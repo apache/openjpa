@@ -900,9 +900,9 @@ public abstract class MappingInfo implements Serializable {
         Table table = cols[0].getTable();
         Index[] idxs = table.getIndexes();
         Index exist = null;
-        for (int i = 0; i < idxs.length; i++) {
-            if (idxs[i].columnsMatch(cols)) {
-                exist = idxs[i];
+        for (Index index : idxs) {
+            if (index.columnsMatch(cols)) {
+                exist = index;
                 break;
             }
         }
@@ -989,9 +989,9 @@ public abstract class MappingInfo implements Serializable {
         Table table = cols[0].getTable();
         Unique[] unqs = table.getUniques();
         Unique exist = null;
-        for (int i = 0; i < unqs.length; i++) {
-            if (unqs[i].columnsMatch(cols)) {
-                exist = unqs[i];
+        for (Unique unique : unqs) {
+            if (unique.columnsMatch(cols)) {
+                exist = unique;
                 break;
             }
         }
@@ -1097,20 +1097,22 @@ public abstract class MappingInfo implements Serializable {
         Table tmp;
         boolean constant = false;
         boolean localSet = false;
-        for (int i = 0; i < joins.length; i++) {
-            if (joins[i][1]instanceof Column) {
-                tmp = ((Column) joins[i][0]).getTable();
+        for (Object[] objects : joins) {
+            if (objects[1] instanceof Column) {
+                tmp = ((Column) objects[0]).getTable();
                 if (!localSet) {
                     local = tmp;
                     localSet = true;
-                } else if (tmp != local)
+                }
+                else if (tmp != local)
                     throw new MetaDataException(_loc.get(prefix
-                        + "-mult-fk-tables", context, local, tmp));
-                foreign = ((Column) joins[i][1]).getTable();
+                            + "-mult-fk-tables", context, local, tmp));
+                foreign = ((Column) objects[1]).getTable();
 
-                if (joins[i][2] == Boolean.TRUE)
+                if (objects[2] == Boolean.TRUE)
                     _join = JOIN_INVERSE;
-            } else
+            }
+            else
                 constant = true;
         }
 
@@ -1126,11 +1128,11 @@ public abstract class MappingInfo implements Serializable {
             }
 
             ForeignKey[] fks = local.getForeignKeys();
-            for (int i = 0; i < fks.length; i++) {
-                if (fks[i].getConstantColumns().length == 0
-                    && fks[i].getConstantPrimaryKeyColumns().length == 0
-                    && fks[i].columnsMatch(cols, pks)) {
-                    exist = fks[i];
+            for (ForeignKey fk : fks) {
+                if (fk.getConstantColumns().length == 0
+                        && fk.getConstantPrimaryKeyColumns().length == 0
+                        && fk.columnsMatch(cols, pks)) {
+                    exist = fk;
                     break;
                 }
             }
@@ -1224,14 +1226,14 @@ public abstract class MappingInfo implements Serializable {
 
         // add joins to key
         Column col;
-        for (int i = 0; i < joins.length; i++) {
-            col = (Column) joins[i][0];
-            if (joins[i][1]instanceof Column)
-                fk.join(col, (Column) joins[i][1]);
-            else if ((joins[i][2] == Boolean.TRUE) != (_join == JOIN_INVERSE))
-                fk.joinConstant(joins[i][1], col);
+        for (Object[] join : joins) {
+            col = (Column) join[0];
+            if (join[1] instanceof Column)
+                fk.join(col, (Column) join[1]);
+            else if ((join[2] == Boolean.TRUE) != (_join == JOIN_INVERSE))
+                fk.joinConstant(join[1], col);
             else
-                fk.joinConstant(col, joins[i][1]);
+                fk.joinConstant(col, join[1]);
         }
         setIOFromJoins(fk, joins);
         return fk;
@@ -1837,9 +1839,9 @@ public abstract class MappingInfo implements Serializable {
         if (col.getTable() == null)
             return false;
         ForeignKey[] fks = col.getTable().getForeignKeys();
-        for (int i = 0; i < fks.length; i++)
-            if (fks[i].containsColumn(col)
-                || fks[i].containsConstantColumn(col))
+        for (ForeignKey fk : fks)
+            if (fk.containsColumn(col)
+                    || fk.containsConstantColumn(col))
                 return true;
         return false;
     }

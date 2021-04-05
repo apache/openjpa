@@ -81,8 +81,9 @@ public class NumberVersionStrategy
     public Map<Column,String> getBulkUpdateValues() {
         Column[] cols = vers.getColumns();
         Map<Column,String> map = new HashMap<>(cols.length);
-        for (int i = 0; i < cols.length; i++)
-            map.put(cols[i], cols[i].getName() + " + 1");
+        for (Column col : cols) {
+            map.put(col, col.getName() + " + 1");
+        }
         return map;
     }
 }

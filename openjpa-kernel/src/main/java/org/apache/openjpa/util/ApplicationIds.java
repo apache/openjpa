@@ -352,8 +352,8 @@ public class ApplicationIds {
      */
     private static boolean hasPCPrimaryKeyFields(ClassMetaData meta) {
         FieldMetaData[] fmds = meta.getPrimaryKeyFields();
-        for (int i = 0; i < fmds.length; i++)
-            if (fmds[i].getDeclaredTypeCode() == JavaTypes.PC)
+        for (FieldMetaData fmd : fmds)
+            if (fmd.getDeclaredTypeCode() == JavaTypes.PC)
                 return true;
         return false;
     }
@@ -379,21 +379,22 @@ public class ApplicationIds {
 
         Field field;
         Object val;
-        for (int i = 0; i < fmds.length; i++) {
-            if (fmds[i].getManagement() != FieldMetaData.MANAGE_PERSISTENT)
+        for (FieldMetaData fmd : fmds) {
+            if (fmd.getManagement() != FieldMetaData.MANAGE_PERSISTENT)
                 continue;
 
             if (AccessCode.isField(meta.getAccessType())) {
-                    field = Reflection.findField(oidType, fmds[i].getName(),
+                field = Reflection.findField(oidType, fmd.getName(),
                         true);
-                    Reflection.set(copy, field, Reflection.get(oid, field));
-                } else { // property
-                    val = Reflection.get(oid, Reflection.findGetter(oidType,
-                        fmds[i].getName(), true));
-                    Reflection.set(copy, Reflection.findSetter(oidType, fmds[i].
-                        getName(), fmds[i].getObjectIdFieldType(), true), val);
-                }
+                Reflection.set(copy, field, Reflection.get(oid, field));
             }
+            else { // property
+                val = Reflection.get(oid, Reflection.findGetter(oidType,
+                        fmd.getName(), true));
+                Reflection.set(copy, Reflection.findSetter(oidType, fmd.
+                        getName(), fmd.getObjectIdFieldType(), true), val);
+            }
+        }
             return copy;
     }
 
@@ -479,18 +480,18 @@ public class ApplicationIds {
      */
     private static boolean assign(OpenJPAStateManager sm, StoreManager store,
         FieldMetaData[] pks, boolean preFlush) {
-        for (int i = 0; i < pks.length; i++)
-            // If we are generating values...
-            if (pks[i].getValueStrategy() != ValueStrategies.NONE) {
+        // If we are generating values...
+        for (FieldMetaData pk : pks)
+            if (pk.getValueStrategy() != ValueStrategies.NONE) {
                 // If a value already exists on this field, throw exception.
                 // This is considered an application coding error.
-                if (!sm.isDefaultValue(pks[i].getIndex()))
+                if (!sm.isDefaultValue(pk.getIndex()))
                     throw new InvalidStateException(_loc2.get("existing-value-override-excep",
-                            pks[i].getFullName(false), Exceptions.toString(sm.getPersistenceCapable()),
+                            pk.getFullName(false), Exceptions.toString(sm.getPersistenceCapable()),
                             sm.getPCState().getClass().getSimpleName()));
                 // Assign the generated value
-                if (store.assignField(sm, pks[i].getIndex(), preFlush))
-                    pks[i].setValueGenerated(true);
+                if (store.assignField(sm, pk.getIndex(), preFlush))
+                    pk.setValueGenerated(true);
                 else
                     return false;
             }

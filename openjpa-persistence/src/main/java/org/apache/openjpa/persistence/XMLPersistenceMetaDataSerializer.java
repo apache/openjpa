@@ -353,14 +353,17 @@ public class XMLPersistenceMetaDataSerializer
 
         boolean removed = false;
         ClassMetaData[] metas = repos.getMetaDatas();
-        for (int i = 0; i < metas.length; i++)
-            removed |= removeMetaData(metas[i]);
+        for (ClassMetaData meta : metas) {
+            removed |= removeMetaData(meta);
+        }
         SequenceMetaData[] seqs = repos.getSequenceMetaDatas();
-        for (int i = 0; i < seqs.length; i++)
-            removed |= removeSequenceMetaData(seqs[i]);
+        for (SequenceMetaData seq : seqs) {
+            removed |= removeSequenceMetaData(seq);
+        }
         QueryMetaData[] queries = repos.getQueryMetaDatas();
-        for (int i = 0; i < queries.length; i++)
-            removed |= removeQueryMetaData(queries[i]);
+        for (QueryMetaData query : queries) {
+            removed |= removeQueryMetaData(query);
+        }
         return removed;
     }
 
@@ -457,8 +460,8 @@ public class XMLPersistenceMetaDataSerializer
         boolean unique = true;
         boolean fieldAccess = false;
         boolean propertyAccess = false;
-        for (Iterator it = objects.iterator(); it.hasNext();) {
-            meta = it.next();
+        for (Object object : objects) {
+            meta = object;
             switch (type(meta)) {
                 case TYPE_META:
                     ClassMetaData cls = (ClassMetaData) meta;
@@ -515,14 +518,12 @@ public class XMLPersistenceMetaDataSerializer
                     serializeQuery((QueryMetaData) obj);
                     break;
                 case TYPE_CLASS_QUERIES:
-                    for (QueryMetaData query : ((ClassQueries) obj)
-                        .getQueries())
+                    for (QueryMetaData query : ((ClassQueries) obj).getQueries())
                         serializeQuery(query);
                     break;
                 case TYPE_CLASS_SEQS:
                     if (isMappingMode())
-                        for (SequenceMetaData seq : ((ClassSeqs) obj)
-                            .getSequences())
+                        for (SequenceMetaData seq : ((ClassSeqs) obj).getSequences())
                             serializeSequence(seq);
                     break;
                 default:
@@ -726,8 +727,9 @@ public class XMLPersistenceMetaDataSerializer
                 (meta.getDescribedType().getName());
             if (seqs != null) {
                 serializationSort(seqs);
-                for (int i = 0; i < seqs.size(); i++)
-                    serializeSequence((SequenceMetaData) seqs.get(i));
+                for (Object seq : seqs) {
+                    serializeSequence((SequenceMetaData) seq);
+                }
             }
         }
 
@@ -736,8 +738,9 @@ public class XMLPersistenceMetaDataSerializer
                 (meta.getDescribedType().getName());
             if (queries != null) {
                 serializationSort(queries);
-                for (int i = 0; i < queries.size(); i++)
-                    serializeQuery((QueryMetaData) queries.get(i));
+                for (Object query : queries) {
+                    serializeQuery((QueryMetaData) query);
+                }
             }
             if (isMappingMode())
                 serializeQueryMappings(meta);

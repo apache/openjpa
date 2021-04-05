@@ -326,11 +326,11 @@ public abstract class MapTableFieldStrategy
 
     private FieldMapping getFieldMapping(ClassMapping meta) {
         FieldMapping[] fields = meta.getFieldMappings();
-        for (int i = 0; i < fields.length; i++) {
-            ValueMapping val = fields[i].getValueMapping();
-            if (fields[i].getMappedByMetaData() == field &&
+        for (FieldMapping fieldMapping : fields) {
+            ValueMapping val = fieldMapping.getValueMapping();
+            if (fieldMapping.getMappedByMetaData() == field &&
                     val.getDeclaredTypeCode() == JavaTypes.MAP)
-                return fields[i];
+                return fieldMapping;
         }
         return null;
     }

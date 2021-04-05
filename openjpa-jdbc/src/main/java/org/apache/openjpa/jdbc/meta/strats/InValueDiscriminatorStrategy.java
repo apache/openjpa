@@ -176,8 +176,9 @@ public abstract class InValueDiscriminatorStrategy
             sql.append(" IS ").appendValue(null).append(" OR ").append(alias);
         sql.append(" IN (");
         sql.appendValue(getDiscriminatorValue(base), col);
-        for (int i = 0; i < subs.length; i++)
-            sql.append(", ").appendValue(getDiscriminatorValue(subs[i]), col);
+        for (ClassMapping sub : subs) {
+            sql.append(", ").appendValue(getDiscriminatorValue(sub), col);
+        }
         sql.append(")");
         if (outer)
             sql.append(")");

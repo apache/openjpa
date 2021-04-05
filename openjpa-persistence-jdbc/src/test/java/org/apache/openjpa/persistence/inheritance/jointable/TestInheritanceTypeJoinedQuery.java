@@ -80,8 +80,7 @@ public class TestInheritanceTypeJoinedQuery  extends SQLListenerTestCase {
         q = em.createQuery(qS);
         rs = q.getResultList();
         assertEquals(numPTEmployees + numFTEmployees, rs.size());
-        for (int i = 0; i < rs.size(); i++){
-            Object obj = rs.get(i);
+        for (Object obj : rs) {
             assertTrue((obj instanceof ParttimeEmployee) || (obj instanceof FulltimeEmployee));
         }
 
@@ -89,15 +88,13 @@ public class TestInheritanceTypeJoinedQuery  extends SQLListenerTestCase {
         q = em.createQuery(qS);
         rs = q.getResultList();
         assertEquals(numContractors, rs.size());
-        for (int i = 0; i < rs.size(); i++)
-            assertTrue(rs.get(i) instanceof Contractor);
+        for (Object value : rs) assertTrue(value instanceof Contractor);
 
         qS = "select p from Person p where TYPE(p) in (?1) order by p.name";
         q = em.createQuery(qS).setParameter(1, Contractor.class);
         rs = q.getResultList();
         assertEquals(numContractors, rs.size());
-        for (int i = 0; i < rs.size(); i++)
-            assertTrue(rs.get(i) instanceof Contractor);
+        for (Object o : rs) assertTrue(o instanceof Contractor);
 
         qS = "select p from Person p where TYPE(p) in ?1 order by p.name";
         Collection<Class<?>> params = new ArrayList<>(2);
@@ -115,8 +112,7 @@ public class TestInheritanceTypeJoinedQuery  extends SQLListenerTestCase {
         q = em.createQuery(qS);
         rs = q.getResultList();
         assertEquals(1, rs.size());
-        for (int i = 0; i < rs.size(); i++)
-            assertTrue(rs.get(i) instanceof Contractor);
+        for (Object r : rs) assertTrue(r instanceof Contractor);
 
         qS = "select p from Person p where TYPE(p) in (?1, ?2) and p.name = ?3 order by p.name";
         q = em.createQuery(qS);
@@ -126,8 +122,7 @@ public class TestInheritanceTypeJoinedQuery  extends SQLListenerTestCase {
 
         rs = q.getResultList();
         assertEquals(1, rs.size());
-        for (int i = 0; i < rs.size(); i++) {
-            Object obj = rs.get(i);
+        for (Object obj : rs) {
             assertTrue(obj instanceof Contractor || obj instanceof FulltimeEmployee);
         }
 
@@ -138,8 +133,7 @@ public class TestInheritanceTypeJoinedQuery  extends SQLListenerTestCase {
 
         rs = q.getResultList();
         assertEquals(numContractors + numFTEmployees, rs.size());
-        for (int i = 0; i < rs.size(); i++) {
-            Object obj = rs.get(i);
+        for (Object obj : rs) {
             assertTrue(obj instanceof Contractor || obj instanceof FulltimeEmployee);
         }
 
@@ -147,8 +141,7 @@ public class TestInheritanceTypeJoinedQuery  extends SQLListenerTestCase {
         q = em.createQuery(qS);
         rs = q.getResultList();
         assertEquals(numPTEmployees + numFTEmployees, rs.size());
-        for (int i = 0; i < rs.size(); i++){
-            Object obj = rs.get(i);
+        for (Object obj : rs) {
             assertTrue((obj instanceof ParttimeEmployee) || (obj instanceof FulltimeEmployee));
         }
 
@@ -157,8 +150,7 @@ public class TestInheritanceTypeJoinedQuery  extends SQLListenerTestCase {
         q.setParameter(1, Contractor.class);
         rs = q.getResultList();
         assertEquals(numPTEmployees + numFTEmployees, rs.size());
-        for (int i = 0; i < rs.size(); i++){
-            Object obj = rs.get(i);
+        for (Object obj : rs) {
             assertTrue((obj instanceof ParttimeEmployee) || (obj instanceof FulltimeEmployee));
         }
 
@@ -168,8 +160,7 @@ public class TestInheritanceTypeJoinedQuery  extends SQLListenerTestCase {
         q.setParameter(2, FulltimeEmployee.class);
         rs = q.getResultList();
         assertEquals(numPTEmployees, rs.size());
-        for (int i = 0; i < rs.size(); i++){
-            Object obj = rs.get(i);
+        for (Object obj : rs) {
             assertTrue((obj instanceof ParttimeEmployee) || (obj instanceof FulltimeEmployee));
         }
         em.close();

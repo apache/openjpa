@@ -19,7 +19,6 @@
 package org.apache.openjpa.kernel.exps;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 
 /**
@@ -48,8 +47,8 @@ class Count
     @Override
     protected Object operate(Collection os, Class c) {
         long count = 0;
-        for (Iterator itr = os.iterator(); itr.hasNext();)
-            if (itr.next() != null)
+        for (Object o : os)
+            if (o != null)
                 count++;
         return count;
     }

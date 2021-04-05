@@ -20,7 +20,6 @@ package org.apache.openjpa.enhance;
 
 import java.util.BitSet;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -1022,8 +1021,8 @@ public class PCDataGenerator
     private int countImplDataFields(ClassMetaData meta) {
         FieldMetaData[] fmds = meta.getFields();
         int count = 0;
-        for (int i = 0; i < fmds.length; i++)
-            if (usesImplData(fmds[i]))
+        for (FieldMetaData fmd : fmds)
+            if (usesImplData(fmd))
                 count++;
         return count;
     }
@@ -1051,8 +1050,9 @@ public class PCDataGenerator
      * clearing the collection in the process.
      */
     protected void setTarget(Instruction ins, Collection<Instruction> jumps) {
-        for (Iterator<Instruction> it = jumps.iterator(); it.hasNext();)
-            ((JumpInstruction) it.next()).setTarget(ins);
+        for (Instruction jump : jumps) {
+            ((JumpInstruction) jump).setTarget(ins);
+        }
         jumps.clear();
     }
 

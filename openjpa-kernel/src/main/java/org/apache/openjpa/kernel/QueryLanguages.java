@@ -45,14 +45,16 @@ public class QueryLanguages {
             ExpressionParser.class,
             AccessController.doPrivileged(
                 J2DoPrivHelper.getClassLoaderAction(ExpressionParser.class)));
-        for (int i = 0; i < classes.length; i++) {
+        for (Class aClass : classes) {
             ExpressionParser ep;
             try {
                 ep = (ExpressionParser) AccessController.doPrivileged(
-                    J2DoPrivHelper.newInstanceAction(classes[i]));
-            } catch (PrivilegedActionException pae) {
+                        J2DoPrivHelper.newInstanceAction(aClass));
+            }
+            catch (PrivilegedActionException pae) {
                 throw new InternalException(pae.getException());
-            } catch (InstantiationException | IllegalAccessException e) {
+            }
+            catch (InstantiationException | IllegalAccessException e) {
                 throw new InternalException(e);
             }
             _expressionParsers.put(ep.getLanguage(), ep);

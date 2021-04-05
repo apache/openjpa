@@ -1063,8 +1063,8 @@ public class JDBCConfigurationImpl
         // handle openjpa.jdbc.SomeMisspelledProperty, but not
         // openjpa.someotherimplementation.SomeProperty
         String[] prefixes = ProductDerivations.getConfigurationPrefixes();
-        for (int i = 0; i < prefixes.length; i++)
-            if (propName.toLowerCase(Locale.ENGLISH).startsWith(prefixes[i] + ".jdbc"))
+        for (String prefix : prefixes)
+            if (propName.toLowerCase(Locale.ENGLISH).startsWith(prefix + ".jdbc"))
                 return true;
         return false;
     }

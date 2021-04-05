@@ -222,8 +222,8 @@ public class TestManagedInterfaces extends SingleEMFTestCase {
         Collection seen = new ArrayList();
         SimpleEntity rel;
         SimpleEntity toRem = null;
-        for (Iterator it = set.iterator(); it.hasNext();) {
-            rel = (SimpleEntity) it.next();
+        for (Object value : set) {
+            rel = (SimpleEntity) value;
             seen.add(rel.getName());
             if (rel.getValue().equals("4"))
                 toRem = rel;
@@ -245,8 +245,8 @@ public class TestManagedInterfaces extends SingleEMFTestCase {
         set = pc.getSetPC();
         assertEquals(4, set.size());
         seen.clear();
-        for (Iterator it = set.iterator(); it.hasNext();) {
-            rel = (SimpleEntity) it.next();
+        for (Object o : set) {
+            rel = (SimpleEntity) o;
             seen.add(rel.getName());
         }
         assertEquals(4, seen.size());
@@ -287,8 +287,8 @@ public class TestManagedInterfaces extends SingleEMFTestCase {
         Collection seen = new ArrayList();
         ManagedIface rel = null;
         ManagedIface toRem = null;
-        for (Iterator it = set.iterator(); it.hasNext();) {
-            rel = (ManagedIface) it.next();
+        for (Object value : set) {
+            rel = (ManagedIface) value;
             seen.add(rel.getIntField());
             if (rel.getIntField() == 4)
                 toRem = rel;
@@ -310,8 +310,8 @@ public class TestManagedInterfaces extends SingleEMFTestCase {
         set = pc.getSetI();
         assertEquals(4, set.size());
         seen.clear();
-        for (Iterator it = set.iterator(); it.hasNext();) {
-            rel = (ManagedIface) it.next();
+        for (Object o : set) {
+            rel = (ManagedIface) o;
             seen.add(rel.getIntField());
         }
         assertEquals(4, seen.size());
@@ -341,8 +341,8 @@ public class TestManagedInterfaces extends SingleEMFTestCase {
         Set seen = new HashSet();
         assertEquals(2, c.size());
         MixedInterface pc;
-        for (Iterator it = c.iterator(); it.hasNext();) {
-            pc = (MixedInterface) it.next();
+        for (Object o : c) {
+            pc = (MixedInterface) o;
             assertEquals(4, pc.getIntField());
             seen.add(pc.getClass());
         }
@@ -372,8 +372,8 @@ public class TestManagedInterfaces extends SingleEMFTestCase {
         Extent e = em.createExtent(MixedInterface.class, true);
         Set seen = new HashSet();
         int size = 0;
-        for (Iterator it = e.iterator(); it.hasNext();) {
-            seen.add(it.next().getClass());
+        for (Object value : e) {
+            seen.add(value.getClass());
             size++;
         }
         assertEquals(3, size);
@@ -382,8 +382,8 @@ public class TestManagedInterfaces extends SingleEMFTestCase {
         e = em.createExtent(MixedInterface.class, false);
         seen = new HashSet();
         size = 0;
-        for (Iterator it = e.iterator(); it.hasNext();) {
-            seen.add(it.next().getClass());
+        for (Object o : e) {
+            seen.add(o.getClass());
             size++;
         }
         assertEquals(1, size);

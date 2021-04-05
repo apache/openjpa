@@ -286,8 +286,8 @@ public final class SQLBuffer
         if (_subsels == null)
             return false;
         Subselect sub;
-        for (int i = 0; i < _subsels.size(); i++) {
-            sub = (Subselect) _subsels.get(i);
+        for (Object subsel : _subsels) {
+            sub = (Subselect) subsel;
             if (sub.select == old) {
                 sub.select = sel;
                 return true;

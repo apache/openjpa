@@ -115,8 +115,8 @@ public class PreparedSQLStoreQuery extends SQLStoreQuery {
                 stmnt = !range.lrs ? buf.prepareStatement(conn) : buf.prepareStatement(conn, fetch, -1, -1);
 
                 int index = 0;
-                for (int i = 0; i < params.length; i++) {
-                    dict.setUnknown(stmnt, ++index, params[i], null);
+                for (Object param : params) {
+                    dict.setUnknown(stmnt, ++index, param, null);
                 }
                 dict.setTimeouts(stmnt, fetch, false);
 

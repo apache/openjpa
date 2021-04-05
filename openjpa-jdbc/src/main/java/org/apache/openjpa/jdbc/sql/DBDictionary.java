@@ -2096,8 +2096,8 @@ public class DBDictionary
             String s;
             idx = typeName.length();
             int curIdx = -1;
-            for (Iterator<String> i = typeModifierSet.iterator(); i.hasNext();) {
-                s = i.next();
+            for (String value : typeModifierSet) {
+                s = value;
                 if (typeName.toUpperCase(Locale.ENGLISH).indexOf(s) != -1) {
                     curIdx = typeName.toUpperCase(Locale.ENGLISH).indexOf(s);
                     if (curIdx != -1 && curIdx < idx) {
@@ -2494,16 +2494,16 @@ public class DBDictionary
         Collection<String> deleteSQL = new ArrayList<>(tables.length);
         Collection<ForeignKey> restrictConstraints =
             new LinkedHashSet<>();
-        for (int i = 0; i < tables.length; i++) {
-            ForeignKey[] fks = tables[i].getForeignKeys();
-            for (int j = 0; j < fks.length; j++) {
-                if (!fks[j].isLogical() && !fks[j].isDeferred()
-                    && fks[j].getDeleteAction() == ForeignKey.ACTION_RESTRICT)
-                restrictConstraints.add(fks[j]);
+        for (Table table : tables) {
+            ForeignKey[] fks = table.getForeignKeys();
+            for (ForeignKey fk : fks) {
+                if (!fk.isLogical() && !fk.isDeferred()
+                        && fk.getDeleteAction() == ForeignKey.ACTION_RESTRICT)
+                    restrictConstraints.add(fk);
             }
 
             deleteSQL.add("DELETE FROM " +
-                toDBName(tables[i].getFullIdentifier()));
+                    toDBName(table.getFullIdentifier()));
         }
 
         for(ForeignKey fk : restrictConstraints) {
@@ -2595,8 +2595,8 @@ public class DBDictionary
                 }
             }
 
-            for (Iterator itr2 = aliases.iterator(); itr2.hasNext();) {
-                String tableAlias = itr2.next().toString();
+            for (Object alias : aliases) {
+                String tableAlias = alias.toString();
                 if (fromSQL.getSQL().indexOf(tableAlias) == -1) {
                     if (!first && fromSQL.getSQL().length() > 0)
                         fromSQL.append(", ");
@@ -3582,8 +3582,8 @@ public class DBDictionary
             return false;
 
         char[] vowels = { 'A', 'E', 'I', 'O', 'U', };
-        for (int i = 0; i < vowels.length; i++) {
-            int index = name.toString().toUpperCase(Locale.ENGLISH).indexOf(vowels[i]);
+        for (char vowel : vowels) {
+            int index = name.toString().toUpperCase(Locale.ENGLISH).indexOf(vowel);
             if (index != -1) {
                 name.replace(index, index + 1, "");
                 return true;
@@ -3695,8 +3695,8 @@ public class DBDictionary
 
         Unique[] unqs = table.getUniques();
         String unqStr;
-        for (int i = 0; i < unqs.length; i++) {
-            unqStr = getUniqueConstraintSQL(unqs[i]);
+        for (Unique unq : unqs) {
+            unqStr = getUniqueConstraintSQL(unq);
             if (unqStr != null) {
                 if (endBuf.length() > 0)
                     endBuf.append(", ");
@@ -4006,8 +4006,8 @@ public class DBDictionary
 
         int delActionId = fk.getDeleteAction();
         if (delActionId == ForeignKey.ACTION_NULL) {
-            for (int i = 0; i < locals.length; i++) {
-                if (locals[i].isNotNull())
+            for (Column local : locals) {
+                if (local.isNotNull())
                     delActionId = ForeignKey.ACTION_NONE;
             }
         }

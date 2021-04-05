@@ -41,8 +41,8 @@ public class ProxyMaps
     public static void beforeClear(ProxyMap map) {
         dirty(map, true);
         Map.Entry entry;
-        for (Iterator itr = map.entrySet().iterator(); itr.hasNext();) {
-            entry = (Map.Entry) itr.next();
+        for (Object o : map.entrySet()) {
+            entry = (Map.Entry) o;
             removed(map, entry.getKey(), true);
             removed(map, entry.getValue(), false);
         }
@@ -171,8 +171,8 @@ public class ProxyMaps
      */
     public static void putAll(ProxyMap map, Map values) {
         Map.Entry entry;
-        for (Iterator itr = values.entrySet().iterator(); itr.hasNext();) {
-            entry = (Map.Entry) itr.next();
+        for (Object o : values.entrySet()) {
+            entry = (Map.Entry) o;
             map.put(entry.getKey(), entry.getValue());
         }
     }

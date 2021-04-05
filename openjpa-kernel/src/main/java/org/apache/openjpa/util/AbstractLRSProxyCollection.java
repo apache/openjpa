@@ -126,8 +126,8 @@ public abstract class AbstractLRSProxyCollection
         Proxies.dirty(this, false);
         boolean added = false;
         Object add;
-        for (Iterator itr = all.iterator(); itr.hasNext();) {
-            add = itr.next();
+        for (Object o : all) {
+            add = o;
             Proxies.assertAllowedType(add, _elementType);
             _ct.added(add);
             added = true;
@@ -150,8 +150,8 @@ public abstract class AbstractLRSProxyCollection
         Proxies.dirty(this, false);
         boolean removed = false;
         Object rem;
-        for (Iterator itr = all.iterator(); itr.hasNext();) {
-            rem = itr.next();
+        for (Object o : all) {
+            rem = o;
             if (remove(rem)) {
                 Proxies.removed(this, rem, false);
                 _ct.removed(rem);
@@ -219,8 +219,8 @@ public abstract class AbstractLRSProxyCollection
 
     @Override
     public boolean containsAll(Collection all) {
-        for (Iterator itr = all.iterator(); itr.hasNext();)
-            if (!contains(itr.next()))
+        for (Object o : all)
+            if (!contains(o))
                 return false;
         return true;
     }

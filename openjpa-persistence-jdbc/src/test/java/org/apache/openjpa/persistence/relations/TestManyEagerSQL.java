@@ -102,8 +102,8 @@ public class TestManyEagerSQL
 
         sql.clear();
 
-        for (int i = 0; i < list.size(); i++) {
-            OneManyEagerChild child = (OneManyEagerChild) list.get(i);
+        for (Object o : list) {
+            OneManyEagerChild child = (OneManyEagerChild) o;
             assertEquals(2, child.getParent().getLazyChildren().size());
             assertEquals(2, child.getParent().getEagerChildren().size());
         }
@@ -128,8 +128,8 @@ public class TestManyEagerSQL
 
         sql.clear();
 
-        for (int i = 0; i < list.size(); i++) {
-            OneManyLazyChild child = (OneManyLazyChild) list.get(i);
+        for (Object o : list) {
+            OneManyLazyChild child = (OneManyLazyChild) o;
             assertEquals(2, child.getParent().getLazyChildren().size());
             assertEquals(2, child.getParent().getEagerChildren().size());
         }
@@ -180,8 +180,8 @@ public class TestManyEagerSQL
 
         sql.clear();
 
-        for (int i = 0; i < list.size(); i++) {
-            OneManyEagerParent p = (OneManyEagerParent) list.get(i);
+        for (Object o : list) {
+            OneManyEagerParent p = (OneManyEagerParent) o;
             long id = p.getId();
             assertEquals(2, p.getEagerChildren().size());
             assertEquals(p, p.getEagerChildren().get(0).getParent());
@@ -221,8 +221,8 @@ public class TestManyEagerSQL
 
         sql.clear();
 
-        for (int i = 0; i < list.size(); i++) {
-            OneOneParent p = (OneOneParent) list.get(i);
+        for (Object o : list) {
+            OneOneParent p = (OneOneParent) o;
             assertEquals(p, p.getChild().getParent());
         }
 
@@ -248,8 +248,8 @@ public class TestManyEagerSQL
 
         sql.clear();
 
-        for (int i = 0; i < list.size(); i++) {
-            OneOneChild c = (OneOneChild) list.get(i);
+        for (Object o : list) {
+            OneOneChild c = (OneOneChild) o;
             assertEquals(c, c.getParent().getChild());
         }
 

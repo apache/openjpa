@@ -1889,11 +1889,11 @@ public class EntityManagerImpl
                     String superName = PCEnhancer.toManagedTypeName(className);
                     ClassMetaData[] metas = conf.getMetaDataRepositoryInstance()
                         .getMetaDatas();
-                    for (int i = 0; i < metas.length; i++) {
+                    for (ClassMetaData meta : metas) {
                         if (superName.equals(
-                            metas[i].getDescribedType().getName())) {
+                                meta.getDescribedType().getName())) {
                             return PCRegistry.getPCType(
-                                metas[i].getDescribedType());
+                                    meta.getDescribedType());
                         }
                     }
 

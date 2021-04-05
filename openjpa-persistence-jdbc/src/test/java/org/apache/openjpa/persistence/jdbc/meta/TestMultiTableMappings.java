@@ -35,6 +35,7 @@ import javax.persistence.EntityTransaction;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.jdbc.FetchMode;
 import org.apache.openjpa.persistence.jdbc.JDBCFetchPlan;
 import org.apache.openjpa.persistence.jdbc.common.apps.MultiA;
 import org.apache.openjpa.persistence.jdbc.common.apps.MultiB;
@@ -63,7 +64,7 @@ public class TestMultiTableMappings
     public void setUpTestCase() {
        deleteAll(MultiA.class);
 
-        OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
+        OpenJPAEntityManager pm = currentEntityManager();
         Collection os = new ArrayList();
         MultiA a = new MultiA();
         MultiB b = new MultiB();
@@ -174,9 +175,8 @@ public class TestMultiTableMappings
 
     public void testVerticalQueryModeQueries() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
-        OpenJPAQuery q = pm.createNativeQuery("",MultiA.class);
-        ((JDBCFetchPlan) q.getFetchPlan()).
-                setSubclassFetchMode(JDBCFetchPlan.EAGER_PARALLEL);
+        OpenJPAQuery<MultiA> q = pm.createNativeQuery("",MultiA.class);
+        ((JDBCFetchPlan) q.getFetchPlan()).setSubclassFetchMode(FetchMode.PARALLEL);
         // we need ordering; otherwise kodo is smart enough to only run first
         // select until its results are exhausted
 

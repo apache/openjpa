@@ -174,18 +174,18 @@ public class TestConfigurationImpl extends AbstractTestCase {
     @Test
     public void testBeanAccessors() throws Exception {
         PropertyDescriptor[] pds = _conf.getPropertyDescriptors();
-        for (int i = 0; i < pds.length; i++) {
-            assertNotNull(pds[i].getShortDescription());
-            assertNotNull(pds[i].getDisplayName());
+        for (PropertyDescriptor pd : pds) {
+            assertNotNull(pd.getShortDescription());
+            assertNotNull(pd.getDisplayName());
 
-            assertNotNull(pds[i].getWriteMethod());
-            assertNotNull(pds[i].getReadMethod());
+            assertNotNull(pd.getWriteMethod());
+            assertNotNull(pd.getReadMethod());
 
-            pds[i].getReadMethod().invoke(_conf, (Object[]) null);
+            pd.getReadMethod().invoke(_conf, (Object[]) null);
 
-            Method setter = pds[i].getWriteMethod();
-            Method getter = pds[i].getReadMethod();
-            Class param = pds[i].getReadMethod().getReturnType();
+            Method setter = pd.getWriteMethod();
+            Method getter = pd.getReadMethod();
+            Class param = pd.getReadMethod().getReturnType();
 
             Object setVal = null;
             if (param == int.class)
@@ -200,7 +200,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
             else
                 continue;
 
-            setter.invoke(_conf, new Object []{ setVal });
+            setter.invoke(_conf, new Object[]{setVal});
             assertEquals(setVal, getter.invoke(_conf, (Object[]) null));
         }
     }

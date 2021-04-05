@@ -211,8 +211,8 @@ public class FormatPreservingProperties extends Properties {
     @Override
     public synchronized void putAll(Map m) {
         Map.Entry e;
-        for (Iterator iter = m.entrySet().iterator(); iter.hasNext();) {
-            e = (Map.Entry) iter.next();
+        for (Object o : m.entrySet()) {
+            e = (Map.Entry) o;
             put(e.getKey(), e.getValue());
         }
     }

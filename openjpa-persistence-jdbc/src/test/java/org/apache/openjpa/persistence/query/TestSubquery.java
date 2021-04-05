@@ -261,8 +261,8 @@ public class TestSubquery
             return;
 
         em.getTransaction().begin();
-        for (int i = 0; i < updates.length; i++) {
-            int updateCount = em.createQuery(updates[i]).executeUpdate();
+        for (String update : updates) {
+            int updateCount = em.createQuery(update).executeUpdate();
             assertEquals(0, updateCount);
         }
 

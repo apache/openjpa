@@ -24,7 +24,6 @@ import java.security.PrivilegedActionException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -1175,9 +1174,9 @@ public class MappingRepository extends MetaDataRepository {
                     return null;
                 ClassMapping inverse = field.getValueMapping().getTypeMapping();
                 FieldMapping[] fmds = inverse.getFieldMappings();
-                for (int i = 0; i < fmds.length; i++) {
-                    if (field == fmds[i].getMappedByMapping())
-                        return fmds[i];
+                for (FieldMapping fmd : fmds) {
+                    if (field == fmd.getMappedByMapping())
+                        return fmd;
                 }
             }
         }
@@ -1219,8 +1218,8 @@ public class MappingRepository extends MetaDataRepository {
             assoType == FieldMetaData.MANY_TO_ONE) {
             ClassMapping inverse = field.getValueMapping().getTypeMapping();
             FieldMapping[] fmds = inverse.getFieldMappings();
-            for (int i = 0; i < fmds.length; i++) {
-                if (field == fmds[i].getMappedByMapping())
+            for (FieldMapping fmd : fmds) {
+                if (field == fmd.getMappedByMapping())
                     return true;
             }
         }
@@ -1568,13 +1567,13 @@ public class MappingRepository extends MetaDataRepository {
                 Collection<Class<?>> classes = loadPersistentTypes(false,
                         mapping.getEnvClassLoader());
                 Class<?> cls;
-                for (Iterator<Class<?>> itr = classes.iterator(); itr.hasNext();) {
-                    cls = itr.next();
+                for (Class<?> aClass : classes) {
+                    cls = aClass;
                     Class<?> supcl = cls.getSuperclass();
                     while (supcl != null &&
-                           !supcl.equals(java.lang.Object.class)) {
+                            !supcl.equals(Object.class)) {
                         if (!supcl.isInterface() &&
-                            supcl.equals(mapping.getDescribedType())) {
+                                supcl.equals(mapping.getDescribedType())) {
                             baseMapping = mapping;
                             break;
                         }

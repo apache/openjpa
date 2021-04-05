@@ -33,7 +33,6 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.TimeZone;
@@ -1630,8 +1629,8 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
 
     private boolean hasGeneratedKey() {
         FieldMetaData[] pkFields = _meta.getPrimaryKeyFields();
-        for (int i = 0; i < pkFields.length; i++) {
-            if (pkFields[i].getValueStrategy() == ValueStrategies.AUTOASSIGN)
+        for (FieldMetaData pkField : pkFields) {
+            if (pkField.getValueStrategy() == ValueStrategies.AUTOASSIGN)
                 return true;
         }
         return false;
@@ -3454,13 +3453,12 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
                 && postLoad(FetchGroup.NAME_DEFAULT, fetch))
                 return;
             String[] fgs = fmd.getCustomFetchGroups();
-            for (int i = 0; i < fgs.length; i++)
-                if (fetch.hasFetchGroup(fgs[i]) && postLoad(fgs[i], fetch))
+            for (String fg : fgs)
+                if (fetch.hasFetchGroup(fg) && postLoad(fg, fetch))
                     return;
         } else {
-            for (Iterator itr = fetch.getFetchGroups().iterator();
-                itr.hasNext();) {
-                if (postLoad((String) itr.next(), fetch))
+            for (String s : fetch.getFetchGroups()) {
+                if (postLoad(s, fetch))
                     return;
             }
         }

@@ -20,7 +20,6 @@ package org.apache.openjpa.kernel;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
@@ -155,18 +154,18 @@ class VersionAttachStrategy
         FetchConfiguration fetch = broker.getFetchConfiguration();
         try {
             FieldMetaData[] fmds = sm.getMetaData().getFields();
-            for (int i = 0; i < fmds.length; i++) {
+            for (FieldMetaData fmd : fmds) {
                 switch (detach) {
                     case DETACH_ALL:
-                        attachField(manager, toAttach, sm, fmds[i], true);
+                        attachField(manager, toAttach, sm, fmd, true);
                         break;
                     case DETACH_FETCH_GROUPS:
-                        if (fetch.requiresFetch(fmds[i])
-                            != FetchConfiguration.FETCH_NONE)
-                            attachField(manager, toAttach, sm, fmds[i], true);
+                        if (fetch.requiresFetch(fmd)
+                                != FetchConfiguration.FETCH_NONE)
+                            attachField(manager, toAttach, sm, fmd, true);
                         break;
                     case DETACH_LOADED:
-                        attachField(manager, toAttach, sm, fmds[i], false);
+                        attachField(manager, toAttach, sm, fmd, false);
                         break;
                 }
             }
@@ -319,8 +318,8 @@ class VersionAttachStrategy
         if (fmd.getElement().isEmbedded())
             copy = (Collection) sm.newFieldProxy(fmd.getIndex());
         else {
-            for (Iterator itr = coll.iterator(); itr.hasNext();) {
-                if (manager.getBroker().isDetached(itr.next())) {
+            for (Object o : coll) {
+                if (manager.getBroker().isDetached(o)) {
                     copy = (Collection) sm.newFieldProxy(fmd.getIndex());
                     break;
                 }
@@ -328,9 +327,9 @@ class VersionAttachStrategy
         }
 
         Object attached;
-        for (Iterator itr = coll.iterator(); itr.hasNext();) {
+        for (Object o : coll) {
             attached = attachInPlace(manager, sm, fmd.getElement(),
-                itr.next());
+                    o);
             if (copy != null)
                 copy.add(attached);
         }
@@ -355,11 +354,11 @@ class VersionAttachStrategy
         if (fmd.getKey().isEmbeddedPC() || fmd.getElement().isEmbeddedPC())
             copy = (Map) sm.newFieldProxy(fmd.getIndex());
         else {
-            for (Iterator itr = map.entrySet().iterator(); itr.hasNext();) {
-                entry = (Map.Entry) itr.next();
+            for (Object o : map.entrySet()) {
+                entry = (Map.Entry) o;
                 if ((keyPC && manager.getBroker().isDetached(entry.getKey()))
-                    || (valPC && manager.getBroker().isDetached
-                    (entry.getValue()))) {
+                        || (valPC && manager.getBroker().isDetached
+                        (entry.getValue()))) {
                     copy = (Map) sm.newFieldProxy(fmd.getIndex());
                     break;
                 }
@@ -367,8 +366,8 @@ class VersionAttachStrategy
         }
 
         Object key, val;
-        for (Iterator itr = map.entrySet().iterator(); itr.hasNext();) {
-            entry = (Map.Entry) itr.next();
+        for (Object o : map.entrySet()) {
+            entry = (Map.Entry) o;
             key = entry.getKey();
             if (keyPC)
                 key = attachInPlace(manager, sm, fmd.getKey(), key);
@@ -408,8 +407,8 @@ class VersionAttachStrategy
 
     private boolean isPrimaryKeysGenerated(ClassMetaData meta) {
         FieldMetaData[] pks = meta.getPrimaryKeyFields();
-        for (int i = 0; i < pks.length; i++) {
-            if (pks[i].getValueStrategy() != ValueStrategies.NONE)
+        for (FieldMetaData pk : pks) {
+            if (pk.getValueStrategy() != ValueStrategies.NONE)
                 return true;
         }
         return false;

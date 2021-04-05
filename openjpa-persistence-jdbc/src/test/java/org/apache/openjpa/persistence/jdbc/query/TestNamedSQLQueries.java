@@ -71,8 +71,7 @@ public class TestNamedSQLQueries
 
         assertEquals("javax.jdo.query.SQL", ((OpenJPAQuery) q).getLanguage());
         Collection results = (Collection) q.getCandidateCollection();
-        for (Iterator i = results.iterator(); i.hasNext();)
-            assertEquals(4, ((NamedSQL) i.next()).getNum());
+        for (Object result : results) assertEquals(4, ((NamedSQL) result).getNum());
         assertEquals(5, results.size());
         q.closeAll();
         pm.close();

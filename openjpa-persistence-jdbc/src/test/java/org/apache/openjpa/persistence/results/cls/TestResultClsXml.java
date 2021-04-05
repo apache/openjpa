@@ -45,8 +45,8 @@ public class TestResultClsXml extends SQLListenerTestCase {
             List<ResultClsXml> result = q.getResultList();
             assertEquals(1, result.size());
 
-            for (Iterator it = result.iterator(); it.hasNext();) {
-                Object obj = (Object) it.next();
+            for (ResultClsXml resultClsXml : result) {
+                Object obj = (Object) resultClsXml;
                 ResultClsXml ct = (ResultClsXml) obj;
                 assertEquals("id1", ct.getId());
                 assertEquals("description1", ct.getDescription());

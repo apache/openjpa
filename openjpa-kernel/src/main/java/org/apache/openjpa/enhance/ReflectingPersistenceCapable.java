@@ -141,8 +141,9 @@ public class ReflectingPersistenceCapable
 
     @Override
     public void pcProvideFields(int[] fieldIndices) {
-        for(int i = 0; i < fieldIndices.length; i++)
-            pcProvideField(fieldIndices[i]);
+        for (int fieldIndex : fieldIndices) {
+            pcProvideField(fieldIndex);
+        }
     }
 
     @Override
@@ -183,8 +184,9 @@ public class ReflectingPersistenceCapable
 
     @Override
     public void pcReplaceFields(int[] fieldIndices) {
-        for(int i = 0; i < fieldIndices.length; i++)
-            pcReplaceField(fieldIndices[i]);
+        for (int fieldIndex : fieldIndices) {
+            pcReplaceField(fieldIndex);
+        }
     }
 
     public void pcCopyField(Object fromObject, int i) {
@@ -199,8 +201,9 @@ public class ReflectingPersistenceCapable
             fromObject = ((ReflectingPersistenceCapable) fromObject)
                 .getManagedInstance();
 
-        for(int i = 0; i < fieldIndices.length; i++)
-            pcCopyField(fromObject, fieldIndices[i]);
+        for (int fieldIndex : fieldIndices) {
+            pcCopyField(fromObject, fieldIndex);
+        }
     }
 
     @Override
@@ -313,10 +316,10 @@ public class ReflectingPersistenceCapable
             target = oid;
 
         FieldMetaData[] pks = meta.getPrimaryKeyFields();
-        for (int i = 0; i < pks.length; i++) {
-            Object val = getValue(pks[i].getIndex(), o);
-            Field f = Reflection.findField(target.getClass(), pks[i].getName(),
-                true);
+        for (FieldMetaData pk : pks) {
+            Object val = getValue(pk.getIndex(), o);
+            Field f = Reflection.findField(target.getClass(), pk.getName(),
+                    true);
             Reflection.set(target, f, val);
         }
     }

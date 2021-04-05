@@ -39,7 +39,6 @@ import java.time.OffsetTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
@@ -139,12 +138,13 @@ public abstract class AbstractResult
     protected void closeEagerMap(Map eager) {
         if (eager != null) {
             Object res;
-            for (Iterator itr = eager.values().iterator(); itr.hasNext();) {
-                res = itr.next();
+            for (Object o : eager.values()) {
+                res = o;
                 if (res != this && res instanceof Closeable)
                     try {
                         ((Closeable) res).close();
-                    } catch (Exception e) {
+                    }
+                    catch (Exception e) {
                     }
             }
         }
@@ -244,8 +244,8 @@ public abstract class AbstractResult
      */
     protected boolean containsAllInternal(Object[] objs, Joins joins)
         throws SQLException {
-        for (int i = 0; i < objs.length; i++)
-            if (!containsInternal(objs[i], joins))
+        for (Object obj : objs)
+            if (!containsInternal(obj, joins))
                 return false;
         return true;
     }

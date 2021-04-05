@@ -134,12 +134,12 @@ public class InMemoryExpressionFactory
         List group = null;
         Object pc;
         boolean eq;
-        for (Iterator itr = matches.iterator(); itr.hasNext();) {
-            pc = itr.next();
+        for (Object match : matches) {
+            pc = match;
             eq = true;
             for (int i = 0; i < exps.grouping.length; i++) {
                 curs[i] = ((Val) exps.grouping[i]).evaluate(pc, pc, ctx,
-                    params);
+                        params);
                 eq = eq && Objects.equals(prevs[i], curs[i]);
             }
 
@@ -231,9 +231,9 @@ public class InMemoryExpressionFactory
 
         // evaluate each candidate
         List projected = new ArrayList(matches.size());
-        for (Iterator itr = matches.iterator(); itr.hasNext();)
-            projected.add(project(itr.next(), exps, exps.grouping.length > 0,
-                ctx, params));
+        for (Object match : matches)
+            projected.add(project(match, exps, exps.grouping.length > 0,
+                    ctx, params));
         return projected;
     }
 
@@ -754,8 +754,9 @@ public class InMemoryExpressionFactory
         @Override
         public int hashCode() {
             int rs = 17;
-            for (int i = 0; i < _arr.length; i++)
-                rs = 37 * rs + ((_arr[i] == null) ? 0 : _arr[i].hashCode());
+            for (Object o : _arr) {
+                rs = 37 * rs + ((o == null) ? 0 : o.hashCode());
+            }
             return rs;
         }
 

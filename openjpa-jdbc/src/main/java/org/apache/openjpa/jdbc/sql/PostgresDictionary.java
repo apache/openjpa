@@ -411,8 +411,8 @@ public class PostgresDictionary extends DBDictionary {
 
         if(namePairs != null) { // unable to parse strName.
             try {
-                for (int i = 0; i < namePairs.length; i++) {
-                    if (queryOwnership(conn, namePairs[i], schema)) {
+                for (String[] namePair : namePairs) {
+                    if (queryOwnership(conn, namePair, schema)) {
                         return true;
                     }
                 }

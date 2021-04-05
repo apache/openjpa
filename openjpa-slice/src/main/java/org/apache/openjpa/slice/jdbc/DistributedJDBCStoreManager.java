@@ -271,19 +271,19 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
         Collection<StateManagerSet> remaining =
             new ArrayList<>(subsets.values());
         ExecutorService threadPool = SliceThread.getPool();
-        for (int i = 0; i < _slices.size(); i++) {
-            SliceStoreManager slice = _slices.get(i);
+        for (SliceStoreManager slice : _slices) {
             StateManagerSet subset = subsets.get(slice.getName());
             if (subset.isEmpty())
                 continue;
             if (subset.containsReplicated()) {
                 Map<OpenJPAStateManager, Object> oldVersions = cacheVersion(
-                    subset.getReplicated());
-            	collectException(slice.flush(subset), exceptions);
+                        subset.getReplicated());
+                collectException(slice.flush(subset), exceptions);
                 remaining.remove(subset);
-            	rollbackVersion(subset.getReplicated(), oldVersions, remaining);
-            } else {
-            	futures.add(threadPool.submit(new Flusher(slice, subset)));
+                rollbackVersion(subset.getReplicated(), oldVersions, remaining);
+            }
+            else {
+                futures.add(threadPool.submit(new Flusher(slice, subset)));
             }
         }
         for (Future<Collection> future : futures) {

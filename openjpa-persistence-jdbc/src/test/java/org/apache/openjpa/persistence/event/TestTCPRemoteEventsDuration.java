@@ -200,9 +200,9 @@ public class TestTCPRemoteEventsDuration
         // This will generate a larger number of transaction in a very
         // short amount of time (old socket-per-transaction would
         // exhaust jvm socket pool)
-        for (int i = 0; i < persistables.length; i++) {
+        for (RuntimeTest1 runtimeTest1 : persistables) {
             startTx(pm);
-            pm.persist(persistables[i]);
+            pm.persist(runtimeTest1);
             endTx(pm);
         }
 
@@ -215,8 +215,8 @@ public class TestTCPRemoteEventsDuration
 
         // delete them
         startTx(pm);
-        for (int i = 0; i < persistables.length; i++) {
-            pm.remove(persistables[i]);
+        for (RuntimeTest1 persistable : persistables) {
+            pm.remove(persistable);
         }
         endTx(pm);
 

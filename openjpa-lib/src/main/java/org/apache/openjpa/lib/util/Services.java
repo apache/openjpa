@@ -164,9 +164,9 @@ public class Services {
 
         // filter out any classes that have any classloader issues wrt.
         // the specified service class.
-        for (int i = 0; i < classes.length; i++)
-            if (!serviceClass.isAssignableFrom(classes[i]))
-                invalid.add(classes[i]);
+        for (Class aClass : classes)
+            if (!serviceClass.isAssignableFrom(aClass))
+                invalid.add(aClass);
         if (invalid.size() != 0) {
             List list = new ArrayList(Arrays.asList(classes));
             list.removeAll(invalid);
@@ -214,9 +214,9 @@ public class Services {
             return new Class[0];
 
         List classes = new ArrayList(names.length);
-        for (int i = 0; i < names.length; i++) {
+        for (String name : names) {
             try {
-                classes.add(Class.forName(names[i], false, loader));
+                classes.add(Class.forName(name, false, loader));
             }
             catch (UnsupportedClassVersionError ecve) {
                 if (!skipMissing)

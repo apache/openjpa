@@ -107,8 +107,8 @@ public class TestFinderCache extends SQLListenerTestCase {
         for (int n = 0; n < N; n++) {
             em.clear();
             long start = System.nanoTime();
-            for (int i = 0; i < ids.length; i++) {
-                T pc = em.find(cls, ids[i]);
+            for (long id : ids) {
+                T pc = em.find(cls, id);
                 assertNotNull(pc);
                 assertTrue(cls.isInstance(pc));
             }

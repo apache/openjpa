@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.event;
 
-import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.openjpa.lib.util.collections.AbstractReferenceMap.ReferenceStrength;
@@ -47,8 +46,8 @@ public class SingleJVMRemoteCommitProvider
     @Override
     public void broadcast(RemoteCommitEvent event) {
         SingleJVMRemoteCommitProvider provider;
-        for (Iterator iter = s_providers.iterator(); iter.hasNext();) {
-            provider = (SingleJVMRemoteCommitProvider) iter.next();
+        for (Object s_provider : s_providers) {
+            provider = (SingleJVMRemoteCommitProvider) s_provider;
 
             // don't notify this object -- this provider's factory
             // should not be notified of commits that originated

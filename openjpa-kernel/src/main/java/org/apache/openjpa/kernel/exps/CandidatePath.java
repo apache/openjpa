@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.kernel.exps;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Objects;
@@ -113,13 +112,13 @@ public class CandidatePath
         Object action;
         OpenJPAStateManager sm;
         Broker tmpBroker = null;
-        for (Iterator itr = _actions.iterator(); itr.hasNext();) {
-            action = itr.next();
+        for (Object o : _actions) {
+            action = o;
 
             // fail on null value
             if (candidate == null) {
                 if (action instanceof Traversal
-                    && ((Traversal) action).nullTraversal)
+                        && ((Traversal) action).nullTraversal)
                     return null;
                 throw new NullPointerException();
             }
@@ -136,8 +135,8 @@ public class CandidatePath
             tmpBroker = null;
             if (ImplHelper.isManageable(candidate))
                 sm = (OpenJPAStateManager) (ImplHelper.toPersistenceCapable(
-                    candidate, ctx.getConfiguration())).
-                    pcGetStateManager();
+                        candidate, ctx.getConfiguration())).
+                        pcGetStateManager();
             if (sm == null) {
                 tmpBroker = ctx.getBroker();
                 tmpBroker.transactional(candidate, false, null);
@@ -148,7 +147,8 @@ public class CandidatePath
                 // get the specified field value and switch candidate
                 Traversal traversal = (Traversal) action;
                 candidate = sm.fetchField(traversal.field.getIndex(), true);
-            } finally {
+            }
+            finally {
                 // transactional does not clear the state, which is
                 // important since tmpCandidate might be also managed by
                 // another broker if it's a proxied non-pc instance

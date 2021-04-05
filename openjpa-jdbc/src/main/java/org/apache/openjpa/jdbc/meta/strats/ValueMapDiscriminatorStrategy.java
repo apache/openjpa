@@ -144,8 +144,9 @@ public class ValueMapDiscriminatorStrategy
         ClassMapping[] subs = cls.getJoinablePCSubclassMappings();
         Map<String, Class<?>> map = new HashMap<>((int) ((subs.length + 1) * 1.33 + 1));
         mapDiscriminatorValue(cls, map);
-        for (int i = 0; i < subs.length; i++)
-            mapDiscriminatorValue(subs[i], map);
+        for (ClassMapping sub : subs) {
+            mapDiscriminatorValue(sub, map);
+        }
         return map;
     }
 

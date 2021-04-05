@@ -178,8 +178,9 @@ public abstract class RelationToManyInverseKeyFieldStrategy
         ForeignKey fk = vinfo.getInverseTypeJoin(elem, field.getName(), adapt);
         if (_uni1MFK) {
             Column[] locals = fk.getColumns();
-            for (int i = 0; i < locals.length; i++)
-                locals[i].setUni1MFK(true);
+            for (Column local : locals) {
+                local.setUni1MFK(true);
+            }
         }
         elem.setForeignKey(fk);
         elem.setColumnIO(vinfo.getColumnIO());
@@ -261,8 +262,9 @@ public abstract class RelationToManyInverseKeyFieldStrategy
         StoreContext ctx = store.getContext();
         if (field.getMappedBy() == null) {
             Collection rem = ct.getRemoved();
-            for (Iterator itr = rem.iterator(); itr.hasNext();)
-                updateInverse(ctx, itr.next(), rel, rm, null, 0);
+            for (Object o : rem) {
+                updateInverse(ctx, o, rel, rm, null, 0);
+            }
         }
 
         Collection add = ct.getAdded();
@@ -308,8 +310,9 @@ public abstract class RelationToManyInverseKeyFieldStrategy
         StoreContext ctx = store.getContext();
         Collection objs = toCollection(sm.fetchObject(field.getIndex()));
         if (objs != null && !objs.isEmpty())
-            for (Iterator itr = objs.iterator(); itr.hasNext();)
-                updateInverse (ctx, itr.next(), rel, rm, sm, 0);
+            for (Object obj : objs) {
+                updateInverse(ctx, obj, rel, rm, sm, 0);
+            }
     }
 
     /**

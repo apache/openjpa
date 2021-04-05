@@ -69,61 +69,61 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         Query qry = em.createQuery("select d from Dog1 d");
         List result = qry.getResultList();
 
-        for (int index = 0; index < result.size(); index++) {
-            Dog1 Obj = (Dog1) result.get(index);
+        for (Object o4 : result) {
+            Dog1 Obj = (Dog1) o4;
             em.remove(Obj);
         }
         Query qry2 = em.createQuery("select d from Dog2 d");
         List result2 = qry2.getResultList();
 
-        for (int index = 0; index < result2.size(); index++) {
-            Dog2 Obj = (Dog2) result2.get(index);
+        for (Object o3 : result2) {
+            Dog2 Obj = (Dog2) o3;
             em.remove(Obj);
         }
         Query qry3 = em.createQuery("select d from DogTable d");
         List result3 = qry3.getResultList();
 
-        for (int index = 0; index < result3.size(); index++) {
-            DogTable Obj = (DogTable) result3.get(index);
+        for (Object o2 : result3) {
+            DogTable Obj = (DogTable) o2;
             em.remove(Obj);
         }
         Query qry4 = em.createQuery("select d from DogTable2 d");
         List result4 = qry4.getResultList();
 
-        for (int index = 0; index < result4.size(); index++) {
-            DogTable2 Obj = (DogTable2) result4.get(index);
+        for (Object o1 : result4) {
+            DogTable2 Obj = (DogTable2) o1;
             em.remove(Obj);
         }
 
         Query qry5 = em.createQuery("select d from DogTable3 d");
         List result5 = qry5.getResultList();
 
-        for (int index = 0; index < result5.size(); index++) {
-            DogTable3 Obj = (DogTable3) result5.get(index);
+        for (Object element : result5) {
+            DogTable3 Obj = (DogTable3) element;
             em.remove(Obj);
         }
 
         Query qry6 = em.createQuery("select d from DogTable4 d");
         List result6 = qry6.getResultList();
 
-        for (int index = 0; index < result6.size(); index++) {
-            DogTable4 Obj = (DogTable4) result6.get(index);
+        for (Object item : result6) {
+            DogTable4 Obj = (DogTable4) item;
             em.remove(Obj);
         }
 
         Query qry7 = em.createQuery("select d from Dog3 d");
         List result7 = qry7.getResultList();
 
-        for (int index = 0; index < result7.size(); index++) {
-            Dog3 Obj = (Dog3) result7.get(index);
+        for (Object value : result7) {
+            Dog3 Obj = (Dog3) value;
             em.remove(Obj);
         }
 
         Query qry8 = em.createQuery("select d from Dog4 d");
         List result8 = qry8.getResultList();
 
-        for (int index = 0; index < result8.size(); index++) {
-            Dog4 Obj = (Dog4) result8.get(index);
+        for (Object o : result8) {
+            Dog4 Obj = (Dog4) o;
             em.remove(Obj);
         }
 

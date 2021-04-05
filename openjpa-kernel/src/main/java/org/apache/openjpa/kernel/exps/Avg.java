@@ -19,7 +19,6 @@
 package org.apache.openjpa.kernel.exps;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.apache.openjpa.kernel.Filters;
 
@@ -54,8 +53,8 @@ class Avg
         Object sum = Filters.convert(0, c);
         Object cur;
         int size = 0;
-        for (Iterator itr = os.iterator(); itr.hasNext();) {
-            cur = itr.next();
+        for (Object o : os) {
+            cur = o;
             if (cur == null)
                 continue;
 

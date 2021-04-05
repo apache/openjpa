@@ -96,8 +96,9 @@ public class FileMetaDataIterator implements MetaDataIterator {
                 File[] files = (File[]) AccessController
                     .doPrivileged(J2DoPrivHelper.listFilesAction(file));
                 if (files != null)
-                    for (int i = 0; i < files.length; i++)
-                        scanned = scan(files[i], filter, rsrc, metas, scanned);
+                    for (File value : files) {
+                        scanned = scan(value, filter, rsrc, metas, scanned);
+                    }
             }
         }
         return scanned;

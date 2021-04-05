@@ -45,53 +45,53 @@ import org.apache.openjpa.lib.util.Localizer;
  *
  */
 public class SourceCode {
-	private static Localizer _loc = Localizer.forPackage(SourceCode.class);
+    private static Localizer _loc = Localizer.forPackage(SourceCode.class);
 
-	/**
-	 * List of Java Keywords and primitive types. Populated statically.
-	 */
+    /**
+     * List of Java Keywords and primitive types. Populated statically.
+     */
     private static final ArrayList<String> reserved = new ArrayList<>();
     private static final ArrayList<String> knownTypes = new ArrayList<>();
 
-	private static int TABSIZE                = 4;
-	private static final String SPACE         = " ";
-	private static final String BLANK         = "";
-	private static final String SEMICOLON     = ";";
+    private static int TABSIZE                = 4;
+    private static final String SPACE         = " ";
+    private static final String BLANK         = "";
+    private static final String SEMICOLON     = ";";
     public static final String  COMMA         = ",";
     public static final String  DOT           = ".";
     public static final String  EQUAL         = "=";
     public static final String  QUOTE         = "\"";
 
-	private static final Delimiter BLOCK_DELIMITER  = new Delimiter("{}");
-	private static final Delimiter ARGS_DELIMITER   = new Delimiter("()");
+    private static final Delimiter BLOCK_DELIMITER  = new Delimiter("{}");
+    private static final Delimiter ARGS_DELIMITER   = new Delimiter("()");
     private static final Delimiter PARAMS_DELIMITER = new Delimiter("<>");
 
-	private List<Comment> comments;
-	private final Package pkg;
-	private final Class   cls;
+    private List<Comment> comments;
+    private final Package pkg;
+    private final Class   cls;
     private final Set<Import> imports = new TreeSet<>();
 
 
-	/**
-	 * Create source code for a top-level class with given fully-qualified
-	 * class name.
-	 */
-	public SourceCode(String c) {
-	    ClassName name = getOrCreateImport(c);
-	    this.cls = new Class(c);
+    /**
+     * Create source code for a top-level class with given fully-qualified
+     * class name.
+     */
+    public SourceCode(String c) {
+        ClassName name = getOrCreateImport(c);
+        this.cls = new Class(c);
         this.pkg = new Package(name.getPackageName());
-	}
+    }
 
-	/**
-	 * Gets the top level class represented by this receiver.
-	 */
-	public Class getTopLevelClass() {
-		return cls;
-	}
+    /**
+     * Gets the top level class represented by this receiver.
+     */
+    public Class getTopLevelClass() {
+        return cls;
+    }
 
-	public Package getPackage() {
-	    return pkg;
-	}
+    public Package getPackage() {
+        return pkg;
+    }
 
     /**
      * Sets the tab size. Tabs are always written as spaces.
@@ -109,90 +109,92 @@ public class SourceCode {
      * @return true if the import is added. ClassName starting with <code>java.lang.</code>
      * is not added.
      */
-	private boolean addImport(ClassName name) {
-		String pkgName = name.getPackageName();
-		for (Import i : imports) {
-		    if (i.getClassName().hides(name)) {
-		        i.getClassName().useFullName();
-		        name.useFullName();
-		    }
-		}
-		return imports.add(new Import(name));
-	}
+    private boolean addImport(ClassName name) {
+        String pkgName = name.getPackageName();
+        for (Import i : imports) {
+            if (i.getClassName().hides(name)) {
+                i.getClassName().useFullName();
+                name.useFullName();
+            }
+        }
+        return imports.add(new Import(name));
+    }
 
-	/**
-	 * Get the class name instance for the given fully-qualified class name.
-	 * If the given class name is already imported, then use the existing instance.
-	 * Otherwise, creates a new instance and adds it to list of imports.
-	 *
-	 * @see #addImport(ClassName)
-	 * @see ClassName
-	 *
-	 * @param name fully-qualified name of a class
-	 * @return an existing class name instance or a new one.
-	 */
-	public ClassName getOrCreateImport(String name) {
-	    for (Import i : imports) {
-	        if (i.name.getFullName().equals(name))
-	            return i.name;
-	    }
-	    ClassName imp = new ClassName(name);
-	    addImport(imp);
-	    return imp;
-	}
+    /**
+     * Get the class name instance for the given fully-qualified class name.
+     * If the given class name is already imported, then use the existing instance.
+     * Otherwise, creates a new instance and adds it to list of imports.
+     *
+     * @see #addImport(ClassName)
+     * @see ClassName
+     *
+     * @param name fully-qualified name of a class
+     * @return an existing class name instance or a new one.
+     */
+    public ClassName getOrCreateImport(String name) {
+        for (Import i : imports) {
+            if (i.name.getFullName().equals(name))
+                return i.name;
+        }
+        ClassName imp = new ClassName(name);
+        addImport(imp);
+        return imp;
+    }
 
 
-	public SourceCode addComment(boolean inline, String... lines) {
-	    if (lines == null)
-	        return this;
-		if (comments == null)
-		    comments = new ArrayList<>();
-		Comment comment = new Comment();
-		comments.add(comment);
-		comment.makeInline(inline);
-		for (String line:lines) {
-		    // Handle long header comment lines...
-		    if (line.length() > 120-4) {
-		        String[] wrappedLines = wrap(line, 120-4);
-		        for (String w:wrappedLines) comment.append(w);
-		    } else {
-	            comment.append(line);
-		    }
-		}
-		return this;
-	}
+    public SourceCode addComment(boolean inline, String... lines) {
+        if (lines == null)
+            return this;
+        if (comments == null)
+            comments = new ArrayList<>();
+        Comment comment = new Comment();
+        comments.add(comment);
+        comment.makeInline(inline);
+        for (String line:lines) {
+            // Handle long header comment lines...
+            if (line.length() > 120-4) {
+                String[] wrappedLines = wrap(line, 120-4);
+                for (String w:wrappedLines) {
+                    comment.append(w);
+                }
+            } else {
+                comment.append(line);
+            }
+        }
+        return this;
+    }
 
-	/**
-	 * Prints the class to the given Writer.
-	 * @param out
-	 */
-	public void write(PrintWriter out) {
-		if (comments != null) {
-		    for (Comment comment : comments) {
-		        comment.write(out, 0);
-		        out.println();
-		    }
-		}
-		if (pkg != null) {
-		    pkg.write(out,0);
-		    out.println();
-		}
-		for (Import imp:imports) {
-			imp.write(out, 0);
-		}
-		out.println();
-		cls.write(out, 0);
-		out.flush();
-	}
+    /**
+     * Prints the class to the given Writer.
+     * @param out
+     */
+    public void write(PrintWriter out) {
+        if (comments != null) {
+            for (Comment comment : comments) {
+                comment.write(out, 0);
+                out.println();
+            }
+        }
+        if (pkg != null) {
+            pkg.write(out,0);
+            out.println();
+        }
+        for (Import imp:imports) {
+            imp.write(out, 0);
+        }
+        out.println();
+        cls.write(out, 0);
+        out.flush();
+    }
 
-	/**
-	 * Outputs <code>tab</code> number of spaces.
-	 */
-	static void tab(PrintWriter out, int tab) {
-		for (int i=0; i<tab*TABSIZE; i++) {
-			out.print(SPACE);
-		}
-	}
+    /**
+     * Outputs <code>tab</code> number of spaces.
+     */
+    static void tab(PrintWriter out, int tab) {
+        for (int i=0; i<tab*TABSIZE; i++) {
+            out.print(SPACE);
+        }
+    }
 
     /**
      * Wraps the given string into lines of max length width at word boundaries
@@ -201,12 +203,12 @@ public class SourceCode {
         String[] words = longLine.split("\\ ");
         List<String> lines = new ArrayList<>();
         StringBuilder line = new StringBuilder();
-        for (int i = 0; i < words.length; i++) {
-            String w = words[i];
+        for (String w : words) {
             if (line.length() + w.length() < width) {
                 if (line.length() > 0) line.append(" ");
                 line.append(w);
-            } else {
+            }
+            else {
                 lines.add(line.toString());
                 line.setLength(0);
                 line.append(w);
@@ -220,51 +222,51 @@ public class SourceCode {
         writeList(out, header, list, new Delimiter(), false);
     }
 
-	static void writeList(PrintWriter out, String header, List<?> list,
-			Delimiter bracket, boolean writeEmpty) {
-		if (list == null || list.isEmpty()) {
-		    if (writeEmpty)
-		        out.append(bracket.start)
-		           .append(bracket.end);
-			return;
-		}
-		out.append(header);
-		out.append(bracket.start);
-		for (int i=0; i<list.size(); i++) {
-			out.append(list.get(i).toString());
-			if (i!=list.size()-1) out.append(COMMA);
-		}
-		out.append(bracket.end);
-	}
+    static void writeList(PrintWriter out, String header, List<?> list,
+                          Delimiter bracket, boolean writeEmpty) {
+        if (list == null || list.isEmpty()) {
+            if (writeEmpty)
+                out.append(bracket.start)
+                        .append(bracket.end);
+            return;
+        }
+        out.append(header);
+        out.append(bracket.start);
+        for (int i=0; i<list.size(); i++) {
+            out.append(list.get(i).toString());
+            if (i!=list.size()-1) out.append(COMMA);
+        }
+        out.append(bracket.end);
+    }
 
-	static String capitalize(String s) {
-		return Character.toUpperCase(s.charAt(0))+s.substring(1);
-	}
+    static String capitalize(String s) {
+        return Character.toUpperCase(s.charAt(0))+s.substring(1);
+    }
 
-	static boolean isValidToken(String s) {
-		return s != null && s.length() > 0 &&
-		      !reserved.contains(s) && isJavaIdentifier(s);
-	}
+    static boolean isValidToken(String s) {
+        return s != null && s.length() > 0 &&
+                !reserved.contains(s) && isJavaIdentifier(s);
+    }
 
-	public static boolean isKnownType(String s) {
-		return knownTypes.contains(s);
-	}
+    public static boolean isKnownType(String s) {
+        return knownTypes.contains(s);
+    }
 
-	static boolean isEmpty(String s) {
-		return s == null || s.length()==0;
-	}
+    static boolean isEmpty(String s) {
+        return s == null || s.length()==0;
+    }
 
-	static LinkedList<String> tokenize(String s, String delim) {
-	    StringTokenizer tokenizer = new StringTokenizer(s, delim, false);
-		LinkedList<String> tokens = new LinkedList<>();
-		while (tokenizer.hasMoreTokens())
-			tokens.add(tokenizer.nextToken());
-		return tokens;
-	}
+    static LinkedList<String> tokenize(String s, String delim) {
+        StringTokenizer tokenizer = new StringTokenizer(s, delim, false);
+        LinkedList<String> tokens = new LinkedList<>();
+        while (tokenizer.hasMoreTokens())
+            tokens.add(tokenizer.nextToken());
+        return tokens;
+    }
 
-	public static boolean isJavaIdentifier(String s) {
+    public static boolean isJavaIdentifier(String s) {
         if (s == null || s.length() == 0 ||
-        	!Character.isJavaIdentifierStart(s.charAt(0))) {
+                !Character.isJavaIdentifierStart(s.charAt(0))) {
             return false;
         }
         for (int i=1; i<s.length(); i++) {
@@ -278,19 +280,19 @@ public class SourceCode {
 
     public enum ACCESS {PUBLIC, PROTECTED, PRIVATE}
 
-	/**
-	 * Abstract element has a name, optional list of modifiers, annotations
-	 * and arguments.
-	 */
-	public abstract class Element<T> implements Comparable<Element<T>> {
-		protected String name;
-		protected ClassName type;
-		protected ACCESS access;
-		protected boolean isStatic;
-		protected boolean isFinal;
-		protected Comment comment;
-		protected List<ClassName> params = new ArrayList<>();
-		protected List<Annotation> annos = new ArrayList<>();
+    /**
+     * Abstract element has a name, optional list of modifiers, annotations
+     * and arguments.
+     */
+    public abstract class Element<T> implements Comparable<Element<T>> {
+        protected String name;
+        protected ClassName type;
+        protected ACCESS access;
+        protected boolean isStatic;
+        protected boolean isFinal;
+        protected Comment comment;
+        protected List<ClassName> params = new ArrayList<>();
+        protected List<Annotation> annos = new ArrayList<>();
 
         protected Element(String name, ClassName type) {
             this.name = name;
@@ -298,98 +300,102 @@ public class SourceCode {
         }
 
         public ClassName getType() {
-			return type;
-		}
+            return type;
+        }
 
-		public Annotation addAnnotation(String a) {
-			Annotation an = new Annotation(a);
-			annos.add(an);
-			return an;
-		}
+        public Annotation addAnnotation(String a) {
+            Annotation an = new Annotation(a);
+            annos.add(an);
+            return an;
+        }
 
-		public Element<T> addParameter(String param) {
-		    params.add(getOrCreateImport(param));
-		    return this;
-		}
+        public Element<T> addParameter(String param) {
+            params.add(getOrCreateImport(param));
+            return this;
+        }
 
-		@Override
+        @Override
         public int compareTo(Element<T> other) {
-			return name.compareTo(other.name);
-		}
+            return name.compareTo(other.name);
+        }
 
-		public T addComment(boolean inline, String... lines) {
-			if (comment == null) comment = new Comment();
-			comment.makeInline(inline);
-			for (String line:lines) comment.append(line);
-			return (T)this;
-		}
+        public T addComment(boolean inline, String... lines) {
+            if (comment == null) {
+                comment = new Comment();
+            }
+            comment.makeInline(inline);
+            for (String line:lines) {
+                comment.append(line);
+            }
+            return (T)this;
+        }
 
-		public T makePublic() {
-			access = ACCESS.PUBLIC;
-			return (T)this;
-		}
+        public T makePublic() {
+            access = ACCESS.PUBLIC;
+            return (T)this;
+        }
 
-		public T makeProtected() {
-			access = ACCESS.PROTECTED;
-			return (T)this;
-		}
+        public T makeProtected() {
+            access = ACCESS.PROTECTED;
+            return (T)this;
+        }
 
-		public T makePrivate() {
-			access = ACCESS.PRIVATE;
-			return (T)this;
-		}
+        public T makePrivate() {
+            access = ACCESS.PRIVATE;
+            return (T)this;
+        }
 
-		public T makeStatic() {
-			isStatic = true;
-			return (T)this;
-		}
+        public T makeStatic() {
+            isStatic = true;
+            return (T)this;
+        }
 
-		public T makeFinal() {
-			isFinal = true;
-			return (T)this;
-		}
+        public T makeFinal() {
+            isFinal = true;
+            return (T)this;
+        }
 
-		public void write(PrintWriter out, int tab) {
-			if (comment != null) comment.write(out, tab);
-			for (Annotation a:annos)
-				a.write(out, tab);
-			tab(out, tab);
-			if (access != null)
-			    out.append(access.toString().toLowerCase(Locale.ENGLISH) + SPACE);
-			if (isStatic)
-			    out.append("static" + SPACE);
-			if (isFinal)
-			    out.append("final" + SPACE);
-		}
-	}
+        public void write(PrintWriter out, int tab) {
+            if (comment != null) comment.write(out, tab);
+            for (Annotation a:annos)
+                a.write(out, tab);
+            tab(out, tab);
+            if (access != null)
+                out.append(access.toString().toLowerCase(Locale.ENGLISH) + SPACE);
+            if (isStatic)
+                out.append("static" + SPACE);
+            if (isFinal)
+                out.append("final" + SPACE);
+        }
+    }
 
-	/**
-	 * Represent <code>class</code> declaration.
-	 *
-	 */
-	public class Class extends Element<Class> {
+    /**
+     * Represent <code>class</code> declaration.
+     *
+     */
+    public class Class extends Element<Class> {
         private boolean isAbstract;
-		private boolean isFinal;
-		private ClassName superCls;
-		private List<ClassName> interfaces = new ArrayList<>();
-	    private Set<Field> fields   = new TreeSet<>();
-	    private Set<Method> methods = new TreeSet<>();
-	    private Set<Constructor> constructors = new TreeSet<>();
+        private boolean isFinal;
+        private ClassName superCls;
+        private List<ClassName> interfaces = new ArrayList<>();
+        private Set<Field> fields   = new TreeSet<>();
+        private Set<Method> methods = new TreeSet<>();
+        private Set<Constructor> constructors = new TreeSet<>();
 
-		public Class(String name) {
-			super(name, getOrCreateImport(name));
-			makePublic();
-		}
+        public Class(String name) {
+            super(name, getOrCreateImport(name));
+            makePublic();
+        }
 
-		public Class setSuper(String s) {
-			superCls = getOrCreateImport(s);
-			return this;
-		}
+        public Class setSuper(String s) {
+            superCls = getOrCreateImport(s);
+            return this;
+        }
 
-		public Class addInterface(String s) {
-			interfaces.add(getOrCreateImport(s));
-			return this;
-		}
+        public Class addInterface(String s) {
+            interfaces.add(getOrCreateImport(s));
+            return this;
+        }
 
         public Class makeAbstract() {
             if (isFinal)
@@ -407,14 +413,14 @@ public class SourceCode {
             return this;
         }
 
-	    /**
-	     * Adds getters and setters to every non-public field.
-	     */
-	    public Class markAsBean() {
-	        for (Field f:fields)
-	            f.markAsBean();
-	        return this;
-	    }
+        /**
+         * Adds getters and setters to every non-public field.
+         */
+        public Class markAsBean() {
+            for (Field f:fields)
+                f.markAsBean();
+            return this;
+        }
 
         public String getName() {
             return getType().getSimpleName();
@@ -429,109 +435,109 @@ public class SourceCode {
         }
 
         public Field addField(String f, ClassName type) {
-	        if (!isValidToken(f)) {
-	            throw new IllegalArgumentException(
-	                _loc.get("src-invalid-field",f).toString());
-	        }
-	        Field field = new Field(this, f, type);
+            if (!isValidToken(f)) {
+                throw new IllegalArgumentException(
+                        _loc.get("src-invalid-field",f).toString());
+            }
+            Field field = new Field(this, f, type);
 
-	        if (!fields.add(field))
-	            throw new IllegalArgumentException(_loc.get(
-	                "src-duplicate-field", field, this).toString());
-	        return field;
-	    }
+            if (!fields.add(field))
+                throw new IllegalArgumentException(_loc.get(
+                        "src-duplicate-field", field, this).toString());
+            return field;
+        }
 
         public Method addMethod(String m, String retType) {
             return addMethod(m, getOrCreateImport(retType));
         }
 
-	    protected Method addMethod(String m, ClassName retType) {
-	        if (isEmpty(m) || !isValidToken(m)) {
-	            throw new IllegalArgumentException(_loc.get(
-	                "src-invalid-method",m).toString());
-	        }
-	        Method method = new Method(m, retType);
-	        if (!methods.add(method))
-	            throw new IllegalArgumentException(_loc.get(
-	                "src-duplicate-method", method, this).toString());
-	        return method;
-	    }
+        protected Method addMethod(String m, ClassName retType) {
+            if (isEmpty(m) || !isValidToken(m)) {
+                throw new IllegalArgumentException(_loc.get(
+                        "src-invalid-method",m).toString());
+            }
+            Method method = new Method(m, retType);
+            if (!methods.add(method))
+                throw new IllegalArgumentException(_loc.get(
+                        "src-duplicate-method", method, this).toString());
+            return method;
+        }
 
-	    public Constructor addConstructor(){
-	        Constructor c = new Constructor(type.simpleName);
-	           if (!constructors.add(c))
-	                throw new IllegalArgumentException(_loc.get(
-	                    "src-duplicate-constructor", c, this).toString());
-	            return c;
-	    }
-	    @Override
+        public Constructor addConstructor(){
+            Constructor c = new Constructor(type.simpleName);
+            if (!constructors.add(c))
+                throw new IllegalArgumentException(_loc.get(
+                        "src-duplicate-constructor", c, this).toString());
+            return c;
+        }
+        @Override
         public void write(PrintWriter out, int tab) {
-			super.write(out, tab);
-			if (isAbstract)
-			    out.append("abstract ");
-			if(isFinal)
-			    out.append("final ");
-			out.print("class ");
-			out.print(type.simpleName);
-			writeList(out, BLANK, params, PARAMS_DELIMITER, false);
-			if (superCls != null)
-				out.print(" extends " + superCls + SPACE);
-			writeList(out, "implements ", interfaces);
-			out.println(SPACE + BLOCK_DELIMITER.start);
-	        for (Field field:fields)
-	            field.write(out, 1);
-	        for(Constructor ctor : constructors){
-	            ctor.write(out, 1);
-	        }
-	        for (Method method:methods)
-	            method.write(out, 1);
-	        out.println(BLOCK_DELIMITER.end);
-		}
+            super.write(out, tab);
+            if (isAbstract)
+                out.append("abstract ");
+            if(isFinal)
+                out.append("final ");
+            out.print("class ");
+            out.print(type.simpleName);
+            writeList(out, BLANK, params, PARAMS_DELIMITER, false);
+            if (superCls != null)
+                out.print(" extends " + superCls + SPACE);
+            writeList(out, "implements ", interfaces);
+            out.println(SPACE + BLOCK_DELIMITER.start);
+            for (Field field:fields)
+                field.write(out, 1);
+            for(Constructor ctor : constructors){
+                ctor.write(out, 1);
+            }
+            for (Method method:methods)
+                method.write(out, 1);
+            out.println(BLOCK_DELIMITER.end);
+        }
 
-	    @Override
+        @Override
         public String toString() {
-	    	return getType().fullName;
-	    }
-	}
+            return getType().fullName;
+        }
+    }
 
-	/**
-	 * Represents field declaration.
-	 *
-	 */
-	public class Field extends Element<Field> {
-	    private final Class owner;
-		protected boolean isTransient;
-		protected boolean isVolatile;
+    /**
+     * Represents field declaration.
+     *
+     */
+    public class Field extends Element<Field> {
+        private final Class owner;
+        protected boolean isTransient;
+        protected boolean isVolatile;
 
-		Field(Class owner, String name, ClassName type) {
-			super(name, type);
-			this.owner = owner;
-			makePrivate();
-		}
+        Field(Class owner, String name, ClassName type) {
+            super(name, type);
+            this.owner = owner;
+            makePrivate();
+        }
 
-		/**
-		 * Adds bean-style getter setter method.
-		 */
-		public Field markAsBean() {
-			addGetter();
-			addSetter();
-			return this;
-		}
+        /**
+         * Adds bean-style getter setter method.
+         */
+        public Field markAsBean() {
+            addGetter();
+            addSetter();
+            return this;
+        }
 
-		public Field addGetter() {
-			owner.addMethod("get"+ capitalize(name), type)
-			     .makePublic()
-			     .addCodeLine("return "+ name);
-			return this;
-		}
+        public Field addGetter() {
+            owner.addMethod("get"+ capitalize(name), type)
+                    .makePublic()
+                    .addCodeLine("return "+ name);
+            return this;
+        }
 
-		public Field addSetter() {
-			owner.addMethod("set"+ capitalize(name), "void")
-			     .makePublic()
-                 .addArgument(new Argument<>(type, name,SPACE))
-			     .addCodeLine("this."+ name + " = " + name);
-			return this;
-		}
+        public Field addSetter() {
+            owner.addMethod("set"+ capitalize(name), "void")
+                    .makePublic()
+                    .addArgument(new Argument<>(type, name,SPACE))
+                    .addCodeLine("this."+ name + " = " + name);
+            return this;
+        }
 
         public void makeVolatile() {
             isVolatile = true;
@@ -541,42 +547,42 @@ public class SourceCode {
             isTransient = true;
         }
 
-		@Override
+        @Override
         public String toString() {
-			return type + SPACE + name;
-		}
+            return type + SPACE + name;
+        }
 
-		@Override
+        @Override
         public void write(PrintWriter out, int tab) {
-			super.write(out, tab);
-			if (isVolatile) out.print("volatile ");
-			if (isTransient) out.print("transient ");
-			out.print(type);
-			writeList(out, BLANK, params, PARAMS_DELIMITER, false);
-			out.println(SPACE + name + SEMICOLON);
-		}
+            super.write(out, tab);
+            if (isVolatile) out.print("volatile ");
+            if (isTransient) out.print("transient ");
+            out.print(type);
+            writeList(out, BLANK, params, PARAMS_DELIMITER, false);
+            out.println(SPACE + name + SEMICOLON);
+        }
 
-		@Override
+        @Override
         public boolean equals(Object other) {
-			if (other instanceof Field) {
-				Field that = (Field)other;
-				return name.equals(that.name);
-			}
-			return false;
-		}
-	}
+            if (other instanceof Field) {
+                Field that = (Field)other;
+                return name.equals(that.name);
+            }
+            return false;
+        }
+    }
 
-	/**
-	 * Represents Method declaration.
-	 *
-	 *
-	 */
-	public class Method extends Element<Method> {
-		private boolean isAbstract;
-		private List<Argument<ClassName,String>> args = new ArrayList<>();
-		private List<String> codeLines = new ArrayList<>();
-		int tabCount = 0;
-		String tab = "";
+    /**
+     * Represents Method declaration.
+     *
+     *
+     */
+    public class Method extends Element<Method> {
+        private boolean isAbstract;
+        private List<Argument<ClassName,String>> args = new ArrayList<>();
+        private List<String> codeLines = new ArrayList<>();
+        int tabCount = 0;
+        String tab = "";
 
         Method(String n, String t) {
             this(n, getOrCreateImport(t));
@@ -587,16 +593,16 @@ public class SourceCode {
             makePublic();
         }
 
-		public Method addArgument(Argument<ClassName,String> arg) {
-			args.add(arg);
-			return this;
-		}
+        public Method addArgument(Argument<ClassName,String> arg) {
+            args.add(arg);
+            return this;
+        }
 
-		public Method addArgument(String className, String argName){
-		    ClassName cn = getOrCreateImport(className);
-		    args.add(new Argument<>(cn, argName," "));
-		    return this;
-		}
+        public Method addArgument(String className, String argName){
+            ClassName cn = getOrCreateImport(className);
+            args.add(new Argument<>(cn, argName," "));
+            return this;
+        }
 
         public void setTab(boolean inc) {
             if (inc)
@@ -617,7 +623,7 @@ public class SourceCode {
 
             }
             if (!line.endsWith(SEMICOLON)
-                && !(line.isEmpty() || line.endsWith("{") || line.endsWith("}") || line.startsWith("if")))
+                    && !(line.isEmpty() || line.endsWith("{") || line.endsWith("}") || line.startsWith("if")))
                 line = line + SEMICOLON;
             codeLines.add(tab + line);
             return this;
@@ -632,60 +638,60 @@ public class SourceCode {
             return addCodeLine(line);
         }
 
-		public Method makeAbstract() {
-			if (codeLines.isEmpty())
-				isAbstract = true;
-			else
+        public Method makeAbstract() {
+            if (codeLines.isEmpty())
+                isAbstract = true;
+            else
                 throw new IllegalStateException("method " + name +
-				    " can not be abstract. It has a body");
-			return this;
-		}
+                        " can not be abstract. It has a body");
+            return this;
+        }
 
 
-		@Override
+        @Override
         public String toString() {
-			return type + SPACE + name;
-		}
+            return type + SPACE + name;
+        }
 
-		@Override
+        @Override
         public void write(PrintWriter out, int tab) {
-			out.println(BLANK);
-			super.write(out, tab);
-			if (isAbstract) out.append("abstract ");
-			out.print(type + SPACE + name);
-			writeList(out, BLANK, args, ARGS_DELIMITER, true);
-			if (isAbstract) {
-				out.println(SEMICOLON);
-				return;
-			}
-			out.println(SPACE + BLOCK_DELIMITER.start);
-			for (String line : codeLines) {
-				tab(out, tab+1);
-				out.println(line);
-			}
-			tab(out, tab);
-			out.println(BLOCK_DELIMITER.end);
-		}
+            out.println(BLANK);
+            super.write(out, tab);
+            if (isAbstract) out.append("abstract ");
+            out.print(type + SPACE + name);
+            writeList(out, BLANK, args, ARGS_DELIMITER, true);
+            if (isAbstract) {
+                out.println(SEMICOLON);
+                return;
+            }
+            out.println(SPACE + BLOCK_DELIMITER.start);
+            for (String line : codeLines) {
+                tab(out, tab+1);
+                out.println(line);
+            }
+            tab(out, tab);
+            out.println(BLOCK_DELIMITER.end);
+        }
 
-		@Override
+        @Override
         public boolean equals(Object other) {
-			if (other instanceof Method) {
-				Method that = (Method)other;
+            if (other instanceof Method) {
+                Method that = (Method)other;
                 return name.equals(that.name) && args.equals(that.args);
-			}
-			return false;
-		}
-	}
+            }
+            return false;
+        }
+    }
 
-	public class Constructor extends Element<Constructor> {
-	    private List<Argument<ClassName,String>> args = new ArrayList<>();
+    public class Constructor extends Element<Constructor> {
+        private List<Argument<ClassName,String>> args = new ArrayList<>();
         private List<String> codeLines = new ArrayList<>();
         int tabCount = 0;
         String tab = "";
 
-	    public Constructor(String name) {
-	        super(name, null);
-	        makePublic();
+        public Constructor(String name) {
+            super(name, null);
+            makePublic();
         }
 
         public Constructor addArgument(Argument<ClassName,String> arg) {
@@ -705,7 +711,7 @@ public class SourceCode {
 
             }
             if (!line.endsWith(SEMICOLON)
-                && !(line.isEmpty() || line.endsWith("{") || line.endsWith("}") || line.startsWith("if")))
+                    && !(line.isEmpty() || line.endsWith("{") || line.endsWith("}") || line.startsWith("if")))
                 line = line + SEMICOLON;
             codeLines.add(tab + line);
             return this;
@@ -745,82 +751,82 @@ public class SourceCode {
             out.println(BLOCK_DELIMITER.end);
         }
 
-	}
-	/**
-	 * Represents <code>import</code> statement.
-	 *
-	 */
-	class Import implements Comparable<Import> {
-		private final ClassName name;
+    }
+    /**
+     * Represents <code>import</code> statement.
+     *
+     */
+    class Import implements Comparable<Import> {
+        private final ClassName name;
 
-		public Import(ClassName name) {
-			this.name = name;
-		}
+        public Import(ClassName name) {
+            this.name = name;
+        }
 
-		@Override
+        @Override
         public int compareTo(Import other) {
-			return name.compareTo(other.name);
-		}
+            return name.compareTo(other.name);
+        }
 
-		public void write(PrintWriter out, int tab) {
-		    if (name.usingFullName())
-		        return;
-		    String pkg = name.getPackageName();
-		    if (pkg.length() == 0 || pkg.equals(getPackage().name))
-		        return;
-		    out.println("import "+ name.fullName + SEMICOLON);
-		}
+        public void write(PrintWriter out, int tab) {
+            if (name.usingFullName())
+                return;
+            String pkg = name.getPackageName();
+            if (pkg.length() == 0 || pkg.equals(getPackage().name))
+                return;
+            out.println("import "+ name.fullName + SEMICOLON);
+        }
 
-		@Override
+        @Override
         public boolean equals(Object other) {
-			if (other instanceof Import) {
-				Import that = (Import)other;
-				return name.equals(that.name);
-			}
-			return false;
-		}
+            if (other instanceof Import) {
+                Import that = (Import)other;
+                return name.equals(that.name);
+            }
+            return false;
+        }
 
-		ClassName getClassName() {
-		    return name;
-		}
-	}
+        ClassName getClassName() {
+            return name;
+        }
+    }
 
-	/**
-	 * Represents method argument.
-	 *
-	 */
-	public class Argument<K,V> {
-		final private K key;
-		final private V value;
-		final private String connector;
+    /**
+     * Represents method argument.
+     *
+     */
+    public class Argument<K,V> {
+        final private K key;
+        final private V value;
+        final private String connector;
 
-		Argument(K key, V value, String connector) {
-			this.key = key;
-			this.value = value;
-			this.connector = connector;
-		}
+        Argument(K key, V value, String connector) {
+            this.key = key;
+            this.value = value;
+            this.connector = connector;
+        }
 
         @Override
         public String toString() {
-			return key + connector + value;
-		}
-	}
+            return key + connector + value;
+        }
+    }
 
-	/**
-	 * Represents annotation.
-	 *
-	 */
-	public class Annotation {
-		private String name;
+    /**
+     * Represents annotation.
+     *
+     */
+    public class Annotation {
+        private String name;
         private List<Argument<?,?>> args = new ArrayList<>();
 
-		Annotation(String n) {
-			name = n;
-		}
+        Annotation(String n) {
+            name = n;
+        }
 
         public Annotation addArgument(String key, String v, boolean quote) {
             return addArgument(new Argument<>(key,
-                quote ? quote(v) : v, EQUAL));
+                    quote ? quote(v) : v, EQUAL));
         }
 
         public Annotation addArgument(String key, String v) {
@@ -842,259 +848,259 @@ public class SourceCode {
             return this;
         }
 
-		public void write(PrintWriter out, int tab) {
-			tab(out, tab);
-			out.println("@"+name);
-			writeList(out, BLANK, args, ARGS_DELIMITER, false);
-			out.println();
-		}
+        public void write(PrintWriter out, int tab) {
+            tab(out, tab);
+            out.println("@"+name);
+            writeList(out, BLANK, args, ARGS_DELIMITER, false);
+            out.println();
+        }
 
-		String quote(String s) {
-		    return QUOTE + s + QUOTE;
-		}
-	}
+        String quote(String s) {
+            return QUOTE + s + QUOTE;
+        }
+    }
 
-	static class Package {
-		private String name;
+    static class Package {
+        private String name;
 
-		Package(String p) {
-			name = p;
-		}
+        Package(String p) {
+            name = p;
+        }
 
         public void write(PrintWriter out, int tab) {
             if (name != null && !name.isEmpty())
                 out.println("package " + name + SEMICOLON);
         }
-	}
+    }
 
-	class Comment {
-		List<String> lines = new ArrayList<>();
-		private boolean inline = false;
+    class Comment {
+        List<String> lines = new ArrayList<>();
+        private boolean inline = false;
 
-		public void append(String line) {
-			lines.add(line);
-		}
+        public void append(String line) {
+            lines.add(line);
+        }
 
-		boolean isEmpty() {
-			return lines.isEmpty();
-		}
+        boolean isEmpty() {
+            return lines.isEmpty();
+        }
 
-		void makeInline(boolean flag) {
-			inline = flag;
-		}
-		public void write(PrintWriter out, int tab) {
-			if (inline) {
-				for (String l:lines) {
-					tab(out, tab);
-					out.println("// " + l);
-				}
-			} else {
-				int i = 0;
-				for (String l:lines) {
-					tab(out, tab);
-					if (i == 0) {
-						out.println("/** ");
-						tab(out, tab);
-					}
+        void makeInline(boolean flag) {
+            inline = flag;
+        }
+        public void write(PrintWriter out, int tab) {
+            if (inline) {
+                for (String l:lines) {
+                    tab(out, tab);
+                    out.println("// " + l);
+                }
+            } else {
+                int i = 0;
+                for (String l:lines) {
+                    tab(out, tab);
+                    if (i == 0) {
+                        out.println("/** ");
+                        tab(out, tab);
+                    }
                     out.println(" *  " + l);
-					i++;
-				}
-				tab(out, tab);
-				out.println("**/");
-			}
-		}
-	}
+                    i++;
+                }
+                tab(out, tab);
+                out.println("**/");
+            }
+        }
+    }
 
-	/**
-	 * Represents fully-qualified name of a Java type.
-	 *
-	 * NOTE: Do not construct directly unless necessary.
-	 * @see SourceCode#getOrCreateImport(String)
-	 */
-	private class ClassName implements Comparable<ClassName> {
+    /**
+     * Represents fully-qualified name of a Java type.
+     *
+     * NOTE: Do not construct directly unless necessary.
+     * @see SourceCode#getOrCreateImport(String)
+     */
+    private class ClassName implements Comparable<ClassName> {
         public final String fullName;
         public final String simpleName;
         public final String pkgName;
         private String  arrayMarker = BLANK;
         private boolean useFullName = false;
 
-	    ClassName(String name) {
-	    	while (isArray(name)) {
-	    		arrayMarker = arrayMarker + "[]";
-	    		name = getComponentName(name);
-	    	}
+        ClassName(String name) {
+            while (isArray(name)) {
+                arrayMarker = arrayMarker + "[]";
+                name = getComponentName(name);
+            }
             int start = name.indexOf("<");
             int stop = name.lastIndexOf(">");
             if (start != -1 && stop != -1) {
                 name = name.substring(0, start) + name.substring(stop + 1);
             }
-	        this.fullName = name;
-	        int dot = fullName.lastIndexOf(DOT);
-	        simpleName = (dot == -1) ? fullName : fullName.substring(dot+1);
-	        pkgName = (dot == -1) ? BLANK : fullName.substring(0,dot);
+            this.fullName = name;
+            int dot = fullName.lastIndexOf(DOT);
+            simpleName = (dot == -1) ? fullName : fullName.substring(dot+1);
+            pkgName = (dot == -1) ? BLANK : fullName.substring(0,dot);
             if (!isValidTypeName(name)) {
                 throw new IllegalArgumentException(_loc.get("src-invalid-type",
-                    name).toString());
+                        name).toString());
             }
-	    }
+        }
 
-	    /**
-	     * Gets fully qualified name of this receiver.
-	     */
-	    public String getFullName() {
-	        return fullName + arrayMarker;
-	    }
+        /**
+         * Gets fully qualified name of this receiver.
+         */
+        public String getFullName() {
+            return fullName + arrayMarker;
+        }
 
         /**
          * Gets simple name of this receiver.
          */
-	    public String getSimpleName() {
-	        return simpleName + arrayMarker;
-	    }
+        public String getSimpleName() {
+            return simpleName + arrayMarker;
+        }
 
-	    /**
-	     * Gets the package name of this receiver. Default package name is
-	     * represented as empty string.
-	     */
-	    public String getPackageName() {
-	        return pkgName;
-	    }
+        /**
+         * Gets the package name of this receiver. Default package name is
+         * represented as empty string.
+         */
+        public String getPackageName() {
+            return pkgName;
+        }
 
-	    /**
-	     * Gets the full or simple name of this receiver based on useFullName flag.
-	     */
-	    @Override
+        /**
+         * Gets the full or simple name of this receiver based on useFullName flag.
+         */
+        @Override
         public String toString() {
-	        return (useFullName ? fullName : simpleName) + arrayMarker;
-	    }
+            return (useFullName ? fullName : simpleName) + arrayMarker;
+        }
 
-	    /**
-	     * Compares by fully-qualified name.
-	     */
-	    @Override
+        /**
+         * Compares by fully-qualified name.
+         */
+        @Override
         public int compareTo(ClassName other) {
-	        return getFullName().compareTo(other.getFullName());
-	    }
+            return getFullName().compareTo(other.getFullName());
+        }
 
-	    public boolean isValidTypeName(String s) {
-	        return isValidPackageName(pkgName)
-	            && (isKnownType(s) || isValidToken(simpleName));
-	    }
+        public boolean isValidTypeName(String s) {
+            return isValidPackageName(pkgName)
+                    && (isKnownType(s) || isValidToken(simpleName));
+        }
 
-	    boolean isValidPackageName(String s) {
-	        if (isEmpty(s)) return true;
-	        LinkedList<String> tokens = tokenize(s, DOT);
-	        for (String token : tokens) {
-	            if (!isValidToken(token))
-	                return false;
-	        }
-	        return !s.endsWith(DOT);
-	    }
+        boolean isValidPackageName(String s) {
+            if (isEmpty(s)) return true;
+            LinkedList<String> tokens = tokenize(s, DOT);
+            for (String token : tokens) {
+                if (!isValidToken(token))
+                    return false;
+            }
+            return !s.endsWith(DOT);
+        }
 
-	    boolean isArray(String name) {
-	    	return name.endsWith("[]");
-	    }
+        boolean isArray(String name) {
+            return name.endsWith("[]");
+        }
 
-	    String getComponentName(String name) {
-	    	return (!isArray(name)) ? name :
-	    		name.substring(0, name.length()-"[]".length());
-	    }
+        String getComponentName(String name) {
+            return (!isArray(name)) ? name :
+                    name.substring(0, name.length()-"[]".length());
+        }
 
-	    boolean hides(ClassName other) {
-	        return this.getSimpleName().equals(other.getSimpleName())
-	            && !this.fullName.equals(other.fullName);
-	    }
+        boolean hides(ClassName other) {
+            return this.getSimpleName().equals(other.getSimpleName())
+                    && !this.fullName.equals(other.fullName);
+        }
 
-	    void useFullName() {
-	        useFullName = true;
-	    }
+        void useFullName() {
+            useFullName = true;
+        }
 
-	    boolean usingFullName() {
-	        return useFullName;
-	    }
+        boolean usingFullName() {
+            return useFullName;
+        }
 
-	}
+    }
 
-	static class Delimiter {
-	    final char start;
-	    final char end;
+    static class Delimiter {
+        final char start;
+        final char end;
 
         public Delimiter() {
             this((char)' ', (char)' ');
         }
 
-	    public Delimiter(String pair) {
-	        this(pair.charAt(0), pair.charAt(1));
-	    }
+        public Delimiter(String pair) {
+            this(pair.charAt(0), pair.charAt(1));
+        }
 
         public Delimiter(char start, char end) {
             super();
             this.start = start;
             this.end = end;
         }
-	}
+    }
 
-	static {
-		reserved.add("abstract");
-		reserved.add("continue");
-		reserved.add("for");
-		reserved.add("new");
-		reserved.add("switch");
-		reserved.add("assert");
-		reserved.add("default");
-		reserved.add("goto");
-		reserved.add("package");
-		reserved.add("synchronized");
-		reserved.add("boolean");
-		reserved.add("do");
-		reserved.add("if");
-		reserved.add("private");
-		reserved.add("this");
-		reserved.add("break");
-		reserved.add("double");
-		reserved.add("implements");
-		reserved.add("protected");
-		reserved.add("throw");
-		reserved.add("byte");
-		reserved.add("else");
-		reserved.add("import");
-		reserved.add("public");
-		reserved.add("throws");
-		reserved.add("case");
-		reserved.add("enum");
-		reserved.add("instanceof");
-		reserved.add("return");
-		reserved.add("transient");
-		reserved.add("catch");
-		reserved.add("extends");
-		reserved.add("int");
-		reserved.add("short");
-		reserved.add("try");
-		reserved.add("char");
-		reserved.add("final");
-		reserved.add("interface");
-		reserved.add("static");
-		reserved.add("void");
-		reserved.add("class");
-		reserved.add("finally");
-		reserved.add("long");
-		reserved.add("strictfp");
-		reserved.add("volatile");
-		reserved.add("const");
-		reserved.add("float");
-		reserved.add("native");
-		reserved.add("super");
-		reserved.add("while");
+    static {
+        reserved.add("abstract");
+        reserved.add("continue");
+        reserved.add("for");
+        reserved.add("new");
+        reserved.add("switch");
+        reserved.add("assert");
+        reserved.add("default");
+        reserved.add("goto");
+        reserved.add("package");
+        reserved.add("synchronized");
+        reserved.add("boolean");
+        reserved.add("do");
+        reserved.add("if");
+        reserved.add("private");
+        reserved.add("this");
+        reserved.add("break");
+        reserved.add("double");
+        reserved.add("implements");
+        reserved.add("protected");
+        reserved.add("throw");
+        reserved.add("byte");
+        reserved.add("else");
+        reserved.add("import");
+        reserved.add("public");
+        reserved.add("throws");
+        reserved.add("case");
+        reserved.add("enum");
+        reserved.add("instanceof");
+        reserved.add("return");
+        reserved.add("transient");
+        reserved.add("catch");
+        reserved.add("extends");
+        reserved.add("int");
+        reserved.add("short");
+        reserved.add("try");
+        reserved.add("char");
+        reserved.add("final");
+        reserved.add("interface");
+        reserved.add("static");
+        reserved.add("void");
+        reserved.add("class");
+        reserved.add("finally");
+        reserved.add("long");
+        reserved.add("strictfp");
+        reserved.add("volatile");
+        reserved.add("const");
+        reserved.add("float");
+        reserved.add("native");
+        reserved.add("super");
+        reserved.add("while");
 
-		knownTypes.add("boolean");
-		knownTypes.add("byte");
-		knownTypes.add("char");
-		knownTypes.add("double");
-		knownTypes.add("float");
-		knownTypes.add("int");
-		knownTypes.add("long");
-		knownTypes.add("short");
-		knownTypes.add("void");
-		knownTypes.add("String");
-	}
+        knownTypes.add("boolean");
+        knownTypes.add("byte");
+        knownTypes.add("char");
+        knownTypes.add("double");
+        knownTypes.add("float");
+        knownTypes.add("int");
+        knownTypes.add("long");
+        knownTypes.add("short");
+        knownTypes.add("void");
+        knownTypes.add("String");
+    }
 }

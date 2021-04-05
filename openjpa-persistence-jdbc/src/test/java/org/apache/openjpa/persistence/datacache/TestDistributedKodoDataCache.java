@@ -198,13 +198,13 @@ public class TestDistributedKodoDataCache extends AbstractTestCase {
         endEm(pmSender);
 
         // assert that pmf2's data cache now has all the Runtime1 and 2s.
-        for (int i = 0; i < _runtime1sOids.length; i++) {
+        for (Object o : _runtime1sOids) {
             assertTrue(dcReceiver.contains(
-                Id.newInstance(RuntimeTest1.class, _runtime1sOids[i])));
+                    Id.newInstance(RuntimeTest1.class, o)));
         }
-        for (int i = 0; i < _runtime2sOids.length; i++) {
+        for (Object oid : _runtime2sOids) {
             assertTrue(dcReceiver.contains(
-                Id.newInstance(RuntimeTest2.class, _runtime2sOids[i])));
+                    Id.newInstance(RuntimeTest2.class, oid)));
         }
 
         // Modify or delete exactly 1 RuntimeTest1 object during a
@@ -213,9 +213,9 @@ public class TestDistributedKodoDataCache extends AbstractTestCase {
 
         // assert that pmf1's data cache now only has Runtime2 objects
         if (asLargeTransaction) {
-            for (int i = 0; i < _runtime1sOids.length; i++) {
+            for (Object runtime1sOid : _runtime1sOids) {
                 assertFalse(dcSender.contains(
-                    Id.newInstance(RuntimeTest1.class, _runtime1sOids[i])));
+                        Id.newInstance(RuntimeTest1.class, runtime1sOid)));
             }
         } else {
             // Normal transaction
@@ -231,17 +231,17 @@ public class TestDistributedKodoDataCache extends AbstractTestCase {
                 }
             }
         }
-        for (int i = 0; i < _runtime2sOids.length; i++) {
+        for (Object sOid : _runtime2sOids) {
             assertTrue(dcSender.contains(
-                Id.newInstance(RuntimeTest2.class, _runtime2sOids[i])));
+                    Id.newInstance(RuntimeTest2.class, sOid)));
         }
         // wait a tiny bit so the rce propagates
         pause(2);
         // assert the pmf2's data cache also now only has Runtime2 objects
         if (asLargeTransaction) {
-            for (int i = 0; i < _runtime1sOids.length; i++) {
+            for (Object runtime1sOid : _runtime1sOids) {
                 assertFalse(dcReceiver.contains(Id.newInstance(
-                    RuntimeTest1.class, _runtime1sOids[i]))); //failing here
+                        RuntimeTest1.class, runtime1sOid))); //failing here
             }
         } else {
             for (int i = 0; i < _runtime1sOids.length; i++) {
@@ -255,9 +255,9 @@ public class TestDistributedKodoDataCache extends AbstractTestCase {
                 }
             }
         }
-        for (int i = 0; i < _runtime2sOids.length; i++) {
+        for (Object runtime2sOid : _runtime2sOids) {
             assertTrue(dcReceiver.contains(
-                Id.newInstance(RuntimeTest2.class, _runtime2sOids[i])));
+                    Id.newInstance(RuntimeTest2.class, runtime2sOid)));
         }
 
         // shutdown
@@ -273,14 +273,12 @@ public class TestDistributedKodoDataCache extends AbstractTestCase {
         Collection runtime1s = (Collection) pm
             .createQuery("SELECT a FROM RuntimeTest1 a").getResultList();
 
-        for (Iterator itr = runtime1s.iterator(); itr.hasNext();)
-            temp1 = (RuntimeTest1) itr.next();
+        for (Object runtime1 : runtime1s) temp1 = (RuntimeTest1) runtime1;
         RuntimeTest2 temp2;
         Collection runtime2s = (Collection) pm
             .createQuery("SELECT a FROM RuntimeTest2 a").getResultList();
 
-        for (Iterator itr = runtime2s.iterator(); itr.hasNext();)
-            temp2 = (RuntimeTest2) itr.next();
+        for (Object runtime2 : runtime2s) temp2 = (RuntimeTest2) runtime2;
         endTx(pm);
     }
 

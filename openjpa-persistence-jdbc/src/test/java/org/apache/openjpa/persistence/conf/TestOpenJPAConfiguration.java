@@ -101,21 +101,23 @@ public class TestOpenJPAConfiguration
         String[] aliases;
         String clsName;
         List failures = new ArrayList();
-        for (int i = 0; i < values.length; i++) {
-            if (!(values[i] instanceof PluginValue))
+        for (Value value : values) {
+            if (!(value instanceof PluginValue))
                 continue;
 
-            aliases = values[i].getAliases();
+            aliases = value.getAliases();
             for (int j = 0; j < aliases.length; j += 2) {
                 try {
                     clsName = Configurations.getClassName(aliases[j + 1]);
                     if (clsName != null)
                         Class.forName(clsName);
-                } catch (ClassNotFoundException cnfe) {
+                }
+                catch (ClassNotFoundException cnfe) {
                     failures.add("Key: " + aliases[j] + " for property "
-                        + values[i].getProperty() + " does not list a valid "
-                        + "class: " + aliases[j + 1]);
-                } catch (UnsupportedClassVersionError ucve) {
+                            + value.getProperty() + " does not list a valid "
+                            + "class: " + aliases[j + 1]);
+                }
+                catch (UnsupportedClassVersionError ucve) {
                     //### JDK 5 plugin; ignore
                 }
             }

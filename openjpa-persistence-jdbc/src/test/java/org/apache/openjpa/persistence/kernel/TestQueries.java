@@ -165,8 +165,7 @@ public class TestQueries extends BaseKernelTest {
             pm.createQuery("SELECT o FROM " + cstrng + " o WHERE o." + filter);
         query.setSubclasses(subs);
         Collection items = query.getResultList();
-        for (Iterator i = items.iterator(); i.hasNext();)
-            pm.remove(i.next());
+        for (Object item : items) pm.remove(item);
 
         //FIXME jthomas
         //query = pm.newQuery(extent, filter);

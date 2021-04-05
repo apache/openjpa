@@ -174,11 +174,10 @@ public class TestInverseEagerSQL
 
         assertEquals(1, res.size());
 
-        for (int i = 0; i < res.size(); i++) {
-            Customer c = (Customer)res.get(i);
+        for (Customer re : res) {
+            Customer c = (Customer) re;
             Collection<Order> orders = c.getOrders();
-            for (Iterator<Order> iter=orders.iterator(); iter.hasNext();) {
-                Order order = (Order)iter.next();
+            for (Order order : orders) {
                 assertEquals(order.getCustomer(), c);
             }
         }
@@ -201,8 +200,8 @@ public class TestInverseEagerSQL
         List<EntityCInverseEager> res = q.getResultList();
         assertEquals(4, res.size());
 
-        for (int i = 0; i < res.size(); i++) {
-            EntityCInverseEager c = (EntityCInverseEager)res.get(i);
+        for (EntityCInverseEager re : res) {
+            EntityCInverseEager c = (EntityCInverseEager) re;
             EntityDInverseEager d = c.getD();
             assertEquals(c, d.getC());
         }
@@ -224,12 +223,11 @@ public class TestInverseEagerSQL
         Query q = em.createQuery(query);
         List list = q.getResultList();
         assertEquals(1, list.size());
-        for (int i = 0; i < list.size(); i++) {
-            EntityA1InverseEager a1 = (EntityA1InverseEager)list.get(i);
+        for (Object element : list) {
+            EntityA1InverseEager a1 = (EntityA1InverseEager) element;
             Collection<EntityBInverseEager> listB = a1.getListB();
             assertEquals(4, listB.size());
-            for (Iterator iter=listB.iterator(); iter.hasNext();) {
-                EntityBInverseEager b = (EntityBInverseEager)iter.next();
+            for (EntityBInverseEager b : listB) {
                 EntityAInverseEager a = b.getA();
                 assertEquals(a1, a);
             }
@@ -241,12 +239,12 @@ public class TestInverseEagerSQL
         q = em.createQuery(query);
         list = q.getResultList();
         assertEquals(1, list.size());
-        for (int i = 0; i < list.size(); i++) {
-            EntityA2InverseEager a2 = (EntityA2InverseEager)list.get(i);
+        for (Object item : list) {
+            EntityA2InverseEager a2 = (EntityA2InverseEager) item;
             Collection listB = a2.getListB();
             assertEquals(4, listB.size());
-            for (Iterator iter=listB.iterator(); iter.hasNext();) {
-                EntityBInverseEager b = (EntityBInverseEager)iter.next();
+            for (Object o : listB) {
+                EntityBInverseEager b = (EntityBInverseEager) o;
                 EntityAInverseEager a = b.getA();
                 assertEquals(a2, a);
             }
@@ -258,12 +256,12 @@ public class TestInverseEagerSQL
         q = em.createQuery(query);
         list = q.getResultList();
         assertEquals(3, list.size());
-        for (int i = 0; i < list.size(); i++) {
-            EntityAInverseEager a0 = (EntityAInverseEager)list.get(i);
+        for (Object value : list) {
+            EntityAInverseEager a0 = (EntityAInverseEager) value;
             Collection listB = a0.getListB();
             assertEquals(4, listB.size());
-            for (Iterator iter=listB.iterator(); iter.hasNext();) {
-                EntityBInverseEager b = (EntityBInverseEager)iter.next();
+            for (Object o : listB) {
+                EntityBInverseEager b = (EntityBInverseEager) o;
                 EntityAInverseEager a = b.getA();
                 assertEquals(a0, a);
             }
@@ -290,12 +288,11 @@ public class TestInverseEagerSQL
 
         sql.clear();
         em.clear();
-        for (int i = 0; i < list.size(); i++) {
-            Publisher p = (Publisher) list.get(i);
+        for (Object o : list) {
+            Publisher p = (Publisher) o;
             Set<Magazine> magazines = p.getMagazineCollection();
             assertEquals(4, magazines.size());
-            for (Iterator iter = magazines.iterator(); iter.hasNext();) {
-                Magazine m = (Magazine) iter.next();
+            for (Magazine m : magazines) {
                 Publisher mp = m.getIdPublisher();
                 assertEquals(p, mp);
             }
@@ -322,11 +319,11 @@ public class TestInverseEagerSQL
 
         sql.clear();
         em.clear();
-        for (int i = 0; i < list.size(); i++) {
-            PPerson p = (PPerson) list.get(i);
+        for (Object o : list) {
+            PPerson p = (PPerson) o;
             Collection<PPhone> phones = p.getPhones();
             assertEquals(_nPhones, phones.size());
-            for(PPhone phone : p.getPhones()) {
+            for (PPhone phone : p.getPhones()) {
                 assertNotNull(phone.getPeople());
                 assertTrue(phone.getPeople().contains(p));
             }

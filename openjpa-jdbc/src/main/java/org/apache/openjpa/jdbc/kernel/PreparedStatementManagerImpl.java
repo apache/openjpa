@@ -156,11 +156,12 @@ public class PreparedStatementManagerImpl
 
     private boolean hasGeneratedKey(ClassMapping meta) {
         FieldMapping[] pks = meta.getPrimaryKeyFieldMappings();
-        for (int i = 0; i < pks.length; i++) {
-            ClassMapping pkMeta = pks[i].getTypeMapping();
+        for (FieldMapping pk : pks) {
+            ClassMapping pkMeta = pk.getTypeMapping();
             if (pkMeta != null) {
                 return hasGeneratedKey(pkMeta);
-            } else if (pks[i].getValueStrategy() == ValueStrategies.AUTOASSIGN)
+            }
+            else if (pk.getValueStrategy() == ValueStrategies.AUTOASSIGN)
                 return true;
         }
         return false;

@@ -1025,8 +1025,8 @@ public class FetchConfigurationImpl
         || hasExtendedLookupPath(fmd))
             return true;
         String[] fgs = fmd.getCustomFetchGroups();
-        for (int i = 0; i < fgs.length; i++)
-            if (hasFetchGroup(fgs[i]))
+        for (String fg : fgs)
+            if (hasFetchGroup(fg))
                 return true;
         return false;
     }

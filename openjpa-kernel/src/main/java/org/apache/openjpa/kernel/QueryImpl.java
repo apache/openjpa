@@ -264,9 +264,9 @@ public class QueryImpl implements Query {
         // check user-defined listeners from configuration
         FilterListener[] confListeners = _broker.getConfiguration().
             getFilterListenerInstances();
-        for (int i = 0; i < confListeners.length; i++)
-            if (confListeners[i].getTag().equals(tag))
-                return confListeners[i];
+        for (FilterListener confListener : confListeners)
+            if (confListener.getTag().equals(tag))
+                return confListener;
 
         // check store listeners
         return _storeQuery.getFilterListener(tag);
@@ -320,9 +320,9 @@ public class QueryImpl implements Query {
         // check user-defined listeners from configuration
         AggregateListener[] confListeners = _broker.getConfiguration().
             getAggregateListenerInstances();
-        for (int i = 0; i < confListeners.length; i++)
-            if (confListeners[i].getTag().equals(tag))
-                return confListeners[i];
+        for (AggregateListener confListener : confListeners)
+            if (confListener.getTag().equals(tag))
+                return confListener;
 
         // check store listeners
         return _storeQuery.getAggregateListener(tag);
@@ -1137,9 +1137,8 @@ public class QueryImpl implements Query {
      * @param params the parameters passed to the query
      */
     private void updateInMemory(Object ob, Object[] params, StoreQuery q) {
-        for (Iterator it = getUpdates().entrySet().iterator();
-            it.hasNext();) {
-            Map.Entry e = (Map.Entry) it.next();
+        for (Object o : getUpdates().entrySet()) {
+            Entry e = (Entry) o;
             Path path = (Path) e.getKey();
             FieldMetaData fmd = path.last();
             OpenJPAStateManager sm = _broker.getStateManager(ob);
@@ -1148,15 +1147,19 @@ public class QueryImpl implements Query {
             Object value = e.getValue();
             if (value instanceof Val) {
                 val = ((Val) value).
-                    evaluate(ob, null, getStoreContext(), params);
-            } else if (value instanceof Literal) {
+                        evaluate(ob, null, getStoreContext(), params);
+            }
+            else if (value instanceof Literal) {
                 val = ((Literal) value).getValue();
-            } else if (value instanceof Constant) {
+            }
+            else if (value instanceof Constant) {
                 val = ((Constant) value).getValue(params);
-            } else {
+            }
+            else {
                 try {
                     val = q.evaluate(value, ob, params, sm);
-                } catch (UnsupportedException e1) {
+                }
+                catch (UnsupportedException e1) {
                     throw new UserException(
                             _loc.get("fail-to-get-update-value"));
                 }
@@ -1164,47 +1167,47 @@ public class QueryImpl implements Query {
 
             int i = fmd.getIndex();
             PersistenceCapable into = ImplHelper.toPersistenceCapable(ob,
-                _broker.getConfiguration());
+                    _broker.getConfiguration());
 
             // set the actual field in the instance
             int set = OpenJPAStateManager.SET_USER;
             switch (fmd.getDeclaredTypeCode()) {
                 case JavaTypes.BOOLEAN:
                     sm.settingBooleanField(into, i, sm.fetchBooleanField(i),
-                        val == null ? false : (Boolean) val,
-                        set);
+                            val == null ? false : (Boolean) val,
+                            set);
                     break;
                 case JavaTypes.BYTE:
                     sm.settingByteField(into, i, sm.fetchByteField(i),
-                        val == null ? 0 : ((Number) val).byteValue(), set);
+                            val == null ? 0 : ((Number) val).byteValue(), set);
                     break;
                 case JavaTypes.CHAR:
                     sm.settingCharField(into, i, sm.fetchCharField(i),
-                        val == null ? 0 : val.toString().charAt(0), set);
+                            val == null ? 0 : val.toString().charAt(0), set);
                     break;
                 case JavaTypes.DOUBLE:
                     sm.settingDoubleField(into, i, sm.fetchDoubleField(i),
-                        val == null ? 0 : ((Number) val).doubleValue(), set);
+                            val == null ? 0 : ((Number) val).doubleValue(), set);
                     break;
                 case JavaTypes.FLOAT:
                     sm.settingFloatField(into, i, sm.fetchFloatField(i),
-                        val == null ? 0 : ((Number) val).floatValue(), set);
+                            val == null ? 0 : ((Number) val).floatValue(), set);
                     break;
                 case JavaTypes.INT:
                     sm.settingIntField(into, i, sm.fetchIntField(i),
-                        val == null ? 0 : ((Number) val).intValue(), set);
+                            val == null ? 0 : ((Number) val).intValue(), set);
                     break;
                 case JavaTypes.LONG:
                     sm.settingLongField(into, i, sm.fetchLongField(i),
-                        val == null ? 0 : ((Number) val).longValue(), set);
+                            val == null ? 0 : ((Number) val).longValue(), set);
                     break;
                 case JavaTypes.SHORT:
                     sm.settingShortField(into, i, sm.fetchShortField(i),
-                        val == null ? 0 : ((Number) val).shortValue(), set);
+                            val == null ? 0 : ((Number) val).shortValue(), set);
                     break;
                 case JavaTypes.STRING:
                     sm.settingStringField(into, i, sm.fetchStringField(i),
-                        val == null ? null : val.toString(), set);
+                            val == null ? null : val.toString(), set);
                     break;
                 case JavaTypes.DATE:
                 case JavaTypes.NUMBER:
@@ -1223,7 +1226,7 @@ public class QueryImpl implements Query {
                 case JavaTypes.OID:
                 case JavaTypes.ENUM:
                     sm.settingObjectField(into, i, sm.fetchObjectField(i), val,
-                        set);
+                            set);
                     break;
                 default:
                     throw new UserException(_loc.get("only-update-primitives"));
@@ -1239,8 +1242,9 @@ public class QueryImpl implements Query {
         if (params.length > 0) {
             if (types != null && types.size() == params.length) {
                 int i = 0;
-                for (Iterator<Object> itr = types.keySet().iterator(); itr.hasNext();)
-                    pmap.put(itr.next(), params[i++]);
+                for (Object o : types.keySet()) {
+                    pmap.put(o, params[i++]);
+                }
             } else {
                 for (int i = 0; i < params.length; i++)
                     pmap.put(String.valueOf(i), params[i]);
@@ -1432,24 +1436,24 @@ public class QueryImpl implements Query {
 
         // compare dirty classes to the access path classes
         Class<?> accClass;
-        for (int i = 0; i < accessMetas.length; i++) {
-            if (accessMetas[i] == null)
+        for (ClassMetaData accessMeta : accessMetas) {
+            if (accessMeta == null)
                 continue;
             // shortcut if actual class is dirty
-            accClass = accessMetas[i].getDescribedType();
+            accClass = accessMeta.getDescribedType();
             if (persisted.contains(accClass) || updated.contains(accClass)
-                || deleted.contains(accClass))
+                    || deleted.contains(accClass))
                 return true;
 
             // check for dirty subclass
-            for (Iterator<Class<?>> dirty = persisted.iterator(); dirty.hasNext();)
-                if (accClass.isAssignableFrom(dirty.next()))
+            for (Class<?> item : persisted)
+                if (accClass.isAssignableFrom(item))
                     return true;
-            for (Iterator<Class<?>> dirty = updated.iterator(); dirty.hasNext();)
-                if (accClass.isAssignableFrom(dirty.next()))
+            for (Class<?> value : updated)
+                if (accClass.isAssignableFrom(value))
                     return true;
-            for (Iterator<Class<?>> dirty = deleted.iterator(); dirty.hasNext();)
-                if (accClass.isAssignableFrom(dirty.next()))
+            for (Class<?> aClass : deleted)
+                if (accClass.isAssignableFrom(aClass))
                     return true;
         }
 
@@ -1476,8 +1480,8 @@ public class QueryImpl implements Query {
             assertOpen();
 
             RemoveOnCloseResultList res;
-            for (Iterator<RemoveOnCloseResultList> itr = _resultLists.iterator(); itr.hasNext();) {
-                res = itr.next();
+            for (RemoveOnCloseResultList resultList : _resultLists) {
+                res = resultList;
                 if (force || res.isProviderOpen())
                     res.close(false);
             }
@@ -1738,8 +1742,8 @@ public class QueryImpl implements Query {
         if (imports != null && imports.length > 0) {
             String dotName = "." + name;
             String importName;
-            for (int i = 0; i < imports.length; i++) {
-                importName = imports[i];
+            for (String anImport : imports) {
+                importName = anImport;
 
                 // full class name import
                 if (importName.endsWith(dotName))
@@ -1747,7 +1751,7 @@ public class QueryImpl implements Query {
                     // wildcard; strip to package
                 else if (importName.endsWith(".*")) {
                     importName = importName.substring
-                        (0, importName.length() - 1);
+                            (0, importName.length() - 1);
                     type = toClass(importName + name);
                 }
                 if (type != null)
@@ -2004,16 +2008,18 @@ public class QueryImpl implements Query {
         @Override
         public Number executeDelete(StoreQuery q, Object[] params) {
             long num = 0;
-            for (int i = 0; i < _executors.length; i++)
-                num += _executors[i].executeDelete(q, params).longValue();
+            for (StoreQuery.Executor executor : _executors) {
+                num += executor.executeDelete(q, params).longValue();
+            }
             return num;
         }
 
         @Override
         public Number executeUpdate(StoreQuery q, Object[] params) {
             long num = 0;
-            for (int i = 0; i < _executors.length; i++)
-                num += _executors[i].executeUpdate(q, params).longValue();
+            for (StoreQuery.Executor executor : _executors) {
+                num += executor.executeUpdate(q, params).longValue();
+            }
             return num;
         }
 
@@ -2026,8 +2032,8 @@ public class QueryImpl implements Query {
             List results = new ArrayList(_executors.length);
             StoreQuery.Range ropRange = new StoreQuery.Range(0L, range.end);
             String[] actions;
-            for (int i = 0; i < _executors.length; i++) {
-                actions = _executors[i].getDataStoreActions(q, params,ropRange);
+            for (StoreQuery.Executor executor : _executors) {
+                actions = executor.getDataStoreActions(q, params, ropRange);
                 if (actions != null && actions.length > 0)
                     results.addAll(Arrays.asList(actions));
             }
@@ -2096,9 +2102,9 @@ public class QueryImpl implements Query {
 
             // create set of base class metadatas in access path
             List metas = null;
-            for (int i = 0; i < _executors.length; i++)
-                metas = Filters.addAccessPathMetaDatas(metas, _executors[i].
-                    getAccessPathMetaDatas(q));
+            for (StoreQuery.Executor executor : _executors)
+                metas = Filters.addAccessPathMetaDatas(metas, executor.
+                        getAccessPathMetaDatas(q));
             if (metas == null)
                 return StoreQuery.EMPTY_METAS;
             return (ClassMetaData[]) metas.toArray

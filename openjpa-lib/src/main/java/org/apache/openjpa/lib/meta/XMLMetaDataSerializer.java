@@ -323,8 +323,8 @@ public abstract class XMLMetaDataSerializer implements MetaDataSerializer {
 
         LexicalHandler lh = (LexicalHandler) _handler;
         char[] chars;
-        for (int i = 0; i < comments.length; i++) {
-            chars = comments[i].toCharArray();
+        for (String comment : comments) {
+            chars = comment.toCharArray();
             lh.comment(chars, 0, chars.length);
         }
     }

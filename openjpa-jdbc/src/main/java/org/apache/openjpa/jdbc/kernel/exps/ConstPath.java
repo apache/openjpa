@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
@@ -131,20 +130,21 @@ class ConstPath
         Object action;
         OpenJPAStateManager sm;
         Broker tmpBroker = null;
-        for (Iterator itr = _actions.iterator(); itr.hasNext();) {
+        for (Object o : _actions) {
             // fail on null value
             if (cstate.value == null) {
                 failed = true;
                 break;
             }
 
-            action = itr.next();
+            action = o;
             if (action instanceof Class) {
                 try {
                     cstate.value = Filters.convert(cstate.value,
-                        (Class) action);
+                            (Class) action);
                     continue;
-                } catch (ClassCastException cce) {
+                }
+                catch (ClassCastException cce) {
                     failed = true;
                     break;
                 }
@@ -156,9 +156,9 @@ class ConstPath
             tmpBroker = null;
             if (ImplHelper.isManageable(cstate.value))
                 sm = (OpenJPAStateManager) (ImplHelper.toPersistenceCapable(
-                    cstate.value,
-                    this.getMetaData().getRepository().getConfiguration())).
-                    pcGetStateManager();
+                        cstate.value,
+                        this.getMetaData().getRepository().getConfiguration())).
+                        pcGetStateManager();
             if (sm == null) {
                 tmpBroker = ctx.store.getContext().getBroker();
                 tmpBroker.transactional(cstate.value, false, null);
@@ -168,8 +168,9 @@ class ConstPath
             try {
                 // get the specified field value and switch candidate
                 cstate.value = sm.fetchField(((FieldMetaData) action).
-                    getIndex(), true);
-            } finally {
+                        getIndex(), true);
+            }
+            finally {
                 // setTransactional does not clear the state, which is
                 // important since tmpVal might be also managed by
                 // another broker if it's a proxied non-pc instance

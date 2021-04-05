@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -232,16 +231,18 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
      * Release the given embedded objects.
      */
     private void releaseEmbedded(ValueMetaData vmd, Object[] objs) {
-        for (int i = 0; i < objs.length; i++)
-            releaseEmbedded(vmd, objs[i]);
+        for (Object obj : objs) {
+            releaseEmbedded(vmd, obj);
+        }
     }
 
     /**
      * Release the given embedded objects.
      */
     private void releaseEmbedded(ValueMetaData vmd, Collection objs) {
-        for (Iterator itr = objs.iterator(); itr.hasNext();)
-            releaseEmbedded(vmd, itr.next());
+        for (Object obj : objs) {
+            releaseEmbedded(vmd, obj);
+        }
     }
 
     /**
@@ -386,16 +387,18 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
      * Delete the objects in the given value.
      */
     private void delete(ValueMetaData vmd, Object[] objs, OpCallbacks call) {
-        for (int i = 0; i < objs.length; i++)
-            delete(vmd, objs[i], call);
+        for (Object obj : objs) {
+            delete(vmd, obj, call);
+        }
     }
 
     /**
      * Delete the objects embedded in the given value.
      */
     private void delete(ValueMetaData vmd, Collection objs, OpCallbacks call) {
-        for (Iterator itr = objs.iterator(); itr.hasNext();)
-            delete(vmd, itr.next(), call);
+        for (Object obj : objs) {
+            delete(vmd, obj, call);
+        }
     }
 
     /**
@@ -417,16 +420,18 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
      * Dereference all valid persistent objects in the given collection.
      */
     private void dereferenceDependent(Object[] objs) {
-        for (int i = 0; i < objs.length; i++)
-            dereferenceDependent(objs[i]);
+        for (Object obj : objs) {
+            dereferenceDependent(obj);
+        }
     }
 
     /**
      * Dereference all valid persistent objects in the given collection.
      */
     private void dereferenceDependent(Collection objs) {
-        for (Iterator itr = objs.iterator(); itr.hasNext();)
-            dereferenceDependent(itr.next());
+        for (Object obj : objs) {
+            dereferenceDependent(obj);
+        }
     }
 
     /**
@@ -441,7 +446,7 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
     }
 
     void dereferenceEmbedDependent(StateManagerImpl sm) {
-    	sm.setDereferencedEmbedDependent(true);
+        sm.setDereferencedEmbedDependent(true);
     }
 
     /**
@@ -480,16 +485,18 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
      * Gather each element.
      */
     private void gatherCascadeRefresh(Object[] arr, OpCallbacks call) {
-        for (int i = 0; i < arr.length; i++)
-            _broker.gatherCascadeRefresh(arr[i], call);
+        for (Object o : arr) {
+            _broker.gatherCascadeRefresh(o, call);
+        }
     }
 
     /**
      * Gather each element.
      */
     private void gatherCascadeRefresh(Collection coll, OpCallbacks call) {
-        for (Iterator itr = coll.iterator(); itr.hasNext();)
-            _broker.gatherCascadeRefresh(itr.next(), call);
+        for (Object o : coll) {
+            _broker.gatherCascadeRefresh(o, call);
+        }
     }
 
     /**
@@ -741,8 +748,9 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
      */
     private void preFlushPCs(ValueMetaData vmd, Collection keys, Map map,
         boolean logical, OpCallbacks call) {
-        for (Iterator itr = keys.iterator(); itr.hasNext();)
-            preFlushPC(vmd, map.get(itr.next()), logical, call);
+        for (Object key : keys) {
+            preFlushPC(vmd, map.get(key), logical, call);
+        }
     }
 
     /**
@@ -751,8 +759,9 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
      */
     private void preFlushPCs(ValueMetaData vmd, Object[] objs,
         boolean logical, OpCallbacks call) {
-        for (int i = 0; i < objs.length; i++)
-            preFlushPC(vmd, objs[i], logical, call);
+        for (Object obj : objs) {
+            preFlushPC(vmd, obj, logical, call);
+        }
     }
 
     /**
@@ -761,8 +770,9 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
      */
     private void preFlushPCs(ValueMetaData vmd, Collection objs,
         boolean logical, OpCallbacks call) {
-        for (Iterator itr = objs.iterator(); itr.hasNext();)
-            preFlushPC(vmd, itr.next(), logical, call);
+        for (Object obj : objs) {
+            preFlushPC(vmd, obj, logical, call);
+        }
     }
 
     /**
@@ -852,8 +862,9 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
             coll = (Collection) _sm.newFieldProxy(vmd.getFieldMetaData().getIndex());
         }
         coll.clear();
-        for (Iterator itr = orig.iterator(); itr.hasNext();)
-            coll.add(embed(vmd, itr.next()));
+        for (Object o : orig) {
+            coll.add(embed(vmd, o));
+        }
         return coll;
     }
 
@@ -879,8 +890,8 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
             }
             map.clear();
             Object key, val;
-            for (Iterator itr = orig.entrySet().iterator(); itr.hasNext();) {
-                entry = (Map.Entry) itr.next();
+            for (Object o : orig.entrySet()) {
+                entry = (Map.Entry) o;
                 key = embed(fmd.getKey(), entry.getKey());
                 val = entry.getValue();
                 if (valEmbed)
@@ -889,10 +900,10 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
             }
         } else {
             map = orig;
-            for (Iterator itr = map.entrySet().iterator(); itr.hasNext();) {
-                entry = (Map.Entry) itr.next();
+            for (Object o : map.entrySet()) {
+                entry = (Map.Entry) o;
                 entry.setValue(embed(fmd.getElement(),
-                    entry.getValue()));
+                        entry.getValue()));
             }
         }
         return map;

@@ -2395,8 +2395,7 @@ public class JPQLExpressionBuilder
             out.println(toString(prefix)
                 + (text && this.text != null ? " [" + this.text + "]" : ""));
             if (children != null) {
-                for (int i = 0; i < children.length; ++i) {
-                    JPQLNode n = children[i];
+                for (JPQLNode n : children) {
                     if (n != null) {
                         n.dump(out, prefix + " ", text);
                     }

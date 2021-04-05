@@ -196,19 +196,22 @@ public class SubQ
     public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         Value[] projs = _exps.projections;
-        for (int i = 0; i < projs.length; i++) {
-            if (projs[i] instanceof GeneralCaseExpression) {
-                ((GeneralCaseExpression)projs[i]).setOtherPath(other);
-                ((GeneralCaseExpression)projs[i]).setOtherState(otherState);
-            } else if (projs[i] instanceof SimpleCaseExpression) {
-                ((SimpleCaseExpression)projs[i]).setOtherPath(other);
-                ((SimpleCaseExpression)projs[i]).setOtherState(otherState);
-            } else if (projs[i] instanceof NullIfExpression) {
-                ((NullIfExpression)projs[i]).setOtherPath(other);
-                ((NullIfExpression)projs[i]).setOtherState(otherState);
-            } else if (projs[i] instanceof CoalesceExpression) {
-                ((CoalesceExpression)projs[i]).setOtherPath(other);
-                ((CoalesceExpression)projs[i]).setOtherState(otherState);
+        for (Value proj : projs) {
+            if (proj instanceof GeneralCaseExpression) {
+                ((GeneralCaseExpression) proj).setOtherPath(other);
+                ((GeneralCaseExpression) proj).setOtherState(otherState);
+            }
+            else if (proj instanceof SimpleCaseExpression) {
+                ((SimpleCaseExpression) proj).setOtherPath(other);
+                ((SimpleCaseExpression) proj).setOtherState(otherState);
+            }
+            else if (proj instanceof NullIfExpression) {
+                ((NullIfExpression) proj).setOtherPath(other);
+                ((NullIfExpression) proj).setOtherState(otherState);
+            }
+            else if (proj instanceof CoalesceExpression) {
+                ((CoalesceExpression) proj).setOtherPath(other);
+                ((CoalesceExpression) proj).setOtherState(otherState);
             }
         }
     }

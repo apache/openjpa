@@ -408,8 +408,9 @@ public class QueryCacheStoreQuery
                 return;
 
             List<Class<?>> classes = new ArrayList<>(cmd.length);
-            for (int i = 0; i < cmd.length; i++)
-                classes.add(cmd[i].getDescribedType());
+            for (ClassMetaData metaData : cmd) {
+                classes.add(metaData.getDescribedType());
+            }
 
             // evict from the query cache
             QueryCacheStoreQuery cq = (QueryCacheStoreQuery) q;
@@ -417,10 +418,10 @@ public class QueryCacheStoreQuery
                 (q.getContext(), classes));
 
             // evict from the data cache
-            for (int i = 0; i < cmd.length; i++) {
-                if (cmd[i].getDataCache() != null && cmd[i].getDataCache().getEvictOnBulkUpdate())
-                    cmd[i].getDataCache().removeAll(
-                        cmd[i].getDescribedType(), true);
+            for (ClassMetaData classMetaData : cmd) {
+                if (classMetaData.getDataCache() != null && classMetaData.getDataCache().getEvictOnBulkUpdate())
+                    classMetaData.getDataCache().removeAll(
+                            classMetaData.getDescribedType(), true);
             }
         }
 

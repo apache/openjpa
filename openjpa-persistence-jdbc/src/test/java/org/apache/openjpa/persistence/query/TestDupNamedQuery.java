@@ -72,24 +72,27 @@ public class TestDupNamedQuery extends SingleEMFTestCase {
             list = em.createNamedQuery(findAllQName).getResultList();
             assertNotNull(list);
             assertEquals(list.size(), 2);
-            for (Iterator resultIter = list.iterator(); resultIter.hasNext();) {
-                o = resultIter.next();
+            for (Object value : list) {
+                o = value;
                 assertTrue(simple2 ? o instanceof SimpleEntity2
-                		: o instanceof SimpleEntity);
+                        : o instanceof SimpleEntity);
                 String n = null;
                 String v = null;
                 if (simple2) {
                     n = ((SimpleEntity2) o).getName();
                     v = ((SimpleEntity2) o).getValue();
-                } else {
+                }
+                else {
                     n = ((SimpleEntity) o).getName();
                     v = ((SimpleEntity) o).getValue();
                 }
                 if (n.equals(nameOne)) {
                     assertTrue(v.equals(ValueOne));
-                } else if (n.equals(nameTwo)) {
+                }
+                else if (n.equals(nameTwo)) {
                     assertTrue(v.equals(ValueTwo));
-                } else {
+                }
+                else {
                     assertTrue(false);
                 }
             }

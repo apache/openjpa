@@ -154,8 +154,9 @@ public class LogicalUnion
 
     @Override
     public void setAutoDistinct(boolean distinct) {
-        for (int i = 0; i < sels.length; i++)
-            sels[i].setAutoDistinct(distinct);
+        for (UnionSelect sel : sels) {
+            sel.setAutoDistinct(distinct);
+        }
     }
 
     @Override
@@ -175,8 +176,9 @@ public class LogicalUnion
 
     @Override
     public void setLRS(boolean lrs) {
-        for (int i = 0; i < sels.length; i++)
-            sels[i].setLRS(lrs);
+        for (UnionSelect sel : sels) {
+            sel.setLRS(lrs);
+        }
     }
 
     @Override
@@ -187,8 +189,9 @@ public class LogicalUnion
     @Override
     public void setExpectedResultCount(int expectedResultCount,
         boolean force) {
-        for (int i = 0; i < sels.length; i++)
-            sels[i].setExpectedResultCount(expectedResultCount, force);
+        for (UnionSelect sel : sels) {
+            sel.setExpectedResultCount(expectedResultCount, force);
+        }
     }
 
     @Override
@@ -198,8 +201,9 @@ public class LogicalUnion
 
     @Override
     public void setJoinSyntax(int syntax) {
-        for (int i = 0; i < sels.length; i++)
-            sels[i].setJoinSyntax(syntax);
+        for (UnionSelect sel : sels) {
+            sel.setJoinSyntax(syntax);
+        }
     }
 
     @Override
@@ -213,8 +217,8 @@ public class LogicalUnion
     public boolean supportsLocking() {
         if (sels.length == 1)
             return sels[0].supportsLocking();
-        for (int i = 0; i < sels.length; i++)
-            if (!sels[i].supportsLocking())
+        for (UnionSelect sel : sels)
+            if (!sel.supportsLocking())
                 return false;
         return true;
     }
@@ -230,8 +234,9 @@ public class LogicalUnion
     public int getCount(JDBCStore store)
         throws SQLException {
         int count = 0;
-        for (int i = 0; i < sels.length; i++)
-            count += sels[i].getCount(store);
+        for (UnionSelect sel : sels) {
+            count += sel.getCount(store);
+        }
         return count;
     }
 
@@ -798,8 +803,9 @@ public class LogicalUnion
          * Record that we're ordering by the given columns.
          */
         protected void recordOrderColumns(Column[] cols, boolean asc) {
-            for (int i = 0; i < cols.length; i++)
-                recordOrder(cols[i], asc);
+            for (Column col : cols) {
+                recordOrder(col, asc);
+            }
         }
 
         @Override

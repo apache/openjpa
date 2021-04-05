@@ -529,12 +529,12 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
         InvocationTargetException, java.beans.IntrospectionException {
         BeanInfo info = Introspector.getBeanInfo(bean.getClass());
         PropertyDescriptor[] props = info.getPropertyDescriptors();
-        for (int i = 0; i < props.length; i++) {
-            Method write = props[i].getWriteMethod();
+        for (PropertyDescriptor prop : props) {
+            Method write = prop.getWriteMethod();
             if (write == null)
                 continue;
 
-            Class [] params = write.getParameterTypes();
+            Class[] params = write.getParameterTypes();
             if (params == null || params.length != 1)
                 continue;
 
@@ -567,7 +567,7 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
                 arg = randomDate();
 
             if (arg != null)
-                write.invoke(bean, new Object []{ arg });
+                write.invoke(bean, new Object[]{arg});
         }
 
         return bean;
@@ -648,8 +648,8 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
     public static List matches(String regex, Collection input)
         throws RESyntaxException {
         List matches = new ArrayList();
-        for (Iterator i = input.iterator(); i.hasNext();) {
-            String check = (String) i.next();
+        for (Object o : input) {
+            String check = (String) o;
             if (matches(regex, check))
                 matches.add(check);
         }
@@ -1170,9 +1170,8 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
         int size = collection.size();
         int iterated = 0;
         // ensure we can walk along the iterator
-        for (Iterator i = collection.iterator(); i.hasNext();) {
+        for (Object o : collection) {
             iterated++;
-            i.next();
         }
 
         // ensure the number of values iterated is the same as the list size

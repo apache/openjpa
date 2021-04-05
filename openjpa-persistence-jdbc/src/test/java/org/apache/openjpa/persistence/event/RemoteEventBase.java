@@ -124,9 +124,9 @@ public class RemoteEventBase extends AbstractTestCase {
         assertNotNull(listener2.deleted);
 
         boolean pass = false;
-        for (Iterator iter = listener2.added.iterator(); iter.hasNext();) {
+        for (Object item : listener2.added) {
             Id roid = Id.newInstance(RuntimeTest1.class, oid);
-            Id it = (Id) iter.next();
+            Id it = (Id) item;
             //FixMe --det. why it.equals(roid) fails when the are actually equal
             if (it.toString().equals(roid.toString())) {
                 pass = true;
@@ -159,8 +159,8 @@ public class RemoteEventBase extends AbstractTestCase {
         assertNotNull(listener2.deleted);
 
         pass = false;
-        for (Iterator iter = listener2.updated.iterator(); iter.hasNext();) {
-            Id it = (Id) iter.next();
+        for (Object value : listener2.updated) {
+            Id it = (Id) value;
             if (it.toString().equals(roid.toString())) {
                 pass = true;
                 break;
@@ -192,8 +192,8 @@ public class RemoteEventBase extends AbstractTestCase {
         assertNotNull(listener2.deleted);
 
         pass = false;
-        for (Iterator iter = listener2.deleted.iterator(); iter.hasNext();) {
-            Id it = (Id) iter.next();
+        for (Object o : listener2.deleted) {
+            Id it = (Id) o;
             if (it.toString().equals(roid.toString())) {
                 pass = true;
                 break;

@@ -142,30 +142,30 @@ public class PCSubclassValidator {
     private void checkPropertiesAreInterceptable() {
         // just considers accessor methods for now.
         FieldMetaData[] fmds = meta.getFields();
-        for (int i = 0; i < fmds.length; i++) {
-            Method getter = getBackingMember(fmds[i]);
+        for (FieldMetaData fmd : fmds) {
+            Method getter = getBackingMember(fmd);
             if (getter == null) {
                 addError(loc.get("subclasser-no-getter",
-                    fmds[i].getName()), fmds[i]);
+                        fmd.getName()), fmd);
                 continue;
             }
-            BCField returnedField = checkGetterIsSubclassable(getter, fmds[i]);
+            BCField returnedField = checkGetterIsSubclassable(getter, fmd);
 
-            Method setter = setterForField(fmds[i]);
+            Method setter = setterForField(fmd);
             if (setter == null) {
-                addError(loc.get("subclasser-no-setter", fmds[i].getName()),
-                    fmds[i]);
+                addError(loc.get("subclasser-no-setter", fmd.getName()),
+                        fmd);
                 continue;
             }
-            BCField assignedField = checkSetterIsSubclassable(setter, fmds[i]);
+            BCField assignedField = checkSetterIsSubclassable(setter, fmd);
             if (assignedField == null)
                 continue;
 
             if (assignedField != returnedField)
                 addContractViolation(loc.get
-                    ("subclasser-setter-getter-field-mismatch",
-                        fmds[i].getName(), returnedField,assignedField),
-                    fmds[i]);
+                                ("subclasser-setter-getter-field-mismatch",
+                                        fmd.getName(), returnedField, assignedField),
+                        fmd);
 
             // ### scan through all the rest of the class to make sure it
             // ### doesn't use the field.

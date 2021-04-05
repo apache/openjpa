@@ -100,8 +100,9 @@ class InterfaceImplGenerator {
 
         FieldMetaData[] fields = meta.getDeclaredFields();
         Set<Method> methods = new HashSet<>();
-        for (int i = 0; i < fields.length; i++)
-            addField(bc, iface, fields[i], methods);
+        for (FieldMetaData field : fields) {
+            addField(bc, iface, field, methods);
+        }
         invalidateNonBeanMethods(bc, iface, methods);
 
         // first load the base Class<?> as the enhancer requires the class
@@ -181,11 +182,11 @@ class InterfaceImplGenerator {
         Code code;
         Class<?> type = _repos.getMetaDataFactory().getDefaults().
             getUnimplementedExceptionType();
-        for (int i = 0; i < meths.length; i++) {
-            if (methods.contains(meths[i]))
+        for (Method method : meths) {
+            if (methods.contains(method))
                 continue;
-            meth = bc.declareMethod(meths[i].getName(),
-                meths[i].getReturnType(), meths[i].getParameterTypes());
+            meth = bc.declareMethod(method.getName(),
+                    method.getReturnType(), method.getParameterTypes());
             meth.makePublic();
             code = meth.getCode(true);
             code.anew().setType(type);
@@ -237,9 +238,9 @@ class InterfaceImplGenerator {
 
     public Class<?> toManagedInterface(Class<?> cls) {
         Class<?>[] ifaces = cls.getInterfaces();
-        for (int i = 0; i < ifaces.length; i++) {
-            if (_impls.get(ifaces[i]) == cls)
-                return ifaces[i];
+        for (Class<?> iface : ifaces) {
+            if (_impls.get(iface) == cls)
+                return iface;
         }
         throw new IllegalArgumentException(cls.getName());
     }

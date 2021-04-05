@@ -142,15 +142,15 @@ public abstract class AbstractOpenJpaMappingToolMojo extends AbstractOpenJpaMojo
             if (classes == null) {
                 getLog().info("Found no classes for " + classPath.getAbsolutePath());
             } else {
-                for (int i = 0; i < classes.length; i++) {
-                    Class<?> cls = classes[i];
-
+                for (Class<?> cls : classes) {
                     if (cls.getAnnotation(Entity.class) != null) {
                         getLog().debug("Found @Entity in class " + classPath);
-                    } else if (implementsPersistenceCapable(cls)) {
+                    }
+                    else if (implementsPersistenceCapable(cls)) {
                         getLog().debug("Found class " + classPath + " that implements interface "
                                 + PersistenceCapable.class.getName());
-                    } else {
+                    }
+                    else {
                         getLog().debug("Removing non-entity class " + classPath);
                         fileIt.remove();
                     }
@@ -167,8 +167,8 @@ public abstract class AbstractOpenJpaMappingToolMojo extends AbstractOpenJpaMojo
     private boolean implementsPersistenceCapable(Class<?> cls) {
         boolean isPersistenceCapable = false;
         Class<?>[] interfaces = cls.getInterfaces();
-        for (int i = 0; i < interfaces.length; i++) {
-            if (interfaces[i].getName().equals(PersistenceCapable.class.getName())) {
+        for (Class<?> anInterface : interfaces) {
+            if (anInterface.getName().equals(PersistenceCapable.class.getName())) {
                 isPersistenceCapable = true;
                 break;
             }

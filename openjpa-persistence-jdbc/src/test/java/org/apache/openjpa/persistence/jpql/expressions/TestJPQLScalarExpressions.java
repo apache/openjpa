@@ -98,8 +98,8 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
             "SELECT c.name as name, SUM(c.age) as sage FROM CompUser c group by c.name order by sage desc, name",
             "SELECT c.name, AVG(c.age) as age FROM CompUser c group by c.name order by age desc, c.name",
         };
-        for (int i = 0; i < querys.length; i++) {
-            Query query = em.createQuery(querys[i]);
+        for (String s : querys) {
+            Query query = em.createQuery(s);
             query.setFirstResult(1);
             query.setMaxResults(4);
             List<Object[]> rs = query.getResultList();
@@ -120,8 +120,8 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
             "SELECT SUM(c.age) * SUM(c.userid) FROM CompUser c",
             "SELECT SUM(c.age) - MIN(c.userid) + MAX(c.userid) FROM CompUser c",
         };
-        for (int i = 0; i < query.length; i++) {
-            List<Long> rs = em.createQuery(query[i]).getResultList();
+        for (String value : query) {
+            List<Long> rs = em.createQuery(value).getResultList();
             assertTrue(rs.get(0) > 0);
         }
         String query2[] = {
@@ -129,8 +129,8 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
                 "SELECT SUM(c.age) * SUM(c.userid), AVG(c.age) FROM CompUser c",
                 "SELECT SUM(c.age) - MIN(c.userid) + MAX(c.userid), AVG(c.age)/10 FROM CompUser c",
         };
-        for (int i = 0; i < query2.length; i++) {
-            List<Object[]> rs = (List<Object[]>)em.createQuery(query2[i]).getResultList();
+        for (String s : query2) {
+            List<Object[]> rs = (List<Object[]>) em.createQuery(s).getResultList();
             assertNotNull(rs.get(0)[1]);
         }
         endEm(em);

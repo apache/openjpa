@@ -603,9 +603,9 @@ public class DB2Dictionary
             StringBuilder errdStr = new StringBuilder();
 
             int[] errds = (int[]) getSqlErrdMethd.invoke(sqlca, new Object[]{});
-            for (int i = 0; i < errds.length; i++)
-                errdStr.append(errdStr.length() > 0 ? ", " : "").
-                    append(errds[i]);
+           for (int errd : errds)
+               errdStr.append(errdStr.length() > 0 ? ", " : "").
+                       append(errd);
             StringBuilder exceptionMsg = new StringBuilder();
             exceptionMsg.append("SQLCA OUTPUT");
             exceptionMsg.append("[Errp=");

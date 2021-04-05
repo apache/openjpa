@@ -547,18 +547,19 @@ public class TestSubclassedBehavior extends AbstractTestCase {
         assertTrue("meta's access should be ACCESS_PROPERTY",
         		AccessCode.isProperty(meta.getAccessType()));
         FieldMetaData[] fmds = meta.getFields();
-        for (int i = 0; i < fmds.length; i++) {
-            assertEquals(Method.class, fmds[i].getBackingMember().getClass());
+        for (FieldMetaData fmd : fmds) {
+            assertEquals(Method.class, fmd.getBackingMember().getClass());
 
             // make sure that the fields are defined in the right part of the
             // hierarchy
-            if (fmds[i].getName().equals("intField") ||
-                fmds[i].getName().equals("oneToOne")) {
+            if (fmd.getName().equals("intField") ||
+                    fmd.getName().equals("oneToOne")) {
                 assertEquals(DerivedEntity.class,
-                    fmds[i].getDefiningMetaData().getDescribedType());
-            } else {
+                        fmd.getDefiningMetaData().getDescribedType());
+            }
+            else {
                 assertEquals(BaseEntity.class,
-                    fmds[i].getDefiningMetaData().getDescribedType());
+                        fmd.getDefiningMetaData().getDescribedType());
             }
         }
     }

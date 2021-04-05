@@ -193,9 +193,7 @@ public class TestResultShapes extends AbstractTestCase {
         if (unique) {
             arrayResultHelper(q.execute(), recordClasses, inCache);
         } else {
-            for (Iterator iter = ((List) q.execute()).iterator(); iter
-                .hasNext();)
-                arrayResultHelper(iter.next(), recordClasses, inCache);
+            for (Object o : (List) q.execute()) arrayResultHelper(o, recordClasses, inCache);
         }
 
         CacheTestHelper.assertInCache(this, q, inCache);
@@ -203,9 +201,7 @@ public class TestResultShapes extends AbstractTestCase {
         if (unique) {
             arrayResultHelper(q.execute(), recordClasses, inCache);
         } else {
-            for (Iterator iter = ((List) q.execute()).iterator(); iter
-                .hasNext();)
-                arrayResultHelper(iter.next(), recordClasses, inCache);
+            for (Object o : (List) q.execute()) arrayResultHelper(o, recordClasses, inCache);
         }
     }
 
@@ -237,9 +233,7 @@ public class TestResultShapes extends AbstractTestCase {
         if (unique) {
             mapResultHelper(q.execute(), recordClasses, results, inCache);
         } else {
-            for (Iterator iter = ((Collection) q.execute()).iterator();
-                iter.hasNext();)
-                mapResultHelper(iter.next(), recordClasses, results, inCache);
+            for (Object o : (Collection) q.execute()) mapResultHelper(o, recordClasses, results, inCache);
         }
 
         CacheTestHelper.assertInCache(this, q, inCache);
@@ -247,9 +241,7 @@ public class TestResultShapes extends AbstractTestCase {
         if (unique) {
             mapResultHelper(q.execute(), recordClasses, results, inCache);
         } else {
-            for (Iterator iter = ((List) q.execute()).iterator(); iter
-                .hasNext();)
-                mapResultHelper(iter.next(), recordClasses, results, inCache);
+            for (Object o : (List) q.execute()) mapResultHelper(o, recordClasses, results, inCache);
         }
     }
 
@@ -277,9 +269,7 @@ public class TestResultShapes extends AbstractTestCase {
             assertEquals(recordClass, q.execute().getClass());
         else {
             q.setUnique(unique);
-            for (Iterator iter = ((List) q.execute()).iterator(); iter
-                .hasNext();)
-                assertEquals(recordClass, iter.next().getClass());
+            for (Object o : (List) q.execute()) assertEquals(recordClass, o.getClass());
         }
 
         CacheTestHelper.assertInCache(this, q, inCache);
@@ -287,9 +277,7 @@ public class TestResultShapes extends AbstractTestCase {
         if (unique) {
             assertEquals(recordClass, q.execute().getClass());
         } else {
-            for (Iterator iter = ((List) q.execute()).iterator(); iter
-                .hasNext();)
-                assertEquals(recordClass, iter.next().getClass());
+            for (Object o : (List) q.execute()) assertEquals(recordClass, o.getClass());
         }
     }
 

@@ -104,8 +104,7 @@ public class TestPersistentMaps extends BaseKernelTest {
         startTx(pm);
 //        holder = getHolder(pm);
         map = holder.getNamedMap(name);
-        for (Iterator i = internalMap.keySet().iterator(); i.hasNext();) {
-            Object k = i.next();
+        for (Object k : internalMap.keySet()) {
             assertEquals(map.get(k), internalMap.get(k));
         }
         endTx(pm);
@@ -116,9 +115,8 @@ public class TestPersistentMaps extends BaseKernelTest {
 
         pm = getPM();
         startTx(pm);
-        for (Iterator i = internalMap.keySet().iterator(); i.hasNext();) {
+        for (Object param : internalMap.keySet()) {
 
-            Object param = i.next();
             if (pm.isPersistent(param))
                 param = pm.find(param.getClass(), pm.getObjectId(param));
 
@@ -129,33 +127,33 @@ public class TestPersistentMaps extends BaseKernelTest {
             OpenJPAQuery q;
 
             q = pm.createQuery(JDOQL,
-                selectWhere + name + ".containsKey(:param)");
+                    selectWhere + name + ".containsKey(:param)");
             q.setParameter("param", param);
             assertSize(1, q.getResultList());
 
             q = pm.createQuery(JDOQL,
-                selectWhere + name + ".containsValue(:value)");
+                    selectWhere + name + ".containsValue(:value)");
             q.setParameter("value", val);
             assertSize(1, q.getResultList());
 
             q = pm.createQuery(JDOQL, selectWhere + name + ".containsValue(" +
-                name + ".get(:param))");
+                    name + ".get(:param))");
             q.setParameter("param", param);
             assertSize(1, q.getResultList());
 
             q = pm.createQuery(JDOQL,
-                selectWhere + name + ".get(:param) != null");
+                    selectWhere + name + ".get(:param) != null");
             q.setParameter("param", param);
             assertSize(1, q.getResultList());
 
             q = pm.createQuery(JDOQL,
-                selectWhere + name + ".get(:param) == :value");
+                    selectWhere + name + ".get(:param) == :value");
             q.setParameter("param", param);
             q.setParameter("value", val);
             assertSize(1, q.getResultList());
 
             q = pm.createQuery(JDOQL,
-                selectWhere + name + ".get(:param) != :value");
+                    selectWhere + name + ".get(:param) != :value");
             q.setParameter("param", param);
             q.setParameter("value", val);
             assertSize(0, q.getResultList());
@@ -165,21 +163,20 @@ public class TestPersistentMaps extends BaseKernelTest {
 
         pm = getPM();
         startTx(pm);
-        for (Iterator i = internalMap.keySet().iterator(); i.hasNext();) {
-            Object param = i.next();
+        for (Object param : internalMap.keySet()) {
             if (pm.isPersistent(param))
                 param = pm.find(param.getClass(), pm.getObjectId(param));
 
             List getQueries = new ArrayList(Arrays.asList(new String[]{
-                selectWhere + name + ".get(:param) != null",
-                selectWhere + name + ".get(:param) == " + name + ".get(:param)",
-                selectWhere + "!(" + name + ".get(:param) == null)",
-                selectWhere + "!(" + name + ".get(:param) != " + name +
-                    ".get(:param))",
+                    selectWhere + name + ".get(:param) != null",
+                    selectWhere + name + ".get(:param) == " + name + ".get(:param)",
+                    selectWhere + "!(" + name + ".get(:param) == null)",
+                    selectWhere + "!(" + name + ".get(:param) != " + name +
+                            ".get(:param))",
             }));
 
-            for (Iterator qi = getQueries.iterator(); qi.hasNext();) {
-                String query = (String) qi.next();
+            for (Object getQuery : getQueries) {
+                String query = (String) getQuery;
                 if (valueClass == String.class)
                     query += " order by " + name + ".get(:param) desc";
                 OpenJPAQuery q = pm.createQuery(JDOQL, query);

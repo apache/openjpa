@@ -79,8 +79,8 @@ public abstract class TestSQLListenerTestCase
      */
     public void assertSQL(String sqlExp)
         throws Exception {
-        for (Iterator i = sql.iterator(); i.hasNext();) {
-            String statement = (String) i.next();
+        for (Object o : sql) {
+            String statement = (String) o;
             if (matches(sqlExp, statement))
                 return;
         }
@@ -98,8 +98,8 @@ public abstract class TestSQLListenerTestCase
         throws Exception {
         boolean failed = false;
 
-        for (Iterator i = sql.iterator(); i.hasNext();) {
-            String statement = (String) i.next();
+        for (Object o : sql) {
+            String statement = (String) o;
             if (matches(sqlExp, statement))
                 failed = true;
         }

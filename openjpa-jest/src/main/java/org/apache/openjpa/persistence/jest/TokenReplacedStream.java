@@ -74,8 +74,8 @@ public class TokenReplacedStream {
                 Pattern p = matched(patterns); // has any pattern matched completely
                 if (p != null) { // a pattern matched completely
                     char[] replace = p.replace().toCharArray();
-                    for (int j = 0; j < replace.length; j++) {
-                        out.write(replace[j]);
+                    for (char value : replace) {
+                        out.write(value);
                     }
                     reset(patterns);
                     tmp.delete(0, tmp.length());

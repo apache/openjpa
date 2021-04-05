@@ -439,8 +439,8 @@ public class ConcurrentHashMap extends AbstractMap
             resize(capacity);
         }
 
-        for (Iterator i = t.entrySet().iterator(); i.hasNext();) {
-            Map.Entry e = (Map.Entry) i.next();
+        for (Object o : t.entrySet()) {
+            Map.Entry e = (Map.Entry) o;
             put(e.getKey(), e.getValue());
         }
     }
@@ -598,8 +598,8 @@ public class ConcurrentHashMap extends AbstractMap
         if (value == null) return containsNullValue();
 
         Entry tab[] = table;
-        for (int i = 0; i < tab.length; i++) {
-            for (Entry e = tab[i]; e != null; e = e.next) {
+        for (Entry entry : tab) {
+            for (Entry e = entry; e != null; e = e.next) {
                 if (value.equals(e.value)) return true;
             }
         }
@@ -611,8 +611,8 @@ public class ConcurrentHashMap extends AbstractMap
      */
     private boolean containsNullValue() {
         Entry tab[] = table;
-        for (int i = 0; i < tab.length; i++) {
-            for (Entry e = tab[i]; e != null; e = e.next) {
+        for (Entry entry : tab) {
+            for (Entry e = entry; e != null; e = e.next) {
                 if (e.value == null) return true;
             }
         }
@@ -946,8 +946,8 @@ public class ConcurrentHashMap extends AbstractMap
         s.writeInt(maxSize);
 
         // Write out keys and values(alternating)
-        for (Iterator i = entrySet().iterator(); i.hasNext();) {
-            Map.Entry e = (Map.Entry) i.next();
+        for (Object o : entrySet()) {
+            Map.Entry e = (Map.Entry) o;
             s.writeObject(e.getKey());
             s.writeObject(e.getValue());
         }

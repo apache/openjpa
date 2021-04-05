@@ -391,11 +391,11 @@ public class WASManagedRuntime extends AbstractManagedRuntime
         String [] interfaces = bcClass.getInterfaceNames();
 
         if(interfaces != null) {
-        	for(int i = 0; i < interfaces.length; i++) {
-        		if(interfaces[i].equals(INTERFACE)) {
-        			return;
-        		}
-        	}
+            for (String anInterface : interfaces) {
+                if (anInterface.equals(INTERFACE)) {
+                    return;
+                }
+            }
         }
         bcClass.declareInterface(INTERFACE);
         AsmAdaptor.write(bcClass);

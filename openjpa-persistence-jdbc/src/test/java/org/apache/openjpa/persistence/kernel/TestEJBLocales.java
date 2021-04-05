@@ -59,14 +59,14 @@ public class TestEJBLocales extends AbstractTestCase {
         boolean foundFrance = false;
         Locale locale;
 
-        for (Iterator iter = c.iterator(); iter.hasNext();) {
-            t1 = (RuntimeTest1) iter.next();
+        for (Object o : c) {
+            t1 = (RuntimeTest1) o;
             locale = t1.getLocaleField();
             if (locale == null)
                 foundNull = true;
             else if (
-                (locale.getCountry().equals(Locale.FRANCE.getCountry())) &&
-                    (locale.getLanguage().equals(Locale.FRANCE.getLanguage())))
+                    (locale.getCountry().equals(Locale.FRANCE.getCountry())) &&
+                            (locale.getLanguage().equals(Locale.FRANCE.getLanguage())))
                 foundFrance = true;
         }
 

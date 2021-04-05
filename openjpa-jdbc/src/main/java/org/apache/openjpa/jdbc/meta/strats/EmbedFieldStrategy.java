@@ -139,8 +139,8 @@ public class EmbedFieldStrategy
                 getFieldMappings();
             for (int i = 0; !found && i < fields.length; i++) {
                 cols = fields[i].getColumns();
-                for (int j = 0; j < cols.length; j++)
-                    if (cols[j].equals(col))
+                for (Column column : cols)
+                    if (column.equals(col))
                         found = true;
             }
             _synthetic = !found;
@@ -175,10 +175,10 @@ public class EmbedFieldStrategy
             em = new NullEmbeddedStateManager(owner, field);
         rm = new EmbeddedRowManager(rm, row);
         FieldMapping[] fields = field.getEmbeddedMapping().getFieldMappings();
-        for (int i = 0; i < fields.length; i++)
-            if (!Boolean.TRUE.equals(fields[i].isCustomInsert(em, store)))
-                if (!fields[i].isPrimaryKey())
-                    fields[i].insert(em, store, rm);
+        for (FieldMapping fieldMapping : fields)
+            if (!Boolean.TRUE.equals(fieldMapping.isCustomInsert(em, store)))
+                if (!fieldMapping.isPrimaryKey())
+                    fieldMapping.insert(em, store, rm);
 
         if (field.getColumnIO().isInsertable(0, true))
             setNullIndicatorColumn(sm, row);
@@ -266,9 +266,9 @@ public class EmbedFieldStrategy
         if (sm == null)
             sm = new NullEmbeddedStateManager(owner, field);
         FieldMapping[] fields = field.getEmbeddedMapping().getFieldMappings();
-        for (int i = 0; i < fields.length; i++)
-            if (!Boolean.TRUE.equals(fields[i].isCustomDelete(sm, store)))
-                fields[i].delete(sm, store, rm);
+        for (FieldMapping fieldMapping : fields)
+            if (!Boolean.TRUE.equals(fieldMapping.isCustomDelete(sm, store)))
+                fieldMapping.delete(sm, store, rm);
     }
 
     /**
@@ -327,16 +327,16 @@ public class EmbedFieldStrategy
 
         FieldMapping[] fields = field.getEmbeddedMapping().getFieldMappings();
         Boolean custom = null;
-        for (int i = 0; i < fields.length; i++) {
+        for (FieldMapping fieldMapping : fields) {
             switch (action) {
                 case INSERT:
-                    custom = fields[i].isCustomInsert(sm, store);
+                    custom = fieldMapping.isCustomInsert(sm, store);
                     break;
                 case UPDATE:
-                    custom = fields[i].isCustomUpdate(sm, store);
+                    custom = fieldMapping.isCustomUpdate(sm, store);
                     break;
                 case DELETE:
-                    custom = fields[i].isCustomDelete(sm, store);
+                    custom = fieldMapping.isCustomDelete(sm, store);
                     break;
             }
 
@@ -359,9 +359,9 @@ public class EmbedFieldStrategy
         if (em == null)
             em = new NullEmbeddedStateManager(sm, field);
         FieldMapping[] fields = field.getEmbeddedMapping().getFieldMappings();
-        for (int i = 0; i < fields.length; i++)
-            if (!Boolean.FALSE.equals(fields[i].isCustomInsert(em, store)))
-                fields[i].customInsert(em, store);
+        for (FieldMapping fieldMapping : fields)
+            if (!Boolean.FALSE.equals(fieldMapping.isCustomInsert(em, store)))
+                fieldMapping.customInsert(em, store);
     }
 
     @Override
@@ -387,9 +387,9 @@ public class EmbedFieldStrategy
         if (em == null)
             em = new NullEmbeddedStateManager(sm, field);
         FieldMapping[] fields = field.getEmbeddedMapping().getFieldMappings();
-        for (int i = 0; i < fields.length; i++)
-            if (!Boolean.FALSE.equals(fields[i].isCustomDelete(em, store)))
-                fields[i].customDelete(em, store);
+        for (FieldMapping fieldMapping : fields)
+            if (!Boolean.FALSE.equals(fieldMapping.isCustomDelete(em, store)))
+                fieldMapping.customDelete(em, store);
     }
 
     @Override
@@ -465,14 +465,14 @@ public class EmbedFieldStrategy
         FieldMapping[] fields = field.getEmbeddedMapping().getFieldMappings();
         boolean containsUnloadedEagerField = false;
 
-        for (int i = 0; i < fields.length; i++) {
-            boolean inResultSet = checkResult(fields[i],res);
+        for (FieldMapping fieldMapping : fields) {
+            boolean inResultSet = checkResult(fieldMapping, res);
             if (inResultSet) {
                 // At least one of the embeddable's field is in the ResultSet.
                 return true;
             }
 
-            if (fetch.requiresFetch(fields[i]) == FetchConfiguration.FETCH_LOAD) {
+            if (fetch.requiresFetch(fieldMapping) == FetchConfiguration.FETCH_LOAD) {
                 containsUnloadedEagerField = true;
             }
         }

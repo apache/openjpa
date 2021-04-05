@@ -34,9 +34,9 @@ public class Base16Encoder {
      */
     public static String encode(byte[] byteArray) {
         StringBuilder hexBuffer = new StringBuilder(byteArray.length * 2);
-        for (int i = 0; i < byteArray.length; i++)
+        for (byte b : byteArray)
             for (int j = 1; j >= 0; j--)
-                hexBuffer.append(HEX[(byteArray[i] >> (j * 4)) & 0xF]);
+                hexBuffer.append(HEX[(b >> (j * 4)) & 0xF]);
         return hexBuffer.toString();
     }
 

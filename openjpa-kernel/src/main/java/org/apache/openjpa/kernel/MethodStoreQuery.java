@@ -302,8 +302,8 @@ public class MethodStoreQuery
             int low = Integer.MAX_VALUE;
             Object obj;
             int val;
-            for (Iterator itr = params.iterator(); itr.hasNext();) {
-                obj = itr.next();
+            for (Object param : params) {
+                obj = param;
                 if (!(obj instanceof Number))
                     return 0; // use 0 base when params are mixed types
 

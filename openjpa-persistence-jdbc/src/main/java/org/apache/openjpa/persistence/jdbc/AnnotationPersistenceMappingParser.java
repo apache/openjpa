@@ -624,12 +624,12 @@ public class AnnotationPersistenceMappingParser
             throw new UserException(_loc.get("unique-no-column", ctx));
         DBIdentifier[] sColNames = DBIdentifier.toArray(columnNames,DBIdentifierType.COLUMN, delimit());
         Unique uniqueConstraint = new Unique();
-        for (int i = 0; i < sColNames.length; i++) {
-            if (DBIdentifier.isEmpty(sColNames[i]))
+        for (DBIdentifier sColName : sColNames) {
+            if (DBIdentifier.isEmpty(sColName))
                 throw new UserException(_loc.get("unique-empty-column",
                         Arrays.toString(sColNames), ctx));
             Column column = new Column();
-            column.setIdentifier(sColNames[i]);
+            column.setIdentifier(sColName);
             uniqueConstraint.addColumn(column);
         }
         if (!StringUtil.isEmpty(anno.name())) {
@@ -661,12 +661,12 @@ public class AnnotationPersistenceMappingParser
 
         DBIdentifier[] sColNames = DBIdentifier.toArray(columnNames.split(","), DBIdentifierType.COLUMN, delimit());
         org.apache.openjpa.jdbc.schema.Index indx = new org.apache.openjpa.jdbc.schema.Index();
-        for (int i = 0; i < sColNames.length; i++) {
-            if (DBIdentifier.isEmpty(sColNames[i]))
+        for (DBIdentifier sColName : sColNames) {
+            if (DBIdentifier.isEmpty(sColName))
                 throw new UserException(_loc.get("index-empty-column",
                         Arrays.toString(sColNames), ctx));
             Column column = new Column();
-            column.setIdentifier(sColNames[i]);
+            column.setIdentifier(sColName);
             indx.addColumn(column);
         }
         indx.setUnique(anno.unique());
@@ -1059,9 +1059,9 @@ public class AnnotationPersistenceMappingParser
 
         List<Column> cols = new ArrayList<>(pcols.length);
         int unique = 0;
-        for (int i = 0; i < pcols.length; i++) {
-            cols.add(newColumn(pcols[i], delimit()));
-            unique |= (pcols[i].unique()) ? TRUE : FALSE;
+        for (ElementColumn pcol : pcols) {
+            cols.add(newColumn(pcol, delimit()));
+            unique |= (pcol.unique()) ? TRUE : FALSE;
         }
         setColumns(fm, fm.getElementMapping().getValueInfo(), cols, unique);
     }
@@ -1095,9 +1095,9 @@ public class AnnotationPersistenceMappingParser
 
         List<Column> cols = new ArrayList<>(joins.length);
         int unique = 0;
-        for (int i = 0; i < joins.length; i++) {
-            cols.add(newColumn(joins[i], delimit()));
-            unique |= (joins[i].unique()) ? TRUE : FALSE;
+        for (KeyJoinColumn join : joins) {
+            cols.add(newColumn(join, delimit()));
+            unique |= (join.unique()) ? TRUE : FALSE;
         }
         setColumns(fm, fm.getKeyMapping().getValueInfo(), cols, unique);
     }
@@ -1894,9 +1894,9 @@ public class AnnotationPersistenceMappingParser
 
         List<Column> cols = new ArrayList<>(pcols.length);
         int unique = 0;
-        for (int i = 0; i < pcols.length; i++) {
-            cols.add(newColumn(pcols[i], delimit()));
-            unique |= (pcols[i].unique()) ? TRUE : FALSE;
+        for (KeyColumn pcol : pcols) {
+            cols.add(newColumn(pcol, delimit()));
+            unique |= (pcol.unique()) ? TRUE : FALSE;
         }
         setColumns(fm, fm.getKeyMapping().getValueInfo(), cols, unique);
     }
@@ -2122,9 +2122,9 @@ public class AnnotationPersistenceMappingParser
 
         List<Column> cols = new ArrayList<>(joins.length);
         int unique = 0;
-        for (int i = 0; i < joins.length; i++) {
-            cols.add(newColumn(joins[i], delimit()));
-            unique |= (joins[i].unique()) ? TRUE : FALSE;
+        for (ElementJoinColumn join : joins) {
+            cols.add(newColumn(join, delimit()));
+            unique |= (join.unique()) ? TRUE : FALSE;
         }
         setColumns(fm, fm.getElementMapping().getValueInfo(), cols, unique);
     }
@@ -2210,9 +2210,9 @@ public class AnnotationPersistenceMappingParser
 
         List<Column> cols = new ArrayList<>(joins.length);
         int unique = 0;
-        for (int i = 0; i < joins.length; i++) {
-            cols.add(newColumn(joins[i]));
-            unique |= (joins[i].unique()) ? TRUE : FALSE;
+        for (MapKeyJoinColumn join : joins) {
+            cols.add(newColumn(join));
+            unique |= (join.unique()) ? TRUE : FALSE;
         }
         setColumns(fm, fm.getKeyMapping().getValueInfo(), cols, unique);
     }

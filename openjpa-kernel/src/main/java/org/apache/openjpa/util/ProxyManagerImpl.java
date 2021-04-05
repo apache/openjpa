@@ -374,8 +374,8 @@ public class ProxyManagerImpl
         if (concrete != null)
             return concrete;
         Class[] intfs = intf.getInterfaces();
-        for (int i = 0; i < intfs.length; i++) {
-            concrete = toConcreteType(intfs[i], concretes);
+        for (Class aClass : intfs) {
+            concrete = toConcreteType(aClass, concretes);
             if (concrete != null)
                 return concrete;
         }
@@ -732,8 +732,8 @@ public class ProxyManagerImpl
         Class[] params;
         BCMethod m;
         Code code;
-        for (int i = 0; i < cons.length; i++) {
-            params = cons[i].getParameterTypes();
+        for (Constructor con : cons) {
+            params = con.getParameterTypes();
             m = bc.declareMethod("<init>", void.class, params);
             m.makePublic();
 
@@ -741,7 +741,7 @@ public class ProxyManagerImpl
             code.aload().setThis();
             for (int j = 0; j < params.length; j++)
                 code.xload().setParam(j).setType(params[j]);
-            code.invokespecial().setMethod(cons[i]);
+            code.invokespecial().setMethod(con);
             code.vreturn();
             code.calculateMaxStack();
             code.calculateMaxLocals();
@@ -1310,14 +1310,14 @@ public class ProxyManagerImpl
         Method[] meths = type.getMethods();
         Method getter;
         int mods;
-        for (int i = 0; i < meths.length; i++) {
-            mods = meths[i].getModifiers();
+        for (Method meth : meths) {
+            mods = meth.getModifiers();
             if (!Modifier.isPublic(mods) || Modifier.isStatic(mods))
                 continue;
-            if (!startsWith(meths[i].getName(), "set")
-                || meths[i].getParameterTypes().length != 1)
+            if (!startsWith(meth.getName(), "set")
+                    || meth.getParameterTypes().length != 1)
                 continue;
-            getter = findGetter(type, meths[i]);
+            getter = findGetter(type, meth);
             if (getter == null)
                 continue;
 
@@ -1326,7 +1326,7 @@ public class ProxyManagerImpl
             code.aload().setParam(0);
             code.checkcast().setType(type);
             code.invokevirtual().setMethod(getter);
-            code.invokevirtual().setMethod(meths[i]);
+            code.invokevirtual().setMethod(meth);
         }
         code.aload().setLocal(copy);
     }
@@ -1341,20 +1341,22 @@ public class ProxyManagerImpl
         Class[] afterParams;
         Method match;
         Method after;
-        for (int i = 0; i < meths.length; i++) {
+        for (Method meth : meths) {
             // Java 8 methods with a return type of KeySetView do not need to be proxied
-            if (meths[i].getReturnType().getName().contains("KeySetView")) continue;
+            if (meth.getReturnType().getName().contains("KeySetView")) continue;
 
-            params = toHelperParameters(meths[i].getParameterTypes(),
-                proxyType);
+            params = toHelperParameters(meth.getParameterTypes(),
+                    proxyType);
 
             // first check for overriding method
             try {
-                match = helper.getMethod(meths[i].getName(), params);
-                proxyOverrideMethod(bc, meths[i], match, params);
+                match = helper.getMethod(meth.getName(), params);
+                proxyOverrideMethod(bc, meth, match, params);
                 continue;
-            } catch (NoSuchMethodException nsme) {
-            } catch (Exception e) {
+            }
+            catch (NoSuchMethodException nsme) {
+            }
+            catch (Exception e) {
                 throw new GeneralException(e);
             }
 
@@ -1363,26 +1365,30 @@ public class ProxyManagerImpl
             match = null;
             try {
                 match = helper.getMethod("before"
-                    + StringUtil.capitalize(meths[i].getName()), params);
-            } catch (NoSuchMethodException nsme) {
-            } catch (Exception e) {
+                        + StringUtil.capitalize(meth.getName()), params);
+            }
+            catch (NoSuchMethodException nsme) {
+            }
+            catch (Exception e) {
                 throw new GeneralException(e);
             }
             after = null;
             afterParams = null;
             try {
                 afterParams = toHelperAfterParameters(params,
-                    meths[i].getReturnType(), (match == null)
-                    ? void.class : match.getReturnType());
+                        meth.getReturnType(), (match == null)
+                                ? void.class : match.getReturnType());
                 after = helper.getMethod("after"
-                    + StringUtil.capitalize(meths[i].getName()), afterParams);
-            } catch (NoSuchMethodException nsme) {
-            } catch (Exception e) {
+                        + StringUtil.capitalize(meth.getName()), afterParams);
+            }
+            catch (NoSuchMethodException nsme) {
+            }
+            catch (Exception e) {
                 throw new GeneralException(e);
             }
             if (match != null || after != null)
-                proxyBeforeAfterMethod(bc, type, meths[i], match, params, after,
-                    afterParams);
+                proxyBeforeAfterMethod(bc, type, meth, match, params, after,
+                        afterParams);
         }
     }
 
@@ -1427,12 +1433,12 @@ public class ProxyManagerImpl
     private boolean proxySetters(BCClass bc, Class type) {
         Method[] meths = type.getMethods();
         int setters = 0;
-        for (int i = 0; i < meths.length; i++) {
-            if (isSetter(meths[i]) && !Modifier.isFinal(meths[i].getModifiers())
-                && bc.getDeclaredMethod(meths[i].getName(),
-                meths[i].getParameterTypes()) == null) {
+        for (Method meth : meths) {
+            if (isSetter(meth) && !Modifier.isFinal(meth.getModifiers())
+                    && bc.getDeclaredMethod(meth.getName(),
+                    meth.getParameterTypes()) == null) {
                 setters++;
-                proxySetter(bc, type, meths[i]);
+                proxySetter(bc, type, meth);
             }
         }
         return setters > 0;
@@ -1622,19 +1628,19 @@ public class ProxyManagerImpl
         Constructor match = null;
         Class matchParam = null;
         Class[] params;
-        for (int i = 0; i < cons.length; i++) {
-            params = cons[i].getParameterTypes();
+        for (Constructor con : cons) {
+            params = con.getParameterTypes();
             if (params.length != 1)
                 continue;
 
             // quit immediately on exact match
             if (params[0] == cls)
-                return cons[i];
+                return con;
 
             if (params[0].isAssignableFrom(cls) && (matchParam == null
-                || matchParam.isAssignableFrom(params[0]))) {
-                 // track most derived collection constructor
-                match = cons[i];
+                    || matchParam.isAssignableFrom(params[0]))) {
+                // track most derived collection constructor
+                match = con;
                 matchParam = params[0];
             }
         }
@@ -1714,14 +1720,15 @@ public class ProxyManagerImpl
         final ProxyManagerImpl mgr = new ProxyManagerImpl();
         Class cls;
         BCClass bc;
-        for (int i = 0; i < types.size(); i++) {
-            cls = Class.forName((String) types.get(i));
+        for (Object type : types) {
+            cls = Class.forName((String) type);
             try {
                 if (Class.forName(getProxyClassName(cls, false), true,
-                    GeneratedClasses.getMostDerivedLoader(cls, Proxy.class))
-                    != null)
+                        GeneratedClasses.getMostDerivedLoader(cls, Proxy.class))
+                        != null)
                     continue;
-            } catch (Throwable t) {
+            }
+            catch (Throwable t) {
                 // expected if the class hasn't been generated
             }
 
@@ -1737,12 +1744,12 @@ public class ProxyManagerImpl
                 final Class fCls = cls;
                 // TODO Move this to J2DOPrivHelper
                 bc = AccessController
-                    .doPrivileged(new PrivilegedAction<BCClass>() {
-                        @Override
-                        public BCClass run() {
-                            return mgr.generateProxyBeanBytecode(fCls, false);
-                        }
-                    });
+                        .doPrivileged(new PrivilegedAction<BCClass>() {
+                            @Override
+                            public BCClass run() {
+                                return mgr.generateProxyBeanBytecode(fCls, false);
+                            }
+                        });
             }
             // START - ALLOW PRINT STATEMENTS
             System.out.println(bc.getName());

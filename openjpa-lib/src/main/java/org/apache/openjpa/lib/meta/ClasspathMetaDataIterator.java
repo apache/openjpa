@@ -55,23 +55,24 @@ public class ClasspathMetaDataIterator extends MetaDataIteratorChain {
         String[] tokens = StringUtil.split(path,
             props.getProperty("path.separator"), 0);
 
-        for (int i = 0; i < tokens.length; i++) {
-            if (dirs != null && dirs.length != 0 && !endsWith(tokens[i], dirs))
+        for (String token : tokens) {
+            if (dirs != null && dirs.length != 0 && !endsWith(token, dirs))
                 continue;
 
-            File file = new File(tokens[i]);
+            File file = new File(token);
             if (!AccessController.doPrivileged(
                     J2DoPrivHelper.existsAction(file)))
                 continue;
             if (AccessController.doPrivileged(J2DoPrivHelper
                     .isDirectoryAction(file)))
                 addIterator(new FileMetaDataIterator(file, filter));
-            else if (tokens[i].endsWith(".jar")) {
+            else if (token.endsWith(".jar")) {
                 try {
                     ZipFile zFile = AccessController
-                        .doPrivileged(J2DoPrivHelper.newZipFileAction(file));
+                            .doPrivileged(J2DoPrivHelper.newZipFileAction(file));
                     addIterator(new ZipFileMetaDataIterator(zFile, filter));
-                } catch (PrivilegedActionException pae) {
+                }
+                catch (PrivilegedActionException pae) {
                     throw (IOException) pae.getException();
                 }
             }
@@ -82,8 +83,8 @@ public class ClasspathMetaDataIterator extends MetaDataIteratorChain {
      * Return true if the given token ends with any of the given strings.
      */
     private static boolean endsWith(String token, String[] suffs) {
-        for (int i = 0; i < suffs.length; i++)
-            if (token.endsWith(suffs[i]))
+        for (String suff : suffs)
+            if (token.endsWith(suff))
                 return true;
         return false;
     }

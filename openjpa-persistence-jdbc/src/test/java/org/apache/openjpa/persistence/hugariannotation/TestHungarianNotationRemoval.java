@@ -44,16 +44,16 @@ public class TestHungarianNotationRemoval extends SingleEMFTestCase {
 
         FieldMapping[] fieldMappings = cm.getFieldMappings();
 
-        for (int i = 0; i < fieldMappings.length; i++) {
-            final String name = fieldMappings[i].getColumns()[0].getName();
+        for (FieldMapping fieldMapping : fieldMappings) {
+            final String name = fieldMapping.getColumns()[0].getName();
 
             // this one doesn't follow the rules
-            if (fieldMappings[i].getName().equals("m_intFooBar7"))
+            if (fieldMapping.getName().equals("m_intFooBar7"))
                 continue;
 
             assertTrue(
-                "Failed to removed Hungarian Notation, resulting column name : "
-                    + name, name.toUpperCase().startsWith("FOOBAR"));
+                    "Failed to removed Hungarian Notation, resulting column name : "
+                            + name, name.toUpperCase().startsWith("FOOBAR"));
         }
     }
 

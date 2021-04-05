@@ -224,8 +224,9 @@ public class RowImpl
         throws SQLException {
         _sql = null;
         Column[] cols = fk.getColumns();
-        for (int i = 0; i < cols.length; i++)
-            _vals[getSetIndex(cols[i])] = null;
+        for (Column col : cols) {
+            _vals[getSetIndex(col)] = null;
+        }
     }
 
     /**

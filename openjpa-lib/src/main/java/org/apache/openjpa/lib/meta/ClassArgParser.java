@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -186,9 +185,8 @@ public class ClassArgParser {
         Map.Entry<Object, String[]> entry;
         String[] names;
         Class<?>[] objs;
-        for (Iterator<Map.Entry<Object, String[]>> i =
-            map.entrySet().iterator(); i.hasNext();) {
-            entry = i.next();
+        for (Map.Entry<Object, String[]> objectEntry : map.entrySet()) {
+            entry = objectEntry;
             names = entry.getValue();
             objs = new Class[names.length];
             for (int j = 0; j < names.length; j++) {
@@ -506,11 +504,11 @@ public class ClassArgParser {
 
         // make sure the rest of the element name matches
         char[] match = _endElements[matchIdx];
-        for (int i = 0; i < match.length; i++) {
+        for (char c : match) {
             ch = in.read();
             if (ch == -1)
                 return TOKEN_EOF;
-            if (ch != match[i])
+            if (ch != c)
                 return TOKEN_NONE;
         }
 

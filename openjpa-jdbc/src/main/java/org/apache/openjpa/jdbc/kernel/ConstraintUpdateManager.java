@@ -22,7 +22,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -147,8 +146,8 @@ public class ConstraintUpdateManager
         OpenJPAStateManager sm;
         if (!deletes.isEmpty() && !inserts.isEmpty()) {
             insertMap = new HashMap((int) (inserts.size() * 1.33 + 1));
-            for (Iterator itr = inserts.iterator(); itr.hasNext();) {
-                sm = ((Row) itr.next()).getPrimaryKey();
+            for (Object insert : inserts) {
+                sm = ((Row) insert).getPrimaryKey();
                 if (sm != null && sm.getObjectId() != null)
                     insertMap.put(sm.getObjectId(), sm);
             }
@@ -162,8 +161,8 @@ public class ConstraintUpdateManager
         ForeignKey[] fks;
         OpenJPAStateManager fkVal;
         boolean ignoreUpdates = true;
-        for (Iterator itr = deletes.iterator(); itr.hasNext();) {
-            row = (PrimaryRow) itr.next();
+        for (Object delete : deletes) {
+            row = (PrimaryRow) delete;
             if (!row.isValid())
                 continue;
 
@@ -175,20 +174,20 @@ public class ConstraintUpdateManager
 
             // now check this row's fks against other deletes
             fks = row.getTable().getForeignKeys();
-            for (int j = 0; j < fks.length; j++) {
+            for (ForeignKey fk : fks) {
                 // when deleting ref fks they'll just set a where value, so
                 // check both for fk updates (relation fks) and wheres (ref fks)
-                fkVal = row.getForeignKeySet(fks[j]);
+                fkVal = row.getForeignKeySet(fk);
                 if (fkVal == null)
-                    fkVal = row.getForeignKeyWhere(fks[j]);
+                    fkVal = row.getForeignKeyWhere(fk);
                 if (fkVal == null)
                     continue;
 
-                row2 = rowMgr.getRow(fks[j].getPrimaryKeyTable(),
-                    Row.ACTION_DELETE, fkVal, false);
+                row2 = rowMgr.getRow(fk.getPrimaryKeyTable(),
+                        Row.ACTION_DELETE, fkVal, false);
                 if (row2 != null && row2.isValid() && row2 != row)
                     graphs[1] = addEdge(graphs[1], (PrimaryRow) row2, row,
-                        fks[j]);
+                            fk);
             }
         }
 
@@ -235,8 +234,8 @@ public class ConstraintUpdateManager
         Row row2;
         ForeignKey[] fks;
         Column[] cols;
-        for (Iterator itr = rows.iterator(); itr.hasNext();) {
-            row = (PrimaryRow) itr.next();
+        for (Object o : rows) {
+            row = (PrimaryRow) o;
             if (!row.isValid())
                 continue;
 
@@ -244,33 +243,33 @@ public class ConstraintUpdateManager
             // column is treated just as actual database fk because the result
             // is the same: the pk row has to be inserted before the fk row
             fks = row.getTable().getForeignKeys();
-            for (int j = 0; j < fks.length; j++) {
-                if (row.getForeignKeySet(fks[j]) == null)
+            for (ForeignKey fk : fks) {
+                if (row.getForeignKeySet(fk) == null)
                     continue;
 
                 // see if this row is dependent on another.  if it's only
                 // depenent on itself, see if the fk is logical or deferred, in
                 // which case it must be an auto-inc because otherwise we
                 // wouldn't have recorded it
-                row2 = rowMgr.getRow(fks[j].getPrimaryKeyTable(),
-                    Row.ACTION_INSERT, row.getForeignKeySet(fks[j]), false);
+                row2 = rowMgr.getRow(fk.getPrimaryKeyTable(),
+                        Row.ACTION_INSERT, row.getForeignKeySet(fk), false);
                 if (row2 != null && row2.isValid() && (row2 != row
-                    || fks[j].isDeferred() || fks[j].isLogical()))
-                    graph = addEdge(graph, row, (PrimaryRow) row2, fks[j]);
+                        || fk.isDeferred() || fk.isLogical()))
+                    graph = addEdge(graph, row, (PrimaryRow) row2, fk);
             }
 
             // see if there are any relation id columns dependent on
             // auto-inc objects
             cols = row.getTable().getRelationIdColumns();
-            for (int j = 0; j < cols.length; j++) {
-                OpenJPAStateManager sm = row.getRelationIdSet(cols[j]);
+            for (Column col : cols) {
+                OpenJPAStateManager sm = row.getRelationIdSet(col);
                 if (sm == null)
                     continue;
 
                 row2 = rowMgr.getRow(getBaseTable(sm), Row.ACTION_INSERT,
-                    sm, false);
+                        sm, false);
                 if (row2 != null && row2.isValid())
-                    graph = addEdge(graph, row, (PrimaryRow) row2, cols[j]);
+                    graph = addEdge(graph, row, (PrimaryRow) row2, col);
             }
         }
         return graph;
@@ -354,11 +353,11 @@ public class ConstraintUpdateManager
         flush(insertUpdates, psMgr);
     }
 
-    protected void flush(Collection deleteUpdates, Collection nodes,
-    	PreparedStatementManager psMgr) {
+    protected void flush(Collection deleteUpdates, Collection nodes, PreparedStatementManager psMgr) {
         flush(deleteUpdates, psMgr);
-        for (Iterator itr = nodes.iterator(); itr.hasNext();)
-            psMgr.flush((RowImpl) itr.next());
+        for (Object node : nodes) {
+            psMgr.flush((RowImpl) node);
+        }
     }
 
     /**
@@ -439,15 +438,16 @@ public class ConstraintUpdateManager
      */
     private Edge findBreakableLink(List cycle) {
         Edge breakableLink = null;
-        for (Iterator iter = cycle.iterator(); iter.hasNext(); ) {
-            Edge edge = (Edge) iter.next();
+        for (Object o : cycle) {
+            Edge edge = (Edge) o;
             Object userObject = edge.getUserObject();
             if (userObject instanceof ForeignKey) {
-                 if (!((ForeignKey) userObject).hasNotNullColumns()) {
-                     breakableLink = edge;
-                     break;
-                 }
-            } else if (userObject instanceof Column) {
+                if (!((ForeignKey) userObject).hasNotNullColumns()) {
+                    breakableLink = edge;
+                    break;
+                }
+            }
+            else if (userObject instanceof Column) {
                 if (!((Column) userObject).isNotNull()) {
                     breakableLink = edge;
                     break;
@@ -495,8 +495,8 @@ public class ConstraintUpdateManager
         Collection deleteUpdates, Collection insertUpdates)
         throws SQLException {
         boolean recalculate = false;
-        for (Iterator itr = edges.iterator(); itr.hasNext();) {
-            Edge edge = (Edge) itr.next();
+        for (Object o : edges) {
+            Edge edge = (Edge) o;
             List cycle = edge.getCycle();
 
             if (cycle != null) {
@@ -521,7 +521,8 @@ public class ConstraintUpdateManager
                     PrimaryRow row = (PrimaryRow) breakableLink.getFrom();
                     if (row.getAction() == Row.ACTION_DELETE) {
                         addDeleteUpdate(breakableLink, deleteUpdates);
-                    } else {
+                    }
+                    else {
                         addInsertUpdate(row, breakableLink, insertUpdates);
                     }
                     graph.removeEdge(breakableLink);
@@ -548,8 +549,8 @@ public class ConstraintUpdateManager
             return;
 
         RowImpl row;
-        for (Iterator itr = rows.iterator(); itr.hasNext(); ) {
-            row = (RowImpl) itr.next();
+        for (Object o : rows) {
+            row = (RowImpl) o;
             if (!row.isFlushed() && row.isValid() && !row.isDependent()) {
                 psMgr.flush(row);
                 row.setFlushed(true);

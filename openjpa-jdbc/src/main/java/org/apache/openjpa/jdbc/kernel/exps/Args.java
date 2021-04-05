@@ -232,8 +232,9 @@ public class Args
     @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
-        for (int i = 0; i < _args.length; i++)
-            _args[i].acceptVisit(visitor);
+        for (Val arg : _args) {
+            arg.acceptVisit(visitor);
+        }
         visitor.exit(this);
     }
 

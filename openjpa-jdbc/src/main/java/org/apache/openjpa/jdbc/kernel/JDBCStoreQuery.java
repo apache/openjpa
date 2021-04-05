@@ -318,10 +318,10 @@ public class JDBCStoreQuery
             return new ProjectionResultObjectProvider(union, exps, states, ctx);
 
         if (paged != null)
-            for (int i = 0; i < paged.length; i++)
-                if (paged[i] != null)
+            for (BitSet bitSet : paged)
+                if (bitSet != null)
                     return new PagingResultObjectProvider(union, mappings,
-                        _store, ctx.fetch, paged, Long.MAX_VALUE);
+                            _store, ctx.fetch, paged, Long.MAX_VALUE);
 
         return new InstanceResultObjectProvider(union, mappings[0], _store,
             ctx.fetch);
@@ -420,8 +420,7 @@ public class JDBCStoreQuery
             return null;
         int size = selectFrom.size();
         List retList = new ArrayList(size);
-        for (int i = 0; i < size; i++) {
-            Object obj = selectFrom.get(i);
+        for (Object obj : selectFrom) {
             if (!exSelectFrom.contains(obj))
                 retList.add(obj);
         }
@@ -465,9 +464,9 @@ public class JDBCStoreQuery
 
         // recurse on immediate subclasses
         ClassMapping[] subMappings = mapping.getJoinablePCSubclassMappings();
-        for (int i = 0; i < subMappings.length; i++)
-            if (subMappings[i].getJoinablePCSuperclassMapping() == mapping)
-                addSubclasses(subMappings[i], subs);
+        for (ClassMapping subMapping : subMappings)
+            if (subMapping.getJoinablePCSuperclassMapping() == mapping)
+                addSubclasses(subMapping, subs);
     }
 
     /**
@@ -475,8 +474,8 @@ public class JDBCStoreQuery
      */
     private static boolean hasVerticalSubclasses(ClassMapping mapping) {
         ClassMapping[] subs = mapping.getJoinablePCSubclassMappings();
-        for (int i = 0; i < subs.length; i++)
-            if (subs[i].getStrategy() instanceof VerticalClassStrategy)
+        for (ClassMapping sub : subs)
+            if (sub.getStrategy() instanceof VerticalClassStrategy)
                 return true;
         return false;
     }
@@ -528,16 +527,16 @@ public class JDBCStoreQuery
         // an update query; otherwise, this is a delete statement
         boolean isUpdate = updates != null && updates.size() > 0;
 
-        for (int i = 0; i < mappings.length; i++) {
-            if (!isSingleTableMapping(mappings[i], subclasses) && !isUpdate)
+        for (ClassMapping mapping : mappings) {
+            if (!isSingleTableMapping(mapping, subclasses) && !isUpdate)
                 return null;
 
             if (!isUpdate) {
                 // if there are any delete callbacks, we need to
                 // execute in-memory so the callbacks are invoked
                 LifecycleEventManager mgr = ctx.getStoreContext().getBroker()
-                    .getLifecycleEventManager();
-                if (mgr.hasDeleteListeners(null, mappings[i]))
+                        .getLifecycleEventManager();
+                if (mgr.hasDeleteListeners(null, mapping))
                     return null;
             }
         }
@@ -582,18 +581,24 @@ public class JDBCStoreQuery
         long count = 0;
         try {
             PreparedStatement stmnt;
-            for (int i = 0; i < sql.length; i++) {
+            for (SQLBuffer sqlBuffer : sql) {
                 stmnt = null;
                 try {
-                    stmnt = prepareStatement(conn, sql[i]);
+                    stmnt = prepareStatement(conn, sqlBuffer);
                     dict.setTimeouts(stmnt, fetch, true);
-                    count += executeUpdate(conn, stmnt, sql[i], isUpdate);
-                } catch (SQLException se) {
-                    throw SQLExceptions.getStore(se, sql[i].getSQL(),
-                        _store.getDBDictionary());
-                } finally {
+                    count += executeUpdate(conn, stmnt, sqlBuffer, isUpdate);
+                }
+                catch (SQLException se) {
+                    throw SQLExceptions.getStore(se, sqlBuffer.getSQL(),
+                            _store.getDBDictionary());
+                }
+                finally {
                     if (stmnt != null)
-                        try { stmnt.close(); } catch (SQLException se) {}
+                        try {
+                            stmnt.close();
+                        }
+                        catch (SQLException se) {
+                        }
                 }
             }
         } finally {
@@ -650,8 +655,8 @@ public class JDBCStoreQuery
      * use multiple tables.
      */
     private Table getTable(FieldMapping[] fields, Table table) {
-        for (int i = 0; i < fields.length; i++) {
-            table = getTable(fields[i], table);
+        for (FieldMapping field : fields) {
+            table = getTable(field, table);
             if (table == INVALID)
                 break;
         }
@@ -1061,8 +1066,8 @@ public class JDBCStoreQuery
 
     public static Context getThreadLocalContext(Context orig) {
         Context[] root = localContext.get();
-        for (int i = 0; i < root.length; i++) {
-            Context lctx = getThreadLocalContext(root[i], orig);
+        for (Context context : root) {
+            Context lctx = getThreadLocalContext(context, orig);
             if (lctx != null)
                 return lctx;
         }
@@ -1074,10 +1079,10 @@ public class JDBCStoreQuery
             return null;
         Context[] lctx = JDBCStoreQuery.getThreadLocalContext();
         Context cloneFrom = select.ctx();
-        for (int i = 0; i < lctx.length; i++) {
-            Context cloneTo = getThreadLocalContext(lctx[i], cloneFrom);
+        for (Context context : lctx) {
+            Context cloneTo = getThreadLocalContext(context, cloneFrom);
             if (cloneTo != null)
-                return (Select)cloneTo.getSelect();
+                return (Select) cloneTo.getSelect();
         }
         return select;
     }

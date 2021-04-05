@@ -127,8 +127,7 @@ public class TestMetaDataValueIndicator
 
     private int countExtent(Extent e) {
         int count = 0;
-        for (Iterator iter = e.iterator(); iter.hasNext();) {
-            iter.next();
+        for (Object o : e) {
             count++;
         }
         return count;

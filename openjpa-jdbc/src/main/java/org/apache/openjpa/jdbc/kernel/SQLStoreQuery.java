@@ -387,8 +387,7 @@ public class SQLStoreQuery
             tok.wordChars('?', '?');
 
             StringBuilder buf = new StringBuilder(sql.length());
-            for (int ttype; (ttype = tok.nextToken()) !=
-                    StreamTokenizer.TT_EOF;) {
+            for (int ttype; (ttype = tok.nextToken()) != StreamTokenizer.TT_EOF;) {
                 switch (ttype) {
                     case StreamTokenizer.TT_WORD:
                         // a token is a positional parameter if it starts with

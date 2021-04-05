@@ -223,8 +223,7 @@ public abstract class AbstractMetaDataDefaults
         String name;
         boolean def;
         FieldMetaData fmd;
-        for (int i = 0; i < members.size(); i++) {
-            Member member = members.get(i);
+        for (Member member : members) {
             name = getFieldName(member);
             if (name == null || isReservedFieldName(name))
                 continue;

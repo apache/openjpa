@@ -98,8 +98,8 @@ public class MergedResultObjectProvider implements ResultObjectProvider {
 
         int total = 0;
         int size;
-        for (int i = 0; i < _rops.length; i++) {
-            size = _rops[i].size();
+        for (ResultObjectProvider rop : _rops) {
+            size = rop.size();
             if (size == Integer.MAX_VALUE) {
                 total = size;
                 break;

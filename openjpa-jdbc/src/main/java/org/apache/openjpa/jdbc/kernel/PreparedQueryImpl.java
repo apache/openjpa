@@ -222,8 +222,7 @@ public class PreparedQueryImpl implements PreparedQuery {
         if (!(executor instanceof StoreQuery.Executor))
             return new Object[]{null, _loc.get("exclude-not-executor", _id)};
         _exps = ((StoreQuery.Executor)executor).getQueryExpressions();
-        for (int i = 0; i < _exps.length; i++) {
-            QueryExpressions exp = _exps[i];
+        for (QueryExpressions exp : _exps) {
             if (exp.hasInExpression)
                 return new Object[]{null, _loc.get("exclude-in-expression", _id)};
             if (isUsingExternalizedParameter(exp)) {
@@ -285,8 +284,8 @@ public class PreparedQueryImpl implements PreparedQuery {
         return false;
     }
     private boolean isUsingFieldStrategy() {
-        for (int i = 0; i < _exps.length; i++) {
-            if (isUsingFieldStrategy(_exps[i])) {
+        for (QueryExpressions exp : _exps) {
+            if (isUsingFieldStrategy(exp)) {
                 return true;
             }
         }

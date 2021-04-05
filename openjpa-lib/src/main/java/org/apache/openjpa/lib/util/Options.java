@@ -25,7 +25,6 @@ import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -173,8 +172,8 @@ public class Options extends TypedProperties {
         // set all defaults that have no explicit value
         Map.Entry entry = null;
         if (defaults != null) {
-            for (Iterator<?> itr = defaults.entrySet().iterator(); itr.hasNext();) {
-                entry = (Map.Entry) itr.next();
+            for (Map.Entry<Object, Object> objectObjectEntry : defaults.entrySet()) {
+                entry = (Map.Entry) objectObjectEntry;
                 if (!containsKey(entry.getKey()))
                     setInto(obj, entry);
             }
@@ -183,8 +182,8 @@ public class Options extends TypedProperties {
         // set from main map
         Options invalidEntries = null;
         Map.Entry e;
-        for (Iterator<?> itr = entrySet().iterator(); itr.hasNext();) {
-            e = (Map.Entry) itr.next();
+        for (Map.Entry<Object, Object> objectObjectEntry : entrySet()) {
+            e = (Map.Entry) objectObjectEntry;
             if (!setInto(obj, e)) {
                 if (invalidEntries == null)
                     invalidEntries = new Options();
@@ -258,23 +257,24 @@ public class Options extends TypedProperties {
         // look for a setter method matching the key
         Method[] meths = type.getMethods();
         Class<?>[] params;
-        for (int i = 0; i < meths.length; i++) {
-            if (meths[i].getName().startsWith("set")) {
-                params = meths[i].getParameterTypes();
+        for (Method meth : meths) {
+            if (meth.getName().startsWith("set")) {
+                params = meth.getParameterTypes();
                 if (params.length == 0)
                     continue;
                 if (params[0].isArray())
                     continue;
 
                 names.add(StringUtil.capitalize(
-                    meths[i].getName().substring(3)));
+                        meth.getName().substring(3)));
             }
         }
 
         // check for public fields
         Field[] fields = type.getFields();
-        for (int i = 0; i < fields.length; i++)
-            names.add(StringUtil.capitalize(fields[i].getName()));
+        for (Field field : fields) {
+            names.add(StringUtil.capitalize(field.getName()));
+        }
 
         return names;
     }
@@ -311,9 +311,9 @@ public class Options extends TypedProperties {
         Method setMeth = null;
         Method getMeth = null;
         Class[] params;
-        for (int i = 0; i < meths.length; i++) {
-            if (meths[i].getName().equals(set)) {
-                params = meths[i].getParameterTypes();
+        for (Method meth : meths) {
+            if (meth.getName().equals(set)) {
+                params = meth.getParameterTypes();
                 if (params.length == 0)
                     continue;
                 if (params[0].isArray())
@@ -323,14 +323,15 @@ public class Options extends TypedProperties {
                 // it has less parameters than any other setter, or if it uses
                 // string parameters
                 if (setMeth == null)
-                    setMeth = meths[i];
+                    setMeth = meth;
                 else if (params.length < setMeth.getParameterTypes().length)
-                    setMeth = meths[i];
+                    setMeth = meth;
                 else if (params.length == setMeth.getParameterTypes().length
-                    && params[0] == String.class)
-                    setMeth = meths[i];
-            } else if (meths[i].getName().equals(get))
-                getMeth = meths[i];
+                        && params[0] == String.class)
+                    setMeth = meth;
+            }
+            else if (meth.getName().equals(get))
+                getMeth = meth;
         }
 
         // if no methods found, check for public field
@@ -339,11 +340,11 @@ public class Options extends TypedProperties {
         if (setter == null) {
             Field[] fields = type.getFields();
             String uncapBase = StringUtil.uncapitalize(find[0]);
-            for (int i = 0; i < fields.length; i++) {
-                if (fields[i].getName().equals(base)
-                    || fields[i].getName().equals(uncapBase)) {
-                    setter = fields[i];
-                    getter = fields[i];
+            for (Field field : fields) {
+                if (field.getName().equals(base)
+                        || field.getName().equals(uncapBase)) {
+                    setter = field;
+                    getter = field;
                     break;
                 }
             }
@@ -423,9 +424,9 @@ public class Options extends TypedProperties {
 
         // for primitives, recurse on wrapper type
         if (type.isPrimitive())
-            for (int i = 0; i < _primWrappers.length; i++)
-                if (type == _primWrappers[i][0])
-                    return stringToObject(str, (Class<?>) _primWrappers[i][1]);
+            for (Object[] primWrapper : _primWrappers)
+                if (type == primWrapper[0])
+                    return stringToObject(str, (Class<?>) primWrapper[1]);
 
         // look for a string constructor
         Exception err = null;
@@ -460,9 +461,9 @@ public class Options extends TypedProperties {
      * Returns the default value for the given parameter type.
      */
     private Object getDefaultValue(Class<?> type) {
-        for (int i = 0; i < _primWrappers.length; i++)
-            if (_primWrappers[i][0] == type)
-                return _primWrappers[i][2];
+        for (Object[] primWrapper : _primWrappers)
+            if (primWrapper[0] == type)
+                return primWrapper[2];
 
         return null;
     }

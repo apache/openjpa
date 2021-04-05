@@ -107,8 +107,8 @@ public class InterbaseDictionary
             && col.getTable() != null) {
             // indexed varchar cols have to be <= 250 chars
             Index[] idx = col.getTable().getIndexes();
-            for (int i = 0; i < idx.length; i++) {
-                if (idx[i].containsColumn(col)) {
+            for (Index index : idx) {
+                if (index.containsColumn(col)) {
                     col.setSize(Math.min(col.getSize(), 200));
                     break;
                 }

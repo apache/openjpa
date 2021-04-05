@@ -111,18 +111,22 @@ public class Table
      */
     void remove() {
         ForeignKey[] fks = getForeignKeys();
-        for (int i = 0; i < fks.length; i++)
-            removeForeignKey(fks[i]);
+        for (ForeignKey fk : fks) {
+            removeForeignKey(fk);
+        }
         Index[] idxs = getIndexes();
-        for (int i = 0; i < idxs.length; i++)
-            removeIndex(idxs[i]);
+        for (Index idx : idxs) {
+            removeIndex(idx);
+        }
         Unique[] unqs = getUniques();
-        for (int i = 0; i < unqs.length; i++)
-            removeUnique(unqs[i]);
+        for (Unique unq : unqs) {
+            removeUnique(unq);
+        }
         removePrimaryKey();
         Column[] cols = getColumns();
-        for (int i = 0; i < cols.length; i++)
-            removeColumn(cols[i]);
+        for (Column col : cols) {
+            removeColumn(col);
+        }
         _schema = null;
         _schemaName = DBIdentifier.NULL;
         _fullPath = null;
@@ -276,11 +280,11 @@ public class Table
             else {
                 Collection<Column> autos = null;
                 Column[] cols = getColumns();
-                for (int i = 0; i < cols.length; i++) {
-                    if (cols[i].isAutoAssigned()) {
+                for (Column col : cols) {
+                    if (col.isAutoAssigned()) {
                         if (autos == null)
                             autos = new ArrayList<>(3);
-                        autos.add(cols[i]);
+                        autos.add(col);
                     }
                 }
                 _autoAssign = (autos == null) ? Schemas.EMPTY_COLUMNS
@@ -300,11 +304,11 @@ public class Table
             else {
                 Collection<Column> rels = null;
                 Column[] cols = getColumns();
-                for (int i = 0; i < cols.length; i++) {
-                    if (cols[i].isRelationId()) {
+                for (Column col : cols) {
+                    if (col.isRelationId()) {
                         if (rels == null)
                             rels = new ArrayList<>(3);
-                        rels.add(cols[i]);
+                        rels.add(col);
                     }
                 }
                 _rels = (rels == null) ? Schemas.EMPTY_COLUMNS
@@ -581,8 +585,9 @@ public class Table
         PrimaryKey copy = addPrimaryKey(pk.getIdentifier());
         copy.setLogical(pk.isLogical());
         Column[] cols = pk.getColumns();
-        for (int i = 0; i < cols.length; i++)
-            copy.addColumn(getColumn(cols[i].getIdentifier()));
+        for (Column col : cols) {
+            copy.addColumn(getColumn(col.getIdentifier()));
+        }
         return copy;
     }
 
@@ -598,9 +603,9 @@ public class Table
 
     public ForeignKey getForeignKey(DBIdentifier name) {
         ForeignKey[] fks = getForeignKeys();
-        for (int i = 0; i < fks.length; i++) {
-            if (name.equals(fks[i].getIdentifier())) {
-                return fks[i];
+        for (ForeignKey fk : fks) {
+            if (name.equals(fk.getIdentifier())) {
+                return fk;
             }
         }
         return null;
@@ -700,16 +705,16 @@ public class Table
                     joined.getColumn(pks[i].getIdentifier()));
 
             cols = fk.getConstantColumns();
-            for (int i = 0; i < cols.length; i++)
-                copy.joinConstant(getColumn(cols[i].getIdentifier()),
-                    fk.getPrimaryKeyConstant(cols[i]));
+            for (Column col : cols)
+                copy.joinConstant(getColumn(col.getIdentifier()),
+                        fk.getPrimaryKeyConstant(col));
 
             pks = fk.getConstantPrimaryKeyColumns();
             if (joined == null && pks.length > 0)
                 joined = schema.getSchemaGroup().findTable(pks[0].getTable());
-            for (int i = 0; i < pks.length; i++)
-                copy.joinConstant(fk.getConstant(pks[i]),
-                    joined.getColumn(pks[i].getIdentifier()));
+            for (Column pk : pks)
+                copy.joinConstant(fk.getConstant(pk),
+                        joined.getColumn(pk.getIdentifier()));
         }
         return copy;
     }
@@ -802,8 +807,9 @@ public class Table
         copy.setUnique(idx.isUnique());
 
         Column[] cols = idx.getColumns();
-        for (int i = 0; i < cols.length; i++)
-            copy.addColumn(getColumn(cols[i].getIdentifier()));
+        for (Column col : cols) {
+            copy.addColumn(getColumn(col.getIdentifier()));
+        }
         return copy;
     }
 
@@ -828,9 +834,9 @@ public class Table
 
     public Unique getUnique(DBIdentifier name) {
         Unique[] unqs = getUniques();
-        for (int i = 0; i < unqs.length; i++)
-            if (DBIdentifier.equal(name, unqs[i].getIdentifier()))
-                return unqs[i];
+        for (Unique unq : unqs)
+            if (DBIdentifier.equal(name, unq.getIdentifier()))
+                return unq;
         return null;
     }
 
@@ -889,8 +895,9 @@ public class Table
         copy.setDeferred(unq.isDeferred());
 
         Column[] cols = unq.getColumns();
-        for (int i = 0; i < cols.length; i++)
-            copy.addColumn(getColumn(cols[i].getIdentifier()));
+        for (Column col : cols) {
+            copy.addColumn(getColumn(col.getIdentifier()));
+        }
         return copy;
     }
 

@@ -369,8 +369,8 @@ public class SelectImpl
         if (_eager == null)
             return false;
         Map.Entry entry;
-        for (Iterator itr = _eager.entrySet().iterator(); itr.hasNext();) {
-            entry = (Map.Entry) itr.next();
+        for (Object o : _eager.entrySet()) {
+            entry = (Map.Entry) o;
             if (entry.getValue() != this)
                 return true;
         }
@@ -478,8 +478,8 @@ public class SelectImpl
         Map.Entry entry;
         Result eres;
         Map eager;
-        for (Iterator itr = sel._eager.entrySet().iterator(); itr.hasNext();) {
-            entry = (Map.Entry) itr.next();
+        for (Object o : sel._eager.entrySet()) {
+            entry = (Map.Entry) o;
 
             // simulated batched selects for inner/outer joins; for separate
             // selects, don't pass on lock level, because they're probably
@@ -488,7 +488,7 @@ public class SelectImpl
                 eres = res;
             else
                 eres = ((SelectExecutor) entry.getValue()).execute(store,
-                    fetch);
+                        fetch);
 
             eager = res.getEagerMap(false);
             if (eager == null) {
@@ -1386,8 +1386,9 @@ public class SelectImpl
         if (_ordered == null)
             return null;
         List idxs = new ArrayList(_ordered.size());
-        for (int i = 0; i < _ordered.size(); i++)
-            idxs.add(_selects.indexOf(_ordered.get(i)));
+        for (Object o : _ordered) {
+            idxs.add(_selects.indexOf(o));
+        }
         return idxs;
     }
 
@@ -1692,8 +1693,8 @@ public class SelectImpl
     @Override
     public void groupBy(Column[] cols, Joins joins) {
         PathJoins pj = getJoins(joins, true);
-        for (int i = 0; i < cols.length; i++) {
-            groupByAppend(getColumnAlias(cols[i], pj));
+        for (Column col : cols) {
+            groupByAppend(getColumnAlias(col, pj));
         }
     }
 
@@ -2575,11 +2576,11 @@ public class SelectImpl
             throws SQLException {
             PathJoins pj = getJoins(joins);
             Object obj;
-            for (int i = 0; i < objs.length; i++) {
+            for (Object o : objs) {
                 if (pj != null && pj.path() != null)
-                    obj = getColumnAlias((Column) objs[i], pj);
+                    obj = getColumnAlias((Column) o, pj);
                 else
-                    obj = objs[i];
+                    obj = o;
                 if (obj == null || !_sel._selects.contains(obj))
                     return false;
             }
@@ -3261,8 +3262,8 @@ public class SelectImpl
             boolean found1 = false;
             boolean found2 = false;
 
-            for (int i = 0; i < aliases.length; i++) {
-                int alias = (Integer) aliases[i];
+            for (Object o : aliases) {
+                int alias = (Integer) o;
                 if (alias == j.getIndex1())
                     found1 = true;
                 if (alias == j.getIndex2())
@@ -3305,8 +3306,8 @@ public class SelectImpl
             boolean found1 = false;
             boolean found2 = false;
 
-            for (int i = 0; i < aliases.length; i++) {
-                int alias = (Integer) aliases[i];
+            for (Object o : aliases) {
+                int alias = (Integer) o;
                 if (alias == join.getIndex1())
                     found1 = true;
                 if (alias == join.getIndex2())

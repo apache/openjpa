@@ -89,10 +89,11 @@ public class TestClassSequenceFactory extends BaseJDBCTest{
         Statement s = null;
         try {
             s = c.createStatement();
-            for (int i = 0; i < sql.length; i++) {
+            for (String value : sql) {
                 try {
-                    s.execute(sql[i]);
-                } catch (SQLException sqe) {
+                    s.execute(value);
+                }
+                catch (SQLException sqe) {
                 }
             }
         } finally {

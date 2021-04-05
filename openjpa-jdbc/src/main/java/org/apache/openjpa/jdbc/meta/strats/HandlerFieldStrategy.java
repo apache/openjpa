@@ -93,21 +93,24 @@ public class HandlerFieldStrategy
                 if (_cols[i].isAutoAssigned())
                     marked = true;
             if (!marked)
-                for (int i = 0; i < _cols.length; i++)
-                    _cols[i].setAutoAssigned(true);
+                for (Column col : _cols) {
+                    col.setAutoAssigned(true);
+                }
         }
 
         // add primary key columns to table pk if logical
         field.mapPrimaryKey(adapt);
         PrimaryKey pk = field.getTable().getPrimaryKey();
         if (field.isPrimaryKey() && pk != null && (adapt || pk.isLogical()))
-            for (int i = 0; i < _cols.length; i++)
-                pk.addColumn(_cols[i]);
+            for (Column col : _cols) {
+                pk.addColumn(col);
+            }
 
         // set joinable
         if (!field.getHandler().objectValueRequiresLoad(field))
-            for (int i = 0; i < _cols.length; i++)
-                field.getDefiningMapping().setJoinable(_cols[i], this);
+            for (Column col : _cols) {
+                field.getDefiningMapping().setJoinable(col, this);
+            }
     }
 
     @Override

@@ -253,9 +253,8 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
         }
 
         if (_transactionListeners != null && !_transactionListeners.isEmpty()) {
-            for (Iterator<Object> itr = _transactionListeners.iterator();
-                itr.hasNext(); ) {
-                broker.addTransactionListener(itr.next());
+            for (Object transactionListener : _transactionListeners) {
+                broker.addTransactionListener(transactionListener);
             }
         }
     }
@@ -287,8 +286,7 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
                 _pcClassNames = Collections.emptyList();
             else {
                 Collection<String> c = new ArrayList<>(clss.size());
-                for (Iterator<Class<?>> itr = clss.iterator(); itr.hasNext();) {
-                    Class<?> cls = itr.next();
+                for (Class<?> cls : clss) {
                     c.add(cls.getName());
                     if (needsSub(cls))
                         toRedefine.add(cls);

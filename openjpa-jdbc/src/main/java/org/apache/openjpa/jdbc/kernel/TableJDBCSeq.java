@@ -259,14 +259,14 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
         // in here.
 
         Schema[] schemas = group.getSchemas();
-        for (int i = 0; i < schemas.length; i++) {
+        for (Schema value : schemas) {
             QualifiedDBIdentifier path = QualifiedDBIdentifier.getPath(_table);
             DBIdentifier schemaName = path.getSchemaName();
             if (DBIdentifier.isEmpty(schemaName)) {
                 schemaName = Schemas.getNewTableSchemaIdentifier(_conf);
             }
             if (DBIdentifier.isNull(schemaName)) {
-                schemaName = schemas[i].getIdentifier();
+                schemaName = value.getIdentifier();
             }
 
             // create table in this group
@@ -279,7 +279,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
             // importTable() does not import unique constraints
             Unique[] uniques = _pkColumn.getTable().getUniques();
             for (Unique u : uniques) {
-            	copy.importUnique(u);
+                copy.importUnique(u);
             }
             // we need to reset the table name in the column with the
             // fully qualified name for matching the table name from the

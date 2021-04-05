@@ -19,7 +19,6 @@
 package org.apache.openjpa.kernel.exps;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.apache.openjpa.kernel.StoreContext;
 
@@ -64,8 +63,8 @@ class BindVariableAndExpression
 
         // the subtree is true if true for any variable in the collection
         BoundVariable var = bind.getVariable();
-        for (Iterator itr = vals.iterator(); itr.hasNext();) {
-            if (!var.setValue(itr.next()))
+        for (Object val : vals) {
+            if (!var.setValue(val))
                 continue;
             if (getExpression2().evaluate(candidate, orig, ctx, params))
                 return true;

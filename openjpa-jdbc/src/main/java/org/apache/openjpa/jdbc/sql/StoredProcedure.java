@@ -243,7 +243,9 @@ public class StoredProcedure {
         }
         buf.append(") ");
         //buf.append("(");
-        for (String s : _sql) buf.append(s).append(" ");
+        for (String s : _sql) {
+            buf.append(s).append(" ");
+        }
         //buf.append(")");
 
         return buf.toString().trim();

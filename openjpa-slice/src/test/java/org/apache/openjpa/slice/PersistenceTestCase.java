@@ -158,10 +158,8 @@ public abstract class PersistenceTestCase
         if (emf == null || !emf.isOpen())
             return;
 
-        for (Iterator iter = ((AbstractBrokerFactory) JPAFacadeHelper
-            .toBrokerFactory(emf)).getOpenBrokers().iterator();
-            iter.hasNext(); ) {
-            Broker b = (Broker) iter.next();
+        for (Broker b : ((AbstractBrokerFactory) JPAFacadeHelper
+                .toBrokerFactory(emf)).getOpenBrokers()) {
             if (b != null && !b.isClosed()) {
                 EntityManager em = JPAFacadeHelper.toEntityManager(b);
                 if (em.getTransaction().isActive())

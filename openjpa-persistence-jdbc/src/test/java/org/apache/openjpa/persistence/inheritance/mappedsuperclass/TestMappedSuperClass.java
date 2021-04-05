@@ -68,8 +68,7 @@ public class TestMappedSuperClass extends SingleEMFTestCase {
         // test polymorphic queries
         String query = "select s from CashBaseEntity s where TYPE(s) = SituationDA";
         List rs = em.createQuery(query).getResultList();
-        for (int i = 0; i < rs.size(); i++)
-            assertTrue(rs.get(i) instanceof SituationDA);
+        for (Object r : rs) assertTrue(r instanceof SituationDA);
 
         query = "select s from CashBaseEntity s where TYPE(s) <> ValuableItemDA";
         try {

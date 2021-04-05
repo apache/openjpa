@@ -188,19 +188,19 @@ public class TestPropertiesParser {
 
         final String dummy = "XXX";
 
-        for (int i = 0; i < values.length; i++) {
+        for (String s : values) {
             // test special characters in either keys or values
-            String val = value ? values[i] : dummy;
-            String key = value ? dummy : values[i];
+            String val = value ? s : dummy;
+            String key = value ? dummy : s;
 
             Properties p = formattingProps ?
-                new FormatPreservingProperties() : new Properties();
+                    new FormatPreservingProperties() : new Properties();
             if (p instanceof FormatPreservingProperties) {
                 // set these properties so we behave the same way as
                 // java.util.Properties
                 ((FormatPreservingProperties) p).setDefaultEntryDelimiter('=');
                 ((FormatPreservingProperties) p).
-                    setAddWhitespaceAfterDelimiter(false);
+                        setAddWhitespaceAfterDelimiter(false);
             }
 
             p.setProperty(key, val);
@@ -213,10 +213,10 @@ public class TestPropertiesParser {
             copy.store(copyOut, null);
 
             p = formattingProps ?
-                new FormatPreservingProperties() : new Properties();
+                    new FormatPreservingProperties() : new Properties();
 
             InputStream in = new BufferedInputStream
-                (new ByteArrayInputStream(out.toByteArray()));
+                    (new ByteArrayInputStream(out.toByteArray()));
 
             try {
                 // make sure that the 2 properties serialized are the same
@@ -227,9 +227,10 @@ public class TestPropertiesParser {
                 p.load(in);
 
                 assertNotNull("Property \"" + key + "\" was null",
-                    p.getProperty(key));
+                        p.getProperty(key));
                 assertEquals(val.trim(), p.getProperty(key).trim());
-            } catch (Throwable ioe) {
+            }
+            catch (Throwable ioe) {
                 if (!formattingProps)
                     throw ioe;
 
@@ -283,12 +284,12 @@ public class TestPropertiesParser {
                 randomString(5000).replace('a', '\\'),
                 };
 
-        for (int i = 0; i < values.length; i++) {
+        for (String value : values) {
             p1.clear();
             p2.clear();
 
-            p1.setProperty("xxx", values[i]);
-            p2.setProperty("xxx", values[i]);
+            p1.setProperty("xxx", value);
+            p2.setProperty("xxx", value);
 
             ByteArrayOutputStream out1 = new ByteArrayOutputStream();
             ByteArrayOutputStream out2 = new ByteArrayOutputStream();
@@ -300,7 +301,7 @@ public class TestPropertiesParser {
             String s2 = new String(out2.toByteArray());
 
             assertTrue("Expected <" + s1 + "> but was <" + s2 + ">",
-                s1.indexOf(s2) != -1);
+                    s1.indexOf(s2) != -1);
         }
     }
 
@@ -402,8 +403,7 @@ public class TestPropertiesParser {
     }
 
     protected void assertProperties(String[][] strings, Properties p) {
-        for (int i = 0; i < strings.length; i++)
-            assertEquals(strings[i][1], p.get(strings[i][0]));
+        for (String[] string : strings) assertEquals(string[1], p.get(string[0]));
 
         assertEquals(strings.length, p.size());
     }

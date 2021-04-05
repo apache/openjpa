@@ -76,9 +76,9 @@ public class SimpleCaseExpression
         if (_cast != null)
             return _cast;
         Class type = _val.getType();
-        for (int i = 0; i < _exp.length; i++)
+        for (Exp exp : _exp)
             type = Filters.promote(type,
-                ((WhenScalar) _exp[i]).getVal2().getType());
+                    ((WhenScalar) exp).getVal2().getType());
         if (type == Raw.class)
             return String.class;
         return type;
@@ -167,8 +167,9 @@ public class SimpleCaseExpression
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _caseOperand.acceptVisit(visitor);
-        for (int i = 0; i < _exp.length; i++)
-            _exp[i].acceptVisit(visitor);
+        for (Exp exp : _exp) {
+            exp.acceptVisit(visitor);
+        }
         _val.acceptVisit(visitor);
         visitor.exit(this);
     }

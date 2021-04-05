@@ -245,8 +245,8 @@ public class TestPMMemory extends BaseKernelTest {
         runningId += persistables.length;
 
         // add them
-        for (int i = 0; i < persistables.length; i++) {
-            pm.persist(persistables[i]);
+        for (RuntimeTest1 persistable : persistables) {
+            pm.persist(persistable);
         }
 
         // modify them

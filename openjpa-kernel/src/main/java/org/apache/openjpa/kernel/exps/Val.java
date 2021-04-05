@@ -20,7 +20,6 @@ package org.apache.openjpa.kernel.exps;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.openjpa.kernel.StoreContext;
@@ -84,10 +83,10 @@ public abstract class Val
         StoreContext ctx, Object[] params) {
         Collection ret = new ArrayList(candidates.size());
         Object candidate;
-        for (Iterator itr = candidates.iterator(); itr.hasNext();) {
-            candidate = itr.next();
+        for (Object o : candidates) {
+            candidate = o;
             ret.add(evaluate(candidate, (orig == null) ? candidate : orig,
-                ctx, params));
+                    ctx, params));
         }
         return ret;
     }

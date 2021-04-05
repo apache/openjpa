@@ -222,18 +222,15 @@ public class TestDefaultInheritanceStrategy
         em.clear();
         String query = "select a from BaseClass2 a where TYPE(a) = MidClass";
         List rs = em.createQuery(query).getResultList();
-        for (int i = 0; i < rs.size(); i++)
-        assertTrue(rs.get(i) instanceof MidClass);
+        for (Object value : rs) assertTrue(value instanceof MidClass);
 
         query = "select a from BaseClass2 a where TYPE(a) = SubclassE";
         rs = em.createQuery(query).getResultList();
-        for (int i = 0; i < rs.size(); i++)
-            assertTrue(rs.get(i) instanceof SubclassE);
+        for (Object o : rs) assertTrue(o instanceof SubclassE);
 
         query = "select a from BaseClass2 a where TYPE(a) = BaseClass2";
         rs = em.createQuery(query).getResultList();
-        for (int i = 0; i < rs.size(); i++)
-            assertTrue(rs.get(i) instanceof BaseClass2);
+        for (Object r : rs) assertTrue(r instanceof BaseClass2);
 
         em.clear();
 
@@ -692,24 +689,23 @@ public class TestDefaultInheritanceStrategy
         assertTrue("Query should return " + expectedValues.length + " entities",
             col.size() == expectedValues.length);
         int count = 0;
-        for (int i = 0; i < col.size(); i++) {
-            Object ent = col.get(i);
+        for (Object ent : col) {
             // If a list of supers or interfaces is provided, make sure
             // the returned type is an instance of those types
             if (types != null) {
-                for (int j = 0; j < types.length; j++ )
-                    assertTrue(types[j].isInstance(ent));
+                for (Class type : types) assertTrue(type.isInstance(ent));
             }
             int id = -1;
             try {
-                Method mth = ent.getClass().getMethod("getId", (Class[])null);
-                id = (Integer)mth.invoke(ent, (Object[])null);
-            } catch (Exception e) {
-                fail("Caught unexepcted exception getting entity id: "
-                    + e.getMessage());
+                Method mth = ent.getClass().getMethod("getId", (Class[]) null);
+                id = (Integer) mth.invoke(ent, (Object[]) null);
             }
-            for (int j = 0; j < expectedValues.length; j++)
-                if (expectedValues[j] == id)
+            catch (Exception e) {
+                fail("Caught unexepcted exception getting entity id: "
+                        + e.getMessage());
+            }
+            for (int expectedValue : expectedValues)
+                if (expectedValue == id)
                     count++;
         }
         assertTrue("Returned unexpected entities " + col + " for " + jpql,

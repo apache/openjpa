@@ -153,14 +153,15 @@ public class HintHandler  {
             owner.addFilterListener(Filters.hintToFilterListener(value, loader));
         } else if (QueryHints.HINT_FILTER_LISTENERS.equals(key)) {
             FilterListener[] arr = Filters.hintToFilterListeners(value, loader);
-            for (int i = 0; i < arr.length; i++)
-                owner.addFilterListener(arr[i]);
+            for (FilterListener filterListener : arr) {
+                owner.addFilterListener(filterListener);
+            }
         } else if (QueryHints.HINT_AGGREGATE_LISTENER.equals(key)) {
             owner.addAggregateListener(Filters.hintToAggregateListener(value, loader));
         } else if (QueryHints.HINT_AGGREGATE_LISTENERS.equals(key)) {
             AggregateListener[] arr = Filters.hintToAggregateListeners(value, loader);
-            for (int i = 0; i < arr.length; i++) {
-                owner.addAggregateListener(arr[i]);
+            for (AggregateListener aggregateListener : arr) {
+                owner.addAggregateListener(aggregateListener);
             }
         } else if (QueryHints.HINT_RESULT_COUNT.equals(key)) {
             int v = (Integer) Filters.convert(value, Integer.class);

@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -319,8 +318,9 @@ public class FetchPlanImpl
         if (fields.isEmpty())
             return fields;
         Collection names = new ArrayList(fields);
-        for (Iterator itr = fields.iterator(); itr.hasNext();)
-            names.add(toFieldName(cls, (String) itr.next()));
+        for (Object field : fields) {
+            names.add(toFieldName(cls, (String) field));
+        }
         return names;
     }
 

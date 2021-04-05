@@ -70,28 +70,29 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
 	void createData() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
-		for (int i = 0; i < MAGAZINE_PUBLISHER_NAME_PAIRS.length; i++) {
-			String magName = MAGAZINE_PUBLISHER_NAME_PAIRS[i][0];
-			String pubName = MAGAZINE_PUBLISHER_NAME_PAIRS[i][1];
-			Magazine mag = new Magazine();
-			mag.setName(magName);
-			if (pubName != null) {
-				Publisher pub = new Publisher();
-				pub.setName(pubName);
-				mag.setPublisher(pub);
-				try {
-                    DateFormat df = new SimpleDateFormat ("yyyy-MM-dd");
-					Date date = df.parse("2001-01-01");
-					mag.setDatePublished(date);
-				} catch (ParseException e) {
-					mag.setDatePublished(null);
-				}
+        for (String[] magazinePublisherNamePair : MAGAZINE_PUBLISHER_NAME_PAIRS) {
+            String magName = magazinePublisherNamePair[0];
+            String pubName = magazinePublisherNamePair[1];
+            Magazine mag = new Magazine();
+            mag.setName(magName);
+            if (pubName != null) {
+                Publisher pub = new Publisher();
+                pub.setName(pubName);
+                mag.setPublisher(pub);
+                try {
+                    DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                    Date date = df.parse("2001-01-01");
+                    mag.setDatePublished(date);
+                }
+                catch (ParseException e) {
+                    mag.setDatePublished(null);
+                }
                 mag.setTsPublished(new Timestamp(System.currentTimeMillis() - 100000));
 
-				em.persist(pub);
-			}
-			em.persist(mag);
-		}
+                em.persist(pub);
+            }
+            em.persist(mag);
+        }
 		em.getTransaction().commit();
 	}
 
@@ -194,13 +195,13 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
 	 */
 	private int getExpecetedResultCount(String key, boolean innerJoin) {
 		int count = 0;
-		for (int i = 0; i < MAGAZINE_PUBLISHER_NAME_PAIRS.length; i++) {
-			String magName = MAGAZINE_PUBLISHER_NAME_PAIRS[i][0];
-			String pubName = MAGAZINE_PUBLISHER_NAME_PAIRS[i][1];
-			if (magName.indexOf(key) != -1)
+        for (String[] magazinePublisherNamePair : MAGAZINE_PUBLISHER_NAME_PAIRS) {
+            String magName = magazinePublisherNamePair[0];
+            String pubName = magazinePublisherNamePair[1];
+            if (magName.indexOf(key) != -1)
                 if (!innerJoin || (innerJoin && pubName != null))
-					count++;
-		}
+                    count++;
+        }
 		return count;
 	}
 }

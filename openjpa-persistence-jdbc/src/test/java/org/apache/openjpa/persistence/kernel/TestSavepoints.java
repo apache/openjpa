@@ -386,8 +386,8 @@ public class TestSavepoints extends BaseKernelTest {
             startTx(pm);
             pc = pm.find(ModRuntimeTest1.class, oid);
             assertEquals(2, pc.getSelfOneMany().size());
-            for (Iterator it = pc.getSelfOneMany().iterator(); it.hasNext();) {
-                temp = (ModRuntimeTest1) it.next();
+            for (Object o : pc.getSelfOneMany()) {
+                temp = (ModRuntimeTest1) o;
                 if (temp.getIntField() == 2)
                     pc2 = temp;
                 else if (temp.getIntField() == 3)
@@ -418,8 +418,8 @@ public class TestSavepoints extends BaseKernelTest {
 
         assertEquals("orig", pc.getStringField());
         assertFalse(pm.isRemoved(pc2));
-        for (Iterator it = pc.getSelfOneMany().iterator(); it.hasNext();) {
-            temp = (ModRuntimeTest1) it.next();
+        for (Object value : pc.getSelfOneMany()) {
+            temp = (ModRuntimeTest1) value;
             assertFalse(pm.isRemoved(temp));
             assertEquals(pc, temp.getSelfOneOne());
             if (temp.getIntField() < 0)
@@ -437,8 +437,8 @@ public class TestSavepoints extends BaseKernelTest {
         assertEquals(2 + before, pc.getSelfOneMany().size());
         boolean found2 = false;
         boolean found3 = false;
-        for (Iterator it = pc.getSelfOneMany().iterator(); it.hasNext();) {
-            temp = (ModRuntimeTest1) it.next();
+        for (Object o : pc.getSelfOneMany()) {
+            temp = (ModRuntimeTest1) o;
             assertEquals(pc, temp.getSelfOneOne());
             if (temp.getIntField() < 0)
                 fail("shouldn't be here:" + temp.getStringField());

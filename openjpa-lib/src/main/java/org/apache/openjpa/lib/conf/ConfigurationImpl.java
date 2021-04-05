@@ -45,7 +45,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -470,9 +469,9 @@ public class ConfigurationImpl
 
         PropertyDescriptor[] pds = getPropertyDescriptors();
         List<MethodDescriptor> descs = new ArrayList<>();
-        for (int i = 0; i < pds.length; i++) {
-            Method write = pds[i].getWriteMethod();
-            Method read = pds[i].getReadMethod();
+        for (PropertyDescriptor pd : pds) {
+            Method write = pd.getWriteMethod();
+            Method read = pd.getReadMethod();
             if (read != null && write != null) {
                 descs.add(new MethodDescriptor(write));
                 descs.add(new MethodDescriptor(read));
@@ -572,18 +571,18 @@ public class ConfigurationImpl
         }
         String[] vals = StringUtil.split(findLocalized(prop
             + "-values", false, val.getScope()), ",", 0);
-        for (int i = 0; i < vals.length; i++)
-            if (!aliases.contains(vals[i]))
-                allowed.add(vals[i]);
+        for (String s : vals)
+            if (!aliases.contains(s))
+                allowed.add(s);
         try {
             Class<?> intf = Class.forName(findLocalized(prop
                 + "-interface", true, val.getScope()), false,
                 getClass().getClassLoader());
             pd.setValue(ATTRIBUTE_INTERFACE, intf.getName());
             String[] impls = Services.getImplementors(intf);
-            for (int i = 0; i < impls.length; i++)
-                if (!aliases.contains(impls[i]))
-                    allowed.add(impls[i]);
+            for (String impl : impls)
+                if (!aliases.contains(impl))
+                    allowed.add(impl);
         } catch (Throwable t) {
         }
         if (!allowed.isEmpty())
@@ -721,8 +720,8 @@ public class ConfigurationImpl
         // now warn if there are any remaining properties that there
         // is an unhandled prop, and remove the unknown properties
         Map.Entry entry;
-        for (Iterator itr = remaining.entrySet().iterator(); itr.hasNext();) {
-            entry = (Map.Entry) itr.next();
+        for (Object value : remaining.entrySet()) {
+            entry = (Map.Entry) value;
             Object key = entry.getKey();
             if (key != null) {
                 warnInvalidProperty((String) key);
@@ -862,8 +861,9 @@ public class ConfigurationImpl
         String[] prefixes = ProductDerivations.getConfigurationPrefixes();
         List<String> l = new ArrayList<>(_vals.size() * prefixes.length);
         for(Value v : _vals) {
-            for (int j = 0; j < prefixes.length; j++)
-                l.add(prefixes[j] + "." + v.getProperty());
+            for (String prefix : prefixes) {
+                l.add(prefix + "." + v.getProperty());
+            }
         }
         return l;
     }

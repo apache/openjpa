@@ -225,10 +225,10 @@ public class DataCachePCDataGenerator extends PCDataGenerator {
 
     private void addSynchronization(BCClass bc) {
         BCMethod[] methods = bc.getDeclaredMethods();
-        for (int i = 0; i < methods.length; i++) {
-            if (methods[i].isPublic()
-                && _synchs.contains(methods[i].getName()))
-                methods[i].setSynchronized(true);
+        for (BCMethod bcMethod : methods) {
+            if (bcMethod.isPublic()
+                    && _synchs.contains(bcMethod.getName()))
+                bcMethod.setSynchronized(true);
         }
 
         // add synchronized isLoaded call.

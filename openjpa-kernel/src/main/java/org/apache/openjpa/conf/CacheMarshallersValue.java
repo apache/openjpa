@@ -61,10 +61,10 @@ public class CacheMarshallersValue
             super.instantiate(elemType, conf, fatal);
         if (ms != null) {
             _marshallers = new HashMap<>();
-            for (int i = 0; i < ms.length; i++) {
-                String mid = ms[i].getId();
+            for (CacheMarshaller m : ms) {
+                String mid = m.getId();
                 if (mid != null)
-                    _marshallers.put(mid, ms[i]);
+                    _marshallers.put(mid, m);
             }
         } else {
             _marshallers = null;

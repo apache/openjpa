@@ -121,10 +121,11 @@ public class TestEmbeddable extends SQLListenerTestCase {
                 "select e from EntityA_Embed_Embed a join a.embed e group by e",
         };
         List rs = null;
-        for (int i = 0; i < query.length; i++) {
+        for (String s : query) {
             try {
-                rs = em.createQuery(query[i]).getResultList();
-            } catch(ArgumentException e) {
+                rs = em.createQuery(s).getResultList();
+            }
+            catch (ArgumentException e) {
                 System.out.println(e.getMessage()); // as expected : Group by embeddable field is not allowed
             }
         }
@@ -216,8 +217,8 @@ public class TestEmbeddable extends SQLListenerTestCase {
                 "join e.mapKeyInteger i where value(i) > 0 ",
             };
         List rs = null;
-        for (int i = 0; i < query.length; i++) {
-            rs = em.createQuery(query[i]).getResultList();
+        for (String s : query) {
+            rs = em.createQuery(s).getResultList();
             em.clear();
         }
         em.close();
@@ -923,9 +924,9 @@ public class TestEmbeddable extends SQLListenerTestCase {
             "select e from Employee e, in (e.nickNames) n " +
                 " where n like '%1'",
         };
-        for (int i = 0; i < query.length; i++) {
-            es = em.createQuery(query[i]).getResultList();
-            for (Employee e : es){
+        for (String s : query) {
+            es = em.createQuery(s).getResultList();
+            for (Employee e : es) {
                 assertEmployee(e);
             }
         }
@@ -1465,9 +1466,9 @@ public class TestEmbeddable extends SQLListenerTestCase {
                 " where a.embed.b IS NOT NULL) " +
                 " ORDER BY a.embed",
         };
-        for (int i = 0; i < query.length; i++) {
+        for (String s : query) {
             List<Object[]> rs = null;
-            rs = em.createQuery(query[i]).getResultList();
+            rs = em.createQuery(s).getResultList();
             assertTrue(rs.size() > 0);
             Object obj = rs.get(0);
             assertTrue(obj instanceof Embed_ToOne);
@@ -1506,9 +1507,9 @@ public class TestEmbeddable extends SQLListenerTestCase {
                 " (select a from EntityA_Embed_MappedToOne a " +
                 " where a.embed.bm IS NOT NULL)",
         };
-        for (int i = 0; i < query.length; i++) {
+        for (String value : query) {
             List<Object[]> rs = null;
-            rs = em.createQuery(query[i]).getResultList();
+            rs = em.createQuery(value).getResultList();
             assertTrue(rs.size() > 0);
             Object obj = rs.get(0);
             assertTrue(obj instanceof Embed_MappedToOne);
@@ -1529,11 +1530,12 @@ public class TestEmbeddable extends SQLListenerTestCase {
                 " (select a.embed from EntityA_Embed_MappedToOne a " +
                 " where a.embed.bm IS NOT NULL)",
         };
-        for (int i = 0; i < query2.length; i++) {
+        for (String s : query2) {
             List<Object[]> rs = null;
             try {
-                rs = em.createQuery(query2[i]).getResultList();
-            } catch (ArgumentException e) {
+                rs = em.createQuery(s).getResultList();
+            }
+            catch (ArgumentException e) {
                 // as expected
             }
         }
@@ -1787,8 +1789,8 @@ public class TestEmbeddable extends SQLListenerTestCase {
                 " where e > 0) order by e",
         };
         List<Object[]> rs = null;
-        for (int i = 0; i < query.length; i++) {
-            rs = em.createQuery(query[i]).getResultList();
+        for (String s : query) {
+            rs = em.createQuery(s).getResultList();
             assertTrue(rs.size() > 0);
             Object obj = ((Object[]) rs.get(0))[0];
             assertTrue(obj instanceof Integer);
@@ -1839,10 +1841,11 @@ public class TestEmbeddable extends SQLListenerTestCase {
             }
             em.clear();
         }
-        for (int i = 0; i < query2.length; i++) {
+        for (String s : query2) {
             try {
-                rs = em.createQuery(query2[i]).getResultList();
-            } catch(ArgumentException e) {
+                rs = em.createQuery(s).getResultList();
+            }
+            catch (ArgumentException e) {
                 // as expected: comparison over embedded object is not allowed
             }
         }
@@ -1980,23 +1983,24 @@ public class TestEmbeddable extends SQLListenerTestCase {
 
         List rs = null;
         Object obj = null;
-        for (int i = 0; i < query.length; i++) {
-            rs = em.createQuery(query[i]).getResultList();
+        for (String item : query) {
+            rs = em.createQuery(item).getResultList();
             assertTrue(rs.size() > 0);
             obj = ((Object[]) rs.get(0))[0];
             assertTrue(obj instanceof Embed_Embed);
         }
-        for (int i = 0; i < query2.length; i++) {
-            rs = em.createQuery(query2[i]).getResultList();
+        for (String value : query2) {
+            rs = em.createQuery(value).getResultList();
             if (rs.size() > 0) {
                 obj = ((Object[]) rs.get(0))[0];
                 assertTrue(obj instanceof Embed_Embed);
             }
         }
-        for (int i = 0; i < query3.length; i++) {
+        for (String s : query3) {
             try {
-            rs = em.createQuery(query3[i]).setParameter(1, obj).getResultList();
-            } catch(ArgumentException e) {
+                rs = em.createQuery(s).setParameter(1, obj).getResultList();
+            }
+            catch (ArgumentException e) {
                 // as expected: comparison over embedded object is not allowed
             }
         }
@@ -2069,12 +2073,13 @@ public class TestEmbeddable extends SQLListenerTestCase {
                 ea = (EntityA_Embed_Coll_Embed) ((Object[]) rs.get(0))[1];
         }
 
-        for (int i = 0; i < query2.length; i++) {
+        for (String s : query2) {
             try {
-            rs = em.createQuery(query2[i]).
-                setParameter(1, (Embed) obj).
-                getResultList();
-            } catch (ArgumentException e) {
+                rs = em.createQuery(s).
+                        setParameter(1, (Embed) obj).
+                        getResultList();
+            }
+            catch (ArgumentException e) {
                 // expected exception: comparison over embedded object is not allowed
             }
         }
@@ -2442,8 +2447,8 @@ public class TestEmbeddable extends SQLListenerTestCase {
                 " (select KEY(e) from Department1 d1, in(d1.empMap) e) " +
                 " order by d",
         };
-        for (int i = 0; i < query.length; i++) {
-            ds1 = em.createQuery(query[i]).getResultList();
+        for (String s : query) {
+            ds1 = em.createQuery(s).getResultList();
             assertDepartment1(ds1.get(0));
         }
         em.close();
@@ -2647,27 +2652,27 @@ public class TestEmbeddable extends SQLListenerTestCase {
                 " order by i",
         };
 
-        for (int i = 0; i < query.length; i++) {
-            Query q = em.createQuery(query[i]);
+        for (String element : query) {
+            Query q = em.createQuery(element);
             q.setParameter(1, imageKey1);
             is1 = q.getResultList();
-            for (Item1 item : is1){
+            for (Item1 item : is1) {
                 assertItem1(item);
             }
         }
-        for (int i = 0; i < query2.length; i++) {
-            Query q = em.createQuery(query2[i]);
+        for (String value : query2) {
+            Query q = em.createQuery(value);
             q.setParameter(1, imageKey2);
             is2 = q.getResultList();
-            for (Item2 item : is2){
+            for (Item2 item : is2) {
                 assertItem2(item);
             }
         }
-        for (int i = 0; i < query3.length; i++) {
-            Query q = em.createQuery(query3[i]);
+        for (String s : query3) {
+            Query q = em.createQuery(s);
             q.setParameter(1, imageKey3);
             is3 = q.getResultList();
-            for (Item3 item : is3){
+            for (Item3 item : is3) {
                 assertItem3(item);
             }
         }
@@ -2713,11 +2718,11 @@ public class TestEmbeddable extends SQLListenerTestCase {
                 "  where KEY(d) = ?1)" +
                 " order by c ",
         };
-        for (int i = 0; i < query.length; i++) {
-            Query q = em.createQuery(query[i]);
+        for (String value : query) {
+            Query q = em.createQuery(value);
             q.setParameter(1, d1);
             cs1 = q.getResultList();
-            for (Company1 c : cs1){
+            for (Company1 c : cs1) {
                 assertCompany1(c);
             }
         }
@@ -2738,11 +2743,11 @@ public class TestEmbeddable extends SQLListenerTestCase {
                 " order by c ",
         };
 
-        for (int i = 0; i < query2.length; i++) {
-            Query q = em.createQuery(query2[i]);
+        for (String s : query2) {
+            Query q = em.createQuery(s);
             q.setParameter(1, d2);
             cs2 = q.getResultList();
-            for (Company2 c : cs2){
+            for (Company2 c : cs2) {
                 assertCompany2(c);
             }
         }

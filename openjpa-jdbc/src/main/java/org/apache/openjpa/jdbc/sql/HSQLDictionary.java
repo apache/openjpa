@@ -219,8 +219,8 @@ public class HSQLDictionary extends DBDictionary {
 
         Unique[] unqs = table.getUniques();
         String unqStr;
-        for (int i = 0; i < unqs.length; i++) {
-            unqStr = getUniqueConstraintSQL(unqs[i]);
+        for (Unique unq : unqs) {
+            unqStr = getUniqueConstraintSQL(unq);
             if (unqStr != null)
                 buf.append(", ").append(unqStr);
         }

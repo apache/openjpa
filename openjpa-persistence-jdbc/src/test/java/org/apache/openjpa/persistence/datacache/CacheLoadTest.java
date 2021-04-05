@@ -143,9 +143,7 @@ public class CacheLoadTest
                 (OpenJPAEntityManager) emf.createEntityManager();
             startTx(em);
 
-            for (Iterator i = em.createExtent(rndclass(), Math.random() > 0.5f).
-                iterator(); i.hasNext();) {
-                Object o = i.next();
+            for (Object o : em.createExtent(rndclass(), Math.random() > 0.5f)) {
                 if (Math.random() > 0.6f)
                     em.remove(o);
             }
@@ -163,9 +161,7 @@ public class CacheLoadTest
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) emf.createEntityManager();
 
-        for (Iterator i = em.createExtent(rndclass(), Math.random() > 0.5f).
-            iterator(); i.hasNext();) {
-            Object o = i.next();
+        for (Object o : em.createExtent(rndclass(), Math.random() > 0.5f)) {
         }
 
         endEm(em);

@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -108,8 +107,8 @@ public class ProductDerivations {
 
         List<String> prefixes = new ArrayList<>(2);
         prefixes.add("openjpa");
-        for (int i = 0; i < _derivations.length; i++) {
-            String prefix = _derivations[i].getConfigurationPrefix();
+        for (ProductDerivation derivation : _derivations) {
+            String prefix = derivation.getConfigurationPrefix();
             if (prefix != null && !"openjpa".equals(prefix))
                 prefixes.add(prefix);
         }
@@ -184,13 +183,15 @@ public class ProductDerivations {
      * {@link BootstrapException} are swallowed.
      */
     public static void beforeConfigurationConstruct(ConfigurationProvider cp) {
-        for (int i = 0; i < _derivations.length; i++) {
+        for (ProductDerivation derivation : _derivations) {
             try {
-                _derivations[i].beforeConfigurationConstruct(cp);
-            } catch (BootstrapException be) {
-            	if (be.isFatal())
-            		throw be;
-            } catch (Exception e) {
+                derivation.beforeConfigurationConstruct(cp);
+            }
+            catch (BootstrapException be) {
+                if (be.isFatal())
+                    throw be;
+            }
+            catch (Exception e) {
                 // can't log; no configuration yet
                 e.printStackTrace();
             }
@@ -203,13 +204,15 @@ public class ProductDerivations {
      * {@link BootstrapException} are swallowed.
      */
     public static void beforeConfigurationLoad(Configuration conf) {
-        for (int i = 0; i < _derivations.length; i++) {
+        for (ProductDerivation derivation : _derivations) {
             try {
-                _derivations[i].beforeConfigurationLoad(conf);
-            } catch (BootstrapException be) {
-            	if (be.isFatal())
-            		throw be;
-            } catch (Exception e) {
+                derivation.beforeConfigurationLoad(conf);
+            }
+            catch (BootstrapException be) {
+                if (be.isFatal())
+                    throw be;
+            }
+            catch (Exception e) {
                 // logging not configured yet
                 e.printStackTrace();
             }
@@ -222,13 +225,15 @@ public class ProductDerivations {
      * {@link BootstrapException} are swallowed.
      */
     public static void afterSpecificationSet(Configuration conf) {
-        for (int i = 0; i < _derivations.length; i++) {
+        for (ProductDerivation derivation : _derivations) {
             try {
-                _derivations[i].afterSpecificationSet(conf);
-            } catch (BootstrapException be) {
-            	if (be.isFatal())
-            		throw be;
-            } catch (Exception e) {
+                derivation.afterSpecificationSet(conf);
+            }
+            catch (BootstrapException be) {
+                if (be.isFatal())
+                    throw be;
+            }
+            catch (Exception e) {
                 // logging not configured yet
                 e.printStackTrace();
             }
@@ -242,10 +247,11 @@ public class ProductDerivations {
      * @since 0.9.7
      */
     public static void beforeClose(Configuration conf) {
-        for (int i = 0; i < _derivations.length; i++) {
+        for (ProductDerivation derivation : _derivations) {
             try {
-                _derivations[i].beforeConfigurationClose(conf);
-            } catch (Exception e) {
+                derivation.beforeConfigurationClose(conf);
+            }
+            catch (Exception e) {
                 conf.getConfigurationLog().warn(_loc.get("before-close-ex"), e);
             }
         }
@@ -436,8 +442,8 @@ public class ProductDerivations {
         Collection newMembers) {
         if (newMembers == null || collection == null)
             return;
-        for (Iterator iter = newMembers.iterator(); iter.hasNext(); ) {
-            String fqLoc = base + "#" + iter.next();
+        for (Object newMember : newMembers) {
+            String fqLoc = base + "#" + newMember;
             if (!collection.contains(fqLoc))
                 collection.add(fqLoc);
         }

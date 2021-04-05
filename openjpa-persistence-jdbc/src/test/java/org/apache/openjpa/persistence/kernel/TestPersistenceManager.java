@@ -337,13 +337,13 @@ public class TestPersistenceManager extends BaseKernelTest {
 
         List l = ((Extent) pm.createExtent(RuntimeTest1.class, true)).list();
         pm.retrieveAll(l);
-        for (Iterator iter = l.iterator(); iter.hasNext();) {
-            PCState s = getStateManager(iter.next(), pm).getPCState();
+        for (Object value : l) {
+            PCState s = getStateManager(value, pm).getPCState();
             assertEquals(PCState.PNONTRANS, s);
         }
         pm.evictAll();
-        for (Iterator iter = l.iterator(); iter.hasNext();) {
-            PCState s = getStateManager(iter.next(), pm).getPCState();
+        for (Object o : l) {
+            PCState s = getStateManager(o, pm).getPCState();
             assertEquals(PCState.HOLLOW, s);
         }
     }
@@ -353,13 +353,13 @@ public class TestPersistenceManager extends BaseKernelTest {
 
         List l = ((Extent) pm.createExtent(RuntimeTest1.class, true)).list();
         pm.retrieveAll(l);
-        for (Iterator iter = l.iterator(); iter.hasNext();) {
-            PCState s = getStateManager(iter.next(), pm).getPCState();
+        for (Object value : l) {
+            PCState s = getStateManager(value, pm).getPCState();
             assertEquals(PCState.PNONTRANS, s);
         }
         pm.evictAll(l);
-        for (Iterator iter = l.iterator(); iter.hasNext();) {
-            PCState s = getStateManager(iter.next(), pm).getPCState();
+        for (Object o : l) {
+            PCState s = getStateManager(o, pm).getPCState();
             assertEquals(PCState.HOLLOW, s);
         }
     }
@@ -369,13 +369,13 @@ public class TestPersistenceManager extends BaseKernelTest {
 
         List l = ((Extent) pm.createExtent(RuntimeTest1.class, true)).list();
         pm.retrieveAll(l);
-        for (Iterator iter = l.iterator(); iter.hasNext();) {
-            PCState s = getStateManager(iter.next(), pm).getPCState();
+        for (Object value : l) {
+            PCState s = getStateManager(value, pm).getPCState();
             assertEquals(PCState.PNONTRANS, s);
         }
         pm.evictAll(RuntimeTest1.class);
-        for (Iterator iter = l.iterator(); iter.hasNext();) {
-            PCState s = getStateManager(iter.next(), pm).getPCState();
+        for (Object o : l) {
+            PCState s = getStateManager(o, pm).getPCState();
             assertEquals(PCState.HOLLOW, s);
         }
     }
@@ -385,14 +385,14 @@ public class TestPersistenceManager extends BaseKernelTest {
 
         List l = ((Extent) pm.createExtent(RuntimeTest1.class, true)).list();
         pm.retrieveAll(l);
-        for (Iterator iter = l.iterator(); iter.hasNext();) {
-            PCState s = getStateManager(iter.next(), pm).getPCState();
+        for (Object value : l) {
+            PCState s = getStateManager(value, pm).getPCState();
             assertEquals(PCState.PNONTRANS, s);
         }
         pm.evictAll(RuntimeTest2.class);
         boolean foundPNONTRANS = false;
-        for (Iterator iter = l.iterator(); iter.hasNext();) {
-            PCState s = getStateManager(iter.next(), pm).getPCState();
+        for (Object o : l) {
+            PCState s = getStateManager(o, pm).getPCState();
             if (s == PCState.PNONTRANS) {
                 foundPNONTRANS = true;
                 break;
@@ -407,24 +407,23 @@ public class TestPersistenceManager extends BaseKernelTest {
 
         List l = ((Extent) pm.createExtent(RuntimeTest1.class, true)).list();
         pm.retrieveAll(l);
-        for (Iterator iter = l.iterator(); iter.hasNext();) {
-            PCState s = getStateManager(iter.next(), pm).getPCState();
+        for (Object element : l) {
+            PCState s = getStateManager(element, pm).getPCState();
             assertEquals(PCState.PNONTRANS, s);
         }
         pm.evictAll(pm.createExtent(RuntimeTest1.class, true));
-        for (Iterator iter = l.iterator(); iter.hasNext();) {
-            PCState s = getStateManager(iter.next(), pm).getPCState();
+        for (Object item : l) {
+            PCState s = getStateManager(item, pm).getPCState();
             assertEquals(PCState.HOLLOW, s);
         }
 
         pm.retrieveAll(l);
-        for (Iterator iter = l.iterator(); iter.hasNext();) {
-            PCState s = getStateManager(iter.next(), pm).getPCState();
+        for (Object value : l) {
+            PCState s = getStateManager(value, pm).getPCState();
             assertEquals(PCState.PNONTRANS, s);
         }
         pm.evictAll(pm.createExtent(RuntimeTest1.class, false));
-        for (Iterator iter = l.iterator(); iter.hasNext();) {
-            Object o = iter.next();
+        for (Object o : l) {
             if (o.getClass() == RuntimeTest1.class) {
                 PCState s = getStateManager(o, pm).getPCState();
                 assertEquals(PCState.HOLLOW, s);

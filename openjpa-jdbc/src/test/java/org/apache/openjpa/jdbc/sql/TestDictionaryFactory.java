@@ -195,12 +195,13 @@ public class TestDictionaryFactory {
      */
     @Test
     public void testUrl2Dictionary() {
-        for (int i = 0; i < testMatrix.length; ++i) {
+        for (String[] matrix : testMatrix) {
             try {
                 String dbType = (String) getProtocol.invoke(null,
-                    testMatrix[i][0]);
-                assertEquals(dbType, testMatrix[i][1]);
-            } catch (Exception e) {
+                        matrix[0]);
+                assertEquals(dbType, matrix[1]);
+            }
+            catch (Exception e) {
                 fail(e.getMessage());
             }
         }

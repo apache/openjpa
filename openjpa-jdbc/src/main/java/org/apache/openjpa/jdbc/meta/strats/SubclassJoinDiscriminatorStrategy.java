@@ -95,14 +95,14 @@ public class SubclassJoinDiscriminatorStrategy
         // the subclass array is already ordered in levels of inheritance, so
         // each subclass only has to join from its direct superclass
         Column[] pks;
-        for (int i = 0; i < subs.length; i++) {
-            if (subs[i].getJoinablePCSuperclassMapping() == null)
+        for (ClassMapping sub : subs) {
+            if (sub.getJoinablePCSuperclassMapping() == null)
                 continue;
 
-            pks = subs[i].getPrimaryKeyColumns();
+            pks = sub.getPrimaryKeyColumns();
             if (pks.length > 0) {
-                sel.select(pks[0], subs[i].joinSuperclass
-                    (sel.newJoins(), true));
+                sel.select(pks[0], sub.joinSuperclass
+                        (sel.newJoins(), true));
                 seld = true;
             }
         }
@@ -122,20 +122,20 @@ public class SubclassJoinDiscriminatorStrategy
         ClassMapping[] subs = base.getJoinablePCSubclassMappings();
         Class derived = base.getDescribedType();
         Column[] pks;
-        for (int i = 0; i < subs.length; i++) {
-            pks = subs[i].getPrimaryKeyColumns();
+        for (ClassMapping sub : subs) {
+            pks = sub.getPrimaryKeyColumns();
             if (pks.length == 0)
                 continue;
 
             // possible that a sibling class cols were already discovered, in
             // which case we can skip this sub
-            if (!derived.isAssignableFrom(subs[i].getDescribedType()))
+            if (!derived.isAssignableFrom(sub.getDescribedType()))
                 continue;
 
             // see if all pk cols are non-null
             if (res.contains(pks[0])
-                && res.getObject(pks[0], -1, null) != null)
-                derived = subs[i].getDescribedType();
+                    && res.getObject(pks[0], -1, null) != null)
+                derived = sub.getDescribedType();
         }
         return derived;
     }
@@ -158,8 +158,8 @@ public class SubclassJoinDiscriminatorStrategy
         ClassMapping[] subs = base.getJoinablePCSubclassMappings();
         SQLBuffer buf = null;
         Column[] pks;
-        for (int i = 0; i < subs.length; i++) {
-            pks = subs[i].getPrimaryKeyColumns();
+        for (ClassMapping sub : subs) {
+            pks = sub.getPrimaryKeyColumns();
             if (pks.length == 0)
                 continue;
 
@@ -167,9 +167,10 @@ public class SubclassJoinDiscriminatorStrategy
                 // make sure the base class is aliased first so that we don't
                 // end up with our outer joins before the inner ones
                 buf = new SQLBuffer(sel.getConfiguration().
-                    getDBDictionaryInstance());
+                        getDBDictionaryInstance());
                 sel.getColumnAlias(base.getPrimaryKeyColumns()[0], joins);
-            } else
+            }
+            else
                 buf.append(" AND ");
             buf.append(sel.getColumnAlias(pks[0], joins)).append(" IS NULL");
         }

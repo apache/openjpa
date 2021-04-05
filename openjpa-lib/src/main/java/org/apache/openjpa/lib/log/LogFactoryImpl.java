@@ -27,7 +27,6 @@ import java.io.StringWriter;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -279,9 +278,8 @@ public class LogFactoryImpl
     public void setInto(Options opts) {
         if (!opts.isEmpty()) {
             Map.Entry<Object, Object> e;
-            for (Iterator<Map.Entry<Object, Object>> iter =
-                opts.entrySet().iterator(); iter.hasNext();) {
-                e = iter.next();
+            for (Map.Entry<Object, Object> objectObjectEntry : opts.entrySet()) {
+                e = objectObjectEntry;
                 _configuredLevels.put(shorten((String) e.getKey()), getLevel((String) e.getValue()));
             }
             opts.clear();

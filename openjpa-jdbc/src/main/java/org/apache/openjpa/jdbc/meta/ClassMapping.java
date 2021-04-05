@@ -22,7 +22,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -177,11 +176,11 @@ public class ClassMapping
         int pkIdx;
         boolean canReadDiscriminator = true;
         boolean isNullPK = true;
-        for (int i = 0; i < pks.length; i++) {
+        for (Column pk : pks) {
             // we know that all pk column join mappings use primary key fields,
             // cause this mapping uses the oid as its primary key (we recursed
             // at the beginning of the method to ensure this)
-            join = assertJoinable(pks[i]);
+            join = assertJoinable(pk);
             fm = getFieldMapping(join.getFieldIndex());
             pkIdx = fm.getPrimaryKeyIndex();
             canReadDiscriminator &= isSelfReference(fk, join.getColumns());
@@ -189,7 +188,7 @@ public class ClassMapping
             if (vals[pkIdx] == null) {
                 res.startDataRequest(fm);
                 vals[pkIdx] = join.getPrimaryKeyValue(res, join.getColumns(),
-                    fk, store, joins);
+                        fk, store, joins);
                 res.endDataRequest();
                 isNullPK = isNullPK && vals[pkIdx] == null;
             }
@@ -373,10 +372,10 @@ public class ClassMapping
         // check the join mapping for each pk column to see if it links up to
         // a primary key field
         Joinable join;
-        for (int i = 0; i < cols.length; i++) {
-            join = assertJoinable(cols[i]);
+        for (Column col : cols) {
+            join = assertJoinable(col);
             if (join.getFieldIndex() != -1
-                && getField(join.getFieldIndex()).getPrimaryKeyIndex() == -1)
+                    && getField(join.getFieldIndex()).getPrimaryKeyIndex() == -1)
                 return Boolean.FALSE;
         }
 
@@ -452,14 +451,15 @@ public class ClassMapping
                 FieldMapping[] pks = getPrimaryKeyFieldMappings();
                 Collection cols = new ArrayList(pks.length);
                 Column[] fieldCols;
-                for (int i = 0; i < pks.length; i++) {
-                    fieldCols = pks[i].getColumns();
+                for (FieldMapping pk : pks) {
+                    fieldCols = pk.getColumns();
                     if (fieldCols.length == 0) {
                         _cols = new Column[0];
                         return _cols;
                     }
-                    for (int j = 0; j < fieldCols.length; j++)
-                        cols.add(fieldCols[j]);
+                    for (Column fieldCol : fieldCols) {
+                        cols.add(fieldCol);
+                    }
                 }
                 _cols = (Column[]) cols.toArray(new Column[cols.size()]);
             }
@@ -515,12 +515,14 @@ public class ClassMapping
             if (_fk != null)
                 _fk.ref();
             Column[] pks = getPrimaryKeyColumns();
-            for (int i = 0; i < pks.length; i++)
-                pks[i].ref();
+            for (Column pk : pks) {
+                pk.ref();
+            }
         } else {
             FieldMapping[] fields = getFieldMappings();
-            for (int i = 0; i < fields.length; i++)
-                fields[i].refSchemaComponents();
+            for (FieldMapping field : fields) {
+                field.refSchemaComponents();
+            }
         }
     }
 
@@ -545,8 +547,9 @@ public class ClassMapping
         else {
             _info.clear();
             FieldMapping[] fields = getFieldMappings();
-            for (int i = 0; i < fields.length; i++)
-                fields[i].syncMappingInfo();
+            for (FieldMapping field : fields) {
+                field.syncMappingInfo();
+            }
         }
     }
 
@@ -670,9 +673,9 @@ public class ClassMapping
                 _joinSubMaps = subs;
             else {
                 List joinable = new ArrayList(subs.length);
-                for (int i = 0; i < subs.length; i++)
-                    if (isSubJoinable(subs[i]))
-                        joinable.add(subs[i]);
+                for (ClassMapping sub : subs)
+                    if (isSubJoinable(sub))
+                        joinable.add(sub);
                 _joinSubMaps = (ClassMapping[]) joinable.toArray
                     (new ClassMapping[joinable.size()]);
             }
@@ -714,8 +717,8 @@ public class ClassMapping
                 // remove all mappings that have a superclass mapping in the set
                 ClassMapping map, sup;
                 List clear = null;
-                for (Iterator itr = independent.iterator(); itr.hasNext();) {
-                    map = (ClassMapping) itr.next();
+                for (Object o : independent) {
+                    map = (ClassMapping) o;
                     sup = map.getJoinablePCSuperclassMapping();
                     if (sup != null && independent.contains(sup)) {
                         if (clear == null)
@@ -863,13 +866,13 @@ public class ClassMapping
         // recursion, then resolve all fields
         resolveNonRelationMappings();
         FieldMapping[] fms = getFieldMappings();
-        for (int i = 0; i < fms.length; i++) {
-            if (fms[i].getDefiningMetaData() == this) {
+        for (FieldMapping fieldMapping : fms) {
+            if (fieldMapping.getDefiningMetaData() == this) {
                 boolean fill = getMappingRepository().getMappingDefaults().
-                    defaultMissingInfo();
-                ForeignKey fk = fms[i].getForeignKey();
+                        defaultMissingInfo();
+                ForeignKey fk = fieldMapping.getForeignKey();
                 if (fill && fk != null &&
-                    fk.getPrimaryKeyColumns().length == 0) {
+                        fk.getPrimaryKeyColumns().length == 0) {
                     // set resolve mode to force this field mapping to be
                     // resolved again. The need to resolve again occurs when
                     // a primary key is a relation field with the foreign key
@@ -879,16 +882,17 @@ public class ClassMapping
                     // field, the foreign key will be constructed. However,
                     // the primary key of the parent entity may not have been
                     // resolved yet, resulting in missing information in the fk
-                    fms[i].setResolve(MODE_META);
-                    if (fms[i].getStrategy() != null)
-                        fms[i].getStrategy().map(false);
+                    fieldMapping.setResolve(MODE_META);
+                    if (fieldMapping.getStrategy() != null)
+                        fieldMapping.getStrategy().map(false);
                 }
-                fms[i].resolve(MODE_MAPPING);
+                fieldMapping.resolve(MODE_MAPPING);
             }
         }
         fms = getDeclaredUnmanagedFieldMappings();
-        for (int i = 0; i < fms.length; i++)
-            fms[i].resolve(MODE_MAPPING);
+        for (FieldMapping fm : fms) {
+            fm.resolve(MODE_MAPPING);
+        }
 
         // mark mapped columns
         if (_cols != null) {
@@ -914,18 +918,19 @@ public class ClassMapping
         // make sure primary key fields are resolved first because other
         // fields might rely on them
         FieldMapping[] fms = getPrimaryKeyFieldMappings();
-        for (int i = 0; i < fms.length; i++)
-            fms[i].resolve(MODE_MAPPING);
+        for (FieldMapping fieldMapping : fms) {
+            fieldMapping.resolve(MODE_MAPPING);
+        }
 
         // resolve defined fields that are safe; that don't rely on other types
         // also being resolved.  don't use getDefinedFields b/c it relies on
         // whether fields are mapped, which isn't known yet
         fms = getFieldMappings();
-        for (int i = 0; i < fms.length; i++) {
-            if (fms[i].getDefiningMetaData() == this
-                    && !fms[i].isTypePC() && !fms[i].getKey().isTypePC()
-                    && !fms[i].getElement().isTypePC()) {
-                fms[i].resolve(MODE_MAPPING);
+        for (FieldMapping fm : fms) {
+            if (fm.getDefiningMetaData() == this
+                    && !fm.isTypePC() && !fm.getKey().isTypePC()
+                    && !fm.getElement().isTypePC()) {
+                fm.resolve(MODE_MAPPING);
             }
         }
         _discrim.resolve(MODE_MAPPING);
@@ -937,8 +942,9 @@ public class ClassMapping
         super.initializeMapping();
 
         FieldMapping[] fields = getDefinedFieldMappings();
-        for (int i = 0; i < fields.length; i++)
-            fields[i].resolve(MODE_MAPPING_INIT);
+        for (FieldMapping field : fields) {
+            field.resolve(MODE_MAPPING_INIT);
+        }
         _discrim.resolve(MODE_MAPPING_INIT);
         _version.resolve(MODE_MAPPING_INIT);
         _strategy.initialize();

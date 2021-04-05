@@ -127,44 +127,44 @@ public class Column extends ReferenceCounter {
             ForeignKey[] fks;
             Column[] cols;
             Column[] pks;
-            for (int i = 0; i < schemas.length; i++) {
-                tabs = schemas[i].getTables();
-                for (int j = 0; j < tabs.length; j++) {
-                    fks = tabs[j].getForeignKeys();
-                    for (int k = 0; k < fks.length; k++) {
-                        cols = fks[k].getColumns();
-                        pks = fks[k].getPrimaryKeyColumns();
+            for (Schema value : schemas) {
+                tabs = value.getTables();
+                for (Table tab : tabs) {
+                    fks = tab.getForeignKeys();
+                    for (ForeignKey fk : fks) {
+                        cols = fk.getColumns();
+                        pks = fk.getPrimaryKeyColumns();
                         for (int l = 0; l < cols.length; l++)
                             if (this.equals(cols[l]) || this.equals(pks[l]))
-                                fks[k].removeJoin(cols[l]);
+                                fk.removeJoin(cols[l]);
 
-                        cols = fks[k].getConstantColumns();
-                        for (int l = 0; l < cols.length; l++)
-                            if (this.equals(cols[l]))
-                                fks[k].removeJoin(cols[l]);
+                        cols = fk.getConstantColumns();
+                        for (Column col : cols)
+                            if (this.equals(col))
+                                fk.removeJoin(col);
 
-                        pks = fks[k].getConstantPrimaryKeyColumns();
-                        for (int l = 0; l < pks.length; l++)
-                            if (this.equals(pks[l]))
-                                fks[k].removeJoin(pks[l]);
+                        pks = fk.getConstantPrimaryKeyColumns();
+                        for (Column pk : pks)
+                            if (this.equals(pk))
+                                fk.removeJoin(pk);
 
-                        if (fks[k].getColumns().length == 0
-                            && fks[k].getConstantColumns().length == 0)
-                            tabs[j].removeForeignKey(fks[k]);
+                        if (fk.getColumns().length == 0
+                                && fk.getConstantColumns().length == 0)
+                            tab.removeForeignKey(fk);
                     }
                 }
             }
         }
 
         Index[] idxs = table.getIndexes();
-        for (int i = 0; i < idxs.length; i++)
-            if (idxs[i].removeColumn(this) && idxs[i].getColumns().length == 0)
-                table.removeIndex(idxs[i]);
+        for (Index idx : idxs)
+            if (idx.removeColumn(this) && idx.getColumns().length == 0)
+                table.removeIndex(idx);
 
         Unique[] unqs = table.getUniques();
-        for (int i = 0; i < unqs.length; i++)
-            if (unqs[i].removeColumn(this) && unqs[i].getColumns().length == 0)
-                table.removeUnique(unqs[i]);
+        for (Unique unq : unqs)
+            if (unq.removeColumn(this) && unq.getColumns().length == 0)
+                table.removeUnique(unq);
 
         PrimaryKey pk = table.getPrimaryKey();
         if (pk != null && pk.removeColumn(this) && pk.getColumns().length == 0)

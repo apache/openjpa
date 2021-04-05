@@ -430,9 +430,9 @@ public class CacheMap
 
     public void putAll(Map map, boolean replaceExisting) {
         Map.Entry entry;
-        for (Iterator itr = map.entrySet().iterator(); itr.hasNext();) {
-            entry = (Map.Entry) itr.next();
-            if(replaceExisting || !containsKey(entry.getKey())) {
+        for (Object o : map.entrySet()) {
+            entry = (Entry) o;
+            if (replaceExisting || !containsKey(entry.getKey())) {
                 put(entry.getKey(), entry.getValue());
             }
         }
@@ -494,8 +494,8 @@ public class CacheMap
 
     private void notifyEntryRemovals(Set set) {
         Map.Entry entry;
-        for (Iterator itr = set.iterator(); itr.hasNext();) {
-            entry = (Map.Entry) itr.next();
+        for (Object o : set) {
+            entry = (Entry) o;
             if (entry.getValue() != null)
                 entryRemoved(entry.getKey(), entry.getValue(), false);
         }

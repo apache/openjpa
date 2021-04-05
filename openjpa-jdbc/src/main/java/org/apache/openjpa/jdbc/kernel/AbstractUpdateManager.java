@@ -91,15 +91,16 @@ public abstract class AbstractUpdateManager
         Collection customs = new LinkedList();
         Collection exceps = psMgr.getExceptions();
         Collection mappedByIdStates = new ArrayList();
-        for (Iterator itr = states.iterator(); itr.hasNext();) {
-            OpenJPAStateManager obj = (OpenJPAStateManager)itr.next();
+        for (Object state : states) {
+            OpenJPAStateManager obj = (OpenJPAStateManager) state;
             if (obj instanceof StateManagerImpl) {
                 StateManagerImpl sm = (StateManagerImpl) obj;
                 if (sm.getMappedByIdFields() != null)
                     mappedByIdStates.add(sm);
                 else exceps = populateRowManager(sm, rowMgr, store, exceps,
                         customs);
-            } else
+            }
+            else
                 exceps = populateRowManager(obj, rowMgr, store, exceps,
                         customs);
         }
@@ -108,8 +109,8 @@ public abstract class AbstractUpdateManager
         exceps = flush(rowMgr, psMgr, exceps);
 
         if (mappedByIdStates.size() != 0) {
-            for (Iterator itr = mappedByIdStates.iterator(); itr.hasNext();) {
-                StateManagerImpl sm = (StateManagerImpl) itr.next();
+            for (Object mappedByIdState : mappedByIdStates) {
+                StateManagerImpl sm = (StateManagerImpl) mappedByIdState;
                 exceps = populateRowManager(sm, rowMgr, store, exceps, customs);
             }
             // flush rows
@@ -236,10 +237,10 @@ public abstract class AbstractUpdateManager
         }
 
         BitSet dirty = sm.getDirty();
-        for (int i = 0; i < fields.length; i++) {
-            if (dirty.get(fields[i].getIndex())
-                && !bufferCustomInsert(fields[i], sm, store, customs)) {
-                fields[i].insert(sm, store, rowMgr);
+        for (FieldMapping field : fields) {
+            if (dirty.get(field.getIndex())
+                    && !bufferCustomInsert(field, sm, store, customs)) {
+                field.insert(sm, store, rowMgr);
             }
         }
         if (sup == null) {
@@ -256,14 +257,14 @@ public abstract class AbstractUpdateManager
         List<FieldMapping> pkFmds = new ArrayList<>();
         FieldMapping[] ret = new FieldMapping[fields.length];
         int j = 0;
-        for (int i = 0; i < fields.length; i++) {
-            if (!fields[i].isPrimaryKey())
-                ret[j++] = fields[i];
+        for (FieldMapping field : fields) {
+            if (!field.isPrimaryKey())
+                ret[j++] = field;
             else
-                pkFmds.add(fields[i]);
+                pkFmds.add(field);
         }
-        for (int i = 0; i <pkFmds.size(); i++) {
-            ret[j++] = pkFmds.get(i);
+        for (FieldMapping pkFmd : pkFmds) {
+            ret[j++] = pkFmd;
         }
         return ret;
     }
@@ -294,9 +295,9 @@ public abstract class AbstractUpdateManager
             return;
 
         FieldMapping[] fields = mapping.getDefinedFieldMappings();
-        for (int i = 0; i < fields.length; i++)
-            if (!bufferCustomDelete(fields[i], sm, store, customs))
-                fields[i].delete(sm, store, rowMgr);
+        for (FieldMapping field : fields)
+            if (!bufferCustomDelete(field, sm, store, customs))
+                field.delete(sm, store, rowMgr);
 
         ClassMapping sup = mapping.getJoinablePCSuperclassMapping();
         if (sup == null) {
@@ -339,20 +340,19 @@ public abstract class AbstractUpdateManager
         // update all fields before all mappings so that the mappings can
         // detect whether any fields in their rows have been modified
         FieldMapping[] fields = mapping.getDefinedFieldMappings();
-        for (int i = 0; i < fields.length; i++) {
-            FieldMapping field = fields[i];
+        for (FieldMapping field : fields) {
             if (dirty.get(field.getIndex())
-                && !bufferCustomUpdate(field, sm, store, customs)) {
+                    && !bufferCustomUpdate(field, sm, store, customs)) {
                 field.update(sm, store, rowMgr);
                 if (!updateIndicators) {
                     FieldMapping[] inverseFieldMappings =
-                        field.getInverseMappings();
+                            field.getInverseMappings();
                     if (inverseFieldMappings.length == 0) {
                         updateIndicators = true;
                     }
                     else {
                         for (FieldMapping inverseFieldMapping :
-                            inverseFieldMappings) {
+                                inverseFieldMappings) {
                             if (inverseFieldMapping.getMappedBy() != null) {
                                 updateIndicators = true;
                                 break;

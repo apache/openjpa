@@ -80,8 +80,8 @@ public abstract class ResultListTest extends AbstractTestCase {
 
     @Test
     public void testIterator() {
-        for (int i = 0; i < _lists.length; i++) {
-            Iterator itr = _lists[i].iterator();
+        for (ResultList list : _lists) {
+            Iterator itr = list.iterator();
             int count = 0;
             for (; itr.hasNext(); count++)
                 assertEquals(String.valueOf(count), itr.next());
@@ -89,28 +89,30 @@ public abstract class ResultListTest extends AbstractTestCase {
             try {
                 itr.next();
                 fail("After last.");
-            } catch (IndexOutOfBoundsException | NoSuchElementException ioob) {
+            }
+            catch (IndexOutOfBoundsException | NoSuchElementException ioob) {
             }
         }
     }
 
     @Test
     public void testIteratorModification() {
-        for (int i = 0; i < _lists.length; i++) {
+        for (ResultList list : _lists) {
             try {
-                Iterator itr = _lists[i].iterator();
+                Iterator itr = list.iterator();
                 itr.next();
                 itr.remove();
                 fail("Allowed modification.");
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
             }
         }
     }
 
     @Test
     public void testListIteratorForward() {
-        for (int i = 0; i < _lists.length; i++) {
-            ListIterator itr = _lists[i].listIterator();
+        for (ResultList list : _lists) {
+            ListIterator itr = list.listIterator();
             int count = 0;
             for (; itr.hasNext(); count++) {
                 assertEquals(count, itr.nextIndex());
@@ -120,15 +122,16 @@ public abstract class ResultListTest extends AbstractTestCase {
             try {
                 itr.next();
                 fail("After last.");
-            } catch (IndexOutOfBoundsException | NoSuchElementException ioob) {
+            }
+            catch (IndexOutOfBoundsException | NoSuchElementException ioob) {
             }
         }
     }
 
     @Test
     public void testListIteratorIndex() {
-        for (int i = 0; i < _lists.length; i++) {
-            ListIterator itr = _lists[i].listIterator(50);
+        for (ResultList list : _lists) {
+            ListIterator itr = list.listIterator(50);
             int count = 50;
             for (; itr.hasNext(); count++) {
                 assertEquals(count, itr.nextIndex());
@@ -138,15 +141,16 @@ public abstract class ResultListTest extends AbstractTestCase {
             try {
                 itr.next();
                 fail("After last.");
-            } catch (IndexOutOfBoundsException | NoSuchElementException ioob) {
+            }
+            catch (IndexOutOfBoundsException | NoSuchElementException ioob) {
             }
         }
     }
 
     @Test
     public void testListIteratorReverse() {
-        for (int i = 0; i < _lists.length; i++) {
-            ListIterator itr = _lists[i].listIterator(100);
+        for (ResultList list : _lists) {
+            ListIterator itr = list.listIterator(100);
             int count = 99;
             for (; itr.hasPrevious(); count--) {
                 assertEquals(count, itr.previousIndex());
@@ -156,20 +160,22 @@ public abstract class ResultListTest extends AbstractTestCase {
             try {
                 itr.previous();
                 fail("Before first.");
-            } catch (IndexOutOfBoundsException | NoSuchElementException ioob) {
+            }
+            catch (IndexOutOfBoundsException | NoSuchElementException ioob) {
             }
         }
     }
 
     @Test
     public void testListIteratorModification() {
-        for (int i = 0; i < _lists.length; i++) {
+        for (ResultList list : _lists) {
             try {
-                ListIterator itr = _lists[i].listIterator();
+                ListIterator itr = list.listIterator();
                 itr.next();
                 itr.set("foo");
                 fail("Allowed modification.");
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
             }
         }
     }
@@ -183,79 +189,84 @@ public abstract class ResultListTest extends AbstractTestCase {
 
     @Test
     public void testContains() {
-        for (int i = 0; i < _lists.length; i++) {
-            assertTrue(_lists[i].contains("0"));
-            assertTrue(_lists[i].contains("50"));
-            assertTrue(_lists[i].contains("99"));
-            assertFalse(_lists[i].contains("-1"));
-            assertFalse(_lists[i].contains("100"));
-            assertFalse(_lists[i].contains(null));
-            assertTrue(_lists[i].containsAll(Arrays.asList(new String[]
-                { "0", "50", "99" })));
-            assertFalse(_lists[i].containsAll(Arrays.asList(new String[]
-                { "0", "-1", "99" })));
+        for (ResultList list : _lists) {
+            assertTrue(list.contains("0"));
+            assertTrue(list.contains("50"));
+            assertTrue(list.contains("99"));
+            assertFalse(list.contains("-1"));
+            assertFalse(list.contains("100"));
+            assertFalse(list.contains(null));
+            assertTrue(list.containsAll(Arrays.asList(new String[]
+                    {"0", "50", "99"})));
+            assertFalse(list.containsAll(Arrays.asList(new String[]
+                    {"0", "-1", "99"})));
         }
     }
 
     @Test
     public void testModification() {
-        for (int i = 0; i < _lists.length; i++) {
+        for (ResultList list : _lists) {
             try {
-                _lists[i].add("foo");
+                list.add("foo");
                 fail("Allowed modification.");
-            } catch (UnsupportedOperationException uoe) {
+            }
+            catch (UnsupportedOperationException uoe) {
             }
             try {
-                _lists[i].remove("1");
+                list.remove("1");
                 fail("Allowed modification.");
-            } catch (UnsupportedOperationException uoe) {
+            }
+            catch (UnsupportedOperationException uoe) {
             }
             try {
-                _lists[i].set(0, "foo");
+                list.set(0, "foo");
                 fail("Allowed modification.");
-            } catch (UnsupportedOperationException uoe) {
+            }
+            catch (UnsupportedOperationException uoe) {
             }
         }
     }
 
     @Test
     public void testGetBegin() {
-        for (int i = 0; i < _lists.length; i++) {
+        for (ResultList list : _lists) {
             for (int j = 0; j < 10; j++)
-                assertEquals(String.valueOf(j), _lists[i].get(j));
+                assertEquals(String.valueOf(j), list.get(j));
             try {
-                _lists[i].get(-1);
+                list.get(-1);
                 fail("Before begin.");
-            } catch (IndexOutOfBoundsException | NoSuchElementException ioob) {
+            }
+            catch (IndexOutOfBoundsException | NoSuchElementException ioob) {
             }
         }
     }
 
     @Test
     public void testGetMiddle() {
-        for (int i = 0; i < _lists.length; i++)
+        for (ResultList list : _lists)
             for (int j = 50; j < 60; j++)
-                assertEquals(String.valueOf(j), _lists[i].get(j));
+                assertEquals(String.valueOf(j), list.get(j));
     }
 
     @Test
     public void testGetEnd() {
-        for (int i = 0; i < _lists.length; i++) {
+        for (ResultList list : _lists) {
             for (int j = 90; j < 100; j++)
-                assertEquals(String.valueOf(j), _lists[i].get(j));
+                assertEquals(String.valueOf(j), list.get(j));
             try {
-                _lists[i].get(100);
+                list.get(100);
                 fail("Past end.");
-            } catch (IndexOutOfBoundsException | NoSuchElementException ioob) {
+            }
+            catch (IndexOutOfBoundsException | NoSuchElementException ioob) {
             }
         }
     }
 
     @Test
     public void testGetReverse() {
-        for (int i = 0; i < _lists.length; i++)
+        for (ResultList list : _lists)
             for (int j = 99; j > -1; j--)
-                assertEquals(String.valueOf(j), _lists[i].get(j));
+                assertEquals(String.valueOf(j), list.get(j));
     }
 
     @Test
@@ -265,8 +276,7 @@ public abstract class ResultListTest extends AbstractTestCase {
         testGetEnd();
 
         // take list size and traverse list to cache values if not already
-        for (int i = 0; i < _lists.length; i++)
-            _lists[i].size();
+        for (ResultList list : _lists) list.size();
         testListIteratorForward();
 
         testGetMiddle();
@@ -276,17 +286,17 @@ public abstract class ResultListTest extends AbstractTestCase {
 
     @Test
     public void testSize() {
-        for (int i = 0; i < _lists.length; i++)
-            assertTrue(_lists[i].size() == 100
-                || _lists[i].size() == Integer.MAX_VALUE);
+        for (ResultList list : _lists)
+            assertTrue(list.size() == 100
+                    || list.size() == Integer.MAX_VALUE);
     }
 
     @Test
     public void testEmpty() {
         ResultObjectProvider[] rops = getResultObjectProviders
             (Collections.EMPTY_LIST);
-        for (int i = 0; i < rops.length; i++) {
-            ResultList list = getResultList(rops[i]);
+        for (ResultObjectProvider rop : rops) {
+            ResultList list = getResultList(rop);
             assertEquals(0, list.size());
             assertTrue(list.isEmpty());
         }
@@ -296,13 +306,14 @@ public abstract class ResultListTest extends AbstractTestCase {
     public void testSubList() {
         ResultObjectProvider[] rops = getResultObjectProviders
             (Collections.EMPTY_LIST);
-        for (int i = 0; i < rops.length; i++) {
-            ResultList list = getResultList(rops[i]);
+        for (ResultObjectProvider rop : rops) {
+            ResultList list = getResultList(rop);
             try {
                 List subList = list.subList(0, 0);
                 if (!subListSupported)
                     fail("Should not support subList.");
-            } catch (UnsupportedOperationException e) {
+            }
+            catch (UnsupportedOperationException e) {
                 if (subListSupported)
                     fail("Should support subList.");
             }

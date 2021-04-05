@@ -36,7 +36,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
@@ -172,8 +171,8 @@ public class XMLFileHandler {
         out.write("<extent>");
 
         // run through each object in the collection
-        for (Iterator itr = datas.iterator(); itr.hasNext();) {
-            ObjectData obj = (ObjectData) itr.next();
+        for (Object data : datas) {
+            ObjectData obj = (ObjectData) data;
             ClassMetaData meta = obj.getMetaData();
 
             // write out the "object" element start
@@ -205,9 +204,9 @@ public class XMLFileHandler {
 
                         // write out each of the elements
                         int elemType = fmds[i].getElement().getTypeCode();
-                        for (Iterator ci = c.iterator(); ci.hasNext();) {
+                        for (Object o : c) {
                             out.write("<element>");
-                            writeDataValue(out, elemType, ci.next());
+                            writeDataValue(out, elemType, o);
                             out.write("</element>");
                         }
                         break;
@@ -221,8 +220,8 @@ public class XMLFileHandler {
                         Collection entries = m.entrySet();
                         int keyType = fmds[i].getKey().getTypeCode();
                         int valueType = fmds[i].getElement().getTypeCode();
-                        for (Iterator ei = entries.iterator(); ei.hasNext();) {
-                            Map.Entry e = (Map.Entry) ei.next();
+                        for (Object entry : entries) {
+                            Map.Entry e = (Map.Entry) entry;
                             out.write("<key>");
                             writeDataValue(out, keyType, e.getKey());
                             out.write("</key>");
@@ -234,7 +233,7 @@ public class XMLFileHandler {
 
                     default:
                         writeDataValue(out, fmds[i].getTypeCode(),
-                            obj.getField(i));
+                                obj.getField(i));
                 }
                 out.write("</field>");
             }

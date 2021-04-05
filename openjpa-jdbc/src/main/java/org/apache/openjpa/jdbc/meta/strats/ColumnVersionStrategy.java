@@ -162,8 +162,9 @@ public abstract class ColumnVersionStrategy
         		templates[i].setIdentifier(infoColumn.getIdentifier());
         	}
         	Column[] cols = info.getColumns(vers, templates, adapt);
-        	for (int i = 0; i < cols.length; i++)
-        		cols[i].setVersionStrategy(this);
+            for (Column col : cols) {
+                col.setVersionStrategy(this);
+            }
         	vers.setColumns(cols);
         	vers.setColumnIO(info.getColumnIO());
         } else {

@@ -1096,8 +1096,8 @@ public class XMLPersistenceMetaDataParser
             meta = repos.addMetaData(_cls, accessCode, metaDataComplete);
             FieldMetaData[] fmds = meta.getFields();
             if (metaDataComplete) {
-                for (int i = 0; i < fmds.length; i++) {
-                    fmds[i].setExplicit(true);
+                for (FieldMetaData fmd : fmds) {
+                    fmd.setExplicit(true);
                 }
             }
             meta.setEnvClassLoader(_envLoader);
@@ -2186,16 +2186,16 @@ public class XMLPersistenceMetaDataParser
             adapter = new MethodLifecycleCallbacks(_cls,
                 attrs.getValue("method-name"), false);
 
-        for (int i = 0; i < events.length; i++) {
-            int event = events[i];
+        for (int event : events) {
             if (_listener != null) {
                 MetaDataParsers.validateMethodsForSameCallback(_listener,
-                    _callbacks[event], ((BeanLifecycleCallbacks) adapter).
-                    getCallbackMethod(), callback, _conf, getLog());
-            } else {
+                        _callbacks[event], ((BeanLifecycleCallbacks) adapter).
+                                getCallbackMethod(), callback, _conf, getLog());
+            }
+            else {
                 MetaDataParsers.validateMethodsForSameCallback(_cls,
-                    _callbacks[event], ((MethodLifecycleCallbacks) adapter).
-                    getCallbackMethod(), callback, _conf, getLog());
+                        _callbacks[event], ((MethodLifecycleCallbacks) adapter).
+                                getCallbackMethod(), callback, _conf, getLog());
 
             }
             if (_callbacks[event] == null)

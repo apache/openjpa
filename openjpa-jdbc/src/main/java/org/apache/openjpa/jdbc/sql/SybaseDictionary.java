@@ -227,8 +227,8 @@ public class SybaseDictionary
 
         Unique[] unqs = table.getUniques();
         String unqStr;
-        for (int i = 0; i < unqs.length; i++) {
-            unqStr = getUniqueConstraintSQL(unqs[i]);
+        for (Unique unq : unqs) {
+            unqStr = getUniqueConstraintSQL(unq);
             if (unqStr != null)
                 buf.append(", ").append(unqStr);
         }
@@ -278,9 +278,9 @@ public class SybaseDictionary
         // dynamic schema factory, where getting a column by name creates
         // that column
         Column[] cols = table.getColumns();
-        for (int i = 0; i < cols.length; i++)
-            if (identityColumnName.equalsIgnoreCase(cols[i].getIdentifier().getName()))
-                cols[i].ref();
+        for (Column col : cols)
+            if (identityColumnName.equalsIgnoreCase(col.getIdentifier().getName()))
+                col.ref();
     }
 
     @Override

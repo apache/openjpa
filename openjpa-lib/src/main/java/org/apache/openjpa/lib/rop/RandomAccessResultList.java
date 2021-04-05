@@ -204,8 +204,9 @@ public class RandomAccessResultList extends AbstractNonSequentialResultList {
         if (_full != null)
             return new ListResultList(Arrays.asList(_full));
         ArrayList list = new ArrayList();
-        for (Iterator itr = iterator(); itr.hasNext();)
-            list.add(itr.next());
+        for (Object o : this) {
+            list.add(o);
+        }
         return list;
     }
 

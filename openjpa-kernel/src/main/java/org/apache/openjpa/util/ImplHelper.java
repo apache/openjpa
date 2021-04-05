@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -97,18 +96,20 @@ public class ImplHelper {
         Collection failed = null;
         OpenJPAStateManager sm;
         LockManager lm;
-        for (Iterator itr = sms.iterator(); itr.hasNext();) {
-            sm = (OpenJPAStateManager) itr.next();
+        for (Object o : sms) {
+            sm = (OpenJPAStateManager) o;
             if (sm.getManagedInstance() == null) {
                 if (!store.initialize(sm, state, fetch, context))
                     failed = addFailedId(sm, failed);
-            } else if (load != StoreManager.FORCE_LOAD_NONE
-                || sm.getPCState() == PCState.HOLLOW) {
+            }
+            else if (load != StoreManager.FORCE_LOAD_NONE
+                    || sm.getPCState() == PCState.HOLLOW) {
                 lm = sm.getContext().getLockManager();
                 if (!store.load(sm, sm.getUnloaded(fetch), fetch,
-                    lm.getLockLevel(sm), context))
+                        lm.getLockLevel(sm), context))
                     failed = addFailedId(sm, failed);
-            } else if (!store.exists(sm, context))
+            }
+            else if (!store.exists(sm, context))
                 failed = addFailedId(sm, failed);
         }
         return (failed == null) ? Collections.EMPTY_LIST : failed;

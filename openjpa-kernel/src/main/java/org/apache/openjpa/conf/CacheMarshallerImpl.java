@@ -80,8 +80,9 @@ public class CacheMarshallerImpl
 
             if (o != null && o.getClass().isArray()) {
                 Object[] array = (Object[]) o;
-                for (int i = 0; i < array.length; i++)
-                    configure(array[i]);
+                for (Object value : array) {
+                    configure(value);
+                }
             } else {
                 configure(o);
             }

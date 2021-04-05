@@ -88,9 +88,8 @@ public class TestFakeRemoteEvents extends AbstractTestCase {
                 s, null, null, null));
 
         boolean pass = false;
-        for (Iterator iter = transactionListener.added.iterator(); iter
-            .hasNext();) {
-            if (iter.next().equals(oid)) {
+        for (Object item : transactionListener.added) {
+            if (item.equals(oid)) {
                 pass = true;
                 break;
             }
@@ -106,9 +105,8 @@ public class TestFakeRemoteEvents extends AbstractTestCase {
                 null, null, s, null));
 
         pass = false;
-        for (Iterator iter = transactionListener.updated.iterator(); iter
-            .hasNext();) {
-            if (iter.next().equals(oid)) {
+        for (Object value : transactionListener.updated) {
+            if (value.equals(oid)) {
                 pass = true;
                 break;
             }
@@ -124,9 +122,8 @@ public class TestFakeRemoteEvents extends AbstractTestCase {
                 null, null, null, s));
 
         pass = false;
-        for (Iterator iter = transactionListener.deleted.iterator(); iter
-            .hasNext();) {
-            if (iter.next().equals(oid)) {
+        for (Object o : transactionListener.deleted) {
+            if (o.equals(oid)) {
                 pass = true;
                 break;
             }
@@ -159,8 +156,7 @@ public class TestFakeRemoteEvents extends AbstractTestCase {
         endTx(pm);
 
         boolean pass = false;
-        for (Iterator iter = provider.added.iterator(); iter.hasNext();) {
-            Object added = iter.next();
+        for (Object added : provider.added) {
             if (equals(added, oid)) {
                 pass = true;
                 break;

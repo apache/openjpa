@@ -154,9 +154,9 @@ public class TestTCPRemoteClassChanges
         }
 
         // add them, a commit per object
-        for (int i = 0; i < persistables.length; i++) {
+        for (RuntimeTest1 persistable : persistables) {
             startTx(pm);
-            pm.persist(persistables[i]);
+            pm.persist(persistable);
             endTx(pm);
         }
 
@@ -176,9 +176,9 @@ public class TestTCPRemoteClassChanges
         }
 
         // add them
-        for (int i = 0; i < persistables.length; i++) {
+        for (RuntimeTest1 runtimeTest1 : persistables) {
             startTx(pm);
-            pm.persist(persistables[i]);
+            pm.persist(runtimeTest1);
             endTx(pm);
         }
 
@@ -190,9 +190,9 @@ public class TestTCPRemoteClassChanges
         }
 
         // delete them
-        for (int i = 0; i < persistables.length; i++) {
+        for (RuntimeTest1 persistable : persistables) {
             startTx(pm);
-            pm.remove(persistables[i]);
+            pm.remove(persistable);
             endTx(pm);
         }
     }

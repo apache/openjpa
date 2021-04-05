@@ -45,9 +45,9 @@ public class BrokerFactoryValue
         Map<String, String> aliases = new HashMap<>();
         aliases.put("abstractstore", AbstractStoreBrokerFactory.class.getName());
         ProductDerivation[] ds = ProductDerivations.getProductDerivations();
-        for (int i = 0; i < ds.length; i++) {
-            if (ds[i] instanceof OpenJPAProductDerivation)
-                ((OpenJPAProductDerivation) ds[i]).putBrokerFactoryAliases(aliases);
+        for (ProductDerivation d : ds) {
+            if (d instanceof OpenJPAProductDerivation)
+                ((OpenJPAProductDerivation) d).putBrokerFactoryAliases(aliases);
         }
 
         _aliases = new String[aliases.size() * 2];

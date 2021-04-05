@@ -61,13 +61,11 @@ public class TestAbstractJoinedAppId
         String query = "select s from RelationOwner r join r.supers s where TYPE(s) = Subclass";
         List rs = em.createQuery(query).getResultList();
         assertTrue(rs.size() > 0);
-        for (int i = 0; i < rs.size(); i++)
-            assertTrue(rs.get(i) instanceof Subclass);
+        for (Object o : rs) assertTrue(o instanceof Subclass);
         query = "select s from Superclass s where TYPE(s) = Subclass";
         rs = em.createQuery(query).getResultList();
         assertTrue(rs.size() > 0);
-        for (int i = 0; i < rs.size(); i++)
-            assertTrue(rs.get(i) instanceof Subclass);
+        for (Object r : rs) assertTrue(r instanceof Subclass);
         em.close();
     }
 

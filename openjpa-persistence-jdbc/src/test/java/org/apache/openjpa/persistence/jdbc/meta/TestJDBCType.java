@@ -85,24 +85,24 @@ public class TestJDBCType
         SchemaGroup schema = repos.getSchemaGroup();
         Table table = schema.getSchemas()[0].getTables()[0];
         Column[] cols = table.getColumns();
-        for (int i = 0; i < cols.length; i++) {
-            if (cols[i].getName().equalsIgnoreCase("id")
-                || cols[i].getName().equalsIgnoreCase("versn")
-                || cols[i].getName().equalsIgnoreCase("typ"))
+        for (Column col : cols) {
+            if (col.getName().equalsIgnoreCase("id")
+                    || col.getName().equalsIgnoreCase("versn")
+                    || col.getName().equalsIgnoreCase("typ"))
                 continue;
-            if ("longToInt".equalsIgnoreCase(cols[i].getName()))
+            if ("longToInt".equalsIgnoreCase(col.getName()))
                 assertEquals(dict.getPreferredType(JavaTypes.INT),
-                    cols[i].getType());
-            else if ("longToSQL".equalsIgnoreCase(cols[i].getName()))
-                assertEquals("varchar", cols[i].getTypeName());
-            else if ("toClob".equalsIgnoreCase(cols[i].getName()))
+                        col.getType());
+            else if ("longToSQL".equalsIgnoreCase(col.getName()))
+                assertEquals("varchar", col.getTypeName());
+            else if ("toClob".equalsIgnoreCase(col.getName()))
                 assertEquals(dict.getPreferredType(JavaSQLTypes.CLOB),
-                    cols[i].getType());
-            else if ("toBlob".equalsIgnoreCase(cols[i].getName()))
+                        col.getType());
+            else if ("toBlob".equalsIgnoreCase(col.getName()))
                 assertEquals(dict.getPreferredType(JavaSQLTypes.BLOB),
-                    cols[i].getType());
+                        col.getType());
             else
-                fail("Unknown column:" + cols[i].getName());
+                fail("Unknown column:" + col.getName());
         }
     }
 }

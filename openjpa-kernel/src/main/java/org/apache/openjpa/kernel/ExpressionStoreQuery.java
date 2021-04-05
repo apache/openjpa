@@ -152,9 +152,9 @@ public class ExpressionStoreQuery
 
     @Override
     public FilterListener getFilterListener(String tag) {
-        for (int i = 0; i < _listeners.length; i++)
-            if (_listeners[i].getTag().equals(tag))
-                return _listeners[i];
+        for (FilterListener listener : _listeners)
+            if (listener.getTag().equals(tag))
+                return listener;
         return null;
     }
 
@@ -466,8 +466,8 @@ public class ExpressionStoreQuery
             int low = Integer.MAX_VALUE;
             Object obj;
             int val;
-            for (Iterator itr = params.iterator(); itr.hasNext();) {
-                obj = itr.next();
+            for (Object param : params) {
+                obj = param;
                 if (!(obj instanceof Number))
                     return 0; // use 0 base when params are mixed types
 
@@ -510,9 +510,9 @@ public class ExpressionStoreQuery
                 return exps[0].accessPath;
 
             List<ClassMetaData> metas = null;
-            for (int i = 0; i < exps.length; i++)
+            for (QueryExpressions exp : exps)
                 metas = Filters.addAccessPathMetaDatas(metas,
-                    exps[i].accessPath);
+                        exp.accessPath);
             if (metas == null)
                 return StoreQuery.EMPTY_METAS;
             return (ClassMetaData[]) metas.toArray

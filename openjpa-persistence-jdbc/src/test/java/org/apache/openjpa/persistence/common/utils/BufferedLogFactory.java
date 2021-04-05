@@ -97,8 +97,7 @@ public class BufferedLogFactory
                 buffer.iterator().remove();
 
             if (disallowedMessages.size() > 0) {
-                for (Iterator<String> i = disallowedMessages.iterator(); i.hasNext();) {
-                    String regex = i.next();
+                for (String regex : disallowedMessages) {
                     AbstractTestCase.assertNotMatches(regex, message);
                 }
             }

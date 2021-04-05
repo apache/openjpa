@@ -86,8 +86,7 @@ public class TestUniteratedQueryResult
         endTx(pm2);
 
         assertEquals(1, res.size());
-        for (Iterator itr = res.iterator(); itr.hasNext();)
-            assertEquals(oid1, pm2.getObjectId(itr.next()));
+        for (Object re : res) assertEquals(oid1, pm2.getObjectId(re));
         endEm(pm2);
         endEm(pm);
 

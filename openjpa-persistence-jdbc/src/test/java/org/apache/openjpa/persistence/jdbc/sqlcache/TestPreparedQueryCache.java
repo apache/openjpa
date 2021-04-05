@@ -146,25 +146,25 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
 	        company.setName(COMPANY_NAMES[i]);
 	        company.setStartYear(START_YEARS[i]);
 	        em.persist(company);
-	        for (int j = 0; j < DEPARTMENT_NAMES.length; j++) {
-	            Department dept = new Department();
-	            dept.setName(DEPARTMENT_NAMES[j]);
-	            company.addDepartment(dept);
-	            em.persist(dept);
-	            for (int k = 0; k < EMPLOYEE_NAMES.length; k++) {
-	                Employee emp = new Employee();
-	                emp.setName(EMPLOYEE_NAMES[k]);
-	                emp.setStartDate(EMPLOYEE_START_DATES[k]);
-	                emp.setEndDate(EMPLOYEE_END_DATES[k]);
+            for (String departmentName : DEPARTMENT_NAMES) {
+                Department dept = new Department();
+                dept.setName(departmentName);
+                company.addDepartment(dept);
+                em.persist(dept);
+                for (int k = 0; k < EMPLOYEE_NAMES.length; k++) {
+                    Employee emp = new Employee();
+                    emp.setName(EMPLOYEE_NAMES[k]);
+                    emp.setStartDate(EMPLOYEE_START_DATES[k]);
+                    emp.setEndDate(EMPLOYEE_END_DATES[k]);
 
-	                Address addr = new Address();
-	                addr.setCity(CITY_NAMES[k]);
+                    Address addr = new Address();
+                    addr.setCity(CITY_NAMES[k]);
                     em.persist(emp);
-	                em.persist(addr);
-	                emp.setAddress(addr);
+                    em.persist(addr);
+                    emp.setAddress(addr);
                     dept.addEmployees(emp);
-	            }
-	        }
+                }
+            }
 	    }
         Person p1 = new Person("John", "Doe", (short)45, 1964);
         Person p2 = new Person("John", "Doe", (short)42, 1967);
@@ -265,14 +265,14 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
 
         List<Employee> rs1 = em.createQuery(jpql).setParameter("param", param1).getResultList();
 
-        for (int i = 0; i < rs1.size(); i++) {
-            Employee e = (Employee) rs1.get(i);
+        for (Employee employee2 : rs1) {
+            Employee e = (Employee) employee2;
             assertFalse(e.getDepartment().getName().equals("Engineering"));
         }
 
         List<Employee> rs2 = (List<Employee>) em.createQuery(jpql).setParameter("param", param2).getResultList();
-        for (int i = 0; i < rs2.size(); i++) {
-            Employee e = (Employee) rs2.get(i);
+        for (Employee employee1 : rs2) {
+            Employee e = (Employee) employee1;
             assertFalse(e.getDepartment().getName().equals("Sales"));
         }
 
@@ -283,8 +283,8 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
         query.setParameter("p2", param1.get(1));
         query.setParameter("p3", param1.get(2));
         List<Employee> rs3 = query.getResultList();
-        for (int i = 0; i < rs3.size(); i++) {
-            Employee e = (Employee) rs3.get(i);
+        for (Employee element : rs3) {
+            Employee e = (Employee) element;
             assertTrue(e.getDepartment().getName().equals("Marketing"));
         }
 
@@ -294,8 +294,8 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
         query.setParameter("p2", param2.get(1));
         query.setParameter("p3", param2.get(2));
         List<Employee> rs4 = query.getResultList();
-        for (int i = 0; i < rs4.size(); i++) {
-            Employee e = (Employee) rs4.get(i);
+        for (Employee employee : rs4) {
+            Employee e = (Employee) employee;
             assertTrue(e.getDepartment().getName().equals("Engineering"));
         }
 
@@ -313,8 +313,8 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
         Query qry = em.createQuery(jpql6);
         qry.setParameter(1, parm1);
         List<Child> c1 = qry.getResultList();
-        for (int i = 0; i < c1.size(); i++) {
-            Child child = (Child) c1.get(i);
+        for (Child item : c1) {
+            Child child = (Child) item;
             assertTrue(child.getParent().getId() < 3);
         }
 
@@ -322,8 +322,8 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
         qry = em.createQuery(jpql6);
         qry.setParameter(1, parm2);
         List<Child> c2 = qry.getResultList();
-        for (int i = 0; i < c2.size(); i++) {
-            Child child = (Child) c2.get(i);
+        for (Child value : c2) {
+            Child child = (Child) value;
             assertTrue(child.getParent().getId() > 4);
         }
 
@@ -342,8 +342,8 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
         List<Employee> rs1 =
             em.createQuery(jpql).setParameter("param", param1).getResultList();
 
-        for (int i = 0; i < rs1.size(); i++) {
-            Employee e = (Employee) rs1.get(i);
+        for (Employee employee : rs1) {
+            Employee e = (Employee) employee;
             assertFalse(e.getDepartment().getName().equals("Engineering"));
         }
 

@@ -155,9 +155,9 @@ public final class ObjectData
 
                 // populate the proxy collection with our stored data,
                 // converting it to the right type from its stored form
-                for (Iterator itr = c.iterator(); itr.hasNext();)
-                    c2.add(toNestedLoadable(sm, fmd.getElement(), itr.next(),
-                        fetch));
+                for (Object value : c)
+                    c2.add(toNestedLoadable(sm, fmd.getElement(), value,
+                            fetch));
                 return c2;
 
             case JavaTypes.ARRAY:
@@ -189,11 +189,11 @@ public final class ObjectData
 
                 // populate the proxy map with our stored data, converting
                 // it to the right type from its stored form
-                for (Iterator itr = m.entrySet().iterator(); itr.hasNext();) {
-                    Map.Entry e = (Map.Entry) itr.next();
-                    m2.put(toNestedLoadable(sm, fmd.getKey(), e.getKey(),fetch),
-                        toNestedLoadable(sm, fmd.getElement(), e.getValue(),
-                            fetch));
+                for (Object o : m.entrySet()) {
+                    Map.Entry e = (Map.Entry) o;
+                    m2.put(toNestedLoadable(sm, fmd.getKey(), e.getKey(), fetch),
+                            toNestedLoadable(sm, fmd.getElement(), e.getValue(),
+                                    fetch));
                 }
                 return m2;
 
@@ -272,8 +272,9 @@ public final class ObjectData
                 // create a collection to copy the elements into for storage,
                 // and populate it with converted element values
                 Collection c2 = new ArrayList();
-                for (Iterator itr = c.iterator(); itr.hasNext();)
-                    c2.add(toNestedStorable(fmd.getElement(), itr.next(), ctx));
+                for (Object value : c) {
+                    c2.add(toNestedStorable(fmd.getElement(), value, ctx));
+                }
                 return c2;
 
             case JavaTypes.ARRAY:
@@ -291,10 +292,10 @@ public final class ObjectData
                 // create a map to copy the entries into for storage, and
                 // populate it with converted entry values
                 Map m2 = new HashMap();
-                for (Iterator itr = m.entrySet().iterator(); itr.hasNext();) {
-                    Map.Entry e = (Map.Entry) itr.next();
+                for (Object o : m.entrySet()) {
+                    Map.Entry e = (Map.Entry) o;
                     m2.put(toNestedStorable(fmd.getKey(), e.getKey(), ctx),
-                        toNestedStorable(fmd.getElement(), e.getValue(), ctx));
+                            toNestedStorable(fmd.getElement(), e.getValue(), ctx));
                 }
                 return m2;
 

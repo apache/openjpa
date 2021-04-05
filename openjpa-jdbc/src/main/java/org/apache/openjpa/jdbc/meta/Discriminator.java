@@ -191,8 +191,9 @@ public class Discriminator
      * Increment the reference count of used schema components.
      */
     public void refSchemaComponents() {
-        for (int i = 0; i < _cols.length; i++)
-            _cols[i].ref();
+        for (Column col : _cols) {
+            col.ref();
+        }
     }
 
     /**

@@ -928,10 +928,10 @@ public class AnnotationPersistenceMetaDataParser
             Field[] fields = (Field[]) AccessController.doPrivileged(
                 J2DoPrivHelper.getDeclaredFieldsAction(
                     meta.getDescribedType()));
-            for (int i = 0; i < fields.length; i++)
+            for (Field field : fields)
                 if (AccessController.doPrivileged(J2DoPrivHelper
-                        .isAnnotationPresentAction(fields[i], DetachedState.class)))
-                    meta.setDetachedState(fields[i].getName());
+                        .isAnnotationPresentAction(field, DetachedState.class)))
+                    meta.setDetachedState(field.getName());
         }
     }
 
@@ -982,8 +982,7 @@ public class AnnotationPersistenceMetaDataParser
         MethodKey key;
         Set<MethodKey> seen = new HashSet<>();
         do {
-            for (Method m : (Method[]) AccessController.doPrivileged(
-                J2DoPrivHelper.getDeclaredMethodsAction(sup))) {
+            for (Method m : (Method[]) AccessController.doPrivileged(J2DoPrivHelper.getDeclaredMethodsAction(sup))) {
                 mods = m.getModifiers();
                 if (Modifier.isStatic(mods) || Modifier.isFinal(mods) ||
                     Object.class.equals(m.getDeclaringClass()))
@@ -1014,18 +1013,18 @@ public class AnnotationPersistenceMetaDataParser
                     callbacks = (Collection<LifecycleCallbacks>[])
                         new Collection[LifecycleEvent.ALL_EVENTS.length];
 
-                for (int i = 0; i < events.length; i++) {
-                    int e = events[i];
+                for (int e : events) {
                     if (callbacks[e] == null)
                         callbacks[e] = new ArrayList<>(3);
                     MetaDataParsers.validateMethodsForSameCallback(cls,
-                        callbacks[e], m, tag, conf, repos.getLog());
+                            callbacks[e], m, tag, conf, repos.getLog());
                     if (listener) {
                         callbacks[e].add(new BeanLifecycleCallbacks(cls, m,
-                            false));
-                    } else {
+                                false));
+                    }
+                    else {
                         callbacks[e].add(new MethodLifecycleCallbacks(m,
-                            false));
+                                false));
                     }
                 }
             }

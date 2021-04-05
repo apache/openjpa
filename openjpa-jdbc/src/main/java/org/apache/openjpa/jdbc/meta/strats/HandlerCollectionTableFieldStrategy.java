@@ -260,9 +260,9 @@ public class HandlerCollectionTableFieldStrategy
             Row delRow = rm.getSecondaryRow(field.getTable(),
                 Row.ACTION_DELETE);
             delRow.whereForeignKey(field.getJoinForeignKey(), sm);
-            for (Iterator itr = rem.iterator(); itr.hasNext();) {
-                HandlerStrategies.where(elem, itr.next(), store, delRow,
-                    _cols);
+            for (Object o : rem) {
+                HandlerStrategies.where(elem, o, store, delRow,
+                        _cols);
                 rm.flushSecondaryRow(delRow);
             }
         }

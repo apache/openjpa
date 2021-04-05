@@ -202,14 +202,14 @@ public class Reflection {
         Method[] methods = (Method[]) AccessController.doPrivileged(
             J2DoPrivHelper.getDeclaredMethodsAction(cls));
         Method candidate = null;
-        for (int i = 0 ; i < methods.length; i++) {
-    	    if (name.equals(methods[i].getName())) {
-                Class[] methodParams = methods[i].getParameterTypes();
+        for (Method method : methods) {
+            if (name.equals(method.getName())) {
+                Class[] methodParams = method.getParameterTypes();
                 if (param == null && methodParams.length == 0)
-                    candidate = mostDerived(methods[i], candidate);
+                    candidate = mostDerived(method, candidate);
                 else if (param != null && methodParams.length == 1
-                    && param.equals(methodParams[0]))
-                    candidate = mostDerived(methods[i], candidate);
+                        && param.equals(methodParams[0]))
+                    candidate = mostDerived(method, candidate);
             }
         }
         return candidate;
@@ -279,9 +279,9 @@ public class Reflection {
     private static Field getDeclaredField(Class cls, String name) {
         Field[] fields = AccessController.doPrivileged(
             J2DoPrivHelper.getDeclaredFieldsAction(cls));
-        for (int i = 0 ; i < fields.length; i++) {
-    	    if (name.equals(fields[i].getName()))
-		        return fields[i];
+        for (Field field : fields) {
+            if (name.equals(field.getName()))
+                return field;
         }
         return null;
     }

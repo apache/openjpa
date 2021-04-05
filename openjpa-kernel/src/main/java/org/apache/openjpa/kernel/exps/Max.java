@@ -19,7 +19,6 @@
 package org.apache.openjpa.kernel.exps;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * Find the max.
@@ -48,8 +47,8 @@ class Max
     protected Object operate(Collection os, Class c) {
         Comparable max = null;
         Comparable cur;
-        for (Iterator itr = os.iterator(); itr.hasNext();) {
-            cur = (Comparable) itr.next();
+        for (Object o : os) {
+            cur = (Comparable) o;
             if (cur != null && (max == null || max.compareTo(cur) < 0))
                 max = cur;
         }

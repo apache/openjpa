@@ -173,15 +173,13 @@ public class TestTablePerClassInheritanceWithAbstractRoot extends
                 "TYPE(tr) = EnglishParagraph";
         List rs = em.createQuery(query).getResultList();
         assertEquals(2, rs.size());
-        for (int i=0; i < rs.size(); i++)
-            assertTrue(rs.get(i) instanceof EnglishParagraph);
+        for (Object o : rs) assertTrue(o instanceof EnglishParagraph);
 
         query = "select distinct tr from Translatable tr join tr.translations t where " +
             "TYPE(tr) = EnglishParagraph or TYPE(tr) = FrenchParagraph";
         rs = em.createQuery(query).getResultList();
         assertEquals(2, rs.size());
-        for (int i=0; i < rs.size(); i++)
-            assertTrue(!(rs.get(i) instanceof GermanParagraph));
+        for (Object r : rs) assertTrue(!(r instanceof GermanParagraph));
 
         query = "select distinct tr from Translatable tr join tr.translations t where " +
             "TYPE(tr) in (?1, ?2)";

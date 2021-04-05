@@ -228,8 +228,8 @@ public class TestIndex extends SingleEMFTestCase {
             // create the elements to add
             Constructor<INameEntity> elementConstrctor = elementClass.getConstructor(String.class);
             List<INameEntity> newElements = new ArrayList<>();
-            for (int i=0; i<Element_Names.length; i++) {
-                newElements.add(elementConstrctor.newInstance(Element_Names[i]));
+            for (String element_name : Element_Names) {
+                newElements.add(elementConstrctor.newInstance(element_name));
             }
 
             // add the entities
@@ -293,8 +293,8 @@ public class TestIndex extends SingleEMFTestCase {
             Constructor<IColumnEntity> elementConstrctor = elementClass.getConstructor(String.class);
             List<INameEntity> newElements = new ArrayList<>();
             IColumnEntity newElement;
-            for (int i=0; i<Element_Names.length; i++) {
-                newElement = elementConstrctor.newInstance(Element_Names[i]);
+            for (String element_name : Element_Names) {
+                newElement = elementConstrctor.newInstance(element_name);
                 // add parent relationships
                 newElement.setEntities(newEntities);
                 em.persist(newElement);
@@ -344,8 +344,8 @@ public class TestIndex extends SingleEMFTestCase {
             IOrderedElements newEntity = (IOrderedElements)constructNewEntityObject(entityType);
             newEntity.setId(entityId);
             List<String> namesList = new ArrayList<>();
-            for (int i=0; i<Element_Names.length; i++) {
-                namesList.add(Element_Names[i]);
+            for (String element_name : Element_Names) {
+                namesList.add(element_name);
             }
             newEntity.setListElements(namesList);
             // add the entity

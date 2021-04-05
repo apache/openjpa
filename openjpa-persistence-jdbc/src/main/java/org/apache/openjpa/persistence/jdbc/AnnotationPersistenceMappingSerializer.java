@@ -141,16 +141,14 @@ public class AnnotationPersistenceMappingSerializer
     @Override
     public void addAll(MetaDataRepository repos) {
         super.addAll(repos);
-        for (QueryResultMapping res : ((MappingRepository) repos)
-            .getQueryResultMappings())
+        for (QueryResultMapping res : ((MappingRepository) repos).getQueryResultMappings())
             addQueryResultMapping(res);
     }
 
     @Override
     public boolean removeAll(MetaDataRepository repos) {
         boolean removed = super.removeAll(repos);
-        for (QueryResultMapping res : ((MappingRepository) repos)
-            .getQueryResultMappings())
+        for (QueryResultMapping res : ((MappingRepository) repos).getQueryResultMappings())
             removed |= removeQueryResultMapping(res);
         return removed;
     }

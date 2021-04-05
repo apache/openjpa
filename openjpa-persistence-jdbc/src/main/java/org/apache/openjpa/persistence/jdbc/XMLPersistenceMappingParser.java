@@ -1514,11 +1514,12 @@ public class XMLPersistenceMappingParser
         if (_deferredMappings.size() > 0) {
             Set<Class<?>> keys = _deferredMappings.keySet();
             Class<?>[] classes = keys.toArray(new Class[keys.size()]);
-            for (int i = 0; i < classes.length; i++) {
+            for (Class<?> aClass : classes) {
                 try {
-                    applyDeferredEmbeddableOverrides(classes[i]);
-                } catch (Exception e) {
-                    throw new MetaDataException(_loc.get("no-embeddable-metadata", classes[i].getName()), e);
+                    applyDeferredEmbeddableOverrides(aClass);
+                }
+                catch (Exception e) {
+                    throw new MetaDataException(_loc.get("no-embeddable-metadata", aClass.getName()), e);
                 }
             }
         }

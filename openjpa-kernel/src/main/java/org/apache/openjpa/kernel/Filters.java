@@ -832,18 +832,19 @@ public class Filters {
         // at least it's n^2 of a small n...
         ClassMetaData meta;
         boolean add;
-        for (int i = 0; i < path.length; i++) {
+        for (ClassMetaData classMetaData : path) {
             add = true;
             for (int j = 0; add && j < last; j++) {
                 meta = metas.get(j);
 
-                if (meta.getDescribedType().isAssignableFrom(path[i].getDescribedType())) {
+                if (meta.getDescribedType().isAssignableFrom(classMetaData.getDescribedType())) {
                     // list already contains base class
                     add = false;
-                } else if (path[i].getDescribedType().isAssignableFrom(meta.getDescribedType())) {
+                }
+                else if (classMetaData.getDescribedType().isAssignableFrom(meta.getDescribedType())) {
                     // this element replaces its subclass
                     add = false;
-                    metas.set(j, path[i]);
+                    metas.set(j, classMetaData);
                 }
             }
 
@@ -851,7 +852,7 @@ public class Filters {
             // list and path element didn't replace a subclass in the
             // list, then add it now as a new base
             if (add)
-                metas.add(path[i]);
+                metas.add(classMetaData);
         }
         return metas;
     }

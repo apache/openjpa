@@ -365,43 +365,39 @@ public class TestSecondClassValues extends BaseKernelTest {
         assertNotNull("Map is null in setGetMap", smap);
         commit();
 
-        for (Iterator mapKey = ((HashMap) map.clone()).keySet().iterator();
-            mapKey.hasNext();) {
-            Object keyToDelete = mapKey.next();
-
+        for (Object keyToDelete : ((HashMap) map.clone()).keySet()) {
             begin();
             SCOTest retrievedObject =
-                (SCOTest) pm.find(SCOTest.class, testID);
+                    (SCOTest) pm.find(SCOTest.class, testID);
 
             assertNotNull(
-                "retrievedObject Obj is null - saveSecondClassMapInternal",
-                retrievedObject);
+                    "retrievedObject Obj is null - saveSecondClassMapInternal",
+                    retrievedObject);
 
             Map retrievedMap = setGetMap(retrievedObject, map, false);
 
             assertNotNull(
-                "retrievedMap Obj is null - saveSecondClassMapInternal",
-                retrievedMap);
+                    "retrievedMap Obj is null - saveSecondClassMapInternal",
+                    retrievedMap);
 
             assertTrue(map.size() != 0);
             assertEquals(map.size(), retrievedMap.size());
 
             assertTrue("Incompatible types", map.keySet().iterator().next().
-                getClass().isAssignableFrom(retrievedMap.keySet().
-                iterator().next().getClass()));
+                    getClass().isAssignableFrom(retrievedMap.keySet().
+                    iterator().next().getClass()));
 
             // check to make sure all the keys match up to the appropriate
             // values.
-            for (Iterator i = map.keySet().iterator(); i.hasNext();) {
-                Object key = i.next();
+            for (Object key : map.keySet()) {
                 assertTrue(key != null);
                 assertTrue(map.get(key) != null);
                 if (key.getClass() == Date.class
-                    && retrievedMap.get(key) == null) {
+                        && retrievedMap.get(key) == null) {
                     getLog().trace("Time: "
-                        + (((Date) key).getTime()));
+                            + (((Date) key).getTime()));
                     getLog().trace("List: "
-                        + dumpDates(retrievedMap.keySet()));
+                            + dumpDates(retrievedMap.keySet()));
 
                     /*
                         bug (6, "Dates lose precision in some data stores "
@@ -410,9 +406,9 @@ public class TestSecondClassValues extends BaseKernelTest {
                     */
                 }
                 if ((key.getClass() == Double.class ||
-                    key.getClass() == Float.class ||
-                    key.getClass() == BigDecimal.class)
-                    && retrievedMap.get(key) == null) {
+                        key.getClass() == Float.class ||
+                        key.getClass() == BigDecimal.class)
+                        && retrievedMap.get(key) == null) {
                     /*
                          bug (3, "Doubles and Floats "
                              + " lose precision in some data stores");
@@ -420,13 +416,13 @@ public class TestSecondClassValues extends BaseKernelTest {
                 }
 
                 assertTrue("The original map contained the object (class="
-                    + key.getClass().getName() + ", value="
-                    + key.toString() + "), but that object was null "
-                    + "in the map that was retrieved "
-                    + dump(retrievedMap.keySet()) + ".",
-                    retrievedMap.get(key) != null);
+                                + key.getClass().getName() + ", value="
+                                + key.toString() + "), but that object was null "
+                                + "in the map that was retrieved "
+                                + dump(retrievedMap.keySet()) + ".",
+                        retrievedMap.get(key) != null);
                 assertClassAndValueEquals(
-                    map.get(key), retrievedMap.get(key));
+                        map.get(key), retrievedMap.get(key));
             }
 
             // now delete the first key in both maps, and make sure

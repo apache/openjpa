@@ -136,8 +136,8 @@ public class ClassAnnotationMetaDataFilter implements MetaDataFilter {
      * Return whether the given annotation matches our candidates.
      */
     private boolean matchAnnotation(String name) {
-        for (int i = 0; i < _annos.length; i++)
-            if (name.equals(_annos[i]))
+        for (String anno : _annos)
+            if (name.equals(anno))
                 return true;
         return false;
     }

@@ -287,9 +287,11 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
         lock();
         try {
             clearBinding();
-            if (params != null)
-                for (Map.Entry e : (Set<Map.Entry>) params.entrySet())
+            if (params != null) {
+                for (Map.Entry e : (Set<Map.Entry>) params.entrySet()) {
                     setParameter((String) e.getKey(), e.getValue());
+                }
+            }
             return this;
         } finally {
             unlock();

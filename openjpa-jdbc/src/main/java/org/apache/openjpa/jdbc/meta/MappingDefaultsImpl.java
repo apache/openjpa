@@ -743,8 +743,9 @@ public class MappingDefaultsImpl
     @Override
     public void populateColumns(ValueMapping vm, DBIdentifier name, Table table,
         Column[] cols) {
-        for (int i = 0; i < cols.length; i++)
-            correctName(table, cols[i]);
+        for (Column col : cols) {
+            correctName(table, col);
+        }
     }
 
     @Override
@@ -852,8 +853,8 @@ public class MappingDefaultsImpl
      * Return whether all the given columns are primary key columns.
      */
     protected boolean areAllPrimaryKeyColumns(Column[] cols) {
-        for (int i = 0; i < cols.length; i++)
-            if (!cols[i].isPrimaryKey())
+        for (Column col : cols)
+            if (!col.isPrimaryKey())
                 return false;
         return true;
     }

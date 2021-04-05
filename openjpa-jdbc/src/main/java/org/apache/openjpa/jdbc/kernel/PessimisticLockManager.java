@@ -185,13 +185,13 @@ public class PessimisticLockManager
     protected void lockJoinTables(List<SQLBuffer> sqls, DBDictionary dict, Object id, ClassMapping mapping,
             JDBCFetchConfiguration fetch, SQLFactory factory) {
         FieldMapping[] fms = mapping.getFieldMappings();
-        for (int i = 0; i < fms.length; i++) {
-            Strategy strat = fms[i].getStrategy();
+        for (FieldMapping fm : fms) {
+            Strategy strat = fm.getStrategy();
             if (strat instanceof ContainerFieldStrategy) {
-                ForeignKey fk = ((ContainerFieldStrategy)strat).getJoinForeignKey();
+                ForeignKey fk = ((ContainerFieldStrategy) strat).getJoinForeignKey();
                 Select select = factory.newSelect();
                 select.select(fk.getColumns());
-                select.whereForeignKey(fk, id, fms[i].getDefiningMapping(), _store);
+                select.whereForeignKey(fk, id, fm.getDefiningMapping(), _store);
                 sqls.add(select.toSelect(true, fetch));
             }
         }

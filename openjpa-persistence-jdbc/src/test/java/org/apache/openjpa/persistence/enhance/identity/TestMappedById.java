@@ -253,10 +253,10 @@ public class TestMappedById extends SingleEMFTestCase {
             "select count (DISTINCT d2) from Dependent2 d2",
         };
 
-        for (int i = 0; i < jpqls.length; i++) {
-            Query q = em.createQuery(jpqls[i]) ;
-            Long o = (Long)q.getSingleResult();
-            int count = (int)o.longValue();
+        for (String jpql : jpqls) {
+            Query q = em.createQuery(jpql);
+            Long o = (Long) q.getSingleResult();
+            int count = (int) o.longValue();
             assertEquals(2, count);
         }
         em.close();

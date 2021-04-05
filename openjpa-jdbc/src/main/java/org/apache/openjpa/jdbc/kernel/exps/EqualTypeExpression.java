@@ -133,10 +133,10 @@ class EqualTypeExpression
             val1.getMetaData());
         if (sub.isVerticalStrategy()) {
             ClassMetaData[] subs = cm1.getPCSubclassMetaDatas();
-            for (int i = 0; i < subs.length; i++) {
-                if (!Modifier.isAbstract(subs[i].getDescribedType().getModifiers()) && subs[i] == sub
-                    && !selectFrom.contains(subs[i]))
-                    selectFrom.add(subs[i]);
+            for (ClassMetaData classMetaData : subs) {
+                if (!Modifier.isAbstract(classMetaData.getDescribedType().getModifiers()) && classMetaData == sub
+                        && !selectFrom.contains(classMetaData))
+                    selectFrom.add(classMetaData);
             }
             buf.append("1=1");
             return;

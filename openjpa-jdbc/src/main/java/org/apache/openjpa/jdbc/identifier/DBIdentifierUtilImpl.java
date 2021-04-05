@@ -367,11 +367,11 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
                   (path.getType() != DBIdentifierType.COLUMN &&
                    path.isUnqualifiedObject()))) {
                 DBIdentifier[] names = QualifiedDBIdentifier.splitPath(name);
-                for (int i = 0; i < names.length; i++) {
-                    DBIdentifier sName = names[i].getUnqualifiedName();
+                for (DBIdentifier dbIdentifier : names) {
+                    DBIdentifier sName = dbIdentifier.getUnqualifiedName();
                     if (!sName.isDelimited()) {
                         String pRule = sName.getType().name();
-                        names[i].setName(delimit(pRule, sName.getName(), force));
+                        dbIdentifier.setName(delimit(pRule, sName.getName(), force));
                     }
                 }
                 return QualifiedDBIdentifier.newPath(names).getName();

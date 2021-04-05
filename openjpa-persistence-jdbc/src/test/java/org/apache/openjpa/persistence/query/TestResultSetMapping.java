@@ -47,8 +47,8 @@ public class TestResultSetMapping
         Query q = em.createNamedQuery("findSimpleEntitites");
         List res = q.getResultList();
         assertNotNull(res);
-        for (Iterator resultIter = res.iterator(); resultIter.hasNext();) {
-            assertSame(resultIter.next().getClass(), SimpleEntity.class);
+        for (Object re : res) {
+            assertSame(re.getClass(), SimpleEntity.class);
         }
         em.close();
     }

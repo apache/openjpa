@@ -24,7 +24,6 @@ import java.sql.ResultSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -363,8 +362,9 @@ public class JDBCFetchConfigurationImpl
     public JDBCFetchConfiguration addJoins(Collection<String> joins) {
         if (joins == null || joins.isEmpty())
             return this;
-        for (Iterator<String> itr = joins.iterator(); itr.hasNext();)
-            addJoin(itr.next());
+        for (String join : joins) {
+            addJoin(join);
+        }
         return this;
     }
 
@@ -479,8 +479,9 @@ public class JDBCFetchConfigurationImpl
     public JDBCFetchConfiguration addFetchInnerJoins(Collection<String> joins) {
         if (joins == null || joins.isEmpty())
             return this;
-        for (Iterator<String> itr = joins.iterator(); itr.hasNext();)
-            addFetchInnerJoin(itr.next());
+        for (String join : joins) {
+            addFetchInnerJoin(join);
+        }
         return this;
     }
 }

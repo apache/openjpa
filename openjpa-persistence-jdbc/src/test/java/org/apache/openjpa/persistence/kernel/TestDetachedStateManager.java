@@ -396,8 +396,8 @@ public class TestDetachedStateManager extends BaseKernelTest {
         assertSize(remove ? 1 : 2, b.getDs());
         boolean found1 = false;
         boolean found2 = false;
-        for (Iterator it = b.getDs().iterator(); it.hasNext();) {
-            d = (AttachD) it.next();
+        for (Object o : b.getDs()) {
+            d = (AttachD) o;
             switch (d.getDint()) {
                 case 5:
                     if (found1)

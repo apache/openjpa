@@ -95,9 +95,9 @@ public class TestForeignKeyCountViolation extends SingleEMFTestCase {
         Connection c = ds.getConnection(_conf.getConnectionUserName(),
             _conf.getConnectionPassword());
 
-        for (int i=0; i< fks.length; i++) {
-            fks[i].loadNameFromDB(
-                _conf.getDBDictionaryInstance(), c);
+        for (ForeignKey fk : fks) {
+            fk.loadNameFromDB(
+                    _conf.getDBDictionaryInstance(), c);
         }
 
         assertEquals(b4Count, tableG.getForeignKeys().length);
@@ -155,15 +155,15 @@ public class TestForeignKeyCountViolation extends SingleEMFTestCase {
         ArrayList<String> fkListfromDB = new ArrayList<>();
         ArrayList<String> fkListfromTable = new ArrayList<>();
 
-        for (int i=0; i< fkfromDB.length; i++) {
-            fkListfromDB.add(fkfromDB[i].getName());
+        for (ForeignKey foreignKey : fkfromDB) {
+            fkListfromDB.add(foreignKey.getName());
         }
 
         ForeignKey fks[] = tableG.getForeignKeys();
-        for (int i=0; i< fks.length; i++) {
-            String fkNamefromDB =fks[i].loadNameFromDB(
-                _conf.getDBDictionaryInstance(), c);
-            if( fkNamefromDB != null)
+        for (ForeignKey fk : fks) {
+            String fkNamefromDB = fk.loadNameFromDB(
+                    _conf.getDBDictionaryInstance(), c);
+            if (fkNamefromDB != null)
                 fkListfromTable.add(fkNamefromDB);
         }
 

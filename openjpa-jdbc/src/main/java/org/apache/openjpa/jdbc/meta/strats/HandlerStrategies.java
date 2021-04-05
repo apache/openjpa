@@ -65,8 +65,8 @@ public class HandlerStrategies {
             cols = vinfo.getColumns(vm, colName, cols,
                 vm.getFieldMapping().getTable(), adapt);
             if (vinfo.isImplicitRelation()) {
-                for (int i = 0; i < cols.length; i++) {
-                    cols[i].setImplicitRelation(true);
+                for (Column col : cols) {
+                    col.setImplicitRelation(true);
                 }
             }
             ColumnIO mappedIO = vinfo.getColumnIO();
@@ -171,8 +171,9 @@ public class HandlerStrategies {
 
         val = toDataStoreValue(vm, val, cols, store);
         if (val == null)
-            for (int i = 0; i < cols.length; i++)
-                row.whereNull(cols[i]);
+            for (Column col : cols) {
+                row.whereNull(col);
+            }
         else if (cols.length == 1)
             where(row, cols[0], val);
         else {

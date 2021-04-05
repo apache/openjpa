@@ -259,8 +259,8 @@ public abstract class AbstractTestCase {
     public static List matches(String regex, Collection input)
         throws RESyntaxException {
         List matches = new ArrayList();
-        for (Iterator i = input.iterator(); i.hasNext();) {
-            String check = (String) i.next();
+        for (Object o : input) {
+            String check = (String) o;
             if (matches(regex, check))
                 matches.add(check);
         }

@@ -235,8 +235,8 @@ public class RelationStrategies {
     public static boolean isRelationId(Column[] cols) {
         if (cols == null || cols.length == 0)
             return false;
-        for (int i = 0; i < cols.length; i++) {
-            if (!cols[i].isRelationId())
+        for (Column col : cols) {
+            if (!col.isRelationId())
                 return false;
         }
         return true;

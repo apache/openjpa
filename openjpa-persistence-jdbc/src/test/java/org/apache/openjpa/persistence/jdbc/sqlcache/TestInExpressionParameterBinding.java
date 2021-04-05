@@ -74,9 +74,9 @@ public class TestInExpressionParameterBinding extends SingleEMFTestCase {
     private void createData() {
         OpenJPAEntityManager em = _emf.createEntityManager();
         em.getTransaction().begin();
-        for (int i = 0; i < ORIGINAL_ZIPS.size(); i++) {
+        for (Integer originalZip : ORIGINAL_ZIPS) {
             Address a = new Address();
-            a.setZip(ORIGINAL_ZIPS.get(i));
+            a.setZip(originalZip);
             em.persist(a);
         }
         em.getTransaction().commit();

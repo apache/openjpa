@@ -140,9 +140,9 @@ public class ExtentImpl<T>
                 metas = EMPTY_METAS;
 
             ResultObjectProvider rop;
-            for (int i = 0; i < metas.length; i++) {
-                rop = _broker.getStoreManager().executeExtent(metas[i],
-                    _subs, _fc);
+            for (ClassMetaData classMetaData : metas) {
+                rop = _broker.getStoreManager().executeExtent(classMetaData,
+                        _subs, _fc);
                 if (rop != null)
                     chain.addIterator(new ResultObjectProviderIterator(rop));
             }
@@ -193,12 +193,13 @@ public class ExtentImpl<T>
         lock();
         try {
             CloseableIterator citr;
-            for (Iterator itr = _openItrs.iterator(); itr.hasNext();) {
-                citr = (CloseableIterator) itr.next();
+            for (Object openItr : _openItrs) {
+                citr = (CloseableIterator) openItr;
                 citr.setRemoveOnClose(null);
                 try {
                     citr.close();
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                 }
             }
             _openItrs.clear();

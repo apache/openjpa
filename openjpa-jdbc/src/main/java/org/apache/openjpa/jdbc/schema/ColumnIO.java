@@ -306,8 +306,8 @@ public class ColumnIO implements Serializable {
      */
     private boolean isNullable(ForeignKey fk) {
         Column[] cols = fk.getColumns();
-        for (int i = 0; i < cols.length; i++)
-            if (cols[i].isNotNull() || cols[i].isPrimaryKey())
+        for (Column col : cols)
+            if (col.isNotNull() || col.isPrimaryKey())
                 return false;
         return true;
     }

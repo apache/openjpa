@@ -91,8 +91,8 @@ public class TestDepthFirstAnalysis
 
         int time = 0;
         Object node;
-        for (Iterator itr = nodes.iterator(); itr.hasNext();) {
-            node = itr.next();
+        for (Object o : nodes) {
+            node = o;
             assertTrue(time <= _dfa.getFinishedTime(node));
             time = _dfa.getFinishedTime(node);
         }

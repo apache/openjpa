@@ -91,8 +91,8 @@ public class TestExtents extends BaseKernelTest {
         Extent ext = pm.createExtent(RuntimeTest1.class, true);
 
         boolean foundB = false;
-        for (Iterator i = ext.iterator(); i.hasNext();)
-            if (i.next().getClass().equals(RuntimeTest2.class))
+        for (Object o : ext)
+            if (o.getClass().equals(RuntimeTest2.class))
                 foundB = true;
         assertTrue(foundB);
     }
@@ -102,8 +102,7 @@ public class TestExtents extends BaseKernelTest {
         Extent ext = pm.createExtent(RuntimeTest1.class, true);
 
         List all = new LinkedList();
-        for (Iterator i = ext.iterator(); i.hasNext();)
-            all.add(i.next());
+        for (Object o : ext) all.add(o);
 
         List aList = ext.list();
         assertEquals(all.size(), aList.size());
@@ -117,7 +116,6 @@ public class TestExtents extends BaseKernelTest {
 
         assertEquals(l.size(), size);
 
-        for (Iterator iter = l.iterator(); iter.hasNext();)
-            assertTrue(c.contains(iter.next()));
+        for (Object o : l) assertTrue(c.contains(o));
     }
 }

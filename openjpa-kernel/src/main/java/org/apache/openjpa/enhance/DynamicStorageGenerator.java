@@ -268,8 +268,9 @@ public class DynamicStorageGenerator {
      * Add all the typed set by index method.
      */
     private void addSetMethods(BCClass bc, int[] types, int totalObjects) {
-        for (int i = 0; i < TYPES.length; i++)
-            addSetMethod(TYPES[i], bc, types, totalObjects);
+        for (int type : TYPES) {
+            addSetMethod(type, bc, types, totalObjects);
+        }
     }
 
     /**
@@ -346,8 +347,9 @@ public class DynamicStorageGenerator {
      * Add all typed get by index method for the given fields.
      */
     private void addGetMethods(BCClass bc, int[] types) {
-        for (int i = 0; i < TYPES.length; i++)
-            addGetMethod(TYPES[i], bc, types);
+        for (int type : TYPES) {
+            addGetMethod(type, bc, types);
+        }
     }
 
     /**
@@ -527,10 +529,10 @@ public class DynamicStorageGenerator {
      * Get the wrapper for the given type.
      */
     protected Class getWrapper(Class c) {
-        for (int i = 0; i < WRAPPERS.length; i++) {
-            if (WRAPPERS[i][0].equals (c))
-				return WRAPPERS[i][1];
-		}
+        for (Class[] wrapper : WRAPPERS) {
+            if (wrapper[0].equals(c))
+                return wrapper[1];
+        }
 		return c;
 	}
 }

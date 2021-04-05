@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -315,8 +314,8 @@ public abstract class AbstractQueryCache
         MetaDataRepository repos = conf.getMetaDataRepositoryInstance();
         ClassMetaData meta;
         Object oid;
-        for (Iterator itr = oids.iterator(); itr.hasNext();) {
-            oid = itr.next();
+        for (Object o : oids) {
+            oid = o;
             if (oid instanceof Id)
                 classes.add(((Id) oid).getType());
             else {
@@ -359,8 +358,9 @@ public abstract class AbstractQueryCache
      * Remove all results under the given keys from the cache.
      */
     protected void removeAllInternal(Collection qks) {
-        for (Iterator iter = qks.iterator(); iter.hasNext();)
-            removeInternal((QueryKey) iter.next());
+        for (Object qk : qks) {
+            removeInternal((QueryKey) qk);
+        }
     }
 
     /**

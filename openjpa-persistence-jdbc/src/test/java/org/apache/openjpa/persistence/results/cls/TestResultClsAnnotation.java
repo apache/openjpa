@@ -44,8 +44,8 @@ public class TestResultClsAnnotation extends SQLListenerTestCase {
             List<ResultClsAnnotation> result = q.getResultList();
             assertEquals(1, result.size());
 
-            for (Iterator it = result.iterator(); it.hasNext();) {
-                Object obj = (Object) it.next();
+            for (ResultClsAnnotation resultClsAnnotation : result) {
+                Object obj = (Object) resultClsAnnotation;
                 ResultClsAnnotation ct = (ResultClsAnnotation) obj;
                 assertEquals("id1", ct.getId());
                 assertEquals("description1", ct.getDescription());

@@ -251,9 +251,9 @@ public class TestTCPRemoteRecoveryTransmitAdds
         }
 
         // add them
-        for (int i = 0; i < persistables.length; i++) {
+        for (RuntimeTest1 runtimeTest1 : persistables) {
             startTx(pm);
-            pm.persist(persistables[i]);
+            pm.persist(runtimeTest1);
             endTx(pm);
         }
 
@@ -266,8 +266,8 @@ public class TestTCPRemoteRecoveryTransmitAdds
 
         // delete them
         startTx(pm);
-        for (int i = 0; i < persistables.length; i++) {
-            pm.remove(persistables[i]);
+        for (RuntimeTest1 persistable : persistables) {
+            pm.remove(persistable);
         }
         endTx(pm);
 

@@ -211,8 +211,8 @@ public class TestEntityTypeExpression extends AbstractTestCase {
                 " FROM CompUser e",
         };
 
-        for (int i = 0; i < queries.length; i++) {
-            query = queries[i];
+        for (String s : queries) {
+            query = s;
             List<Object> rs1 = em.createQuery(query).getResultList();
             Object obj = rs1.get(0);
             obj.toString();

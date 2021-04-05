@@ -20,7 +20,6 @@ package org.apache.openjpa.jdbc.schema;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Properties;
 
@@ -219,8 +218,8 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
 
         // now, merge in any passed in properties
         if (props != null && !props.isEmpty()) {
-            for (Iterator<Object> itr = props.keySet().iterator(); itr.hasNext();) {
-                String key = (String)itr.next();
+            for (Object o : props.keySet()) {
+                String key = (String) o;
                 String value = props.getProperty(key);
                 // need to map "user" to "username" for Commons DBCP
                 if ("user".equalsIgnoreCase(key)) {
@@ -231,7 +230,8 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
                 if (existingKey != null) {
                     // update existing entry
                     mergedProps.setProperty(existingKey, value);
-                } else {
+                }
+                else {
                     // add property to the merged set
                     mergedProps.setProperty(key, value);
                 }
@@ -260,8 +260,8 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
     private String hasKey(Properties props, String key, String defaultKey)
     {
         if (props != null && key != null) {
-            for (Iterator<Object> itr = props.keySet().iterator(); itr.hasNext();) {
-                String entry = (String)itr.next();
+            for (Object o : props.keySet()) {
+                String entry = (String) o;
                 if (key.equalsIgnoreCase(entry))
                     return entry;
             }

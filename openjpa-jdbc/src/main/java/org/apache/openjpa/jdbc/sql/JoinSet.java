@@ -108,9 +108,9 @@ class JoinSet {
         // traverse graph
         Node n;
         int idx, sidx;
-        for (int i = 0; i < _graph.size(); i++) {
+        for (Object o : _graph) {
             // seed queue with next set of disconnected joins
-            for (n = (Node) _graph.get(i); n != null; n = n.next) {
+            for (n = (Node) o; n != null; n = n.next) {
                 sidx = getSeenIndex(n.join);
                 if (!seen.get(sidx)) {
                     seen.set(sidx);

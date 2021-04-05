@@ -88,8 +88,9 @@ public class EnumValueHandler extends AbstractValueHandler {
             // look for the longest enum value name; use 20 as min length to
             // leave room for future long names
             int len = 20;
-            for (int i = 0; i < _vals.length; i++)
-                len = Math.max(_vals[i].name().length(), len);
+            for (Enum<?> val : _vals) {
+                len = Math.max(val.name().length(), len);
+            }
 
             col.setJavaType(JavaTypes.STRING);
             col.setSize(len);

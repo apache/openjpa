@@ -58,8 +58,8 @@ public class TestLocators
         startTx(pm);
 
         Extent e = pm.createExtent(LocatorTestObject.class, true);
-        for (Iterator i = e.iterator(); i.hasNext();) {
-            pm.remove(i.next());
+        for (Object o : e) {
+            pm.remove(o);
 
         }
         endTx(pm);

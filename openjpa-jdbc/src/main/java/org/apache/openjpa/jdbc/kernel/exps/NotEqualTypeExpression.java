@@ -144,10 +144,10 @@ class NotEqualTypeExpression
                 sel.setJoinedTableClassMeta(selectFrom);
             }
 
-            for (int i = 0; i < subs.length; i++) {
-                if (!Modifier.isAbstract(subs[i].getDescribedType().getModifiers()) &&
-                    !selectFrom.contains(subs[i]))
-                    selectFrom.add(subs[i]);
+            for (ClassMetaData classMetaData : subs) {
+                if (!Modifier.isAbstract(classMetaData.getDescribedType().getModifiers()) &&
+                        !selectFrom.contains(classMetaData))
+                    selectFrom.add(classMetaData);
             }
             buf.append("1=1");
             return;

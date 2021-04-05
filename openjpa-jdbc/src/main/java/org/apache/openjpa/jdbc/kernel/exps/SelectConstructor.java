@@ -149,9 +149,9 @@ public class SelectConstructor
 
         Context[] qryCtx = JDBCStoreQuery.getThreadLocalContext();
         Context lctx = null;
-        for (int i = 0; i < qryCtx.length; i++) {
-            if (qryCtx[i].cloneFrom == exps.ctx()) {
-                lctx = qryCtx[i];
+        for (Context context : qryCtx) {
+            if (context.cloneFrom == exps.ctx()) {
+                lctx = context;
                 break;
             }
         }
@@ -293,8 +293,8 @@ public class SelectConstructor
     }
 
     private boolean contains(Val orderVal, Value[] grouping) {
-        for (int i = 0; i < grouping.length; i++) {
-            Val groupVal = (Val) grouping[i];
+        for (Value value : grouping) {
+            Val groupVal = (Val) value;
             if (orderVal.equals(groupVal))
                 return true;
         }
@@ -409,8 +409,8 @@ public class SelectConstructor
 
         public static boolean hasCandidateProjections(Value[] projs) {
             ProjectionExpressionVisitor v = new ProjectionExpressionVisitor();
-            for (int i = 0; i < projs.length; i++) {
-                projs[i].acceptVisit(v);
+            for (Value proj : projs) {
+                proj.acceptVisit(v);
                 if (v._candidate)
                     return true;
             }

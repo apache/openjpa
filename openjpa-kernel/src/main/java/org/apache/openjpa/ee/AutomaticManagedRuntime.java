@@ -208,11 +208,12 @@ public class AutomaticManagedRuntime extends AbstractManagedRuntime
 
         // try to find a jndi runtime
         JNDIManagedRuntime jmr = new JNDIManagedRuntime();
-        for (int i = 0; i < JNDI_LOCS.length; i++) {
-            jmr.setTransactionManagerName(JNDI_LOCS[i]);
+        for (String jndiLoc : JNDI_LOCS) {
+            jmr.setTransactionManagerName(jndiLoc);
             try {
                 tm = jmr.getTransactionManager();
-            } catch (Throwable t) {
+            }
+            catch (Throwable t) {
                 errors.add(t);
             }
             if (tm != null) {
@@ -223,12 +224,13 @@ public class AutomaticManagedRuntime extends AbstractManagedRuntime
 
         // look for a method runtime
         InvocationManagedRuntime imr = new InvocationManagedRuntime();
-        for (int i = 0; i < METHODS.length; i++) {
+        for (String method : METHODS) {
             imr.setConfiguration(_conf);
-            imr.setTransactionManagerMethod(METHODS[i]);
+            imr.setTransactionManagerMethod(method);
             try {
                 tm = imr.getTransactionManager();
-            } catch (Throwable t) {
+            }
+            catch (Throwable t) {
                 errors.add(t);
             }
             if (tm != null) {

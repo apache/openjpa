@@ -65,8 +65,8 @@ public abstract class AbstractNonSequentialResultList
     @Override
     public boolean containsAll(Collection c) {
         assertOpen();
-        for (Iterator itr = c.iterator(); itr.hasNext();)
-            if (!contains(itr.next()))
+        for (Object o : c)
+            if (!contains(o))
                 return false;
         return true;
     }

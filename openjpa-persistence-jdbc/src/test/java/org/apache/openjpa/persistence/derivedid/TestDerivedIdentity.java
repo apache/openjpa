@@ -91,26 +91,28 @@ public class TestDerivedIdentity  extends SQLListenerTestCase {
             "select e from EDBigIntegerID e join fetch e.rid",
             "select e from EDSQLDateID e join fetch e.rid",
         };
-        for (int i = 0; i < str.length; i++) {
-            query = em.createQuery(str[i]);
+        for (String s : str) {
+            query = em.createQuery(s);
             List rs = query.getResultList();
             assertTrue(rs.size() > 0);
-            for (int j = 0; j < rs.size(); j++) {
-                Object e = rs.get(j);
+            for (Object e : rs) {
                 String name = null;
                 Object oid = null;
                 if (e instanceof EDDateID) {
-                    name = ((EDDateID)e).getName();
-                    oid = ((EDDateID)e).getRid().getId();
-                } else if (e instanceof EDBigDecimalID) {
-                    name = ((EDBigDecimalID)e).getName();
-                    oid = ((EDBigDecimalID)e).getRid().getId();
-                } else if (e instanceof EDBigIntegerID) {
-                    name = ((EDBigIntegerID)e).getName();
-                    oid = ((EDBigIntegerID)e).getRid().getId();
-                } else if (e instanceof EDSQLDateID) {
-                    name = ((EDSQLDateID)e).getName();
-                    oid = ((EDSQLDateID)e).getRid().getId();
+                    name = ((EDDateID) e).getName();
+                    oid = ((EDDateID) e).getRid().getId();
+                }
+                else if (e instanceof EDBigDecimalID) {
+                    name = ((EDBigDecimalID) e).getName();
+                    oid = ((EDBigDecimalID) e).getRid().getId();
+                }
+                else if (e instanceof EDBigIntegerID) {
+                    name = ((EDBigIntegerID) e).getName();
+                    oid = ((EDBigIntegerID) e).getRid().getId();
+                }
+                else if (e instanceof EDSQLDateID) {
+                    name = ((EDSQLDateID) e).getName();
+                    oid = ((EDSQLDateID) e).getRid().getId();
                 }
                 //System.out.println(name);
                 //System.out.println(oid.toString());

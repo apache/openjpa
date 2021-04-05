@@ -662,23 +662,23 @@ public class ReverseMappingTool
         // map base classes first
         Schema[] schemas = getSchemaGroup().getSchemas();
         Table[] tables;
-        for (int i = 0; i < schemas.length; i++) {
-            tables = schemas[i].getTables();
-            for (int j = 0; j < tables.length; j++)
-                if (isBaseTable(tables[j]))
-                    mapBaseClass(tables[j]);
+        for (Schema schema2 : schemas) {
+            tables = schema2.getTables();
+            for (Table table : tables)
+                if (isBaseTable(table))
+                    mapBaseClass(table);
         }
 
         // map vertical subclasses
         Set subs = null;
-        for (int i = 0; i < schemas.length; i++) {
-            tables = schemas[i].getTables();
-            for (int j = 0; j < tables.length; j++) {
-                if (!_tables.containsKey(tables[j])
-                    && getSecondaryType(tables[j], false) == TABLE_SUBCLASS) {
+        for (Schema schema1 : schemas) {
+            tables = schema1.getTables();
+            for (Table table : tables) {
+                if (!_tables.containsKey(table)
+                        && getSecondaryType(table, false) == TABLE_SUBCLASS) {
                     if (subs == null)
                         subs = new HashSet();
-                    subs.add(tables[j]);
+                    subs.add(table);
                 }
             }
         }
@@ -687,29 +687,29 @@ public class ReverseMappingTool
 
         // map fields in the primary tables of the classes
         ClassMapping cls;
-        for (Iterator itr = _tables.values().iterator(); itr.hasNext();) {
-            cls = (ClassMapping) itr.next();
+        for (Object o1 : _tables.values()) {
+            cls = (ClassMapping) o1;
             mapColumns(cls, cls.getTable(), null, false);
         }
 
         // map association tables, join tables, and secondary tables
-        for (int i = 0; i < schemas.length; i++) {
-            tables = schemas[i].getTables();
-            for (int j = 0; j < tables.length; j++)
-                if (!_tables.containsKey(tables[j]))
-                    mapTable(tables[j], getSecondaryType(tables[j], false));
+        for (Schema element : schemas) {
+            tables = element.getTables();
+            for (Table table : tables)
+                if (!_tables.containsKey(table))
+                    mapTable(table, getSecondaryType(table, false));
         }
 
         // map discriminators and versions, make sure identity type is correct,
         // set simple field column java types, and ref schema components so
         // we can tell what is unmapped
         FieldMapping[] fields;
-        for (Iterator itr = _tables.values().iterator(); itr.hasNext();) {
-            cls = (ClassMapping) itr.next();
+        for (Object item : _tables.values()) {
+            cls = (ClassMapping) item;
             cls.refSchemaComponents();
             if (cls.getDiscriminator().getStrategy() == null)
                 getStrategyInstaller().installStrategy
-                    (cls.getDiscriminator());
+                        (cls.getDiscriminator());
             cls.getDiscriminator().refSchemaComponents();
             if (cls.getVersion().getStrategy() == null)
                 getStrategyInstaller().installStrategy(cls.getVersion());
@@ -719,36 +719,37 @@ public class ReverseMappingTool
             // it might have to switch to std application identity if pk field
             // not compatible
             if (cls.getPCSuperclass() == null
-                && cls.getIdentityType() == ClassMetaData.ID_APPLICATION) {
+                    && cls.getIdentityType() == ClassMetaData.ID_APPLICATION) {
                 if (cls.getPrimaryKeyFields().length == 0)
                     throw new MetaDataException(_loc.get("no-pk-fields", cls));
                 if (cls.getObjectIdType() == null
-                    || (cls.isOpenJPAIdentity() && !isBuiltinIdentity(cls)))
+                        || (cls.isOpenJPAIdentity() && !isBuiltinIdentity(cls)))
                     setObjectIdType(cls);
-            } else if (cls.getIdentityType() == ClassMetaData.ID_DATASTORE)
+            }
+            else if (cls.getIdentityType() == ClassMetaData.ID_DATASTORE)
                 cls.getPrimaryKeyColumns()[0].setJavaType(JavaTypes.LONG);
 
             // set java types for simple fields;
             fields = cls.getDeclaredFieldMappings();
-            for (int i = 0; i < fields.length; i++) {
-                fields[i].refSchemaComponents();
-                setColumnJavaType(fields[i]);
-                setColumnJavaType(fields[i].getElementMapping());
+            for (FieldMapping field : fields) {
+                field.refSchemaComponents();
+                setColumnJavaType(field);
+                setColumnJavaType(field.getElementMapping());
             }
         }
 
         // set the java types of foreign key columns; we couldn't do this
         // earlier because we rely on the linked-to columns to do it
-        for (Iterator itr = _tables.values().iterator(); itr.hasNext();) {
-            cls = (ClassMapping) itr.next();
+        for (Object value : _tables.values()) {
+            cls = (ClassMapping) value;
             setForeignKeyJavaType(cls.getJoinForeignKey());
 
             fields = cls.getDeclaredFieldMappings();
-            for (int i = 0; i < fields.length; i++) {
-                setForeignKeyJavaType(fields[i].getJoinForeignKey());
-                setForeignKeyJavaType(fields[i].getForeignKey());
-                setForeignKeyJavaType(fields[i].getElementMapping().
-                    getForeignKey());
+            for (FieldMapping field : fields) {
+                setForeignKeyJavaType(field.getJoinForeignKey());
+                setForeignKeyJavaType(field.getForeignKey());
+                setForeignKeyJavaType(field.getElementMapping().
+                        getForeignKey());
             }
         }
 
@@ -756,28 +757,30 @@ public class ReverseMappingTool
         // that ends up unmapped
         Column[] cols;
         Collection unmappedCols = new ArrayList(5);
-        for (int i = 0; i < schemas.length; i++) {
-            tables = schemas[i].getTables();
-            for (int j = 0; j < tables.length; j++) {
+        for (Schema schema : schemas) {
+            tables = schema.getTables();
+            for (Table table : tables) {
                 unmappedCols.clear();
-                cols = tables[j].getColumns();
-                for (int k = 0; k < cols.length; k++)
-                    if (cols[k].getRefCount() == 0)
-                        unmappedCols.add(cols[k]);
+                cols = table.getColumns();
+                for (Column col : cols)
+                    if (col.getRefCount() == 0)
+                        unmappedCols.add(col);
 
                 if (unmappedCols.size() == cols.length) {
-                    if (_custom == null || !_custom.unmappedTable(tables[j]))
-                        _log.info(_loc.get("unmap-table", tables[j]));
-                } else if (unmappedCols.size() > 0)
-                    _log.info(_loc.get("unmap-cols", tables[j], unmappedCols));
+                    if (_custom == null || !_custom.unmappedTable(table))
+                        _log.info(_loc.get("unmap-table", table));
+                }
+                else if (unmappedCols.size() > 0)
+                    _log.info(_loc.get("unmap-cols", table, unmappedCols));
             }
         }
         if (_custom != null)
             _custom.close();
 
         // resolve mappings
-        for (Iterator itr = _tables.values().iterator(); itr.hasNext();)
-            ((ClassMapping) itr.next()).resolve(MODE_META | MODE_MAPPING);
+        for (Object o : _tables.values()) {
+            ((ClassMapping) o).resolve(MODE_META | MODE_MAPPING);
+        }
     }
 
     /**
@@ -868,15 +871,15 @@ public class ReverseMappingTool
 
         ClassMapping[] mappings = getMappings();
         ReverseCodeGenerator gen;
-        for (int i = 0; i < mappings.length; i++) {
+        for (ClassMapping mapping : mappings) {
             if (_log.isInfoEnabled())
-                _log.info(_loc.get("class-code", mappings[i]));
+                _log.info(_loc.get("class-code", mapping));
 
-            ApplicationIdTool aid = newApplicationIdTool(mappings[i]);
+            ApplicationIdTool aid = newApplicationIdTool(mapping);
             if (getGenerateAnnotations())
-                gen = new AnnotatedCodeGenerator(mappings[i], aid);
+                gen = new AnnotatedCodeGenerator(mapping, aid);
             else
-                gen = new ReverseCodeGenerator(mappings[i], aid);
+                gen = new ReverseCodeGenerator(mapping, aid);
 
             gen.generateCode();
 
@@ -885,17 +888,18 @@ public class ReverseMappingTool
                 written.add(gen.getFile());
                 if (aid != null && !aid.isInnerClass())
                     aid.record();
-            } else {
+            }
+            else {
                 StringWriter writer = new StringWriter();
                 gen.writeCode(writer);
-                output.put(mappings[i].getDescribedType(), writer.toString());
+                output.put(mapping.getDescribedType(), writer.toString());
 
                 if (aid != null && !aid.isInnerClass()) {
                     writer = new StringWriter();
                     aid.setWriter(writer);
                     aid.record();
-                    output.put(mappings[i].getObjectIdType(),
-                        writer.toString());
+                    output.put(mapping.getObjectIdType(),
+                            writer.toString());
                 }
             }
         }
@@ -926,10 +930,9 @@ public class ReverseMappingTool
         throws IOException {
         // pretend mappings are all resolved
         ClassMapping[] mappings = getMappings();
-        for (int i = 0; i < mappings.length; i++)
-        {
-            mappings[i].setResolve(MODE_META | MODE_MAPPING, true);
-            mappings[i].setUseSchemaElement(getUseSchemaElement());
+        for (ClassMapping classMapping : mappings) {
+            classMapping.setResolve(MODE_META | MODE_MAPPING, true);
+            classMapping.setUseSchemaElement(getUseSchemaElement());
         }
         // store in user's configured IO
         MetaDataFactory mdf = _conf.newMetaDataFactoryInstance();
@@ -941,9 +944,9 @@ public class ReverseMappingTool
             MODE_META | MODE_MAPPING, output);
 
         Set files = new TreeSet();
-        for (int i = 0; i < mappings.length; i++)
-            if (mappings[i].getSourceFile() != null)
-                files.add(mappings[i].getSourceFile());
+        for (ClassMapping mapping : mappings)
+            if (mapping.getSourceFile() != null)
+                files.add(mapping.getSourceFile());
         return files;
     }
 
@@ -951,10 +954,9 @@ public class ReverseMappingTool
         Map output = new HashMap();
         // pretend mappings are all resolved
         ClassMapping[] mappings = getMappings();
-        for (int i = 0; i < mappings.length; i++)
-        {
-            mappings[i].setResolve(MODE_META | MODE_MAPPING, true);
-            mappings[i].setUseSchemaElement(getUseSchemaElement());
+        for (ClassMapping mapping : mappings) {
+            mapping.setResolve(MODE_META | MODE_MAPPING, true);
+            mapping.setUseSchemaElement(getUseSchemaElement());
         }
         // store in user's configured IO
         MetaDataFactory mdf = _conf.newMetaDataFactoryInstance();
@@ -1058,12 +1060,12 @@ public class ReverseMappingTool
         if (pk != null && pk.columnsMatch(fk.getColumns()))
             return true;
         Index[] idx = fk.getTable().getIndexes();
-        for (int i = 0; i < idx.length; i++)
-            if (idx[i].isUnique() && idx[i].columnsMatch(fk.getColumns()))
+        for (Index index : idx)
+            if (index.isUnique() && index.columnsMatch(fk.getColumns()))
                 return true;
         Unique[] unq = fk.getTable().getUniques();
-        for (int i = 0; i < unq.length; i++)
-            if (unq[i].columnsMatch(fk.getColumns()))
+        for (Unique unique : unq)
+            if (unique.columnsMatch(fk.getColumns()))
                 return true;
         return false;
     }
@@ -1077,15 +1079,15 @@ public class ReverseMappingTool
         PrimaryKey pk = table.getPrimaryKey();
         ForeignKey unq = null;
         int count = 0;
-        for (int i = 0; i < fks.length; i++) {
-            if (pk != null && pk.columnsMatch(fks[i].getColumns()))
-                return fks[i];
-            if (!isUnique(fks[i]))
+        for (ForeignKey fk : fks) {
+            if (pk != null && pk.columnsMatch(fk.getColumns()))
+                return fk;
+            if (!isUnique(fk))
                 continue;
 
             count++;
             if (unq == null)
-                unq = fks[i];
+                unq = fk;
         }
         return (count == 1) ? unq : null;
     }
@@ -1129,9 +1131,9 @@ public class ReverseMappingTool
 
         Table table = cols[0].getTable();
         Index[] idxs = table.getIndexes();
-        for (int i = 0; i < idxs.length; i++)
-            if (idxs[i].columnsMatch(cols))
-                return idxs[i];
+        for (Index idx : idxs)
+            if (idx.columnsMatch(cols))
+                return idx;
         return null;
     }
 
@@ -1144,9 +1146,9 @@ public class ReverseMappingTool
 
         Table table = cols[0].getTable();
         Unique[] unqs = table.getUniques();
-        for (int i = 0; i < unqs.length; i++)
-            if (unqs[i].columnsMatch(cols))
-                return unqs[i];
+        for (Unique unq : unqs)
+            if (unq.columnsMatch(cols))
+                return unq;
         return null;
     }
 
@@ -1337,9 +1339,9 @@ public class ReverseMappingTool
         boolean outer) {
         // first map foreign keys to relations
         ForeignKey[] fks = table.getForeignKeys();
-        for (int i = 0; i < fks.length; i++)
-            if (fks[i] != join && fks[i] != cls.getJoinForeignKey())
-                mapForeignKey(cls, fks[i], join, outer);
+        for (ForeignKey fk : fks)
+            if (fk != join && fk != cls.getJoinForeignKey())
+                mapForeignKey(cls, fk, join, outer);
 
         // map any columns not controlled by foreign keys; also force primary
         // key cols to get mapped to simple fields even if the columns are
@@ -1347,13 +1349,13 @@ public class ReverseMappingTool
         PrimaryKey pk = (join != null) ? null : table.getPrimaryKey();
         boolean pkcol;
         Column[] cols = table.getColumns();
-        for (int i = 0; i < cols.length; i++) {
-            pkcol = pk != null && pk.containsColumn(cols[i]);
+        for (Column col : cols) {
+            pkcol = pk != null && pk.containsColumn(col);
             if (pkcol && cls.getIdentityType() == ClassMetaData.ID_DATASTORE)
                 continue;
             if ((cls.getPCSuperclass() == null && pkcol)
-                || !isForeignKeyColumn(cols[i]))
-                mapColumn(cls, cols[i], join, outer);
+                    || !isForeignKeyColumn(col))
+                mapColumn(cls, col, join, outer);
         }
     }
 
@@ -1362,8 +1364,8 @@ public class ReverseMappingTool
      */
     private static boolean isForeignKeyColumn(Column col) {
         ForeignKey[] fks = col.getTable().getForeignKeys();
-        for (int i = 0; i < fks.length; i++)
-            if (fks[i].containsColumn(col))
+        for (ForeignKey fk : fks)
+            if (fk.containsColumn(col))
                 return true;
         return false;
     }
@@ -1509,8 +1511,9 @@ public class ReverseMappingTool
             if (allUpperCase(name))
                 name = name.toLowerCase();
             subs = StringUtil.split(name, "_", 0);
-            for (int i = 0; i < subs.length; i++)
-                buf.append(StringUtil.capitalize(subs[i]));
+            for (String sub : subs) {
+                buf.append(StringUtil.capitalize(sub));
+            }
         }
 
         name = replaceInvalidCharacters(table.getName());
@@ -2034,8 +2037,8 @@ public class ReverseMappingTool
         } else {
             SchemaParser parser = new XMLSchemaParser(conf);
             File file;
-            for (int i = 0; i < args.length; i++) {
-                file = Files.getFile(args[i], loader);
+            for (String arg : args) {
+                file = Files.getFile(arg, loader);
                 log.info(_loc.get("revtool-running-file", file));
                 parser.parse(file);
             }
@@ -2173,8 +2176,8 @@ public class ReverseMappingTool
          */
         private boolean hasSubclasses(ClassMapping cls) {
             ClassMetaData[] metas = repos.getMetaDatas();
-            for (int i = 0; i < metas.length; i++)
-                if (metas[i].getPCSuperclass() == cls.getDescribedType())
+            for (ClassMetaData meta : metas)
+                if (meta.getPCSuperclass() == cls.getDescribedType())
                     return true;
             return false;
         }

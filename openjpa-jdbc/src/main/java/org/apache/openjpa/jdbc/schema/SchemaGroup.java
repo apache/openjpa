@@ -131,21 +131,24 @@ public class SchemaGroup
 
         Schema copy = addSchema(schema.getIdentifier());
         Sequence[] seqs = schema.getSequences();
-        for (int i = 0; i < seqs.length; i++)
-            copy.importSequence(seqs[i]);
+        for (Sequence seq : seqs) {
+            copy.importSequence(seq);
+        }
 
         Table[] tables = schema.getTables();
         Index[] idxs;
         Unique[] unqs;
         Table tab;
-        for (int i = 0; i < tables.length; i++) {
-            tab = copy.importTable(tables[i]);
-            idxs = tables[i].getIndexes();
-            for (int j = 0; j < idxs.length; j++)
-                tab.importIndex(idxs[j]);
-            unqs = tables[i].getUniques();
-            for (int j = 0; j < unqs.length; j++)
-                tab.importUnique(unqs[j]);
+        for (Table table : tables) {
+            tab = copy.importTable(table);
+            idxs = table.getIndexes();
+            for (Index idx : idxs) {
+                tab.importIndex(idx);
+            }
+            unqs = table.getUniques();
+            for (Unique unq : unqs) {
+                tab.importUnique(unq);
+            }
         }
         return copy;
     }
@@ -209,8 +212,8 @@ public class SchemaGroup
         } else {
             Schema[] schemas = getSchemas();
             Table tab;
-            for (int i = 0; i < schemas.length; i++) {
-                tab = schemas[i].getTable(path.getIdentifier());
+            for (Schema schema : schemas) {
+                tab = schema.getTable(path.getIdentifier());
                 if (tab != null)
                     return tab;
             }
@@ -252,8 +255,8 @@ public class SchemaGroup
                 return schema.getTable(path.getIdentifier());
         } else {
             Schema[] schemas = getSchemas();
-            for (int i = 0; i < schemas.length; i++) {
-                Table tab = schemas[i].getTable(path.getIdentifier());
+            for (Schema schema : schemas) {
+                Table tab = schema.getTable(path.getIdentifier());
                 // if a table is found and it has the same schema
                 // as the input schema , it means that the table
                 // exists. However, if the input schema is null,
@@ -263,13 +266,13 @@ public class SchemaGroup
                 // and other entity does not have schema name but both entities
                 // map to the same table.
                 boolean isDefaultSchema = DBIdentifier.isNull(inSchema.getIdentifier()) &&
-                    !DBIdentifier.isNull(defaultSchemaName) &&
-                    DBIdentifier.equalsIgnoreCase(defaultSchemaName, schemas[i].getIdentifier());
+                        !DBIdentifier.isNull(defaultSchemaName) &&
+                        DBIdentifier.equalsIgnoreCase(defaultSchemaName, schema.getIdentifier());
                 boolean hasNoDefaultSchema = DBIdentifier.isNull(inSchema.getIdentifier()) &&
-                    DBIdentifier.isNull(defaultSchemaName);
+                        DBIdentifier.isNull(defaultSchemaName);
 
                 if (tab != null &&
-                    (schemas[i] == inSchema || isDefaultSchema || hasNoDefaultSchema))
+                        (schema == inSchema || isDefaultSchema || hasNoDefaultSchema))
                     return tab;
 
             }
@@ -344,8 +347,8 @@ public class SchemaGroup
         } else {
             Schema[] schemas = getSchemas();
             Sequence seq;
-            for (int i = 0; i < schemas.length; i++) {
-                seq = schemas[i].getSequence(path.getIdentifier());
+            for (Schema schema : schemas) {
+                seq = schema.getSequence(path.getIdentifier());
                 if (seq != null)
                     return seq;
             }
@@ -377,10 +380,10 @@ public class SchemaGroup
         } else {
             Schema[] schemas = getSchemas();
             Sequence seq;
-            for (int i = 0; i < schemas.length; i++) {
-                seq = schemas[i].getSequence(path.getIdentifier());
+            for (Schema schema : schemas) {
+                seq = schema.getSequence(path.getIdentifier());
                 if ((seq != null) &&
-                        (schemas[i] == inSchema || DBIdentifier.isNull(inSchema.getIdentifier())))
+                        (schema == inSchema || DBIdentifier.isNull(inSchema.getIdentifier())))
                     return seq;
             }
         }
@@ -399,15 +402,15 @@ public class SchemaGroup
         Table[] tabs;
         ForeignKey[] fks;
         Collection<ForeignKey> exports = new LinkedList<>();
-        for (int i = 0; i < schemas.length; i++) {
-            tabs = schemas[i].getTables();
-            for (int j = 0; j < tabs.length; j++) {
-                fks = tabs[j].getForeignKeys();
-                for (int k = 0; k < fks.length; k++) {
-                    if (fks[k].getPrimaryKeyTable() != null
-                        && pk.equals(fks[k].getPrimaryKeyTable().
-                        getPrimaryKey()))
-                        exports.add(fks[k]);
+        for (Schema schema : schemas) {
+            tabs = schema.getTables();
+            for (Table tab : tabs) {
+                fks = tab.getForeignKeys();
+                for (ForeignKey fk : fks) {
+                    if (fk.getPrimaryKeyTable() != null
+                            && pk.equals(fk.getPrimaryKeyTable().
+                            getPrimaryKey()))
+                        exports.add(fk);
                 }
             }
         }
@@ -424,35 +427,35 @@ public class SchemaGroup
         Sequence[] seqs;
         PrimaryKey pk;
         ForeignKey[] fks;
-        for (int i = 0; i < schemas.length; i++) {
-            seqs = schemas[i].getSequences();
-            for (int j = 0; j < seqs.length; j++)
-                if (seqs[j].getRefCount() == 0)
-                    schemas[i].removeSequence(seqs[j]);
+        for (Schema schema : schemas) {
+            seqs = schema.getSequences();
+            for (Sequence seq : seqs)
+                if (seq.getRefCount() == 0)
+                    schema.removeSequence(seq);
 
-            tabs = schemas[i].getTables();
-            for (int j = 0; j < tabs.length; j++) {
-                pk = tabs[j].getPrimaryKey();
-                fks = tabs[j].getForeignKeys();
-                cols = tabs[j].getColumns();
+            tabs = schema.getTables();
+            for (Table tab : tabs) {
+                pk = tab.getPrimaryKey();
+                fks = tab.getForeignKeys();
+                cols = tab.getColumns();
 
                 if (pk != null && pk.getRefCount() == 0)
-                    tabs[j].removePrimaryKey();
+                    tab.removePrimaryKey();
 
-                for (int k = 0; k < fks.length; k++)
-                    if (fks[k].getRefCount() == 0)
-                        tabs[j].removeForeignKey(fks[k]);
+                for (ForeignKey fk : fks)
+                    if (fk.getRefCount() == 0)
+                        tab.removeForeignKey(fk);
 
-                for (int k = 0; k < cols.length; k++)
-                    if (cols[k].getRefCount() == 0)
-                        tabs[j].removeColumn(cols[k]);
+                for (Column col : cols)
+                    if (col.getRefCount() == 0)
+                        tab.removeColumn(col);
 
-                if (tabs[j].getColumns().length == 0)
-                    schemas[i].removeTable(tabs[j]);
+                if (tab.getColumns().length == 0)
+                    schema.removeTable(tab);
             }
 
-            if (schemas[i].getTables().length == 0)
-                removeSchema(schemas[i]);
+            if (schema.getTables().length == 0)
+                removeSchema(schema);
         }
     }
 
@@ -475,19 +478,20 @@ public class SchemaGroup
      */
     protected void copy(SchemaGroup group) {
         Schema[] schemas = group.getSchemas();
-        for (int i = 0; i < schemas.length; i++)
-            importSchema(schemas[i]);
+        for (Schema value : schemas) {
+            importSchema(value);
+        }
 
         // have to do fks after all schemas are imported
         Table[] tabs;
         ForeignKey[] fks;
-        for (int i = 0; i < schemas.length; i++) {
-            tabs = schemas[i].getTables();
-            for (int j = 0; j < tabs.length; j++) {
-                fks = tabs[j].getForeignKeys();
-                for (int k = 0; k < fks.length; k++)
-                    getSchema(schemas[i].getIdentifier()).getTable
-                        (tabs[j].getIdentifier()).importForeignKey(fks[k]);
+        for (Schema schema : schemas) {
+            tabs = schema.getTables();
+            for (Table tab : tabs) {
+                fks = tab.getForeignKeys();
+                for (ForeignKey fk : fks)
+                    getSchema(schema.getIdentifier()).getTable
+                            (tab.getIdentifier()).importForeignKey(fk);
             }
         }
     }

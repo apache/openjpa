@@ -43,17 +43,17 @@ public class SimpleCase extends Val {
     protected Object eval(Object candidate, Object orig, StoreContext ctx,
         Object[] params) {
         Object o1 = _caseOperand.eval(candidate, orig, ctx, params);
-        for (int i = 0; i < _exp.length; i++) {
-            Object o2 = ((WhenScalar) _exp[i]).getVal1().
-                eval(candidate, orig, ctx, params);
+        for (Exp exp : _exp) {
+            Object o2 = ((WhenScalar) exp).getVal1().
+                    eval(candidate, orig, ctx, params);
             if (o1 != null && o2 != null) {
                 Class c = Filters.promote(o1.getClass(), o2.getClass());
                 o1 = Filters.convert(o1, c);
                 o2 = Filters.convert(o2, c);
             }
             if (compare(o1, o2))
-                return ((WhenScalar) _exp[i]).getVal2().
-                    eval(candidate, orig, ctx, params);
+                return ((WhenScalar) exp).getVal2().
+                        eval(candidate, orig, ctx, params);
             else
                 continue;
         }
@@ -63,17 +63,17 @@ public class SimpleCase extends Val {
     protected Object eval(Object candidate,StoreContext ctx,
             Object[] params) {
         Object o1 = _caseOperand.eval(candidate, null, ctx, params);
-        for (int i = 0; i < _exp.length; i++) {
-            Object o2 = ((WhenScalar) _exp[i]).getVal1().
-                eval(candidate, null, ctx, params);
+        for (Exp exp : _exp) {
+            Object o2 = ((WhenScalar) exp).getVal1().
+                    eval(candidate, null, ctx, params);
             if (o1 != null && o2 != null) {
                 Class c = Filters.promote(o1.getClass(), o2.getClass());
                 o1 = Filters.convert(o1, c);
                 o2 = Filters.convert(o2, c);
             }
             if (compare(o1, o2))
-                return ((WhenScalar) _exp[i]).getVal2().
-                    eval(candidate, null, ctx, params);
+                return ((WhenScalar) exp).getVal2().
+                        eval(candidate, null, ctx, params);
             else
                 continue;
         }
@@ -91,8 +91,8 @@ public class SimpleCase extends Val {
     @Override
     public Class getType() {
         Class c1 = _val.getType();
-        for (int i = 0; i < _exp.length; i++) {
-            Class c2 = ((WhenScalar) _exp[i]).getVal1().getType();
+        for (Exp exp : _exp) {
+            Class c2 = ((WhenScalar) exp).getVal1().getType();
             c1 = Filters.promote(c1, c2);
         }
         return c1;
@@ -106,8 +106,9 @@ public class SimpleCase extends Val {
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _caseOperand.acceptVisit(visitor);
-        for (int i = 0; i < _exp.length; i++)
-            _exp[i].acceptVisit(visitor);
+        for (Exp exp : _exp) {
+            exp.acceptVisit(visitor);
+        }
         _val.acceptVisit(visitor);
         visitor.exit(this);
     }

@@ -112,8 +112,8 @@ public class DataLoader {
         for (int i = 0; i < MOVIE_ACTORS.length; i++) {
             int[] roles = MOVIE_ACTORS[i];
             Movie m = movies[i];
-            for (int j = 0; j < roles.length; j++) {
-                Actor a = actors[roles[j]];
+            for (int role : roles) {
+                Actor a = actors[role];
                 a.addMovie(m);
                 m.addActor(a);
             }
@@ -121,13 +121,12 @@ public class DataLoader {
     }
 
     void makePartner(Actor[] actors) {
-        for (int i = 0; i < PARTNERS.length; i++) {
-            int[] partners = PARTNERS[i];
+        for (int[] partners : PARTNERS) {
             Actor a1 = actors[partners[0]];
             Actor a2 = actors[partners[1]];
             a1.setPartner(a2);
             a2.setPartner(a1);
-       }
+        }
     }
 
 }

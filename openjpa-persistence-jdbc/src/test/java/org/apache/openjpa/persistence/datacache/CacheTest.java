@@ -122,9 +122,9 @@ public abstract class CacheTest extends AbstractTestCase {
                 CacheObjectB.class, CacheObjectC.class, CacheObjectD.class,
                 CacheObjectE.class, CacheObjectJ.class,
                 AppIdCacheObject.class, };
-            for (int i = 0; i < toDelete.length; i++) {
+            for (Class aClass : toDelete) {
                 startTx(em);
-                Extent e = em.createExtent(toDelete[i], true);
+                Extent e = em.createExtent(aClass, true);
                 Iterator it = e.iterator();
                 while (it.hasNext()) {
                     em.remove(it.next());
@@ -1691,17 +1691,17 @@ public abstract class CacheTest extends AbstractTestCase {
     }
 
     public static void main(String[] args) throws Exception {
-        for (int i = 0; i < args.length; i++) {
-            String type = args[i];
-
+        for (String type : args) {
             CacheTest c;
             if (type.equals("tcp")) {
                 c = new DistributedCacheTest("time test",
-                    ConcurrentDataCache.class);
-            } else if (type.equals("jms")) {
+                        ConcurrentDataCache.class);
+            }
+            else if (type.equals("jms")) {
                 c = new DistributedCacheTest("time test",
-                    ConcurrentDataCache.class);
-            } else {
+                        ConcurrentDataCache.class);
+            }
+            else {
                 c = new TestLocalCache("time test");
             }
 
@@ -1710,10 +1710,10 @@ public abstract class CacheTest extends AbstractTestCase {
             int count = 1000;
             for (int j = 0; j < count; j++) {
                 c.doassertTrue(c.factory.createEntityManager(), NEW_NAME,
-                    ORIG_AGE);
+                        ORIG_AGE);
             }
             System.out.println(count + " iterations in "
-                + (System.currentTimeMillis() - start) + " millis");
+                    + (System.currentTimeMillis() - start) + " millis");
             c.tearDown();
         }
     }

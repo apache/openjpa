@@ -24,7 +24,6 @@ import java.security.PrivilegedActionException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -555,8 +554,8 @@ public class Configurations {
         StringBuilder buf = new StringBuilder();
         Map.Entry entry;
         String val;
-        for (Iterator itr = map.entrySet().iterator(); itr.hasNext();) {
-            entry = (Map.Entry) itr.next();
+        for (Object o : map.entrySet()) {
+            entry = (Map.Entry) o;
             if (buf.length() > 0)
                 buf.append(", ");
             buf.append(entry.getKey()).append('=');

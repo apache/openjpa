@@ -28,7 +28,6 @@ import java.lang.reflect.Modifier;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -227,10 +226,7 @@ public abstract class PersistenceTestCase
         if (emf == null || !emf.isOpen())
             return;
 
-        for (Iterator iter = ((AbstractBrokerFactory) JPAFacadeHelper
-            .toBrokerFactory(emf)).getOpenBrokers().iterator();
-            iter.hasNext(); ) {
-            Broker b = (Broker) iter.next();
+        for (Broker b : ((AbstractBrokerFactory) JPAFacadeHelper.toBrokerFactory(emf)).getOpenBrokers()) {
             if (b != null && !b.isClosed()) {
                 EntityManager em = JPAFacadeHelper.toEntityManager(b);
                 if (em.getTransaction().isActive())
@@ -571,14 +567,12 @@ public abstract class PersistenceTestCase
         return System.getProperty("platform", "derby");
     }
 
-    private static class FixedMap extends LinkedHashMap<EMFKey,
-            OpenJPAEntityManagerFactorySPI> {
+    private static class FixedMap extends LinkedHashMap<EMFKey, OpenJPAEntityManagerFactorySPI> {
         
         private static final long serialVersionUID = 1L;
 
         @Override
-        public boolean removeEldestEntry(Map.Entry<EMFKey,
-                OpenJPAEntityManagerFactorySPI> entry) {
+        public boolean removeEldestEntry(Map.Entry<EMFKey, OpenJPAEntityManagerFactorySPI> entry) {
             return this.size() > 2;
         }
     }

@@ -38,7 +38,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -973,17 +972,17 @@ public class FieldMetaData
                 // scan rel type for fields that name this field as an inverse
                 FieldMetaData[] fields = meta.getFields();
                 Class<?> type = getDeclaringMetaData().getDescribedType();
-                for (int i = 0; i < fields.length; i++) {
+                for (FieldMetaData fieldMetaData : fields) {
                     // skip fields that aren't compatible with our owning class
-                    switch (fields[i].getTypeCode()) {
+                    switch (fieldMetaData.getTypeCode()) {
                         case JavaTypes.PC:
-                            if (!type.isAssignableFrom(fields[i].getType()))
+                            if (!type.isAssignableFrom(fieldMetaData.getType()))
                                 continue;
                             break;
                         case JavaTypes.COLLECTION:
                         case JavaTypes.ARRAY:
-                            if (!type.isAssignableFrom(fields[i].
-                                getElement().getType()))
+                            if (!type.isAssignableFrom(fieldMetaData.
+                                    getElement().getType()))
                                 continue;
                             break;
                         default:
@@ -993,12 +992,12 @@ public class FieldMetaData
                     // if the field declares us as its inverse and we haven't
                     // already added it (we might have if we also declared it
                     // as our inverse), add it now
-                    if (_name.equals(fields[i].getMappedBy())
-                        || _name.equals(fields[i].getInverse())) {
+                    if (_name.equals(fieldMetaData.getMappedBy())
+                            || _name.equals(fieldMetaData.getInverse())) {
                         if (inverses == null)
                             inverses = new ArrayList<>(3);
-                        if (!inverses.contains(fields[i]))
-                            inverses.add(fields[i]);
+                        if (!inverses.contains(fieldMetaData))
+                            inverses.add(fieldMetaData);
                     }
                 }
             }
@@ -1491,10 +1490,10 @@ public class FieldMetaData
         Map fieldValues = new HashMap((int) (values.size() * 1.33 + 1));
         Map.Entry entry;
         Object extValue, fieldValue;
-        for (Iterator itr = values.entrySet().iterator(); itr.hasNext();) {
-            entry = (Map.Entry) itr.next();
+        for (Map.Entry<Object, Object> objectObjectEntry : values.entrySet()) {
+            entry = (Map.Entry) objectObjectEntry;
             fieldValue = transform((String) entry.getKey(),
-                getDeclaredTypeCode());
+                    getDeclaredTypeCode());
             extValue = transform((String) entry.getValue(), getTypeCode());
 
             extValues.put(fieldValue, extValue);
@@ -1643,26 +1642,27 @@ public class FieldMetaData
         // find the named method
         Method[] methods = cls.getMethods();
         Class<?>[] params;
-        for (int i = 0; i < methods.length; i++) {
-            if (methods[i].getName().equals(methodName)) {
-                params = methods[i].getParameterTypes();
+        for (Method value : methods) {
+            if (value.getName().equals(methodName)) {
+                params = value.getParameterTypes();
 
                 // static factory methods require one argument or one argument
                 // plus a context; non-static methods require zero arguments or
                 // just a context
-                if (Modifier.isStatic(methods[i].getModifiers())
-                    && (params.length == 1 || (params.length == 2
-                    && isStoreContextParameter(params[1]))))
+                if (Modifier.isStatic(value.getModifiers())
+                        && (params.length == 1 || (params.length == 2
+                        && isStoreContextParameter(params[1]))))
 
-                	if (type == null) {
-                		return methods[i];
-                	} else if (isConvertibleToByMethodInvocationConversion(type, params[0])) {
-                		return methods[i];
-                	}
-                if (!Modifier.isStatic(methods[i].getModifiers())
-                    && (params.length == 0 || (params.length == 1
-                    && isStoreContextParameter(params[0]))))
-                    return methods[i];
+                    if (type == null) {
+                        return value;
+                    }
+                    else if (isConvertibleToByMethodInvocationConversion(type, params[0])) {
+                        return value;
+                    }
+                if (!Modifier.isStatic(value.getModifiers())
+                        && (params.length == 0 || (params.length == 1
+                        && isStoreContextParameter(params[0]))))
+                    return value;
             }
         }
 

@@ -107,8 +107,8 @@ public class TestExtents2 extends BaseKernelTest {
         int test2Count = 0;
         int test3Count = 0;
         Object next;
-        for (Iterator itr = ext.iterator(); itr.hasNext();) {
-            next = pm.getObjectId(itr.next());
+        for (Object o : ext) {
+            next = pm.getObjectId(o);
             if (_oid1.equals(next))
                 test1Count++;
             else if (_oid2.equals(next))
@@ -142,8 +142,8 @@ public class TestExtents2 extends BaseKernelTest {
             boolean foundOid1 = false;
             boolean foundNew = false;
             Object next;
-            for (Iterator itr = ext.iterator(); itr.hasNext();) {
-                next = pm.getObjectId(itr.next());
+            for (Object o : ext) {
+                next = pm.getObjectId(o);
                 if (_oid1.equals(next))
                     foundOid1 = true;
                 else if (newOid.equals(next))
@@ -178,8 +178,8 @@ public class TestExtents2 extends BaseKernelTest {
             boolean foundOid1 = false;
             boolean foundOid3 = false;
             Object next;
-            for (Iterator itr = ext.iterator(); itr.hasNext();) {
-                next = pm.getObjectId(itr.next());
+            for (Object o : ext) {
+                next = pm.getObjectId(o);
                 if (_oid1.equals(next))
                     foundOid1 = true;
                 else if (_oid3.equals(next))

@@ -95,9 +95,9 @@ public class ByteArrayPKPCId implements Serializable {
             return "null";
 
         StringBuilder r = new StringBuilder(b.length * 2);
-        for (int i = 0; i < b.length; i++)
+        for (byte value : b)
             for (int j = 1; j >= 0; j--)
-                r.append(HEX[(b[i] >> (j * 4)) & 0xF]);
+                r.append(HEX[(value >> (j * 4)) & 0xF]);
         return r.toString();
     }
 
@@ -118,8 +118,7 @@ public class ByteArrayPKPCId implements Serializable {
         if (b == null)
             return 0;
         int sum = 0;
-        for (int i = 0; i < b.length; i++)
-            sum += b[i];
+        for (byte value : b) sum += value;
         return sum;
     }
 }
