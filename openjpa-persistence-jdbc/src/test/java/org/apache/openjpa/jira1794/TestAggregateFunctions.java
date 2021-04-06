@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -88,6 +89,40 @@ public class TestAggregateFunctions extends SingleEMFTestCase {
         // non-null value when there is a query result
         verifyResult(em, stringAggregateFunctions,
                 new String[] { "ae.stringVal" }, false);
+
+        em.close();
+    }
+
+    /**
+     * if a SUM(CASE statement is used, then the effective type might be different
+     */
+    public void testAggregateWithCase() {
+        EntityManager em = emf.createEntityManager();
+
+        // Add a row to the table and re-test
+        em.getTransaction().begin();
+        AggEntity ae = new AggEntity();
+        ae.init();
+        ae.setStringVal("bare");
+        em.persist(ae);
+        AggEntity ae2 = new AggEntity();
+        ae2.init();
+        ae2.setStringVal("foot");
+        em.persist(ae2);
+        em.getTransaction().commit();
+
+/*X
+        em.getTransaction().begin();
+        final TypedQuery<Long> q2 = em.createQuery("select SUM(ae.intVal) from AggEntity AS ae", Long.class);
+        final Long sum = q2.getSingleResult();
+        assertEquals(2L, (long) sum);
+*/
+
+        final TypedQuery<Long> q = em.createQuery("select SUM(CASE ae.stringVal WHEN 'bare' THEN 1 ELSE 0 END) from AggEntity AS ae", Long.class);
+        final Long sumC = q.getSingleResult();
+        assertEquals(1L, (long) sumC);
+
+        em.getTransaction().commit();
 
         em.close();
     }

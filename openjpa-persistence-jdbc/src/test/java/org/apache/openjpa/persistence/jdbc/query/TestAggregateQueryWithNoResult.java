@@ -37,15 +37,15 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestAggregateQueryWithNoResult extends SingleEMFTestCase {
     EntityManager em;
-	@Override
+
+    @Override
     public void setUp() {
         super.setUp(CLEAR_TABLES,
                 "openjpa.Compatibility", "ReturnNullOnAggregateResult=false",  //OPENJPA-1794
-                Game.class, IndoorGame.class, Scrabble.class,
-				Chess.class);
+                Game.class, IndoorGame.class, Scrabble.class, Chess.class);
         em = emf.createEntityManager();
         assertTrue(em.createQuery("select p from Scrabble p").getResultList().isEmpty());
-	}
+    }
 
 
     public void testSumWithNoResult() {
