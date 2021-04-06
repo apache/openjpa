@@ -1601,9 +1601,9 @@
             </dependencies>
             <properties>
                 <oracle.maven.repo>http://not.a.real.repository</oracle.maven.repo>
-                <oracle.groupid>com.oracle</oracle.groupid>
-                <oracle.artifactid>jdbc-driver</oracle.artifactid>
-                <oracle.version>11.2.0.1-jdbc6</oracle.version>
+                <oracle.groupid>com.oracle.ojdbc</oracle.groupid>
+                <oracle.artifactid>ojdbc8</oracle.artifactid>
+                <oracle.version>19.3.0.0</oracle.version>
                 <connection.driver.name>oracle.jdbc.driver.OracleDriver</connection.driver.name>
                 <!--<connection.url>jdbc:oracle:thin:@localhost:1521:OPENJPA</connection.url>-->
                 <connection.url>${openjpa.oracle.url}</connection.url>
@@ -1611,21 +1611,6 @@
                 <connection.password>${openjpa.oracle.password}</connection.password>
                 <jdbc.DBDictionary />
             </properties>
-            <repositories>
-                <repository>
-                    <id>oracle.repository</id>
-                    <name>Oracle Repository</name>
-                    <url>${oracle.maven.repo}</url>
-                    <layout>default</layout>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                    <releases>
-                        <enabled>true</enabled>
-                        <checksumPolicy>ignore</checksumPolicy>
-                    </releases>
-                </repository>
-            </repositories>
         </profile>
 
         <!-- Profile for testing IBM SolidDB -->
@@ -2200,6 +2185,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.0.0-M3</version>
                 <executions>
                     <execution>
                         <phase>validate</phase>
