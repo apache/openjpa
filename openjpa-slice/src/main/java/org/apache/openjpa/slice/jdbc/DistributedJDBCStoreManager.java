@@ -246,11 +246,11 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
 
     @Override
     public boolean exists(OpenJPAStateManager sm, Object edata) {
-    	String origin = null;
+        String origin = null;
         for (SliceStoreManager slice : _slices) {
             if (slice.exists(sm, edata)) {
-            	origin = slice.getName();
-            	break;
+                origin = slice.getName();
+                break;
             }
         }
         if (origin != null)
@@ -264,7 +264,7 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
      * slices.
      */
     @Override
-    public Collection flush(Collection sms) {
+    public Collection flush(Collection<OpenJPAStateManager> sms) {
         Collection exceptions = new ArrayList();
         List<Future<Collection>> futures = new ArrayList<>();
         Map<String, StateManagerSet> subsets = bin(sms, null);
@@ -276,19 +276,17 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
             if (subset.isEmpty())
                 continue;
             if (subset.containsReplicated()) {
-                Map<OpenJPAStateManager, Object> oldVersions = cacheVersion(
-                        subset.getReplicated());
+                Map<OpenJPAStateManager, Object> oldVersions = cacheVersion(subset.getReplicated());
                 collectException(slice.flush(subset), exceptions);
                 remaining.remove(subset);
                 rollbackVersion(subset.getReplicated(), oldVersions, remaining);
-            }
-            else {
+            } else {
                 futures.add(threadPool.submit(new Flusher(slice, subset)));
             }
         }
         for (Future<Collection> future : futures) {
             try {
-            	collectException(future.get(), exceptions);
+                collectException(future.get(), exceptions);
             } catch (InterruptedException e) {
                 throw new StoreException(e);
             } catch (ExecutionException e) {
@@ -296,27 +294,27 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
             }
         }
 
-	    return exceptions;
+        return exceptions;
     }
 
     private void collectException(Collection error,  Collection holder) {
         if (!(error == null || error.isEmpty())) {
-        	holder.addAll(error);
+            holder.addAll(error);
         }
     }
 
     @Override
     public void commit() {
-    	for (SliceStoreManager slice : _slices) {
-    		slice.commit();
-    	}
+        for (SliceStoreManager slice : _slices) {
+            slice.commit();
+        }
     }
 
     @Override
     public void rollback() {
-    	for (SliceStoreManager slice : _slices) {
-    		slice.rollback();
-    	}
+        for (SliceStoreManager slice : _slices) {
+            slice.rollback();
+        }
     }
 
     /**
@@ -454,16 +452,16 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
      */
     @Override
     public StoreQuery newQuery(String language) {
-    	if (QueryLanguages.LANG_SQL.equals(language)) {
-    		DistributedSQLStoreQuery ret = new DistributedSQLStoreQuery(this);
+        if (QueryLanguages.LANG_SQL.equals(language)) {
+            DistributedSQLStoreQuery ret = new DistributedSQLStoreQuery(this);
             for (SliceStoreManager slice : _slices) {
                 ret.add(slice.newQuery(language));
             }
             return ret;
-    	}
+        }
         ExpressionParser parser = QueryLanguages.parserForLanguage(language);
         if (parser == null) {
-    		throw new UnsupportedOperationException("Language [" + language + "] not supported");
+            throw new UnsupportedOperationException("Language [" + language + "] not supported");
         }
 
         DistributedStoreQuery ret = new DistributedStoreQuery(this, parser);
@@ -500,13 +498,13 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
 
     @Override
     public boolean syncVersion(OpenJPAStateManager sm, Object edata) {
-    	String[] targets = findSliceNames(sm, edata).getSlices();
-    	boolean sync = true;
-    	for (String replica : targets) {
-    		SliceStoreManager slice = lookup(replica);
-    		sync &= slice.syncVersion(sm, edata);
-    	}
-    	return sync;
+        String[] targets = findSliceNames(sm, edata).getSlices();
+        boolean sync = true;
+        for (String replica : targets) {
+            SliceStoreManager slice = lookup(replica);
+            sync &= slice.syncVersion(sm, edata);
+        }
+        return sync;
     }
 
     @Override
@@ -558,7 +556,7 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
 
         @Override
         public Collection call() throws Exception {
-        	return store.flush(toFlush);
+            return store.flush(toFlush);
         }
     }
 

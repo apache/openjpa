@@ -746,7 +746,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
     }
 
     @Override
-    public Collection flush(Collection sms) {
+    public Collection flush(Collection<OpenJPAStateManager> sms) {
         try {
             if (_conn != null && _conn.getInnermostDelegate().isReadOnly())
                 _conn.setReadOnly(false);
