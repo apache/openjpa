@@ -26,7 +26,6 @@ import org.apache.openjpa.jdbc.meta.Discriminator;
 import org.apache.openjpa.jdbc.meta.strats.NoneDiscriminatorStrategy;
 import org.apache.openjpa.jdbc.meta.strats.VerticalClassStrategy;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.apache.openjpa.jdbc.sql.Raw;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.Arguments;
 import org.apache.openjpa.kernel.exps.Expression;
@@ -578,24 +577,7 @@ public class JDBCExpressionFactory
     private Value getLiteralRawString(Value val) {
         if (val instanceof Lit) {
             Lit lit = (Lit) val;
-            StringBuilder value = new StringBuilder();
-            int pType = lit.getParseType();
-            if (pType == Literal.TYPE_SQ_STRING ||
-                pType == Literal.TYPE_STRING)
-                value.append("'").append(lit.getValue().toString()).append("'");
-            else if (pType == Literal.TYPE_BOOLEAN) {
-                Boolean boolVal = (Boolean)lit.getValue();
-                if (_isBooleanLiteralAsNumeric)
-                    value.append(boolVal ? "1" : "0");
-                else
-                    value.append(boolVal ? "true" : "false");
-            } else if (pType == Literal.TYPE_ENUM) {
-                lit.setRaw(true);
-                return val;
-            } else
-                value.append(lit.getValue().toString());
-            lit.setValue(new Raw(value.toString()));
-            return lit;
+            lit.setRaw(true);
         }
         return val;
     }

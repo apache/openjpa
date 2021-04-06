@@ -319,7 +319,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
         List rs3 = em.createQuery(query3).getResultList();
         Object[] result3 = (Object[]) rs3.get(0);
         assertEquals("the name is not Jacob", "Jacob", result3[0]);
-        assertEquals("the credit rating is not 'POOR'", "POOR", result3[1]);
+        assertEquals("the credit rating is not 'POOR'", CompUser.CreditRating.POOR, result3[1]);
 
         String update2 = "update CompUser c set c.creditRating = " +
             " CASE WHEN c.name ='Jacob' THEN " +

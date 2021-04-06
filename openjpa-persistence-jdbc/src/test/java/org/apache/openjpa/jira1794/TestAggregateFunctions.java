@@ -111,12 +111,10 @@ public class TestAggregateFunctions extends SingleEMFTestCase {
         em.persist(ae2);
         em.getTransaction().commit();
 
-/*X
         em.getTransaction().begin();
         final TypedQuery<Long> q2 = em.createQuery("select SUM(ae.intVal) from AggEntity AS ae", Long.class);
         final Long sum = q2.getSingleResult();
         assertEquals(2L, (long) sum);
-*/
 
         final TypedQuery<Long> q = em.createQuery("select SUM(CASE ae.stringVal WHEN 'bare' THEN 1 ELSE 0 END) from AggEntity AS ae", Long.class);
         final Long sumC = q.getSingleResult();
