@@ -85,7 +85,7 @@
           <groupId>org.apache.openjpa</groupId>
           <artifactId>openjpa-maven-plugin</artifactId>
           <configuration>
-            <includes>org/apache/openjpa/examples/gallery/model/*.class</includes>
+            <includes>org/apache/openjpa/example/gallery/model/*.class</includes>
             <addDefaultConstructor>true</addDefaultConstructor>
             <enforcePropertyRestrictions>true</enforcePropertyRestrictions>
             <persistenceXmlFile>${project.basedir}/src/test/resources/META-INF/persistence.xml</persistenceXmlFile>
