@@ -193,6 +193,10 @@ public class OracleDictionary
         longVarbinaryTypeName = "BLOB";
         timeTypeName = "DATE";
         timeWithZoneTypeName = "DATE";
+
+        // default TIMESTAMP is TIMESTAMP(6) which means MICROs
+        datePrecision = MICRO;
+
         varcharTypeName = "VARCHAR2{0}";
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
             "LONG RAW", "RAW", "LONG", "REF",
