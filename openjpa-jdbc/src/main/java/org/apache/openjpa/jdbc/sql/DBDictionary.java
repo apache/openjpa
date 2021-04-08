@@ -313,6 +313,11 @@ public class DBDictionary
     public int maxEmbeddedBlobSize = -1;
     public int maxEmbeddedClobSize = -1;
     public int inClauseLimit = -1;
+
+    /**
+     * Attention, while this is named datePrecision it actually only get used for Timestamp handling!
+     * @see StateManagerImpl#roundTimestamp(Timestamp, int)
+     */
     public int datePrecision = MILLI;
 
     /**
@@ -1441,7 +1446,27 @@ public class DBDictionary
     public void setTimestamp(PreparedStatement stmnt, int idx, Timestamp val, Calendar cal, Column col)
         throws SQLException {
 
-        val = StateManagerImpl.roundTimestamp(val, datePrecision);
+        int usePrecision = datePrecision;
+        if (col != null) {
+            int columnPrecision = col.getPrecision();
+            if (columnPrecision >= 0) { // negative value means we don't know
+                if (columnPrecision == 0) {
+                    usePrecision = SEC;
+                }
+                else if (columnPrecision == 3) {
+                    usePrecision = MILLI;
+                }
+                else if (columnPrecision == 6) {
+                    usePrecision = MICRO;
+                }
+                else if (columnPrecision == 9) {
+                    usePrecision = NANO;
+                }
+                // rest defaults to datePrecision
+            }
+        }
+
+        val = StateManagerImpl.roundTimestamp(val, usePrecision);
 
         if (cal == null)
             stmnt.setTimestamp(idx, val);
