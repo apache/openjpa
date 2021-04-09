@@ -70,6 +70,10 @@
              anything else allows the test to execute normally
         -->
         <tests.openjpa.allowfailure>ignore</tests.openjpa.allowfailure>
+
+        <!-- By default we use DBCP2 via AutoDriverDataSource -->
+        <tests.openjpa.driverDataSource>dbcp</tests.openjpa.driverDataSource>
+
         <!--turn on sources.jar generation by setting to verify and true -->
         <createSource>none</createSource>
         <createSources>false</createSources>
@@ -1504,6 +1508,9 @@
                 <oracle.server.version>latest</oracle.server.version>
                 <docker.external.oracle.port>1521</docker.external.oracle.port>
 
+                <!-- Oracle Driver + XE11 seems to not play well with DBCP2 -->
+                <tests.openjpa.driverDataSource>simple</tests.openjpa.driverDataSource>
+
                 <connection.driver.name>oracle.jdbc.driver.OracleDriver</connection.driver.name>
                 <openjpa.oracle.database>openjpatst</openjpa.oracle.database>
                 <openjpa.oracle.username>openjpatst</openjpa.oracle.username>
@@ -1541,7 +1548,8 @@
                             <images>
                                 <image>
                                     <!--<name>oracledb19c/oracle.19.3.0-ee:oracle19.3.0-ee</name>-->
-                                    <name>oracleinanutshell/oracle-xe-11g</name>
+                                    <!--<name>oracleinanutshell/oracle-xe-11g</name>-->
+                                    <name>pvargacl/oracle-xe-18.4.0:latest</name>
                                     <run>
                                         <volumes>
                                             <bind>
@@ -1933,6 +1941,10 @@
                         <property>
                             <name>tests.openjpa.allowfailure</name>
                             <value>${tests.openjpa.allowfailure}</value>
+                        </property>
+                        <property>
+                            <name>openjpa.jdbc.DriverDataSource</name>
+                            <value>${tests.openjpa.driverDataSource}</value>
                         </property>
                     </systemProperties>
                     </configuration>
