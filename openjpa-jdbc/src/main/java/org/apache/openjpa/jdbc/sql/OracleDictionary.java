@@ -34,6 +34,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -92,6 +96,14 @@ public class OracleDictionary
      * The global sequence name to use for autoassign simulation.
      */
     public String autoAssignSequenceName = null;
+
+    /**
+     * Whether this JDBC driver has native java.time support for
+     * LocalDate, LocalDateTime, LocalTime, OffsetTime and OffsetDateTime
+     *
+     *
+     */
+    public boolean nativeJavaTimeSupport = true;
 
     /**
      * Flag to use OpenJPA 0.3 style naming for auto assign sequence name and
@@ -218,7 +230,7 @@ public class OracleDictionary
             "EXCLUSIVE", "EXISTS", "FILE", "FLOAT", "FOR", "FROM", "GRANT",
             "GROUP", "HAVING", "IDENTIFIED", "IMMEDIATE", "IN", "INCREMENT",
             "INDEX", "INITIAL", "INSERT", "INTEGER", "INTERSECT", "INTO",
-            "IS", "LEVEL", "LIKE", "LOCK", "LONG", "MAXEXTENTS", "MINUS",
+            "IS", "KEY", "LEVEL", "LIKE", "LOCK", "LONG", "MAXEXTENTS", "MINUS",
             "MODE", "NOAUDIT", "NOCOMPRESS", "NOT", "NOWAIT", "NULL", "NUMBER",
             "OF", "OFFLINE", "ON", "ONLINE", "OPTION", "OR", "ORDER", "PCTFREE",
             "PRIOR", "PRIVILEGES", "PUBLIC", "REVOKE", "ROW", "ROWS", "SELECT",
@@ -301,6 +313,10 @@ public class OracleDictionary
                 if( jdbcVersion >= 11002) {
                     maxEmbeddedBlobSize = -1;
                     maxEmbeddedClobSize = -1;
+                }
+                if (jdbcMajor < 18) {
+                    // no native java.time support for old JDBC drivers.
+                    nativeJavaTimeSupport = false;
                 }
                 String productVersion = meta.getDatabaseProductVersion()
                     .split("Release ",0)[1].split("\\.",0)[0];
@@ -648,18 +664,18 @@ public class OracleDictionary
         Column col)
         throws SQLException {
 
-    	//We need a place to detect if the user is setting the 'supportsSetClob' property.
-    	//While in previous releases this property had meaning, it is no longer useful
-    	//given the code added via OPENJPA-1691.  As such, we need to warn user's the
-    	//property no longer has meaning.  While it would be nice to have a better way
-    	//to detect if the supportsSetClob property has been set, the best we can do
-    	//is detect the variable in this code path as this is the path a user's code
-    	//would go down if they are still executing code which actually made use of
-    	//the support provided via setting supportsSetClob.
-    	if (supportsSetClob && logSupportsSetClobWarning){
-    		log.warn(_loc.get("oracle-set-clob-warning"));
-    		logSupportsSetClobWarning=false;
-    	}
+        //We need a place to detect if the user is setting the 'supportsSetClob' property.
+        //While in previous releases this property had meaning, it is no longer useful
+        //given the code added via OPENJPA-1691.  As such, we need to warn user's the
+        //property no longer has meaning.  While it would be nice to have a better way
+        //to detect if the supportsSetClob property has been set, the best we can do
+        //is detect the variable in this code path as this is the path a user's code
+        //would go down if they are still executing code which actually made use of
+        //the support provided via setting supportsSetClob.
+        if (supportsSetClob && logSupportsSetClobWarning){
+            log.warn(_loc.get("oracle-set-clob-warning"));
+            logSupportsSetClobWarning=false;
+        }
 
         if (col.isXML()) {
             if (isJDBC4) {
@@ -702,6 +718,46 @@ public class OracleDictionary
             super.setNull(stmnt, idx, Types.NULL, col);
         else
             super.setNull(stmnt, idx, colType, col);
+    }
+
+    @Override
+    public void setLocalDate(PreparedStatement stmnt, int idx, LocalDate val, Column col) throws SQLException {
+        stmnt.setObject(idx, val);
+    }
+
+    @Override
+    public LocalDate getLocalDate(ResultSet rs, int column) throws SQLException {
+        return rs.getObject(column, LocalDate.class);
+    }
+
+    @Override
+    public void setLocalTime(PreparedStatement stmnt, int idx, LocalTime val, Column col) throws SQLException {
+        stmnt.setObject(idx, val);
+    }
+
+    @Override
+    public LocalTime getLocalTime(ResultSet rs, int column) throws SQLException {
+        return rs.getObject(column, LocalTime.class);
+    }
+
+    @Override
+    public void setLocalDateTime(PreparedStatement stmnt, int idx, LocalDateTime val, Column col) throws SQLException {
+        stmnt.setObject(idx, val);
+    }
+
+    @Override
+    public LocalDateTime getLocalDateTime(ResultSet rs, int column) throws SQLException {
+        return rs.getObject(column, LocalDateTime.class);
+    }
+
+    @Override
+    public void setOffsetDateTime(PreparedStatement stmnt, int idx, OffsetDateTime val, Column col) throws SQLException {
+        stmnt.setObject(idx, val);
+    }
+
+    @Override
+    public OffsetDateTime getOffsetDateTime(ResultSet rs, int column) throws SQLException {
+        return rs.getObject(column, OffsetDateTime.class);
     }
 
     @Override
@@ -831,6 +887,10 @@ public class OracleDictionary
      */
     @Override
     public int getPreferredType(int type) {
+        if (nativeJavaTimeSupport) {
+            return type;
+        }
+
         switch (type) {
             case Types.TIME_WITH_TIMEZONE:
                 return Types.TIME;
