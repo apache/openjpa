@@ -39,6 +39,7 @@ public class TestOpenJPA2330 extends SingleEMFTestCase {
     public void testOpenJPA2330() {
         final EntityManager em = emf.createEntityManager();
 
+        em.getTransaction().begin();
         EntityA a = new EntityA();
         EntityB b = new EntityB(a);
         // set back pointer
@@ -49,8 +50,8 @@ public class TestOpenJPA2330 extends SingleEMFTestCase {
         b.getCs().add(c);
 
         em.persist(a);
-        em.persist(b);
         em.persist(c);
+        em.getTransaction().commit();
 
         assertEquals(LoadState.LOADED, OpenJPAPersistenceUtil.isLoaded(b, "center"));
 
