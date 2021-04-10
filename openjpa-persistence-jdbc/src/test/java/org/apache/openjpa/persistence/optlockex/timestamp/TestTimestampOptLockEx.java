@@ -59,7 +59,7 @@ public class TestTimestampOptLockEx extends SingleEMFTestCase {
         //This loop is necessary since we need a timestamp which has been rounded up
         //by the database, or by OpenJPA such that the in-memory version of the Timestamp
         //varies from that which is in the database.
-        for (int i = 0; i < 50000; i++) {
+        for (int i = 0; i < 5000; i++) {
             EntityManager em = emf.createEntityManager();
             EntityTransaction tx = em.getTransaction();
 
