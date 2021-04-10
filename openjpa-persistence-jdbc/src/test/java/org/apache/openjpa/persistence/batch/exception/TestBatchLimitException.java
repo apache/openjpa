@@ -355,6 +355,9 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
             assertNotNull("Failed object was null.", failedObject);
             if (!isOracle && !isPostgres) {
                 assertEquals(expectedFailedObject, failedObject);
+            } else if (isOracle) {
+                // since Oracle 18 we see a different behaviour, so test both ways
+                assertTrue(failedObject.equals(expectedFailedObject) || failedObject.equals(expectedFailedObjectOracle) );
             } else {
                 // special case, as Oracle returns all statements in the batch
                 assertEquals(expectedFailedObjectOracle, failedObject);
@@ -370,6 +373,9 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
         if (!isOracle && !isPostgres) {
             assertTrue("Did not see expected text in message. Expected <" + expectedFailureMsg + "> but was " +
                 msg, msg.contains(expectedFailureMsg));
+        } else if (isOracle) {
+            // since Oracle 18 we see a different behaviour, so test both ways
+            assertTrue(msg.contains(expectedFailureMsg) || msg.contains(expectedFailureMsgOracle));
         } else {
             // special case, as Oracle returns all statements in the batch
             assertTrue("Did not see expected text in message. Expected <" + expectedFailureMsgOracle + "> but was " +
