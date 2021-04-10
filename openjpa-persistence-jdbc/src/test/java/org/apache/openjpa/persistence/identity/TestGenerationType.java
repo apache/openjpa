@@ -25,6 +25,7 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -117,6 +118,10 @@ public class TestGenerationType
     }
 
     public void testQueryWithoutGetGeneratedKeys() {
+        if (getDBDictionary() instanceof OracleDictionary) {
+            // Oracle now always has JDBC4 driver.
+            return;
+        }
         testQuery();
     }
 
