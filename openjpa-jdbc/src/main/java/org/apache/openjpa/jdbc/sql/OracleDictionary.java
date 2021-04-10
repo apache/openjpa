@@ -58,6 +58,7 @@ import org.apache.openjpa.jdbc.schema.ForeignKey.FKMapKey;
 import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.lib.jdbc.DelegatingDatabaseMetaData;
 import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
@@ -179,6 +180,10 @@ public class OracleDictionary
         maxEmbeddedBlobSize = 4000;
         maxEmbeddedClobSize = 4000;
         inClauseLimit = 1000;
+
+        // support auto increment columns javax.persistence.GenerationType#IDENTITY
+        supportsAutoAssign = true;
+        autoAssignClause = "GENERATED ALWAYS AS IDENTITY";
 
         supportsDeferredConstraints = true;
         supportsLockingWithDistinctClause = false;
@@ -395,6 +400,41 @@ public class OracleDictionary
             return false;
         return !requiresSubselectForRange(sel.getStartIndex(),
             sel.getEndIndex(), sel.isDistinct(), sel.getOrdering());
+    }
+
+    /**
+     * Return the declaration SQL for the given column. This method is used
+     * for each column from within {@link #getCreateTableSQL} and
+     * {@link #getAddColumnSQL}.
+     *
+     * Oracle needs a bit special handling for auto assign columns.
+     * For those ("GENERATED ALWAYS AS IDENTITY") we must not generate NOT NULL
+     * as this would create invalid statements for Oracle.
+     */
+    @Override
+    protected String getDeclareColumnSQL(Column col, boolean alter) {
+        StringBuilder buf = new StringBuilder();
+        String columnName = checkNameLength(toDBName(col.getIdentifier()), maxColumnNameLength,
+                "long-column-name");
+        buf.append(columnName).append(" ");
+        buf.append(getTypeName(col));
+
+        // can't add constraints to a column we're adding after table
+        // creation, cause some data might already be inserted
+        if (!alter
+            && !col.isAutoAssigned()) { // this is actually the only 'special' case for oracle
+            if (col.getDefaultString() != null && !col.isAutoAssigned())
+                buf.append(" DEFAULT ").append(col.getDefaultString());
+            if (col.isNotNull() || (!supportsNullUniqueColumn && col.hasConstraint(Unique.class)))
+                buf.append(" NOT NULL");
+        }
+        if (col.isAutoAssigned()) {
+            if (!supportsAutoAssign)
+                log.warn(_loc.get("invalid-autoassign", platform, col));
+            else if (autoAssignClause != null)
+                buf.append(" ").append(autoAssignClause);
+        }
+        return buf.toString();
     }
 
     @Override
