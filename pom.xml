@@ -1119,9 +1119,9 @@
                 </dependency>
             </dependencies>
             <properties>
-                <connection.driver.name>org.herddb.jdbc.Driver</connection.driver.name>
+                <connection.driver.name>herddb.jdbc.Driver</connection.driver.name>
 
-                <connection.url>jdbc:herddb://localhost</connection.url>
+                <connection.url>jdbc:herddb:server:localhost:7000</connection.url>
                 <connection.username>sa</connection.username>
                 <connection.password>hdb</connection.password>
                 <jdbc.DBDictionary />
