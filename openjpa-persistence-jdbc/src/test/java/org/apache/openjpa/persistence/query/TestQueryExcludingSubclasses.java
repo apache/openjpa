@@ -41,15 +41,15 @@ public class TestQueryExcludingSubclasses
         setUp(ManyOneEntity.class, ManyOneEntitySub.class);
 
         ManyOneEntity e1 = new ManyOneEntity();
-        e1.setName("e1");
+        e1.setName("eMain1");
         ManyOneEntity e2 = new ManyOneEntity();
-        e2.setName("e2");
+        e2.setName("eMain2");
         ManyOneEntity invalid = new ManyOneEntity();
         invalid.setName("invalid");
         ManyOneEntitySub esub1 = new ManyOneEntitySub();
-        esub1.setName("esub1");
+        esub1.setName("eSub1");
         ManyOneEntitySub esub2 = new ManyOneEntitySub();
-        esub2.setName("esub2");
+        esub2.setName("eSub2");
         ManyOneEntitySub invalidsub = new ManyOneEntitySub();
         invalidsub.setName("invalidsub");
 
@@ -73,11 +73,11 @@ public class TestQueryExcludingSubclasses
         assertEquals(4, res.size());
         for (int i = 0; i < 2; i++) {
             assertEquals(ManyOneEntity.class, res.get(i).getClass());
-            assertEquals("e" + (i + 1), res.get(i).getName());
+            assertEquals("eMain" + (i + 1), res.get(i).getName());
         }
         for (int i = 0; i < 2; i++) {
             assertEquals(ManyOneEntitySub.class, res.get(i + 2).getClass());
-            assertEquals("esub" + (i + 1), res.get(i + 2).getName());
+            assertEquals("eSub" + (i + 1), res.get(i + 2).getName());
         }
         em.close();
     }
@@ -91,7 +91,7 @@ public class TestQueryExcludingSubclasses
         assertEquals(2, res.size());
         for (int i = 0; i < res.size(); i++) {
             assertEquals(ManyOneEntity.class, res.get(i).getClass());
-            assertEquals("e" + (i + 1), res.get(i).getName());
+            assertEquals("eMain" + (i + 1), res.get(i).getName());
         }
         em.close();
     }
