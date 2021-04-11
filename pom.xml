@@ -1104,10 +1104,10 @@
 
         <!-- Profile for testing with HerdDB -->
         <profile>
-            <id>test-herddb-docker</id>
+            <id>test-herddb</id>
             <activation>
                 <property>
-                    <name>test-herddb-docker</name>
+                    <name>test-herddb</name>
                 </property>
             </activation>
             <dependencies>
@@ -1121,7 +1121,7 @@
             <properties>
                 <connection.driver.name>herddb.jdbc.Driver</connection.driver.name>
 
-                <connection.url>jdbc:herddb:server:localhost:7000</connection.url>
+                <connection.url>jdbc:herddb:local</connection.url>
                 <connection.username>sa</connection.username>
                 <connection.password>hdb</connection.password>
                 <jdbc.DBDictionary />
@@ -1129,29 +1129,7 @@
                 <!-- DBCP overrides for testing -->
                 <dbcp.maxIdle>5</dbcp.maxIdle>
                 <dbcp.minIdle>0</dbcp.minIdle>
-
             </properties>
-
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>io.fabric8</groupId>
-                        <artifactId>docker-maven-plugin</artifactId>
-                        <configuration>
-                            <images>
-                                <image>
-                                    <name>herddb/herddb:latest</name>
-                                    <run>
-                                        <ports>
-                                            <port>7000:7000</port>
-                                        </ports>
-                                    </run>
-                                </image>
-                            </images>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
         </profile>
 
         <!-- Profile for testing with a custom DB using a system jar -->
