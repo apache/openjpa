@@ -33,6 +33,7 @@ import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.SchemaTool;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.HerdDBDictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
@@ -180,6 +181,8 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
             createSql = "org/apache/openjpa/persistence/jdbc/schema/create-postgresql.sql";
         } else if (dict instanceof SQLServerDictionary) {
             createSql = "org/apache/openjpa/persistence/jdbc/schema/create-mssql.sql";
+        } else if (dict instanceof OracleDictionary) {
+            createSql = "org/apache/openjpa/persistence/jdbc/schema/create-oracle.sql";
         } else {
              createSql = "org/apache/openjpa/persistence/jdbc/schema/create.sql";
         }

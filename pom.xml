@@ -1578,8 +1578,8 @@
                             <images>
                                 <image>
                                     <!--<name>oracledb19c/oracle.19.3.0-ee:oracle19.3.0-ee</name>-->
-                                    <!--<name>oracleinanutshell/oracle-xe-11g</name>-->
-                                    <name>pvargacl/oracle-xe-18.4.0:latest</name>
+                                    <name>oracleinanutshell/oracle-xe-11g</name>
+                                    <!--<name>pvargacl/oracle-xe-18.4.0:latest</name>-->
                                     <run>
                                         <volumes>
                                             <bind>
