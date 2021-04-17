@@ -22,10 +22,13 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import org.apache.openjpa.jdbc.sql.HerdDBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import static org.junit.Assume.assumeFalse;
 
 public class TestBulkJPQLAndDataCache
     extends SingleEMFTestCase {
@@ -34,6 +37,7 @@ public class TestBulkJPQLAndDataCache
 
     @Override
     public void setUp() throws Exception {
+        assumeFalse(this.getDBDictionary() instanceof HerdDBDictionary);
         setUp("openjpa.DataCache", "true",
             "openjpa.QueryCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm",

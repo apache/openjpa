@@ -23,11 +23,14 @@ import javax.persistence.EntityManagerFactory;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.HerdDBDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 import org.apache.openjpa.util.ExceptionInfo;
+
+import static org.junit.Assume.assumeFalse;
 
 //This test was created for OPENJPA-1550.  In this issue the user was
 //not able to get the 'failed object' (the object causing the failure) when
@@ -63,6 +66,7 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
         DBDictionary dict = conf.getDBDictionaryInstance();
         isOracle = dict instanceof OracleDictionary;
         isPostgres = dict instanceof PostgresDictionary;
+        assumeFalse(dict instanceof HerdDBDictionary);
         return emf;
     }
 

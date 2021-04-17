@@ -22,8 +22,11 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.strats.FullClassStrategy;
 import org.apache.openjpa.jdbc.meta.strats.NoneDiscriminatorStrategy;
+import org.apache.openjpa.jdbc.sql.HerdDBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import static org.junit.Assume.assumeFalse;
 
 /**
  * <p>Test that InheritanceType.TABLE_PER_CLASS JPA mapping is translated
@@ -39,6 +42,7 @@ public class TestTablePerClassInheritance
     public void setUp() {
         setUp(TablePerClass1.class, TablePerClass2.class, EmbedOwner.class,
             EmbedValue.class, CLEAR_TABLES);
+        assumeFalse(this.getDBDictionary() instanceof HerdDBDictionary);
     }
 
     public void testMapping() {

@@ -22,9 +22,13 @@ import javax.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
+import org.apache.openjpa.jdbc.sql.HerdDBDictionary;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.test.CombinatorialPersistenceTestCase;
+
+import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.assumeTrue;
 
 /**
  * Tests for SQL statement ordering capabilities of different update strategies
@@ -103,6 +107,7 @@ public class TestParentChild extends CombinatorialPersistenceTestCase {
 
 	@Override
     public void setUp() {
+		assumeFalse(this.getDBDictionary() instanceof HerdDBDictionary);
         // The options can also be added in setup() as well but then
         // coutTestCase() will only record test methods and not multiply them
         // with number of configuration combinations the same tests will run.

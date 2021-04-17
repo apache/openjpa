@@ -31,11 +31,14 @@ import org.apache.openjpa.jdbc.meta.strats.ClobValueHandler;
 import org.apache.openjpa.jdbc.meta.strats.MaxEmbeddedClobFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.StringFieldStrategy;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.HerdDBDictionary;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import static org.junit.Assume.assumeFalse;
 
 /**
  * Test for embedded
@@ -58,6 +61,7 @@ public class TestEJBEmbedded extends SingleEMFTestCase {
         setUp(EmbedOwner.class, EmbedValue.class, CLEAR_TABLES
 //        ,"openjpa.Log","SQL=trace"
         );
+        assumeFalse(this.getDBDictionary() instanceof HerdDBDictionary);
     }
 
     public void testEmbedded() {

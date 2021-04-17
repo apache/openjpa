@@ -20,9 +20,16 @@ package org.apache.openjpa.persistence.annotations;
 
 import java.util.Collection;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.HerdDBDictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
+import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest1;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest2;
+
+import static org.junit.Assume.assumeFalse;
 
 
 /**
@@ -41,6 +48,9 @@ public class TestOneToMany extends AnnotationTestCase
     public void setUp() {
         deleteAll(AnnoTest1.class);
         deleteAll(AnnoTest2.class);
+        JDBCConfiguration conf = (JDBCConfiguration) getEmf().getConfiguration();
+        DBDictionary dict = conf.getDBDictionaryInstance();
+        assumeFalse(dict instanceof HerdDBDictionary);
     }
 
     public void testOneToMany() {
