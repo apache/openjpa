@@ -603,8 +603,7 @@ public class JDBCStoreQuery
             }
         } finally {
             try {
-            	if (conn.getAutoCommit())
-            		conn.close();
+                conn.close();
             } catch (SQLException se) {
 
             }
