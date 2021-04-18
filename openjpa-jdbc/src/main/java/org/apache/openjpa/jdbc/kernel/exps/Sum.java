@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
-import org.apache.openjpa.kernel.Filters;
-
 /**
  * Sum.
  *

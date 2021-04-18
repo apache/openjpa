@@ -21,7 +21,6 @@ import javax.persistence.TypedQuery;
 
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.kernel.common.apps.CalendarFields;
-import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 
 /**
  * OPENJPA-2789 connection didn't get closed properly
