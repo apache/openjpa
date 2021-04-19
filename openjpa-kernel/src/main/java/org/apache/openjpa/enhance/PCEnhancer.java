@@ -768,6 +768,7 @@ public class PCEnhancer {
         BCMethod method = _pc.declareMethod(PRE + "AttributeIndexToFieldName",
             String.class, new Class[] { int.class });
         method.makePublic();
+        method.setSynthetic(true);
         Code code = method.getCode(true);
 
         // switch (val)
@@ -1211,6 +1212,7 @@ public class PCEnhancer {
         BCMethod method = _pc.declareMethod(PRE + "ClearFields", void.class,
             null);
         method.makeProtected();
+        method.setSynthetic(true);
         Code code = method.getCode(true);
 
         // super.pcClearFields ()
@@ -1271,6 +1273,7 @@ public class PCEnhancer {
             (oid) ? new Class[]{ SMTYPE, Object.class, boolean.class }
                 : new Class[]{ SMTYPE, boolean.class };
         BCMethod method = _pc.declareMethod(PRE + "NewInstance", PCTYPE, args);
+        method.setSynthetic(true);
         Code code = method.getCode(true);
 
         // if the type is abstract, throw a UserException
@@ -1326,6 +1329,7 @@ public class PCEnhancer {
         // protected static int pcGetManagedFieldCount ()
         BCMethod method = _pc.declareMethod(PRE + "GetManagedFieldCount",
             int.class, null);
+        method.setSynthetic(true);
         method.setStatic(true);
         method.makeProtected();
         Code code = method.getCode(true);
@@ -1359,6 +1363,7 @@ public class PCEnhancer {
         // public void pcProvideField (int fieldNumber)
         BCMethod method = _pc.declareMethod(PRE + "ProvideField", void.class,
             new Class[]{ int.class });
+        method.setSynthetic(true);
         Code code = method.getCode(true);
 
         // adds everything through the switch ()
@@ -1410,6 +1415,7 @@ public class PCEnhancer {
         // public void pcReplaceField (int fieldNumber)
         BCMethod method = _pc.declareMethod(PRE + "ReplaceField", void.class,
             new Class[]{ int.class });
+        method.setSynthetic(true);
         Code code = method.getCode(true);
 
         // adds everything through the switch ()
@@ -1476,6 +1482,7 @@ public class PCEnhancer {
             void.class.getName(),
             new String[]{ _managedType.getName(), int.class.getName() });
         method.makeProtected();
+        method.setSynthetic(true);
         Code code = method.getCode(true);
 
         // adds everything through the switch ()
@@ -1581,8 +1588,8 @@ public class PCEnhancer {
         // public void <method>s (int[] fields)
         Class[] args = (copy) ? new Class[]{ Object.class, int[].class }
             : new Class[]{ int[].class };
-        BCMethod method = _pc.declareMethod(single.getName() + "s",
-            void.class, args);
+        BCMethod method = _pc.declareMethod(single.getName() + "s", void.class, args);
+        method.setSynthetic(true);
         Code code = method.getCode(true);
 
         int fieldNumbers = 0;
@@ -1732,8 +1739,8 @@ public class PCEnhancer {
                         SMTYPE, "dirty", new Class[]{ String.class })), false);
 
             // pcGetStateManager
-            BCMethod meth = _pc.declareMethod(PRE + "GetStateManager",
-                StateManager.class, null);
+            BCMethod meth = _pc.declareMethod(PRE + "GetStateManager", StateManager.class, null);
+            meth.setSynthetic(true);
             Code code = meth.getCode(true);
             loadManagedInstance(code, false);
             code.getfield().setField(SM, StateManager.class);
@@ -1760,6 +1767,7 @@ public class PCEnhancer {
 
         // add the method to the pc
         BCMethod method = _pc.declareMethod(name, returnType, params);
+        method.setSynthetic(true);
         Code code = method.getCode(true);
 
         // if (pcStateManager == null) return <default>;
@@ -1804,6 +1812,7 @@ public class PCEnhancer {
         throws NoSuchMethodException {
         BCMethod method = _pc.declareMethod(PRE + "GetVersion", Object.class,
             null);
+        method.setSynthetic(true);
         Code code = method.getCode(true);
 
         // if (pcStateManager == null)
@@ -1872,8 +1881,8 @@ public class PCEnhancer {
      */
     private void addReplaceStateManagerMethod() {
         // public void pcReplaceStateManager (StateManager sm)
-        BCMethod method = _pc.declareMethod(PRE + "ReplaceStateManager",
-            void.class, new Class[]{ SMTYPE });
+        BCMethod method = _pc.declareMethod(PRE + "ReplaceStateManager", void.class, new Class[]{ SMTYPE });
+        method.setSynthetic(true);
         method.getExceptions(true).addException(SecurityException.class);
         Code code = method.getCode(true);
 
@@ -1916,6 +1925,7 @@ public class PCEnhancer {
         // 	Object oid)
         BCMethod method = _pc.declareMethod(PRE + "CopyKeyFieldsToObjectId",
             void.class, new Class[]{ OIDFSTYPE, Object.class });
+        method.setSynthetic(true);
         Code code = method.getCode(true);
         code.vreturn();
         code.calculateMaxLocals();
@@ -1923,6 +1933,7 @@ public class PCEnhancer {
         // public void pcCopyKeyFieldsToObjectId (Object oid)
         method = _pc.declareMethod(PRE + "CopyKeyFieldsToObjectId",
             void.class, new Class[]{ Object.class });
+        method.setSynthetic(true);
         code = method.getCode(true);
         code.vreturn();
         code.calculateMaxLocals();
@@ -1931,6 +1942,7 @@ public class PCEnhancer {
         //	Object oid)
         method = _pc.declareMethod(PRE + "CopyKeyFieldsFromObjectId",
             void.class, new Class[]{ OIDFCTYPE, Object.class });
+        method.setSynthetic(true);
         code = method.getCode(true);
         code.vreturn();
         code.calculateMaxLocals();
@@ -1938,6 +1950,7 @@ public class PCEnhancer {
         // public void pcCopyKeyFieldsFromObjectId (Object oid)
         method = _pc.declareMethod(PRE + "CopyKeyFieldsFromObjectId",
             void.class, new Class[]{ Object.class });
+        method.setSynthetic(true);
         code = method.getCode(true);
         code.vreturn();
         code.calculateMaxLocals();
@@ -1945,6 +1958,7 @@ public class PCEnhancer {
         // public Object pcNewObjectIdInstance ()
         method = _pc.declareMethod(PRE + "NewObjectIdInstance",
             Object.class, null);
+        method.setSynthetic(true);
         code = method.getCode(true);
         code.constant().setNull();
         code.areturn();
@@ -1954,6 +1968,7 @@ public class PCEnhancer {
         // public Object pcNewObjectIdInstance (Object obj)
         method = _pc.declareMethod(PRE + "NewObjectIdInstance",
             Object.class, new Class[]{ Object.class });
+        method.setSynthetic(true);
         code = method.getCode(true);
         code.constant().setNull();
         code.areturn();
@@ -1974,6 +1989,7 @@ public class PCEnhancer {
             : new String[]{ Object.class.getName() };
         BCMethod method = _pc.declareMethod(PRE + "CopyKeyFieldsToObjectId",
             void.class.getName(), args);
+        method.setSynthetic(true);
         Code code = method.getCode(true);
 
         // single field identity always throws exception
@@ -2469,6 +2485,7 @@ public class PCEnhancer {
             : new String[]{ Object.class.getName() };
         BCMethod method = _pc.declareMethod(PRE + "CopyKeyFieldsFromObjectId",
             void.class.getName(), args);
+        method.setSynthetic(true);
         Code code = method.getCode(true);
 
         // call superclass method
@@ -2724,6 +2741,7 @@ public class PCEnhancer {
         Class[] args = (obj) ? new Class[]{ Object.class } : null;
         BCMethod method = _pc.declareMethod(PRE + "NewObjectIdInstance",
             Object.class, args);
+        method.setSynthetic(true);
         Code code = method.getCode(true);
 
         Boolean usesClsString = usesClassStringIdConstructor();
@@ -2945,19 +2963,38 @@ public class PCEnhancer {
      * </ul>
      */
     private void addFields() {
-        _pc.declareField(INHERIT, int.class).setStatic(true);
-        _pc.declareField(PRE + "FieldNames", String[].class).setStatic(true);
-        _pc.declareField(PRE + "FieldTypes", Class[].class).setStatic(true);
-        _pc.declareField(PRE + "FieldFlags", byte[].class).setStatic(true);
-        _pc.declareField(SUPER, Class.class).setStatic(true);
+        BCField field;
+        field = _pc.declareField(INHERIT, int.class);
+        field.setStatic(true);
+        field.setSynthetic(true);
+
+        field = _pc.declareField(PRE + "FieldNames", String[].class);
+        field.setStatic(true);
+        field.setSynthetic(true);
+
+        field = _pc.declareField(PRE + "FieldTypes", Class[].class);
+        field.setStatic(true);
+        field.setSynthetic(true);
+
+        field = _pc.declareField(PRE + "FieldFlags", byte[].class);
+        field.setStatic(true);
+        field.setSynthetic(true);
+
+
+        field = _pc.declareField(SUPER, Class.class);
+        field.setSynthetic(true);
+        field.setStatic(true);
+
         if (_addVersionInitFlag && _meta.getVersionField() != null) {
             // protected transient boolean pcVersionInit;
-            BCField field = _pc.declareField(VERSION_INIT_STR, boolean.class);
+            field = _pc.declareField(VERSION_INIT_STR, boolean.class);
+            field.setSynthetic(true);
             field.makeProtected();
             field.setTransient(true);
         }
         if (_meta.getPCSuperclass() == null || getCreateSubclass()) {
-            BCField field = _pc.declareField(SM, SMTYPE);
+            field = _pc.declareField(SM, SMTYPE);
+            field.setSynthetic(true);
             field.makeProtected();
             field.setTransient(true);
         }
@@ -3144,6 +3181,7 @@ public class PCEnhancer {
             // private void writeObject (ObjectOutputStream out)
             write = _pc.declareMethod("writeObject", void.class,
                 new Class[]{ ObjectOutputStream.class });
+            write.setSynthetic(true);
             write.getExceptions(true).addException(IOException.class);
             write.makePrivate();
         }
@@ -3157,6 +3195,7 @@ public class PCEnhancer {
             // private void readObject (ObjectInputStream in)
             read = _pc.declareMethod("readObject", void.class,
                 new Class[]{ ObjectInputStream.class });
+            read.setSynthetic(true);
             read.getExceptions(true).addException(IOException.class);
             read.getExceptions(true).addException
                 (ClassNotFoundException.class);
@@ -3172,6 +3211,7 @@ public class PCEnhancer {
 
         // private Object writeReplace() throws ObjectStreamException
         BCMethod method = _pc.declareMethod("writeReplace", Object.class, null);
+        method.setSynthetic(true);
         method.getExceptions(true).addException(ObjectStreamException.class);
         Code code = method.getCode(true);
 
@@ -3260,7 +3300,7 @@ public class PCEnhancer {
 
     /**
      * Adds a custom readObject method that delegates to the
-     * {@link ObjectInputStream#readObject} method.
+     * {@link ObjectInputStream#readObject()} method.
      */
     private void modifyReadObjectMethod(BCMethod method, boolean full) {
         Code code = method.getCode(true);
@@ -3297,6 +3337,7 @@ public class PCEnhancer {
         // public boolean pcIsDetached()
         BCMethod method = _pc.declareMethod(PRE + "IsDetached",
             Boolean.class, null);
+        method.setSynthetic(true);
         method.makePublic();
         Code code = method.getCode(true);
         boolean needsDefinitiveMethod = writeIsDetachedMethod(code);
@@ -3309,8 +3350,8 @@ public class PCEnhancer {
         //   return false;
         // auxilliary enhancers may change the return value of this method
         // if their specs consider detached state definitive
-        method = _pc.declareMethod(ISDETACHEDSTATEDEFINITIVE, boolean.class,
-            null);
+        method = _pc.declareMethod(ISDETACHEDSTATEDEFINITIVE, boolean.class, null);
+        method.setSynthetic(true);
         method.makePrivate();
         code = method.getCode(true);
         code.constant().setValue(false);
@@ -3623,6 +3664,7 @@ public class PCEnhancer {
             // add clone method
             // protected Object clone () throws CloneNotSupportedException
             clone = _pc.declareMethod("clone", Object.class, null);
+            clone.setSynthetic(true);
             if (!setVisibilityToSuperMethod(clone))
                 clone.makeProtected();
             clone.getExceptions(true).addException
@@ -3725,8 +3767,8 @@ public class PCEnhancer {
         throws NoSuchMethodException {
         Class propType = fmd.getDeclaredType();
         String setterName = getSetterName(fmd);
-        BCMethod setter = _pc.declareMethod(setterName, void.class,
-            new Class[] { propType });
+        BCMethod setter = _pc.declareMethod(setterName, void.class, new Class[] { propType });
+        setter.setSynthetic(true);
         setVisibilityToSuperMethod(setter);
         Code code = setter.getCode(true);
 
@@ -3784,8 +3826,8 @@ public class PCEnhancer {
         String methName = "get" + StringUtil.capitalize(fmd.getName());
         if (_managedType.getMethods(methName, new Class[0]).length == 0)
             methName = "is" + StringUtil.capitalize(fmd.getName());
-        BCMethod getter = _pc.declareMethod(methName, fmd.getDeclaredType(),
-            null);
+        BCMethod getter = _pc.declareMethod(methName, fmd.getDeclaredType(), null);
+        getter.setSynthetic(true);
         setVisibilityToSuperMethod(getter);
         getter.makePublic();
         Code code = getter.getCode(true);
@@ -3962,6 +4004,7 @@ public class PCEnhancer {
             name = PRE + "DetachedState";
             declarer = _pc.getName();
             BCField field = _pc.declareField(name, Object.class);
+            field.setSynthetic(true);
             field.makePrivate();
             field.setTransient(true);
         } else if (impl) {
@@ -3970,8 +4013,8 @@ public class PCEnhancer {
         }
 
         // public Object pcGetDetachedState ()
-        BCMethod method = _pc.declareMethod(PRE + "GetDetachedState",
-            Object.class, null);
+        BCMethod method = _pc.declareMethod(PRE + "GetDetachedState", Object.class, null);
+        method.setSynthetic(true);
         method.setStatic(false);
         method.makePublic();
         int access = method.getAccessFlags();
@@ -3991,6 +4034,7 @@ public class PCEnhancer {
         // public void pcSetDetachedState (Object state)
         method = _pc.declareMethod(PRE + "SetDetachedState",
             void.class, new Class []{ Object.class });
+        method.setSynthetic(true);
         method.setAccessFlags(access);
         code = method.getCode(true);
         if (impl) {
@@ -4183,6 +4227,7 @@ public class PCEnhancer {
         throws NoSuchMethodException {
         Class[] inargs = new Class[]{ ObjectInput.class };
         BCMethod meth = _pc.declareMethod("readExternal", void.class, inargs);
+        meth.setSynthetic(true);
         Exceptions exceps = meth.getExceptions(true);
         exceps.addException(IOException.class);
         exceps.addException(ClassNotFoundException.class);
@@ -4241,6 +4286,7 @@ public class PCEnhancer {
     private void addReadExternalFields() throws NoSuchMethodException {
         Class<?>[] inargs = new Class[]{ ObjectInput.class };
         BCMethod meth = _pc.declareMethod("readExternalFields", void.class, inargs);
+        meth.setSynthetic(true);
         meth.setAccessFlags(Constants.ACCESS_PROTECTED);
         Exceptions exceps = meth.getExceptions(true);
         exceps.addException(IOException.class);
@@ -4275,8 +4321,8 @@ public class PCEnhancer {
     private void addReadUnmanaged(Collection unmgd, boolean parentDetachable)
         throws NoSuchMethodException {
         Class[] inargs = new Class[]{ ObjectInput.class };
-        BCMethod meth = _pc.declareMethod(PRE + "ReadUnmanaged", void.class,
-            inargs);
+        BCMethod meth = _pc.declareMethod(PRE + "ReadUnmanaged", void.class, inargs);
+        meth.setSynthetic(true);
         meth.makeProtected();
         Exceptions exceps = meth.getExceptions(true);
         exceps.addException(IOException.class);
@@ -4361,6 +4407,7 @@ public class PCEnhancer {
         throws NoSuchMethodException {
         Class[] outargs = new Class[]{ ObjectOutput.class };
         BCMethod meth = _pc.declareMethod("writeExternal", void.class, outargs);
+        meth.setSynthetic(true);
         Exceptions exceps = meth.getExceptions(true);
         exceps.addException(IOException.class);
         Code code = meth.getCode(true);
@@ -4432,6 +4479,7 @@ public class PCEnhancer {
         throws NoSuchMethodException {
         Class<?>[] outargs = new Class[]{ ObjectOutput.class };
         BCMethod meth = _pc.declareMethod("writeExternalFields", void.class, outargs);
+        meth.setSynthetic(true);
         meth.setAccessFlags(Constants.ACCESS_PROTECTED);
         Exceptions exceps = meth.getExceptions(true);
         exceps.addException(IOException.class);
@@ -4465,8 +4513,8 @@ public class PCEnhancer {
     private void addWriteUnmanaged(Collection unmgd, boolean parentDetachable)
         throws NoSuchMethodException {
         Class[] outargs = new Class[]{ ObjectOutput.class };
-        BCMethod meth = _pc.declareMethod(PRE + "WriteUnmanaged", void.class,
-            outargs);
+        BCMethod meth = _pc.declareMethod(PRE + "WriteUnmanaged", void.class, outargs);
+        meth.setSynthetic(true);
         meth.makeProtected();
         Exceptions exceps = meth.getExceptions(true);
         exceps.addException(IOException.class);
@@ -4662,6 +4710,7 @@ public class PCEnhancer {
             BCField field = _pc.getDeclaredField(fmd.getName());
             getter = _pc.declareMethod(PRE + "Get" + fmd.getName(), fmd.
                 getDeclaredType().getName(), new String[]{ _pc.getName() });
+            getter.setSynthetic(true);
             getter.setAccessFlags(field.getAccessFlags()
                 & ~Constants.ACCESS_TRANSIENT & ~Constants.ACCESS_VOLATILE);
             getter.setStatic(true);
@@ -4677,6 +4726,7 @@ public class PCEnhancer {
             meth.getParameterTypes());
         BCMethod newgetter = _pc.declareMethod(PRE + meth.getName(),
             meth.getReturnType(), meth.getParameterTypes());
+        newgetter.setSynthetic(true);
         newgetter.setAccessFlags(getter.getAccessFlags());
         newgetter.makeProtected();
         transferCodeAttributes(getter, newgetter);
@@ -4694,6 +4744,7 @@ public class PCEnhancer {
             BCField field = _pc.getDeclaredField(fmd.getName());
             setter = _pc.declareMethod(PRE + "Set" + fmd.getName(), void.class,
                 new Class[]{ getType(_meta), fmd.getDeclaredType() });
+            setter.setSynthetic(true);
             setter.setAccessFlags(field.getAccessFlags()
                 & ~Constants.ACCESS_TRANSIENT & ~Constants.ACCESS_VOLATILE);
             setter.setStatic(true);
@@ -4708,6 +4759,7 @@ public class PCEnhancer {
             new Class[]{ fmd.getDeclaredType() });
         BCMethod newsetter = _pc.declareMethod(PRE + setter.getName(),
             setter.getReturnName(), setter.getParamNames());
+        newsetter.setSynthetic(true);
         newsetter.setAccessFlags(setter.getAccessFlags());
         newsetter.makeProtected();
         transferCodeAttributes(setter, newsetter);
@@ -4716,8 +4768,8 @@ public class PCEnhancer {
 
     private void addGetEnhancementContractVersionMethod() {
         // public int getEnhancementContractVersion()
-        BCMethod method = _pc.declareMethod(PRE +
-                "GetEnhancementContractVersion", int.class, null);
+        BCMethod method = _pc.declareMethod(PRE + "GetEnhancementContractVersion", int.class, null);
+        method.setSynthetic(true);
         method.makePublic();
         Code code = method.getCode(true);
         code.constant().setValue(ENHANCER_VERSION);
@@ -4946,8 +4998,8 @@ public class PCEnhancer {
     }
 
     private void addGetIDOwningClass() throws NoSuchMethodException {
-        BCMethod method = _pc.declareMethod(PRE + "GetIDOwningClass",
-            Class.class, null);
+        BCMethod method = _pc.declareMethod(PRE + "GetIDOwningClass", Class.class, null);
+        method.setSynthetic(true);
         Code code = method.getCode(true);
 
         code.classconstant().setClass(getType(_meta));
