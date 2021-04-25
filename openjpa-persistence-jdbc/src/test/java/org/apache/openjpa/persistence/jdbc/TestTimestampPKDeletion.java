@@ -24,13 +24,17 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
+import org.apache.openjpa.jdbc.sql.HerdDBDictionary;
 import org.apache.openjpa.persistence.simple.EntityWithTimestampPK;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+
+import static org.junit.Assume.assumeFalse;
 
 public class TestTimestampPKDeletion extends SQLListenerTestCase {
 
     @Override
     public void setUp() {
+        assumeFalse(this.getDBDictionary() instanceof HerdDBDictionary);
         setUp(EntityWithTimestampPK.class);
     }
 

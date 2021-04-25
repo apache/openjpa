@@ -19,10 +19,13 @@
 package org.apache.openjpa.persistence.detachment;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.jdbc.sql.HerdDBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.detachment.model.NoDetachedStateEntityFieldAccess;
 import org.apache.openjpa.persistence.detachment.model.NoDetachedStateEntityPropertyAccess;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import static org.junit.Assume.assumeFalse;
 
 public class TestDetachNoStateField extends SingleEMFTestCase {
 
@@ -30,6 +33,7 @@ public class TestDetachNoStateField extends SingleEMFTestCase {
     protected void setUp(Object... props) {
         super.setUp(DROP_TABLES, "openjpa.DetachState", "loaded(DetachedStateField=false)",
             NoDetachedStateEntityPropertyAccess.class, NoDetachedStateEntityFieldAccess.class);
+        assumeFalse(this.getDBDictionary() instanceof HerdDBDictionary);
         loadDB();
     }
 

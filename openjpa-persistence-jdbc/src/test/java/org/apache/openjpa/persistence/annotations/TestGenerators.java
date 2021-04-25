@@ -20,8 +20,13 @@ package org.apache.openjpa.persistence.annotations;
 
 import javax.persistence.Query;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.HerdDBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Generator;
+
+import static org.junit.Assume.assumeFalse;
 
 /**
  * Test for generators
@@ -40,6 +45,9 @@ public class TestGenerators extends AnnotationTestCase
     public void setUp()
         throws Exception {
         deleteAll(Generator.class);
+        JDBCConfiguration conf = (JDBCConfiguration) getEmf().getConfiguration();
+        DBDictionary dict = conf.getDBDictionaryInstance();
+        assumeFalse(dict instanceof HerdDBDictionary);
     }
 
     public void testGet() {

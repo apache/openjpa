@@ -25,9 +25,12 @@ import javax.persistence.RollbackException;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
+import org.apache.openjpa.jdbc.sql.HerdDBDictionary;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import static org.junit.Assume.assumeFalse;
 
 public class TestBulkUpdatesAndVersionColumn
     extends SingleEMFTestCase {
@@ -37,7 +40,7 @@ public class TestBulkUpdatesAndVersionColumn
         setUp("openjpa.DataCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm",
             OptimisticLockInstance.class, CLEAR_TABLES);
-
+        assumeFalse(this.getDBDictionary() instanceof HerdDBDictionary);
         OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         OptimisticLockInstance pc = new OptimisticLockInstance("foo");

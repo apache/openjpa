@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.jdbc.schema;
 
 import static org.apache.openjpa.jdbc.identifier.DBIdentifier.newTable;
 import static org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier.getPath;
+import static org.junit.Assume.assumeFalse;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -31,6 +32,7 @@ import org.apache.openjpa.jdbc.meta.MappingTool;
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.SchemaTool;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.HerdDBDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
@@ -76,7 +78,6 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-
         OpenJPAEntityManagerFactory pmf = getEmf(new HashMap());
         pmf.createEntityManager();
         JDBCConfiguration conf = (JDBCConfiguration) ((OpenJPAEntityManagerFactorySPI) pmf).getConfiguration();

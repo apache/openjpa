@@ -30,11 +30,21 @@ import javax.persistence.Query;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
+import org.apache.openjpa.jdbc.sql.HerdDBDictionary;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.lib.jdbc.DelegatingConnection;
+import org.apache.openjpa.persistence.detachment.model.NoDetachedStateEntityFieldAccess;
+import org.apache.openjpa.persistence.detachment.model.NoDetachedStateEntityPropertyAccess;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
+import static org.junit.Assume.assumeFalse;
+
 public class TestUnwrap extends SingleEMFTestCase {
+
+    @Override
+    protected void setUp(Object... props) {
+        assumeFalse(this.getDBDictionary() instanceof HerdDBDictionary);
+    }
 
     /**
      * Tests a query can be unwrapped as an instance of a series of class or

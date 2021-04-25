@@ -1102,6 +1102,36 @@
             </properties>
         </profile>
 
+        <!-- Profile for testing with HerdDB -->
+        <profile>
+            <id>test-herddb</id>
+            <activation>
+                <property>
+                    <name>test-herddb</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.herddb</groupId>
+                    <artifactId>herddb-jdbc</artifactId>
+                    <version>0.22.0</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <properties>
+                <connection.driver.name>herddb.jdbc.Driver</connection.driver.name>
+
+                <connection.url>jdbc:herddb:local</connection.url>
+                <connection.username>sa</connection.username>
+                <connection.password>hdb</connection.password>
+                <jdbc.DBDictionary />
+
+                <!-- DBCP overrides for testing -->
+                <dbcp.maxIdle>5</dbcp.maxIdle>
+                <dbcp.minIdle>0</dbcp.minIdle>
+            </properties>
+        </profile>
+
         <!-- Profile for testing with a custom DB using a system jar -->
         <!--
             For example, to test with Oracle, you might run:

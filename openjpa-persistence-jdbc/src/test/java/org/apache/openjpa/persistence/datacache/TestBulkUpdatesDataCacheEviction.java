@@ -21,9 +21,12 @@ package org.apache.openjpa.persistence.datacache;
 import javax.persistence.Cache;
 import javax.persistence.EntityManager;
 
+import org.apache.openjpa.jdbc.sql.HerdDBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import static org.junit.Assume.assumeFalse;
 
 public class TestBulkUpdatesDataCacheEviction extends SingleEMFTestCase {
     Object[] props = new Object[] { CLEAR_TABLES, CachedEntityStatistics.class, "openjpa.DataCache", "true" };
@@ -33,6 +36,7 @@ public class TestBulkUpdatesDataCacheEviction extends SingleEMFTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp(props);
+        assumeFalse(this.getDBDictionary() instanceof HerdDBDictionary);
     }
 
     /**
