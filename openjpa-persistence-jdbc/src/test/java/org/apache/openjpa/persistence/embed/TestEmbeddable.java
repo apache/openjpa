@@ -30,7 +30,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,10 +40,6 @@ import javax.persistence.PersistenceUnitUtil;
 import javax.persistence.Query;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.meta.MappingTool;
-import org.apache.openjpa.jdbc.meta.MappingTool.Flags;
-import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
@@ -107,10 +102,6 @@ public class TestEmbeddable extends SQLListenerTestCase {
             EntityA_Embed_Single_Coll.class, Embed_Single_Coll.class, EntityA_Embed.class,
             EntityA_Embed_Complex.class, A.class, CLEAR_TABLES);
             sql.clear();
-            DBDictionary dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
-            if (dict.getClass().getName().toLowerCase(Locale.ENGLISH).indexOf("oracle") != -1) {
-                ((OracleDictionary)dict).useTriggersForAutoAssign = true;
-            }
     }
 
     public void testGroupByEmbed() {
@@ -2786,14 +2777,9 @@ public class TestEmbeddable extends SQLListenerTestCase {
      */
     public void createEmbeddableContainingRelationWithGeneratedKey()
         throws IOException, SQLException {
-        EntityManager em = emf.createEntityManager();
-
-        OpenJPAEntityManagerSPI ojem = (OpenJPAEntityManagerSPI)em;
+        OpenJPAEntityManagerSPI ojem = emf.createEntityManager();
+        EntityManager em = ojem;
         JDBCConfiguration conf = (JDBCConfiguration) ojem.getConfiguration();
-        DBDictionary dict = conf.getDBDictionaryInstance();
-        if (dict instanceof OracleDictionary) {
-            recreateOracleArtifacts((OracleDictionary)dict, conf);
-        }
         EntityTransaction tran = em.getTransaction();
 
         Book b = new Book(1590596455);
@@ -2816,27 +2802,6 @@ public class TestEmbeddable extends SQLListenerTestCase {
             assertTrue(seller.getId() != 0);
         }
         em.close();
-    }
-
-    /*
-     * This method uses the mapping tool to regenerate Oracle db artifacts
-     * with the useTriggersForAutoAssign db option enabled.
-     */
-    private void recreateOracleArtifacts(OracleDictionary dict,
-        JDBCConfiguration conf) throws IOException, SQLException {
-        dict.useTriggersForAutoAssign = true;
-        Flags flags = new MappingTool.Flags();
-        flags.dropTables = true;
-        flags.schemaAction = "drop,add";
-        flags.sequences = true;
-        flags.ignoreErrors = true;
-        flags.dropSequences = true;
-        MappingTool.run(
-            conf,
-            new String[] { "org.apache.openjpa.persistence.embed.Book" },
-            flags,
-            conf.getClassResolverInstance().
-            getClassLoader(MappingTool.class, null));
     }
 
     /*
