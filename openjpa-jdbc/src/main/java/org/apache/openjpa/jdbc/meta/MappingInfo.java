@@ -770,8 +770,8 @@ public abstract class MappingInfo implements Serializable {
         if (col == null) {
             col = table.addColumn(colName);
             col.setType(type);
-        } else if ((compat || !ttype) && !col.isCompatible(type, typeName,
-            size, decimals)) {
+        } else if ((compat || !ttype) &&
+                !col.isCompatible(type, typeName, size, decimals)) {
             // if existing column isn't compatible with desired type, die if
             // can't adapt, else warn and change the existing column type
             Message msg = _loc.get(prefix + "-bad-col", context,

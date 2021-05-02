@@ -762,10 +762,29 @@ public class Column extends ReferenceCounter {
                     case Types.DATE:
                     case Types.TIME:
                     case Types.TIMESTAMP:
+                    case Types.TIMESTAMP_WITH_TIMEZONE:
                         return true;
                     default:
                         return false;
                 }
+            case Types.TIMESTAMP_WITH_TIMEZONE:
+                switch (type) {
+                    case Types.DATE:
+                    case Types.TIMESTAMP:
+                        return true;
+                    default:
+                        return false;
+                }
+            case Types.TIME_WITH_TIMEZONE:
+                switch (type) {
+                    case Types.DATE:
+                    case Types.TIME:
+                    case Types.TIMESTAMP:
+                        return true;
+                    default:
+                        return false;
+                }
+
             case Types.SQLXML:  // All XML Types
             case 2007:          // Oracle-defined opaque type code for XMLType treated the same way
                 switch (type) {

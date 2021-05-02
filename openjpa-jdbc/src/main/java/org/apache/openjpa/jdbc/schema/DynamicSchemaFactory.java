@@ -240,8 +240,7 @@ public class DynamicSchemaFactory
         }
 
         @Override
-        public boolean isCompatible(int type, String typeName, int size,
-            int decimals) {
+        public boolean isCompatible(int type, String typeName, int size, int decimals) {
             if (getType() != Types.OTHER)
                 return super.isCompatible(type, typeName, size, decimals);
 
