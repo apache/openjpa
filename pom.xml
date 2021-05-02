@@ -1508,9 +1508,6 @@
                 <oracle.server.version>latest</oracle.server.version>
                 <docker.external.oracle.port>1521</docker.external.oracle.port>
 
-                <!-- Oracle Driver + XE11 seems to not play well with DBCP2 -->
-                <tests.openjpa.driverDataSource>simple</tests.openjpa.driverDataSource>
-
                 <connection.driver.name>oracle.jdbc.driver.OracleDriver</connection.driver.name>
                 <openjpa.oracle.database>openjpatst</openjpa.oracle.database>
                 <openjpa.oracle.username>openjpatst</openjpa.oracle.username>
