@@ -419,7 +419,13 @@ public class TestContainerSpecCompatibilityOptions
             // trigger table creation
             em.getTransaction().begin();
             em.getTransaction().commit();
-            assertSQLFragnments(sql, "CREATE TABLE C_U1M_Map_FK", "Uni1MFK_ID", "KEY0");
+
+            // on some databases KEY is a forbidden name for columns.
+            String keyColumn = getDbDictioary(emf).getInvalidColumnWordSet().contains("KEY")
+                    ? "KEY0"
+                    : "KEY";
+            assertSQLFragnments(sql, "CREATE TABLE C_U1M_Map_FK", "Uni1MFK_ID", keyColumn);
+
             assertSQLFragnments(sql, "CREATE TABLE Bi1M_Map_JT_C", "B_ID", "C_ID");
             assertSQLFragnments(sql, "CREATE TABLE C_U1M_Map_RelKey_FK", "Uni1MFK_ID");
             assertSQLFragnments(sql, "CREATE TABLE Bi1M_Map_RelKey_JT_C", "B_ID", "C_ID");

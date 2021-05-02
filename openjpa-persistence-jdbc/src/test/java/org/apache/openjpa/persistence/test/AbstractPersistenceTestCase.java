@@ -38,10 +38,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 
@@ -271,10 +274,10 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
             if (b != null && !b.isClosed()) {
                 EntityManager em = JPAFacadeHelper.toEntityManager(b);
                 if( em.getTransaction().isActive() ) {
-                	try {
-						em.getTransaction().rollback();
-					} catch (Exception e) {
-					}
+                    try {
+                        em.getTransaction().rollback();
+                    } catch (Exception e) {
+                    }
                 }
                 closeEM(em);
             }
@@ -354,6 +357,11 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
             closeEM(em);
         }
     }
+
+    protected DBDictionary getDbDictioary(EntityManagerFactory emf) {
+        return ((JDBCConfiguration)((OpenJPAEntityManagerFactory) emf).getConfiguration()).getDBDictionaryInstance();
+    }
+
 
     /**
      * Return the entity name for the given type.
