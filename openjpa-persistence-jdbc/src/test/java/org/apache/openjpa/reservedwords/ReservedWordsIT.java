@@ -27,6 +27,7 @@ import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.io.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,14 +84,30 @@ public class ReservedWordsIT extends AbstractPersistenceTestCase {
         Log log = getLog();
 
         try (OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream("target/reserved_words_" +
-                dict.getClass().getSimpleName() + ".properties"))) {
-            String msg = "# FOUND " + reservedColumnWords.size() + " RESERVED WORDS for Dictionary " + dict.getClass().getName();
-            log.info(msg);
-            osw.append(msg).append('\n');
+                dict.getClass().getSimpleName() + ".java"))) {
+            log.info("FOUND " + reservedColumnWords.size() + " RESERVED WORDS for Dictionary " + dict.getClass().getName());
+            osw.append(
+                    "// reservedWordSet subset that CANNOT be used as valid column names\n" +
+                    "// (i.e., without surrounding them with double-quotes)\n" +
+                    "// generated at " + LocalDateTime.now() + " via " + ReservedWordsIT.class.getName() + "\n" +
+                    "invalidColumnWordSet.addAll(Arrays.asList(new String[] {\n");
+            StringBuilder sb = new StringBuilder();
+            sb.append("    ");
             for (String reservedColumnWord : reservedColumnWords) {
                 log.info(reservedColumnWord);
-                osw.append(reservedColumnWord).append('\n');
+                sb.append('"').append(reservedColumnWord).append("\", ");
+                if (sb.length() > 110) {
+                    osw.append(sb.toString().trim()).append('\n');
+                    sb.setLength(0);
+                }
             }
+
+            // also add the rest if any
+            if (sb.length() > 0) {
+                osw.append(sb.toString().trim()).append('\n');
+            }
+
+            osw.append("}));");
             osw.flush();
         }
         log.info("******* END RESERVED WORDS *******");
