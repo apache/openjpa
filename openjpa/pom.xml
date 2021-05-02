@@ -200,9 +200,9 @@
                         <Agent-Class>org.apache.openjpa.enhance.InstrumentationFactory</Agent-Class>
                         <Can-Redefine-Classes>true</Can-Redefine-Classes>
                         <Can-Retransform-Classes>true</Can-Retransform-Classes>
-                        <Specification-Title>JSR-317 Java Persistence</Specification-Title>
-                        <Specification-Vendor>Sun Microsystems, Inc.</Specification-Vendor>
-                        <Specification-Version>2.0</Specification-Version>
+                        <Specification-Title>JSR-338 Java Persistence</Specification-Title>
+                        <Specification-Vendor>ORACLE, Inc.</Specification-Vendor>
+                        <Specification-Version>2.2</Specification-Version>
                         <!-- OSGi Bundle Metadata -->
                         <Bundle-DocURL>${project.url}</Bundle-DocURL>
                         <Bundle-Activator>org.apache.openjpa.persistence.osgi.PersistenceActivator</Bundle-Activator>

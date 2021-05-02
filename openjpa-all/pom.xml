@@ -107,9 +107,9 @@
                                         <Can-Redefine-Classes>true</Can-Redefine-Classes>
                                         <Can-Retransform-Classes>true</Can-Retransform-Classes>
                                         <Implementation-Title>Apache OpenJPA Aggregate JAR with dependencies</Implementation-Title>
-                                        <Specification-Title>JSR-317 Java Persistence</Specification-Title>
-                                        <Specification-Vendor>Sun Microsystems, Inc.</Specification-Vendor>
-                                        <Specification-Version>2.0</Specification-Version>
+                                        <Specification-Title>JSR-338 Java Persistence</Specification-Title>
+                                        <Specification-Vendor>ORACLE, Inc.</Specification-Vendor>
+                                        <Specification-Version>2.2</Specification-Version>
                                     </manifestEntries>
                                 </transformer>
                             </transformers>
