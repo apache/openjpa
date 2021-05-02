@@ -227,21 +227,22 @@ public class OracleDictionary
 
         // reservedWordSet subset that CANNOT be used as valid column names
         // (i.e., without surrounding them with double-quotes)
-        invalidColumnWordSet.addAll(Arrays.asList(new String[]{
-            "ACCESS", "ADD", "ALL", "ALTER", "AND", "ANY", "AS", "ASC", "AUDIT",
-            "BETWEEN", "BY", "CHAR", "CHECK", "CLUSTER", "COLUMN", "COMMENT",
-            "COMPRESS", "CONNECT", "CREATE", "CURRENT", "DATE", "DECIMAL",
-            "DEFAULT", "DELETE", "DESC", "DISTINCT", "DROP", "ELSE", "END-EXEC",
-            "EXCLUSIVE", "EXISTS", "FILE", "FLOAT", "FOR", "FROM", "GRANT",
-            "GROUP", "HAVING", "IDENTIFIED", "IMMEDIATE", "IN", "INCREMENT",
-            "INDEX", "INITIAL", "INSERT", "INTEGER", "INTERSECT", "INTO",
-            "IS", "KEY", "LEVEL", "LIKE", "LOCK", "LONG", "MAXEXTENTS", "MINUS",
-            "MODE", "NOAUDIT", "NOCOMPRESS", "NOT", "NOWAIT", "NULL", "NUMBER",
-            "OF", "OFFLINE", "ON", "ONLINE", "OPTION", "OR", "ORDER", "PCTFREE",
-            "PRIOR", "PRIVILEGES", "PUBLIC", "REVOKE", "ROW", "ROWS", "SELECT",
-            "SESSION", "SET", "SIZE", "SMALLINT", "TABLE", "THEN", "TO",
-            "UNION", "UNIQUE", "UPDATE", "USER", "VALUES", "VARCHAR", "VIEW",
-            "WHENEVER", "WHERE", "WITH",
+        // generated at 2021-05-02T16:36:42.608 via org.apache.openjpa.reservedwords.ReservedWordsIT
+        invalidColumnWordSet.addAll(Arrays.asList(new String[] {
+            "ACCESS", "ADD", "ALL", "ALTER", "AND", "ANY", "AS", "ASC", "AUDIT", "BETWEEN", "BY", "CHAR", "CHECK", "CLUSTER",
+            "COLUMN", "COMMENT", "COMPRESS", "CONNECT", "CREATE", "CURRENT", "DATE", "DECIMAL", "DEFAULT", "DELETE", "DESC",
+            "DISTINCT", "DROP", "ELSE", "END-EXEC", "EXCLUSIVE", "EXISTS", "FILE", "FLOAT", "FOR", "FROM", "GRANT", "GROUP",
+            "HAVING", "IDENTIFIED", "IMMEDIATE", "IN", "INCREMENT", "INDEX", "INITIAL", "INSERT", "INTEGER", "INTERSECT", "INTO",
+            "IS", "LEVEL", "LIKE", "LOCK", "LONG", "MAXEXTENTS", "MINUS", "MLSLABEL", "MODE", "MODIFY", "NOAUDIT", "NOCOMPRESS",
+            "NOT", "NOWAIT", "NULL", "NUMBER", "OF", "OFFLINE", "ON", "ONLINE", "OPTION", "OR", "ORDER", "PCTFREE", "PRIOR",
+            "PUBLIC", "RAW", "RENAME", "RESOURCE", "REVOKE", "ROW", "ROWID", "ROWNUM", "ROWS", "SELECT", "SESSION", "SET",
+            "SHARE", "SIZE", "SMALLINT", "START", "SUCCESSFUL", "SYNONYM", "SYSDATE", "TABLE", "THEN", "TO", "TRIGGER", "UID",
+            "UNION", "UNIQUE", "UPDATE", "USER", "VALIDATE", "VALUES", "VARCHAR", "VARCHAR2", "VIEW", "WHENEVER", "WHERE",
+            "WITH",
+            // end generated.
+            // The following keywords used to be defined as reserved words in the past, but now seem to work
+            // we still add them for compat reasons
+            "PRIVILEGES"
         }));
 
         substringFunctionName = "SUBSTR";

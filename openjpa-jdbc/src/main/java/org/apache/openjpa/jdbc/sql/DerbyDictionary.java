@@ -107,7 +107,7 @@ public class DerbyDictionary
             "USING", "VALUES", "VARCHAR", "VARYING", "VIEW", "WHENEVER", "WHERE", "WINDOW", "WITH", "WORK", "WRITE", "XML",
             "XMLEXISTS", "XMLPARSE", "XMLQUERY", "XMLSERIALIZE", "YEAR",
             // end generated.
-            // the following keywords used to be defined as reserved words in the past, but now seem to work
+            // The following keywords used to be defined as reserved words in the past, but now seem to work
             // we still add them for compat reasons
             "COALESCE", "OVER", "ROW_NUMBER",
         }));
