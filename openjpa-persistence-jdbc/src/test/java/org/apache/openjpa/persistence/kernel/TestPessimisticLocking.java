@@ -58,10 +58,6 @@ public class TestPessimisticLocking extends BaseKernelTest {
     }
 
     protected boolean skipTest() {
-        // pointbase doesn't really lock
-        if (getCurrentPlatform() == AbstractTestCase.Platform.POINTBASE)
-            return true;
-
         if (getConfiguration() instanceof JDBCConfiguration) {
             JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
             return !conf.getDBDictionaryInstance().supportsSelectForUpdate;
@@ -136,6 +132,10 @@ public class TestPessimisticLocking extends BaseKernelTest {
      */
     public void pessimisticLockingTest(boolean useReentrantLock)
         throws Throwable {
+        if (skipTest()) {
+            return;
+        }
+
         long timeout = System.currentTimeMillis() + (60 * 5 * 1000);
 
         ReentrantLock lock = null;
@@ -269,11 +269,10 @@ public class TestPessimisticLocking extends BaseKernelTest {
                     }
                 }
             }
-			catch (Exception e)
-			{
-				exception = e;
-			}
-		}
-	}
+            catch (Exception e) {
+                exception = e;
+            }
+        }
+    }
 
 }

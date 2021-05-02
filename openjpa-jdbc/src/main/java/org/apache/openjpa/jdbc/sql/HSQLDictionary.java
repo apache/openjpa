@@ -98,6 +98,18 @@ public class HSQLDictionary extends DBDictionary {
         }));
         fixedSizeTypeNameSet.remove("NUMERIC");
         fixedSizeTypeNameSet.remove("DECIMAL");
+
+        // reservedWordSet subset that CANNOT be used as valid column names
+        // (i.e., without surrounding them with double-quotes)
+        // generated at 2021-05-02T18:24:22.807 via org.apache.openjpa.reservedwords.ReservedWordsIT
+        invalidColumnWordSet.addAll(Arrays.asList(new String[] {
+            "ALL", "AND", "ANY", "AS", "AT", "BETWEEN", "BOTH", "BY", "CALL", "CASE", "CAST", "CHECK", "COALESCE", "CONSTRAINT",
+            "CONVERT", "CORRESPONDING", "CREATE", "CROSS", "CUBE", "DEFAULT", "DISTINCT", "DO", "DROP", "ELSE", "END-EXEC",
+            "EVERY", "EXCEPT", "EXISTS", "FETCH", "FOR", "FOREIGN", "FROM", "FULL", "GRANT", "GROUP", "GROUPING", "HAVING",
+            "IN", "INNER", "INTERSECT", "INTO", "IS", "JOIN", "LEADING", "LEFT", "LIKE", "NATURAL", "NOT", "NULLIF", "ON",
+            "OR", "ORDER", "OUTER", "PRIMARY", "REFERENCES", "RIGHT", "ROLLUP", "SELECT", "SET", "SOME", "SUM", "TABLE", "THEN",
+            "TO", "TRAILING", "TRIGGER", "UNION", "UNIQUE", "USING", "VALUES", "WHEN", "WHERE", "WITH",
+        }));
     }
 
     /**

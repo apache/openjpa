@@ -105,6 +105,7 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
     protected enum Platform {
         EMPRESS,
         HYPERSONIC,
+        HERDDB,
         POSTGRESQL,
         MARIADB,
         MYSQL,
