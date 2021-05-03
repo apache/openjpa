@@ -223,11 +223,15 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
 
         result = (Object[]) rs.get(rs.size()-1);
 
-        if (result[1] instanceof String)
+        if (result[1] instanceof String) {
             assertEquals(result[1], "true");
-        else
+        }
+        else if (result[1] instanceof Boolean) {
+            assertEquals(true, result[1]);
+        }
+        else {
             assertEquals(result[1], 1);
-
+        }
 
         startTx(em);
         String update = "update CompUser c set c.creditRating = " +
