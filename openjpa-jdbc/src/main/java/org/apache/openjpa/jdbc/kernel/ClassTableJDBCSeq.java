@@ -116,9 +116,7 @@ public class ClassTableJDBCSeq
     @Override
     protected Column addPrimaryKeyColumn(Table table) {
         DBDictionary dict = getConfiguration().getDBDictionaryInstance();
-        DBIdentifier delimitedColumnName = dict.fromDBName(getPrimaryKeyColumn(), DBIdentifier.DBIdentifierType.COLUMN);
-        Column pkColumn = table.addColumn(dict.getValidColumnName
-            (delimitedColumnName, table));
+        Column pkColumn = table.addColumn(dict.getValidColumnName(getPrimaryKeyColumnIdentifier(), table));
         pkColumn.setType(dict.getPreferredType(Types.VARCHAR));
         pkColumn.setJavaType(JavaTypes.STRING);
         pkColumn.setSize(dict.characterColumnSize);

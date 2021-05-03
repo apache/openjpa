@@ -167,7 +167,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
      * <code>ID</code>.
      */
     public void setPrimaryKeyColumn(String primaryKeyColumn) {
-        _pkColumnName = DBIdentifier.newColumn(primaryKeyColumn);
+        _pkColumnName = DBIdentifier.newColumn(primaryKeyColumn, _conf.getDBDictionaryInstance().delimitAll());
     }
 
     /**
@@ -375,9 +375,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
      */
     protected Column addPrimaryKeyColumn(Table table) {
         DBDictionary dict = _conf.getDBDictionaryInstance();
-        DBIdentifier delimitedColumnName = dict.fromDBName(getPrimaryKeyColumn(), DBIdentifier.DBIdentifierType.COLUMN);
-        Column pkColumn = table.addColumn(dict.getValidColumnName
-            (delimitedColumnName, table));
+        Column pkColumn = table.addColumn(dict.getValidColumnName(getPrimaryKeyColumnIdentifier(), table));
         pkColumn.setType(dict.getPreferredType(Types.TINYINT));
         pkColumn.setJavaType(JavaTypes.INT);
         return pkColumn;
