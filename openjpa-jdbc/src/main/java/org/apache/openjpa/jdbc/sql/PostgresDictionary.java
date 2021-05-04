@@ -191,19 +191,21 @@ public class PostgresDictionary extends DBDictionary {
 
         // reservedWordSet subset that CANNOT be used as valid column names
         // (i.e., without surrounding them with double-quotes)
+        // generated at 2021-05-03T10:44:58.562 via org.apache.openjpa.reservedwords.ReservedWordsIT
         invalidColumnWordSet.addAll(Arrays.asList(new String[] {
-            "ALL", "AND", "ANY", "AS", "ASC", "AUTHORIZATION", "BETWEEN",
-            "BINARY", "BOTH", "CASE", "CAST", "CHECK", "COLLATE", "COLUMN",
-            "CONSTRAINT", "CREATE", "CROSS", "CURRENT_DATE", "CURRENT_TIME",
-            "CURRENT_TIMESTAMP", "CURRENT_USER", "DEFAULT", "DEFERRABLE",
-            "DESC", "DISTINCT", "DO", "ELSE", "END", "END", "EXCEPT", "FALSE",
-            "FOR", "FOREIGN", "FROM", "FULL", "GRANT", "GROUP", "HAVING", "IN",
-            "INITIALLY", "INNER", "INTERSECT", "INTO", "IS", "ISNULL", "JOIN", "KEY",
-            "LEADING", "LEFT", "LIKE", "NATURAL", "NOT", "NOTNULL", "NULL",
-            "ON", "ONLY", "OR", "ORDER", "OUTER", "OVERLAPS", "PRIMARY",
-            "REFERENCES", "RIGHT", "SELECT", "SESSION_USER", "SOME", "TABLE",
-            "THEN", "TO", "TRAILING", "TRUE", "UNION", "UNIQUE", "USER",
-            "USING", "VERBOSE", "WHEN", "WHERE",
+            "ALL", "ANALYSE", "ANALYZE", "AND", "ANY", "ARRAY", "AS", "ASC", "ASYMMETRIC", "AUTHORIZATION", "BINARY", "BOTH",
+            "CASE", "CAST", "CHECK", "COLLATE", "COLLATION", "COLUMN", "CONSTRAINT", "CREATE", "CROSS", "CURRENT_DATE", "CURRENT_ROLE",
+            "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER", "DEFAULT", "DEFERRABLE", "DESC", "DISTINCT", "DO", "ELSE",
+            "END", "END-EXEC", "EXCEPT", "FALSE", "FETCH", "FOR", "FOREIGN", "FREEZE", "FROM", "FULL", "GRANT", "GROUP", "HAVING",
+            "ILIKE", "IN", "INITIALLY", "INNER", "INTERSECT", "INTO", "IS", "ISNULL", "JOIN", "LATERAL", "LEADING", "LEFT",
+            "LIKE", "LIMIT", "LOCALTIME", "LOCALTIMESTAMP", "NATURAL", "NOT", "NOTNULL", "NULL", "OFFSET", "ON", "ONLY", "OR",
+            "ORDER", "OUTER", "OVERLAPS", "PLACING", "PRIMARY", "REFERENCES", "RIGHT", "SELECT", "SESSION_USER", "SIMILAR",
+            "SOME", "SYMMETRIC", "TABLE", "TABLESAMPLE", "THEN", "TO", "TRAILING", "TRUE", "UNION", "UNIQUE", "USER", "USING",
+            "VERBOSE", "WHEN", "WHERE", "WINDOW", "WITH",
+            // end generated.
+            // The following keywords used to be defined as reserved words in the past, but now seem to work
+            // we still add them for compat reasons
+            "BETWEEN",
         }));
 
         _timestampTypes.add("ABSTIME");
