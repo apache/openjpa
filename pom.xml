@@ -1119,7 +1119,7 @@
                 </dependency>
             </dependencies>
             <properties>
-                <connection.driver.name>org.herddb.jdbc.Driver</connection.driver.name>
+                <connection.driver.name>herddb.jdbc.Driver</connection.driver.name>
 
                 <connection.url>jdbc:herddb://localhost</connection.url>
                 <connection.username>sa</connection.username>
@@ -1128,7 +1128,7 @@
 
                 <!-- DBCP overrides for testing -->
                 <dbcp.maxIdle>5</dbcp.maxIdle>
-                <dbcp.minIdle>0</dbcp.minIdle>
+                <dbcp.minIdle>1</dbcp.minIdle>
 
             </properties>
 
