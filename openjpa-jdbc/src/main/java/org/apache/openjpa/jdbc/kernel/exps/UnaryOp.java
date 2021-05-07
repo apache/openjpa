@@ -132,6 +132,11 @@ abstract class UnaryOp
         throws SQLException {
         Class<?> type = getType();
         int typeCode = type != null ? JavaTypes.getTypeCode(type) : JavaSQLTypes.JDBC_DEFAULT;
+        if (typeCode == JavaTypes.DATE) {
+            // further clarify which date exactly
+            typeCode = JavaSQLTypes.getDateTypeCode(type);
+        }
+
         Object value = res.getObject(this, typeCode, null);
         if (value == null) {
             if (nullableValue(ctx, state)) {  // OPENJPA-1794

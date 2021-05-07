@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jira1794;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -47,6 +49,10 @@ public class AggEntity {
     private Double dblVal;
 
     private String stringVal;
+
+    private java.util.Date utilDate;
+
+    private java.sql.Date sqlDate;
 
     public void setId(int id) {
         this.id = id;
@@ -144,6 +150,22 @@ public class AggEntity {
         return stringVal;
     }
 
+    public Date getUtilDate() {
+        return utilDate;
+    }
+
+    public void setUtilDate(Date utilDate) {
+        this.utilDate = utilDate;
+    }
+
+    public java.sql.Date getSqlDate() {
+        return sqlDate;
+    }
+
+    public void setSqlDate(java.sql.Date sqlDate) {
+        this.sqlDate = sqlDate;
+    }
+
     public void init() {
         setPshortVal((short) 1);
         setShortVal((short) 1);
@@ -156,5 +178,7 @@ public class AggEntity {
         setFloatVal(1f);
         setPfloatVal(1f);
         setStringVal("1");
+        setUtilDate(new java.util.Date());
+        setSqlDate(new java.sql.Date(getUtilDate().getTime()));
     }
 }

@@ -75,12 +75,17 @@ public class TestAggregateFunctions extends SingleEMFTestCase {
         verifyResult(em, stringAggregateFunctions,
                 new String[] { "ae.stringVal" }, true, true);
 
+        verifyResult(em, stringAggregateFunctions,
+                new String[]{"ae.utilDate", "ae.sqlDate"}, true, true);
+
         // Add a row to the table and re-test
         AggEntity ae = new AggEntity();
         ae.init();
         em.getTransaction().begin();
         em.persist(ae);
         em.getTransaction().commit();
+
+        verifyResult(em, stringAggregateFunctions,  "ae.sqlDate", java.sql.Date.class);
 
         // Verify all numeric types for all aggregate functions return a
         // non-null value when there is a query result
@@ -89,6 +94,8 @@ public class TestAggregateFunctions extends SingleEMFTestCase {
         // non-null value when there is a query result
         verifyResult(em, stringAggregateFunctions,
                 new String[] { "ae.stringVal" }, false);
+
+        verifyResult(em, stringAggregateFunctions,  "ae.utilDate", java.util.Date.class);
 
         em.close();
     }
@@ -238,6 +245,21 @@ public class TestAggregateFunctions extends SingleEMFTestCase {
                 Query q = em.createQuery(sql);
                 verifyQueryResult(q, expectNull, isString);
             }
+        }
+    }
+
+    private <T> void verifyResult(EntityManager em, String[] aggregates,
+                              String attr, Class<T> expectedType) {
+        for (String func : aggregates) {
+            // JPQL with aggregate and aggregate in subselect
+            String sql = "SELECT " + func + "(" + attr + ")"
+                    + " FROM AggEntity ae WHERE " + attr + " <= "
+                    + "(SELECT " + func + "("
+                    + attr.replaceFirst("^ae.", "ae2.")
+                    + ") FROM AggEntity ae2)";
+            TypedQuery<T> q = em.createQuery(sql, expectedType);
+            T intance = q.getSingleResult();
+            assertEquals(intance.getClass(), expectedType);
         }
     }
 
