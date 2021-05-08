@@ -35,9 +35,9 @@
             JPA
         </primary>
     </indexterm>
-The Java Persistence 2.0 API (JPA 2.0) is a specification
+The Java Persistence API (JPA) is a specification
 for the persistence of Java objects to any relational
-datastore. This document provides an overview of JPA 2.0. Unless
+datastore. This document provides an overview of JPA 2.2. Unless
 otherwise noted, the information presented applies to all JPA implementations.
     </para>
     <note>
