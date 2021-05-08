@@ -32,6 +32,7 @@ public class XMLVersionParser extends XMLMetaDataParser {
     public static final String VERSION_1_0 = "1.0";
     public static final String VERSION_2_0 = "2.0";
     public static final String VERSION_2_1 = "2.1";
+    public static final String VERSION_2_2 = "2.2";
 
     static private final String VERSION_ATTR = "version";
     static private final String XSI_NS =
