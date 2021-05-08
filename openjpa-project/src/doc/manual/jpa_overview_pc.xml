@@ -435,6 +435,31 @@ java.lang.Byte</classname>, etc)
 <classname>java.math.BigDecimal</classname>
                     </para>
                 </listitem>
+                <listitem>
+                    <para>
+<classname>java.time.LocalDate</classname>
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+<classname>java.time.LocalDateTime</classname>
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+<classname>java.time.LocalTime</classname>
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+<classname>java.time.OffsetDateTime</classname>
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+<classname>java.time.OffsetTime</classname>
+                    </para>
+                </listitem>
             </itemizedlist>
             <para>
 JPA also supports <classname>byte[]</classname>, <classname>Byte[]</classname>,

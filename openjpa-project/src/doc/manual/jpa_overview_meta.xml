@@ -1181,7 +1181,14 @@ Character[]</classname>, <classname>java.math.BigDecimal</classname>,
 <classname>java.math.BigInteger</classname>, <classname>
 java.util.Date</classname>, <classname>java.util.Calendar</classname>,
 <classname>java.sql.Date</classname>, <classname>java.sql.Timestamp</classname>,
+<classname>java.sql.Time</classname>,
 <classname>Enum</classname>s, and <classname>Serializable</classname> types.
+            </para>
+            <para>
+Since JPA 2.2 the following <classname>java.time</classname> Types are also supported:
+<classname>java.time.LocalDate</classname>, <classname>java.time.LocalDateTime</classname>,
+<classname>java.time.LocalTime</classname>, <classname>java.time.LocalOffsetTime</classname>
+and <classname>java.time.OffsetDateTime</classname>.
             </para>
             <para>
 <classname>Basic</classname> declares these properties:
