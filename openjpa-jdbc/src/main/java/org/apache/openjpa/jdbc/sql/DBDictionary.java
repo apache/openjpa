@@ -425,6 +425,12 @@ public class DBDictionary
     public int nativeSequenceType= Seq.TYPE_CONTIGUOUS;
 
     /**
+     * reservedWordSet subset that CANNOT be used as valid column names
+     * (i.e., without surrounding them with double-quotes).
+     */
+    public Set<String> invalidColumnWordSet = new HashSet<>();
+
+    /**
      * This variable was used in 2.1.x and prior releases to indicate that
      * OpenJPA should not use the CACHE clause when getting a native
      * sequence; instead the INCREMENT BY clause gets its value equal to the
@@ -450,9 +456,6 @@ public class DBDictionary
     protected boolean isJDBC3 = false;
     protected boolean isJDBC4 = false;
     protected final Set<String> reservedWordSet = new HashSet<>();
-    // reservedWordSet subset that CANNOT be used as valid column names
-    // (i.e., without surrounding them with double-quotes)
-    protected Set<String> invalidColumnWordSet = new HashSet<>();
     protected final Set<String> systemSchemaSet = new HashSet<>();
     protected final Set<String> systemTableSet = new HashSet<>();
     protected final Set<String> fixedSizeTypeNameSet = new HashSet<>();
