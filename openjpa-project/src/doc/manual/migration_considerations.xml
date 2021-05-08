@@ -458,24 +458,24 @@
                     <xref linkend="jpa_2.2_allocationSize"/>.
                 </para>
             </section>
-        	<section id="jpa_2.2_cascadePersist">
+            <section id="jpa_2.2_cascadePersist">
                 <title>
                     Cascade persist behavior
                 </title>
                 <!-- See OPENJPA-1986 for details. -->
-				<para>
-					In previous releases, OpenJPA would check the database for the
-					existence of the related Entity before persisting the relationship to
-					that Entity. This resulted in an extra Select being sent to the
-					database. In 2.2.0, code was added so that when cascading a persist to
-					a related Entity without persistence state, the persist (insert) will
-					happen without first checking the database. This may result in an
-					EntityExistsException if the related Entity already exists in the
-					database. To revert this behavior to the previous release, set the
-					value of the <literal>openjpa.Compatibility</literal>
-					property <literal>CheckDatabaseForCascadePersistToDetachedEntity</literal>
-					to <literal>true</literal>.
-				</para>
+                <para>
+                    In previous releases, OpenJPA would check the database for the
+                    existence of the related Entity before persisting the relationship to
+                    that Entity. This resulted in an extra Select being sent to the
+                    database. In 2.2.0, code was added so that when cascading a persist to
+                    a related Entity without persistence state, the persist (insert) will
+                    happen without first checking the database. This may result in an
+                    EntityExistsException if the related Entity already exists in the
+                    database. To revert this behavior to the previous release, set the
+                    value of the <literal>openjpa.Compatibility</literal>
+                    property <literal>CheckDatabaseForCascadePersistToDetachedEntity</literal>
+                    to <literal>true</literal>.
+                </para>
             </section>
             <section id="jpa_2.2_LifecycleEventManager">
                 <title>
@@ -578,4 +578,77 @@
             </section>
         </section>
     </section>
+    <section id="jpa_3.2">
+        <title>OpenJPA 3.2.0</title>
+        <section id="jpa_3.2_incompatibilities">
+            <title>Incompatibilities</title>
+            <para>
+                The following sections indicate changes that are incompatible
+                between OpenJPA 3.1.x releases and the 3.2.0 release.
+            </para>
+            <section id="jpa_3.2_SumDouble">
+                <title>SUM now always returns Double</title>
+                <para>
+                    We did fix the SUM operation to always return <classname>Double</classname> as requested by the spec.
+                    Previously we did return whatever Numeric the JDBC driver did serve, resulting in non portable code.
+                </para>
+            </section>
+            <section id="jpa_3.2_InvalidColumnNames">
+                <title>Invalid Column Name Changes</title>
+                <para>
+                    We did review and update the list of invalid column names for most <classname>DBDicationary</classname>.
+                    The list of tested reserved words got enriched with previously forbidden column names to avoid backward
+                    incompatibility issues.
+                    The list can ge retrieved and configured via
+                    <ulink url="../../apidocs/org/apache/openjpa/jdbc/sql/DBDictionary.html#getInvalidColumnWordSet()">
+                        <methodname>DBDictionary.getInvalidColumnWordSet</methodname></ulink>
+                </para>
+            </section>
+            <section id="jpa_3.2_HsqlMappingTool">
+                <title>MappingTool Behavior for HSQLDB</title>
+                <para>
+                    There have been 2 changes for Hypersonic (HSQLDB).
+                    We fixed a bug which did cause <classname>long</classname> fields getting mapped to <literal>INTEGER</literal>
+                    instead of <literal>BIGINT</literal>.
+                </para>
+                <para>
+                    Java <classname>double</classname> fields previously got mapped to <literal>NUMERIC</literal> which
+                    does lack fraction digits. Thus the value <literal>7.3425343</literal> got truncated to <literal>7</literal>.
+                    We now map <classname>double</classname> fields in Entities to <literal>DOUBLE</literal> SQL column types.
+                </para>
+            </section>
+            <section id="jpa_3.2_OracleTimestampPrecision">
+                <title>Respect TIMESTAMP precision in Oracle</title>
+                <para>
+                    Due to a bug we did hardcoded round at 3 digits precision.
+                    So we essentially only allowed millis, even on a TIMESTAMP(6) field.
+                    The new code does respect the second fractions and now defaults to 6.
+                    It should be compatible but it might behave very subtle different.
+                </para>
+            </section>
+            <section id="jpa_3.2_UnaryOps">
+                <title>Unary Operations return types</title>
+                <para>
+                    Before OpenJPA-3.2.0 Unary Operations like <literal>MIN</literal>, <literal>MAX</literal>, <literal>SUM</literal>, etc
+                    did return whatever type got returned by the JDBC driver. For certain column types this could also have been internal
+                    classes of that very JDBC driver. E.g. a <literal>SELECT MAX(a.someLocalDateField) ..</literal> might have returned
+                    an instance of types <classname>com.oracle.jdbc....</classname> or <literal>com.microsoft.sqlserver...</literal>, etc.
+                    We now use the respective <ulink url="../../apidocs/org/apache/openjpa/jdbc/sql/DBDictionary.html">
+                    <methodname>DBDictionary</methodname></ulink> to request the correct type from the <classname>ResultSet</classname>.
+                </para>
+            </section>
+            <section id="jpa_3.2_PostgreSqlQueryTimeout">
+                <title>PostgreSQL now supports setQueryTimeOut</title>
+                <para>
+                    PostgreSQL does now support client side setQueryTimeout.
+                    User might see this come alive and now return different when the situation occurs.
+                    This flag is automatically enabled if running against PostgreSQL 10 or later.
+                    It can also be configured manually via
+                    <ulink url="../../apidocs/org/apache/openjpa/jdbc/sql/DBDictionary.html#supportsQueryTimeout">
+                        <fieldname>DBDictionary.supportsQueryTimeout</fieldname></ulink>
+                </para>
+            </section>
+        </section>
+    </section>
+
 </appendix>
