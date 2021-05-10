@@ -644,8 +644,7 @@
                     User might see this come alive and now return different when the situation occurs.
                     This flag is automatically enabled if running against PostgreSQL 10 or later.
                     It can also be configured manually via
-                    <ulink url="../../apidocs/org/apache/openjpa/jdbc/sql/DBDictionary.html#supportsQueryTimeout">
-                        <fieldname>DBDictionary.supportsQueryTimeout</fieldname></ulink>
+                    <literal>DBDictionary.supportsQueryTimeout</literal>
                 </para>
             </section>
         </section>

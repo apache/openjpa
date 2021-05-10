@@ -34,7 +34,7 @@
     <artifactId>openjpa-parent</artifactId>
     <packaging>pom</packaging>
     <name>OpenJPA Parent POM</name>
-    <description>Apache OpenJPA implementation of JSR-338 JPA 2.1</description>
+    <description>Apache OpenJPA implementation of JSR-338 JPA 2.2</description>
 
     <version>3.2.0-SNAPSHOT</version>
 
@@ -2169,7 +2169,6 @@
                     <version>${project.version}</version>
                 </plugin>
 
-                <!-- Newer versions of plugin will cause PDF build failures -->
                 <plugin>
                     <groupId>com.agilejava.docbkx</groupId>
                     <artifactId>docbkx-maven-plugin</artifactId>
