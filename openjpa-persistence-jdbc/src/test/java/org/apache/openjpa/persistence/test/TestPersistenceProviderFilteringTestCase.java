@@ -47,30 +47,14 @@ public class TestPersistenceProviderFilteringTestCase extends SQLListenerTestCas
     public void testGenerateSchemaNoProvider() {
         final PersistenceProviderImpl ppi = new PersistenceProviderImpl();
         final Map<Object, Object> map = new HashMap<>();
-        map.put("javax.persistence.jdbc.driver", "org.apache.derby.jdbc.EmbeddedDriver");
-        map.put("javax.persistence.jdbc.url", "jdbc:derby:target/database/openjpa-test-provider-database;create=true");
-        try {
-            ppi.generateSchema(persistenceUnitName, map);
-            fail("Should have fail because there is no pool or so to generate the schema");
-
-        } catch (final UserException e) {
-            // great
-        }
+        assertTrue(ppi.generateSchema(persistenceUnitName, map));
     }
 
     public void testGenerateSchemaOpenJPAProvider() {
         final PersistenceProviderImpl ppi = new PersistenceProviderImpl();
         final Map<Object, Object> map = new HashMap<>();
         map.put("javax.persistence.provider", PersistenceProviderImpl.class.getName());
-        map.put("javax.persistence.jdbc.driver", "org.apache.derby.jdbc.EmbeddedDriver");
-        map.put("javax.persistence.jdbc.url", "jdbc:derby:target/database/openjpa-test-provider-database;create=true");
-        try {
-            ppi.generateSchema(persistenceUnitName, map);
-            fail("Should have fail because there is no pool or so to generate the schema");
-
-        } catch (final UserException e) {
-            // great
-        }
+        assertTrue(ppi.generateSchema(persistenceUnitName, map));
     }
 
     public void testGenerateSchemaEclipseProvider() {
