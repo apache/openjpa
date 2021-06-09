@@ -161,6 +161,14 @@ public class NoneMetaDataFactory
     public Class<?> getManagedClass(Class<?> c) {
         return null;
     }
+    
+    public Boolean isDefaultCascadePersistEnabled() {
+        return false;
+    }
+    
+    public void setDefaultCascadePersistEnabled(Boolean bool) {
+        
+    }
 
     public boolean isAbstractMappingUniDirectional(OpenJPAConfiguration conf) {
         return false;

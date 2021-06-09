@@ -204,6 +204,13 @@ public interface ValueMetaData
     public void setCascadePersist(int cascade);
 
     /**
+     * Cascade behavior for persist operation.
+     *
+     * @see #getCascadePersist
+     */
+    public void setCascadePersist(int cascade, boolean checkPUDefault);
+
+    /**
      * Cascade behavior for attach operation. Only applies to
      * persistence-capable values. Options are:<br />
      * <ul>
