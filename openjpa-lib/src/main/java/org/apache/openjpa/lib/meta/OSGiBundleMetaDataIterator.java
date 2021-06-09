@@ -61,8 +61,11 @@ public class OSGiBundleMetaDataIterator implements MetaDataIterator, MetaDataFil
             return true;
         }
 
+<<<<<<< HEAD
 //        if (buf == null && last != null)
 //            _stream.closeEntry();
+=======
+>>>>>>> refs/remotes/origin/2.3.0-osgi_fixed
         last = null;
         buf = null;
 
