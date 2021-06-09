@@ -53,6 +53,7 @@ import org.apache.openjpa.lib.meta.MetaDataFilter;
 import org.apache.openjpa.lib.meta.MetaDataIterator;
 import org.apache.openjpa.lib.meta.MetaDataParser;
 import org.apache.openjpa.lib.meta.MetaDataSerializer;
+import org.apache.openjpa.lib.meta.OSGiBundleMetaDataIterator;
 import org.apache.openjpa.lib.meta.ResourceMetaDataIterator;
 import org.apache.openjpa.lib.meta.URLMetaDataIterator;
 import org.apache.openjpa.lib.meta.ZipFileMetaDataIterator;
