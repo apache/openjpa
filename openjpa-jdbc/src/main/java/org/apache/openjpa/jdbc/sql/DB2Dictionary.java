@@ -1023,22 +1023,30 @@ public class DB2Dictionary
             return (byte[]) rs.getObject(column);
         }
 
-        int type = rs.getMetaData().getColumnType(column);
-        switch (type) {
-            case Types.BLOB:
-                Blob blob = getBlob(rs, column);
-                if (blob == null) {
-                    return null;
-                }
-
-                int length = (int) blob.length();
-                if (length == 0) {
-                    return null;
-                }
-                return blob.getBytes(1, length);
-            case Types.BINARY:
-            default:
+        // At this point we don't have any idea if the DB2 column was defined as
+        //     a blob or if it was defined as CHAR for BIT DATA.
+        // First try as a blob, if that doesn't work, then try as CHAR for BIT DATA
+        // If that doesn't work, then go ahead and throw the first exception
+        try {
+            Blob blob = getBlob(rs, column);
+            if (blob == null) {
+                return null;
+            }
+            
+            int length = (int) blob.length();
+            if (length == 0) {
+                return null;
+            }
+            
+            return blob.getBytes(1, length);
+        }
+        catch (SQLException e) {
+            try {
                 return rs.getBytes(column);
+            }
+            catch (SQLException e2) {
+                throw e;                
+            }
         }
     }
 
