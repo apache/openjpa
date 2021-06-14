@@ -71,7 +71,7 @@ import org.apache.openjpa.util.StoreFacadeTypeRegistry;
  * @see Configuration
  */
 public interface OpenJPAConfiguration
-    extends Configuration {
+        extends Configuration {
 
     /**
      * Name of logger for metadata-related messages:
@@ -113,25 +113,25 @@ public interface OpenJPAConfiguration
      * Option for runtimes that support nontransactional reads.
      */
     String OPTION_NONTRANS_READ =
-        "openjpa.option.NontransactionalRead";
+            "openjpa.option.NontransactionalRead";
 
     /**
      * Option for runtimes that support optimistic transactions.
      */
     String OPTION_OPTIMISTIC =
-        "openjpa.option.Optimistic";
+            "openjpa.option.Optimistic";
 
     /**
      * Option for runtimes that support application identity.
      */
     String OPTION_ID_APPLICATION =
-        "openjpa.option.ApplicationIdentity";
+            "openjpa.option.ApplicationIdentity";
 
     /**
      * Option for runtimes that support application identity.
      */
     String OPTION_ID_DATASTORE =
-        "openjpa.option.DatastoreIdentity";
+            "openjpa.option.DatastoreIdentity";
 
     /**
      * Option for SQL support.
@@ -142,7 +142,7 @@ public interface OpenJPAConfiguration
      * Option for runtimes that support persistent collection fields.
      */
     String OPTION_TYPE_COLLECTION =
-        "openjpa.option.Collection";
+            "openjpa.option.Collection";
 
     /**
      * Option for runtimes that support persistent map fields.
@@ -159,65 +159,65 @@ public interface OpenJPAConfiguration
      * container fields.
      */
     String OPTION_NULL_CONTAINER =
-        "openjpa.option.NullContainer";
+            "openjpa.option.NullContainer";
 
     /**
      * Option for runtimes that support embedded relations to other
      * persistence capable objects.
      */
     String OPTION_EMBEDDED_RELATION =
-        "openjpa.option.EmbeddedRelation";
+            "openjpa.option.EmbeddedRelation";
 
     /**
      * Option for runtimes that support collections of embedded
      * relations to other persistence capable objects.
      */
     String OPTION_EMBEDDED_COLLECTION_RELATION =
-        "openjpa.option.EmbeddedCollectionRelation";
+            "openjpa.option.EmbeddedCollectionRelation";
 
     /**
      * Option for runtimes that support maps of embedded
      * relations to other persistence capable objects.
      */
     String OPTION_EMBEDDED_MAP_RELATION =
-        "openjpa.option.EmbeddedMapRelation";
+            "openjpa.option.EmbeddedMapRelation";
 
     /**
      * Option for runtimes that support incremental flushing.
      */
     String OPTION_INC_FLUSH =
-        "openjpa.option.IncrementalFlush";
+            "openjpa.option.IncrementalFlush";
 
     /**
      * Option for runtimes that the autoassign value strategy.
      */
     String OPTION_VALUE_AUTOASSIGN =
-        "openjpa.option.AutoassignValue";
+            "openjpa.option.AutoassignValue";
 
     /**
      * Option for runtimes that the increment value strategy.
      */
     String OPTION_VALUE_INCREMENT =
-        "openjpa.option.IncrementValue";
+            "openjpa.option.IncrementValue";
 
     /**
      * Option for runtimes that support returning the datastore connection.
      */
     String OPTION_DATASTORE_CONNECTION =
-        "openjpa.option.DataStoreConnection";
+            "openjpa.option.DataStoreConnection";
 
     /**
      * Option for runtimes that support returning the datastore connection
      * that is a JDBC Connection.
      */
     String OPTION_JDBC_CONNECTION =
-        "openjpa.option.JDBCConnection";
+            "openjpa.option.JDBCConnection";
 
     /**
      * Option for enable fire &#064;PostLoad events on merge operations
      */
     String OPTION_POSTLOAD_ON_MERGE =
-        "openjpa.option.PostLoadOnMerge";
+            "openjpa.option.PostLoadOnMerge";
 
     /**
      * Option to enable TCCL if the result class for select new is not found
@@ -1441,47 +1441,47 @@ public interface OpenJPAConfiguration
      * Whether to warn and defer registration instead of throwing an
      * exception when a registered persistent class cannot be processed.
      * Should only be set to true in complex classloader topologies.
-	 * Defaults to <code>false</code>.
-	 *
-	 * @since 0.3.2.3
-	 */
-	void setRetryClassRegistration(boolean warn);
+     * Defaults to <code>false</code>.
+     *
+     * @since 0.3.2.3
+     */
+    void setRetryClassRegistration(boolean warn);
 
     /**
      * Wrapper for JCA usage of {@link #setRetryClassRegistration(boolean)}.
      *
      * @since 0.3.2.3
      */
-	void setRetryClassRegistration(Boolean warn);
+    void setRetryClassRegistration(Boolean warn);
 
-	/**
-	 * Backwards compatibility options.
-	 */
-	String getCompatibility();
+    /**
+     * Backwards compatibility options.
+     */
+    String getCompatibility();
 
-	/**
-	 * Backwards compatibility options.
-	 */
-	void setCompatibility(String compatibility);
+    /**
+     * Backwards compatibility options.
+     */
+    void setCompatibility(String compatibility);
 
-	/**
-	 * Backwards compatibility options.
-	 */
-	Compatibility getCompatibilityInstance ();
+    /**
+     * Backwards compatibility options.
+     */
+    Compatibility getCompatibilityInstance ();
 
-	/**
-	 * Options for configuring callbacks as a String.
+    /**
+     * Options for configuring callbacks as a String.
      *
      * @since 2.0.0
-	 */
-	String getCallbackOptions();
+     */
+    String getCallbackOptions();
 
-	/**
-	 * Options for configuring callbacks.
-	 *
-	 * @since 2.0.0
-	 */
-	CallbackOptions getCallbackOptionsInstance();
+    /**
+     * Options for configuring callbacks.
+     *
+     * @since 2.0.0
+     */
+    CallbackOptions getCallbackOptionsInstance();
 
     /**
      * Options for configuring callbacks set as a comma-separated string value
@@ -1489,7 +1489,7 @@ public interface OpenJPAConfiguration
      *
      * @since 2.0.0
      */
-	void setCallbackOptions(String options);
+    void setCallbackOptions(String options);
 
     /**
      * Configuration settings for the query compilation cache to use.
@@ -1906,112 +1906,185 @@ public interface OpenJPAConfiguration
      */
     void setAuditor(String s);
 
-     /**
-      * Whether to send &#064;PostLoad events on a merge operation.
-      * @since 2.2.0
-      */
-     boolean getPostLoadOnMerge();
+    /**
+     * Whether to send &#064;PostLoad events on a merge operation.
+     * @since 2.2.0
+     */
+    boolean getPostLoadOnMerge();
 
-     /**
-      * Whether to send &#064;PostLoad events on a merge operation.
-      * @since 2.2.0
-      */
-     void setPostLoadOnMerge(boolean postLoadOnMerge);
+    /**
+     * Whether to send &#064;PostLoad events on a merge operation.
+     * @since 2.2.0
+     */
+    void setPostLoadOnMerge(boolean postLoadOnMerge);
 
-     /**
-      * Whether to send &#064;PostLoad events on a merge operation.
-      * @since 2.2.0
-      */
-     void setPostLoadOnMerge(Boolean postLoadOnMerge);
+    /**
+     * Whether to send &#064;PostLoad events on a merge operation.
+     * @since 2.2.0
+     */
+    void setPostLoadOnMerge(Boolean postLoadOnMerge);
 
-     /**
-      * Whether to attempt to optimize id class copy operations during the
-      * enhancement process.  Optimization is only applicable for simple id classes
-      * that have a constructor with the proper construction parameters and
-      * direct assignments to fields within the id class during construction.
-      * If the optimization cannot occur, the enhancer will fallback to the
-      * noraml behavior.
-      * @since 2.2.0
-      */
-     boolean getOptimizeIdCopy();
+    /**
+     * Whether to attempt to optimize id class copy operations during the
+     * enhancement process.  Optimization is only applicable for simple id classes
+     * that have a constructor with the proper construction parameters and
+     * direct assignments to fields within the id class during construction.
+     * If the optimization cannot occur, the enhancer will fallback to the
+     * noraml behavior.
+     * @since 2.2.0
+     */
+    boolean getOptimizeIdCopy();
 
-     /**
-      * Whether to attempt to optimize id class copy operations during the
-      * enhancement process.  Optimization is only applicable for simple id classes
-      * that have a constructor with the proper construction parameters and
-      * direct assignments to fields within the id class during construction.
-      * If the optimization cannot occur, the enhancer will fallback to the
-      * normal behavior.
-      * @since 2.2.0
-      */
-     void setOptimizeIdCopy(boolean optimizeIds);
+    /**
+     * Whether to attempt to optimize id class copy operations during the
+     * enhancement process.  Optimization is only applicable for simple id classes
+     * that have a constructor with the proper construction parameters and
+     * direct assignments to fields within the id class during construction.
+     * If the optimization cannot occur, the enhancer will fallback to the
+     * normal behavior.
+     * @since 2.2.0
+     */
+    void setOptimizeIdCopy(boolean optimizeIds);
 
-     /**
-      * Whether to attempt to optimize id class copy operations during the
-      * enhancement process.  Optimization is only applicable for simple id classes
-      * that have a constructor with the proper construction parameters and
-      * direct assignments to fields within the id class during construction.
-      * If the optimization cannot occur, the enhancer will fallback to the
-      * normal behavior.
-      * @since 2.2.0
-      */
-      void setOptimizeIdCopy(Boolean optimizeIds);
+    /**
+     * Whether to attempt to optimize id class copy operations during the
+     * enhancement process.  Optimization is only applicable for simple id classes
+     * that have a constructor with the proper construction parameters and
+     * direct assignments to fields within the id class during construction.
+     * If the optimization cannot occur, the enhancer will fallback to the
+     * normal behavior.
+     * @since 2.2.0
+     */
+    void setOptimizeIdCopy(Boolean optimizeIds);
 
-      /**
-       * Indicates if the {@link Thread#contextClassLoader} should be used
-       * as fallback if the result class for {@code select new} is not found
-       * by the classloader of the entity.
-       *
-       * @since 2.4.2
-       */
-      boolean getUseTCCLinSelectNew();
+    /**
+     * Indicates if the {@link Thread#contextClassLoader} should be used
+     * as fallback if the result class for {@code select new} is not found
+     * by the classloader of the entity.
+     *
+     * @since 2.4.2
+     */
+    boolean getUseTCCLinSelectNew();
 
-      /**
-       * Indicates if the {@link Thread#contextClassLoader} should be used
-       * as fallback if the result class for {@code select new} is not found
-       * by the classloader of the entity.
-       *
-       * @since 2.4.2
-       */
-      void setUseTCCLinSelectNew(boolean useTcclForSelectNew);
+    /**
+     * Indicates if the {@link Thread#contextClassLoader} should be used
+     * as fallback if the result class for {@code select new} is not found
+     * by the classloader of the entity.
+     *
+     * @since 2.4.2
+     */
+    void setUseTCCLinSelectNew(boolean useTcclForSelectNew);
 
-      /**
-       * Indicates if the {@link Thread#contextClassLoader} should be used
-       * as fallback if the result class for {@code select new} is not found
-       * by the classloader of the entity.
-       *
-       * @since 2.4.2
-       */
-      void setUseTCCLinSelectNew(Boolean useTcclForSelectNew);
+    /**
+     * Indicates if the {@link Thread#contextClassLoader} should be used
+     * as fallback if the result class for {@code select new} is not found
+     * by the classloader of the entity.
+     *
+     * @since 2.4.2
+     */
+    void setUseTCCLinSelectNew(Boolean useTcclForSelectNew);
 
+    /**
+     * database action from the persistence unit.
+     * See 'javax.persistence.schema-generation.database.action'
+     * @return openjpa internal schemaAction which corresponds to the JPA action.
+     * @since 3.0.0
+     */
     String getDatabaseAction();
 
+    /**
+     * @see #getDatabaseAction()
+     * @since 3.0.0
+     */
     int getDatabaseActionConstant();
 
+    /**
+     * Similar to {@link #getDatabaseAction()} but write the generated SQL
+     * to files.
+     * @see #getDatabaseAction()
+     * @since 3.0.0
+     */
     String getScriptsAction();
 
+    /**
+     * @see #getScriptsAction()
+     * @since 3.0.0
+     */
     int getScriptsActionConstant();
 
+    /**
+     * Optional run a DB action before accessing the database.
+     * The possible values in the persistence unit are:
+     * <ul>
+     *     <li>metadata</li>
+     *     <li>script - see {@link #getCreateScriptSource()}</li>
+     *     <li>metadata-then-script</li>
+     *     <li>script-then-metadata</li>
+     * </ul>
+     * @see #getScriptsAction()
+     * @since 3.0.0
+     */
     String getCreateSource();
 
+    /**
+     * @see #getCreateSource()
+     * @since 3.0.0
+     */
     int getCreateSourceConstant();
 
+    /**
+     * Similar to {@link #getCreateSource()} but for dropping the database schema and content.
+     * @see #getCreateSource()
+     * @since 3.0.0
+     */
     String getDropSource();
 
+    /**
+     * @see #getDatabaseAction()
+     * @since 3.0.0
+     */
     int getDropSourceConstant();
 
+    /**
+     * @see #getDatabaseAction()
+     * @since 3.0.0
+     */
     String getCreateScriptSource();
 
+    /**
+     * @see #getCreateSource()
+     * @since 3.0.0
+     */
     String getDropScriptSource();
 
+    /**
+     * @see #getDatabaseAction() 'script'
+     * @since 3.0.0
+     */
     String getCreateScriptTarget();
 
+    /**
+     * @see #getDatabaseAction() 'script'
+     * @since 3.0.0
+     */
     String getDropScriptTarget();
 
+    /**
+     * Can be used to load a set of initial data into the database.
+     * @since 3.0.0
+     */
     String getLoadScriptSource();
 
+    /**
+     * @return types which should not get enhanced although they are on the included directories.
+     * @since 3.1.1
+     */
     Collection<Class<?>> getTypesWithoutEnhancement();
 
-    void setTypesWithoutEnhancement(Collection<Class<?>> value);
+    /**
+     * @see #getTypesWithoutEnhancement()
+     * @since 3.1.1
+     */
+    void setTypesWithoutEnhancement(Collection<Class<?>> typesWithoutEnhancement);
 }
 
