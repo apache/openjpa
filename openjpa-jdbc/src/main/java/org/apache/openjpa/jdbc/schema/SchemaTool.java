@@ -575,9 +575,7 @@ public class SchemaTool {
                 seqs = value.getSequences();
                 for (Sequence seq : seqs) {
                     if (considerDatabaseState && db.findSequence(value, seq.getQualifiedPath()) != null) {
-                        if (_writer == null) {
-                            continue;
-                        }
+                        continue;
                     }
 
                     if (createSequence(seq)) {
@@ -656,9 +654,7 @@ public class SchemaTool {
             tabs = schema1.getTables();
             for (Table tab : tabs) {
                 if (considerDatabaseState && db.findTable(schema1, tab.getQualifiedPath()) != null) {
-                    if (_writer == null) {
-                        continue;
-                    }
+                    continue;
                 }
 
                 if (createTable(tab)) {
@@ -712,9 +708,7 @@ public class SchemaTool {
             for (Table tab : tabs) {
                 // create unique constraints only on new tables
                 if (!newTables.contains(tab)) {
-                    if (_writer == null) {
-                        continue;
-                    }
+                    continue;
                 }
 
                 uniques = tab.getUniques();
@@ -740,9 +734,7 @@ public class SchemaTool {
                 // create foreign keys on new tables even if fks
                 // have been turned off
                 if (!_fks && !newTables.contains(tab)) {
-                    if (_writer == null) {
-                        continue;
-                    }
+                    continue;
                 }
 
                 fks = tab.getForeignKeys();

@@ -534,14 +534,14 @@ public class MappingTool
                             tool = newSchemaTool(schemaAction);
                         }
 
-                        if (schemaAction.equals(ACTION_ADD) && _conf.getCreateScriptTarget() != null) {
+                        if (schemaAction.equals(SchemaTool.ACTION_BUILD) && _conf.getCreateScriptTarget() != null) {
                             tool.setWriter(new PrintWriter(_conf.getCreateScriptTarget()));
                             tool.setIndexes(true);
                             tool.setForeignKeys(true);
                             tool.setSequences(true);
                         }
 
-                        if (schemaAction.equals(ACTION_DROP) && _conf.getDropScriptTarget() != null) {
+                        if (schemaAction.equals(SchemaTool.ACTION_DROP) && _conf.getDropScriptTarget() != null) {
                             tool.setWriter(new PrintWriter(_conf.getDropScriptTarget()));
                         }
 
@@ -1134,12 +1134,7 @@ public class MappingTool
             return false;
         }
 
-        MappingTool tool;
-        try {
-            tool = new MappingTool(conf, flags.action, flags.meta, loader);
-        } catch (IllegalArgumentException iae) {
-            return false;
-        }
+        MappingTool tool = new MappingTool(conf, flags.action, flags.meta, loader);
 
         // setup the tool
         tool.setIgnoreErrors(flags.ignoreErrors);
