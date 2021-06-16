@@ -227,15 +227,21 @@ public class NativeJDBCSeq
                     // If this fails, we will warn the user at most one time and set _allocated and _increment to 1 so
                     // as to not potentially insert records ahead of what the database thinks is the next sequence
                     // value.
-                    if (updateSql(conn, dict.getAlterSequenceSQL(_seq)) == -1) {
-                        if (!alreadyLoggedAlterSeqFailure) {
-                            Log log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
-                            if (log.isWarnEnabled()) {
-                                log.warn(_loc.get("fallback-no-seq-cache", _seqName));
+
+                    // first we have to allocate a new connection as some databases do an implicit commit
+                    // if a DDL gets changed. Others do blow up on a DDL change
+                    try (Connection newConn = getConnection(store, true)) {
+                        if (updateSql(newConn, dict.getAlterSequenceSQL(_seq)) == -1) {
+                            newConn.commit(); // new connection has autoCommit=false
+                            if (!alreadyLoggedAlterSeqFailure) {
+                                Log log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
+                                if (log.isWarnEnabled()) {
+                                    log.warn(_loc.get("fallback-no-seq-cache", _seqName));
+                                }
                             }
+                            alreadyLoggedAlterSeqFailure = true;
+                            _allocate = 1;
                         }
-                        alreadyLoggedAlterSeqFailure = true;
-                        _allocate = 1;
                     }
                 } else {
                     if (!alreadyLoggedAlterSeqDisabled) {
