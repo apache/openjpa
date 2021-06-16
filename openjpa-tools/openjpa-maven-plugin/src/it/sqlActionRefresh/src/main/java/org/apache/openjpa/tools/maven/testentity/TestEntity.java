@@ -19,17 +19,24 @@ package org.apache.openjpa.tools.maven.testentity;
  * under the License.
  */
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 
 @Entity
+@Table(name="TEST_ENTITY")
 public class TestEntity {
 
   @Id
   private int xint1;
 
+  @Column(name="SOME_VALUE")
   private String string1;
+
+  @Column(name="VAL2", length=100)
+  private String val2;
 
   public int getInt1() {
     return xint1;

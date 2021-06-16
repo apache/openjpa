@@ -24,14 +24,17 @@
 
     <modelVersion>4.0.0</modelVersion>
 
+
     <groupId>org.apache.openjpa.tools.openjpa-maven-plugin.testing</groupId>
     <artifactId>modifyDatabase</artifactId>
     <version>1.0-SNAPSHOT</version>
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>3.8.2</version>
+            <version>4.13.2</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -41,16 +44,23 @@
         </dependency>
 
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.11</version>
+            <groupId>org.hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+            <version>@hsqldb.version@</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-dbcp2</artifactId>
+            <version>@dbcp2.version@</version>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.5.1</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -60,10 +70,10 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>sql-maven-plugin</artifactId>
-                <version>1.4</version>
+                <version>1.5</version>
                 <executions>
                     <execution>
-                        <id>dropdatabase</id>
+                        <id>initialdb</id>
                         <phase>process-resources</phase>
                         <goals>
                             <goal>execute</goal>
@@ -71,17 +81,20 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <driver>com.mysql.jdbc.Driver</driver>
-                    <url>jdbc:mysql://localhost/testdb</url>
-                    <username>root</username>
-                    <enableAnonymousPassword>true</enableAnonymousPassword>
-                    <sqlCommand>DROP TABLE TestEntity;</sqlCommand>
+                    <driver>org.hsqldb.jdbcDriver</driver>
+                    <url>jdbc:hsqldb:file:target/openjpa-hsqldb;hsqldb.lock_file=false</url>
+                    <username>SA</username>
+                    <password></password>
+                    <srcFiles>
+                        <srcFile>src/main/sql/database.sql</srcFile>
+                    </srcFiles>
+                    <escapeProcessing>false</escapeProcessing>
                 </configuration>
                 <dependencies>
                     <dependency>
-                        <groupId>mysql</groupId>
-                        <artifactId>mysql-connector-java</artifactId>
-                        <version>5.1.11</version>
+                        <groupId>org.hsqldb</groupId>
+                        <artifactId>hsqldb</artifactId>
+                        <version>@hsqldb.version@</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -96,14 +109,16 @@
                         org/apache/openjpa/tools/maven/testentity/TestEntity.class
                     </include>
                     <sqlAction>refresh</sqlAction>
-                    <modifyDatabase>true</modifyDatabase>
+                    <connectionDriverName>org.apache.commons.dbcp2.BasicDataSource</connectionDriverName>
                     <connectionProperties>
-                        driverClass=com.mysql.jdbc.Driver,
-                        jdbcUrl=jdbc:mysql://localhost/testdb,
-                        user=root,
+                        driverClassName=org.hsqldb.jdbcDriver,
+                        url=jdbc:hsqldb:file:target/openjpa-hsqldb;hsqldb.lock_file=false,
+                        username=SA,
                         password=
                     </connectionProperties>
-
+                    <toolProperties>
+                        <DBDictionary>org.apache.openjpa.jdbc.sql.HSQLDictionary</DBDictionary>
+                    </toolProperties>
                 </configuration>
                 <executions>
                     <execution>
@@ -117,9 +132,14 @@
                 </executions>
                 <dependencies>
                     <dependency>
-                        <groupId>mysql</groupId>
-                        <artifactId>mysql-connector-java</artifactId>
-                        <version>5.1.11</version>
+                        <groupId>org.hsqldb</groupId>
+                        <artifactId>hsqldb</artifactId>
+                        <version>@hsqldb.version@</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.commons</groupId>
+                        <artifactId>commons-dbcp2</artifactId>
+                        <version>@dbcp2.version@</version>
                     </dependency>
                 </dependencies>
             </plugin>
