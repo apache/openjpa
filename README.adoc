@@ -36,6 +36,18 @@ We assume that Docker is installed to be used by your current user.
 The respective database image has to be started manually before starting the build.
 The reason for not starting it as part of the build itself is to be able to look at the database content after the build did run.
 
+[TIP]
+====
+*Hint for running with Podman*
+
+Some distributions switched from native Docker to Podman.
+If you get an error like `missing DOCKER_HOST` then you might try running the following command:
+
+  export DOCKER_HOST="unix:/run/user/$(id -u)/podman/podman.sock"
+  podman system service -t 3600 &
+  mvn ...
+====
+
 To start e.g. a PostgreSQL Docker image you can simply invoke the following command.
 Note the -N Maven option which stands for 'non-recursive'.
 This is used because the docker container is configured only at the root project but not at his children.
