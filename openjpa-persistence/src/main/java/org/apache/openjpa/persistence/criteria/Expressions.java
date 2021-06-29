@@ -1440,6 +1440,12 @@ class Expressions {
             this.e = (ExpressionImpl<T>)e;
         }
 
+        private Expressions.In<?> copy() {
+            In<?> in = new Expressions.In<>(this.e);
+            in._exps.addAll(this._exps);
+            return in;
+        }
+
         @Override
         public Expression<T> getExpression() {
             return e;
@@ -1468,7 +1474,11 @@ class Expressions {
         }
 
         @Override
-        org.apache.openjpa.kernel.exps.Expression toKernelExpression(
+        org.apache.openjpa.kernel.exps.Expression toKernelExpression(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
+            return copy().toKernelExpression0(factory, q);
+        }
+
+        org.apache.openjpa.kernel.exps.Expression toKernelExpression0(
             ExpressionFactory factory, CriteriaQueryImpl<?> q) {
             org.apache.openjpa.kernel.exps.Expression inExpr = null;
             if (_exps.size() == 1) {
