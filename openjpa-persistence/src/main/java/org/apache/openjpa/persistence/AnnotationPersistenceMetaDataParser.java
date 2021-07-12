@@ -96,6 +96,7 @@ import javax.persistence.AccessType;
 import javax.persistence.Basic;
 import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
+import javax.persistence.Convert;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
@@ -174,6 +175,7 @@ import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
+import static org.apache.openjpa.persistence.MetaDataTag.CONVERT;
 
 
 /**
@@ -231,6 +233,7 @@ public class AnnotationPersistenceMetaDataParser
         _tags.put(ElementType.class, ELEM_TYPE);
         _tags.put(ExternalValues.class, EXTERNAL_VALS);
         _tags.put(Externalizer.class, EXTERNALIZER);
+        _tags.put(Convert.class, CONVERT);
         _tags.put(Factory.class, FACTORY);
         _tags.put(FetchGroup.class, FETCH_GROUP);
         _tags.put(FetchGroups.class, FETCH_GROUPS);
@@ -1325,6 +1328,10 @@ public class AnnotationPersistenceMetaDataParser
                     if (isMetaDataMode())
                         fmd.setTypeOverride(toOverrideType(((Type) anno).
                             value()));
+                    break;
+                case CONVERT:
+                    if (isMetaDataMode() && !((Convert) anno).disableConversion())
+                        fmd.setConverter(((Convert) anno).converter());
                     break;
                 default:
                     throw new UnsupportedException(_loc.get("unsupported", fmd,
