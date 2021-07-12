@@ -199,6 +199,9 @@ public class FieldMetaData
     private transient Method _extMethod = DEFAULT_METHOD;
     private transient Member _factMethod = DEFAULT_METHOD;
 
+    private transient Method _converterExtMethod;
+    private transient Method _converterFactMethod;
+    
     // intermediate and impl data
     private boolean _intermediate = true;
     private Boolean _implData = Boolean.TRUE;
@@ -1352,9 +1355,12 @@ public class FieldMetaData
             try {
                 // TODO support CDI (OPENJPA-2714)
                 Object instance = converter.getDeclaredConstructor().newInstance();
+
                 // see AttributeConverter.java from the JPA specs
-                Method method = converter.getDeclaredMethod("convertToDatabaseColumn", Object.class);
-                return method.invoke(instance, val);
+                if (_converterExtMethod == null) {
+                    _converterExtMethod = converter.getDeclaredMethod("convertToDatabaseColumn", Object.class);
+                }
+                return _converterExtMethod.invoke(instance, val);
             } catch (OpenJPAException ke) {
                 throw ke;
             } catch (Exception e) {
@@ -1426,9 +1432,12 @@ public class FieldMetaData
             try {
                 // TODO support CDI (OPENJPA-2714)
                 Object instance = converter.getDeclaredConstructor().newInstance();
+
                 // see AttributeConverter.java from the JPA specs
-                Method method = converter.getDeclaredMethod("convertToEntityAttribute", Object.class);
-                return method.invoke(instance, val);
+                if (_converterFactMethod == null) {
+                    _converterFactMethod = converter.getDeclaredMethod("convertToEntityAttribute", Object.class);
+                }
+                return _converterFactMethod.invoke(instance, val);
             } catch (OpenJPAException ke) {
                 throw ke;
             } catch (Exception e) {
@@ -1457,6 +1466,8 @@ public class FieldMetaData
 
     public void setConverter(Class converter) {
         _converter = converter;
+        _converterExtMethod = null;
+        _converterFactMethod = null;
     }
     
     /**
