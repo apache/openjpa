@@ -133,6 +133,7 @@ public class TestExternalValues
         assertFalse(result.isEmpty());
         for (ExternalValues x:result) {
             assertEquals(uuid, x.getUuid());
+            assertEquals(uuid, x.getUuid2());
         }
     }
 
@@ -148,6 +149,7 @@ public class TestExternalValues
         assertFalse(result.isEmpty());
         for (ExternalValues pc:result) {
             assertEquals(uuid, pc.getUuid());
+            assertEquals(uuid, pc.getUuid2());
         }
     }
 
@@ -189,6 +191,7 @@ public class TestExternalValues
         em.getTransaction().begin();
         ExternalValues pc = new ExternalValues();
         pc.setUuid(uuid);
+        pc.setUuid2(uuid);
         em.persist(pc);
         em.getTransaction().commit();
         em.clear();

@@ -1351,7 +1351,7 @@ public class FieldMetaData
         }
 
         Class converter = getConverter();
-        if (converter != null) {
+        if (converter != null && val != null) {
             try {
                 // TODO support CDI (OPENJPA-2714)
                 Object instance = converter.getDeclaredConstructor().newInstance();
@@ -1428,7 +1428,7 @@ public class FieldMetaData
         }
 
         Class converter = getConverter();
-        if (converter != null) {
+        if (converter != null && val != null) {
             try {
                 // TODO support CDI (OPENJPA-2714)
                 Object instance = converter.getDeclaredConstructor().newInstance();
