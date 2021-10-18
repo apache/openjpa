@@ -18,17 +18,18 @@
  */
 package org.apache.openjpa.persistence;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.CacheStoreMode;
-import javax.persistence.SharedCacheMode;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.openjpa.datacache.DataCacheMode;
 import org.apache.openjpa.kernel.DataCacheRetrieveMode;
 import org.apache.openjpa.kernel.DataCacheStoreMode;
+import org.apache.openjpa.lib.util.StringUtil;
 
 /**
  * Enumerates configuration property keys defined in JPA 2.0 Specification.
@@ -119,7 +120,7 @@ public class JPAProperties {
         }
         return buf.toString();
     }
-    
+
     /**
      * Convert the given user value to a value consumable by OpenJPA kernel constructs.
      * 
@@ -135,10 +136,20 @@ public class JPAProperties {
             } else if (value instanceof CacheStoreMode || (value instanceof String && CACHE_STORE_MODE.equals(key))) {
                 return (T)DataCacheStoreMode.valueOf(value.toString().trim().toUpperCase());
             }
+
+            // If the value doesn't match the result type, attempt to convert
+            if(resultType != null && !resultType.isAssignableFrom(value.getClass())) {
+                if (value instanceof String) {
+                    if ("null".equals(value)) {
+                        return null;
+                    }
+                    return StringUtil.parse((String) value, resultType);
+                }
+            }
         }
-        return (T)value;
+        return (T) value;
     }
-    
+
     /**
      * Convert the given kernel value to a value visible to the user.
      * 
