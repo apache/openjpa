@@ -289,7 +289,7 @@ public class OracleDictionary
     public void endConfiguration() {
         super.endConfiguration();
         if (useTriggersForAutoAssign)
-            supportsAutoAssign = true;
+            supportsAutoAssign = false;
     }
 
     @Override
@@ -1045,7 +1045,7 @@ public class OracleDictionary
 
             setTimeouts(stmnt, conf, false);
             rs = stmnt.executeQuery();
-            List idxList = new ArrayList();
+            List<Index> idxList = new ArrayList<>();
             while (rs != null && rs.next())
                 idxList.add(newIndex(rs));
             return (Index[]) idxList.toArray(new Index[idxList.size()]);
@@ -1160,13 +1160,13 @@ public class OracleDictionary
             return create;
 
         Column[] cols = table.getColumns();
-        List seqs = null;
+        List<String> seqs = null;
         String seq, trig;
         for (int i = 0; cols != null && i < cols.length; i++) {
             if (!cols[i].isAutoAssigned())
                 continue;
             if (seqs == null)
-                seqs = new ArrayList(4);
+                seqs = new ArrayList<String>(4);
 
             seq = autoAssignSequenceName;
             if (seq == null) {

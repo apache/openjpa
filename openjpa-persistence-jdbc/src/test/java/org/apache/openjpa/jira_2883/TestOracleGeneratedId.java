@@ -20,12 +20,12 @@ package org.apache.openjpa.jira_2883;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EntityManager;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.apache.openjpa.persistence.test.DatabasePlatform;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -34,6 +34,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *   <A HREF="https://issues.apache.org/jira/browse/OPENJPA-2883">OPENJPA-2883</A>
  *
  */
+@DatabasePlatform("oracle.jdbc.driver.OracleDriver")
 public class TestOracleGeneratedId extends SingleEMFTestCase {
     @Override
     public void setUp() {
@@ -42,7 +43,7 @@ public class TestOracleGeneratedId extends SingleEMFTestCase {
     }
 
     public void testGeneratedId() {
-        EntityManager em = emf.createEntityManager();
+        emf.createEntityManager();
         assertTrue("Should be created without issues", true);
     }
 
