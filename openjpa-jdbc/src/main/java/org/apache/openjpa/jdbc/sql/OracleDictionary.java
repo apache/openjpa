@@ -91,11 +91,13 @@ public class OracleDictionary
      * using a trigger that inserts a sequence value into the
      * primary key value when a row is inserted.
      */
+    @Deprecated
     public boolean useTriggersForAutoAssign = false;
 
     /**
      * The global sequence name to use for autoassign simulation.
      */
+    @Deprecated
     public String autoAssignSequenceName = null;
 
     /**
@@ -181,6 +183,10 @@ public class OracleDictionary
         maxEmbeddedClobSize = 4000;
         inClauseLimit = 1000;
 
+        if (supportsAutoAssign && useTriggersForAutoAssign) {
+            log.warn("Both 'supportsAutoAssign' and 'useTriggersForAutoAssign' were specified, such configuration will never work,"
+                    + " please use 'supportsAutoAssign'");
+        }
         // support auto increment columns javax.persistence.GenerationType#IDENTITY
         supportsAutoAssign = true;
         autoAssignClause = "GENERATED ALWAYS AS IDENTITY";
