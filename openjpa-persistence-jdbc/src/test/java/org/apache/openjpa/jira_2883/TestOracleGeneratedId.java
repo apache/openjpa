@@ -50,11 +50,10 @@ public class TestOracleGeneratedId extends SingleEMFTestCase {
             em = emf.createEntityManager();
             assertFalse("'supportsAutoAssign' should be turned OFF", (((JDBCConfiguration) emf.getConfiguration()).
                     getDBDictionaryInstance().supportsAutoAssign));
-        } catch (Exception e) {
+        } finally {
             if (em != null) {
                 em.close();
             }
-            throw e;
         }
     }
 
