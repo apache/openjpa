@@ -20,11 +20,13 @@ package org.apache.openjpa.jira_2883;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityManager;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.test.DatabasePlatform;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -43,8 +45,17 @@ public class TestOracleGeneratedId extends SingleEMFTestCase {
     }
 
     public void testGeneratedId() {
-        emf.createEntityManager();
-        assertTrue("Should be created without issues", true);
+        EntityManager em = null;
+        try {
+            em = emf.createEntityManager();
+            assertFalse("'supportsAutoAssign' should be turned OFF", (((JDBCConfiguration) emf.getConfiguration()).
+                    getDBDictionaryInstance().supportsAutoAssign));
+        } catch (Exception e) {
+            if (em != null) {
+                em.close();
+            }
+            throw e;
+        }
     }
 
     /**
