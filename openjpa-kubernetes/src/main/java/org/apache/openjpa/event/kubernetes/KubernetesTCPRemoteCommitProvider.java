@@ -21,6 +21,7 @@ package org.apache.openjpa.event.kubernetes;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientException;
+import io.fabric8.kubernetes.client.internal.readiness.Readiness;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +68,7 @@ public class KubernetesTCPRemoteCommitProvider extends DynamicTCPRemoteCommitPro
         try (KubernetesClient client = kubernetesClient()) {
             podIPs.addAll(client.pods().inNamespace(_namespace).withLabel(_label).list().
                     getItems().stream().
+                    filter(Readiness::isPodReady).
                     map(pod -> pod.getStatus().getPodIP()).
                     collect(Collectors.toList()));
 
