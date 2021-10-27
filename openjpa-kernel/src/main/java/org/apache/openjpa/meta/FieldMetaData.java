@@ -188,6 +188,7 @@ public class FieldMetaData
     private Boolean _serializableField = null;
     private boolean _generated = false;
     private boolean _useSchemaElement = true;
+    private Class _converter;
 
     // Members aren't serializable. Use a proxy that can provide a Member
     // to avoid writing the full Externalizable implementation.
@@ -198,6 +199,10 @@ public class FieldMetaData
     private transient Method _extMethod = DEFAULT_METHOD;
     private transient Member _factMethod = DEFAULT_METHOD;
 
+    private transient Constructor _converterConstructor;
+    private transient Method _converterExtMethod;
+    private transient Method _converterFactMethod;
+    
     // intermediate and impl data
     private boolean _intermediate = true;
     private Boolean _implData = Boolean.TRUE;
@@ -1317,35 +1322,58 @@ public class FieldMetaData
         }
 
         Method externalizer = getExternalizerMethod();
-        if (externalizer == null)
-            return val;
+        if (externalizer != null) {
+            // special case for queries: allow the given value to pass through
+            // as-is if it is already in externalized form
+            if (val != null && getType().isInstance(val)
+                && (!getDeclaredType().isInstance(val)
+                || getDeclaredType() == Object.class))
+                return val;
 
-        // special case for queries: allow the given value to pass through
-        // as-is if it is already in externalized form
-        if (val != null && getType().isInstance(val)
-            && (!getDeclaredType().isInstance(val)
-            || getDeclaredType() == Object.class))
-            return val;
-
-        try {
-            // either invoke the static toExternal(val[, ctx]) method, or the
-            // non-static val.toExternal([ctx]) method
-            if (Modifier.isStatic(externalizer.getModifiers())) {
-                if (externalizer.getParameterTypes().length == 1)
-                    return externalizer.invoke(null, new Object[]{ val });
-                return externalizer.invoke(null, new Object[]{ val, ctx });
+            try {
+                // either invoke the static toExternal(val[, ctx]) method, or the
+                // non-static val.toExternal([ctx]) method
+                if (Modifier.isStatic(externalizer.getModifiers())) {
+                    if (externalizer.getParameterTypes().length == 1)
+                        return externalizer.invoke(null, new Object[]{ val });
+                    return externalizer.invoke(null, new Object[]{ val, ctx });
+                }
+                if (val == null)
+                    return null;
+                if (externalizer.getParameterTypes().length == 0)
+                    return externalizer.invoke(val, (Object[]) null);
+                return externalizer.invoke(val, new Object[]{ ctx });
+            } catch (OpenJPAException ke) {
+                throw ke;
+            } catch (Exception e) {
+                throw new MetaDataException(_loc.get("externalizer-err", this,
+                    Exceptions.toString(val), e.toString())).setCause(e);
             }
-            if (val == null)
-                return null;
-            if (externalizer.getParameterTypes().length == 0)
-                return externalizer.invoke(val, (Object[]) null);
-            return externalizer.invoke(val, new Object[]{ ctx });
-        } catch (OpenJPAException ke) {
-            throw ke;
-        } catch (Exception e) {
-            throw new MetaDataException(_loc.get("externalizer-err", this,
-                Exceptions.toString(val), e.toString())).setCause(e);
         }
+
+        Class converter = getConverter();
+        if (converter != null && val != null) {
+            try {
+                // TODO support CDI (OPENJPA-2714)
+                if (_converterConstructor == null) {
+                    _converterConstructor = converter.getDeclaredConstructor();
+                }
+                Object instance = _converterConstructor.newInstance();
+
+                // see AttributeConverter.java from the JPA specs
+                if (_converterExtMethod == null) {
+                    _converterExtMethod = converter.getDeclaredMethod("convertToDatabaseColumn", Object.class);
+                }
+                return _converterExtMethod.invoke(instance, val);
+            } catch (OpenJPAException ke) {
+                throw ke;
+            } catch (Exception e) {
+                throw new MetaDataException(_loc.get("converter-err", this,
+                    Exceptions.toString(val), e.toString())).setCause(e);
+            }
+        }
+
+        return val;
     }
 
     /**
@@ -1359,50 +1387,73 @@ public class FieldMetaData
             return fieldValues.get(val);
 
         Member factory = getFactoryMethod();
-        if (factory == null)
-            return val;
+        if (factory != null) {
+            try {
+                if (val == null && getNullValue() == NULL_DEFAULT)
+                    return AccessController.doPrivileged(
+                        J2DoPrivHelper.newInstanceAction(getDeclaredType()));
 
-        try {
-            if (val == null && getNullValue() == NULL_DEFAULT)
-                return AccessController.doPrivileged(
-                    J2DoPrivHelper.newInstanceAction(getDeclaredType()));
+                // invoke either the constructor for the field type,
+                // or the static type.toField(val[, ctx]) method
+                if (factory instanceof Constructor) {
+                    if (val == null)
+                        return null;
+                    return ((Constructor) factory).newInstance
+                        (new Object[]{ val });
+                }
 
-            // invoke either the constructor for the field type,
-            // or the static type.toField(val[, ctx]) method
-            if (factory instanceof Constructor) {
-                if (val == null)
-                    return null;
-                return ((Constructor) factory).newInstance
-                    (new Object[]{ val });
+                Method meth = (Method) factory;
+                if (meth.getParameterTypes().length == 1)
+                    return meth.invoke(null, new Object[]{ val });
+                return meth.invoke(null, new Object[]{ val, ctx });
+            } catch (Exception e) {
+                // unwrap cause
+                if (e instanceof InvocationTargetException) {
+                    Throwable t = ((InvocationTargetException) e).
+                        getTargetException();
+                    if (t instanceof Error)
+                        throw (Error) t;
+                    e = (Exception) t;
+
+                    // allow null values to cause NPEs and illegal arg exceptions
+                    // without error
+                    if (val == null && (e instanceof NullPointerException
+                        || e instanceof IllegalArgumentException))
+                        return null;
+                }
+
+                if (e instanceof OpenJPAException)
+                    throw (OpenJPAException) e;
+                if (e instanceof PrivilegedActionException)
+                    e = ((PrivilegedActionException) e).getException();
+                throw new MetaDataException(_loc.get("factory-err", this,
+                    Exceptions.toString(val), e.toString())).setCause(e);
             }
-
-            Method meth = (Method) factory;
-            if (meth.getParameterTypes().length == 1)
-                return meth.invoke(null, new Object[]{ val });
-            return meth.invoke(null, new Object[]{ val, ctx });
-        } catch (Exception e) {
-            // unwrap cause
-            if (e instanceof InvocationTargetException) {
-                Throwable t = ((InvocationTargetException) e).
-                    getTargetException();
-                if (t instanceof Error)
-                    throw (Error) t;
-                e = (Exception) t;
-
-                // allow null values to cause NPEs and illegal arg exceptions
-                // without error
-                if (val == null && (e instanceof NullPointerException
-                    || e instanceof IllegalArgumentException))
-                    return null;
-            }
-
-            if (e instanceof OpenJPAException)
-                throw (OpenJPAException) e;
-            if (e instanceof PrivilegedActionException)
-                e = ((PrivilegedActionException) e).getException();
-            throw new MetaDataException(_loc.get("factory-err", this,
-                Exceptions.toString(val), e.toString())).setCause(e);
         }
+
+        Class converter = getConverter();
+        if (converter != null && val != null) {
+            try {
+                // TODO support CDI (OPENJPA-2714)
+                if (_converterConstructor == null) {
+                    _converterConstructor = converter.getDeclaredConstructor();
+                }
+                Object instance = _converterConstructor.newInstance();
+
+                // see AttributeConverter.java from the JPA specs
+                if (_converterFactMethod == null) {
+                    _converterFactMethod = converter.getDeclaredMethod("convertToEntityAttribute", Object.class);
+                }
+                return _converterFactMethod.invoke(instance, val);
+            } catch (OpenJPAException ke) {
+                throw ke;
+            } catch (Exception e) {
+                throw new MetaDataException(_loc.get("converter-err", this,
+                    Exceptions.toString(val), e.toString())).setCause(e);
+            }
+        }
+
+        return val;
     }
 
     /**
@@ -1420,6 +1471,12 @@ public class FieldMetaData
         _extMethod = DEFAULT_METHOD;
     }
 
+    public void setConverter(Class converter) {
+        _converter = converter;
+        _converterExtMethod = null;
+        _converterFactMethod = null;
+    }
+    
     /**
      * The name of this field's factory, or null if none.
      */
@@ -2044,6 +2101,7 @@ public class FieldMetaData
         _access = field._access;
         _orderDec = field._orderDec;
         _useSchemaElement = field._useSchemaElement;
+        _converter = field._converter;
 
         // embedded fields can't be versions
         if (_owner.getEmbeddingMetaData() == null && _version == null)
@@ -2522,5 +2580,9 @@ public class FieldMetaData
             }
         }
         return setterName;
+    }
+
+    public Class getConverter() {
+        return _converter;
     }
 }
