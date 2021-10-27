@@ -199,6 +199,7 @@ public class FieldMetaData
     private transient Method _extMethod = DEFAULT_METHOD;
     private transient Member _factMethod = DEFAULT_METHOD;
 
+    private transient Constructor _converterConstructor;
     private transient Method _converterExtMethod;
     private transient Method _converterFactMethod;
     
@@ -1354,7 +1355,10 @@ public class FieldMetaData
         if (converter != null && val != null) {
             try {
                 // TODO support CDI (OPENJPA-2714)
-                Object instance = converter.getDeclaredConstructor().newInstance();
+                if (_converterConstructor == null) {
+                    _converterConstructor = converter.getDeclaredConstructor();
+                }
+                Object instance = _converterConstructor.newInstance();
 
                 // see AttributeConverter.java from the JPA specs
                 if (_converterExtMethod == null) {
@@ -1431,7 +1435,10 @@ public class FieldMetaData
         if (converter != null && val != null) {
             try {
                 // TODO support CDI (OPENJPA-2714)
-                Object instance = converter.getDeclaredConstructor().newInstance();
+                if (_converterConstructor == null) {
+                    _converterConstructor = converter.getDeclaredConstructor();
+                }
+                Object instance = _converterConstructor.newInstance();
 
                 // see AttributeConverter.java from the JPA specs
                 if (_converterFactMethod == null) {
