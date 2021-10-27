@@ -123,8 +123,28 @@
                             </artifactSet>
                             <relocations>
                                 <relocation>
-                                    <pattern>javax.annotation</pattern>
-                                    <shadedPattern>jakarta.annotation</shadedPattern>
+                                    <pattern>javax.annotation.security</pattern>
+                                    <shadedPattern>jakarta.annotation.security</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>javax.annotation.Generated</pattern>
+                                    <shadedPattern>jakarta.annotation.Generated</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>javax.annotation.PostConstruct</pattern>
+                                    <shadedPattern>jakarta.annotation.PostConstruct</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>javax.annotation.PreDestroy</pattern>
+                                    <shadedPattern>jakarta.annotation.PreDestroy</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>javax.annotation.Resource</pattern>
+                                    <shadedPattern>jakarta.annotation.Resource</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>javax.annotation.Resources</pattern>
+                                    <shadedPattern>jakarta.annotation.Resources</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>javax.el</pattern>

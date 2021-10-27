@@ -91,11 +91,13 @@ public class OracleDictionary
      * using a trigger that inserts a sequence value into the
      * primary key value when a row is inserted.
      */
+    @Deprecated
     public boolean useTriggersForAutoAssign = false;
 
     /**
      * The global sequence name to use for autoassign simulation.
      */
+    @Deprecated
     public String autoAssignSequenceName = null;
 
     /**
@@ -181,6 +183,10 @@ public class OracleDictionary
         maxEmbeddedClobSize = 4000;
         inClauseLimit = 1000;
 
+        if (supportsAutoAssign && useTriggersForAutoAssign) {
+            log.warn("Both 'supportsAutoAssign' and 'useTriggersForAutoAssign' were specified, such configuration will never work,"
+                    + " please use 'supportsAutoAssign'");
+        }
         // support auto increment columns javax.persistence.GenerationType#IDENTITY
         supportsAutoAssign = true;
         autoAssignClause = "GENERATED ALWAYS AS IDENTITY";
@@ -289,7 +295,7 @@ public class OracleDictionary
     public void endConfiguration() {
         super.endConfiguration();
         if (useTriggersForAutoAssign)
-            supportsAutoAssign = true;
+            supportsAutoAssign = false;
     }
 
     @Override
@@ -1045,7 +1051,7 @@ public class OracleDictionary
 
             setTimeouts(stmnt, conf, false);
             rs = stmnt.executeQuery();
-            List idxList = new ArrayList();
+            List<Index> idxList = new ArrayList<>();
             while (rs != null && rs.next())
                 idxList.add(newIndex(rs));
             return (Index[]) idxList.toArray(new Index[idxList.size()]);
@@ -1160,13 +1166,13 @@ public class OracleDictionary
             return create;
 
         Column[] cols = table.getColumns();
-        List seqs = null;
+        List<String> seqs = null;
         String seq, trig;
         for (int i = 0; cols != null && i < cols.length; i++) {
             if (!cols[i].isAutoAssigned())
                 continue;
             if (seqs == null)
-                seqs = new ArrayList(4);
+                seqs = new ArrayList<String>(4);
 
             seq = autoAssignSequenceName;
             if (seq == null) {

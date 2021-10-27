@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -134,8 +136,18 @@ public class JPAProperties {
             } else if (value instanceof CacheStoreMode || (value instanceof String && CACHE_STORE_MODE.equals(key))) {
                 return (T)DataCacheStoreMode.valueOf(value.toString().trim().toUpperCase(Locale.ENGLISH));
             }
+
+            // If the value doesn't match the result type, attempt to convert
+            if(resultType != null && !resultType.isAssignableFrom(value.getClass())) {
+                if (value instanceof String) {
+                    if ("null".equals(value)) {
+                        return null;
+                    }
+                    return StringUtil.parse((String) value, resultType);
+                }
+            }
         }
-        return (T)value;
+        return (T) value;
     }
 
     /**
