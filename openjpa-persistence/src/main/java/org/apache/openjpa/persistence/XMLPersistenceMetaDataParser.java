@@ -306,6 +306,8 @@ public class XMLPersistenceMetaDataParser
 
     private static final String ORM_XSD_1_0 = "orm_1_0.xsd";
     private static final String ORM_XSD_2_0 = "orm_2_0.xsd";
+    private static final String ORM_XSD_2_1 = "orm_2_1.xsd";
+    private static final String ORM_XSD_2_2 = "orm_2_2.xsd";
 
     /**
      * Constructor; supply configuration.
@@ -575,17 +577,25 @@ public class XMLPersistenceMetaDataParser
         boolean useExtendedSchema = true;
         // if the version and/or schema location is for 1.0, use the 1.0
         // schema
-        if (_ormVersion != null &&
-            _ormVersion.equals(XMLVersionParser.VERSION_1_0) ||
-            (_schemaLocation != null &&
-            _schemaLocation.indexOf(ORM_XSD_1_0) != -1)) {
+        if (XMLVersionParser.VERSION_1_0.equals(_ormVersion)
+                || (_schemaLocation != null && _schemaLocation.indexOf(ORM_XSD_1_0) > -1)) {
             ormxsd = "orm-xsd.rsrc";
             useExtendedSchema = false;
+        } else if (XMLVersionParser.VERSION_2_0.equals(_ormVersion)
+                || (_schemaLocation != null && _schemaLocation.indexOf(ORM_XSD_2_0) > -1)) {
+            ormxsd = "orm_2_0-xsd.rsrc";
+        } else if (XMLVersionParser.VERSION_2_1.equals(_ormVersion)
+                || (_schemaLocation != null && _schemaLocation.indexOf(ORM_XSD_2_1) > -1)) {
+            ormxsd = "orm_2_1.xsd.rsrc";
+            useExtendedSchema = false;
+        } else if (XMLVersionParser.VERSION_2_2.equals(_ormVersion)
+                || (_schemaLocation != null && _schemaLocation.indexOf(ORM_XSD_2_2) > -1)) {
+            ormxsd = "orm_2_2.xsd.rsrc";
+            useExtendedSchema = false;
         }
-        InputStream ormxsdIS = XMLPersistenceMetaDataParser.class.getResourceAsStream(ormxsd);
 
-        ArrayList<InputStream> schema = new ArrayList<>();
-        schema.add(ormxsdIS);
+        List<InputStream> schema = new ArrayList<>();
+        schema.add(XMLPersistenceMetaDataParser.class.getResourceAsStream(ormxsd));
 
         if (useExtendedSchema) {
             // Get the extendable schema

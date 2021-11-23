@@ -89,8 +89,8 @@ public class XMLPersistenceMetaDataSerializer
 
     private final OpenJPAConfiguration _conf;
     private Map<String, ClassMetaData> _metas = null;
-    private Map<String, List> _queries = null;
-    private Map<String, List> _seqs = null;
+    private Map<String, List<QueryMetaData>> _queries = null;
+    private Map<String, List<SequenceMetaData>> _seqs = null;
     private int _mode = MODE_NONE;
     private boolean _annos = true;
     private SerializationComparator _comp = null;
@@ -230,7 +230,7 @@ public class XMLPersistenceMetaDataSerializer
         if (meta == null)
             return;
 
-        List seqs = null;
+        List<SequenceMetaData> seqs = null;
         String defName = null;
         if (meta.getSourceScope() instanceof Class)
             defName = ((Class) meta.getSourceScope()).getName();
@@ -240,7 +240,7 @@ public class XMLPersistenceMetaDataSerializer
             seqs = _seqs.get(defName);
 
         if (seqs == null) {
-            seqs = new ArrayList(3); // don't expect many seqs / class
+            seqs = new ArrayList<>(3); // don't expect many seqs / class
             seqs.add(meta);
             _seqs.put(defName, seqs);
         } else if (!seqs.contains(meta))
@@ -255,7 +255,7 @@ public class XMLPersistenceMetaDataSerializer
         if (meta == null)
             return;
 
-        List queries = null;
+        List<QueryMetaData> queries = null;
         String defName = null;
         if (meta.getSourceScope() instanceof Class)
             defName = ((Class) meta.getSourceScope()).getName();
@@ -310,7 +310,7 @@ public class XMLPersistenceMetaDataSerializer
         String defName = null;
         if (meta.getSourceScope() instanceof Class)
             defName = ((Class) meta.getSourceScope()).getName();
-        List seqs = _seqs.get(defName);
+        List<SequenceMetaData> seqs = _seqs.get(defName);
         if (seqs == null)
             return false;
         if (!seqs.remove(meta))
@@ -331,7 +331,7 @@ public class XMLPersistenceMetaDataSerializer
         String defName = null;
         if (meta.getSourceScope() instanceof Class)
             defName = ((Class) meta.getSourceScope()).getName();
-        List queries = _queries.get(defName);
+        List<QueryMetaData> queries = _queries.get(defName);
         if (queries == null)
             return false;
         if (!queries.remove(meta))
@@ -723,7 +723,7 @@ public class XMLPersistenceMetaDataSerializer
             serializeInheritanceContent(meta);
 
         if (isMappingMode()) {
-            List seqs = (_seqs == null) ? null : _seqs.get
+            List<SequenceMetaData> seqs = (_seqs == null) ? null : _seqs.get
                 (meta.getDescribedType().getName());
             if (seqs != null) {
                 serializationSort(seqs);
@@ -746,7 +746,7 @@ public class XMLPersistenceMetaDataSerializer
                 serializeQueryMappings(meta);
         }
 
-        List<FieldMetaData> fields = new ArrayList(Arrays.asList
+        List<FieldMetaData> fields = new ArrayList<>(Arrays.asList
             (meta.getDefinedFieldsInListingOrder()));
         Collections.sort(fields, new FieldComparator());
 
@@ -846,7 +846,7 @@ public class XMLPersistenceMetaDataSerializer
             return;
 
         ClassMetaData sup = meta.getPCSuperclassMetaData();
-        Class oid = meta.getObjectIdType();
+        Class<?> oid = meta.getObjectIdType();
         if (oid != null && (sup == null || oid != sup.getObjectIdType())) {
             addAttribute("class", getClassName(oid.getName()));
             startElement("id-class");
