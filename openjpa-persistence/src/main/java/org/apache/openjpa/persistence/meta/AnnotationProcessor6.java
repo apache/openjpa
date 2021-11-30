@@ -317,21 +317,27 @@ public class AnnotationProcessor6 extends AbstractProcessor {
         SourceCode.Class cls = source.getTopLevelClass();
         cls.addAnnotation(StaticMetamodel.class.getName())
             .addArgument("value", originalClass + ".class", false);
-        if ("false".equals(this.addGeneratedOption)) {
-            return;
-        }
 
-        if ("force".equals(this.addGeneratedOption)) {
-            cls.addAnnotation(javax.annotation.Generated.class.getName())
-                    .addArgument("value", this.getClass().getName())
-                    .addArgument("date", this.generationDate.toString());
-        }
+        switch (this.addGeneratedOption) {
+            case "false":
+                return;
 
-        // only add the annotation if it is on the classpath for Java 6+.
-        if (generatedAnnotation != null && generatedSourceVersion >= 6) {
-            cls.addAnnotation(generatedAnnotation.getName())
-                    .addArgument("value", this.getClass().getName())
-                    .addArgument("date", this.generationDate.toString());
+            case "force":
+                cls.addAnnotation(javax.annotation.Generated.class.getName())
+                        .addArgument("value", this.getClass().getName())
+                        .addArgument("date", this.generationDate.toString());
+                break;
+
+            case "auto":
+                // fall through
+            default:
+                // only add the annotation if it is on the classpath for Java 6+.
+                if (generatedAnnotation != null && generatedSourceVersion >= 6) {
+                    cls.addAnnotation(generatedAnnotation.getName())
+                            .addArgument("value", this.getClass().getName())
+                            .addArgument("date", this.generationDate.toString());
+                }
+                break;
         }
     }
 
@@ -398,6 +404,11 @@ public class AnnotationProcessor6 extends AbstractProcessor {
 
     private void setAddGeneratedAnnotation() {
         this.addGeneratedOption = getOptionValue("openjpa.addGeneratedAnnotation");
+
+        if (this.addGeneratedOption == null) {
+            this.addGeneratedOption = "auto";
+        }
+
         // only add the annotation if it is on the classpath for Java 6+.
         try {
             this.generatedAnnotation = Class.forName("javax.annotation.Generated", false, null);
