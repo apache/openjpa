@@ -60,5 +60,10 @@
             <version>4.2.0</version>
             <scope>provided</scope>
         </dependency>
+        <!-- annotation javax.annotation.Generated -->
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+        </dependency>
     </dependencies>
 </project>

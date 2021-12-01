@@ -99,7 +99,8 @@ import org.apache.openjpa.persistence.util.SourceCode;
                     "openjpa.source",
                     "openjpa.naming",
                     "openjpa.header",
-                    "openjpa.metamodel"
+                    "openjpa.metamodel",
+                    "openjpa.addGeneratedAnnotation"
                   })
 
 public class AnnotationProcessor6 extends AbstractProcessor {
@@ -111,6 +112,9 @@ public class AnnotationProcessor6 extends AbstractProcessor {
     private boolean active;
     private static Localizer _loc =  Localizer.forPackage(AnnotationProcessor6.class);
     private SourceVersion supportedSourceVersion;
+    private String addGeneratedOption;
+    private Class<?> generatedAnnotation;
+    private Date generationDate;
 
     /**
      * Category of members as per JPA 2.0 type system.
@@ -213,6 +217,8 @@ public class AnnotationProcessor6 extends AbstractProcessor {
         setNamingPolicy();
         setHeader();
         handler = new SourceAnnotationHandler(processingEnv, logger);
+        setAddGeneratedAnnotation();
+        this.generationDate = new Date();
     }
 
     /**
@@ -311,10 +317,27 @@ public class AnnotationProcessor6 extends AbstractProcessor {
         SourceCode.Class cls = source.getTopLevelClass();
         cls.addAnnotation(StaticMetamodel.class.getName())
             .addArgument("value", originalClass + ".class", false);
-        if (generatedSourceVersion >= 6) {
-            cls.addAnnotation(Generated.class.getName())
-            .addArgument("value", this.getClass().getName())
-            .addArgument("date", new Date().toString());
+
+        switch (this.addGeneratedOption) {
+            case "false":
+                return;
+
+            case "force":
+                cls.addAnnotation(javax.annotation.Generated.class.getName())
+                        .addArgument("value", this.getClass().getName())
+                        .addArgument("date", this.generationDate.toString());
+                break;
+
+            case "auto":
+                // fall through
+            default:
+                // only add the annotation if it is on the classpath for Java 6+.
+                if (generatedAnnotation != null && generatedSourceVersion >= 6) {
+                    cls.addAnnotation(generatedAnnotation.getName())
+                            .addArgument("value", this.getClass().getName())
+                            .addArgument("date", this.generationDate.toString());
+                }
+                break;
         }
     }
 
@@ -376,6 +399,21 @@ public class AnnotationProcessor6 extends AbstractProcessor {
             } catch (Throwable t) {
 
             }
+        }
+    }
+
+    private void setAddGeneratedAnnotation() {
+        this.addGeneratedOption = getOptionValue("openjpa.addGeneratedAnnotation");
+
+        if (this.addGeneratedOption == null) {
+            this.addGeneratedOption = "auto";
+        }
+
+        // only add the annotation if it is on the classpath for Java 6+.
+        try {
+            this.generatedAnnotation = Class.forName("javax.annotation.Generated", false, null);
+        } catch (ClassNotFoundException generatedNotFoundEx) {
+            logger.trace(_loc.get("mmg-annotation-not-found"));
         }
     }
 
