@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.jdbc.auto;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.H2Dictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
 import org.apache.openjpa.jdbc.sql.SybaseDictionary;
@@ -35,7 +36,8 @@ public class TestAutoIncrement extends SingleEMTestCase {
             disabled = true;
             return;
         }
-        if (dic instanceof SQLServerDictionary || dic instanceof OracleDictionary || dic instanceof SybaseDictionary) {
+        if (dic instanceof SQLServerDictionary || dic instanceof OracleDictionary || dic instanceof SybaseDictionary
+                || (dic instanceof H2Dictionary && dic.getMajorVersion() > 1)) {
             disabled = true;
             return;
         }

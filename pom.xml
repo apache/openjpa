@@ -447,7 +447,34 @@
                 </property>
             </activation>
             <properties>
-                <h2.version>1.4.196</h2.version>
+                <h2.version>1.4.200</h2.version>
+                <connection.driver.name>org.h2.Driver</connection.driver.name>
+                <connection.url>jdbc:h2:./target/database/openjpa-h2-database</connection.url>
+                <connection.username />
+                <connection.password />
+                <!-- TCK specific properties -->
+                <tck.db.name>h2mem</tck.db.name>
+            </properties>
+
+            <dependencies>
+                <dependency>
+                    <groupId>com.h2database</groupId>
+                    <artifactId>h2</artifactId>
+                    <version>${h2.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <!-- profile for testing with an embedded h2 2.x DB -->
+        <profile>
+            <id>test-h2-2</id>
+            <activation>
+                <property>
+                    <name>test-h2-2</name>
+                </property>
+            </activation>
+            <properties>
+                <h2.version>2.0.202</h2.version>
                 <connection.driver.name>org.h2.Driver</connection.driver.name>
                 <connection.url>jdbc:h2:./target/database/openjpa-h2-database</connection.url>
                 <connection.username />

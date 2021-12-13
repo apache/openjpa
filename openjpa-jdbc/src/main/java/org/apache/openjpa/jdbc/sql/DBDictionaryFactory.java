@@ -275,10 +275,9 @@ public class DBDictionaryFactory {
         }
         // test h2 in a special way, because there's a decent chance the string
         // h2 could appear in the URL of another database
-        if (prod.indexOf("jdbc:h2:") != -1)
+        if (prod.indexOf("jdbc:h2:") != -1 || prod.indexOf("h2 database") != -1) {
             return dbdictionaryPlugin.unalias("h2");
-        if (prod.indexOf("h2 database") != -1)
-            return dbdictionaryPlugin.unalias("h2");
+        }
         // test db2 last, because there's a decent chance this string could
         // appear in the URL of another database (like if the db is named
         // "testdb2" or something)

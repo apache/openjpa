@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
@@ -47,6 +48,109 @@ import org.apache.openjpa.util.StoreException;
  * @since 0.9.7
  */
 public class H2Dictionary extends DBDictionary {
+    private final static List<String> V2_KEYWORDS = Arrays.asList(
+            "ALL",
+            "AND",
+            "ANY",
+            "ARRAY",
+            "AS",
+            "ASYMMETRIC",
+            "AUTHORIZATION",
+            "BETWEEN",
+            "BOTH",
+            "CASE",
+            "CAST",
+            "CHECK",
+            "CONSTRAINT",
+            "CROSS",
+            "CURRENT_CATALOG",
+            "CURRENT_DATE",
+            "CURRENT_PATH",
+            "CURRENT_ROLE",
+            "CURRENT_SCHEMA",
+            "CURRENT_TIME",
+            "CURRENT_TIMESTAMP",
+            "CURRENT_USER",
+            "DAY",
+            "DEFAULT",
+            "DISTINCT",
+            "ELSE",
+            "END",
+            "EXCEPT",
+            "EXISTS",
+            "FALSE",
+            "FETCH",
+            "FILTER",
+            "FOR",
+            "FOREIGN",
+            "FROM",
+            "FULL",
+            "GROUP",
+            "GROUPS",
+            "HAVING",
+            "HOUR",
+            "IF",
+            "ILIKE",
+            "IN",
+            "INNER",
+            "INTERSECT",
+            "INTERSECTS",
+            "INTERVAL",
+            "IS",
+            "JOIN",
+            "KEY",
+            "LEADING",
+            "LEFT",
+            "LIKE",
+            "LIMIT",
+            "LOCALTIME",
+            "LOCALTIMESTAMP",
+            "MINUS",
+            "MINUTE",
+            "MONTH",
+            "NATURAL",
+            "NOT",
+            "NULL",
+            "OFFSET",
+            "ON",
+            "OR",
+            "ORDER",
+            "OVER",
+            "PARTITION",
+            "PRIMARY",
+            "QUALIFY",
+            "RANGE",
+            "REGEXP",
+            "RIGHT",
+            "ROW",
+            "ROWNUM",
+            "ROWS",
+            "SECOND",
+            "SELECT",
+            "SESSION_USER",
+            "SET",
+            "SOME",
+            "SYMMETRIC",
+            "SYSTEM_USER",
+            "TABLE",
+            "TO",
+            "TOP",
+            "TRAILING",
+            "TRUE",
+            "UESCAPE",
+            "UNION",
+            "UNIQUE",
+            "UNKNOWN",
+            "USER",
+            "USING",
+            "VALUE",
+            "VALUES",
+            "WHEN",
+            "WHERE",
+            "WINDOW",
+            "WITH",
+            "YEAR",
+            "_ROWID_");
 
     public H2Dictionary() {
         platform = "H2";
@@ -136,6 +240,23 @@ public class H2Dictionary extends DBDictionary {
     }
 
     @Override
+    public void connectedConfiguration(Connection conn) throws SQLException {
+        super.connectedConfiguration(conn);
+        if (versionLaterThan(1)) {
+            supportsGetGeneratedKeys = true;
+            supportsNullTableForGetPrimaryKeys = false;
+            supportsNullTableForGetIndexInfo = false;
+            autoAssignClause = "GENERATED ALWAYS AS IDENTITY";
+            bitTypeName = "BOOLEAN";
+            booleanRepresentation = BooleanRepresentationFactory.BOOLEAN;
+            reservedWordSet.clear();
+            reservedWordSet.addAll(V2_KEYWORDS);
+            invalidColumnWordSet.clear();
+            invalidColumnWordSet.addAll(V2_KEYWORDS);
+        }
+    }
+
+    @Override
     public int getJDBCType(int metaTypeCode, boolean lob) {
         int type = super.getJDBCType(metaTypeCode, lob);
         switch (type) {
@@ -207,10 +328,14 @@ public class H2Dictionary extends DBDictionary {
 
     @Override
     protected String getPrimaryKeyConstraintSQL(PrimaryKey pk) {
-        Column[] cols = pk.getColumns();
-        if (cols.length == 1 && cols[0].isAutoAssigned())
-            return null;
-        return super.getPrimaryKeyConstraintSQL(pk);
+        if (versionLaterThan(1)) {
+            return super.getPrimaryKeyConstraintSQL(pk);
+        } else {
+            Column[] cols = pk.getColumns();
+            if (cols.length == 1 && cols[0].isAutoAssigned())
+                return null;
+            return super.getPrimaryKeyConstraintSQL(pk);
+        }
     }
 
     @Override
