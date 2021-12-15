@@ -23,6 +23,7 @@ import javax.persistence.Query;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.H2Dictionary;
 import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
@@ -39,7 +40,7 @@ public class TestLiteralInSQL extends SQLListenerTestCase {
         em = emf.createEntityManager();
         DBDictionary dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
         //Disable on Postgres for now....
-        if (dict instanceof PostgresDictionary){
+        if (dict instanceof PostgresDictionary || (dict instanceof H2Dictionary && dict.getMajorVersion() > 1)) {
             setTestsDisabled(true);
             return;
         }

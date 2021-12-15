@@ -50,7 +50,7 @@ public class EntityWithCompositeId {
 	}
 
 
-	@Column(name="VALUE")
+	@Column(name="OJVALUE")
 	public String getValue ()
 	{
 		return value;

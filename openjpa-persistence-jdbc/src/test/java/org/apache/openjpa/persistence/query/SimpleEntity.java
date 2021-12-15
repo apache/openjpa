@@ -52,7 +52,7 @@ import javax.persistence.Table;
 
 @NamedNativeQueries( {
     @NamedNativeQuery(name = "findSimpleEntitites",
-        query = "SELECT ID, NAME, VALUE FROM SIMPLE_ENTITY",
+        query = "SELECT ID, NAME, OJVALUE FROM SIMPLE_ENTITY",
         resultSetMapping = "simpleEntitiesResult") })
 
 @SqlResultSetMapping(name = "simpleEntitiesResult",
@@ -60,7 +60,7 @@ import javax.persistence.Table;
     entityClass = org.apache.openjpa.persistence.query.SimpleEntity.class,
     fields = {@FieldResult(name = "id", column = "ID"),
         @FieldResult(name = "name", column = "NAME"),
-        @FieldResult(name = "value", column = "VALUE") }))
+        @FieldResult(name = "value", column = "OJVALUE") }))
 @Entity(name = "simple")
 @Table(name = "SIMPLE_ENTITY")
 public class SimpleEntity implements Serializable {
@@ -79,7 +79,7 @@ public class SimpleEntity implements Serializable {
     private String name;
 
     @Basic
-    @Column(name = "VALUE")
+    @Column(name = "OJVALUE")
     private String value;
 
     public SimpleEntity() {
