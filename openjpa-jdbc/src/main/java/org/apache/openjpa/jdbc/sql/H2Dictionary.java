@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -248,7 +249,12 @@ public class H2Dictionary extends DBDictionary {
             supportsNullTableForGetIndexInfo = false;
             autoAssignClause = "GENERATED ALWAYS AS IDENTITY";
             bitTypeName = "BOOLEAN";
+            timeTypeName = "TIME(9)";
+            timestampTypeName = "TIMESTAMP(9)";
+            timeWithZoneTypeName = "TIME(9) WITH TIME ZONE";
+            timestampWithZoneTypeName = "TIMESTAMP(9) WITH TIME ZONE";
             booleanRepresentation = BooleanRepresentationFactory.BOOLEAN;
+            booleanTypeName = "BOOLEAN";
             reservedWordSet.clear();
             reservedWordSet.addAll(V2_KEYWORDS);
             invalidColumnWordSet.clear();
@@ -423,6 +429,13 @@ public class H2Dictionary extends DBDictionary {
     @Override
     public void setOffsetDateTime(PreparedStatement stmnt, int idx, OffsetDateTime val, Column col) throws SQLException {
         stmnt.setObject(idx, val);
+    }
+
+    @Override
+    public int getInt(ResultSet rs, int column) throws SQLException {
+        //rs.getInt perform rounding `25.5 -> 26`
+        final BigDecimal decRes = rs.getBigDecimal(column);
+        return decRes == null ? 0 : decRes.intValue();
     }
 
     /**
