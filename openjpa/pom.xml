@@ -109,6 +109,12 @@
                             <createSourcesJar>${createSources}</createSourcesJar>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                                <!-- Need to add some MANIFEST.MF metadata -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <Automatic-Module-Name>org.apache.openjpa.jakarta</Automatic-Module-Name>
+                                    </manifestEntries>
+                                </transformer>
                             </transformers>
                             <artifactSet>
                                 <includes>
@@ -223,6 +229,7 @@
                         <Specification-Title>JSR-338 Java Persistence</Specification-Title>
                         <Specification-Vendor>ORACLE, Inc.</Specification-Vendor>
                         <Specification-Version>2.2</Specification-Version>
+                        <Automatic-Module-Name>org.apache.openjpa</Automatic-Module-Name>
                         <!-- OSGi Bundle Metadata -->
                         <Bundle-DocURL>${project.url}</Bundle-DocURL>
                         <Bundle-Activator>org.apache.openjpa.persistence.osgi.PersistenceActivator</Bundle-Activator>

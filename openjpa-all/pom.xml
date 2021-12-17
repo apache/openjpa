@@ -110,6 +110,7 @@
                                         <Specification-Title>JSR-338 Java Persistence</Specification-Title>
                                         <Specification-Vendor>ORACLE, Inc.</Specification-Vendor>
                                         <Specification-Version>2.2</Specification-Version>
+                                        <Automatic-Module-Name>org.apache.openjpa.all</Automatic-Module-Name>
                                     </manifestEntries>
                                 </transformer>
                             </transformers>
