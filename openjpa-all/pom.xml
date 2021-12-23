@@ -35,9 +35,6 @@
     <packaging>jar</packaging>
     <name>OpenJPA Aggregate Jar with Dependencies</name>
 
-    <properties>
-        <automatic-module-name>org.apache.openjpa.all</automatic-module-name>
-    </properties>
     <build>
         <plugins>
             <!-- disable creating javadoc for this module -->
@@ -110,7 +107,6 @@
                                         <Specification-Title>JSR-338 Java Persistence</Specification-Title>
                                         <Specification-Vendor>ORACLE, Inc.</Specification-Vendor>
                                         <Specification-Version>2.2</Specification-Version>
-                                        <Automatic-Module-Name>org.apache.openjpa.all</Automatic-Module-Name>
                                     </manifestEntries>
                                 </transformer>
                             </transformers>
