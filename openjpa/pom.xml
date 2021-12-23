@@ -112,7 +112,7 @@
                                 <!-- Need to add some MANIFEST.MF metadata -->
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
-                                        <Automatic-Module-Name>org.apache.openjpa.jakarta</Automatic-Module-Name>
+                                        <Automatic-Module-Name>org.apache.openjpa</Automatic-Module-Name>
                                     </manifestEntries>
                                 </transformer>
                             </transformers>
