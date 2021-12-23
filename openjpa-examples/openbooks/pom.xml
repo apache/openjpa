@@ -41,7 +41,6 @@
 
     <properties>
         <checkstyle.suppressions.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}suppressions.xml</checkstyle.suppressions.location>
-        <automatic-module-name>org.apache.openjpa.examples.openbooks</automatic-module-name>
     </properties>
     <dependencies>
         <dependency>

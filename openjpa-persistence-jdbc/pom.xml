@@ -35,9 +35,6 @@
     <name>OpenJPA Persistence JDBC</name>
     <description>OpenJPA Persistence JDBC</description>
 
-    <properties>
-        <automatic-module-name>org.apache.openjpa.persistence.jdbc</automatic-module-name>
-    </properties>
     <profiles>
         <!-- Profile for testing with test-dynamic-enhancer -->
         <profile>

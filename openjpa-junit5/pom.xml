@@ -32,10 +32,6 @@
     <name>OpenJPA JUnit 5</name>
     <description>OpenJPA JUnit 5</description>
 
-    <properties>
-        <automatic-module-name>org.apache.openjpa.junit5</automatic-module-name>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>

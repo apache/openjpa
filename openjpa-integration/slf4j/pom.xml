@@ -38,7 +38,6 @@
     <properties>
         <!-- use SLF4JLogFactory for logging -->
         <openjpa.Log>slf4j</openjpa.Log>
-        <automatic-module-name>org.apache.openjpa.integration.slf4j</automatic-module-name>
     </properties>
 
     <dependencies>
