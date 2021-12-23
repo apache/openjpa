@@ -42,7 +42,6 @@
     <test.jvm.maxheapsize>1024m</test.jvm.maxheapsize>
     <test.jvm.arguments>-Xmx${test.jvm.maxheapsize}</test.jvm.arguments>
     <surefire.jvm.args>${test.jvm.arguments}</surefire.jvm.args>
-    <automatic-module-name>org.apache.openjpa.examples.gallery</automatic-module-name>
     <checkstyle.suppressions.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}suppressions.xml</checkstyle.suppressions.location>
   </properties>
 

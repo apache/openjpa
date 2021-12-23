@@ -103,7 +103,6 @@
         <ant.version>1.10.9</ant.version>
 
         <jmock.version>2.9.0</jmock.version>
-        <automatic-module-name>-SUBMODULES-NEED-TO-OVERRIDE-THIS-</automatic-module-name>
         <dbcp2.version>2.8.0</dbcp2.version>
 	<pool2.version>2.9.0</pool2.version>
     </properties>
@@ -2160,7 +2159,6 @@
                                     <manifestEntries>
                                         <Implementation-Build>${buildNumber}</Implementation-Build>
                                         <Implementation-Date>${timestamp}</Implementation-Date>
-                                        <Automatic-Module-Name>${automatic-module-name}</Automatic-Module-Name>
                                     </manifestEntries>
                                 </archive>
                             </configuration>
