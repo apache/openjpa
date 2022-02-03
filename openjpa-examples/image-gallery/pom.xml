@@ -27,7 +27,7 @@
   <parent>
       <groupId>org.apache.openjpa</groupId>
       <artifactId>openjpa-examples</artifactId>
-      <version>3.2.1</version>
+      <version>3.2.2-SNAPSHOT</version>
   </parent>
 
   <groupId>org.apache.openjpa.openjpa-examples</groupId>
