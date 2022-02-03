@@ -17,7 +17,7 @@
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-tools</artifactId>
-        <version>3.2.1-SNAPSHOT</version>
+        <version>3.2.1</version>
     </parent>
 
     <artifactId>openjpa-fetch-statistics-was</artifactId>
