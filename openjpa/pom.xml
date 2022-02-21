@@ -129,48 +129,19 @@
                             </artifactSet>
                             <relocations>
                                 <relocation>
-                                    <pattern>javax.annotation.security</pattern>
-                                    <shadedPattern>jakarta.annotation.security</shadedPattern>
+                                    <pattern>javax.annotation</pattern>
+                                    <shadedPattern>jakarta.annotation</shadedPattern>
+                                    <excludes>
+                                        <exclude>javax.annotation.process.**</exclude>
+                                    </excludes>
                                 </relocation>
                                 <relocation>
-                                    <pattern>javax.annotation.Generated</pattern>
-                                    <shadedPattern>jakarta.annotation.Generated</shadedPattern>
+                                    <pattern>javax.jms</pattern>
+                                    <shadedPattern>jakarta.jms</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>javax.annotation.PostConstruct</pattern>
-                                    <shadedPattern>jakarta.annotation.PostConstruct</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>javax.annotation.PreDestroy</pattern>
-                                    <shadedPattern>jakarta.annotation.PreDestroy</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>javax.annotation.Resource</pattern>
-                                    <shadedPattern>jakarta.annotation.Resource</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>javax.annotation.Resources</pattern>
-                                    <shadedPattern>jakarta.annotation.Resources</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>javax.el</pattern>
-                                    <shadedPattern>jakarta.el</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>javax.enterprise</pattern>
-                                    <shadedPattern>jakarta.enterprise</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>javax.decorator</pattern>
-                                    <shadedPattern>jakarta.decorator</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>javax.inject</pattern>
-                                    <shadedPattern>jakarta.inject</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>javax.interceptor</pattern>
-                                    <shadedPattern>jakarta.interceptor</shadedPattern>
+                                    <pattern>javax.persistence</pattern>
+                                    <shadedPattern>jakarta.persistence</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>javax.servlet</pattern>
@@ -179,34 +150,18 @@
                                 <relocation>
                                     <pattern>javax.transaction</pattern>
                                     <shadedPattern>jakarta.transaction</shadedPattern>
+                                    <excludes>
+                                        <exclude>javax.transaction.xa.**</exclude>
+                                    </excludes>
                                 </relocation>
                                 <relocation>
                                     <pattern>javax.validation</pattern>
                                     <shadedPattern>jakarta.validation</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>javax.persistence</pattern>
-                                    <shadedPattern>jakarta.persistence</shadedPattern>
+                                    <pattern>javax.xml.bind</pattern>
+                                    <shadedPattern>jakarta.xml.bind</shadedPattern>
                                 </relocation>
-                                <relocation>
-                                    <pattern>javax.faces</pattern>
-                                    <shadedPattern>jakarta.faces</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>javax.ejb</pattern>
-                                    <shadedPattern>jakarta.ejb</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>javax.jms</pattern>
-                                    <shadedPattern>jakarta.jms</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>javax.transaction</pattern>
-                                    <shadedPattern>jakarta.transaction</shadedPattern>
-                                </relocation>
-                                <!--
-                                todo: javax.transaction, it is in the JVM so can have issue repackaging
-                                -->
                             </relocations>
                         </configuration>
                     </execution>
