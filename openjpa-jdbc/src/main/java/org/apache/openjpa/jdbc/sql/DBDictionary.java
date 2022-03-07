@@ -1723,6 +1723,12 @@ public class DBDictionary
         else if (val instanceof LocalDateTime) {
             setLocalDateTime(stmnt, idx, (LocalDateTime) val, col);
         }
+        else if (val instanceof OffsetTime) {
+            setOffsetTime(stmnt, idx, (OffsetTime) val, col);
+        }
+        else if (val instanceof OffsetDateTime) {
+            setOffsetDateTime(stmnt, idx, (OffsetDateTime) val, col);
+        }
         else if (val instanceof Reader)
             setCharacterStream(stmnt, idx, (Reader) val,
                 (sized == null) ? 0 : sized.size, col);
