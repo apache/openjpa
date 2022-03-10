@@ -375,7 +375,7 @@ public class Filters {
                     } else if (o instanceof java.util.Date) {
                         return ((java.util.Date)o).toInstant().atZone(ZoneId.systemDefault()).toOffsetDateTime();
                     } else if (o instanceof CharSequence) {
-                        return LocalTime.parse((CharSequence) o);
+                        return OffsetDateTime.parse((CharSequence) o);
                     }
                 }
 
