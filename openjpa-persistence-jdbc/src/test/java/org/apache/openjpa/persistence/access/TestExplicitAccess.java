@@ -34,7 +34,7 @@ import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
-// -ea -Dopenjpa.ConnectionDriverName=com.mysql.jdbc.Driver -Dopenjpa.ConnectionPassword=openjpatst
+// -ea -Dopenjpa.ConnectionDriverName=com.mysql.cj.jdbc.Driver -Dopenjpa.ConnectionPassword=openjpatst
 // -Dopenjpa.ConnectionURL=jdbc:mysql://localhost:3306/openjpatst -Dopenjpa.ConnectionUserName=openjpatst
 public class TestExplicitAccess extends SingleEMFTestCase {
 

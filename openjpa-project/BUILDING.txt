@@ -198,7 +198,7 @@ To run the tests in the debugger simply add the following JVM properties
  -ea -Dopenjpa.ConnectionURL=jdbc:derby:target/database/openjpa-derby-database;create=true -Dopenjpa.ConnectionDriverName=org.apache.derby.jdbc.EmbeddedDriver
 
 For running against a MySQL Docker installation:
- -ea -Dopenjpa.ConnectionDriverName=com.mysql.jdbc.Driver -Dopenjpa.ConnectionURL=jdbc:mysql://localhost:3306/openjpatst -Dopenjpa.ConnectionUserName=openjpatst -Dopenjpa.ConnectionPassword=openjpatst
+ -ea -Dopenjpa.ConnectionDriverName=com.mysql.cj.jdbc.Driver -Dopenjpa.ConnectionURL=jdbc:mysql://localhost:3306/openjpatst -Dopenjpa.ConnectionUserName=openjpatst -Dopenjpa.ConnectionPassword=openjpatst
 
 Running against a PostgreSQL Docker installation:
  -ea -Dopenjpa.ConnectionDriverName=org.postgresql.Driver -Dopenjpa.ConnectionURL=jdbc:postgresql://localhost:5432/openjpatst -Dopenjpa.ConnectionUserName=postgres -Dopenjpa.ConnectionPassword=postgres
