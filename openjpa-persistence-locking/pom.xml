@@ -142,14 +142,7 @@
                         <phase>process-test-classes</phase>
                         <configuration>
                             <target>
-                                <ant antfile="src/test/ant/enhancer.xml" target="enhance" inheritRefs="true">
-                                    <property name="maven.test.skip" value="${maven.test.skip}" />
-                                    <property name="test" value="${test}" />
-                                    <property name="outdir" value="${project.build.outputDirectory}" />
-                                    <property name="project.build.testOutputDirectory" value="${project.build.testOutputDirectory}" />
-                                    <property name="openjpa.Log" value="${openjpa.Log}" />
-                                    <property name="build.enhance" value="${build.enhance}" />
-                                </ant>
+
                             </target>
                         </configuration>
                         <goals>

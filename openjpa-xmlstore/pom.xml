@@ -100,7 +100,6 @@
                         <id>enhancer</id>
                         <phase>process-test-classes</phase>
                         <goals>
-                            <goal>test-enhance</goal>
                         </goals>
                     </execution>
                 </executions>
