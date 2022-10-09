@@ -19,6 +19,8 @@
 
 package org.apache.openjpa.persistence.criteria;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -27,6 +29,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.ParameterExpression;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.query.DomainObject;
@@ -645,6 +648,26 @@ public class TestCriteria extends SingleEMFTestCase {
         for (int i = 0; i < p.length; i += 2) {
             q.setParameter(p[i].toString(), p[i+1]);
         }
+    }
+
+    public void testInCriteriaWithCollection() {
+
+        OpenJPAEntityManager em = emf.createEntityManager();
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+
+        CriteriaQuery<Customer> criteria = builder.createQuery(Customer.class);
+        Root<Customer> root = criteria.from(Customer.class);
+        criteria.where(root.get("status").in(builder.parameter(Collection.class)));
+
+        TypedQuery<Customer> query = em.createQuery(criteria);
+        System.err.println(query);
+        for (ParameterExpression parameter : criteria.getParameters()) {
+            query.setParameter(parameter, Arrays.asList(1L, 2L));
+        }
+
+        assertEquals("SELECT * FROM Customer c WHERE c.status IN (:param)", criteria.toString());
+        query.getResultList();
+        assertEquals("SELECT * FROM Customer c WHERE c.status IN (:param)", criteria.toString());
     }
 }
 
