@@ -95,7 +95,7 @@ public class KubernetesTCPRemoteCommitProviderTest {
                 endMetadata().
                 withStatus(new PodStatusBuilder().withPodIP("1.1.1.1").withConditions(condition).build()).
                 build();
-        client.pods().inNamespace(NAMESPACE).create(pod1);
+        client.pods().inNamespace(NAMESPACE).resource(pod1).create();
 
         pod2 = new PodBuilder().
                 withNewMetadata().
@@ -104,7 +104,7 @@ public class KubernetesTCPRemoteCommitProviderTest {
                 endMetadata().
                 withStatus(new PodStatusBuilder().withPodIP("2.2.2.2").withConditions(condition).build()).
                 build();
-        client.pods().inNamespace(NAMESPACE).create(pod2);
+        client.pods().inNamespace(NAMESPACE).resource(pod2).create();
 
         pod3 = new PodBuilder().
                 withNewMetadata().
@@ -112,7 +112,7 @@ public class KubernetesTCPRemoteCommitProviderTest {
                 endMetadata().
                 withStatus(new PodStatusBuilder().withPodIP("3.3.3.3").withConditions(condition).build()).
                 build();
-        client.pods().inNamespace("ns2").create(pod3);
+        client.pods().inNamespace("ns2").resource(pod3).create();
 
         pod4 = new PodBuilder().
                 withNewMetadata().
@@ -121,7 +121,7 @@ public class KubernetesTCPRemoteCommitProviderTest {
                 endMetadata().
                 withStatus(new PodStatusBuilder().withPodIP("4.4.4.4").withConditions(condition).build()).
                 build();
-        client.pods().inNamespace(NAMESPACE).create(pod4);
+        client.pods().inNamespace(NAMESPACE).resource(pod4).create();
 
         PodList podList = client.pods().inNamespace(NAMESPACE).withLabel(LABEL).list();
         assertNotNull(podList);
@@ -162,13 +162,6 @@ public class KubernetesTCPRemoteCommitProviderTest {
 
         // expect to find remote addresses of matching pods
         List<String> addresses = getAddresses(rcp);
-        assertEquals(2, addresses.size());
-        assertTrue(addresses.contains(pod1.getStatus().getPodIP()));
-        assertTrue(addresses.contains(pod2.getStatus().getPodIP()));
-
-        Thread.sleep(500);
-
-        addresses = getAddresses(rcp);
         assertEquals(2, addresses.size());
         assertTrue(addresses.contains(pod1.getStatus().getPodIP()));
         assertTrue(addresses.contains(pod2.getStatus().getPodIP()));
