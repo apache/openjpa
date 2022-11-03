@@ -18,10 +18,10 @@
  */
 package org.apache.openjpa.event.kubernetes;
 
-import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 import io.fabric8.kubernetes.client.KubernetesClientException;
-import io.fabric8.kubernetes.client.internal.readiness.Readiness;
+import io.fabric8.kubernetes.client.readiness.Readiness;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +58,7 @@ public class KubernetesTCPRemoteCommitProvider extends DynamicTCPRemoteCommitPro
     }
 
     protected KubernetesClient kubernetesClient() throws KubernetesClientException {
-        return new DefaultKubernetesClient();
+        return new KubernetesClientBuilder().build();
     }
 
     @Override
