@@ -95,7 +95,7 @@
 
         <maven.javadoc.version>3.0.1</maven.javadoc.version>
         <javadoc.additionalparam />
-        <maven.surefire.version>3.0.0-M4</maven.surefire.version>
+        <maven.surefire.version>3.0.0-M7</maven.surefire.version>
 
         <xbean.version>4.20</xbean.version>
         <bval.version>1.1.2</bval.version>

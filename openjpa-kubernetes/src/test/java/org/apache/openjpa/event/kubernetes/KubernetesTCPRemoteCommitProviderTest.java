@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodBuilder;
+import io.fabric8.kubernetes.api.model.PodCondition;
 import io.fabric8.kubernetes.api.model.PodList;
 import io.fabric8.kubernetes.api.model.PodStatusBuilder;
 import io.fabric8.kubernetes.client.KubernetesClient;
@@ -33,9 +34,6 @@ import java.lang.reflect.Field;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.openjpa.event.TCPRemoteCommitProvider;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.log.SLF4JLogFactory;
@@ -50,6 +48,23 @@ public class KubernetesTCPRemoteCommitProviderTest {
     private static final String NAMESPACE = "ns1";
 
     private static final String LABEL = "testKey";
+
+    @SuppressWarnings("unchecked")
+    private static List<String> getAddresses(final KubernetesTCPRemoteCommitProvider rcp)
+            throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+
+        Field _addresses = TCPRemoteCommitProvider.class.getDeclaredField("_addresses");
+        _addresses.setAccessible(true);
+
+        List<String> result = new ArrayList<>();
+        for (Object address : ((Iterable<? extends Object>) _addresses.get(rcp))) {
+            Field _address = address.getClass().getDeclaredField("_address");
+            _address.setAccessible(true);
+
+            result.add(_address.get(address).toString().substring(1));
+        }
+        return result;
+    }
 
     @Rule
     public JUnitRuleMockery context = new JUnitRuleMockery();
@@ -69,12 +84,16 @@ public class KubernetesTCPRemoteCommitProviderTest {
     public void setupKubernetes() {
         KubernetesClient client = server.getClient();
 
+        PodCondition condition = new PodCondition();
+        condition.setType("Ready");
+        condition.setStatus("True");
+
         pod1 = new PodBuilder().
                 withNewMetadata().
                 withName("pod1").
                 addToLabels(LABEL, "value1").
                 endMetadata().
-                withStatus(new PodStatusBuilder().withPodIP("1.1.1.1").build()).
+                withStatus(new PodStatusBuilder().withPodIP("1.1.1.1").withConditions(condition).build()).
                 build();
         client.pods().inNamespace(NAMESPACE).create(pod1);
 
@@ -83,7 +102,7 @@ public class KubernetesTCPRemoteCommitProviderTest {
                 withName("pod2").
                 addToLabels(LABEL, "value2").
                 endMetadata().
-                withStatus(new PodStatusBuilder().withPodIP("2.2.2.2").build()).
+                withStatus(new PodStatusBuilder().withPodIP("2.2.2.2").withConditions(condition).build()).
                 build();
         client.pods().inNamespace(NAMESPACE).create(pod2);
 
@@ -91,7 +110,7 @@ public class KubernetesTCPRemoteCommitProviderTest {
                 withNewMetadata().
                 withName("pod3").
                 endMetadata().
-                withStatus(new PodStatusBuilder().withPodIP("3.3.3.3").build()).
+                withStatus(new PodStatusBuilder().withPodIP("3.3.3.3").withConditions(condition).build()).
                 build();
         client.pods().inNamespace("ns2").create(pod3);
 
@@ -100,29 +119,15 @@ public class KubernetesTCPRemoteCommitProviderTest {
                 withName("pod4").
                 addToLabels("other", "value1").
                 endMetadata().
-                withStatus(new PodStatusBuilder().withPodIP("4.4.4.4").build()).
+                withStatus(new PodStatusBuilder().withPodIP("4.4.4.4").withConditions(condition).build()).
                 build();
         client.pods().inNamespace(NAMESPACE).create(pod4);
 
         PodList podList = client.pods().inNamespace(NAMESPACE).withLabel(LABEL).list();
         assertNotNull(podList);
         assertEquals(2, podList.getItems().size());
-        assertTrue(podList.getItems().contains(pod1));
-        assertTrue(podList.getItems().contains(pod2));
-    }
-
-    @SuppressWarnings("unchecked")
-    private List<String> getAddresses(final KubernetesTCPRemoteCommitProvider rcp)
-            throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-
-        Field _addresses = TCPRemoteCommitProvider.class.getDeclaredField("_addresses");
-        _addresses.setAccessible(true);
-
-        return new ArrayList<>((List<Object>) _addresses.get(rcp)).stream().
-                map(ReflectionToStringBuilder::toString).
-                map(address -> StringUtils.substringAfter(address, "_address=/")).
-                map(address -> StringUtils.substringBefore(address, ",")).
-                collect(Collectors.toList());
+        assertTrue(podList.getItems().stream().anyMatch(pod -> "pod1".equals(pod.getMetadata().getName())));
+        assertTrue(podList.getItems().stream().anyMatch(pod -> "pod2".equals(pod.getMetadata().getName())));
     }
 
     @Test
