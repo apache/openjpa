@@ -136,16 +136,16 @@
    <persistence-unit name="mysql">
       <properties>
          <property name="openjpa.BrokerFactory" value="slice"/>
-         <property name="openjpa.ConnectionDriverName" value="com.mysql.jdbc.Driver"/>
+         <property name="openjpa.ConnectionDriverName" value="com.mysql.cj.jdbc.Driver"/>
 
          <property name="openjpa.slice.Names" value="One,Two"/>
          <property name="openjpa.slice.DistributionPolicy" value="org.apache.openjpa.slice.policy.UserDistributionPolicy"/>
 
          <property name="openjpa.ConnectionUserName"        value="root"/>
          <property name="openjpa.ConnectionPassword"        value=""/>
-         <property name="openjpa.slice.One.ConnectionDriverName" value="com.mysql.jdbc.Driver"/>
+         <property name="openjpa.slice.One.ConnectionDriverName" value="com.mysql.cj.jdbc.Driver"/>
          <property name="openjpa.slice.One.ConnectionURL" value="jdbc:mysql://localhost/slice1"/>
-         <property name="openjpa.slice.Two.ConnectionDriverName" value="com.mysql.jdbc.Driver"/>
+         <property name="openjpa.slice.Two.ConnectionDriverName" value="com.mysql.cj.jdbc.Driver"/>
          <property name="openjpa.slice.Two.ConnectionURL" value="jdbc:mysql://localhost/slice2"/>
 
          <property name="openjpa.Multithreaded" value="false"/>
@@ -236,7 +236,7 @@
    <persistence-unit name="car.mysql">
       <properties>
          <property name="openjpa.BrokerFactory" value="slice"/>
-         <property name="openjpa.ConnectionDriverName" value="com.mysql.jdbc.Driver"/>
+         <property name="openjpa.ConnectionDriverName" value="com.mysql.cj.jdbc.Driver"/>
 
          <property name="openjpa.slice.Names" value="BMW,Honda,Ford"/>
 
@@ -288,10 +288,10 @@
 
          <property name="openjpa.ConnectionUserName"        value="root"/>
          <property name="openjpa.ConnectionPassword"        value=""/>
-         <property name="openjpa.slice.S1.ConnectionProperties" value="DriverClassName=com.mysql.jdbc.Driver,Url=jdbc:mysql://localhost/S1,MaxTotal=4"/>
-         <property name="openjpa.slice.S2.ConnectionProperties" value="DriverClassName=com.mysql.jdbc.Driver,Url=jdbc:mysql://localhost/S2,MaxTotal=4"/>
-         <property name="openjpa.slice.S3.ConnectionProperties" value="DriverClassName=com.mysql.jdbc.Driver,Url=jdbc:mysql://localhost/S3,MaxTotal=4"/>
-         <property name="openjpa.slice.S4.ConnectionProperties" value="DriverClassName=com.mysql.jdbc.Driver,Url=jdbc:mysql://localhost/S4,MaxTotal=4"/>
+         <property name="openjpa.slice.S1.ConnectionProperties" value="DriverClassName=com.mysql.cj.jdbc.Driver,Url=jdbc:mysql://localhost/S1,MaxTotal=4"/>
+         <property name="openjpa.slice.S2.ConnectionProperties" value="DriverClassName=com.mysql.cj.jdbc.Driver,Url=jdbc:mysql://localhost/S2,MaxTotal=4"/>
+         <property name="openjpa.slice.S3.ConnectionProperties" value="DriverClassName=com.mysql.cj.jdbc.Driver,Url=jdbc:mysql://localhost/S3,MaxTotal=4"/>
+         <property name="openjpa.slice.S4.ConnectionProperties" value="DriverClassName=com.mysql.cj.jdbc.Driver,Url=jdbc:mysql://localhost/S4,MaxTotal=4"/>
 
          <property name="openjpa.jdbc.DBDictionary"        value="mysql"/>
          <property name="openjpa.Multithreaded" value="false"/>
@@ -311,7 +311,7 @@
 
          <property name="openjpa.ConnectionUserName"        value="root"/>
          <property name="openjpa.ConnectionPassword"        value=""/>
-         <property name="openjpa.ConnectionProperties" value="DriverClassName=com.mysql.jdbc.Driver,Url=jdbc:mysql://localhost/S,MaxTotal=4"/>
+         <property name="openjpa.ConnectionProperties" value="DriverClassName=com.mysql.cj.jdbc.Driver,Url=jdbc:mysql://localhost/S,MaxTotal=4"/>
 
          <property name="openjpa.jdbc.DBDictionary"        value="mysql"/>
          <property name="openjpa.Multithreaded" value="false"/>

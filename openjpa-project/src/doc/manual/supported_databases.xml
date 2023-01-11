@@ -155,13 +155,13 @@ users, but may not support every feature of this release, please refer to the
                         <link linkend="dbsupport_mysql">MySQL</link>
                     </entry>
                     <entry colname="dbversion">
-                        5.0.26, 5.1.6, 5.7
+                        5.0.26, 5.1.6, 5.7, 8.0.x
                     </entry>
                     <entry colname="drivname">
                         MySQL Driver
                     </entry>
                     <entry colname="drivversion">
-                        5.1.6, 5.1.47
+                        5.1.6, 5.1.47, 8.0.29
                     </entry>
                 </row>
                 <row>
@@ -1135,7 +1135,7 @@ Using the Sun JDBC-ODBC bridge to connect is not supported.
                 Example properties for MySQL
             </title>
 <programlisting>
-openjpa.ConnectionDriverName: com.mysql.jdbc.Driver
+openjpa.ConnectionDriverName: com.mysql.cj.jdbc.Driver
 openjpa.ConnectionURL: jdbc:mysql://SERVER_NAME/DB_NAME
 </programlisting>
         </example>

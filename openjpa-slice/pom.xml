@@ -82,14 +82,14 @@
             </activation>
             <dependencies>
                 <dependency>
-                    <groupId>mysql</groupId>
-                    <artifactId>mysql-connector-java</artifactId>
+                    <groupId>com.mysql</groupId>
+                    <artifactId>mysql-connector-j</artifactId>
                     <version>${mysql.connector.version}</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
             <properties>
-                <connection.driver.name>com.mysql.jdbc.Driver</connection.driver.name>
+                <connection.driver.name>com.mysql.cj.jdbc.Driver</connection.driver.name>
                 <connection.url>${openjpa.mysql.url}</connection.url>
                 <connection.username>${openjpa.mysql.username}</connection.username>
                 <connection.password>${openjpa.mysql.password}</connection.password>

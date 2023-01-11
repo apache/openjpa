@@ -365,7 +365,7 @@
        For example, the following configuration will use two different JDBC
        drivers for slice <classname>One</classname> and <classname>Two</classname>.
        <programlisting>
-        <![CDATA[<property name="openjpa.slice.One.ConnectionDriverName" value="com.mysql.jdbc.Driver"/>
+        <![CDATA[<property name="openjpa.slice.One.ConnectionDriverName" value="com.mysql.cj.jdbc.Driver"/>
         <property name="openjpa.slice.Two.ConnectionDriverName" value="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"/>]]>
        </programlisting>
       </para>
@@ -378,13 +378,13 @@
          <property name="openjpa.slice.Two.ConnectionURL"          value="jdbc:mysql:localhost//slice2"/>
          <property name="openjpa.slice.Three.ConnectionURL"        value="jdbc:oracle:localhost//slice3"/>
 
-         <property name="openjpa.ConnectionDriverName"     value="com.mysql.jdbc.Driver"/>
+         <property name="openjpa.ConnectionDriverName"     value="com.mysql.cj.jdbc.Driver"/>
          <property name="openjpa.slice.Three.ConnectionDriverName" value="oracle.jdbc.Driver"/>]]>
         </programlisting>
         In this example, <classname>Three</classname> will use slice-specific
         <classname>oracle.jdbc.Driver</classname> driver while slice
         <classname>One</classname> and <classname>Two</classname> will use
-        the driver <classname>com.mysql.jdbc.Driver</classname> as
+        the driver <classname>com.mysql.cj.jdbc.Driver</classname> as
         specified by <classname>openjpa.ConnectionDriverName</classname>
         property value.
     </para>

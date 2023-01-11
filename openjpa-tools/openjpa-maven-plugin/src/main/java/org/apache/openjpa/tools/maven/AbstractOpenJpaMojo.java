@@ -120,7 +120,7 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
      * Sample:
      * <pre>
      * &lt;connectionProperties&gt;
-     *   driverClass=com.mysql.jdbc.Driver,
+     *   driverClass=com.mysql.cj.jdbc.Driver,
      *   jdbcUrl=jdbc:mysql://localhost/mydatabase,
      *   user=root,
      *   password=,

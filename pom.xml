@@ -26,7 +26,7 @@
     <parent>
       <groupId>org.apache</groupId>
       <artifactId>apache</artifactId>
-      <version>23</version>
+      <version>29</version>
     </parent>
 
     <groupId>org.apache.openjpa</groupId>
@@ -79,7 +79,7 @@
         <!-- common JDBC driver versions -->
         <derby.version>10.14.2.0</derby.version>
         <hsqldb.version>2.5.1</hsqldb.version>
-        <mysql.connector.version>5.1.49</mysql.connector.version>
+        <mysql.connector.version>8.0.31</mysql.connector.version>
         <mariadb.connector.version>2.7.2</mariadb.connector.version>
         <postgresql.connector.version>42.5.1</postgresql.connector.version>
         <mssql.connector.version>11.2.1.jre8</mssql.connector.version>
@@ -600,14 +600,14 @@
             </activation>
             <dependencies>
                 <dependency>
-                    <groupId>mysql</groupId>
-                    <artifactId>mysql-connector-java</artifactId>
+                    <groupId>com.mysql</groupId>
+                    <artifactId>mysql-connector-j</artifactId>
                     <version>${mysql.connector.version}</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
             <properties>
-                <connection.driver.name>com.mysql.jdbc.Driver</connection.driver.name>
+                <connection.driver.name>com.mysql.cj.jdbc.Driver</connection.driver.name>
                 <!--<connection.url>jdbc:mysql://localhost/OPENJPA</connection.url>-->
                 <connection.url>${openjpa.mysql.url}</connection.url>
                 <connection.username>${openjpa.mysql.username}</connection.username>
@@ -629,19 +629,19 @@
             </activation>
             <dependencies>
                 <dependency>
-                    <groupId>mysql</groupId>
-                    <artifactId>mysql-connector-java</artifactId>
+                    <groupId>com.mysql</groupId>
+                    <artifactId>mysql-connector-j</artifactId>
                     <version>${mysql.connector.version}</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
             <properties>
-                <connection.driver.name>com.mysql.jdbc.Driver</connection.driver.name>
+                <connection.driver.name>com.mysql.cj.jdbc.Driver</connection.driver.name>
 
                 <!-- default settings for local docker -->
                 <docker.external.mysql.port>3306</docker.external.mysql.port>
                 <openjpa.mysql.dbname>openjpatst</openjpa.mysql.dbname>
-                <openjpa.mysql.url>jdbc:mysql://localhost:${docker.external.mysql.port}/${openjpa.mysql.dbname}?useSSL=false</openjpa.mysql.url>
+                <openjpa.mysql.url>jdbc:mysql://localhost:${docker.external.mysql.port}/${openjpa.mysql.dbname}?useSSL=false&amp;allowPublicKeyRetrieval=true</openjpa.mysql.url>
                 <openjpa.mysql.username>openjpatst</openjpa.mysql.username>
                 <openjpa.mysql.password>openjpatst</openjpa.mysql.password>
 
@@ -655,7 +655,7 @@
                 <dbcp.maxIdle>5</dbcp.maxIdle>
                 <dbcp.minIdle>0</dbcp.minIdle>
 
-                <mysql.server.version>5.7</mysql.server.version>
+                <mysql.server.version>8.0</mysql.server.version>
             </properties>
 
             <build>
@@ -1806,8 +1806,8 @@
                 <version>${derby.version}</version>
             </dependency>
             <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-java</artifactId>
+                <groupId>com.mysql</groupId>
+                <artifactId>mysql-connector-j</artifactId>
                 <version>${mysql.connector.version}</version>
             </dependency>
             <dependency>

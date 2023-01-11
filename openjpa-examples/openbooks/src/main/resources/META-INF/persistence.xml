@@ -36,7 +36,7 @@
 
         <properties>
         <!-- Use these for MySQL
-            <property name="javax.persistence.jdbc.driver"   value="com.mysql.jdbc.Driver"/>
+            <property name="javax.persistence.jdbc.driver"   value="com.mysql.cj.jdbc.Driver"/>
             <property name="javax.persistence.jdbc.url"      value="jdbc:mysql://localhost/OpenBooks"/>
             <property name="javax.persistence.jdbc.user"     value="user"/>
             <property name="javax.persistence.jdbc.password" value="password"/>

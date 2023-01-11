@@ -31,7 +31,7 @@
 
         <properties>
         <property name="openjpa.BrokerFactory"             value="slice"/>
-        <property name="openjpa.ConnectionDriverName"      value="com.mysql.jdbc.Driver"/>
+        <property name="openjpa.ConnectionDriverName"      value="com.mysql.cj.jdbc.Driver"/>
         <property name="openjpa.ConnectionUserName"        value="demo"/>
         <property name="openjpa.ConnectionPassword"        value="pwd"/>
 
@@ -68,7 +68,7 @@
     	<class>org.apache.openjpa.trader.domain.Trade</class>
     	<class>org.apache.openjpa.trader.domain.Stock</class>
         <properties>
-        <property name="openjpa.ConnectionDriverName" value="com.mysql.jdbc.Driver"/>
+        <property name="openjpa.ConnectionDriverName" value="com.mysql.cj.jdbc.Driver"/>
         <property name="openjpa.ConnectionURL" value="jdbc:mysql://localhost/exchange"/>
         <property name="openjpa.ConnectionUserName" value="root"/>
         <property name="openjpa.ConnectionPassword" value=""/>
@@ -90,7 +90,7 @@
     	<class>org.apache.openjpa.trader.domain.Trade</class>
     	<class>org.apache.openjpa.trader.domain.Stock</class>
         <properties>
-        <property name="openjpa.ConnectionDriverName" value="com.mysql.jdbc.Driver"/>
+        <property name="openjpa.ConnectionDriverName" value="com.mysql.cj.jdbc.Driver"/>
         <property name="openjpa.ConnectionURL" value="jdbc:mysql://opentrader.cxlsv2qt7orp.us-east-1.rds.amazonaws.com:3306/exchange"/>
         <property name="openjpa.ConnectionUserName" value="ppoddar"/>
         <property name="openjpa.ConnectionPassword" value="password"/>
