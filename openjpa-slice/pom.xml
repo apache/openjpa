@@ -105,25 +105,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>process-test-classes</phase>
-                        <configuration>
-                            <target>
-                                <ant antfile="src/main/ant/enhancer.xml" target="enhance" inheritRefs="true">
-                                    <property name="maven.test.skip" value="${maven.test.skip}" />
-                                    <property name="test" value="${test}" />
-                                    <property name="outdir" value="${project.build.outputDirectory}" />
-                                    <property name="project.build.testOutputDirectory" value="${project.build.testOutputDirectory}" />
-                                    <property name="openjpa.Log" value="${openjpa.Log}" />
-                                </ant>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
