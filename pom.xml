@@ -1944,6 +1944,7 @@
                     <configuration>
                         <source>${compile.class.source}</source>
                         <target>${compile.class.target}</target>
+                        <release>8</release>
                         <encoding>${project.build.sourceEncoding}</encoding>
                     </configuration>
                 </plugin>
