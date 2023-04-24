@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_27_ex5;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name="S27x5Div")

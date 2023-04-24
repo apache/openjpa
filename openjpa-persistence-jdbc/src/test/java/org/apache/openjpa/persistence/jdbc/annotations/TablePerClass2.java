@@ -19,8 +19,8 @@
 package org.apache.openjpa.persistence.jdbc.annotations;
 
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Entity;
 
 @Entity
 public class TablePerClass2

@@ -19,8 +19,8 @@
 
 package org.apache.openjpa.enhance.stats;
 
-import javax.persistence.Entity;
-import javax.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.Entity;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 
 @Entity
 @PrimaryKeyJoinColumn(name = "CHILDID", referencedColumnName = "ID")

@@ -16,8 +16,8 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.kernel.common.apps.CalendarFields;

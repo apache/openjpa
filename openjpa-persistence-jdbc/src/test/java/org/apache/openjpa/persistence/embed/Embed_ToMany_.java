@@ -23,10 +23,10 @@
 
 package org.apache.openjpa.persistence.embed;
 
-import javax.persistence.metamodel.ListAttribute;
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.ListAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.StaticMetamodel
+@jakarta.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.embed.Embed_ToMany.class)
 public class Embed_ToMany_ {
     public static volatile ListAttribute<Embed_ToMany,EntityB1> bs;

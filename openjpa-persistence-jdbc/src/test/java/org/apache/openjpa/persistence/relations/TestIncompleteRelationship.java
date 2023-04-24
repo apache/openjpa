@@ -19,7 +19,7 @@
 
 package org.apache.openjpa.persistence.relations;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.relations.entity.IncompleteRelationshipChildEntity;
 import org.apache.openjpa.persistence.relations.entity.IncompleteRelationshipParentEntity;

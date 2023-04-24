@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence;
 
 import java.util.Collection;
 
-import javax.persistence.Cache;
+import jakarta.persistence.Cache;
 
 import org.apache.openjpa.datacache.CacheStatistics;
 import org.apache.openjpa.datacache.DataCache;

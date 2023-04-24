@@ -17,8 +17,8 @@
  * under the License.
  */
 package org.apache.openjpa.persistence.inheritance.entity;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
 /**
  * Test case and domain classes were originally part of the reported issue

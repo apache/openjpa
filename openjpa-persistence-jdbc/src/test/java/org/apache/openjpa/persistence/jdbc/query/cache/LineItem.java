@@ -15,9 +15,9 @@
  *  limitations under the License.
  */
 package org.apache.openjpa.persistence.jdbc.query.cache;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 
 /**
  * @version $Revision$ $Date$

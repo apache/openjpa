@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.metamodel.Attribute;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DB2Dictionary;

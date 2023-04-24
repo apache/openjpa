@@ -20,8 +20,8 @@ package org.apache.openjpa.ee;
 
 import java.lang.reflect.Method;
 
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
+import jakarta.transaction.Transaction;
+import jakarta.transaction.TransactionManager;
 
 /**
  * {@link ManagedRuntime} implementation that directly accesses the

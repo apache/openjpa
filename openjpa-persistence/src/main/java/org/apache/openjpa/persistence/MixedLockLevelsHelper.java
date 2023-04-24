@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence;
 
 import java.util.Locale;
 
-import javax.persistence.LockModeType;
+import jakarta.persistence.LockModeType;
 
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.LockLevels;
@@ -35,7 +35,7 @@ import org.apache.openjpa.kernel.MixedLockLevels;
  */
 public class MixedLockLevelsHelper implements HintValueConverter {
     /**
-     * Translates javax.persistence LockModeType to internal lock level.
+     * Translates jakarta.persistence LockModeType to internal lock level.
      */
     public static int toLockLevel(LockModeType mode) {
         if (mode == null || mode == LockModeType.NONE)
@@ -74,7 +74,7 @@ public class MixedLockLevelsHelper implements HintValueConverter {
 
 
     /**
-     * Translates internal lock level to javax.persistence LockModeType.
+     * Translates internal lock level to jakarta.persistence LockModeType.
      */
     public static LockModeType fromLockLevel(int level) {
         if (level < LockLevels.LOCK_READ)

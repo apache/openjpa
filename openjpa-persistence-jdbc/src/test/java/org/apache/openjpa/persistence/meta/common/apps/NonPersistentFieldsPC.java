@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.meta.common.apps;
 
 import java.io.Serializable;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 import org.apache.openjpa.meta.ClassMetaData;
 

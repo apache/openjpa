@@ -22,7 +22,7 @@ There are two sets of properties that may be specified: those that
 are specific to OpenJPA and those that have been defined by the JPA
 specification. In some cases, two properties may be equivalent, but
 have different keys. For example, <emphasis>openjpa.LockTimeout
-</emphasis> and <emphasis>javax.persistence.lock.timeout</emphasis>
+</emphasis> and <emphasis>jakarta.persistence.lock.timeout</emphasis>
 are two different keys for the same property.
 </para>
 <para>

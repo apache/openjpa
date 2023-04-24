@@ -20,10 +20,10 @@ package org.apache.openjpa.conf;
 
 import java.util.Properties;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.PersistenceException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.PersistenceException;
 
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.util.UserException;

@@ -20,9 +20,9 @@ package org.apache.openjpa.conf;
 
 import java.util.HashMap;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceException;
 
 import org.apache.openjpa.lib.util.ParseException;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;

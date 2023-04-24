@@ -20,9 +20,9 @@ package org.apache.openjpa.jdbc.procedure;
 
 import java.util.Iterator;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-import javax.persistence.StoredProcedureQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.StoredProcedureQuery;
 
 import org.apache.openjpa.jdbc.procedure.derby.Procedures;
 import org.apache.openjpa.jdbc.procedure.entity.EntityWithStoredProcedure;

@@ -113,11 +113,11 @@
 		<class>org.apache.openjpa.persistence.kernel.common.apps.SingleIdString</class>
 		<class>org.apache.openjpa.persistence.kernel.common.apps.SingleIdWrapper</class>
 		<class>org.apache.openjpa.persistence.kernel.common.apps.ValueStrategyPC</class>
-		<class>org.apache.openjpa.persistence.kernel.TestEJBLobs$Inner</class>
-		<class>org.apache.openjpa.persistence.kernel.TestEJBLobs$Inner2</class>
-		<class>org.apache.openjpa.persistence.kernel.TestStaticInnerClasses$Inner</class>
-		<class>org.apache.openjpa.persistence.kernel.TestEJBNoPersistentFields$Nholder</class>
-		<class>org.apache.openjpa.persistence.kernel.TestEJBNoPersistentFields$NoPersistentFieldsPC</class>
+		<class>org.apache.openjpa.persistence.kernel.TestEJBLobsInnerEntity</class>
+		<class>org.apache.openjpa.persistence.kernel.TestEJBLobsInner2Entity</class>
+		<class>org.apache.openjpa.persistence.kernel.StaticInnerClassesContainer.Inner</class>
+		<class>org.apache.openjpa.persistence.kernel.TestEJBNoPersistentFieldsNholderEntity</class>
+		<class>org.apache.openjpa.persistence.kernel.EJBNoPersistentFieldsNoPersistentFieldsPCEntity</class>
 		<class>org.apache.openjpa.persistence.kernel.common.apps.ModRuntimeTest1</class>
 		<class>org.apache.openjpa.persistence.kernel.common.apps.ModRuntimeTest2</class>
 	</persistence-unit>

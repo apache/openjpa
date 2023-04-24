@@ -58,7 +58,7 @@ public class TestSecurityContext extends BaseKernelTest {
 
     @Override
     public void tearDown()
-        throws Exception {
+            throws Exception {
         System.setSecurityManager(oldManager);
         oldManager = null;
         super.tearDown();
@@ -73,7 +73,7 @@ public class TestSecurityContext extends BaseKernelTest {
     }
 
     public class StrictSecurityManager
-        extends SecurityManager {
+            extends SecurityManager {
 
         private void debug(String msg) {
             // log.debug (msg);
@@ -95,12 +95,6 @@ public class TestSecurityContext extends BaseKernelTest {
         public void checkAccess(ThreadGroup g) {
             debug("checkAccess: " + g);
             super.checkAccess(g);
-        }
-
-        @Override
-        public void checkAwtEventQueueAccess() {
-            debug("checkAwtEventQueueAccess");
-            super.checkAwtEventQueueAccess();
         }
 
         @Override
@@ -149,12 +143,6 @@ public class TestSecurityContext extends BaseKernelTest {
         public void checkListen(int port) {
             debug("checkListen: " + port);
             super.checkListen(port);
-        }
-
-        @Override
-        public void checkMemberAccess(Class clazz, int which) {
-            debug("checkMemberAccess: " + clazz + "," + which);
-            super.checkMemberAccess(clazz, which);
         }
 
         @Override
@@ -242,18 +230,6 @@ public class TestSecurityContext extends BaseKernelTest {
         }
 
         @Override
-        public void checkSystemClipboardAccess() {
-            debug("checkSystemClipboardAccess");
-            super.checkSystemClipboardAccess();
-        }
-
-        @Override
-        public boolean checkTopLevelWindow(Object window) {
-            debug("checkTopLevelWindow: " + window);
-            return super.checkTopLevelWindow(window);
-        }
-
-        @Override
         public void checkWrite(FileDescriptor fd) {
             debug("checkWrite: " + fd);
             super.checkWrite(fd);
@@ -266,63 +242,9 @@ public class TestSecurityContext extends BaseKernelTest {
         }
 
         @Override
-        protected int classDepth(String name) {
-            debug("classDepth: " + name);
-            return super.classDepth(name);
-        }
-
-        @Override
-        protected int classLoaderDepth() {
-            debug("classLoaderDepth");
-            return super.classLoaderDepth();
-        }
-
-        @Override
-        protected ClassLoader currentClassLoader() {
-            debug("currentClassLoader");
-            return super.currentClassLoader();
-        }
-
-        @Override
-        protected Class currentLoadedClass() {
-            debug("currentLoadedClass");
-            return super.currentLoadedClass();
-        }
-
-        @Override
         protected Class[] getClassContext() {
             debug("getClassContext");
             return super.getClassContext();
-        }
-
-        @Override
-        public boolean getInCheck() {
-            debug("getInCheck");
-            return super.getInCheck();
-        }
-
-        @Override
-        public Object getSecurityContext() {
-            debug("getSecurityContext");
-            return super.getSecurityContext();
-        }
-
-        @Override
-        public ThreadGroup getThreadGroup() {
-            debug("getThreadGroup");
-            return super.getThreadGroup();
-        }
-
-        @Override
-        protected boolean inClass(String name) {
-            debug("inClass: " + name);
-            return super.inClass(name);
-        }
-
-        @Override
-        protected boolean inClassLoader() {
-            debug("inClassLoader");
-            return super.inClassLoader();
         }
     }
 }

@@ -21,10 +21,10 @@ package org.apache.openjpa.persistence.models.company.fetchlazy;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 
 import org.apache.openjpa.persistence.models.company.IAddress;
 import org.apache.openjpa.persistence.models.company.ICustomer;

@@ -47,11 +47,11 @@
           <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true,SchemaAction='add,deleteTableContents')"/>
           <property name="openjpa.DynamicEnhancementAgent" value="false"/>
 
-          <property name="javax.persistence.validation.group.pre-persist"
+          <property name="jakarta.persistence.validation.group.pre-persist"
               value="org.apache.openjpa.example.gallery.constraint.SequencedImageGroup"/>
-          <property name="javax.persistence.validation.group.pre-update"
+          <property name="jakarta.persistence.validation.group.pre-update"
               value="org.apache.openjpa.example.gallery.constraint.SequencedImageGroup"/>
-          <property name="javax.persistence.validation.group.pre-remove"
+          <property name="jakarta.persistence.validation.group.pre-remove"
               value="javax.validation.groups.Default"/>
         </properties>
     </persistence-unit>

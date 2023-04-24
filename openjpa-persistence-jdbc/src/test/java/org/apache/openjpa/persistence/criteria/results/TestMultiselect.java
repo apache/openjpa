@@ -21,11 +21,11 @@ package org.apache.openjpa.persistence.criteria.results;
 import java.lang.reflect.Array;
 import java.util.List;
 
-import javax.persistence.Tuple;
-import javax.persistence.criteria.CompoundSelection;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.criteria.CompoundSelection;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Root;
 
 import org.apache.openjpa.persistence.criteria.CriteriaTest;
 import org.apache.openjpa.persistence.criteria.Person;

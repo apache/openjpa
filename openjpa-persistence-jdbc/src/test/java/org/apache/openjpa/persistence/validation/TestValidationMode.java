@@ -16,7 +16,7 @@ package org.apache.openjpa.persistence.validation;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.ValidationMode;
+import jakarta.persistence.ValidationMode;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.event.LifecycleEvent;
@@ -163,7 +163,7 @@ public class TestValidationMode extends SingleEMFTestCase {
 
         // create the Map to test overrides
         Map<String,String> props = new HashMap<>();
-        props.put("javax.persistence.validation.mode",
+        props.put("jakarta.persistence.validation.mode",
             String.valueOf(ValidationMode.NONE));
 
         // create our EMF
@@ -195,7 +195,7 @@ public class TestValidationMode extends SingleEMFTestCase {
 
         // create the Map to test overrides
         Map<String,String> props = new HashMap<>();
-        props.put("javax.persistence.validation.mode",
+        props.put("jakarta.persistence.validation.mode",
             String.valueOf(ValidationMode.NONE));
 
         // create our EMF
@@ -227,7 +227,7 @@ public class TestValidationMode extends SingleEMFTestCase {
 
         // create the Map to test overrides
         Map<String,Object> props = new HashMap<>();
-        props.put("javax.persistence.validation.mode",
+        props.put("jakarta.persistence.validation.mode",
             ValidationMode.NONE);
 
         // create our EMF

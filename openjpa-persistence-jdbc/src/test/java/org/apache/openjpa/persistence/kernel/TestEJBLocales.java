@@ -22,7 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;

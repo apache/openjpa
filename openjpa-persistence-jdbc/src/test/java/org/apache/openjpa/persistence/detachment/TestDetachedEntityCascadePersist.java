@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.detachment;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.detachment.model.DMCustomer;
 import org.apache.openjpa.persistence.detachment.model.DMCustomerInventory;

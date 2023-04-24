@@ -20,7 +20,7 @@ package org.apache.openjpa.slice;
 
 import java.util.Set;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 /**
  * Tests that parent-child relation both replicated are stored in all replicated

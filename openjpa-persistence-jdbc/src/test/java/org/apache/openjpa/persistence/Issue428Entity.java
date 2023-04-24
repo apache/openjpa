@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "ISSUE_428_ENTITY")

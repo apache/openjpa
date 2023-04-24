@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.DetachedStateManager;

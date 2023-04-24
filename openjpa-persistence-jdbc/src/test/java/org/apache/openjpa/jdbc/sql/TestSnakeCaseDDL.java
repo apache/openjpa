@@ -23,10 +23,9 @@ import org.apache.openjpa.persistence.PersistenceProviderImpl;
 import org.apache.openjpa.persistence.PersistenceUnitInfoImpl;
 import org.junit.Test;
 
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Id;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.ResultSet;
@@ -63,8 +62,8 @@ public class TestSnakeCaseDDL {
 
         final PersistenceUnitInfoImpl persistenceUnitInfo = new PersistenceUnitInfoImpl();
         persistenceUnitInfo.setExcludeUnlistedClasses(true);
-        persistenceUnitInfo.addManagedClassName(MyEntity1.class.getName());
-        persistenceUnitInfo.addManagedClassName(MyEntity2.class.getName());
+        persistenceUnitInfo.addManagedClassName(SnakeCaseDDLEntity.class.getName());
+        persistenceUnitInfo.addManagedClassName(SnakeCaseDDLMy2Entity.class.getName());
         final BasicDataSource ds = new BasicDataSource();
         ds.setDriver(derbyDriver);
         ds.setUrl("jdbc:derby:memory:ddlInSnakeCase;create=true");
@@ -101,7 +100,7 @@ public class TestSnakeCaseDDL {
                 final EntityManager em = entityManagerFactory.createEntityManager();
                 em.getTransaction().begin();
                 try {
-                    final MyEntity1 entity = new MyEntity1();
+                    final SnakeCaseDDLEntity entity = new SnakeCaseDDLEntity();
                     entity.setFooBar("1");
                     entity.setThisField(123);
                     em.persist(entity);
@@ -118,7 +117,7 @@ public class TestSnakeCaseDDL {
             {
                 final EntityManager em = entityManagerFactory.createEntityManager();
                 try {
-                    final MyEntity1 myEntity1 = em.find(MyEntity1.class, "1");
+                    final SnakeCaseDDLEntity myEntity1 = em.find(SnakeCaseDDLEntity.class, "1");
                     assertNotNull(myEntity1);
                     assertEquals("1", myEntity1.getFooBar());
                     assertEquals(123, myEntity1.getThisField());
@@ -144,33 +143,4 @@ public class TestSnakeCaseDDL {
         assertEquals(singleton("ANOTHER_FIELD"), columns.get("TestSnakeCaseDDL$MyEntity2"));
     }
 
-    @Entity
-    public static class MyEntity1 {
-        @Id
-        private String fooBar;
-
-        private int thisField;
-
-        public int getThisField() {
-            return thisField;
-        }
-
-        public void setThisField(int thisField) {
-            this.thisField = thisField;
-        }
-
-        public String getFooBar() {
-            return fooBar;
-        }
-
-        public void setFooBar(String fooBar) {
-            this.fooBar = fooBar;
-        }
-    }
-
-    @Entity
-    public static class MyEntity2 {
-        @Id
-        private String anotherField;
-    }
 }

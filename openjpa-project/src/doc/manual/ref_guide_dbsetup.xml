@@ -478,7 +478,7 @@ properties are outlined in <xref linkend="ref_guide_conf"/>.
             <para>
 As mentioned above, the JTA and Non-JTA DataSources may be passed in as configuration properties
 at EntityManagerFactory creation. Either the JPA standard properties (
-<literal>javax.persistence.jtaDataSource</literal>, <literal>java.persistence.nonJtaDataSource</literal>)
+<literal>jakarta.persistence.jtaDataSource</literal>, <literal>java.persistence.nonJtaDataSource</literal>)
 or their OpenJPA specific equivalents (<literal>openjpa.ConnectionFactoryName</literal>,
 <literal>openjpa.ConnectionFactory2Name</literal>) may be used. One use case for this function is to
 store production connection information in configuration files but override the value when testing.
@@ -489,8 +489,8 @@ store production connection information in configuration files but override the 
                     Setting DataSource at Runtime
                 </title>
                 <programlisting>Map&lt;Object,Object&gt; props = new HashMap&lt;Object,Object&gt;();
-props.put("javax.persistence.jtaDataSource", "jdbc/myDataSource");
-props.put("javax.persistence.nonJtaDataSource", "jdbc/myNonJTADataSource");
+props.put("jakarta.persistence.jtaDataSource", "jdbc/myDataSource");
+props.put("jakarta.persistence.nonJtaDataSource", "jdbc/myNonJTADataSource");
 emf = Persistence.createEntityManagerFactory("example", props);</programlisting>
             </example>
             </para>
@@ -623,8 +623,8 @@ connection is not released if a datastore transaction is in progress.
             </title>
 <programlisting>
 import java.sql.Connection;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 
 ...
 
@@ -3135,7 +3135,7 @@ calls to <methodname> java.sql.Statement.setQueryTimeout</methodname>.
                         </tertiary>
                     </indexterm>
 <literal>AllowQueryTimeoutOnFindUpdate</literal>: The JPA Specification defines the
-javax.persistence.query.timeout, in milliseconds, as a hint to the provider.  The hint
+jakarta.persistence.query.timeout, in milliseconds, as a hint to the provider.  The hint
 is used for Query operations.  This property, when set to true, will allow the query timeout hint
 to apply to EntityManager operations.  For example, when a 'find' is executed and the resultant
 entity updated, the query timeout will apply to the SQL update operation.  This property defaults

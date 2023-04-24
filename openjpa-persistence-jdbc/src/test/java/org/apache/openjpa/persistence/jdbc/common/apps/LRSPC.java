@@ -25,7 +25,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 /**
  * <p>Persistent type with LRS fields.</p>

@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.TreeMap;
 
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;

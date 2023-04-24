@@ -20,8 +20,8 @@ package org.apache.openjpa.lib.conf;
 
 import java.util.Properties;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
@@ -31,7 +31,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Tests that configuration properties can be specified both as new
- * javax.persistence.* namespace and old openjpa.* namespace. The two style can
+ * jakarta.persistence.* namespace and old openjpa.* namespace. The two style can
  * also be mixed where one property is in javax.* namespace the other in
  * openjpa.*. But same property can not be specified in both style.
  *
@@ -52,9 +52,9 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
     private static final String OLD_STYLE_DRIVER_KEY =
         "openjpa.ConnectionDriverName";
     private static final String NEW_STYLE_DRIVER_KEY =
-        "javax.persistence.jdbc.driver";
+        "jakarta.persistence.jdbc.driver";
     private static final String NEW_STYLE_URL_KEY    =
-        "javax.persistence.jdbc.url";
+        "jakarta.persistence.jdbc.url";
 
     private static final String[] KEYS = {
         OLD_STYLE_DRIVER_KEY, OLD_STYLE_URL_KEY,

@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 
 import org.apache.openjpa.persistence.datacache.entities.ContactInfo;
 import org.apache.openjpa.persistence.datacache.entities.Person;

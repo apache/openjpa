@@ -18,10 +18,10 @@
  */
 package org.apache.openjpa.persistence.kernel.common.apps;
 
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.OneToOne;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.OneToOne;
 
 /**
  * <p>Embedded type used in testing.</p>

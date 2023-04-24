@@ -21,7 +21,7 @@ package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_26_ex0;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class EmployeePK2 implements Serializable {

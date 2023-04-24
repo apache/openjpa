@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.detachment;
 
-import javax.persistence.EntityManager;
-import javax.persistence.RollbackException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.RollbackException;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.persistence.OpenJPAPersistence;

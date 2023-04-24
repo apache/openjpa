@@ -21,7 +21,7 @@ package org.apache.openjpa.persistence.log;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.apache.openjpa.lib.log.AbstractLog;
 import org.apache.openjpa.lib.log.Log;

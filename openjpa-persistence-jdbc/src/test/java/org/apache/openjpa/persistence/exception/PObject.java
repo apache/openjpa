@@ -18,10 +18,10 @@
  */
 package org.apache.openjpa.persistence.exception;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Version;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 
 /**
  * A Simple entity for testing. Has a version field for testing optimistic

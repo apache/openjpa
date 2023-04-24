@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.TreeSet;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.proxy.delayed.Award;
 import org.apache.openjpa.persistence.proxy.delayed.Certification;

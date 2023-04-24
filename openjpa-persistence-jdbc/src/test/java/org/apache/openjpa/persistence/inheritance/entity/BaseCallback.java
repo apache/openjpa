@@ -18,10 +18,10 @@
  */
 package org.apache.openjpa.persistence.inheritance.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.PostPersist;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.PostPersist;
 
 /*
  * Annotated entity class with no persistent attributes or access type

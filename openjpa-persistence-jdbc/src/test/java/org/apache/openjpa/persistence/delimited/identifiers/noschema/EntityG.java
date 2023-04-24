@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.persistence.delimited.identifiers.noschema;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name="\"nsentity d4\"")

@@ -20,8 +20,8 @@ package org.apache.openjpa.persistence.detachment;
 
 import java.util.Calendar;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.enhance.PersistenceCapable;

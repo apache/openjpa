@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.Cache;
+import jakarta.persistence.Cache;
 
 import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;

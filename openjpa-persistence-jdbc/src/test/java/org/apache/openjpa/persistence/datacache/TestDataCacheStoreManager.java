@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.datacache.DataCacheManager;
 import org.apache.openjpa.datacache.DataCacheStoreManager;

@@ -19,8 +19,8 @@
 package org.apache.openjpa.persistence.jdbc.kernel;
 
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 
 import org.apache.openjpa.persistence.PersistenceException;
 import org.apache.openjpa.persistence.RollbackException;

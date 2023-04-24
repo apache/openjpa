@@ -17,7 +17,7 @@
  */
 package org.apache.openjpa.enhance;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 @Entity
 public class UnenhancedPObject {

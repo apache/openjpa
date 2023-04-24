@@ -22,11 +22,11 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.List;
 
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.OptimisticLockException;
-import javax.persistence.Query;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.OptimisticLockException;
+import jakarta.persistence.Query;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
@@ -51,7 +51,7 @@ public class TestException extends SingleEMFTestCase {
 
 	/**
 	 * Tests that when Optimistic transaction consistency is violated, the
-     * exception thrown is an instance of javax.persistence.OptimisticException.
+     * exception thrown is an instance of jakarta.persistence.OptimisticException.
 	 */
 	// TODO: Re-enable this test once OPENJPA-991 issue is corrected.
 	public void disabledTestThrowsOptimisticException() {

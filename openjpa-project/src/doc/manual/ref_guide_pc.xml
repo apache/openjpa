@@ -633,7 +633,7 @@ OpenJPA's
 <classname>org.apache.openjpa.persistence.DataStoreId</classname></ulink> class
 annotation. This annotation has <literal>strategy</literal> and <literal>
 generator</literal> properties that mirror the same-named properties on the
-standard <classname>javax.persistence.GeneratedValue</classname> annotation
+standard <classname>jakarta.persistence.GeneratedValue</classname> annotation
 described in <xref linkend="jpa_overview_meta_id"/> of the JPA Overview.
             </para>
             <para>

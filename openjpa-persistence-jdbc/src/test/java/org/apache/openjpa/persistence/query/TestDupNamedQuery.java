@@ -21,7 +21,7 @@ package org.apache.openjpa.persistence.query;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 

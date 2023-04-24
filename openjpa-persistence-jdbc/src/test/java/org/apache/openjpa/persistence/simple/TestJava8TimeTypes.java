@@ -20,8 +20,8 @@ package org.apache.openjpa.persistence.simple;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 
 import java.time.Instant;
 import java.time.LocalDate;

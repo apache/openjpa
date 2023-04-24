@@ -21,7 +21,7 @@ package org.apache.openjpa.persistence.meta;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;

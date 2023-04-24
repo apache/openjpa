@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.kernel.common.apps;
 
 import java.util.StringTokenizer;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 /**
  * Abstract subclass that defines one more primary key field than its

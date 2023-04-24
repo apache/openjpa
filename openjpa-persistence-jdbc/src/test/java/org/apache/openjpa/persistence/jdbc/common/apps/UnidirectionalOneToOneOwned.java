@@ -18,10 +18,10 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Version;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Version;
 
 /**
  * Entity which is traget of a unidirectional one-to-one relation.

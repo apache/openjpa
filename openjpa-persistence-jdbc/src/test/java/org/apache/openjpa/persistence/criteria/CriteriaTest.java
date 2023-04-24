@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.criteria.results.Bar;

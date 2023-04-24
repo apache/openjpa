@@ -20,10 +20,10 @@ package org.apache.openjpa.persistence.query.common.apps;
 
 import java.util.Collection;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToOne;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToOne;
 
 /**
  * <p>Used in testing; should be enhanced.</p>

@@ -20,7 +20,7 @@ package org.apache.openjpa.kernel;
 
 import java.util.Collections;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.enhance.ManagedClassSubclasser;
 import org.apache.openjpa.enhance.PersistenceCapable;
@@ -64,7 +64,7 @@ public class TestDynamicClassRegistration
             JPAFacadeHelper.getMetaData(emf1, SimpleEntity.class);
         assertNotNull(meta);
         EntityManager em = emf1.createEntityManager();
-        javax.persistence.Query q = em.createQuery("select o from simple o");
+        jakarta.persistence.Query q = em.createQuery("select o from simple o");
         em.close();
     }
 
@@ -82,7 +82,7 @@ public class TestDynamicClassRegistration
             JPAFacadeHelper.getMetaData(emf1, UnenhancedFieldAccess.class);
         assertNotNull(meta);
         EntityManager em = emf1.createEntityManager();
-        javax.persistence.Query q = em.createQuery(
+        jakarta.persistence.Query q = em.createQuery(
             "select o from UnenhancedFieldAccess o");
         em.close();
     }

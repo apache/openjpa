@@ -21,7 +21,7 @@ package org.apache.openjpa.instrumentation;
 import java.util.Random;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.lib.instrumentation.Instrument;
 import org.apache.openjpa.lib.instrumentation.InstrumentationProvider;

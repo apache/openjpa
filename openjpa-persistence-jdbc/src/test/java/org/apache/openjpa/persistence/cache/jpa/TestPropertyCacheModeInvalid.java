@@ -34,13 +34,13 @@ public class TestPropertyCacheModeInvalid extends AbstractCacheTestCase {
         boolean exceptionCaught = false;
         try {
             Map<String, Object> propertyMap = new HashMap<>();
-            propertyMap.put("javax.persistence.sharedCache.mode", "INVALID");
+            propertyMap.put("jakarta.persistence.sharedCache.mode", "INVALID");
             emf = createEntityManagerFactory("cache-mode-empty",propertyMap);
         } catch (Throwable e) {
             exceptionCaught = true;
             assertException(e, java.lang.IllegalArgumentException.class);
             String msg = e.getMessage();
-            assertTrue(msg.contains("javax.persistence.SharedCacheMode.INVALID"));
+            assertTrue(msg.contains("jakarta.persistence.SharedCacheMode.INVALID"));
         }
         assertTrue(exceptionCaught);
     }

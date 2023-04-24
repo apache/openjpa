@@ -21,8 +21,8 @@ package org.apache.openjpa.persistence.relations;
 import java.util.Collection;
 import java.util.HashSet;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 import org.apache.openjpa.persistence.PersistentCollection;
 

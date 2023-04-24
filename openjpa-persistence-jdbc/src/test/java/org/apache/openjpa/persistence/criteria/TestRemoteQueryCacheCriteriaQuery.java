@@ -18,11 +18,11 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.Metamodel;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.metamodel.EntityType;
+import jakarta.persistence.metamodel.Metamodel;
 
 import org.apache.openjpa.persistence.datacache.SerializingConcurrentQueryCache;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;

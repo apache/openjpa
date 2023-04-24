@@ -20,8 +20,8 @@ package org.apache.openjpa.persistence.derivedid;
 
 import java.math.BigInteger;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 @Entity
 public class EBigIntegerID {
     @Id

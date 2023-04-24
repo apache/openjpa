@@ -24,8 +24,8 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;

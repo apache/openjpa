@@ -21,11 +21,11 @@ package org.apache.openjpa.persistence.query.sqlresultmapping;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
-@javax.persistence.Table(name = "CRT_OPERACAO")
+@jakarta.persistence.Table(name = "CRT_OPERACAO")
 @Entity
 public class CrtOperacaoEntity implements Serializable {
 

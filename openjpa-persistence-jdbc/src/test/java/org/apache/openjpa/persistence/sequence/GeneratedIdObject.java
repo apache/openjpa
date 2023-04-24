@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.persistence.sequence;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 
 /**
  * An entity that uses generated value for its primary key.

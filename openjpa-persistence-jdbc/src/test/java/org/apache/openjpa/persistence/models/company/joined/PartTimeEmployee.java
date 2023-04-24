@@ -18,10 +18,10 @@
  */
 package org.apache.openjpa.persistence.models.company.joined;
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 
 import org.apache.openjpa.persistence.models.company.IPartTimeEmployee;
 

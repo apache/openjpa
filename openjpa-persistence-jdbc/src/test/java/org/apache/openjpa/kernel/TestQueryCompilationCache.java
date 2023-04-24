@@ -21,7 +21,7 @@ package org.apache.openjpa.kernel;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.Persistence;
+import jakarta.persistence.Persistence;
 
 import org.apache.openjpa.kernel.QueryImpl.Compilation;
 import org.apache.openjpa.kernel.jpql.JPQLExpressionBuilder.ParsedJPQL;

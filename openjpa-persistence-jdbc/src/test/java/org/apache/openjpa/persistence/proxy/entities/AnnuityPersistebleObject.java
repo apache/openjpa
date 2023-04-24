@@ -20,11 +20,11 @@ package org.apache.openjpa.persistence.proxy.entities;
 
 import java.util.Date;
 
-import javax.persistence.MappedSuperclass;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.Transient;
-import javax.persistence.Version;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Transient;
+import jakarta.persistence.Version;
 
 @MappedSuperclass
 public class AnnuityPersistebleObject implements JPAPersisteble {
@@ -44,7 +44,7 @@ public class AnnuityPersistebleObject implements JPAPersisteble {
 	}
 
 	@Override
-    @javax.persistence.Id
+    @jakarta.persistence.Id
 	public String getId() {
 		return id;
 	}

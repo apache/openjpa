@@ -24,15 +24,15 @@ import java.lang.reflect.Method;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.InvalidTransactionException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.Status;
-import javax.transaction.Synchronization;
-import javax.transaction.SystemException;
-import javax.transaction.Transaction;
+import jakarta.transaction.HeuristicMixedException;
+import jakarta.transaction.HeuristicRollbackException;
+import jakarta.transaction.InvalidTransactionException;
+import jakarta.transaction.NotSupportedException;
+import jakarta.transaction.RollbackException;
+import jakarta.transaction.Status;
+import jakarta.transaction.Synchronization;
+import jakarta.transaction.SystemException;
+import jakarta.transaction.Transaction;
 import javax.transaction.xa.XAResource;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -79,7 +79,7 @@ public class WASManagedRuntime extends AbstractManagedRuntime
      * wrapper
      */
     @Override
-    public javax.transaction.TransactionManager getTransactionManager()
+    public jakarta.transaction.TransactionManager getTransactionManager()
         throws Exception {
         return new WASTransaction();
     }
@@ -97,8 +97,8 @@ public class WASManagedRuntime extends AbstractManagedRuntime
      * <LI>GetStatus</LI>
      * </UL>
      */
-    class WASTransaction implements javax.transaction.TransactionManager,
-        javax.transaction.Transaction {
+    class WASTransaction implements jakarta.transaction.TransactionManager,
+        jakarta.transaction.Transaction {
 
         @Override
         public int getStatus() throws SystemException {
@@ -270,7 +270,7 @@ public class WASManagedRuntime extends AbstractManagedRuntime
 
     /**
      * WASSynchronization wrapper. This class translates the WAS proprietary
-     * synchronization callback methods to javax.transaction.Synchronization
+     * synchronization callback methods to jakarta.transaction.Synchronization
      * methods.
      *
      * <P>
@@ -296,7 +296,7 @@ public class WASManagedRuntime extends AbstractManagedRuntime
 
         /**
          * AfterCompletion wrapper. Translates the WAS proprietary call to a
-         * javax.transaction.Synchronization call.
+         * jakarta.transaction.Synchronization call.
          */
         public void afterCompletion(int localTransactionId,
             byte[] globalTransactionId, boolean committed) {
@@ -311,7 +311,7 @@ public class WASManagedRuntime extends AbstractManagedRuntime
 
         /**
          * BeforeCompletion wrapper. Translates WAS proprietary call to a
-         * javax.transaction.Synchronization call.
+         * jakarta.transaction.Synchronization call.
          */
         public void beforeCompletion(int arg0, byte[] arg1) {
             if (_sync != null) {

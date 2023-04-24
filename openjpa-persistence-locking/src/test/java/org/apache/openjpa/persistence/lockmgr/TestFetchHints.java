@@ -21,9 +21,9 @@ package org.apache.openjpa.persistence.lockmgr;
 import java.sql.Connection;
 import java.sql.ResultSet;
 
-import javax.persistence.EntityManager;
-import javax.persistence.LockModeType;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.Query;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -50,8 +50,8 @@ import org.apache.openjpa.persistence.jdbc.ResultSetType;
  * JPA 2.0 em.find/refresh/lock(... Map) and query.X(... Map) methods.
  *
  * Supported hints:
- *   javax.persistence.lock.timeout
- *   javax.persistence.query.timeout
+ *   jakarta.persistence.lock.timeout
+ *   jakarta.persistence.query.timeout
  *   openjpa.ExtendedPathLookup (?)
  *   openjpa.FetchBatchSize
  *   openjpa.FetchPlan.EagerFetchMode
@@ -1185,10 +1185,10 @@ public class TestFetchHints extends SequencedActionsTest {
     }
 
     /* Good
-     * Test "javax.persistence.lock.timeout" hint
+     * Test "jakarta.persistence.lock.timeout" hint
      */
     public void testJavaxLockTimeoutHint() {
-        String hintName = "javax.persistence.lock.timeout";
+        String hintName = "jakarta.persistence.lock.timeout";
 
         EntityManager em = emf.createEntityManager();
         OpenJPAEntityManager oem = (OpenJPAEntityManager)em.getDelegate();
@@ -1337,10 +1337,10 @@ public class TestFetchHints extends SequencedActionsTest {
     }
 
     /* Good
-     * Test "javax.persistence.query.timeout" hint
+     * Test "jakarta.persistence.query.timeout" hint
      */
     public void testJavaxQueryTimeoutHint() {
-        String hintName = "javax.persistence.query.timeout";
+        String hintName = "jakarta.persistence.query.timeout";
 
         EntityManager em = emf.createEntityManager();
         OpenJPAEntityManager oem = (OpenJPAEntityManager)em.getDelegate();
@@ -2275,7 +2275,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test precendence order of similiar/equivalent LockTimeout hints.
      */
     public void testSimiliarLockTimeoutHints() {
-        String JavaxLockTimeout = "javax.persistence.lock.timeout";
+        String JavaxLockTimeout = "jakarta.persistence.lock.timeout";
         String OpenJPALockTimeout = "openjpa.LockTimeout";
         String FetchPlanLockTimeout = "openjpa.FetchPlan.LockTimeout";
 
@@ -2339,7 +2339,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test precendence order of similiar/equivalent QueryTimeout hints.
      */
     public void testSimiliarQueryTimeoutHints() {
-        String JavaxQueryTimeout = "javax.persistence.query.timeout";
+        String JavaxQueryTimeout = "jakarta.persistence.query.timeout";
         String OpenJPAQueryTimeout = "openjpa.QueryTimeout";
         String FetchPlanQueryTimeout = "openjpa.FetchPlan.QueryTimeout";
 

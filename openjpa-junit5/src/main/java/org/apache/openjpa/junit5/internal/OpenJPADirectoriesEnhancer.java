@@ -36,9 +36,9 @@ import org.apache.xbean.finder.ClassLoaders;
 import serp.bytecode.BCClass;
 import serp.bytecode.Project;
 
-import javax.persistence.Embeddable;
-import javax.persistence.Entity;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Entity;
+import jakarta.persistence.MappedSuperclass;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;

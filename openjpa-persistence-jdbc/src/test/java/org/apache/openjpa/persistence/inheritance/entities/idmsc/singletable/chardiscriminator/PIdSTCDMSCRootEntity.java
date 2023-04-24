@@ -18,12 +18,12 @@
  */
 package org.apache.openjpa.persistence.inheritance.entities.idmsc.singletable.chardiscriminator;
 
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorType;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 
 import org.apache.openjpa.persistence.inheritance.entities.idmsc.
     PrimitiveIDMappedSuperclass;

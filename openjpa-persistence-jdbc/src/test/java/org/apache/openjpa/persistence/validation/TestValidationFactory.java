@@ -16,7 +16,7 @@ package org.apache.openjpa.persistence.validation;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.ValidationMode;
+import jakarta.persistence.ValidationMode;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
@@ -76,7 +76,7 @@ public class TestValidationFactory extends SingleEMFTestCase {
         // create the Map to test overrides
         //   Just use current class object, as we have no provider to test with
         Map<String,Object> props = new HashMap<>();
-        props.put("javax.persistence.validation.factory",
+        props.put("jakarta.persistence.validation.factory",
             this.getClass());
 
         // create our EMF
@@ -106,7 +106,7 @@ public class TestValidationFactory extends SingleEMFTestCase {
         // create the Map to test overrides
         //   Just use current class object, as we have no provider to test with
         Map<String,Object> props = new HashMap<>();
-        props.put("javax.persistence.validation.factory",
+        props.put("jakarta.persistence.validation.factory",
             this.getClass());
 
         // create our EMF
@@ -136,9 +136,9 @@ public class TestValidationFactory extends SingleEMFTestCase {
         // create the Map to test overrides
         //   Just use current class object, as we have no provider to test with
         Map<String,Object> props = new HashMap<>();
-        props.put("javax.persistence.validation.factory",
+        props.put("jakarta.persistence.validation.factory",
             this.getClass());
-        props.put("javax.persistence.validation.mode",
+        props.put("jakarta.persistence.validation.mode",
             String.valueOf(ValidationMode.CALLBACK));
 
         try {

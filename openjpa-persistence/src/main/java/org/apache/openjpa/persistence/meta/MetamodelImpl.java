@@ -18,10 +18,10 @@
  */
 package org.apache.openjpa.persistence.meta;
 
-import static javax.persistence.metamodel.Type.PersistenceType.BASIC;
-import static javax.persistence.metamodel.Type.PersistenceType.EMBEDDABLE;
-import static javax.persistence.metamodel.Type.PersistenceType.ENTITY;
-import static javax.persistence.metamodel.Type.PersistenceType.MAPPED_SUPERCLASS;
+import static jakarta.persistence.metamodel.Type.PersistenceType.BASIC;
+import static jakarta.persistence.metamodel.Type.PersistenceType.EMBEDDABLE;
+import static jakarta.persistence.metamodel.Type.PersistenceType.ENTITY;
+import static jakarta.persistence.metamodel.Type.PersistenceType.MAPPED_SUPERCLASS;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
@@ -34,16 +34,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.EmbeddableType;
-import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.ManagedType;
-import javax.persistence.metamodel.MappedSuperclassType;
-import javax.persistence.metamodel.Metamodel;
-import javax.persistence.metamodel.PluralAttribute.CollectionType;
-import javax.persistence.metamodel.StaticMetamodel;
-import javax.persistence.metamodel.Type;
-import javax.persistence.metamodel.Type.PersistenceType;
+import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.EmbeddableType;
+import jakarta.persistence.metamodel.EntityType;
+import jakarta.persistence.metamodel.ManagedType;
+import jakarta.persistence.metamodel.MappedSuperclassType;
+import jakarta.persistence.metamodel.Metamodel;
+import jakarta.persistence.metamodel.PluralAttribute.CollectionType;
+import jakarta.persistence.metamodel.StaticMetamodel;
+import jakarta.persistence.metamodel.Type;
+import jakarta.persistence.metamodel.Type.PersistenceType;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.QueryContext;

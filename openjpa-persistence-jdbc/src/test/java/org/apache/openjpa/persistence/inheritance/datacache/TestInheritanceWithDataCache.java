@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.inheritance.datacache;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.inheritance.entity.Department;
 import org.apache.openjpa.persistence.inheritance.entity.Employee;

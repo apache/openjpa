@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 @Entity
 public class HorizAppMultiB

@@ -25,13 +25,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.Cache;
-import javax.persistence.EntityGraph;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnitUtil;
-import javax.persistence.Query;
-import javax.persistence.SynchronizationType;
-import javax.persistence.spi.LoadState;
+import jakarta.persistence.Cache;
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceUnitUtil;
+import jakarta.persistence.Query;
+import jakarta.persistence.SynchronizationType;
+import jakarta.persistence.spi.LoadState;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.AutoDetach;
@@ -254,8 +254,8 @@ public class EntityManagerFactoryImpl
             }
         }
 
-        // javax.persistence.jtaDataSource and openjpa.ConnectionFactory name are equivalent.
-        // prefer javax.persistence for now.
+        // jakarta.persistence.jtaDataSource and openjpa.ConnectionFactory name are equivalent.
+        // prefer jakarta.persistence for now.
         String cfName = (String) Configurations.removeProperty("jtaDataSource", props);
         if(cfName == null) {
             cfName = (String) Configurations.removeProperty("ConnectionFactoryName", props);
@@ -447,7 +447,7 @@ public class EntityManagerFactoryImpl
         if (cls.isInstance(this)) {
             return cls.cast(this);
         }
-        throw new javax.persistence.PersistenceException(this + " is not a " + cls);
+        throw new jakarta.persistence.PersistenceException(this + " is not a " + cls);
     }
 
     @Override

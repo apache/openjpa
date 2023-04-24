@@ -20,9 +20,9 @@ package org.apache.openjpa.persistence.jpql.version;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 

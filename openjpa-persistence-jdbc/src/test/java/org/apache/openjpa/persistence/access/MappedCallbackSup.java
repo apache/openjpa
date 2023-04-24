@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.access;
 
-import javax.persistence.MappedSuperclass;
-import javax.persistence.PrePersist;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
 
 /*
  * Mapped superclass which contains no persistent attributes, but contains

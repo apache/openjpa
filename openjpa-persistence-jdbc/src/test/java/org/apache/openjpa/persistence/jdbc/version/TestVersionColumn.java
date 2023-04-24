@@ -20,8 +20,8 @@
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 
 import org.apache.openjpa.persistence.jdbc.version.model.IntVersion;
 import org.apache.openjpa.persistence.jdbc.version.model.ShortVersion;

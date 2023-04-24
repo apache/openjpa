@@ -25,9 +25,9 @@ package org.apache.openjpa.persistence.meta;
 
 import java.util.Date;
 
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.StaticMetamodel
+@jakarta.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.meta.ImplicitFieldAccessMappedSuperclass.class)
 public class ImplicitFieldAccessMappedSuperclass_ {
     public static volatile SingularAttribute<ImplicitFieldAccessMappedSuperclass,Date> createTime;

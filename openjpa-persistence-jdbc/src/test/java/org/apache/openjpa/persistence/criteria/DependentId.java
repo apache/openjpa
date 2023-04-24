@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.criteria;
 
 import java.util.Date;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class DependentId {

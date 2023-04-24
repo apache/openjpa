@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
-import javax.persistence.MapKey;
+import jakarta.persistence.MapKey;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;

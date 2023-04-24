@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;

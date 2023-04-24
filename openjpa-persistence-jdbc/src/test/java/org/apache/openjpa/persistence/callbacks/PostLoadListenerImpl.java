@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.callbacks;
 
-import javax.persistence.PostLoad;
+import jakarta.persistence.PostLoad;
 
 /**
  * JPA Listener which maintains changelog information of the {@link PostLoadListenerEntity}.

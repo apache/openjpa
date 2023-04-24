@@ -20,11 +20,11 @@ package org.apache.openjpa.persistence.criteria.multiselect;
 
 import java.util.Date;
 
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.StaticMetamodel
+@jakarta.persistence.metamodel.StaticMetamodel
 (value=DimDay.class)
-@javax.annotation.Generated
+@jakarta.annotation.Generated
 (value="org.apache.openjpa.persistence.meta.AnnotationProcessor6",date="Mon Feb 23 16:53:34 MST 2015")
 public class DimDay_ {
     public static volatile SingularAttribute<DimDay,Long> currentMonthInd;

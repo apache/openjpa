@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.lifecycle;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.relations.BidiChild;
 import org.apache.openjpa.persistence.relations.BidiParent;

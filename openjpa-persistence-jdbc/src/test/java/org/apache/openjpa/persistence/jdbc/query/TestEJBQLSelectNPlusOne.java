@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.jdbc.query;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 

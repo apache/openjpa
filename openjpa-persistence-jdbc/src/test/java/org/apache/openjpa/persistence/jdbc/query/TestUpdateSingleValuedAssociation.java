@@ -20,9 +20,9 @@ package org.apache.openjpa.persistence.jdbc.query;
 
 import java.util.List;
 
-import javax.persistence.Cache;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.Cache;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.jdbc.query.domain.Applicant;
 import org.apache.openjpa.persistence.jdbc.query.domain.Application;

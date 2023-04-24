@@ -28,7 +28,7 @@
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>
-        <version>3.2.3-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>openjpa-all</artifactId>
@@ -91,7 +91,7 @@
                             <transformers>
                                 <!-- Need to concatinate the services resources:
                                  org.apache.openjpa.lib.conf.ProductDerivation
-                                 javax.persistence.spi.PersistenceProvider
+                                 jakarta.persistence.spi.PersistenceProvider
                                  org.apache.openjpa.kernel.exps.ExpressionParser
                                 -->
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
@@ -139,8 +139,8 @@
 
         <!-- bean validation includes -->
         <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-validation_1.1_spec</artifactId>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.bval</groupId>

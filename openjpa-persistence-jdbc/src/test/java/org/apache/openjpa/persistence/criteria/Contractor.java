@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 
 @Entity

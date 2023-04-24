@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.arrays;
 
 import java.util.ArrayList;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.arrays.model.AnnoExceptionEntity;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;

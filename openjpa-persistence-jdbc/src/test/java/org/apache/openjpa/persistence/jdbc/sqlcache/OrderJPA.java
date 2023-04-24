@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.sqlcache;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 /**
  * A simple entity for a complex test.

@@ -31,7 +31,7 @@ import java.util.concurrent.Future;
 import javax.management.JMX;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 
 import org.apache.openjpa.instrumentation.DataCacheInstrument;
 import org.apache.openjpa.instrumentation.InstrumentationManager;

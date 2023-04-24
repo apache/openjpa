@@ -16,9 +16,9 @@ package openbook.server;
 import java.io.Serializable;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceContextType;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceContextType;
 
 /**
  * An abstract utility for JPA based service.

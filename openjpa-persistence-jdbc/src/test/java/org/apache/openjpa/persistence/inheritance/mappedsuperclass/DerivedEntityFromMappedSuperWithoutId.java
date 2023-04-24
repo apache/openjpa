@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.persistence.inheritance.mappedsuperclass;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Version;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Version;
 
 /**
  * A Mapped Super Class without a declared identity field. The derived classes

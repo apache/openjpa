@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
-import javax.persistence.MapKey;
+import jakarta.persistence.MapKey;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest1;

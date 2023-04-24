@@ -25,8 +25,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.jdbc.query.domain.Magazine;
 import org.apache.openjpa.persistence.jdbc.query.domain.Publisher;

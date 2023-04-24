@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.enhance;
 
-import javax.persistence.Persistence;
+import jakarta.persistence.Persistence;
 
 import org.apache.openjpa.persistence.annotations.TestAnnotationBasics;
 import org.apache.openjpa.persistence.annotations.TestEmbeddedId;

@@ -23,12 +23,12 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.metamodel.ListAttribute;
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.ListAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 import org.apache.openjpa.persistence.criteria.CompUser.CreditRating;
 
-@javax.persistence.metamodel.StaticMetamodel
+@jakarta.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.CompUser.class)
 public class CompUser_ {
     public static volatile SingularAttribute<CompUser,Address> address;

@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence;
 
-import javax.persistence.Parameter;
+import jakarta.persistence.Parameter;
 
 /**
  * A user-defined parameter of a query.

@@ -20,9 +20,9 @@ package org.apache.openjpa.persistence.graph;
 
 import java.io.Serializable;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 
 /**
  * Persistent Graph is a marker for persistent version of a {@link Graph}.

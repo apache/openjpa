@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceException;
-import javax.persistence.Tuple;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.Tuple;
 
 import org.apache.openjpa.persistence.simple.NamedEntity;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;

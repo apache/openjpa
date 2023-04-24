@@ -49,10 +49,10 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipFile;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 
 import serp.bytecode.BCClass;
 import serp.bytecode.BCClassLoader;
@@ -117,8 +117,8 @@ import serp.bytecode.Project;
  * <li>AnnotatedElement.getAnnotations
  * <li>AnnotatedElement.getDeclaredAnnotations
  * <li>AnnotatedElement.isAnnotationPresent
- * <li>javax.validation.Validator.validate
- * <li>javax.validation.Validation.buildDefaultValidatorFactory
+ * <li>jakarta.validation.Validator.validate
+ * <li>jakarta.validation.Validation.buildDefaultValidatorFactory
  * </ul>
  *
  * If these methods are used, the following sample usage patterns should be
@@ -1303,7 +1303,7 @@ public abstract class J2DoPrivHelper {
     }
 
     /**
-     * Return a PrivilegeAction object for javax.validation.Validator.validate().
+     * Return a PrivilegeAction object for jakarta.validation.Validator.validate().
      *
      * Requires security policy: 'permission java.lang.RuntimePermission "accessDeclaredMemeber";'
      */
@@ -1318,7 +1318,7 @@ public abstract class J2DoPrivHelper {
     }
 
     /**
-     * Return a PrivilegeAction object for javax.validation.Validation.buildDefaultValidatorFactory().
+     * Return a PrivilegeAction object for jakarta.validation.Validation.buildDefaultValidatorFactory().
      *
      * Requires security policy: 'permission java.lang.RuntimePermission "createClassLoader";'
      */

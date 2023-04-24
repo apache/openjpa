@@ -17,9 +17,9 @@
  * under the License.
  */
 package org.apache.openjpa.persistence.annotations;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class PColl_EntityB {

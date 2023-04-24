@@ -22,8 +22,8 @@ package org.apache.openjpa.persistence.jdbc.common.apps;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 
 @Entity

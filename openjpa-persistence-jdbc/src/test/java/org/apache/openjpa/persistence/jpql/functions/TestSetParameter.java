@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.jpql.functions;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.common.apps.Address;

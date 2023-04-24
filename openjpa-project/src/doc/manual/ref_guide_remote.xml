@@ -102,7 +102,7 @@ version. See the migration section
 In JPA, objects detach automatically when they are serialized or when a
 <link linkend="jpa_overview_emfactory_perscontext">persistence context</link>
 ends. The specification also allows objects to be explicitly detached using
-the following javax.persistence.EntityManager method:
+the following jakarta.persistence.EntityManager method:
 </para>
 <programlisting>
 public void detach(Object)
@@ -577,13 +577,13 @@ JVMs. Defaults to <literal>topic/OpenJPACommitProviderTopic</literal>
                     <listitem>
                         <para>
 <literal>TopicConnectionFactory</literal>: The JNDI name of a <classname>
-javax.jms.TopicConnectionFactory</classname> factory to use for finding topics.
+jakarta.jms.TopicConnectionFactory</classname> factory to use for finding topics.
 Defaults to <literal> java:/ConnectionFactory</literal>. This setting may vary
 depending on the application server in use; consult the application server's
 documentation for details of the default JNDI name for the <classname>
-javax.jms.TopicConnectionFactory</classname> instance. For example, under
+jakarta.jms.TopicConnectionFactory</classname> instance. For example, under
 Weblogic, the JNDI name for the TopicConnectionFactory is <literal>
-javax.jms.TopicConnectionFactory</literal>.
+jakarta.jms.TopicConnectionFactory</literal>.
                         </para>
                     </listitem>
                     <listitem>

@@ -1986,7 +1986,7 @@ public interface OpenJPAConfiguration
 
     /**
      * database action from the persistence unit.
-     * See 'javax.persistence.schema-generation.database.action'
+     * See 'jakarta.persistence.schema-generation.database.action'
      * @return openjpa internal schemaAction which corresponds to the JPA action.
      * @since 3.0.0
      */

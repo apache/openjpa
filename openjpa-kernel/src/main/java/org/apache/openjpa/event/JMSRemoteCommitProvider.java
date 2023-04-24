@@ -20,18 +20,18 @@ package org.apache.openjpa.event;
 
 import java.util.Properties;
 
-import javax.jms.ExceptionListener;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.ObjectMessage;
-import javax.jms.Session;
-import javax.jms.Topic;
-import javax.jms.TopicConnection;
-import javax.jms.TopicConnectionFactory;
-import javax.jms.TopicPublisher;
-import javax.jms.TopicSession;
-import javax.jms.TopicSubscriber;
+import jakarta.jms.ExceptionListener;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.MessageListener;
+import jakarta.jms.ObjectMessage;
+import jakarta.jms.Session;
+import jakarta.jms.Topic;
+import jakarta.jms.TopicConnection;
+import jakarta.jms.TopicConnectionFactory;
+import jakarta.jms.TopicPublisher;
+import jakarta.jms.TopicSession;
+import jakarta.jms.TopicSubscriber;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -197,7 +197,7 @@ public class JMSRemoteCommitProvider
     }
 
     /* *
-     * Returns a {@link javax.jms.MessageListener} capable of
+     * Returns a {@link jakarta.jms.MessageListener} capable of
      * understanding and processing messages created by {@link #createMessage}.
      *  The listener returned by this method is responsible for
      * notifying the provider that a remote event has been received.

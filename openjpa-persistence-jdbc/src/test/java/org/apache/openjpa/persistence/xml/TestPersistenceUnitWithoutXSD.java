@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.xml;
 
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.persistence.OpenJPAPersistence;

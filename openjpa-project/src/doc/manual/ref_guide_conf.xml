@@ -418,19 +418,19 @@ and their OpenJPA equivalent.
             </thead>
             <tbody>
                 <row>
-                    <entry colname="StandardJPA">javax.persistence.jdbc.driver</entry>
+                    <entry colname="StandardJPA">jakarta.persistence.jdbc.driver</entry>
                     <entry colname="OpenJPAEquivalent">openjpa.ConnectionDriverName</entry>
                 </row>
                 <row>
-                    <entry colname="StandardJPA">javax.persistence.jdbc.url</entry>
+                    <entry colname="StandardJPA">jakarta.persistence.jdbc.url</entry>
                     <entry colname="OpenJPAEquivalent">openjpa.ConnectionURL</entry>
                 </row>
                 <row>
-                    <entry colname="StandardJPA">javax.persistence.jdbc.user</entry>
+                    <entry colname="StandardJPA">jakarta.persistence.jdbc.user</entry>
                     <entry colname="OpenJPAEquivalent">openjpa.ConnectionUserName</entry>
                 </row>
                 <row>
-                    <entry colname="StandardJPA">javax.persistence.jdbc.password</entry>
+                    <entry colname="StandardJPA">jakarta.persistence.jdbc.password</entry>
                     <entry colname="OpenJPAEquivalent">openjpa.ConnectionPassword</entry>
                 </row>
            </tbody>

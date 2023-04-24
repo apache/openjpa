@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.managedinterface;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 import org.apache.openjpa.persistence.ManagedInterface;
 

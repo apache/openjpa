@@ -27,10 +27,10 @@
         <class>demo.Actor</class>
 
         <properties>
-        <property name="javax.persistence.jdbc.driver"   value="com.mysql.jdbc.Driver"/>
-        <property name="javax.persistence.jdbc.url"      value="jdbc:mysql://localhost/jest"/>
-        <property name="javax.persistence.jdbc.user"     value="root"/>
-        <property name="javax.persistence.jdbc.password" value=""/>
+        <property name="jakarta.persistence.jdbc.driver"   value="com.mysql.jdbc.Driver"/>
+        <property name="jakarta.persistence.jdbc.url"      value="jdbc:mysql://localhost/jest"/>
+        <property name="jakarta.persistence.jdbc.user"     value="root"/>
+        <property name="jakarta.persistence.jdbc.password" value=""/>
         <property name="openjpa.ConnectionFactoryProperties" value="PrintParameters=true"/>
         <property name="openjpa.Log" value="Tool=Trace,SQL=TRACE,Remote=TRACE"/>
         <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>

@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.datacache.common.apps;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 @Entity
 /**

@@ -28,7 +28,7 @@ package org.apache.openjpa.persistence.query;
 
 import java.util.Collection;
 
-import javax.persistence.TypedQuery;
+import jakarta.persistence.TypedQuery;
 
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;

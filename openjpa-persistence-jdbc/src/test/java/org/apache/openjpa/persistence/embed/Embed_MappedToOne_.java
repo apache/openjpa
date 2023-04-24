@@ -23,9 +23,9 @@
 
 package org.apache.openjpa.persistence.embed;
 
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.StaticMetamodel
+@jakarta.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.embed.Embed_MappedToOne.class)
 public class Embed_MappedToOne_ {
     public static volatile SingularAttribute<Embed_MappedToOne,EntityB1> bm;

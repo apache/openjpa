@@ -20,8 +20,8 @@ package org.apache.openjpa.persistence.kernel;
 
 import java.util.ArrayList;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 

@@ -20,10 +20,10 @@ package org.apache.openjpa.integration.validation;
 
 import java.io.Serializable;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToOne;
-import javax.persistence.Transient;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Transient;
 
 @Entity(name="VCustomer")
 public class Customer extends Person implements ICustomer, Serializable {

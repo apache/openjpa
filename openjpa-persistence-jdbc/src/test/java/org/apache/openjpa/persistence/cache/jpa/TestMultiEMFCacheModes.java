@@ -20,12 +20,12 @@ package org.apache.openjpa.persistence.cache.jpa;
 
 import java.util.Random;
 
-import javax.persistence.Cache;
-import javax.persistence.CacheStoreMode;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.LockModeType;
+import jakarta.persistence.Cache;
+import jakarta.persistence.CacheStoreMode;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.LockModeType;
 
 import org.apache.openjpa.persistence.cache.jpa.model.CacheableEntity;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -46,7 +46,7 @@ public class TestMultiEMFCacheModes extends SingleEMFTestCase {
 
     /**
      * Verifies that the data cache us updated via a em.refresh operation when
-     * javax.persistence.cache.storeMode = CacheStoreMode.REFRESH and the
+     * jakarta.persistence.cache.storeMode = CacheStoreMode.REFRESH and the
      * entity is updated in the database.
      */
     public void testCacheRefreshModeRefresh() {
@@ -94,7 +94,7 @@ public class TestMultiEMFCacheModes extends SingleEMFTestCase {
         // Refresh the entity - this will load the entity into the L1 and with storeMode=REFRESH,
         // should also refresh it in the L2
         java.util.Map<String, Object> cacheStoreModeMap = new java.util.HashMap<>();
-        cacheStoreModeMap.put("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH);
+        cacheStoreModeMap.put("jakarta.persistence.cache.storeMode", CacheStoreMode.REFRESH);
         em.refresh(ce, cacheStoreModeMap);
 
         // Verify the entity was updated
@@ -123,7 +123,7 @@ public class TestMultiEMFCacheModes extends SingleEMFTestCase {
 
     /**
      * Verifies that the data cache us updated via a em.refresh operation when
-     * javax.persistence.cache.storeMode = CacheStoreMode.REFRESH and the
+     * jakarta.persistence.cache.storeMode = CacheStoreMode.REFRESH and the
      * record is removed from the database.
      */
     public void testCacheRefreshModeRefreshDelete() {
@@ -169,7 +169,7 @@ public class TestMultiEMFCacheModes extends SingleEMFTestCase {
         // Refresh the entity with storeMode=REFRESH.  The entity has been deleted so it will be
         // purged from the L2 cache when the DB load fails.
         java.util.Map<String, Object> cacheStoreModeMap = new java.util.HashMap<>();
-        cacheStoreModeMap.put("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH);
+        cacheStoreModeMap.put("jakarta.persistence.cache.storeMode", CacheStoreMode.REFRESH);
         try {
             em.refresh(ce, cacheStoreModeMap);
             fail("Refresh operation should have thrown an exception");

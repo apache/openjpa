@@ -25,9 +25,9 @@ import java.security.AccessController;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.validation.ConstraintViolationException;
-import javax.validation.Path;
-import javax.validation.TraversableResolver;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Path;
+import jakarta.validation.TraversableResolver;
 
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;

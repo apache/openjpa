@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.criteria;
 
 import java.util.Collection;
 
-import javax.persistence.criteria.ParameterExpression;
+import jakarta.persistence.criteria.ParameterExpression;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Value;

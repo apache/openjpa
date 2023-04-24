@@ -21,7 +21,7 @@ package org.apache.openjpa.persistence.lockmgr;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.jdbc.JDBCFetchPlan;
@@ -47,7 +47,7 @@ public class TestEmLockTimeout extends SequencedActionsTest {
     public void testSetJavaxLockTimeoutAtProviderCreateEmf() {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"
-            , "javax.persistence.lock.timeout", "13"
+            , "jakarta.persistence.lock.timeout", "13"
             );
 
         EntityManager em = emf.createEntityManager();
@@ -71,7 +71,7 @@ public class TestEmLockTimeout extends SequencedActionsTest {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"
             , "openjpa.LockTimeout", 122
-            , "javax.persistence.lock.timeout", "133"
+            , "jakarta.persistence.lock.timeout", "133"
             );
 
         EntityManager em = emf.createEntityManager();
@@ -92,13 +92,13 @@ public class TestEmLockTimeout extends SequencedActionsTest {
     public void testSetJavaxLockTimeoutAtFind() {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"
-            , "javax.persistence.lock.timeout", "13"
+            , "jakarta.persistence.lock.timeout", "13"
             );
 
         EntityManager em = emf.createEntityManager();
 
         Map<String,Object> props2 = new HashMap<>();
-        props2.put("javax.persistence.lock.timeout", 3333);
+        props2.put("jakarta.persistence.lock.timeout", 3333);
         em.find(LockEmployee.class, 1, props2);
 
         OpenJPAEntityManager oem = (OpenJPAEntityManager)em.getDelegate();

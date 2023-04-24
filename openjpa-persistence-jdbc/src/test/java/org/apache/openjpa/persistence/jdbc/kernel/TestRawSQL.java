@@ -25,7 +25,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Iterator;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.kernel.GenericResultObjectProvider;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;

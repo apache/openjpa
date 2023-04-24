@@ -18,20 +18,13 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
-import java.io.Serializable;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 public class TestEJBNoPersistentFields extends AbstractTestCase {
 
-    private Nholder holder;
+    private TestEJBNoPersistentFieldsNholderEntity holder;
 
     public TestEJBNoPersistentFields(String test) {
         super(test, "kernelcactusapp");
@@ -39,21 +32,21 @@ public class TestEJBNoPersistentFields extends AbstractTestCase {
 
     @Override
     public void setUp() throws Exception {
-        deleteAll(Nholder.class);
+        deleteAll(TestEJBNoPersistentFieldsNholderEntity.class);
     }
 
     public void testNoPersistentFields() {
         EntityManager em = currentEntityManager();
         startTx(em);
 
-        holder = new Nholder();
-        holder.setNpf(new NoPersistentFieldsPC());
+        holder = new TestEJBNoPersistentFieldsNholderEntity();
+        holder.setNpf(new EJBNoPersistentFieldsNoPersistentFieldsPCEntity());
         holder.setIdKey(1);
 
         em.persist(holder);
         endTx(em);
 
-        Nholder holder2 = em.find(Nholder.class, 1);
+        TestEJBNoPersistentFieldsNholderEntity holder2 = em.find(TestEJBNoPersistentFieldsNholderEntity.class, 1);
         assertEquals(1, holder2.getIdKey());
         assertNotNull(holder2);
         assertNotNull(holder2.getNpf());
@@ -61,47 +54,4 @@ public class TestEJBNoPersistentFields extends AbstractTestCase {
         endEm(em);
     }
 
-    @Entity
-    @Table(name = "nholder2")
-    public static class Nholder implements Serializable {
-        private static final long serialVersionUID = 1L;
-
-        @Id
-        private int idkey;
-
-        @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
-        private NoPersistentFieldsPC npf;
-
-        public Nholder() {
-        }
-
-        public Nholder(NoPersistentFieldsPC npf, int idkey) {
-            this.npf = npf;
-            this.idkey = idkey;
-        }
-
-        public void setNpf(NoPersistentFieldsPC npf) {
-            this.npf = npf;
-        }
-
-        public NoPersistentFieldsPC getNpf() {
-            return this.npf;
-        }
-
-        public int getIdKey() {
-            return idkey;
-        }
-
-        public void setIdKey(int idkey) {
-            this.idkey = idkey;
-        }
-    }
-
-    @Entity
-    @Table(name = "npfp")
-    public static class NoPersistentFieldsPC implements Serializable {
-        private static final long serialVersionUID = 1L;
-        public transient int blankInt;
-        public transient String blankString;
-    }
 }

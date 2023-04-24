@@ -111,7 +111,7 @@
             <para>
             By default, any query is executed against all available slices.
 			However, the application can target the query only to a subset of
-			slices by setting <emphasis>hint</emphasis> on <classname>javax.persistence.Query</classname>.
+			slices by setting <emphasis>hint</emphasis> on <classname>jakarta.persistence.Query</classname>.
 			The hint key is  <classname>openjpa.hint.slice.Target</classname> and
             hint value is an array of slice identifiers. The following
             example shows how to target a query only to a pair of slices
@@ -189,7 +189,7 @@
 		 <para>
 			 Slice runtime invokes this user-supplied method for the newly
 			 persistent instance that is explicit argument of the
-			 <classname>javax.persistence.EntityManager.persist(Object pc)</classname>
+			 <classname>jakarta.persistence.EntityManager.persist(Object pc)</classname>
 			 method. The user application must return a valid slice name from
 			 this method to designate the target slice for the given instance.
 			 The data distribution policy may be based on the attribute

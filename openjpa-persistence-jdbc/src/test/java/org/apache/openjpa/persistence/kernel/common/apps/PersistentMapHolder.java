@@ -21,8 +21,8 @@ package org.apache.openjpa.persistence.kernel.common.apps;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
 
 import org.apache.openjpa.persistence.PersistentMap;
 import org.apache.openjpa.persistence.jdbc.KeyColumn;

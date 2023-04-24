@@ -25,9 +25,9 @@ package org.apache.openjpa.persistence.embed;
 
 import java.util.Date;
 
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.StaticMetamodel
+@jakarta.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.embed.EmployeePK2.class)
 public class EmployeePK2_ {
     public static volatile SingularAttribute<EmployeePK2,Date> bDay;

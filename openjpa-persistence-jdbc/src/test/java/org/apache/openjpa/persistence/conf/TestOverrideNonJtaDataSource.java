@@ -21,10 +21,10 @@ package org.apache.openjpa.persistence.conf;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.RollbackException;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.RollbackException;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
@@ -103,14 +103,14 @@ public class TestOverrideNonJtaDataSource extends SingleEMFTestCase {
 
     public void testConnectionFactoryName() {
         // Disable for non-Derby.
-        // split out so that we can try javax.persistence.jtaDataSource in the future.
+        // split out so that we can try jakarta.persistence.jtaDataSource in the future.
         overridePropertyOnEM("openjpa.ConnectionFactory2Name", jndiNames[0]);
     }
 
     public void testJtaDataSource() {
         // Disable for non-Derby.
-        // split out so that we can try javax.persistence.jtaDataSource in the future.
-        overridePropertyOnEM("javax.persistence.nonJtaDataSource", jndiNames[0]);
+        // split out so that we can try jakarta.persistence.jtaDataSource in the future.
+        overridePropertyOnEM("jakarta.persistence.nonJtaDataSource", jndiNames[0]);
     }
 
     public void overridePropertyOnEM(String name, String value) {

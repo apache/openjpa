@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.maps.m2mmapex9;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class FullName {

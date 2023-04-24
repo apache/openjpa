@@ -17,9 +17,9 @@
  * under the License.
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
 
 @Embeddable
 public class PropertyOwner {

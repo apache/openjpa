@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
 @Entity
 @DiscriminatorValue("SUB")

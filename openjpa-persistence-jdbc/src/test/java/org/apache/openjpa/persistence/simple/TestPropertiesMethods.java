@@ -23,8 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Persistence;
 
 import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.conf.Value;
@@ -60,7 +60,7 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
 /* no funky  */ config.put("openjpa.DynamicEnhancementAgent", "false");
 
 // following properties are not used becuase that makes the test dependent on database specifics
-/* equiv key */ //config.put("javax.persistence.jdbc.url", "jdbc:derby:target/database/test;create=true");
+/* equiv key */ //config.put("jakarta.persistence.jdbc.url", "jdbc:derby:target/database/test;create=true");
 /* prime use */ //config.put("openjpa.ConnectionUserName", "root");
 
         emf = OpenJPAPersistence.cast(Persistence.createEntityManagerFactory(UNIT_NAME, config));
@@ -86,7 +86,7 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
     public void testConfigurationPrefixes() {
         String[] prefixes = ProductDerivations.getConfigurationPrefixes();
         assertEquals("openjpa", prefixes[0]);
-        assertTrue(Arrays.asList(prefixes).contains("javax.persistence"));
+        assertTrue(Arrays.asList(prefixes).contains("jakarta.persistence"));
     }
 
     public void testEMNumericPropertyValueForEnumTypeIsReturnedAsString() {
@@ -143,13 +143,13 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
         assertTrue(emSupportedProperties.contains("openjpa.AutoDetach"));
 
         // Make sure the all possible keys are returned
-        assertTrue(emSupportedProperties.contains("javax.persistence.lock.timeout"));
+        assertTrue(emSupportedProperties.contains("jakarta.persistence.lock.timeout"));
         assertTrue(emSupportedProperties.contains("openjpa.LockTimeout"));
 
         // Make sure the spec property for query timeout, that only has one
         // key, is returned.
-        assertTrue(emSupportedProperties.contains("javax.persistence.query.timeout"));
-        assertFalse(emSupportedProperties.contains("openjpa.javax.persistence.query.timeout"));
+        assertTrue(emSupportedProperties.contains("jakarta.persistence.query.timeout"));
+        assertFalse(emSupportedProperties.contains("openjpa.jakarta.persistence.query.timeout"));
     }
 
     /**
@@ -181,7 +181,7 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
 
     /**
      * Certain logical property such as ConnectionUserName can appear under different
-     * keys such as openjpa.ConnectionUserName or javax.persistence.jdbc.user.
+     * keys such as openjpa.ConnectionUserName or jakarta.persistence.jdbc.user.
      * The key under which the property value appears depends on the key under which
      * property value was loaded into the configuration.
      *
@@ -192,7 +192,7 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
 
         // This property was loaded with equivalent javax. key
         assertFalse(props.containsKey("openjpa.ConnectionURL"));
-        assertTrue(props.containsKey("javax.persistence.jdbc.url"));
+        assertTrue(props.containsKey("jakarta.persistence.jdbc.url"));
     }
 
     // Not run because that makes these tests database specific
@@ -201,7 +201,7 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
 
         // This property was loaded with primary openjpa. key
         assertTrue(props.containsKey("openjpa.ConnectionUserName"));
-        assertFalse(props.containsKey("javax.persistence.jdbc.user"));
+        assertFalse(props.containsKey("jakarta.persistence.jdbc.user"));
     }
 
     /**
@@ -255,7 +255,7 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
     public void testEquivalentKeysArePresentInSupportedProperties() {
         Set<String> keys = em.getSupportedProperties();
         assertTrue(keys.contains("openjpa.ConnectionURL"));
-        assertTrue(keys.contains("javax.persistence.jdbc.url"));
+        assertTrue(keys.contains("jakarta.persistence.jdbc.url"));
     }
 
     public void testPasswordValuesAreInvisible() {

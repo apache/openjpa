@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.inheritance.mappedsuperclass;
 
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.MappedSuperclass;
 
 /**
  * This class has the same name as {@link

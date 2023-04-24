@@ -21,7 +21,7 @@ package org.apache.openjpa.persistence.jdbc;
 import java.sql.ResultSet;
 import java.util.Collection;
 
-import javax.persistence.LockModeType;
+import jakarta.persistence.LockModeType;
 
 import org.apache.openjpa.jdbc.kernel.DelegatingJDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.EagerFetchModes;

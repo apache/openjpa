@@ -20,7 +20,7 @@ package org.apache.openjpa.ee;
 
 import java.lang.reflect.Method;
 
-import javax.transaction.TransactionManager;
+import jakarta.transaction.TransactionManager;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.conf.Configurable;

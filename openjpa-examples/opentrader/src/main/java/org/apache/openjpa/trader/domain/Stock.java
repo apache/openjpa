@@ -20,9 +20,9 @@ package org.apache.openjpa.trader.domain;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 /**
  * A stock is a typical financial instrument that is bought and sold by {@linkplain Trader}.

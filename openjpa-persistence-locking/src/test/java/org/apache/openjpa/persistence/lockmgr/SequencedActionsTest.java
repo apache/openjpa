@@ -31,9 +31,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.LockModeType;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.Query;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
@@ -63,17 +63,17 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
     protected static final String Default_FirstName = "Def FirstName";
     protected static final Class<?>[] ExpectingOptimisticLockExClass =
         new Class<?>[]
-            { javax.persistence.OptimisticLockException.class };
+            { jakarta.persistence.OptimisticLockException.class };
     protected static final Class<?>[] ExpectingPessimisticLockExClass =
         new Class<?>[]
-            { javax.persistence.PessimisticLockException.class };
+            { jakarta.persistence.PessimisticLockException.class };
     protected static final Class<?>[] ExpectingLockTimeoutExClass =
         new Class<?>[]
-            { javax.persistence.LockTimeoutException.class };
+            { jakarta.persistence.LockTimeoutException.class };
     protected static final Class<?>[] ExpectingAnyLockExClass =
         new Class<?>[] {
-            javax.persistence.PessimisticLockException.class,
-            javax.persistence.LockTimeoutException.class };
+            jakarta.persistence.PessimisticLockException.class,
+            jakarta.persistence.LockTimeoutException.class };
 
     protected static final int MinThreadWaitInMs = 10000;
 

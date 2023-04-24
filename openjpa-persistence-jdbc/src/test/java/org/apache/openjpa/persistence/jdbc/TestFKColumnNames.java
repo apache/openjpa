@@ -18,11 +18,7 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.Persistence;
+import jakarta.persistence.Persistence;
 
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
@@ -52,63 +48,12 @@ public class TestFKColumnNames extends AbstractPersistenceTestCase {
                 (MappingRepository) emf.getConfiguration()
                         .getMetaDataRepositoryInstance();
 
-        assertEquals("SELECT_ID", repos.getMapping(Inner1.class, null, true)
+        assertEquals("SELECT_ID", repos.getMapping(FKColumnNamesInner1Entity.class, null, true)
                 .getFieldMapping("select").getColumns()[0].getName());
 
-        assertEquals("FROM_ID", repos.getMapping(Inner2.class, null, true)
+        assertEquals("FROM_ID", repos.getMapping(FKColumnNamesInner2Entity.class, null, true)
                 .getFieldMapping("from").getColumns()[0].getName());
         closeEMF(emf);
     }
 
-    @Entity
-    public static class Inner1 {
-        @Id
-        @GeneratedValue
-        int id;
-
-        @OneToOne
-        Inner2 select;
-
-        public Inner2 getSelect() {
-            return select;
-        }
-
-        public void setSelect(Inner2 select) {
-            this.select = select;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public void setId(int id) {
-            this.id = id;
-        }
-    }
-
-    @Entity
-    public static class Inner2 {
-        @Id
-        @GeneratedValue
-        int id;
-
-        @OneToOne
-        Inner1 from;
-
-        public Inner1 getFrom() {
-            return from;
-        }
-
-        public void setFrom(Inner1 from) {
-            this.from = from;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public void setId(int id) {
-            this.id = id;
-        }
-    }
 }

@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.persistence.kernel.common.apps;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 /**
  * <p>Embedded type used in testing.</p>

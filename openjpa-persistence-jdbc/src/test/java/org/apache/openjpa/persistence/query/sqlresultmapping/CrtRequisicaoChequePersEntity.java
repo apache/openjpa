@@ -18,13 +18,13 @@
  */
 package org.apache.openjpa.persistence.query.sqlresultmapping;
 
-import javax.persistence.Entity;
-import javax.persistence.EntityResult;
-import javax.persistence.FieldResult;
-import javax.persistence.ManyToOne;
-import javax.persistence.SqlResultSetMapping;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityResult;
+import jakarta.persistence.FieldResult;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SqlResultSetMapping;
 
-@javax.persistence.Table(name = "CRT_REQUISICAO_CHEQUE_PERS")
+@jakarta.persistence.Table(name = "CRT_REQUISICAO_CHEQUE_PERS")
 @Entity
 @SqlResultSetMapping(name = "MyResultMapping", entities = {
     @EntityResult(entityClass = CrtRequisicaoChequePersEntity.class, fields = {
@@ -35,7 +35,7 @@ import javax.persistence.SqlResultSetMapping;
 public class CrtRequisicaoChequePersEntity extends CrtRequisicaoEntity {
 
     @ManyToOne
-    @javax.persistence.JoinColumn(name = "OPERACAO_RECEPCAO_SERV_CENT", referencedColumnName = "ID")
+    @jakarta.persistence.JoinColumn(name = "OPERACAO_RECEPCAO_SERV_CENT", referencedColumnName = "ID")
     private CrtOperacaoEntity crtOperacaoByOperacaoRecepcaoServCent;
 
     public CrtOperacaoEntity getCrtOperacaoByOperacaoRecepcaoServCent() {
@@ -49,7 +49,7 @@ public class CrtRequisicaoChequePersEntity extends CrtRequisicaoEntity {
     }
 
     @ManyToOne
-    @javax.persistence.JoinColumn(name = "OPERACAO_REQUISICAO", referencedColumnName = "ID", nullable = false)
+    @jakarta.persistence.JoinColumn(name = "OPERACAO_REQUISICAO", referencedColumnName = "ID", nullable = false)
     private CrtOperacaoEntity crtOperacaoByOperacaoRequisicao;
 
     public CrtOperacaoEntity getCrtOperacaoByOperacaoRequisicao() {

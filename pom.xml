@@ -26,20 +26,20 @@
     <parent>
       <groupId>org.apache</groupId>
       <artifactId>apache</artifactId>
-      <version>23</version>
+      <version>29</version>
     </parent>
 
     <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-parent</artifactId>
     <packaging>pom</packaging>
     <name>OpenJPA Parent POM</name>
-    <description>Apache OpenJPA implementation of JSR-338 JPA 2.2</description>
+    <description>Apache OpenJPA implementation of Jakarta JPA 3.1</description>
 
-    <version>3.2.3-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
 
     <properties>
-        <java.class.version>1.8</java.class.version>
-        <java.testclass.version>1.8</java.testclass.version>
+        <java.class.version>11</java.class.version>
+        <java.testclass.version>11</java.testclass.version>
 
         <doclint>none</doclint>
 
@@ -50,7 +50,6 @@
 
         <site.deploy.url>scp://people.apache.org/home/${site.deploy.user.name}/public_html/openjpa/${project.version}/staging-site</site.deploy.url>
         <!-- the test settings can be overridden my specific profiles -->
-        <test.jvm.maxpermsize>512m</test.jvm.maxpermsize>
         <test.jvm.maxheapsize>1024m</test.jvm.maxheapsize>
         <test.jvm.arguments>-Xmx${test.jvm.maxheapsize} -XX:+HeapDumpOnOutOfMemoryError</test.jvm.arguments>
         <surefire.jvm.args>${test.jvm.arguments}</surefire.jvm.args>
@@ -77,7 +76,7 @@
         <createSource>none</createSource>
         <createSources>false</createSources>
         <!-- common JDBC driver versions -->
-        <derby.version>10.14.2.0</derby.version>
+        <derby.version>10.15.2.0</derby.version>
         <hsqldb.version>2.5.1</hsqldb.version>
         <mysql.connector.version>5.1.49</mysql.connector.version>
         <mariadb.connector.version>2.7.2</mariadb.connector.version>
@@ -98,13 +97,20 @@
         <maven.surefire.version>3.0.0-M7</maven.surefire.version>
 
         <xbean.version>4.20</xbean.version>
-        <bval.version>1.1.2</bval.version>
+        <bval.version>3.0.0-SNAPSHOT</bval.version>
         <log4j2.version>2.19.0</log4j2.version>
         <ant.version>1.10.12</ant.version>
 
         <jmock.version>2.9.0</jmock.version>
         <dbcp2.version>2.8.0</dbcp2.version>
-	<pool2.version>2.9.0</pool2.version>
+        <pool2.version>2.9.0</pool2.version>
+
+        <jakarta.annotation-api.version>2.1.1</jakarta.annotation-api.version>
+        <jakarta.persistence-api.version>3.0.0</jakarta.persistence-api.version>
+        <jakarta.transaction-api.version>2.0.1</jakarta.transaction-api.version>
+        <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
+        <jakarta.jms-api.version>3.1.0</jakarta.jms-api.version>
+
     </properties>
 
     <licenses>
@@ -229,7 +235,7 @@
                             <numUnapprovedLicenses>0</numUnapprovedLicenses>
                             <excludes>
                                 <!-- comments are usupported in services files -->
-                                <exclude>**/javax.persistence.spi.PersistenceProvider</exclude>
+                                <exclude>**/jakarta.persistencespi.PersistenceProvider</exclude>
                                 <exclude>**/javax.annotation.processing.Processor</exclude>
                                 <!-- comments are usupported by our rsrc parser -->
                                 <exclude>**/*.rsrc</exclude>
@@ -425,6 +431,11 @@
                     <artifactId>derby</artifactId>
                     <scope>test</scope>
                 </dependency>
+                <dependency>
+                    <groupId>org.apache.derby</groupId>
+                    <artifactId>derbytools</artifactId>
+                    <scope>test</scope>
+                </dependency>
             </dependencies>
             <properties>
                 <connection.driver.name>org.apache.derby.jdbc.EmbeddedDriver</connection.driver.name>
@@ -508,6 +519,12 @@
                 <dependency>
                     <groupId>org.apache.derby</groupId>
                     <artifactId>derby</artifactId>
+                    <version>${derby.version}</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.derby</groupId>
+                    <artifactId>derbytools</artifactId>
                     <version>${derby.version}</version>
                     <scope>test</scope>
                 </dependency>
@@ -1752,7 +1769,7 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-pool2</artifactId>
-		<version>${pool2.version}</version>
+                <version>${pool2.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-logging</groupId>
@@ -1770,26 +1787,33 @@
                   </exclusion>
                 </exclusions>
             </dependency>
+
             <dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-jpa_2.2_spec</artifactId>
-                <version>1.1</version>
+                <groupId>jakarta.persistence</groupId>
+                <artifactId>jakarta.persistence-api</artifactId>
+                <version>${jakarta.persistence-api.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-jms_1.1_spec</artifactId>
-                <version>1.1.1</version>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
+                <version>${jakarta.annotation-api.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-jta_1.1_spec</artifactId>
-                <version>1.1.1</version>
+                <groupId>jakarta.validation</groupId>
+                <artifactId>jakarta.validation-api</artifactId>
+                <version>${jakarta.validation-api.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-validation_1.1_spec</artifactId>
-                <version>1.0</version>
+                <groupId>jakarta.transaction</groupId>
+                <artifactId>jakarta.transaction-api</artifactId>
+                <version>${jakarta.transaction-api.version}</version>
             </dependency>
+            <dependency>
+                <groupId>jakarta.jms</groupId>
+                <artifactId>jakarta.jms-api</artifactId>
+                <version>${jakarta.jms-api.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.apache.bval</groupId>
                 <artifactId>org.apache.bval.bundle</artifactId>
@@ -1798,6 +1822,11 @@
             <dependency>
                 <groupId>org.apache.derby</groupId>
                 <artifactId>derby</artifactId>
+                <version>${derby.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.derby</groupId>
+                <artifactId>derbytools</artifactId>
                 <version>${derby.version}</version>
             </dependency>
             <dependency>
@@ -1819,12 +1848,6 @@
                 <groupId>javax.xml.bind</groupId>
                 <artifactId>jaxb-api</artifactId>
                 <version>2.2.1</version>
-            </dependency>
-            <dependency>
-                <groupId>javax.annotation</groupId>
-                <artifactId>javax.annotation-api</artifactId>
-                <version>1.3.2</version>
-                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>com.sun.xml.bind</groupId>

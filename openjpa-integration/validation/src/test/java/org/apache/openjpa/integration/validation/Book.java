@@ -18,13 +18,13 @@
  */
 package org.apache.openjpa.integration.validation;
 
-import javax.persistence.Basic;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.validation.Valid;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 
 @Entity(name="Vbook")
 public class Book {

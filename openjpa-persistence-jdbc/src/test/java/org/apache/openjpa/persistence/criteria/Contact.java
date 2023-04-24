@@ -20,9 +20,9 @@ package org.apache.openjpa.persistence.criteria;
 
 import java.util.List;
 
-import javax.persistence.Embeddable;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 
 @Embeddable
 public class Contact {

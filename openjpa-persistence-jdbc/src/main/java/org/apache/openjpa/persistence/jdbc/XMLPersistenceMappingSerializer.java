@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.persistence.EnumType;
-import javax.persistence.TemporalType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.TemporalType;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;

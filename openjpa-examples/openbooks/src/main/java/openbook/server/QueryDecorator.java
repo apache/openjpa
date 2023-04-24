@@ -13,7 +13,7 @@
 */
 package openbook.server;
 
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 
 /**
  * Decorates an executable query.

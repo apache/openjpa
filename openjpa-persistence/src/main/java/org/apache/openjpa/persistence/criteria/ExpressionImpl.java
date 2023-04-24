@@ -21,9 +21,9 @@ package org.apache.openjpa.persistence.criteria;
 
 import java.util.Collection;
 
-import javax.persistence.criteria.CriteriaBuilder.In;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.CriteriaBuilder.In;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Predicate;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 

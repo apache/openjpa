@@ -20,14 +20,14 @@ package org.apache.openjpa.persistence.jdbc.common.apps.mappingApp;
 
 import java.io.Serializable;
 
-import javax.persistence.ColumnResult;
-import javax.persistence.Entity;
-import javax.persistence.EntityResult;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.PostLoad;
-import javax.persistence.SqlResultSetMapping;
-import javax.persistence.Table;
+import jakarta.persistence.ColumnResult;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityResult;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.SqlResultSetMapping;
+import jakarta.persistence.Table;
 
 /** Exemplifies a mapping that is overwritten in orm.xml file.
  *

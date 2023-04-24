@@ -20,7 +20,7 @@ package org.apache.openjpa.ee;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import javax.transaction.TransactionManager;
+import jakarta.transaction.TransactionManager;
 
 /**
  * Implementation of the {@link ManagedRuntime} interface that uses JNDI to

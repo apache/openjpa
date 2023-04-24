@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.identity;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 

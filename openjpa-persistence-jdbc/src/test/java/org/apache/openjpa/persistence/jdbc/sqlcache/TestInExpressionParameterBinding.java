@@ -22,7 +22,7 @@ package org.apache.openjpa.persistence.jdbc.sqlcache;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.persistence.TypedQuery;
+import jakarta.persistence.TypedQuery;
 
 import org.apache.openjpa.kernel.PreparedQuery;
 import org.apache.openjpa.kernel.PreparedQueryCache;

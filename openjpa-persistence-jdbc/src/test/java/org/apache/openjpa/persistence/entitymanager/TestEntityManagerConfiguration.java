@@ -22,7 +22,7 @@ package org.apache.openjpa.persistence.entitymanager;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.EntityManagerImpl;
 import org.apache.openjpa.persistence.datacache.common.apps.PObject;

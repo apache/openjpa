@@ -21,10 +21,10 @@ package org.apache.openjpa.persistence.models.company.idclass;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 
 import org.apache.openjpa.persistence.models.company.ICompany;
 import org.apache.openjpa.persistence.models.company.IProduct;

@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.kernel.common.apps.UnAnnotPojo;

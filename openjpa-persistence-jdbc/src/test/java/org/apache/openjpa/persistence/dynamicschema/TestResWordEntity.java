@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.dynamicschema;
 
 import java.util.Random;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;

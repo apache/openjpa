@@ -24,7 +24,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.AttributeConverter;
+import jakarta.persistence.AttributeConverter;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAProductDerivation;
@@ -64,7 +64,7 @@ public class JDBCPersistenceProductDerivation
         throws Exception {
         // make sure JPA is available
         AccessController.doPrivileged(J2DoPrivHelper.getClassLoaderAction(
-            javax.persistence.EntityManagerFactory.class));
+            jakarta.persistence.EntityManagerFactory.class));
     }
 
     @Override

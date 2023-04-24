@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
-import javax.persistence.InheritanceType;
+import jakarta.persistence.InheritanceType;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;

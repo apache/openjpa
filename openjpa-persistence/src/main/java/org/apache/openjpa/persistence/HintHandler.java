@@ -58,7 +58,7 @@ import org.apache.openjpa.lib.util.StringDistance;
  *    Their values are used to set the corresponding property of {@link
  *    FetchPlan} via {@link #hintToSetter(FetchPlan, String, Object) reflection}
  *
- * 3. Currently defined <code>javax.persistence.*</code> hint keys have
+ * 3. Currently defined <code>jakarta.persistence.*</code> hint keys have
  *    a equivalent counterpart to one of these FetchPlan keys.
  *    The JPA keys are mapped to equivalent FetchPlan hint keys.
  *

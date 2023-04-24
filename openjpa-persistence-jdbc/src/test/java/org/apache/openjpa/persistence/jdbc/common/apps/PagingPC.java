@@ -21,7 +21,7 @@ package org.apache.openjpa.persistence.jdbc.common.apps;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 
 /**

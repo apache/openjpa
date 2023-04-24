@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.validation;
 
-import javax.persistence.ValidationMode;
+import jakarta.persistence.ValidationMode;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.log.Log;
@@ -31,7 +31,7 @@ import org.apache.openjpa.validation.ValidationUnavailableException;
  * Validation helper routines and wrappers to remove runtime dependencies
  * on the Bean Valdiation APIs or a implementation.
  *
- * Note:  This class should have no direct dependency on the javax.validation
+ * Note:  This class should have no direct dependency on the jakarta.validation
  *        packages, which should only occur in the ValidatorImpl class.
  *
  * @version $Rev$ $Date$
@@ -42,7 +42,7 @@ public class ValidationUtils {
         ValidationUtils.class);
 
     /**
-     * Setup Validation support by determining if the javax.validation APIs
+     * Setup Validation support by determining if the jakarta.validation APIs
      * are available and then create a Validator if required by the
      * provided configuration.
      * @param conf
@@ -66,15 +66,15 @@ public class ValidationUtils {
             boolean bValRequired = String.valueOf(ValidationMode.CALLBACK)
                 .equalsIgnoreCase(conf.getValidationMode());
             try {
-                // see if the javax.validation spec api is available
+                // see if the jakarta.validation spec api is available
                 if (log.isTraceEnabled()) {
-                    log.trace("Trying to load javax.validation APIs " +
+                    log.trace("Trying to load jakarta.validation APIs " +
                         "based on the ValidationMode="
                         + conf.getValidationMode());
                 }
                 @SuppressWarnings("unused")
                 Class<?> c = Class.forName(
-                    "javax.validation.ValidationException");
+                    "jakarta.validation.ValidationException");
             } catch (ClassNotFoundException e) {
                 if (bValRequired) {
                     // fatal error - ValidationMode requires a validator
@@ -88,12 +88,12 @@ public class ValidationUtils {
                     // no optional validation provider, so just trace output
                     if (log.isTraceEnabled()) {
                         log.trace(_loc.get("vlem-creation-warn",
-                            "No available javax.validation APIs"));
+                            "No available jakarta.validation APIs"));
                     }
                     return brc;
                 }
             }
-            // we have the javax.validation APIs
+            // we have the jakarta.validation APIs
             try {
                 // try loading a validation provider
                 ValidatorImpl validator = new ValidatorImpl(conf);
@@ -142,7 +142,7 @@ public class ValidationUtils {
             return false;
 
         if (e.getClass().getName().equals(
-            "javax.validation.ConstraintViolationException"))
+            "jakarta.validation.ConstraintViolationException"))
             return true;
 
         return false;

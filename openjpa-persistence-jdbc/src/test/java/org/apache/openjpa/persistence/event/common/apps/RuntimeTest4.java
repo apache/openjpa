@@ -21,7 +21,7 @@ package org.apache.openjpa.persistence.event.common.apps;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 @Entity
 public class RuntimeTest4 {

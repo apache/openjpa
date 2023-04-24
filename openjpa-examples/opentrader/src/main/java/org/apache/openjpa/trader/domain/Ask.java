@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.trader.domain;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 
 /**
  * An offer to sell a financial instrument.

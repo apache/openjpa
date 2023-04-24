@@ -16,7 +16,7 @@ package openbook.server;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 
 import openbook.domain.Book;
 import openbook.domain.Customer;

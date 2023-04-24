@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.apache.openjpa.datacache.ConcurrentQueryCache;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
@@ -97,7 +97,7 @@ public class TestQueryResultSize
         // query
         String jpql = "select p.name, c.name from CascadeParent p, CascadeChild c where p.name = c.name "
                 + "and p.name = 'p1'";
-        javax.persistence.Query query = pm.createQuery(jpql);
+        jakarta.persistence.Query query = pm.createQuery(jpql);
         List result1 = query.getResultList();
         assertEquals(1, result1.size());
 

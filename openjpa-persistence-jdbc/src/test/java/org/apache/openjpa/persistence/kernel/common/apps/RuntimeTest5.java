@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.kernel.common.apps;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name="RuntimeTest5k")

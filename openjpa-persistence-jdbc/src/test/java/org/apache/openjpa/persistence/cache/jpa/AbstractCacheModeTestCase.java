@@ -20,10 +20,10 @@ package org.apache.openjpa.persistence.cache.jpa;
 
 import java.util.List;
 
-import javax.persistence.Cache;
-import javax.persistence.CacheRetrieveMode;
-import javax.persistence.CacheStoreMode;
-import javax.persistence.EntityManager;
+import jakarta.persistence.Cache;
+import jakarta.persistence.CacheRetrieveMode;
+import jakarta.persistence.CacheStoreMode;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;

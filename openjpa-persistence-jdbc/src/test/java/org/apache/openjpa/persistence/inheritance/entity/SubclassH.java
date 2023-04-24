@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.persistence.inheritance.entity;
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
-import javax.persistence.OneToOne;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
 
 @Entity
 public class SubclassH extends MidClass2 {

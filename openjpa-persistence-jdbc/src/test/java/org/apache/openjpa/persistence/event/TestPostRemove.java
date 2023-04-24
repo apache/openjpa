@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.event;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jta.ContainerTest;
 

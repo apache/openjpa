@@ -22,10 +22,10 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-import javax.persistence.LockModeType;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.Query;
 
 import org.apache.openjpa.event.CallbackModes;
 import org.apache.openjpa.kernel.AutoClear;

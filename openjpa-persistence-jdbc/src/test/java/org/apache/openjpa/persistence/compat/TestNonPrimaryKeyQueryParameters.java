@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.persistence.compat;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.Query;
 
 import org.apache.openjpa.conf.OpenJPAVersion;
 import org.apache.openjpa.persistence.ArgumentException;

@@ -22,8 +22,8 @@ package org.apache.openjpa.persistence.jdbc.annotations;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
 
 import org.apache.openjpa.persistence.PersistentCollection;
 import org.apache.openjpa.persistence.jdbc.Nonpolymorphic;

@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence;
 
-import javax.persistence.EntityManager;
-import javax.persistence.spi.LoadState;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.spi.LoadState;
 
 import org.apache.openjpa.persistence.entity.EntityA;
 import org.apache.openjpa.persistence.entity.EntityB;

@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.relations;
 
 import java.util.Arrays;
 
-import javax.persistence.EntityTransaction;
+import jakarta.persistence.EntityTransaction;
 
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
 

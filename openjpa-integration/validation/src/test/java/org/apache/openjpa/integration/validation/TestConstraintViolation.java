@@ -22,10 +22,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
@@ -40,7 +40,7 @@ public class TestConstraintViolation extends AbstractPersistenceTestCase {
     @Override
     public void setUp() {
         Map<String, String> props = new HashMap<>();
-        props.put("javax.persistence.validation.group.pre-remove", "javax.validation.groups.Default");
+        props.put("jakarta.persistence.validation.group.pre-remove", "jakarta.validation.groups.Default");
 
         // This test case uses a different persistence xml file because validation require 2.0 xsd.
         emf2 = OpenJPAPersistence.createEntityManagerFactory("ConstraintViolationTestPU",

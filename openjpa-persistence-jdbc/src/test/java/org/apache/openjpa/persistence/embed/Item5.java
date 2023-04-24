@@ -22,11 +22,11 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.MapKeyTemporal;
-import javax.persistence.TemporalType;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.MapKeyTemporal;
+import jakarta.persistence.TemporalType;
 
 @Entity
 public class Item5 {

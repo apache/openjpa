@@ -17,8 +17,8 @@
  */
 package org.apache.openjpa.enhance;
 
-import javax.persistence.Entity;
-import javax.persistence.IdClass;
+import jakarta.persistence.Entity;
+import jakarta.persistence.IdClass;
 
 @Entity
 @IdClass(UnenhancedCompoundPKFieldAccessSubclass.PK.class)

@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.jdbc;
 
 import java.util.Collection;
 
-import javax.persistence.LockModeType;
+import jakarta.persistence.LockModeType;
 
 import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 import org.apache.openjpa.jdbc.kernel.LRSSizes;

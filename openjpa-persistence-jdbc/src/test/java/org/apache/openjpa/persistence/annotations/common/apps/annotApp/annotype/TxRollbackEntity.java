@@ -21,14 +21,14 @@ package
 
 import java.util.ArrayList;
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.PostLoad;
-import javax.persistence.PostRemove;
-import javax.persistence.Table;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PostRemove;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name="TX_ROLLBACK_ENT")

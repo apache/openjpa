@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.query.GroupingTestCase;
 

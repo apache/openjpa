@@ -107,7 +107,7 @@
         <property name="toplink.properties" value="${tck.dir}/bin/toplink-provider.properties" />
         <!-- create the OpenJPA properties for the TCK run -->
         <echo append="false" file="${openjpa.properties}">
-javax.persistence.provider: org.apache.openjpa.persistence.PersistenceProviderImpl
+jakarta.persistence.provider: org.apache.openjpa.persistence.PersistenceProviderImpl
 openjpa.ConnectionDriverName: ${db.driver}
 openjpa.ConnectionURL: ${db.url}
 openjpa.ConnectionUserName: ${db.username}
@@ -153,10 +153,10 @@ toplink.properties=${toplink.properties}
 # actually work for a given environment.
 sigTestClasspath=${javart.property}${path.separator}${cp.property}
 persistence.unit.properties.file.full.path=${provider.properties}
-javax.persistence.jdbc.driver: ${db.driver}
-javax.persistence.jdbc.url: ${db.url}
-javax.persistence.jdbc.user: ${db.username}
-javax.persistence.jdbc.password: ${db.password}
+jakarta.persistence.jdbc.driver: ${db.driver}
+jakarta.persistence.jdbc.url: ${db.url}
+jakarta.persistence.jdbc.user: ${db.username}
+jakarta.persistence.jdbc.password: ${db.password}
 database.driver=${db.driver}
 database.url=${db.url}
 database.user=${db.username}

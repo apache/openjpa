@@ -20,8 +20,8 @@ package org.apache.openjpa.persistence.datacache;
 
 import java.util.Collection;
 
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class CachedManager extends CachedPerson {

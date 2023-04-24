@@ -18,11 +18,11 @@
  */
 package org.apache.openjpa.persistence.embed.compositepk;
 
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.StaticMetamodel
+@jakarta.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.embed.compositepk.Subject.class)
-@javax.annotation.Generated
+@jakarta.annotation.Generated
 (value="org.apache.openjpa.persistence.meta.AnnotationProcessor6",date="Fri Feb 05 14:31:20 MST 2016")
 public class Subject_ {
     public static volatile SingularAttribute<Subject,SubjectKey> key;

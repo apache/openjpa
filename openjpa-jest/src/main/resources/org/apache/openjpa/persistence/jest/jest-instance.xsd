@@ -43,7 +43,7 @@
 	<!-- The root element for a single instance. Children of this element are persistent attribute -->
 	<!-- Persistent Attributes occur in order. The order is determined by the attribute category.  -->
 	<!-- Attribute category is determined by the enumerated PersistentAttributeType defined in     -->
-	<!-- javax.persistence.metamodel and then further refined by id, version, lob and enum.        -->
+	<!-- jakarta.persistence.metamodel and then further refined by id, version, lob and enum.        -->
 	<!-- See org.apache.openjpa.persistence.jest.MetamodelHelper for further details.              -->
 	<xsd:complexType name="instance-type">
 		<xsd:sequence>

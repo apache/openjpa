@@ -21,8 +21,8 @@ package org.apache.openjpa.persistence.datacache.common.apps;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name="L2_AttachE")

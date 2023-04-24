@@ -45,7 +45,7 @@
         </imageobject>
     </mediaobject>
     <para>
-The <classname>javax.persistence.Query</classname> interface is the mechanism
+The <classname>jakarta.persistence.Query</classname> interface is the mechanism
 for issuing queries in JPA. The primary query language used is the Java
 Persistence Query Language, or <literal>JPQL</literal>. JPQL is syntactically
 very similar to SQL, but is object-oriented rather than table-oriented.
@@ -846,7 +846,7 @@ force update version field at the end of transaction
                 <para>
 To specify a lock timeout hint in milliseconds to those databases that support
 it, specify a hint name of &quot;openjpa.LockTimeout&quot; or
-&quot;javax.persistence.lock.timeout&quot; with an integer value greater than
+&quot;jakarta.persistence.lock.timeout&quot; with an integer value greater than
 zero, or zero for no timeout which is the default behavior.
                 </para>
             </section>
@@ -856,7 +856,7 @@ zero, or zero for no timeout which is the default behavior.
                 </title>
                 <para>
 To specify a query timeout hint in milliseconds to those database drivers that
-support it, specify a hint name of &quot;javax.persistence.query.timeout&quot;
+support it, specify a hint name of &quot;jakarta.persistence.query.timeout&quot;
 with an integer value greater than zero, or zero for no timeout which is the
 default behavior.
                 </para>
@@ -931,7 +931,7 @@ When similar hints in different prefix scopes are specified in a query,
 the following prefix precedence order is used to select the effective hint:
             	<itemizedlist>
                 	<listitem>
-javax.persistence.*
+jakarta.persistence.*
                 	</listitem>
                 	<listitem>
 openjpa.FetchPlan.*
@@ -951,7 +951,7 @@ openjpa.*
 ...
 Query q = em.createQuery(.....);
 q.setHint("openjpa.FetchPlan.LockTimeout", 1000);
-q.setHint("javax.persistence.lock.timeout", 2000);
+q.setHint("jakarta.persistence.lock.timeout", 2000);
 q.setHint("openjpa.LockTimeout", 3000);
 // Lock time out of 2000 ms is in effect for query q
 ...

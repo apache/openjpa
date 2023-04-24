@@ -20,8 +20,8 @@ package org.apache.openjpa.persistence.criteria;
 
 import java.util.List;
 
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Selection;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Selection;
 
 import org.apache.openjpa.persistence.util.ReservedWords;
 

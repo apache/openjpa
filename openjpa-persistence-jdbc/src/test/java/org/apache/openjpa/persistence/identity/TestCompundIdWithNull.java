@@ -21,7 +21,7 @@ package org.apache.openjpa.persistence.identity;
 import java.sql.Connection;
 import java.util.List;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;

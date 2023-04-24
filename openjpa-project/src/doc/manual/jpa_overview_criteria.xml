@@ -40,7 +40,7 @@
     <para>
     JPA 2.0 specification introduces a new API to define queries dynamically
     via construction of an object-based
-    <classname>javax.persistence.CriteriaQuery</classname> instance, rather
+    <classname>jakarta.persistence.CriteriaQuery</classname> instance, rather
     than string-based approach used in JPQL (Java Persistence Query Language).
     This dynamic query definition capability, referred as Criteria API, is
     based on the abstract persistent schema of the entities, their embedded
@@ -205,8 +205,8 @@ the name of a meta-class given the name of the original persistent Java entity c
         <listitem>
             <para>
                 -Aopenjpa.addGeneratedAnnotation=auto|force|false : Configure whether the annotation
-                <code>javax.annotation.Generated</code> should be added to the generated metamodel classes.
-                This annotation is not available on Java 9 upwards unless the <code>javax.annotation-api</code>
+                <code>jakarta.annotation.Generated</code> should be added to the generated metamodel classes.
+                This annotation is not available on Java 9 upwards unless the <code>jakarta.annotation-api</code>
                 is in the classpath.
                 The default is <code>auto</code>. Set to <code>force</code> to add the annotation even if it is
                 not in the classpath or to <code>false</code> to never add it to the generated class.

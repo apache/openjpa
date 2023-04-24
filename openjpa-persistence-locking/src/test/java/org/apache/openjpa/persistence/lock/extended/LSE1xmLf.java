@@ -25,14 +25,14 @@ import java.io.ObjectOutput;
 import java.util.Collection;
 import java.util.HashSet;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.LockModeType;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.QueryHint;
-import javax.persistence.Version;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.QueryHint;
+import jakarta.persistence.Version;
 
 @NamedQueries ( value={
         @NamedQuery(
@@ -44,7 +44,7 @@ import javax.persistence.Version;
             name="findLSE1xmLfExtended"
             , query="SELECT c FROM LSE1xmLf c WHERE c.firstName LIKE :firstName"
             , lockMode=LockModeType.PESSIMISTIC_WRITE
-            , hints={@QueryHint(name="javax.persistence.lock.scope",value="EXTENDED")}
+            , hints={@QueryHint(name="jakarta.persistence.lock.scope",value="EXTENDED")}
             )
         }
     )

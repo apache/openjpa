@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.callbacks;
 
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;

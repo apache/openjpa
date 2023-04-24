@@ -27,7 +27,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
-import javax.persistence.EntityTransaction;
+import jakarta.persistence.EntityTransaction;
 
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.FieldMetaData;

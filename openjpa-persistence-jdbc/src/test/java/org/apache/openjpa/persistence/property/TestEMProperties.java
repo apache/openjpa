@@ -21,7 +21,7 @@ package org.apache.openjpa.persistence.property;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAQuery;
@@ -37,7 +37,7 @@ public class TestEMProperties extends SingleEMFTestCase {
     public void setUp() {
         setUp(EntityContact.class,
               EmbeddableAddress.class,
-              DROP_TABLES, "javax.persistence.query.timeout", 23456);
+              DROP_TABLES, "jakarta.persistence.query.timeout", 23456);
     }
 
     public void testQueryTimeoutPropertyDefault() {
@@ -53,7 +53,7 @@ public class TestEMProperties extends SingleEMFTestCase {
 
     public void testQueryTimeoutPropertyOnEntityManagerCreation() {
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put("javax.persistence.query.timeout", "12345");
+        properties.put("jakarta.persistence.query.timeout", "12345");
         // Setting a value of type String should convert if possible and not return an error
         EntityManager em = emf.createEntityManager(properties);
 
@@ -69,7 +69,7 @@ public class TestEMProperties extends SingleEMFTestCase {
         EntityManager em = emf.createEntityManager();
 
         // Setting a value of type String should convert if possible and not return an error
-        em.setProperty("javax.persistence.query.timeout", "12345");
+        em.setProperty("jakarta.persistence.query.timeout", "12345");
 
         String sql = "select * from EntityContact";
         OpenJPAQuery<?> query = OpenJPAPersistence.cast(em.createNativeQuery(sql));

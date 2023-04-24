@@ -23,9 +23,9 @@
 
 package org.apache.openjpa.persistence.embed;
 
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.StaticMetamodel
+@jakarta.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.embed.EntityA_Embed_Embed_ToMany.class)
 public class EntityA_Embed_Embed_ToMany_ {
     public static volatile SingularAttribute<EntityA_Embed_Embed_ToMany,Integer> age;

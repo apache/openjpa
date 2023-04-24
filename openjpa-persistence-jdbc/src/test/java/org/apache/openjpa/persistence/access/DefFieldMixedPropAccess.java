@@ -18,17 +18,17 @@
  */
 package org.apache.openjpa.persistence.access;
 
-import static javax.persistence.AccessType.FIELD;
-import static javax.persistence.AccessType.PROPERTY;
+import static jakarta.persistence.AccessType.FIELD;
+import static jakarta.persistence.AccessType.PROPERTY;
 
-import javax.persistence.Access;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Transient;
-import javax.persistence.Version;
+import jakarta.persistence.Access;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Transient;
+import jakarta.persistence.Version;
 
 @Entity(name="DFMPA")
 @Access(value=FIELD)

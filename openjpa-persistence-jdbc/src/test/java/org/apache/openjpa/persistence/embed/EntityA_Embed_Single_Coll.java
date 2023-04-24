@@ -20,9 +20,9 @@ package org.apache.openjpa.persistence.embed;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
+import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
 
 @Entity
 public class EntityA_Embed_Single_Coll implements Serializable {

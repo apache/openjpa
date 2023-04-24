@@ -23,10 +23,10 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.metamodel.SetAttribute;
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.SetAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.StaticMetamodel
+@jakarta.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.Person.class)
 public class Person_ {
     public static volatile SingularAttribute<Person,Integer> id;

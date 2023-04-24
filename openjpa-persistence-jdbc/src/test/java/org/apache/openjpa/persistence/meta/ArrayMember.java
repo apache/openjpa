@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.meta;
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Entity;
 
 @Entity
 public class ArrayMember {

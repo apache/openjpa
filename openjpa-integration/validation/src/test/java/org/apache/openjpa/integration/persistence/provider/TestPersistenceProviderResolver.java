@@ -34,9 +34,9 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 
-import javax.persistence.spi.PersistenceProvider;
-import javax.persistence.spi.PersistenceProviderResolver;
-import javax.persistence.spi.PersistenceProviderResolverHolder;
+import jakarta.persistence.spi.PersistenceProvider;
+import jakarta.persistence.spi.PersistenceProviderResolver;
+import jakarta.persistence.spi.PersistenceProviderResolverHolder;
 
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 
@@ -170,7 +170,7 @@ public class TestPersistenceProviderResolver extends TestCase {
             + "services");
         servicesDir.mkdirs();
         assertTrue(servicesDir.exists());
-        persistenceProviderFile = new File(servicesDir, "javax.persistence.spi.PersistenceProvider");
+        persistenceProviderFile = new File(servicesDir, "jakarta.persistence.spi.PersistenceProvider");
         if (persistenceProviderFile.exists()) {
             persistenceProviderFile.delete();
         }
@@ -201,7 +201,7 @@ public class TestPersistenceProviderResolver extends TestCase {
 
         out.putNextEntry(new JarEntry("META-INF/"));
         out.putNextEntry(new JarEntry("META-INF/services/"));
-        out.putNextEntry(new JarEntry("META-INF/services/javax.persistence.spi.PersistenceProvider"));
+        out.putNextEntry(new JarEntry("META-INF/services/jakarta.persistence.spi.PersistenceProvider"));
         //write the file to the jar
         byte[] buf = new byte[1024];
         int i;

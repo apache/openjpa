@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.kernel;
 
 import java.math.BigDecimal;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.kernel.common.apps.AllFieldsTypeTest;

@@ -68,7 +68,7 @@ public class FetchConfigurationImpl
     /**
      * Registers hint keys that have a corresponding setter method.
      * The hint keys are registered in <code>openjpa.FetchPlan</code> and <code>openjpa</code> as prefix.
-     * Also some keys are registered in <code>javax.persistence</code> namespace.
+     * Also some keys are registered in <code>jakarta.persistence</code> namespace.
      */
     static {
             String[] prefixes = {"openjpa.FetchPlan", "openjpa"};
@@ -78,10 +78,10 @@ public class FetchConfigurationImpl
             populateHintSetter(target, "FlushBeforeQueries", int.class, prefixes);
             populateHintSetter(target, "LockScope", int.class, prefixes);
             populateHintSetter(target, "LockTimeout", int.class, prefixes);
-            populateHintSetter(target, "setLockTimeout", "timeout", int.class, "javax.persistence.lock");
+            populateHintSetter(target, "setLockTimeout", "timeout", int.class, "jakarta.persistence.lock");
             populateHintSetter(target, "MaxFetchDepth", int.class, prefixes);
             populateHintSetter(target, "QueryTimeout", int.class, prefixes);
-            populateHintSetter(target, "setQueryTimeout", "timeout", int.class, "javax.persistence.query");
+            populateHintSetter(target, "setQueryTimeout", "timeout", int.class, "jakarta.persistence.query");
             populateHintSetter(target, "ReadLockLevel", int.class, prefixes);
             populateHintSetter(target, "setReadLockLevel", "ReadLockMode", int.class, prefixes);
             populateHintSetter(target, "WriteLockLevel", int.class, prefixes);

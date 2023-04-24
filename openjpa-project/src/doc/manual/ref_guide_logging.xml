@@ -618,7 +618,7 @@ com.xyz.CustomLogFactory(Prefix="LOG MSG")
     <literal>org.apache.openjpa.audit.Auditable</literal>.
     </para>
     <programlisting>
-      @javax.persistence.Entity
+      @jakarta.persistence.Entity
       @org.apache.openjpa.audit.Auditable
       public class MyDomainObject { ...}
     </programlisting>

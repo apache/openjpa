@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.persistence.inheritance.mappedsuperclass.idclass;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Version;
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Version;
 
 @MappedSuperclass
 public class IdClassTestMSC {

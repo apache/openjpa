@@ -17,10 +17,10 @@
 
 package org.apache.openjpa.ee;
 
-import javax.transaction.NotSupportedException;
-import javax.transaction.SystemException;
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
+import jakarta.transaction.NotSupportedException;
+import jakarta.transaction.SystemException;
+import jakarta.transaction.Transaction;
+import jakarta.transaction.TransactionManager;
 
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.GeneralException;

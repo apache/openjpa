@@ -17,8 +17,8 @@
  * under the License.
  */
 package org.apache.openjpa.persistence.xmlmapping.entities;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
 /*
  * example of an JPA embeddable class.

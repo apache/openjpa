@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence;
 
 import java.util.Collections;
 
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 
 import org.apache.openjpa.datacache.DelegatingQueryCache;
 import org.apache.openjpa.datacache.QueryCache;

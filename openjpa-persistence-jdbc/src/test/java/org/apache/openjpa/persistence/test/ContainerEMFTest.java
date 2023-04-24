@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.spi.PersistenceUnitInfo;
+import jakarta.persistence.spi.PersistenceUnitInfo;
 
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;

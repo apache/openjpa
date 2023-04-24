@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 
 import org.apache.openjpa.persistence.jdbc.common.apps.InvertA;
 import org.apache.openjpa.persistence.jdbc.common.apps.InvertB;

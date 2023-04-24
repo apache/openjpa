@@ -20,9 +20,9 @@ package org.apache.openjpa.persistence.jdbc.query.xml;
 
 import java.io.Serializable;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.NamedQuery;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.NamedQuery;
 
 @Entity
 @NamedQuery(name = "TableNameInXmlEntity.findAll", query = "SELECT t FROM TableNameInXmlEntity t")

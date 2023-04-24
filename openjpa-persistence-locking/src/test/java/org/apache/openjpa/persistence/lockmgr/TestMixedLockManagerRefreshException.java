@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.lockmgr;
 
-import javax.persistence.LockModeType;
-import javax.persistence.TransactionRequiredException;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.TransactionRequiredException;
 
 /**
  * Test JPA 2.0 em.refresh(LockMode) exception behaviors with "mixed"

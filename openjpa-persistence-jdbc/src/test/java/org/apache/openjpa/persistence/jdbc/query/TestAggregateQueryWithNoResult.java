@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.jdbc.query.domain.Chess;
 import org.apache.openjpa.persistence.jdbc.query.domain.Game;

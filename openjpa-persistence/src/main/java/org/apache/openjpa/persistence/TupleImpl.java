@@ -22,8 +22,8 @@ package org.apache.openjpa.persistence;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import javax.persistence.Tuple;
-import javax.persistence.TupleElement;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TupleElement;
 
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.lib.util.Localizer;

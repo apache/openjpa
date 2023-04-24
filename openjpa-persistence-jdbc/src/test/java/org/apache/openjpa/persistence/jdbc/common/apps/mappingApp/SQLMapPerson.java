@@ -20,14 +20,14 @@ package org.apache.openjpa.persistence.jdbc.common.apps.mappingApp;
 
 import java.io.Serializable;
 
-import javax.persistence.CascadeType;
-import javax.persistence.ColumnResult;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.SqlResultSetMapping;
-import javax.persistence.Table;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.ColumnResult;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.SqlResultSetMapping;
+import jakarta.persistence.Table;
 
 /**
  * @author ppoddar

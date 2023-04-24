@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.query.common.apps;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 /**
  * <p>Single-field application identity class.</p>

@@ -22,9 +22,9 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Random;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
-import javax.persistence.PersistenceUtil;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.PersistenceUtil;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 

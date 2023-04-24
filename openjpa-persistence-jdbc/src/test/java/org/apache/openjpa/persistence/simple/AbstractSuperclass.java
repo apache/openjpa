@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.simple;
 
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Transient;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Transient;
 
 @MappedSuperclass
 public abstract class AbstractSuperclass {

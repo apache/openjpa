@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Root;
 
 public class TestFetchJoin extends CriteriaTest {
     public void testFetchJoin() {

@@ -21,10 +21,10 @@ package org.apache.openjpa.persistence.datacache.common.apps;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 
 import org.apache.openjpa.persistence.PersistentCollection;
 import org.apache.openjpa.persistence.datacache.TestEmbeddedCollection;

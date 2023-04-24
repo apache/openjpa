@@ -21,11 +21,11 @@ package org.apache.openjpa.persistence.embed;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Id;
-import javax.persistence.MapKeyEnumerated;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Id;
+import jakarta.persistence.MapKeyEnumerated;
 
 @Entity
 public class Item4 {

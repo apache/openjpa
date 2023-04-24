@@ -23,9 +23,9 @@
 
 package org.apache.openjpa.persistence.meta;
 
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.StaticMetamodel
+@jakarta.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.meta.ExplicitPropertyAccess.class)
 public class ExplicitPropertyAccess_ {
     public static volatile SingularAttribute<ExplicitPropertyAccess,String> f1;

@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.delimited.identifiers.noschema;
 
 import java.util.List;
 
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;

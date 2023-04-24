@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.jdbc.annotations;
 
 import java.util.Set;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 

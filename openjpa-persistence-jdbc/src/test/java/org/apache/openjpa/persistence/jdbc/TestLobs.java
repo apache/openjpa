@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.RollbackException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.persistence.RollbackException;
 
 import org.apache.openjpa.jdbc.sql.SybaseDictionary;
 import org.apache.openjpa.persistence.kernel.common.apps.Blobs;

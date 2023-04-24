@@ -149,7 +149,7 @@ public class StoreCacheImpl
         if (cls.isInstance(this)) {
             return cls.cast(this);
         }
-        throw new javax.persistence.PersistenceException(cls.getName() + " not supported");
+        throw new jakarta.persistence.PersistenceException(cls.getName() + " not supported");
     }
 
     @Override

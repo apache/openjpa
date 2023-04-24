@@ -22,11 +22,11 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.StaticMetamodel
+@jakarta.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.BlogUser.class)
-@javax.annotation.Generated
+@jakarta.annotation.Generated
 (value="org.apache.openjpa.persistence.meta.AnnotationProcessor6",date="Wed Jul 06 09:09:40 CDT 2011")
 public class BlogUser_ {
     // The use of ListAttribute for arrays needs a special property setting.

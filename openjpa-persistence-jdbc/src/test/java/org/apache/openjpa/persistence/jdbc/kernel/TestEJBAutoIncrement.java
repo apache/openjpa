@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.kernel;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.jdbc.common.apps.AutoIncrementPC1;
 import org.apache.openjpa.persistence.jdbc.common.apps.AutoIncrementPC2;

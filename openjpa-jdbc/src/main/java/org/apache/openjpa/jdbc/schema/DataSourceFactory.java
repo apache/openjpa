@@ -205,7 +205,7 @@ public class DataSourceFactory {
                 new ConfiguringConnectionDecorator();
             ccd.setTransactionIsolation(conf.getTransactionIsolationConstant());
 
-            //OPENJPA-2517: Allow a javax.persistence.query.timeout to apply to all
+            //OPENJPA-2517: Allow a jakarta.persistence.query.timeout to apply to all
             //EM operations (not just Query operations).  Convert from milliseconds
             //to seconds.  See DBDictionary.setQueryTimeout for similar conversions.
             //DBDictionary.setQueryTimeout will log warnings for invalid values,

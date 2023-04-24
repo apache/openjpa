@@ -24,14 +24,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.FlushModeType;
-import javax.persistence.LockModeType;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.Parameter;
-import javax.persistence.ParameterMode;
-import javax.persistence.StoredProcedureQuery;
-import javax.persistence.TemporalType;
+import jakarta.persistence.FlushModeType;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
+import jakarta.persistence.Parameter;
+import jakarta.persistence.ParameterMode;
+import jakarta.persistence.StoredProcedureQuery;
+import jakarta.persistence.TemporalType;
 
 import org.apache.openjpa.kernel.DelegatingResultList;
 import org.apache.openjpa.kernel.QueryResultCallback;
@@ -143,7 +143,7 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
                     .getRollbackTranslator(_delegate.getEntityManager());
             return new DelegatingResultList((ResultList) list, trans);
         } catch (Exception ex) {
-            throw new javax.persistence.PersistenceException(ex);
+            throw new jakarta.persistence.PersistenceException(ex);
         }
     }
 
@@ -162,7 +162,7 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
                     .getRollbackTranslator(_delegate.getEntityManager());
             return new DelegatingResultList(result, trans).iterator().next();
         } catch (Exception ex) {
-            throw new javax.persistence.PersistenceException(ex);
+            throw new jakarta.persistence.PersistenceException(ex);
         }
     }
 
@@ -261,7 +261,7 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
     }
 
     @Override
-    public javax.persistence.Query setMaxResults(int maxResult) {
+    public jakarta.persistence.Query setMaxResults(int maxResult) {
         // TODO JPA 2.1 Method
         return _delegate.setMaxResults(maxResult);
     }
@@ -273,7 +273,7 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
     }
 
     @Override
-    public javax.persistence.Query setFirstResult(int startPosition) {
+    public jakarta.persistence.Query setFirstResult(int startPosition) {
         // TODO JPA 2.1 Method
         return _delegate.setFirstResult(startPosition);
     }
@@ -327,7 +327,7 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
     }
 
     @Override
-    public javax.persistence.Query setLockMode(LockModeType lockMode) {
+    public jakarta.persistence.Query setLockMode(LockModeType lockMode) {
         // TODO JPA 2.1 Method
         return _delegate.setLockMode(lockMode);
     }

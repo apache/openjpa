@@ -25,7 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.lib.log.Log;

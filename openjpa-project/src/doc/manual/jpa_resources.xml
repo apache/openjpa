@@ -36,7 +36,7 @@ Java Persistence 2.0 page</ulink>
         <listitem>
             <para>
 <ulink url="http://download.oracle.com/javaee/6/api/index.html">
-javax.persistence Javadoc</ulink>
+jakarta.persistence Javadoc</ulink>
             </para>
         </listitem>
         <listitem>

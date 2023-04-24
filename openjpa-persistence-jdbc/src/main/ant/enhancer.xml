@@ -80,6 +80,7 @@
             <exclude name="**/proxy/entities/*.class" />
             <exclude name="**/xml/*.class" />
             <exclude name="**/Unenhanced*.class" />
+            <exclude name="**/Test*.class"/>
             <exclude name="org/apache/openjpa/enhance/EnhancedSuperClass.class"/>
             <exclude name="org/apache/openjpa/enhance/EnhancedSubClass.class"/>
             <exclude name="**/AbstractUnenhanced*.class" />

@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.discriminator;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
 @Entity
 @DiscriminatorValue("StringRoot")

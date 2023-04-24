@@ -19,9 +19,9 @@
 
 package org.apache.openjpa.persistence.meta;
 
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Version;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Version;
 
 /**
  * Domain class used by meta-model testing.
