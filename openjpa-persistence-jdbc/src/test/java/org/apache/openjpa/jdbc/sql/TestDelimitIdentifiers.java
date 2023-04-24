@@ -132,13 +132,13 @@ public class TestDelimitIdentifiers {
             {
                 final EntityManager em = entityManagerFactory.createEntityManager();
                 try {
-                    assertEquals(2, em.createQuery("select x from TestDelimitIdentifiers$AllFieldTypes x").
+                    assertEquals(2, em.createQuery("select x from DelimitedIdentifiersAllFieldTypesEntity x").
                             getResultList().size());
-                    assertEquals(1, em.createQuery("select x from TestDelimitIdentifiers$AllFieldTypes x where x.stringField = 'foo'").
+                    assertEquals(1, em.createQuery("select x from DelimitedIdentifiersAllFieldTypesEntity x where x.stringField = 'foo'").
                             getResultList().size());
-                    assertEquals(0, em.createQuery("select x from TestDelimitIdentifiers$AllFieldTypes x where x.stringField = 'bar'").
+                    assertEquals(0, em.createQuery("select x from DelimitedIdentifiersAllFieldTypesEntity x where x.stringField = 'bar'").
                             getResultList().size());
-                    assertEquals(1, em.createQuery("select x from TestDelimitIdentifiers$AllFieldTypes x where x.intField >= 10").
+                    assertEquals(1, em.createQuery("select x from DelimitedIdentifiersAllFieldTypesEntity x where x.intField >= 10").
                             getResultList().size());
                 } finally {
                     em.close();

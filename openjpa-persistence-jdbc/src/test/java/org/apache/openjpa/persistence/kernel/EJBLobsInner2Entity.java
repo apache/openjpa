@@ -14,31 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.openjpa.jdbc.sql;
+package org.apache.openjpa.persistence.kernel;
+
+import java.io.Serializable;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
-public class SnakeCaseDDLEntity {
+@Table(name = "Inner2")
+public class EJBLobsInner2Entity implements Serializable {
+    private static final long serialVersionUID = 1L;
     @Id
-    private String fooBar;
+    public String string = null;
 
-    private int thisField;
-
-    public int getThisField() {
-        return thisField;
+    public String getString() {
+        return string;
     }
 
-    public void setThisField(int thisField) {
-        this.thisField = thisField;
-    }
-
-    public String getFooBar() {
-        return fooBar;
-    }
-
-    public void setFooBar(String fooBar) {
-        this.fooBar = fooBar;
+    public void setString(String string) {
+        this.string = string;
     }
 }

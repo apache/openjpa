@@ -62,7 +62,7 @@ public class TestSnakeCaseDDL {
 
         final PersistenceUnitInfoImpl persistenceUnitInfo = new PersistenceUnitInfoImpl();
         persistenceUnitInfo.setExcludeUnlistedClasses(true);
-        persistenceUnitInfo.addManagedClassName(SnakeCaseDDLEntity.class.getName());
+        persistenceUnitInfo.addManagedClassName(SnakeCaseDDLMy1Entity.class.getName());
         persistenceUnitInfo.addManagedClassName(SnakeCaseDDLMy2Entity.class.getName());
         final BasicDataSource ds = new BasicDataSource();
         ds.setDriver(derbyDriver);
@@ -74,7 +74,7 @@ public class TestSnakeCaseDDL {
         final Map<String, Collection<String>> columns = new HashMap<>();
         try (final Connection connection = ds.getConnection()) {
             try (final ResultSet tables = connection.getMetaData()
-                    .getTables(null, null, "TestSnakeCaseDDL$MyEntity%", null)) {
+                    .getTables(null, null, "SnakeCaseDDLMy%", null)) {
                 while (tables.next()) {
                     final String table = tables.getString(3);
                     createdTables.add(table);
@@ -100,7 +100,7 @@ public class TestSnakeCaseDDL {
                 final EntityManager em = entityManagerFactory.createEntityManager();
                 em.getTransaction().begin();
                 try {
-                    final SnakeCaseDDLEntity entity = new SnakeCaseDDLEntity();
+                    final SnakeCaseDDLMy1Entity entity = new SnakeCaseDDLMy1Entity();
                     entity.setFooBar("1");
                     entity.setThisField(123);
                     em.persist(entity);
@@ -117,7 +117,7 @@ public class TestSnakeCaseDDL {
             {
                 final EntityManager em = entityManagerFactory.createEntityManager();
                 try {
-                    final SnakeCaseDDLEntity myEntity1 = em.find(SnakeCaseDDLEntity.class, "1");
+                    final SnakeCaseDDLMy1Entity myEntity1 = em.find(SnakeCaseDDLMy1Entity.class, "1");
                     assertNotNull(myEntity1);
                     assertEquals("1", myEntity1.getFooBar());
                     assertEquals(123, myEntity1.getThisField());
@@ -127,7 +127,7 @@ public class TestSnakeCaseDDL {
             }
             try (final Connection connection = ds.getConnection();
                  final Statement statement = connection.createStatement();
-                 final ResultSet rs = statement.executeQuery("select foo_bar, this_field from \"TestSnakeCaseDDL$MyEntity1\"")) {
+                 final ResultSet rs = statement.executeQuery("select foo_bar, this_field from \"SnakeCaseDDLMy1Entity\"")) {
                 assertTrue (rs.next());
                 assertEquals("1", rs.getString(1));
                 assertEquals(123, rs.getInt(2));
@@ -137,10 +137,10 @@ public class TestSnakeCaseDDL {
             entityManagerFactory.close();
         }
         ds.close();
-        assertEquals(2, columns.get("TestSnakeCaseDDL$MyEntity1").size());
-        assertTrue(columns.get("TestSnakeCaseDDL$MyEntity1").contains("FOO_BAR"));
-        assertTrue(columns.get("TestSnakeCaseDDL$MyEntity1").contains("THIS_FIELD"));
-        assertEquals(singleton("ANOTHER_FIELD"), columns.get("TestSnakeCaseDDL$MyEntity2"));
+        assertEquals(2, columns.get("SnakeCaseDDLMy1Entity").size());
+        assertTrue(columns.get("SnakeCaseDDLMy1Entity").contains("FOO_BAR"));
+        assertTrue(columns.get("SnakeCaseDDLMy1Entity").contains("THIS_FIELD"));
+        assertEquals(singleton("ANOTHER_FIELD"), columns.get("SnakeCaseDDLMy2Entity"));
     }
 
 }

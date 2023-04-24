@@ -113,8 +113,8 @@
 		<class>org.apache.openjpa.persistence.kernel.common.apps.SingleIdString</class>
 		<class>org.apache.openjpa.persistence.kernel.common.apps.SingleIdWrapper</class>
 		<class>org.apache.openjpa.persistence.kernel.common.apps.ValueStrategyPC</class>
-		<class>org.apache.openjpa.persistence.kernel.TestEJBLobsInnerEntity</class>
-		<class>org.apache.openjpa.persistence.kernel.TestEJBLobsInner2Entity</class>
+		<class>org.apache.openjpa.persistence.kernel.EJBLobsInnerEntity</class>
+		<class>org.apache.openjpa.persistence.kernel.EJBLobsInner2Entity</class>
 		<class>org.apache.openjpa.persistence.kernel.StaticInnerClassesContainer.Inner</class>
 		<class>org.apache.openjpa.persistence.kernel.TestEJBNoPersistentFieldsNholderEntity</class>
 		<class>org.apache.openjpa.persistence.kernel.EJBNoPersistentFieldsNoPersistentFieldsPCEntity</class>

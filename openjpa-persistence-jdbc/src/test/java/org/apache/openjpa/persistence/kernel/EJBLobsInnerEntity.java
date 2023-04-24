@@ -24,7 +24,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "inntable")
-public class TestEJBLobsInnerEntity {
+public class EJBLobsInnerEntity {
 
     @Id
     private String string = null;
@@ -32,7 +32,7 @@ public class TestEJBLobsInnerEntity {
     private Object eblob = null;
 
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-    private TestEJBLobsInner2Entity blobField = null;
+    private EJBLobsInner2Entity blobField = null;
 
     public String getString() {
         return string;
@@ -58,11 +58,11 @@ public class TestEJBLobsInnerEntity {
         eblob = val;
     }
 
-    public TestEJBLobsInner2Entity getBlob() {
+    public EJBLobsInner2Entity getBlob() {
         return blobField;
     }
 
-    public void setBlob(TestEJBLobsInner2Entity val) {
+    public void setBlob(EJBLobsInner2Entity val) {
         blobField = val;
     }
 }

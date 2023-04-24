@@ -25,7 +25,7 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 public class TestEJBLobs extends AbstractTestCase {
 
     private EntityManager _pm = null;
-    private TestEJBLobsInnerEntity _inner = null;
+    private EJBLobsInnerEntity _inner = null;
 
     public TestEJBLobs(String name) {
         super(name, "kernelcactusapp");
@@ -33,7 +33,7 @@ public class TestEJBLobs extends AbstractTestCase {
 
     @Override
     public void setUp() throws Exception {
-        super.setUp(TestEJBLobsInnerEntity.class, TestEJBLobsInner2Entity.class);
+        super.setUp(EJBLobsInnerEntity.class, EJBLobsInner2Entity.class);
 
         EntityManager em = currentEntityManager();
         startTx(em);
@@ -41,12 +41,12 @@ public class TestEJBLobs extends AbstractTestCase {
         endTx(em);
         endEm(em);
 
-        TestEJBLobsInnerEntity inner = new TestEJBLobsInnerEntity();
+        EJBLobsInnerEntity inner = new EJBLobsInnerEntity();
         inner.setString("string");
         inner.setClob("clobField");
         inner.setEBlob("eblob");
 
-        TestEJBLobsInner2Entity inner2 = new TestEJBLobsInner2Entity();
+        EJBLobsInner2Entity inner2 = new EJBLobsInner2Entity();
         inner2.string = "inner2";
         inner.setBlob(inner2);
 
@@ -64,7 +64,7 @@ public class TestEJBLobs extends AbstractTestCase {
         endEm(_pm);
 
         _pm = currentEntityManager();
-        _inner = _pm.find(TestEJBLobsInnerEntity.class, "string");
+        _inner = _pm.find(EJBLobsInnerEntity.class, "string");
     }
 
     public void testOtherFields() {
@@ -91,13 +91,13 @@ public class TestEJBLobs extends AbstractTestCase {
     }
 
     public void testDelete() {
-        deleteAll(TestEJBLobsInnerEntity.class);
+        deleteAll(EJBLobsInnerEntity.class);
     }
 
     public void testUpdate() {
         startTx(_pm);
         _inner.setClob("newvalue");
-        TestEJBLobsInner2Entity inner2 = new TestEJBLobsInner2Entity();
+        EJBLobsInner2Entity inner2 = new EJBLobsInner2Entity();
         inner2.string = "newinner2";
         _inner.setBlob(inner2);
         endTx(_pm);
