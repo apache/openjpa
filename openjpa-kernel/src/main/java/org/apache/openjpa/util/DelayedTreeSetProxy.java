@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.NavigableSet;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.function.IntFunction;
 
 import org.apache.openjpa.kernel.AutoDetach;
 import org.apache.openjpa.kernel.Broker;
@@ -313,6 +314,14 @@ public class DelayedTreeSetProxy extends TreeSet implements ProxyCollection, Del
             load();
         }
         return super.toArray(array);
+    }
+
+    @Override
+    public Object[] toArray(IntFunction generator) {
+        if (!_directAccess && isDelayLoad()) {
+            load();
+        }
+        return super.toArray(generator);
     }
 
     @Override

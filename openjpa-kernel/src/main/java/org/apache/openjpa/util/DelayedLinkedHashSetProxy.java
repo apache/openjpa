@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.function.IntFunction;
 
 import org.apache.openjpa.kernel.AutoDetach;
 import org.apache.openjpa.kernel.Broker;
@@ -273,6 +274,14 @@ public class DelayedLinkedHashSetProxy extends LinkedHashSet implements DelayedP
             load();
         }
         return super.toArray(a);
+    }
+
+    @Override
+    public Object[] toArray(IntFunction generator) {
+        if (!_directAccess && isDelayLoad()) {
+            load();
+        }
+        return super.toArray(generator);
     }
 
     @Override

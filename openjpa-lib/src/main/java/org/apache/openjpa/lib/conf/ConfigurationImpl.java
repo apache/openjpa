@@ -769,7 +769,7 @@ public class ConfigurationImpl
     /**
      * Adds a prefix <code>"openjpa."</code> to the given key, if necessary. A key is
      * considered without prefix if it starts neither of <code>"openjpa."</code>,
-     * <code>"java."</code> and <code>"javax."</code>.
+     * <code>"java."</code>, <code>"javax."</code> and {@code "jakarta."}.
      */
     String fixPrefix(String key) {
         return (key == null || hasKnownPrefix(key)) ? key : "openjpa."+key;

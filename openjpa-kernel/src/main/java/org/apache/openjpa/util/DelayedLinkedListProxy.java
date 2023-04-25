@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.function.IntFunction;
 
 import org.apache.openjpa.kernel.AutoDetach;
 import org.apache.openjpa.kernel.Broker;
@@ -566,6 +567,14 @@ public class DelayedLinkedListProxy extends LinkedList implements ProxyCollectio
             load();
         }
         return super.toArray(array);
+    }
+
+    @Override
+    public Object[] toArray(IntFunction generator) {
+        if (!_directAccess && isDelayLoad()) {
+            load();
+        }
+        return super.toArray(generator);
     }
 
     @Override

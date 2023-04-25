@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.function.IntFunction;
 
 import org.apache.openjpa.kernel.AutoDetach;
 import org.apache.openjpa.kernel.Broker;
@@ -277,12 +278,21 @@ public class DelayedHashSetProxy extends HashSet implements DelayedProxy, ProxyC
     }
 
     @Override
+    public Object[] toArray(IntFunction generator) {
+        if (!_directAccess && isDelayLoad()) {
+            load();
+        }
+        return super.toArray(generator);
+    }
+
+    @Override
     public boolean containsAll(Collection c) {
         if (!_directAccess && isDelayLoad()) {
             load();
         }
         return super.containsAll(c);
     }
+
 
     @Override
     public String toString() {

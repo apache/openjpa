@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.PriorityQueue;
 import java.util.SortedSet;
+import java.util.function.IntFunction;
 
 import org.apache.openjpa.kernel.AutoDetach;
 import org.apache.openjpa.kernel.Broker;
@@ -328,6 +329,14 @@ public class DelayedPriorityQueueProxy extends PriorityQueue implements ProxyCol
             load();
         }
         return super.toArray(array);
+    }
+
+    @Override
+    public Object[] toArray(IntFunction generator) {
+        if (!_directAccess && isDelayLoad()) {
+            load();
+        }
+        return super.toArray(generator);
     }
 
     @Override
