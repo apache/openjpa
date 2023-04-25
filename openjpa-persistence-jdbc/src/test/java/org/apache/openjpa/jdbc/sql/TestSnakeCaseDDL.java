@@ -35,8 +35,11 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import static java.util.Collections.singleton;
 import static org.junit.Assert.assertEquals;
@@ -70,22 +73,24 @@ public class TestSnakeCaseDDL {
         persistenceUnitInfo.setJtaDataSource(ds);
         persistenceUnitInfo.setProperty("openjpa.jdbc.DBDictionary", "derby(javaToDbColumnNameProcessing=snake_case)");
         new PersistenceProviderImpl().generateSchema(persistenceUnitInfo, new HashMap<>());
-        final Collection<String> createdTables = new HashSet<>();
-        final Map<String, Collection<String>> columns = new HashMap<>();
+        final Map<String, String> createdTables = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        final Map<String, Collection<String>> columns = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         try (final Connection connection = ds.getConnection()) {
             try (final ResultSet tables = connection.getMetaData()
-                    .getTables(null, null, "SnakeCaseDDLMy%", null)) {
+                    .getTables(null, null, "%", null)) {
                 while (tables.next()) {
                     final String table = tables.getString(3);
-                    createdTables.add(table);
+                    if (table.toUpperCase(Locale.ROOT).startsWith("SNAKE")) {
+                        createdTables.put(table.toUpperCase(Locale.ROOT), table);
+                    }
                 }
             }
-            for (final String table : createdTables) {
+            for (final Map.Entry<String, String> table : createdTables.entrySet()) {
                 try (final Statement statement = connection.createStatement()) {
-                    try (final ResultSet rs = statement.executeQuery("select * from \"" + table + "\"")) {
+                    try (final ResultSet rs = statement.executeQuery("select * from \"" + table.getValue() + "\"")) {
                         final ResultSetMetaData metaData = rs.getMetaData();
                         final Set<String> columnNames = new HashSet<>();
-                        columns.put(table, columnNames);
+                        columns.put(table.getValue(), columnNames);
                         for (int i = 1; i <= metaData.getColumnCount(); i++) {
                             columnNames.add(metaData.getColumnName(i));
                         }
@@ -125,9 +130,10 @@ public class TestSnakeCaseDDL {
                     em.close();
                 }
             }
+            final String tableName = createdTables.get("SnakeCaseDDLMy1Entity".toUpperCase(Locale.ROOT));
             try (final Connection connection = ds.getConnection();
                  final Statement statement = connection.createStatement();
-                 final ResultSet rs = statement.executeQuery("select foo_bar, this_field from \"SnakeCaseDDLMy1Entity\"")) {
+                 final ResultSet rs = statement.executeQuery("select foo_bar, this_field from \"" + tableName + "\"")) {
                 assertTrue (rs.next());
                 assertEquals("1", rs.getString(1));
                 assertEquals(123, rs.getInt(2));
