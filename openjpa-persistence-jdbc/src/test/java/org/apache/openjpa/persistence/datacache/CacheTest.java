@@ -73,7 +73,7 @@ import org.apache.openjpa.util.CacheMap;
 import org.apache.openjpa.util.Id;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.OpenJPAException;
-import org.apache.openjpa.util.ProxyDate;
+import org.apache.openjpa.util.proxy.ProxyDate;
 
 import junit.framework.AssertionFailedError;
 

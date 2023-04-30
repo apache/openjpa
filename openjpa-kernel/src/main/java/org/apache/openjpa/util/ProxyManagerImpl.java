@@ -58,6 +58,21 @@ import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.StringUtil;
+import org.apache.openjpa.util.proxy.DelayedArrayListProxy;
+import org.apache.openjpa.util.proxy.DelayedHashSetProxy;
+import org.apache.openjpa.util.proxy.DelayedLinkedHashSetProxy;
+import org.apache.openjpa.util.proxy.DelayedLinkedListProxy;
+import org.apache.openjpa.util.proxy.DelayedPriorityQueueProxy;
+import org.apache.openjpa.util.proxy.DelayedTreeSetProxy;
+import org.apache.openjpa.util.proxy.DelayedVectorProxy;
+import org.apache.openjpa.util.proxy.ProxyBean;
+import org.apache.openjpa.util.proxy.ProxyCalendar;
+import org.apache.openjpa.util.proxy.ProxyCollection;
+import org.apache.openjpa.util.proxy.ProxyCollections;
+import org.apache.openjpa.util.proxy.ProxyConcurrentMaps;
+import org.apache.openjpa.util.proxy.ProxyDate;
+import org.apache.openjpa.util.proxy.ProxyMap;
+import org.apache.openjpa.util.proxy.ProxyMaps;
 
 import serp.bytecode.BCClass;
 import serp.bytecode.BCField;
@@ -526,25 +541,25 @@ public class ProxyManagerImpl
 
     protected Class<?> loadDelayedProxy(Class<?> type) {
         if (type.equals(java.util.ArrayList.class)) {
-            return org.apache.openjpa.util.DelayedArrayListProxy.class;
+            return DelayedArrayListProxy.class;
         }
         if (type.equals(java.util.HashSet.class)) {
-            return org.apache.openjpa.util.DelayedHashSetProxy.class;
+            return DelayedHashSetProxy.class;
         }
         if (type.equals(java.util.LinkedList.class)) {
-            return org.apache.openjpa.util.DelayedLinkedListProxy.class;
+            return DelayedLinkedListProxy.class;
         }
         if (type.equals(java.util.Vector.class)) {
-            return org.apache.openjpa.util.DelayedVectorProxy.class;
+            return DelayedVectorProxy.class;
         }
         if (type.equals(java.util.LinkedHashSet.class)) {
-            return org.apache.openjpa.util.DelayedLinkedHashSetProxy.class;
+            return DelayedLinkedHashSetProxy.class;
         }
         if (type.equals(java.util.SortedSet.class) || type.equals(java.util.TreeSet.class)) {
-            return org.apache.openjpa.util.DelayedTreeSetProxy.class;
+            return DelayedTreeSetProxy.class;
         }
         if (type.equals(java.util.PriorityQueue.class)) {
-            return org.apache.openjpa.util.DelayedPriorityQueueProxy.class;
+            return DelayedPriorityQueueProxy.class;
         }
         return null;
     }

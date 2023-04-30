@@ -16,20 +16,34 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.openjpa.util;
+package org.apache.openjpa.util.proxy;
+
+import java.util.Comparator;
+import java.util.Map;
+
+import org.apache.openjpa.util.Proxy;
 
 /**
- * Interface implemented by all generated custom types, which use JavaBean
- * conventions for copying state.
+ * Interface implemented by proxies on {@link Map} types.
  *
  * @author Abe White
  */
-public interface ProxyBean
-    extends Proxy {
+public interface ProxyMap
+    extends Proxy, Map {
 
     /**
-     * Create a new instance of this proxy type with the same state as the
-     * given instance.
+     * The map key type.
      */
-    ProxyBean newInstance(Object orig);
+    Class getKeyType();
+
+    /**
+     * The map value type.
+     */
+    Class getValueType();
+
+    /**
+     * Create a new instance of this proxy type.
+     */
+    ProxyMap newInstance(Class keyType, Class valueType,
+        Comparator compare, boolean trackChanges, boolean autoOff);
 }

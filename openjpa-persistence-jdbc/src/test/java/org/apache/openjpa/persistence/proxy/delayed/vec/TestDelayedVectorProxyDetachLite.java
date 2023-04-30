@@ -25,7 +25,7 @@ import jakarta.persistence.EntityManager;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.persistence.proxy.delayed.IDepartment;
 import org.apache.openjpa.persistence.proxy.delayed.IEmployee;
-import org.apache.openjpa.util.DelayedVectorProxy;
+import org.apache.openjpa.util.proxy.DelayedVectorProxy;
 
 public class TestDelayedVectorProxyDetachLite extends TestDelayedVectorProxy {
 

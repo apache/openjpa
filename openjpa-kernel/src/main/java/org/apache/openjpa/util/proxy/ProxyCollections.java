@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.openjpa.util;
+package org.apache.openjpa.util.proxy;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,6 +31,9 @@ import org.apache.openjpa.kernel.BrokerImpl;
 import org.apache.openjpa.kernel.DetachedValueStateManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StateManagerImpl;
+import org.apache.openjpa.util.ChangeTracker;
+import org.apache.openjpa.util.CollectionChangeTracker;
+import org.apache.openjpa.util.Proxies;
 
 /**
  * Utility methods used by collection proxies.

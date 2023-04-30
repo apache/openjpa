@@ -26,7 +26,7 @@ import java.util.TimeZone;
 
 import org.apache.openjpa.persistence.simple.TemporalFieldTypes;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
-import org.apache.openjpa.util.ProxyCalendar;
+import org.apache.openjpa.util.proxy.ProxyCalendar;
 
 public class TestCalendarField extends SingleEMTestCase {
 

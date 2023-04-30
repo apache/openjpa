@@ -16,9 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.openjpa.util;
+package org.apache.openjpa.util.proxy;
 
 import java.util.Map;
+
+import org.apache.openjpa.util.MapChangeTracker;
+import org.apache.openjpa.util.Proxies;
 
 /**
  * Utility methods used by concurrent map proxies.
@@ -29,7 +32,7 @@ public class ProxyConcurrentMaps extends ProxyMaps {
      * Call before invoking {@link Map#remove(key, value) } on super.
      */
     public static boolean beforeRemove(ProxyMap map, Object key, Object value) {
-        dirty(map, false);
+        Proxies.dirty(map, false);
         return map.containsKey(key);
     }
 
@@ -46,8 +49,8 @@ public class ProxyConcurrentMaps extends ProxyMaps {
             if (map.getChangeTracker() != null) {
                 ((MapChangeTracker) map.getChangeTracker()).removed(key, ret);
             }
-            removed(map, key, true);
-            removed(map, ret, false);
+            Proxies.removed(map, key, true);
+            Proxies.removed(map, ret, false);
         }
         return ret;
     }

@@ -47,7 +47,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.ChangeTracker;
-import org.apache.openjpa.util.DelayedProxy;
+import org.apache.openjpa.util.proxy.DelayedProxy;
 import org.apache.openjpa.util.Id;
 import org.apache.openjpa.util.OpenJPAId;
 import org.apache.openjpa.util.Proxy;

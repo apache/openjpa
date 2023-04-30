@@ -20,7 +20,7 @@ package org.apache.openjpa.kernel;
 
 import java.util.Calendar;
 
-import org.apache.openjpa.util.ProxyCalendar;
+import org.apache.openjpa.util.proxy.ProxyCalendar;
 
 
 /**

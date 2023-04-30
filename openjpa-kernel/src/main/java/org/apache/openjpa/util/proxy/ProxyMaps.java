@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.openjpa.util;
+package org.apache.openjpa.util.proxy;
 
 import java.io.InputStream;
 import java.io.ObjectStreamException;
@@ -26,6 +26,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+
+import org.apache.openjpa.util.MapChangeTracker;
+import org.apache.openjpa.util.Proxies;
 
 /**
  * Utility methods used by map proxies.

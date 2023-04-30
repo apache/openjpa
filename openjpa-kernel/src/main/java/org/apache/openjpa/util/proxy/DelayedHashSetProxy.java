@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.openjpa.util;
+package org.apache.openjpa.util.proxy;
 
 import java.io.ObjectStreamException;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.function.IntFunction;
 
 import org.apache.openjpa.kernel.AutoDetach;
@@ -30,14 +30,20 @@ import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.kernel.DetachedStateManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.util.ChangeTracker;
+import org.apache.openjpa.util.CollectionChangeTracker;
+import org.apache.openjpa.util.DelayedCollectionChangeTrackerImpl;
+import org.apache.openjpa.util.Proxies;
+import org.apache.openjpa.util.Proxy;
 
 /**
- * LinkedHashSet proxy with delay loading capability.  Allows non-indexed
- * add and remove operations to occur on an unloaded collection.  Operations
- * that require a load will trigger a load.
+ * HashSet proxy with delay loading capability. Allows non-indexed add and
+ * remove operations to occur on an unloaded collection. Operations that require
+ * a load will trigger a load.
  */
-@SuppressWarnings({"rawtypes","unchecked"})
-public class DelayedLinkedHashSetProxy extends LinkedHashSet implements DelayedProxy, ProxyCollection {
+@SuppressWarnings({ "rawtypes", "unchecked" })
+public class DelayedHashSetProxy extends HashSet implements DelayedProxy, ProxyCollection {
+
     private transient OpenJPAStateManager sm;
     private transient int field;
     private transient CollectionChangeTracker changeTracker;
@@ -51,19 +57,19 @@ public class DelayedLinkedHashSetProxy extends LinkedHashSet implements DelayedP
     private transient int _delayedField;
     private transient boolean _detached = false;
 
-    public DelayedLinkedHashSetProxy(Collection<?> paramCollection) {
+    public DelayedHashSetProxy(Collection<?> paramCollection) {
         super(paramCollection);
     }
 
-    public DelayedLinkedHashSetProxy(int paramInt, float paramFloat) {
+    public DelayedHashSetProxy(int paramInt, float paramFloat) {
         super(paramInt, paramFloat);
     }
 
-    public DelayedLinkedHashSetProxy(int paramInt) {
+    public DelayedHashSetProxy(int paramInt) {
         super(paramInt);
     }
 
-    public DelayedLinkedHashSetProxy() {
+    public DelayedHashSetProxy() {
     }
 
     @Override
@@ -120,7 +126,7 @@ public class DelayedLinkedHashSetProxy extends LinkedHashSet implements DelayedP
 
     @Override
     public Object copy(Object paramObject) {
-        return new LinkedHashSet((Collection) paramObject);
+        return new HashSet((Collection) paramObject);
     }
 
     @Override
@@ -136,7 +142,7 @@ public class DelayedLinkedHashSetProxy extends LinkedHashSet implements DelayedP
     public ProxyCollection newInstance(Class paramClass,
             Comparator paramComparator, boolean paramBoolean1,
             boolean paramBoolean2) {
-        DelayedLinkedHashSetProxy localproxy = new DelayedLinkedHashSetProxy();
+        DelayedHashSetProxy localproxy = new DelayedHashSetProxy();
         localproxy.elementType = paramClass;
         if (paramBoolean1)
             localproxy.changeTracker = new DelayedCollectionChangeTrackerImpl(
@@ -292,6 +298,7 @@ public class DelayedLinkedHashSetProxy extends LinkedHashSet implements DelayedP
         return super.containsAll(c);
     }
 
+
     @Override
     public String toString() {
         if (!_directAccess && isDelayLoad()) {
@@ -383,7 +390,7 @@ public class DelayedLinkedHashSetProxy extends LinkedHashSet implements DelayedP
         return _detached;
     }
 
-    protected boolean isDelayLoad() {
+    public boolean isDelayLoad() {
         return ProxyCollections.isDelayed(this);
     }
 }

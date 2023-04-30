@@ -25,7 +25,7 @@ import jakarta.persistence.EntityManager;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.persistence.proxy.delayed.IDepartment;
 import org.apache.openjpa.persistence.proxy.delayed.IEmployee;
-import org.apache.openjpa.util.DelayedTreeSetProxy;
+import org.apache.openjpa.util.proxy.DelayedTreeSetProxy;
 
 public class TestDelayedTreeSetProxyDetachLite extends TestDelayedTreeSetProxy {
 

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.openjpa.util;
+package org.apache.openjpa.util.proxy;
 
 import java.io.ObjectStreamException;
 import java.util.Collection;
@@ -32,6 +32,11 @@ import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.kernel.DetachedStateManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.util.ChangeTracker;
+import org.apache.openjpa.util.CollectionChangeTracker;
+import org.apache.openjpa.util.DelayedCollectionChangeTrackerImpl;
+import org.apache.openjpa.util.Proxies;
+import org.apache.openjpa.util.Proxy;
 
 /**
  * TreeSet proxy with delay loading capability.  Allows non-indexed

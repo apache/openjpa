@@ -16,27 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.openjpa.util;
+package org.apache.openjpa.util.proxy;
 
-import java.util.Collection;
-import java.util.Comparator;
+import org.apache.openjpa.util.Proxy;
 
 /**
- * Interface implemented by all proxy collection types.
+ * Interface implemented by all generated proxies on {@link java.util.Calendar}
+ * types.
  *
- * @author Abe White
+ * @author Marc Prud'hommeaux
  */
-public interface ProxyCollection
-    extends Proxy, Collection {
+public interface ProxyCalendar
+    extends Proxy {
 
     /**
-     * The collection element type.
+     * Return a new instance of this calendar type.
      */
-    Class getElementType();
-
-    /**
-     * Create a new instance of this proxy type.
-     */
-    ProxyCollection newInstance(Class elementType, Comparator comp,
-        boolean trackChanges, boolean autoOff);
+    ProxyCalendar newInstance();
 }

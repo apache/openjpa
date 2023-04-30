@@ -33,9 +33,9 @@ import jakarta.persistence.EntityManager;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.DetachedStateManager;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-import org.apache.openjpa.util.DelayedProxy;
+import org.apache.openjpa.util.proxy.DelayedProxy;
 import org.apache.openjpa.util.Proxy;
-import org.apache.openjpa.util.ProxyCollection;
+import org.apache.openjpa.util.proxy.ProxyCollection;
 
 /**
  * Verifies generic delay-load capabilities for delay-load collection proxies.

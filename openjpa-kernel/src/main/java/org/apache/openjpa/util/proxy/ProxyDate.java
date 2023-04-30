@@ -16,32 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.openjpa.util;
+package org.apache.openjpa.util.proxy;
 
-import java.util.Comparator;
-import java.util.Map;
+import org.apache.openjpa.util.Proxy;
 
 /**
- * Interface implemented by proxies on {@link Map} types.
+ * Interface implemented by all generated proxies on {@link java.util.Date}
+ * types.
  *
  * @author Abe White
  */
-public interface ProxyMap
-    extends Proxy, Map {
+public interface ProxyDate
+    extends Proxy {
 
     /**
-     * The map key type.
+     * Return a new instance of this date type.
      */
-    Class getKeyType();
-
-    /**
-     * The map value type.
-     */
-    Class getValueType();
-
-    /**
-     * Create a new instance of this proxy type.
-     */
-    ProxyMap newInstance(Class keyType, Class valueType,
-        Comparator compare, boolean trackChanges, boolean autoOff);
+    ProxyDate newInstance();
 }
