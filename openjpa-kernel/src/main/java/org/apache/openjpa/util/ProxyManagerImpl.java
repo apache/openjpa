@@ -73,6 +73,10 @@ import org.apache.openjpa.util.proxy.ProxyConcurrentMaps;
 import org.apache.openjpa.util.proxy.ProxyDate;
 import org.apache.openjpa.util.proxy.ProxyMap;
 import org.apache.openjpa.util.proxy.ProxyMaps;
+import org.apache.xbean.asm9.ClassWriter;
+import org.apache.xbean.asm9.MethodVisitor;
+import org.apache.xbean.asm9.Opcodes;
+import org.apache.xbean.asm9.Type;
 
 import serp.bytecode.BCClass;
 import serp.bytecode.BCField;
@@ -85,6 +89,7 @@ import serp.bytecode.Project;
  * Default implementation of the {@link ProxyManager} interface.
  *
  * @author Abe White
+ * @author Mark Struberg
  */
 public class ProxyManagerImpl
     implements ProxyManager {
@@ -446,8 +451,7 @@ public class ProxyManagerImpl
                 ProxyDate.class);
             Class pcls = loadBuildTimeProxy(type, l);
             if (pcls == null)
-                pcls = GeneratedClasses.loadBCClass(
-                    generateProxyDateBytecode(type, true), l);
+                pcls = generateAndLoadProxyDate(type, true, l);
             proxy = (ProxyDate) instantiateProxy(pcls, null, null);
             _proxies.put(type, proxy);
         }
@@ -664,24 +668,234 @@ public class ProxyManagerImpl
         return bc;
     }
 
+
+    private Class generateAndLoadProxyDate(Class type, boolean runtime, ClassLoader l) {
+        final String proxyClassName = getProxyClassName(type, runtime);
+        final byte[] classBytes = generateProxyDateBytecode(type, runtime, proxyClassName);
+
+        return GeneratedClasses.loadAsmClass(proxyClassName, classBytes, ProxyDate.class, l);
+    }
+
     /**
      * Generate the bytecode for a date proxy for the given type.
      */
-    protected BCClass generateProxyDateBytecode(Class type, boolean runtime) {
+    protected byte[] generateProxyDateBytecode(Class type, boolean runtime, String proxyClassName) {
         assertNotFinal(type);
-        Project project = new Project();
-        BCClass bc = AccessController.doPrivileged(J2DoPrivHelper
-            .loadProjectClassAction(project, getProxyClassName(type, runtime)));
-        bc.setSuperclass(type);
-        bc.declareInterface(ProxyDate.class);
+        proxyClassName = proxyClassName.replace('.', '/');
 
-        delegateConstructors(bc, type);
-        addProxyMethods(bc, true);
+        String superClassFileNname = type.getName().replace('.', '/');
+
+        String[] interfaceNames = new String[]{Type.getInternalName(ProxyDate.class)};
+
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        cw.visit(Opcodes.V11, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, proxyClassName,
+                null, superClassFileNname, interfaceNames);
+
+        String classFileName = runtime ? type.getName() : proxyClassName;
+        cw.visitSource(classFileName + ".java", null);
+
+        delegateConstructors(cw, type, superClassFileNname);
+        addInstanceVariables(cw);
+        addProxyMethods(cw, true, proxyClassName, type);
+
+/* TODO
         addProxyDateMethods(bc, type);
         proxySetters(bc, type);
         addWriteReplaceMethod(bc, runtime);
-        return bc;
+*/
+        return cw.toByteArray();
     }
+
+    /**
+     * add the instance variables to the class to be generated
+     */
+    private void addInstanceVariables(ClassWriter cw) {
+        // variable #1, the state manager
+        cw.visitField(Opcodes.ACC_PRIVATE | Opcodes.ACC_TRANSIENT,
+                "sm", Type.getDescriptor(OpenJPAStateManager.class), null, null).visitEnd();
+
+        // variable #2, the state manager
+        cw.visitField(Opcodes.ACC_PRIVATE | Opcodes.ACC_TRANSIENT,
+                "field", Type.getDescriptor(int.class), null, null).visitEnd();
+    }
+
+    /**
+     * Returns the appropriate bytecode instruction to load a value from a variable to the stack
+     *
+     * @param type Type to load
+     * @return Bytecode instruction to use
+     */
+    private int getVarInsn(Class<?> type)
+    {
+        if (type.isPrimitive())
+        {
+            if (Integer.TYPE.equals(type))
+            {
+                return Opcodes.ILOAD;
+            }
+            else if (Boolean.TYPE.equals(type))
+            {
+                return Opcodes.ILOAD;
+            }
+            else if (Character.TYPE.equals(type))
+            {
+                return Opcodes.ILOAD;
+            }
+            else if (Byte.TYPE.equals(type))
+            {
+                return Opcodes.ILOAD;
+            }
+            else if (Short.TYPE.equals(type))
+            {
+                return Opcodes.ILOAD;
+            }
+            else if (Float.TYPE.equals(type))
+            {
+                return Opcodes.FLOAD;
+            }
+            else if (Long.TYPE.equals(type))
+            {
+                return Opcodes.LLOAD;
+            }
+            else if (Double.TYPE.equals(type))
+            {
+                return Opcodes.DLOAD;
+            }
+        }
+
+        return Opcodes.ALOAD;
+    }
+
+    /**
+     * Create pass-through constructors to base type.
+     */
+    private void delegateConstructors(ClassWriter cw, Class type, String superClassFileNname) {
+        Constructor[] constructors = type.getConstructors();
+
+        for (Constructor constructor : constructors) {
+            Class[] params = constructor.getParameterTypes();
+            String[] exceptionTypes = getInternalNames(constructor.getExceptionTypes());
+            String descriptor = Type.getConstructorDescriptor(constructor);
+            MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", descriptor, null, exceptionTypes);
+            mv.visitCode();
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            for (int i = 1; i <= params.length; i++)
+            {
+                mv.visitVarInsn(getVarInsn(params[i-1]), i);
+            }
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, superClassFileNname, "<init>", descriptor, false);
+
+            mv.visitInsn(Opcodes.RETURN);
+            mv.visitMaxs(-1, -1);
+            mv.visitEnd();
+        }
+    }
+
+    private String[] getInternalNames(Class[] classes) {
+        String[] internalNames = new String[classes.length];
+
+        for (int i=0; i<classes.length; i++) {
+            internalNames[i] = Type.getInternalName(classes[i]);
+        }
+        return internalNames;
+    }
+
+    /**
+     * Implement the methods in the {@link Proxy} interface, with the exception
+     * of {@link Proxy#copy}.
+     *
+     * @param changeTracker whether to implement a null change tracker; if false
+     * the change tracker method is left unimplemented
+     * @param proxyClassName
+     */
+    private void addProxyMethods(ClassWriter cw, boolean changeTracker, String proxyClassName, Class<?> parentClass) {
+
+        MethodVisitor mv = cw.visitMethod(Modifier.PUBLIC, "setOwner",
+                Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(OpenJPAStateManager.class), Type.INT_TYPE)
+                , null, null);
+        mv.visitCode();
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitVarInsn(Opcodes.ALOAD, 1);
+        mv.visitFieldInsn(Opcodes.PUTFIELD, proxyClassName, "sm", Type.getDescriptor(OpenJPAStateManager.class));
+
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitVarInsn(Opcodes.ILOAD, 2);
+        mv.visitFieldInsn(Opcodes.PUTFIELD, proxyClassName, "field", Type.getDescriptor(Integer.TYPE));
+
+        mv.visitInsn(Opcodes.RETURN);
+        mv.visitMaxs(-1, -1);
+        mv.visitEnd();
+
+
+        mv = cw.visitMethod(Modifier.PUBLIC, "getOwner",
+                Type.getMethodDescriptor(Type.getType(OpenJPAStateManager.class), Type.VOID_TYPE)
+                , null, null);
+        mv.visitCode();
+
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitFieldInsn(Opcodes.GETFIELD, proxyClassName, "sm", Type.getDescriptor(OpenJPAStateManager.class));
+
+        mv.visitInsn(Opcodes.IRETURN);
+        mv.visitMaxs(-1, -1);
+        mv.visitEnd();
+
+
+        mv = cw.visitMethod(Modifier.PUBLIC, "getOwnerField",
+                Type.getMethodDescriptor(Type.INT_TYPE)
+                , null, null);
+        mv.visitCode();
+
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitFieldInsn(Opcodes.GETFIELD, proxyClassName, "field", Type.INT_TYPE.getDescriptor());
+
+        mv.visitInsn(Opcodes.IRETURN);
+        mv.visitMaxs(-1, -1);
+        mv.visitEnd();
+
+
+        /*
+         * clone (return detached proxy object)
+         * Note:  This method is only being provided to satisfy a quirk with
+         * the IBM JDK -- while comparing Calendar objects, the clone() method
+         * was invoked.  So, we are now overriding the clone() method so as to
+         * provide a detached proxy object (null out the StateManager).
+         */
+        mv = cw.visitMethod(Modifier.PUBLIC, "clone",
+                Type.getMethodDescriptor(Type.getType(Object.class))
+                , null, null);
+        mv.visitCode();
+
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(parentClass), "clone",
+                Type.getMethodDescriptor(Type.getType(Object.class)), false);
+        mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getInternalName(Proxy.class));
+        mv.visitVarInsn(Opcodes.ASTORE, 1);
+        mv.visitVarInsn(Opcodes.ALOAD, 1);
+
+        mv.visitInsn(Opcodes.ACONST_NULL);
+        mv.visitInsn(Opcodes.ICONST_0);
+        mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, Type.getInternalName(Proxy.class), "setOwner",
+                Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(OpenJPAStateManager.class), Type.INT_TYPE), true);
+
+        mv.visitVarInsn(Opcodes.ALOAD, 1);
+        mv.visitInsn(Opcodes.ARETURN);
+        mv.visitMaxs(-1, -1);
+        mv.visitEnd();
+
+
+        if (changeTracker) {
+            mv = cw.visitMethod(Modifier.PUBLIC, "getChangeTracker",
+                    Type.getMethodDescriptor(Type.getType(ChangeTracker.class))
+                    , null, null);
+            mv.visitCode();
+            mv.visitInsn(Opcodes.ACONST_NULL);
+            mv.visitInsn(Opcodes.ARETURN);
+            mv.visitMaxs(-1, -1);
+            mv.visitEnd();
+        }
+
+    }
+
 
     /**
      * Generate the bytecode for a calendar proxy for the given type.
@@ -1751,8 +1965,14 @@ public class ProxyManagerImpl
                 bc = mgr.generateProxyCollectionBytecode(cls, false);
             else if (Map.class.isAssignableFrom(cls))
                 bc = mgr.generateProxyMapBytecode(cls, false);
-            else if (Date.class.isAssignableFrom(cls))
-                bc = mgr.generateProxyDateBytecode(cls, false);
+            else if (Date.class.isAssignableFrom(cls)) {
+                final String proxyClassName = getProxyClassName(cls, false);
+                byte[] bytes = mgr.generateProxyDateBytecode(cls, false, proxyClassName);
+
+                final String fileName = cls.getName().replace('.', '$') + PROXY_SUFFIX + ".class";
+                java.nio.file.Files.write(new File(dir, fileName).toPath(), bytes);
+                continue;
+            }
             else if (Calendar.class.isAssignableFrom(cls))
                 bc = mgr.generateProxyCalendarBytecode(cls, false);
             else {

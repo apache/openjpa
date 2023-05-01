@@ -56,6 +56,7 @@ public class GeneratedClasses {
 
     /**
      * Load the class represented by the given bytecode.
+     * @deprecated move to ASM
      */
     public static Class loadBCClass(BCClass bc, ClassLoader loader) {
         BCClassLoader bcloader = AccessController
@@ -68,6 +69,11 @@ public class GeneratedClasses {
         } catch (Throwable t) {
             throw new GeneralException(bc.getName()).setCause(t);
         }
+    }
+
+    public static Class loadAsmClass(String className, byte[] classBytes, Class<?> proxiedClass, ClassLoader loader) {
+        ClassLoaderProxyService pcls = new ClassLoaderProxyService(null, loader);
+        return pcls.defineAndLoad(className, classBytes, proxiedClass);
     }
 
     /**
