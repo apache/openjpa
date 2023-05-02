@@ -698,11 +698,9 @@ public class ProxyManagerImpl
         addInstanceVariables(cw);
         addProxyMethods(cw, true, proxyClassDef, type);
         addProxyDateMethods(cw, proxyClassDef, type);
+        proxySetters(cw, proxyClassDef, type);
+        addWriteReplaceMethod(cw, proxyClassDef, runtime);
 
-/* TODO
-        proxySetters(bc, type);
-        addWriteReplaceMethod(bc, runtime);
-*/
         return cw.toByteArray();
     }
 
@@ -782,7 +780,7 @@ public class ProxyManagerImpl
             mv.visitVarInsn(Opcodes.ALOAD, 0);
             mv.visitFieldInsn(Opcodes.GETFIELD, proxyClassDef, "sm", Type.getDescriptor(OpenJPAStateManager.class));
 
-            mv.visitInsn(Opcodes.IRETURN);
+            mv.visitInsn(Opcodes.ARETURN);
             mv.visitMaxs(-1, -1);
             mv.visitEnd();
         }
@@ -952,7 +950,74 @@ public class ProxyManagerImpl
         }
     }
 
+    /**
+     * Proxy setter methods of the given type.
+     *
+     * @return true if we generated any setters, false otherwise
+     */
+    private boolean proxySetters(ClassWriter cw, String proxyClassDef, Class type) {
+        Method[] meths = type.getMethods();
 
+        int setters = 0;
+        for (Method meth : meths) {
+            if (isSetter(meth) && !Modifier.isFinal(meth.getModifiers())) {
+
+                setters++;
+                proxySetter(cw, proxyClassDef, type, meth);
+            }
+        }
+        return setters > 0;
+    }
+
+    private void proxySetter(ClassWriter cw, String proxyClassDef, Class type, Method meth) {
+        Class[] params = meth.getParameterTypes();
+        Class ret = meth.getReturnType();
+
+        final String methodDescriptor = Type.getMethodDescriptor(Type.getType(ret), getParamTypes(params));
+        MethodVisitor mv = cw.visitMethod(Modifier.PUBLIC, meth.getName(),
+                methodDescriptor
+                , null, null);
+        mv.visitCode();
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitInsn(Opcodes.ICONST_1);
+        mv.visitMethodInsn(Opcodes.INVOKESTATIC, Type.getInternalName(Proxies.class), "dirty",
+                Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(Proxy.class), Type.BOOLEAN_TYPE), false);
+
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+
+        // push all the method params to the stack
+        for (int i = 1; i <= params.length; i++)
+        {
+            mv.visitVarInsn(getVarInsn(params[i-1]), i);
+        }
+
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(type), meth.getName(),
+                methodDescriptor, false);
+
+        mv.visitInsn(getReturnInsn(ret));
+        mv.visitMaxs(-1, -1);
+        mv.visitEnd();
+    }
+
+
+    /**
+     * Add a writeReplace implementation that serializes to a non-proxy type
+     * unless detached and this is a build-time generated class.
+     */
+    private void addWriteReplaceMethod(ClassWriter cw, String proxyClassDef, boolean runtime) {
+        MethodVisitor mv = cw.visitMethod(Modifier.PROTECTED, "writeReplace",
+                Type.getMethodDescriptor(Type.getType(Object.class))
+                , null, new String[]{Type.getInternalName(ObjectStreamException.class)});
+        mv.visitCode();
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitInsn(runtime ? Opcodes.ICONST_0 : Opcodes.ICONST_1); // !runtime
+        mv.visitMethodInsn(Opcodes.INVOKESTATIC, Type.getInternalName(Proxies.class), "writeReplace",
+                Type.getMethodDescriptor(Type.getType(Object.class), Type.getType(Proxy.class), Type.BOOLEAN_TYPE), false);
+
+        mv.visitInsn(Opcodes.ARETURN);
+        mv.visitMaxs(-1, -1);
+        mv.visitEnd();
+    }
 
     /* a few utility methods to make life with ASM easier */
 
@@ -1029,6 +1094,29 @@ public class ProxyManagerImpl
 
         return Opcodes.ALOAD;
     }
+
+    /**
+     * calclates the proper Return instruction opcode for the given class
+     */
+    private int getReturnInsn(Class ret) {
+        if (ret.equals(Void.TYPE)) {
+            return Opcodes.RETURN;
+        }
+        if (ret.equals(Integer.TYPE)) {
+            return Opcodes.IRETURN;
+        }
+        if (ret.equals(Long.TYPE)) {
+            return Opcodes.LRETURN;
+        }
+        if (ret.equals(Float.TYPE)) {
+            return Opcodes.FRETURN;
+        }
+        if (ret.equals(Double.TYPE)) {
+            return Opcodes.DRETURN;
+        }
+        return Opcodes.ARETURN;
+    }
+
 
     /* ASM end */
 
@@ -1431,97 +1519,6 @@ public class ProxyManagerImpl
         code.putfield().setField(changeTracker);
 
         ifins.setTarget(code.aload().setLocal(ret));
-        code.areturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-    }
-
-    /**
-     * Implement the methods in the {@link ProxyDate} interface.
-     */
-    private void addProxyDateMethods(BCClass bc, Class type) {
-        boolean hasDefaultCons = bc.getDeclaredMethod("<init>",
-            (Class[]) null) != null;
-        boolean hasMillisCons = bc.getDeclaredMethod("<init>",
-            new Class[] { long.class }) != null;
-        if (!hasDefaultCons && !hasMillisCons)
-            throw new UnsupportedException(_loc.get("no-date-cons", type));
-
-        // add a default constructor that delegates to the millis constructor
-        BCMethod m;
-        Code code;
-        if (!hasDefaultCons) {
-            m = bc.declareMethod("<init>", void.class, null);
-            m.makePublic();
-            code = m.getCode(true);
-            code.aload().setThis();
-            code.invokestatic().setMethod(System.class, "currentTimeMillis",
-                long.class, null);
-            code.invokespecial().setMethod(type, "<init>", void.class,
-                new Class[] { long.class });
-            code.vreturn();
-            code.calculateMaxStack();
-            code.calculateMaxLocals();
-        }
-
-        // date copy
-        Constructor cons = findCopyConstructor(type);
-        Class[] params;
-        if (cons != null)
-            params = cons.getParameterTypes();
-        else if (hasMillisCons)
-            params = new Class[] { long.class };
-        else
-            params = new Class[0];
-
-        m = bc.declareMethod("copy", Object.class, new Class[] {Object.class});
-        m.makePublic();
-        code = m.getCode(true);
-
-        code.anew().setType(type);
-        code.dup();
-        if (params.length == 1) {
-            if (params[0] == long.class) {
-                code.aload().setParam(0);
-                code.checkcast().setType(Date.class);
-                code.invokevirtual().setMethod(Date.class, "getTime",
-                    long.class, null);
-            } else {
-                code.aload().setParam(0);
-                code.checkcast().setType(params[0]);
-            }
-        }
-        code.invokespecial().setMethod(type, "<init>", void.class, params);
-        if (params.length == 0) {
-            code.dup();
-            code.aload().setParam(0);
-            code.checkcast().setType(Date.class);
-            code.invokevirtual().setMethod(Date.class, "getTime", long.class,
-                null);
-            code.invokevirtual().setMethod(type, "setTime", void.class,
-                new Class[] { long.class });
-        }
-        if ((params.length == 0 || params[0] == long.class)
-            && Timestamp.class.isAssignableFrom(type)) {
-            code.dup();
-            code.aload().setParam(0);
-            code.checkcast().setType(Timestamp.class);
-            code.invokevirtual().setMethod(Timestamp.class, "getNanos",
-                int.class, null);
-            code.invokevirtual().setMethod(type, "setNanos", void.class,
-                new Class[] { int.class });
-        }
-        code.areturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-
-        // new instance factory
-        m = bc.declareMethod("newInstance", ProxyDate.class, null);
-        m.makePublic();
-        code = m.getCode(true);
-        code.anew().setType(bc);
-        code.dup();
-        code.invokespecial().setMethod("<init>", void.class, null);
         code.areturn();
         code.calculateMaxStack();
         code.calculateMaxLocals();
@@ -2096,18 +2093,25 @@ public class ProxyManagerImpl
                 // expected if the class hasn't been generated
             }
 
+            // ASM generated proxies
+            if (Date.class.isAssignableFrom(cls)) {
+                final String proxyClassName = getProxyClassName(cls, false);
+
+                byte[] bytes = null;
+                if (Date.class.isAssignableFrom(cls)) {
+                    bytes = mgr.generateProxyDateBytecode(cls, false, proxyClassName);
+                }
+                if (bytes != null) {
+                    final String fileName = cls.getName().replace('.', '$') + PROXY_SUFFIX + ".class";
+                    java.nio.file.Files.write(new File(dir, fileName).toPath(), bytes);
+                }
+                continue;
+            }
+
             if (Collection.class.isAssignableFrom(cls))
                 bc = mgr.generateProxyCollectionBytecode(cls, false);
             else if (Map.class.isAssignableFrom(cls))
                 bc = mgr.generateProxyMapBytecode(cls, false);
-            else if (Date.class.isAssignableFrom(cls)) {
-                final String proxyClassName = getProxyClassName(cls, false);
-                byte[] bytes = mgr.generateProxyDateBytecode(cls, false, proxyClassName);
-
-                final String fileName = cls.getName().replace('.', '$') + PROXY_SUFFIX + ".class";
-                java.nio.file.Files.write(new File(dir, fileName).toPath(), bytes);
-                continue;
-            }
             else if (Calendar.class.isAssignableFrom(cls))
                 bc = mgr.generateProxyCalendarBytecode(cls, false);
             else {
