@@ -681,25 +681,25 @@ public class ProxyManagerImpl
      */
     protected byte[] generateProxyDateBytecode(Class type, boolean runtime, String proxyClassName) {
         assertNotFinal(type);
-        proxyClassName = proxyClassName.replace('.', '/');
+        String proxyClassDef = proxyClassName.replace('.', '/');
 
         String superClassFileNname = type.getName().replace('.', '/');
 
         String[] interfaceNames = new String[]{Type.getInternalName(ProxyDate.class)};
 
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-        cw.visit(Opcodes.V11, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, proxyClassName,
+        cw.visit(Opcodes.V11, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, proxyClassDef,
                 null, superClassFileNname, interfaceNames);
 
-        String classFileName = runtime ? type.getName() : proxyClassName;
+        String classFileName = runtime ? type.getName() : proxyClassDef;
         cw.visitSource(classFileName + ".java", null);
 
         delegateConstructors(cw, type, superClassFileNname);
         addInstanceVariables(cw);
-        addProxyMethods(cw, true, proxyClassName, type);
+        addProxyMethods(cw, true, proxyClassDef, type);
+        addProxyDateMethods(cw, proxyClassDef, type);
 
 /* TODO
-        addProxyDateMethods(bc, type);
         proxySetters(bc, type);
         addWriteReplaceMethod(bc, runtime);
 */
@@ -717,6 +717,270 @@ public class ProxyManagerImpl
         // variable #2, the state manager
         cw.visitField(Opcodes.ACC_PRIVATE | Opcodes.ACC_TRANSIENT,
                 "field", Type.getDescriptor(int.class), null, null).visitEnd();
+    }
+
+
+    /**
+     * Create pass-through constructors to base type.
+     */
+    private void delegateConstructors(ClassWriter cw, Class type, String superClassFileNname) {
+        Constructor[] constructors = type.getConstructors();
+
+        for (Constructor constructor : constructors) {
+            Class[] params = constructor.getParameterTypes();
+            String[] exceptionTypes = getInternalNames(constructor.getExceptionTypes());
+            String descriptor = Type.getConstructorDescriptor(constructor);
+            MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", descriptor, null, exceptionTypes);
+            mv.visitCode();
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            for (int i = 1; i <= params.length; i++)
+            {
+                mv.visitVarInsn(getVarInsn(params[i-1]), i);
+            }
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, superClassFileNname, "<init>", descriptor, false);
+
+            mv.visitInsn(Opcodes.RETURN);
+            mv.visitMaxs(-1, -1);
+            mv.visitEnd();
+        }
+    }
+
+    /**
+     * Implement the methods in the {@link Proxy} interface, with the exception
+     * of {@link Proxy#copy}.
+     *
+     * @param changeTracker whether to implement a null change tracker; if false
+     * the change tracker method is left unimplemented
+     * @param proxyClassDef
+     */
+    private void addProxyMethods(ClassWriter cw, boolean changeTracker, String proxyClassDef, Class<?> parentClass) {
+
+        {
+            MethodVisitor mv = cw.visitMethod(Modifier.PUBLIC, "setOwner",
+                    Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(OpenJPAStateManager.class), Type.INT_TYPE)
+                    , null, null);
+            mv.visitCode();
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitVarInsn(Opcodes.ALOAD, 1);
+            mv.visitFieldInsn(Opcodes.PUTFIELD, proxyClassDef, "sm", Type.getDescriptor(OpenJPAStateManager.class));
+
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitVarInsn(Opcodes.ILOAD, 2);
+            mv.visitFieldInsn(Opcodes.PUTFIELD, proxyClassDef, "field", Type.getDescriptor(Integer.TYPE));
+
+            mv.visitInsn(Opcodes.RETURN);
+            mv.visitMaxs(-1, -1);
+            mv.visitEnd();
+        }
+
+        {
+            MethodVisitor mv = cw.visitMethod(Modifier.PUBLIC, "getOwner",
+                    Type.getMethodDescriptor(Type.getType(OpenJPAStateManager.class))
+                    , null, null);
+            mv.visitCode();
+
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitFieldInsn(Opcodes.GETFIELD, proxyClassDef, "sm", Type.getDescriptor(OpenJPAStateManager.class));
+
+            mv.visitInsn(Opcodes.IRETURN);
+            mv.visitMaxs(-1, -1);
+            mv.visitEnd();
+        }
+
+        {
+            MethodVisitor mv = cw.visitMethod(Modifier.PUBLIC, "getOwnerField",
+                    Type.getMethodDescriptor(Type.INT_TYPE)
+                    , null, null);
+            mv.visitCode();
+
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitFieldInsn(Opcodes.GETFIELD, proxyClassDef, "field", Type.INT_TYPE.getDescriptor());
+
+            mv.visitInsn(Opcodes.IRETURN);
+            mv.visitMaxs(-1, -1);
+            mv.visitEnd();
+        }
+
+        {
+            /*
+             * clone (return detached proxy object)
+             * Note:  This method is only being provided to satisfy a quirk with
+             * the IBM JDK -- while comparing Calendar objects, the clone() method
+             * was invoked.  So, we are now overriding the clone() method so as to
+             * provide a detached proxy object (null out the StateManager).
+             */
+            MethodVisitor mv = cw.visitMethod(Modifier.PUBLIC, "clone",
+                    Type.getMethodDescriptor(Type.getType(Object.class))
+                    , null, null);
+            mv.visitCode();
+
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(parentClass), "clone",
+                    Type.getMethodDescriptor(Type.getType(Object.class)), false);
+            mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getInternalName(Proxy.class));
+            mv.visitVarInsn(Opcodes.ASTORE, 1);
+            mv.visitVarInsn(Opcodes.ALOAD, 1);
+
+            mv.visitInsn(Opcodes.ACONST_NULL);
+            mv.visitInsn(Opcodes.ICONST_0);
+            mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, Type.getInternalName(Proxy.class), "setOwner",
+                    Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(OpenJPAStateManager.class), Type.INT_TYPE), true);
+
+            mv.visitVarInsn(Opcodes.ALOAD, 1);
+            mv.visitInsn(Opcodes.ARETURN);
+            mv.visitMaxs(-1, -1);
+            mv.visitEnd();
+        }
+
+        if (changeTracker) {
+            MethodVisitor mv = cw.visitMethod(Modifier.PUBLIC, "getChangeTracker",
+                    Type.getMethodDescriptor(Type.getType(ChangeTracker.class))
+                    , null, null);
+            mv.visitCode();
+            mv.visitInsn(Opcodes.ACONST_NULL);
+            mv.visitInsn(Opcodes.ARETURN);
+            mv.visitMaxs(-1, -1);
+            mv.visitEnd();
+        }
+    }
+
+    /**
+     * Implement the methods in the {@link ProxyDate} interface.
+     */
+    private void addProxyDateMethods(ClassWriter cw, String proxyClassDef, Class type) {
+
+        final boolean hasDefaultCons = hasConstructor(type);
+        final boolean hasMillisCons = hasConstructor(type, long.class);
+
+        if (!hasDefaultCons && !hasMillisCons) {
+            throw new UnsupportedException(_loc.get("no-date-cons", type));
+        }
+
+        // add a default constructor that delegates to the millis constructor
+        if (!hasDefaultCons) {
+            MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>",
+                    Type.getMethodDescriptor(Type.VOID_TYPE), null, null);
+            mv.visitCode();
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitMethodInsn(Opcodes.INVOKESTATIC, Type.getInternalName(System.class), "currentTimeMillis",
+                    Type.getMethodDescriptor(Type.LONG_TYPE), false);
+
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(type), "<init>",
+                    Type.getMethodDescriptor(Type.VOID_TYPE, Type.LONG_TYPE), false);
+
+            mv.visitInsn(Opcodes.RETURN);
+            mv.visitMaxs(-1, -1);
+            mv.visitEnd();
+        }
+
+        {
+            // date copy
+            Constructor cons = findCopyConstructor(type);
+            Class[] params;
+            if (cons != null) {
+                params = cons.getParameterTypes();
+            }
+            else if (hasMillisCons) {
+                params = new Class[]{long.class};
+            }
+            else {
+                params = new Class[0];
+            }
+
+            MethodVisitor mv = cw.visitMethod(Modifier.PUBLIC, "copy",
+                    Type.getMethodDescriptor(Type.getType(Object.class), Type.getType(Object.class))
+                    , null, null);
+            mv.visitTypeInsn(Opcodes.NEW, Type.getInternalName(type));
+            mv.visitInsn(Opcodes.DUP);
+
+            if (params.length == 1) {
+                if (params[0] == long.class) {
+                    // call getTime on the given Date if the current type has a long constructor
+                    mv.visitVarInsn(Opcodes.ALOAD, 1);
+                    mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getInternalName(java.util.Date.class));
+                    mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, Type.getInternalName(java.util.Date.class), "getTime",
+                            Type.getMethodDescriptor(Type.LONG_TYPE), false);
+                }
+                else {
+                    // otherwise just pass the parameter
+                    mv.visitVarInsn(Opcodes.ALOAD, 1);
+                    mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getInternalName(params[0]));
+                }
+            }
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(type), "<init>",
+                    Type.getMethodDescriptor(Type.VOID_TYPE, getParamTypes(params)), false);
+
+            if (params.length == 0) {
+                mv.visitInsn(Opcodes.DUP);
+                mv.visitVarInsn(Opcodes.ALOAD, 1);
+                mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getInternalName(java.util.Date.class));
+                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, Type.getInternalName(java.util.Date.class), "getTime",
+                        Type.getMethodDescriptor(Type.LONG_TYPE), false);
+                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, Type.getInternalName(type), "setTime",
+                        Type.getMethodDescriptor(Type.VOID_TYPE, Type.LONG_TYPE), false);
+            }
+            if ((params.length == 0 || params[0] == long.class)
+                    && Timestamp.class.isAssignableFrom(type)) {
+                mv.visitInsn(Opcodes.DUP);
+                mv.visitVarInsn(Opcodes.ALOAD, 1);
+                mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getInternalName(Timestamp.class));
+                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, Type.getInternalName(Timestamp.class), "getNanos",
+                        Type.getMethodDescriptor(Type.INT_TYPE), false);
+                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, Type.getInternalName(type), "setNanos",
+                        Type.getMethodDescriptor(Type.VOID_TYPE, Type.INT_TYPE), false);
+
+            }
+
+            mv.visitInsn(Opcodes.ARETURN);
+            mv.visitMaxs(-1, -1);
+            mv.visitEnd();
+        }
+
+        {
+            // new instance factory
+            MethodVisitor mv = cw.visitMethod(Modifier.PUBLIC, "newInstance",
+                    Type.getMethodDescriptor(Type.getType(ProxyDate.class))
+                    , null, null);
+            mv.visitTypeInsn(Opcodes.NEW, proxyClassDef);
+            mv.visitInsn(Opcodes.DUP);
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, proxyClassDef, "<init>",
+                    Type.getMethodDescriptor(Type.VOID_TYPE), false);
+
+            mv.visitInsn(Opcodes.ARETURN);
+            mv.visitMaxs(-1, -1);
+            mv.visitEnd();
+        }
+    }
+
+
+
+    /* a few utility methods to make life with ASM easier */
+
+    private String[] getInternalNames(Class[] classes) {
+        String[] internalNames = new String[classes.length];
+
+        for (int i=0; i<classes.length; i++) {
+            internalNames[i] = Type.getInternalName(classes[i]);
+        }
+        return internalNames;
+    }
+
+    private Type[] getParamTypes(Class[] params) {
+        Type[] types = new Type[params.length];
+        for (int i=0; i<types.length; i++) {
+            types[i] = Type.getType(params[i]);
+        }
+
+        return types;
+    }
+
+    private boolean hasConstructor(Class type, Class<?>... paramTypes) {
+        try {
+            return type.getDeclaredConstructor(paramTypes) != null;
+        }
+        catch (NoSuchMethodException e) {
+            return false;
+        }
     }
 
     /**
@@ -766,136 +1030,7 @@ public class ProxyManagerImpl
         return Opcodes.ALOAD;
     }
 
-    /**
-     * Create pass-through constructors to base type.
-     */
-    private void delegateConstructors(ClassWriter cw, Class type, String superClassFileNname) {
-        Constructor[] constructors = type.getConstructors();
-
-        for (Constructor constructor : constructors) {
-            Class[] params = constructor.getParameterTypes();
-            String[] exceptionTypes = getInternalNames(constructor.getExceptionTypes());
-            String descriptor = Type.getConstructorDescriptor(constructor);
-            MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", descriptor, null, exceptionTypes);
-            mv.visitCode();
-            mv.visitVarInsn(Opcodes.ALOAD, 0);
-            for (int i = 1; i <= params.length; i++)
-            {
-                mv.visitVarInsn(getVarInsn(params[i-1]), i);
-            }
-            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, superClassFileNname, "<init>", descriptor, false);
-
-            mv.visitInsn(Opcodes.RETURN);
-            mv.visitMaxs(-1, -1);
-            mv.visitEnd();
-        }
-    }
-
-    private String[] getInternalNames(Class[] classes) {
-        String[] internalNames = new String[classes.length];
-
-        for (int i=0; i<classes.length; i++) {
-            internalNames[i] = Type.getInternalName(classes[i]);
-        }
-        return internalNames;
-    }
-
-    /**
-     * Implement the methods in the {@link Proxy} interface, with the exception
-     * of {@link Proxy#copy}.
-     *
-     * @param changeTracker whether to implement a null change tracker; if false
-     * the change tracker method is left unimplemented
-     * @param proxyClassName
-     */
-    private void addProxyMethods(ClassWriter cw, boolean changeTracker, String proxyClassName, Class<?> parentClass) {
-
-        MethodVisitor mv = cw.visitMethod(Modifier.PUBLIC, "setOwner",
-                Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(OpenJPAStateManager.class), Type.INT_TYPE)
-                , null, null);
-        mv.visitCode();
-        mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitVarInsn(Opcodes.ALOAD, 1);
-        mv.visitFieldInsn(Opcodes.PUTFIELD, proxyClassName, "sm", Type.getDescriptor(OpenJPAStateManager.class));
-
-        mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitVarInsn(Opcodes.ILOAD, 2);
-        mv.visitFieldInsn(Opcodes.PUTFIELD, proxyClassName, "field", Type.getDescriptor(Integer.TYPE));
-
-        mv.visitInsn(Opcodes.RETURN);
-        mv.visitMaxs(-1, -1);
-        mv.visitEnd();
-
-
-        mv = cw.visitMethod(Modifier.PUBLIC, "getOwner",
-                Type.getMethodDescriptor(Type.getType(OpenJPAStateManager.class), Type.VOID_TYPE)
-                , null, null);
-        mv.visitCode();
-
-        mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitFieldInsn(Opcodes.GETFIELD, proxyClassName, "sm", Type.getDescriptor(OpenJPAStateManager.class));
-
-        mv.visitInsn(Opcodes.IRETURN);
-        mv.visitMaxs(-1, -1);
-        mv.visitEnd();
-
-
-        mv = cw.visitMethod(Modifier.PUBLIC, "getOwnerField",
-                Type.getMethodDescriptor(Type.INT_TYPE)
-                , null, null);
-        mv.visitCode();
-
-        mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitFieldInsn(Opcodes.GETFIELD, proxyClassName, "field", Type.INT_TYPE.getDescriptor());
-
-        mv.visitInsn(Opcodes.IRETURN);
-        mv.visitMaxs(-1, -1);
-        mv.visitEnd();
-
-
-        /*
-         * clone (return detached proxy object)
-         * Note:  This method is only being provided to satisfy a quirk with
-         * the IBM JDK -- while comparing Calendar objects, the clone() method
-         * was invoked.  So, we are now overriding the clone() method so as to
-         * provide a detached proxy object (null out the StateManager).
-         */
-        mv = cw.visitMethod(Modifier.PUBLIC, "clone",
-                Type.getMethodDescriptor(Type.getType(Object.class))
-                , null, null);
-        mv.visitCode();
-
-        mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(parentClass), "clone",
-                Type.getMethodDescriptor(Type.getType(Object.class)), false);
-        mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getInternalName(Proxy.class));
-        mv.visitVarInsn(Opcodes.ASTORE, 1);
-        mv.visitVarInsn(Opcodes.ALOAD, 1);
-
-        mv.visitInsn(Opcodes.ACONST_NULL);
-        mv.visitInsn(Opcodes.ICONST_0);
-        mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, Type.getInternalName(Proxy.class), "setOwner",
-                Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(OpenJPAStateManager.class), Type.INT_TYPE), true);
-
-        mv.visitVarInsn(Opcodes.ALOAD, 1);
-        mv.visitInsn(Opcodes.ARETURN);
-        mv.visitMaxs(-1, -1);
-        mv.visitEnd();
-
-
-        if (changeTracker) {
-            mv = cw.visitMethod(Modifier.PUBLIC, "getChangeTracker",
-                    Type.getMethodDescriptor(Type.getType(ChangeTracker.class))
-                    , null, null);
-            mv.visitCode();
-            mv.visitInsn(Opcodes.ACONST_NULL);
-            mv.visitInsn(Opcodes.ARETURN);
-            mv.visitMaxs(-1, -1);
-            mv.visitEnd();
-        }
-
-    }
-
+    /* ASM end */
 
     /**
      * Generate the bytecode for a calendar proxy for the given type.
