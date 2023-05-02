@@ -98,6 +98,7 @@ public class ProxyManagerImpl
 
     private static final Localizer _loc = Localizer.forPackage
         (ProxyManagerImpl.class);
+    public static final Type TYPE_OBJECT = Type.getType(Object.class);
 
     private static long _proxyId = 0L;
     private static final Map _stdCollections = new HashMap();
@@ -469,8 +470,7 @@ public class ProxyManagerImpl
                 ProxyCalendar.class);
             Class pcls = loadBuildTimeProxy(type, l);
             if (pcls == null)
-                pcls = GeneratedClasses.loadBCClass(
-                    generateProxyCalendarBytecode(type, true), l);
+                pcls = generateAndLoadProxyCalendar(type, true, l);
             proxy = (ProxyCalendar) instantiateProxy(pcls, null, null);
             _proxies.put(type, proxy);
         }
@@ -676,15 +676,20 @@ public class ProxyManagerImpl
         return GeneratedClasses.loadAsmClass(proxyClassName, classBytes, ProxyDate.class, l);
     }
 
+    private Class generateAndLoadProxyCalendar(Class type, boolean runtime, ClassLoader l) {
+        final String proxyClassName = getProxyClassName(type, runtime);
+        final byte[] classBytes = generateProxyCalendarBytecode(type, runtime, proxyClassName);
+
+        return GeneratedClasses.loadAsmClass(proxyClassName, classBytes, ProxyDate.class, l);
+    }
+
     /**
      * Generate the bytecode for a date proxy for the given type.
      */
     protected byte[] generateProxyDateBytecode(Class type, boolean runtime, String proxyClassName) {
         assertNotFinal(type);
         String proxyClassDef = proxyClassName.replace('.', '/');
-
-        String superClassFileNname = type.getName().replace('.', '/');
-
+        String superClassFileNname = Type.getInternalName(type);
         String[] interfaceNames = new String[]{Type.getInternalName(ProxyDate.class)};
 
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
@@ -703,6 +708,34 @@ public class ProxyManagerImpl
 
         return cw.toByteArray();
     }
+
+    /**
+     * Generate the bytecode for a calendar proxy for the given type.
+     */
+    protected byte[] generateProxyCalendarBytecode(Class type, boolean runtime, String proxyClassName) {
+        assertNotFinal(type);
+        String proxyClassDef = proxyClassName.replace('.', '/');
+        String superClassFileNname = Type.getInternalName(type);
+        String[] interfaceNames = new String[]{Type.getInternalName(ProxyCalendar.class)};
+
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        cw.visit(Opcodes.V11, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, proxyClassDef,
+                null, superClassFileNname, interfaceNames);
+
+        String classFileName = runtime ? type.getName() : proxyClassDef;
+        cw.visitSource(classFileName + ".java", null);
+
+        delegateConstructors(cw, type, superClassFileNname);
+        addInstanceVariables(cw);
+        addProxyMethods(cw, true, proxyClassDef, type);
+        addProxyCalendarMethods(cw, proxyClassDef, type);
+        proxySetters(cw, proxyClassDef, type);
+        addWriteReplaceMethod(cw, proxyClassDef, runtime);
+
+        return cw.toByteArray();
+
+    }
+
 
     /**
      * add the instance variables to the class to be generated
@@ -808,13 +841,13 @@ public class ProxyManagerImpl
              * provide a detached proxy object (null out the StateManager).
              */
             MethodVisitor mv = cw.visitMethod(Modifier.PUBLIC, "clone",
-                    Type.getMethodDescriptor(Type.getType(Object.class))
+                    Type.getMethodDescriptor(TYPE_OBJECT)
                     , null, null);
             mv.visitCode();
 
             mv.visitVarInsn(Opcodes.ALOAD, 0);
             mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(parentClass), "clone",
-                    Type.getMethodDescriptor(Type.getType(Object.class)), false);
+                    Type.getMethodDescriptor(TYPE_OBJECT), false);
             mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getInternalName(Proxy.class));
             mv.visitVarInsn(Opcodes.ASTORE, 1);
             mv.visitVarInsn(Opcodes.ALOAD, 1);
@@ -886,8 +919,9 @@ public class ProxyManagerImpl
             }
 
             MethodVisitor mv = cw.visitMethod(Modifier.PUBLIC, "copy",
-                    Type.getMethodDescriptor(Type.getType(Object.class), Type.getType(Object.class))
+                    Type.getMethodDescriptor(TYPE_OBJECT, TYPE_OBJECT)
                     , null, null);
+            mv.visitCode();
             mv.visitTypeInsn(Opcodes.NEW, Type.getInternalName(type));
             mv.visitInsn(Opcodes.DUP);
 
@@ -939,6 +973,7 @@ public class ProxyManagerImpl
             MethodVisitor mv = cw.visitMethod(Modifier.PUBLIC, "newInstance",
                     Type.getMethodDescriptor(Type.getType(ProxyDate.class))
                     , null, null);
+            mv.visitCode();
             mv.visitTypeInsn(Opcodes.NEW, proxyClassDef);
             mv.visitInsn(Opcodes.DUP);
             mv.visitMethodInsn(Opcodes.INVOKESPECIAL, proxyClassDef, "<init>",
@@ -948,6 +983,130 @@ public class ProxyManagerImpl
             mv.visitMaxs(-1, -1);
             mv.visitEnd();
         }
+    }
+
+    private void addProxyCalendarMethods(ClassWriter cw, String proxyClassDef, Class type) {
+        // calendar copy
+        {
+            Constructor cons = findCopyConstructor(type);
+            Class[] params = (cons == null) ? new Class[0] : cons.getParameterTypes();
+
+            MethodVisitor mv = cw.visitMethod(Modifier.PUBLIC, "copy",
+                    Type.getMethodDescriptor(TYPE_OBJECT, TYPE_OBJECT)
+                    , null, null);
+            mv.visitCode();
+
+            mv.visitTypeInsn(Opcodes.NEW, Type.getInternalName(type));
+            mv.visitInsn(Opcodes.DUP);
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(type), "<init>",
+                    Type.getMethodDescriptor(Type.VOID_TYPE, getParamTypes(params)), false);
+
+            // timeInMillis
+            mv.visitInsn(Opcodes.DUP);
+            mv.visitVarInsn(Opcodes.ALOAD, 1);
+            mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getInternalName(Calendar.class));
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, Type.getInternalName(Calendar.class), "getTimeInMillis",
+                    Type.getMethodDescriptor(Type.LONG_TYPE), false);
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, Type.getInternalName(type), "setTimeInMillis",
+                    Type.getMethodDescriptor(Type.VOID_TYPE, Type.LONG_TYPE), false);
+
+            // lenient
+            mv.visitInsn(Opcodes.DUP);
+            mv.visitVarInsn(Opcodes.ALOAD, 1);
+            mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getInternalName(Calendar.class));
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, Type.getInternalName(Calendar.class), "isLenient",
+                    Type.getMethodDescriptor(Type.BOOLEAN_TYPE), false);
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, Type.getInternalName(type), "setLenient",
+                    Type.getMethodDescriptor(Type.VOID_TYPE, Type.BOOLEAN_TYPE), false);
+
+            // firstDayOfWeek
+            mv.visitInsn(Opcodes.DUP);
+            mv.visitVarInsn(Opcodes.ALOAD, 1);
+            mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getInternalName(Calendar.class));
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, Type.getInternalName(Calendar.class), "getFirstDayOfWeek",
+                    Type.getMethodDescriptor(Type.INT_TYPE), false);
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, Type.getInternalName(type), "setFirstDayOfWeek",
+                    Type.getMethodDescriptor(Type.VOID_TYPE, Type.INT_TYPE), false);
+
+            // minimalDaysInFirstWeek
+            mv.visitInsn(Opcodes.DUP);
+            mv.visitVarInsn(Opcodes.ALOAD, 1);
+            mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getInternalName(Calendar.class));
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, Type.getInternalName(Calendar.class), "getMinimalDaysInFirstWeek",
+                    Type.getMethodDescriptor(Type.INT_TYPE), false);
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, Type.getInternalName(type), "setMinimalDaysInFirstWeek",
+                    Type.getMethodDescriptor(Type.VOID_TYPE, Type.INT_TYPE), false);
+
+            // timeZone
+            mv.visitInsn(Opcodes.DUP);
+            mv.visitVarInsn(Opcodes.ALOAD, 1);
+            mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getInternalName(Calendar.class));
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, Type.getInternalName(Calendar.class), "getTimeZone",
+                    Type.getMethodDescriptor(Type.getType(TimeZone.class)), false);
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, Type.getInternalName(type), "setTimeZone",
+                    Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(TimeZone.class)), false);
+
+            mv.visitInsn(Opcodes.ARETURN);
+            mv.visitMaxs(-1, -1);
+            mv.visitEnd();
+        }
+
+        // newInstance factory
+        {
+            MethodVisitor mv = cw.visitMethod(Modifier.PUBLIC, "newInstance",
+                    Type.getMethodDescriptor(Type.getType(ProxyCalendar.class))
+                    , null, null);
+            mv.visitCode();
+            mv.visitTypeInsn(Opcodes.NEW, proxyClassDef);
+            mv.visitInsn(Opcodes.DUP);
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, proxyClassDef, "<init>",
+                    Type.getMethodDescriptor(Type.VOID_TYPE), false);
+
+            mv.visitInsn(Opcodes.ARETURN);
+            mv.visitMaxs(-1, -1);
+            mv.visitEnd();
+        }
+
+        // proxy the protected computeFields method b/c it is called on
+        // mutate, and some setters are final and therefore not proxyable
+        {
+            MethodVisitor mv = cw.visitMethod(Modifier.PROTECTED, "computeFields",
+                    Type.getMethodDescriptor(Type.VOID_TYPE)
+                    , null, null);
+            mv.visitCode();
+
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitInsn(Opcodes.ICONST_1);
+            mv.visitMethodInsn(Opcodes.INVOKESTATIC, Type.getInternalName(Proxies.class), "dirty",
+                    Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(Proxy.class), Type.BOOLEAN_TYPE), false);
+
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(type), "computeFields",
+                    Type.getMethodDescriptor(Type.VOID_TYPE), false);
+
+            mv.visitInsn(Opcodes.RETURN);
+            mv.visitMaxs(-1, -1);
+            mv.visitEnd();
+        }
+
+
+        /*
+
+        // proxy the protected computeFields method b/c it is called on
+        // mutate, and some setters are final and therefore not proxyable
+        m = bc.declareMethod("computeFields", void.class, null);
+        m.makeProtected();
+        code = m.getCode(true);
+        code.aload().setThis();
+        code.constant().setValue(true);
+        code.invokestatic().setMethod(Proxies.class, "dirty", void.class,
+            new Class[] { Proxy.class, boolean.class });
+        code.aload().setThis();
+        code.invokespecial().setMethod(type, "computeFields", void.class, null);
+        code.vreturn();
+        code.calculateMaxStack();
+        code.calculateMaxLocals();
+         */
     }
 
     /**
@@ -1006,13 +1165,13 @@ public class ProxyManagerImpl
      */
     private void addWriteReplaceMethod(ClassWriter cw, String proxyClassDef, boolean runtime) {
         MethodVisitor mv = cw.visitMethod(Modifier.PROTECTED, "writeReplace",
-                Type.getMethodDescriptor(Type.getType(Object.class))
+                Type.getMethodDescriptor(TYPE_OBJECT)
                 , null, new String[]{Type.getInternalName(ObjectStreamException.class)});
         mv.visitCode();
         mv.visitVarInsn(Opcodes.ALOAD, 0);
         mv.visitInsn(runtime ? Opcodes.ICONST_0 : Opcodes.ICONST_1); // !runtime
         mv.visitMethodInsn(Opcodes.INVOKESTATIC, Type.getInternalName(Proxies.class), "writeReplace",
-                Type.getMethodDescriptor(Type.getType(Object.class), Type.getType(Proxy.class), Type.BOOLEAN_TYPE), false);
+                Type.getMethodDescriptor(TYPE_OBJECT, Type.getType(Proxy.class), Type.BOOLEAN_TYPE), false);
 
         mv.visitInsn(Opcodes.ARETURN);
         mv.visitMaxs(-1, -1);
@@ -1120,25 +1279,6 @@ public class ProxyManagerImpl
 
     /* ASM end */
 
-    /**
-     * Generate the bytecode for a calendar proxy for the given type.
-     */
-    protected BCClass generateProxyCalendarBytecode(Class type,
-        boolean runtime) {
-        assertNotFinal(type);
-        Project project = new Project();
-        BCClass bc = AccessController.doPrivileged(J2DoPrivHelper
-            .loadProjectClassAction(project, getProxyClassName(type, runtime)));
-        bc.setSuperclass(type);
-        bc.declareInterface(ProxyCalendar.class);
-
-        delegateConstructors(bc, type);
-        addProxyMethods(bc, true);
-        addProxyCalendarMethods(bc, type);
-        proxySetters(bc, type);
-        addWriteReplaceMethod(bc, runtime);
-        return bc;
-    }
 
     /**
      * Generate the bytecode for a bean proxy for the given type.
@@ -1523,100 +1663,7 @@ public class ProxyManagerImpl
         code.calculateMaxStack();
         code.calculateMaxLocals();
     }
-
-    /**
-     * Implement the methods in the {@link ProxyCalendar} interface.
-     */
-    private void addProxyCalendarMethods(BCClass bc, Class type) {
-        // calendar copy
-        Constructor cons = findCopyConstructor(type);
-        Class[] params = (cons == null) ? new Class[0]
-            : cons.getParameterTypes();
-
-        BCMethod m = bc.declareMethod("copy", Object.class,
-            new Class[] {Object.class});
-        m.makePublic();
-        Code code = m.getCode(true);
-
-        code.anew().setType(type);
-        code.dup();
-        if (params.length == 1) {
-            code.aload().setParam(0);
-            code.checkcast().setType(params[0]);
-        }
-        code.invokespecial().setMethod(type, "<init>", void.class, params);
-        if (params.length == 0) {
-            code.dup();
-            code.aload().setParam(0);
-            code.checkcast().setType(Calendar.class);
-            code.invokevirtual().setMethod(Calendar.class, "getTimeInMillis",
-                long.class, null);
-            code.invokevirtual().setMethod(type, "setTimeInMillis", void.class,
-                new Class[] { long.class });
-
-            code.dup();
-            code.aload().setParam(0);
-            code.checkcast().setType(Calendar.class);
-            code.invokevirtual().setMethod(Calendar.class, "isLenient",
-                boolean.class, null);
-            code.invokevirtual().setMethod(type, "setLenient", void.class,
-                new Class[] { boolean.class });
-
-            code.dup();
-            code.aload().setParam(0);
-            code.checkcast().setType(Calendar.class);
-            code.invokevirtual().setMethod(Calendar.class, "getFirstDayOfWeek",
-                int.class, null);
-            code.invokevirtual().setMethod(type, "setFirstDayOfWeek",
-                void.class, new Class[] { int.class });
-
-            code.dup();
-            code.aload().setParam(0);
-            code.checkcast().setType(Calendar.class);
-            code.invokevirtual().setMethod(Calendar.class,
-                "getMinimalDaysInFirstWeek", int.class, null);
-            code.invokevirtual().setMethod(type, "setMinimalDaysInFirstWeek",
-                void.class, new Class[] { int.class });
-
-            code.dup();
-            code.aload().setParam(0);
-            code.checkcast().setType(Calendar.class);
-            code.invokevirtual().setMethod(Calendar.class, "getTimeZone",
-                TimeZone.class, null);
-            code.invokevirtual().setMethod(type, "setTimeZone", void.class,
-                new Class[] { TimeZone.class });
-        }
-        code.areturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-
-        // new instance factory
-        m = bc.declareMethod("newInstance", ProxyCalendar.class, null);
-        m.makePublic();
-        code = m.getCode(true);
-        code.anew().setType(bc);
-        code.dup();
-        code.invokespecial().setMethod("<init>", void.class, null);
-        code.areturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-
-        // proxy the protected computeFields method b/c it is called on
-        // mutate, and some setters are final and therefore not proxyable
-        m = bc.declareMethod("computeFields", void.class, null);
-        m.makeProtected();
-        code = m.getCode(true);
-        code.aload().setThis();
-        code.constant().setValue(true);
-        code.invokestatic().setMethod(Proxies.class, "dirty", void.class,
-            new Class[] { Proxy.class, boolean.class });
-        code.aload().setThis();
-        code.invokespecial().setMethod(type, "computeFields", void.class, null);
-        code.vreturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-    }
-
+    
     /**
      * Implement the methods in the {@link ProxyBean} interface.
      */
@@ -2094,12 +2141,16 @@ public class ProxyManagerImpl
             }
 
             // ASM generated proxies
-            if (Date.class.isAssignableFrom(cls)) {
+            if (Date.class.isAssignableFrom(cls) ||
+                Calendar.class.isAssignableFrom(cls)) {
                 final String proxyClassName = getProxyClassName(cls, false);
 
                 byte[] bytes = null;
                 if (Date.class.isAssignableFrom(cls)) {
                     bytes = mgr.generateProxyDateBytecode(cls, false, proxyClassName);
+                }
+                else if (Calendar.class.isAssignableFrom(cls)) {
+                    bytes = mgr.generateProxyCalendarBytecode(cls, false, proxyClassName);
                 }
                 if (bytes != null) {
                     final String fileName = cls.getName().replace('.', '$') + PROXY_SUFFIX + ".class";
@@ -2112,8 +2163,6 @@ public class ProxyManagerImpl
                 bc = mgr.generateProxyCollectionBytecode(cls, false);
             else if (Map.class.isAssignableFrom(cls))
                 bc = mgr.generateProxyMapBytecode(cls, false);
-            else if (Calendar.class.isAssignableFrom(cls))
-                bc = mgr.generateProxyCalendarBytecode(cls, false);
             else {
                 final Class fCls = cls;
                 // TODO Move this to J2DOPrivHelper
