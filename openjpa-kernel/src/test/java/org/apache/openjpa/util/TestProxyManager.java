@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.util;
 
+import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.sql.Time;
@@ -47,6 +48,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import org.apache.openjpa.lib.util.Files;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -767,6 +769,20 @@ public class TestProxyManager {
 
         orig = new CustomCopyConstructorBean(orig);
         assertBeansEqual(orig, (CustomBean) _mgr.copyCustom(orig));
+    }
+
+
+    @Test
+    public void testBeanClassProxy() throws Exception {
+        Class cls = CustomComparatorSortedSet.class;
+        final String proxyClassName = ProxyManagerImpl.getProxyClassName(cls, false);
+        final byte[] bytes = _mgr.generateProxyCollectionBytecode(cls, true, proxyClassName);
+        File dir = Files.getClassFile(TestProxyManager.class).getParentFile();
+
+        final String fileName = cls.getName().replace('.', '$') + "$proxy" + ".class";
+        java.nio.file.Files.write(new File(dir, fileName).toPath(), bytes);
+
+        _mgr.loadBuildTimeProxy(cls, this.getClass().getClassLoader());
     }
 
     /**

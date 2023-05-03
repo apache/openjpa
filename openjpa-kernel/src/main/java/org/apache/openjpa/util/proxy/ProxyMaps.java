@@ -207,6 +207,35 @@ public class ProxyMaps
     }
 
     /**
+     * See OPENJPA-2442.
+     * Call before invoking {@link Map#remove(key, value) } on super.
+     */
+    public static boolean beforeRemove(ProxyMap map, Object key, Object value) {
+        Proxies.dirty(map, false);
+        return map.containsKey(key);
+    }
+
+    /**
+     * See OPENJPA-2442.
+     * Call after invoking {@link Map#remove(key, value) } on super.
+     *
+     * @param ret the return value from the super's method
+     * @param before the return value from {@link #beforeRemove}
+     * @return the value to return from {@link Map#remove}
+     */
+    public static boolean afterRemove(ProxyMap map, Object key, Object value, boolean ret,
+                                      boolean before) {
+        if (before) {
+            if (map.getChangeTracker() != null) {
+                ((MapChangeTracker) map.getChangeTracker()).removed(key, ret);
+            }
+            Proxies.removed(map, key, true);
+            Proxies.removed(map, ret, false);
+        }
+        return ret;
+    }
+
+    /**
      * Marker interface for a proxy entry set.
      */
     public interface ProxyEntrySet

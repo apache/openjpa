@@ -26,7 +26,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -50,7 +49,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.openjpa.enhance.AsmAdaptor;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.Files;
@@ -70,7 +68,6 @@ import org.apache.openjpa.util.proxy.ProxyBean;
 import org.apache.openjpa.util.proxy.ProxyCalendar;
 import org.apache.openjpa.util.proxy.ProxyCollection;
 import org.apache.openjpa.util.proxy.ProxyCollections;
-import org.apache.openjpa.util.proxy.ProxyConcurrentMaps;
 import org.apache.openjpa.util.proxy.ProxyDate;
 import org.apache.openjpa.util.proxy.ProxyMap;
 import org.apache.openjpa.util.proxy.ProxyMaps;
@@ -80,12 +77,6 @@ import org.apache.xbean.asm9.MethodVisitor;
 import org.apache.xbean.asm9.Opcodes;
 import org.apache.xbean.asm9.Type;
 
-import serp.bytecode.BCClass;
-import serp.bytecode.BCField;
-import serp.bytecode.BCMethod;
-import serp.bytecode.Code;
-import serp.bytecode.JumpInstruction;
-import serp.bytecode.Project;
 
 /**
  * Default implementation of the {@link ProxyManager} interface.
@@ -416,8 +407,7 @@ public class ProxyManagerImpl
                 ProxyMap.class);
             Class pcls = loadBuildTimeProxy(type, l);
             if (pcls == null)
-                pcls = GeneratedClasses.loadBCClass(
-                    generateProxyMapBytecode(type, true), l);
+                pcls = generateAndLoadProxyMap(type, true, l);
             proxy = (ProxyMap) instantiateProxy(pcls, null, null);
             _proxies.put(type, proxy);
         }
@@ -493,15 +483,7 @@ public class ProxyManagerImpl
             ClassLoader l = GeneratedClasses.getMostDerivedLoader(type, ProxyBean.class);
             Class<?> pcls = loadBuildTimeProxy(type, l);
             if (pcls == null) {
-                // TODO Move this to J2DOPrivHelper?
-                BCClass bc = AccessController.doPrivileged(new PrivilegedAction<BCClass>() {
-                    @Override
-                    public BCClass run() {
-                        return generateProxyBeanBytecode(type, true);
-                    }
-                });
-                if (bc != null)
-                    pcls = GeneratedClasses.loadBCClass(bc, l);
+                pcls = generateAndLoadProxyBean(type, true, l);
             }
             if (pcls != null)
                 proxy = (ProxyBean) instantiateProxy(pcls, findCopyConstructor(type), new Object[] { orig });
@@ -596,31 +578,9 @@ public class ProxyManagerImpl
     }
 
     /**
-     * Generate the bytecode for a collection proxy for the given type.
-     */
-    protected BCClass generateProxyCollectionBytecode(Class type,
-        boolean runtime) {
-        assertNotFinal(type);
-        Project project = new Project();
-        BCClass bc = AccessController.doPrivileged(J2DoPrivHelper
-            .loadProjectClassAction(project, getProxyClassName(type, runtime)));
-        bc.setSuperclass(type);
-        bc.declareInterface(ProxyCollection.class);
-
-        delegateConstructors(bc, type);
-        addProxyMethods(bc, false);
-        addProxyCollectionMethods(bc, type);
-        proxyRecognizedMethods(bc, type, ProxyCollections.class,
-            ProxyCollection.class);
-        proxySetters(bc, type);
-        addWriteReplaceMethod(bc, runtime);
-        return bc;
-    }
-
-    /**
      * Return the name of the proxy class to generate for the given type.
      */
-    private static String getProxyClassName(Class type, boolean runtime) {
+    protected static String getProxyClassName(Class type, boolean runtime) {
         String id = (runtime) ? "$" + nextProxyId() : "";
         return ClassUtil.getPackageName(ProxyManagerImpl.class) + "."
             + type.getName().replace('.', '$') + id + PROXY_SUFFIX;
@@ -649,27 +609,6 @@ public class ProxyManagerImpl
 
     }
 
-    /**
-     * Generate the bytecode for a map proxy for the given type.
-     */
-    protected BCClass generateProxyMapBytecode(Class type, boolean runtime) {
-        assertNotFinal(type);
-        Project project = new Project();
-        BCClass bc = AccessController.doPrivileged(J2DoPrivHelper
-            .loadProjectClassAction(project, getProxyClassName(type, runtime)));
-        bc.setSuperclass(type);
-        bc.declareInterface(ProxyMap.class);
-
-        delegateConstructors(bc, type);
-        addProxyMethods(bc, false);
-        addProxyMapMethods(bc, type);
-        Class<? extends ProxyMaps> mapProxyClassType = ProxyConcurrentMaps.class;
-        proxyRecognizedMethods(bc, type, mapProxyClassType, ProxyMap.class);
-        proxySetters(bc, type);
-        addWriteReplaceMethod(bc, runtime);
-        return bc;
-    }
-
 
     private Class generateAndLoadProxyDate(Class type, boolean runtime, ClassLoader l) {
         final String proxyClassName = getProxyClassName(type, runtime);
@@ -688,6 +627,20 @@ public class ProxyManagerImpl
     private Class generateAndLoadProxyCollection(Class type, boolean runtime, ClassLoader l) {
         final String proxyClassName = getProxyClassName(type, runtime);
         final byte[] classBytes = generateProxyCollectionBytecode(type, runtime, proxyClassName);
+
+        return GeneratedClasses.loadAsmClass(proxyClassName, classBytes, ProxyDate.class, l);
+    }
+
+    private Class generateAndLoadProxyMap(Class type, boolean runtime, ClassLoader l) {
+        final String proxyClassName = getProxyClassName(type, runtime);
+        final byte[] classBytes = generateProxyMapBytecode(type, runtime, proxyClassName);
+
+        return GeneratedClasses.loadAsmClass(proxyClassName, classBytes, ProxyDate.class, l);
+    }
+
+    private Class generateAndLoadProxyBean(Class type, boolean runtime, ClassLoader l) {
+        final String proxyClassName = getProxyClassName(type, runtime);
+        final byte[] classBytes = generateProxyBeanBytecode(type, runtime, proxyClassName);
 
         return GeneratedClasses.loadAsmClass(proxyClassName, classBytes, ProxyDate.class, l);
     }
@@ -767,13 +720,182 @@ public class ProxyManagerImpl
         addInstanceVariables(ct);
         addProxyMethods(ct, false, proxyClassDef, type);
         addProxyCollectionMethods(ct, proxyClassDef, type);
-        proxyRecognizedMethods(ct, proxyClassDef, type,ProxyCollections.class, ProxyCollection.class);
+        proxyRecognizedMethods(ct, proxyClassDef, type, ProxyCollections.class, ProxyCollection.class);
         proxySetters(ct, proxyClassDef, type);
         addWriteReplaceMethod(ct, proxyClassDef, runtime);
 
         return cw.toByteArray();
     }
 
+    /**
+     * Generate the bytecode for a map proxy for the given type.
+     */
+    protected byte[] generateProxyMapBytecode(Class type, boolean runtime, String proxyClassName) {
+        assertNotFinal(type);
+        String proxyClassDef = proxyClassName.replace('.', '/');
+        String superClassFileNname = Type.getInternalName(type);
+        String[] interfaceNames = new String[]{Type.getInternalName(ProxyMap.class)};
+
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        cw.visit(Opcodes.V11, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, proxyClassDef,
+                null, superClassFileNname, interfaceNames);
+
+        ClassWriterTracker ct = new ClassWriterTracker(cw);
+        String classFileName = runtime ? type.getName() : proxyClassDef;
+        cw.visitSource(classFileName + ".java", null);
+
+        delegateConstructors(ct, type, superClassFileNname);
+        addInstanceVariables(ct);
+        addProxyMethods(ct, false, proxyClassDef, type);
+        addProxyCollectionMethods(ct, proxyClassDef, type);
+        proxyRecognizedMethods(ct, proxyClassDef, type, ProxyMaps.class, ProxyMap.class);
+        proxySetters(ct, proxyClassDef, type);
+        addWriteReplaceMethod(ct, proxyClassDef, runtime);
+
+        return cw.toByteArray();
+    }
+
+    /**
+     * Generate the bytecode for a bean proxy for the given type.
+     */
+    protected byte[] generateProxyBeanBytecode(Class type, boolean runtime, String proxyClassName) {
+        if (Modifier.isFinal(type.getModifiers())) {
+            return null;
+        }
+        if (ImplHelper.isManagedType(null, type)) {
+            return null;
+        }
+
+        // we can only generate a valid proxy if there is a copy constructor
+        // or a default constructor
+        Constructor cons = findCopyConstructor(type);
+        if (cons == null) {
+            Constructor[] cs = type.getConstructors();
+            for (int i = 0; cons == null && i < cs.length; i++) {
+                if (cs[i].getParameterTypes().length == 0) {
+                    cons = cs[i];
+                }
+            }
+            if (cons == null)
+                return null;
+        }
+
+        String proxyClassDef = proxyClassName.replace('.', '/');
+        String superClassFileNname = Type.getInternalName(type);
+        String[] interfaceNames = new String[]{Type.getInternalName(ProxyBean.class)};
+
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        cw.visit(Opcodes.V11, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, proxyClassDef,
+                null, superClassFileNname, interfaceNames);
+
+        ClassWriterTracker ct = new ClassWriterTracker(cw);
+        String classFileName = runtime ? type.getName() : proxyClassDef;
+        cw.visitSource(classFileName + ".java", null);
+
+        delegateConstructors(ct, type, superClassFileNname);
+        addInstanceVariables(ct);
+        addProxyMethods(ct, true, proxyClassDef, type);
+        addProxyBeanMethods(ct, proxyClassDef, type, cons);
+        if (!proxySetters(ct, proxyClassDef, type)) {
+            return null;
+        }
+        addWriteReplaceMethod(ct, proxyClassDef, runtime);
+
+        return cw.toByteArray();
+    }
+
+    private void addProxyBeanMethods(ClassWriterTracker ct, String proxyClassDef, Class type, Constructor cons) {
+        // bean copy
+        {
+            MethodVisitor mv = ct.visitMethod(Modifier.PUBLIC, "copy",
+                    Type.getMethodDescriptor(TYPE_OBJECT, TYPE_OBJECT)
+                    , null, null);
+            mv.visitCode();
+            mv.visitTypeInsn(Opcodes.NEW, Type.getInternalName(type));
+            mv.visitInsn(Opcodes.DUP);
+
+            Class[] params = cons.getParameterTypes();
+            if (params.length == 1) {
+                mv.visitVarInsn(Opcodes.ALOAD, 1);
+                mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getInternalName(params[0]));
+            }
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(type), "<init>",
+                    Type.getMethodDescriptor(Type.VOID_TYPE, AsmHelper.getParamTypes(params)), false);
+            int beanVarPos = params.length+2; // params+DUP
+
+            if (params.length == 0) {
+                mv.visitVarInsn(Opcodes.ASTORE, beanVarPos);
+                copyBeanProperties(mv, type, beanVarPos);
+                mv.visitVarInsn(Opcodes.ALOAD, beanVarPos);
+            }
+
+            mv.visitInsn(Opcodes.ARETURN);
+            mv.visitMaxs(-1, -1);
+            mv.visitEnd();
+        }
+
+        // new instance factory
+        {
+            MethodVisitor mv = ct.visitMethod(Modifier.PUBLIC, "newInstance",
+                    Type.getMethodDescriptor(Type.getType(ProxyBean.class), Type.getType(Object.class))
+                    , null, null);
+            mv.visitCode();
+            mv.visitTypeInsn(Opcodes.NEW, proxyClassDef);
+            mv.visitInsn(Opcodes.DUP);
+
+
+            Class[] params = cons.getParameterTypes();
+            if (params.length == 1) {
+                mv.visitVarInsn(Opcodes.ALOAD, 1);
+                mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getInternalName(params[0]));
+            }
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(type), "<init>",
+                    Type.getMethodDescriptor(Type.VOID_TYPE, AsmHelper.getParamTypes(params)), false);
+            int beanVarPos = params.length+2; // params+DUP
+
+            if (params.length == 0) {
+                mv.visitVarInsn(Opcodes.ASTORE, beanVarPos);
+                copyBeanProperties(mv, type, beanVarPos);
+                mv.visitVarInsn(Opcodes.ALOAD, beanVarPos);
+            }
+
+            mv.visitInsn(Opcodes.ARETURN);
+            mv.visitMaxs(-1, -1);
+            mv.visitEnd();
+
+        }
+    }
+
+    private void copyBeanProperties(MethodVisitor mv, Class type, int copyVarPos) {
+        Method[] meths = type.getMethods();
+        Method getter;
+        int mods;
+        for (Method meth : meths) {
+            mods = meth.getModifiers();
+            if (!Modifier.isPublic(mods) || Modifier.isStatic(mods)) {
+                continue;
+            }
+
+            if (!startsWith(meth.getName(), "set")
+                    || meth.getParameterTypes().length != 1) {
+                continue;
+            }
+
+            getter = findGetter(type, meth);
+            if (getter == null) {
+                continue;
+            }
+
+            // copy.setXXX(orig.getXXX());
+            mv.visitVarInsn(Opcodes.ALOAD, copyVarPos);
+            mv.visitVarInsn(Opcodes.ALOAD, copyVarPos-1);
+            mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getInternalName(type));
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, Type.getInternalName(type), getter.getName(),
+                    Type.getMethodDescriptor(getter), false);
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, Type.getInternalName(type), meth.getName(),
+                    Type.getMethodDescriptor(meth), false);
+        }
+    }
 
     private void addProxyCollectionMethods(ClassWriterTracker ct, String proxyClassDef, Class type) {
         // change tracker
@@ -828,7 +950,7 @@ public class ProxyManagerImpl
                 mv.visitVarInsn(Opcodes.ALOAD, 1);
                 mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getInternalName(Collection.class));
                 mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, Type.getInternalName(type), "addAll",
-                        Type.getMethodDescriptor(Type.BOOLEAN_TYPE, TYPE_OBJECT), true);
+                        Type.getMethodDescriptor(Type.BOOLEAN_TYPE, Type.getType(Collection.class)), false);
                 mv.visitInsn(Opcodes.POP);
             }
 
@@ -1490,10 +1612,6 @@ public class ProxyManagerImpl
         mv.visitEnd();
     }
 
-    /* a few utility methods to make life with ASM easier */
-
-
-
     private boolean hasConstructor(Class type, Class<?>... paramTypes) {
         try {
             return type.getDeclaredConstructor(paramTypes) != null;
@@ -1501,258 +1619,6 @@ public class ProxyManagerImpl
         catch (NoSuchMethodException e) {
             return false;
         }
-    }
-
-    /* ASM end */
-
-
-    /**
-     * Generate the bytecode for a bean proxy for the given type.
-     */
-    protected BCClass generateProxyBeanBytecode(Class type, boolean runtime) {
-        if (Modifier.isFinal(type.getModifiers()))
-            return null;
-        if (ImplHelper.isManagedType(null, type))
-            return null;
-
-        // we can only generate a valid proxy if there is a copy constructor
-        // or a default constructor
-        Constructor cons = findCopyConstructor(type);
-        if (cons == null) {
-            Constructor[] cs = type.getConstructors();
-            for (int i = 0; cons == null && i < cs.length; i++)
-               if (cs[i].getParameterTypes().length == 0)
-                    cons = cs[i];
-            if (cons == null)
-                return null;
-        }
-
-        Project project = new Project();
-        BCClass bc = AccessController.doPrivileged(J2DoPrivHelper
-            .loadProjectClassAction(project, getProxyClassName(type, runtime)));
-        bc.setSuperclass(type);
-        bc.declareInterface(ProxyBean.class);
-
-        delegateConstructors(bc, type);
-        addProxyMethods(bc, true);
-        addProxyBeanMethods(bc, type, cons);
-        if (!proxySetters(bc, type))
-            return null;
-        addWriteReplaceMethod(bc, runtime);
-        return bc;
-    }
-
-    /**
-     * Create pass-through constructors to base type.
-     */
-    private void delegateConstructors(BCClass bc, Class type) {
-        Constructor[] cons = type.getConstructors();
-        Class[] params;
-        BCMethod m;
-        Code code;
-        for (Constructor con : cons) {
-            params = con.getParameterTypes();
-            m = bc.declareMethod("<init>", void.class, params);
-            m.makePublic();
-
-            code = m.getCode(true);
-            code.aload().setThis();
-            for (int j = 0; j < params.length; j++)
-                code.xload().setParam(j).setType(params[j]);
-            code.invokespecial().setMethod(con);
-            code.vreturn();
-            code.calculateMaxStack();
-            code.calculateMaxLocals();
-        }
-    }
-
-    /**
-     * Implement the methods in the {@link Proxy} interface, with the exception
-     * of {@link Proxy#copy}.
-     *
-     * @param changeTracker whether to implement a null change tracker; if false
-     * the change tracker method is left unimplemented
-     */
-    private void addProxyMethods(BCClass bc, boolean changeTracker) {
-        BCField sm = bc.declareField("sm", OpenJPAStateManager.class);
-        sm.setTransient(true);
-        BCField field = bc.declareField("field", int.class);
-        field.setTransient(true);
-
-        BCMethod m = bc.declareMethod("setOwner", void.class, new Class[] {
-            OpenJPAStateManager.class, int.class });
-        m.makePublic();
-        Code code = m.getCode(true);
-        code.aload().setThis();
-        code.aload().setParam(0);
-        code.putfield().setField(sm);
-        code.aload().setThis();
-        code.iload().setParam(1);
-        code.putfield().setField(field);
-        code.vreturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-
-        m = bc.declareMethod("getOwner", OpenJPAStateManager.class, null);
-        m.makePublic();
-        code = m.getCode(true);
-        code.aload().setThis();
-        code.getfield().setField(sm);
-        code.areturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-
-        m = bc.declareMethod("getOwnerField", int.class, null);
-        m.makePublic();
-        code = m.getCode(true);
-        code.aload().setThis();
-        code.getfield().setField(field);
-        code.ireturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-
-        /*
-         * clone (return detached proxy object)
-         * Note:  This method is only being provided to satisfy a quirk with
-         * the IBM JDK -- while comparing Calendar objects, the clone() method
-         * was invoked.  So, we are now overriding the clone() method so as to
-         * provide a detached proxy object (null out the StateManager).
-         */
-        m = bc.declareMethod("clone", Object.class, null);
-        m.makePublic();
-        code = m.getCode(true);
-        code.aload().setThis();
-        code.invokespecial().setMethod(bc.getSuperclassType(), "clone",
-                Object.class, null);
-        code.checkcast().setType(Proxy.class);
-        int other = code.getNextLocalsIndex();
-        code.astore().setLocal(other);
-        code.aload().setLocal(other);
-        code.constant().setNull();
-        code.constant().setValue(0);
-        code.invokeinterface().setMethod(Proxy.class, "setOwner", void.class,
-                new Class[] { OpenJPAStateManager.class, int.class });
-        code.aload().setLocal(other);
-        code.areturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-
-        if (changeTracker) {
-            m = bc.declareMethod("getChangeTracker", ChangeTracker.class, null);
-            m.makePublic();
-            code = m.getCode(true);
-            code.constant().setNull();
-            code.areturn();
-            code.calculateMaxStack();
-            code.calculateMaxLocals();
-        }
-    }
-
-    /**
-     * Implement the methods in the {@link ProxyCollection} interface.
-     */
-    private void addProxyCollectionMethods(BCClass bc, Class type) {
-        // change tracker
-        BCField changeTracker = bc.declareField("changeTracker",
-            CollectionChangeTracker.class);
-        changeTracker.setTransient(true);
-        BCMethod m = bc.declareMethod("getChangeTracker", ChangeTracker.class,
-            null);
-        m.makePublic();
-        Code code = m.getCode(true);
-        code.aload().setThis();
-        code.getfield().setField(changeTracker);
-        code.areturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-
-        // collection copy
-        Constructor cons = findCopyConstructor(type);
-        if (cons == null && SortedSet.class.isAssignableFrom(type))
-            cons = findComparatorConstructor(type);
-        Class[] params = (cons == null) ? new Class[0]
-            : cons.getParameterTypes();
-
-        m = bc.declareMethod("copy", Object.class, new Class[] {Object.class});
-        m.makePublic();
-        code = m.getCode(true);
-
-        code.anew().setType(type);
-        code.dup();
-        if (params.length == 1) {
-            code.aload().setParam(0);
-            if (params[0] == Comparator.class) {
-                code.checkcast().setType(SortedSet.class);
-                code.invokeinterface().setMethod(SortedSet.class, "comparator",
-                    Comparator.class, null);
-            } else
-                code.checkcast().setType(params[0]);
-        }
-        code.invokespecial().setMethod(type, "<init>", void.class, params);
-        if (params.length == 0 || params[0] == Comparator.class) {
-            code.dup();
-            code.aload().setParam(0);
-            code.checkcast().setType(Collection.class);
-            code.invokevirtual().setMethod(type, "addAll", boolean.class,
-                new Class[] { Collection.class });
-            code.pop();
-        }
-        code.areturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-
-        // element type
-        BCField elementType = bc.declareField("elementType", Class.class);
-        elementType.setTransient(true);
-        m = bc.declareMethod("getElementType", Class.class, null);
-        m.makePublic();
-        code = m.getCode(true);
-        code.aload().setThis();
-        code.getfield().setField(elementType);
-        code.areturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-
-        // new instance factory
-        m = bc.declareMethod("newInstance", ProxyCollection.class,
-            new Class[] { Class.class, Comparator.class, boolean.class, boolean.class });
-        m.makePublic();
-        code = m.getCode(true);
-
-        code.anew().setType(bc);
-        code.dup();
-        cons = findComparatorConstructor(type);
-        params = (cons == null) ? new Class[0] : cons.getParameterTypes();
-        if (params.length == 1)
-            code.aload().setParam(1);
-        code.invokespecial().setMethod("<init>", void.class, params);
-        int ret = code.getNextLocalsIndex();
-        code.astore().setLocal(ret);
-
-        // set element type
-        code.aload().setLocal(ret);
-        code.aload().setParam(0);
-        code.putfield().setField(elementType);
-
-        // create change tracker and set it
-        code.iload().setParam(2);
-        JumpInstruction ifins = code.ifeq();
-        code.aload().setLocal(ret);
-        code.anew().setType(CollectionChangeTrackerImpl.class);
-        code.dup();
-        code.aload().setLocal(ret);
-        code.constant().setValue(allowsDuplicates(type));
-        code.constant().setValue(isOrdered(type));
-        code.aload().setParam(3);
-        code.invokespecial().setMethod(CollectionChangeTrackerImpl.class,
-            "<init>", void.class, new Class[] { Collection.class,
-            boolean.class, boolean.class, boolean.class });
-        code.putfield().setField(changeTracker);
-
-        ifins.setTarget(code.aload().setLocal(ret));
-        code.areturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
     }
 
     /**
@@ -1769,261 +1635,6 @@ public class ProxyManagerImpl
     protected boolean isOrdered(Class type) {
         return List.class.isAssignableFrom(type)
             || "java.util.LinkedHashSet".equals(type.getName());
-    }
-
-    /**
-     * Implement the methods in the {@link ProxyMap} interface.
-     */
-    private void addProxyMapMethods(BCClass bc, Class type) {
-        // change tracker
-        BCField changeTracker = bc.declareField("changeTracker",
-            MapChangeTracker.class);
-        changeTracker.setTransient(true);
-        BCMethod m = bc.declareMethod("getChangeTracker", ChangeTracker.class,
-            null);
-        m.makePublic();
-        Code code = m.getCode(true);
-        code.aload().setThis();
-        code.getfield().setField(changeTracker);
-        code.areturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-
-        // map copy
-        Constructor cons = findCopyConstructor(type);
-        if (cons == null && SortedMap.class.isAssignableFrom(type))
-            cons = findComparatorConstructor(type);
-        Class[] params = (cons == null) ? new Class[0]
-            : cons.getParameterTypes();
-
-        m = bc.declareMethod("copy", Object.class, new Class[] {Object.class});
-        m.makePublic();
-        code = m.getCode(true);
-
-        code.anew().setType(type);
-        code.dup();
-        if (params.length == 1) {
-            code.aload().setParam(0);
-            if (params[0] == Comparator.class) {
-                code.checkcast().setType(SortedMap.class);
-                code.invokeinterface().setMethod(SortedMap.class, "comparator",
-                    Comparator.class, null);
-            } else
-                code.checkcast().setType(params[0]);
-        }
-        code.invokespecial().setMethod(type, "<init>", void.class, params);
-        if (params.length == 0 || params[0] == Comparator.class) {
-            code.dup();
-            code.aload().setParam(0);
-            code.checkcast().setType(Map.class);
-            code.invokevirtual().setMethod(type, "putAll", void.class,
-                new Class[] { Map.class });
-        }
-        code.areturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-
-        // key type
-        BCField keyType = bc.declareField("keyType", Class.class);
-        keyType.setTransient(true);
-        m = bc.declareMethod("getKeyType", Class.class, null);
-        m.makePublic();
-        code = m.getCode(true);
-        code.aload().setThis();
-        code.getfield().setField(keyType);
-        code.areturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-
-        // value type
-        BCField valueType = bc.declareField("valueType", Class.class);
-        valueType.setTransient(true);
-        m = bc.declareMethod("getValueType", Class.class, null);
-        m.makePublic();
-        code = m.getCode(true);
-        code.aload().setThis();
-        code.getfield().setField(valueType);
-        code.areturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-
-        // new instance factory
-        m = bc.declareMethod("newInstance", ProxyMap.class,
-            new Class[] { Class.class, Class.class, Comparator.class,
-            boolean.class,boolean.class });
-        m.makePublic();
-        code = m.getCode(true);
-
-        code.anew().setType(bc);
-        code.dup();
-        cons = findComparatorConstructor(type);
-        params = (cons == null) ? new Class[0] : cons.getParameterTypes();
-        if (params.length == 1)
-            code.aload().setParam(2);
-        code.invokespecial().setMethod("<init>", void.class, params);
-        int ret = code.getNextLocalsIndex();
-        code.astore().setLocal(ret);
-
-        // set key and value types
-        code.aload().setLocal(ret);
-        code.aload().setParam(0);
-        code.putfield().setField(keyType);
-        code.aload().setLocal(ret);
-        code.aload().setParam(1);
-        code.putfield().setField(valueType);
-
-        // create change tracker and set it
-        code.iload().setParam(3);
-        JumpInstruction ifins = code.ifeq();
-        code.aload().setLocal(ret);
-        code.anew().setType(MapChangeTrackerImpl.class);
-        code.dup();
-        code.aload().setLocal(ret);
-        code.aload().setParam(4);
-        code.invokespecial().setMethod(MapChangeTrackerImpl.class,
-            "<init>", void.class, new Class[] { Map.class, boolean.class });
-        code.putfield().setField(changeTracker);
-
-        ifins.setTarget(code.aload().setLocal(ret));
-        code.areturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-    }
-
-    /**
-     * Implement the methods in the {@link ProxyBean} interface.
-     */
-    private void addProxyBeanMethods(BCClass bc, Class type, Constructor cons) {
-        // bean copy
-        BCMethod m = bc.declareMethod("copy", Object.class,
-            new Class[] { Object.class });
-        m.makePublic();
-        Code code = m.getCode(true);
-
-        code.anew().setType(type);
-        code.dup();
-        Class[] params = cons.getParameterTypes();
-        if (params.length == 1) {
-            code.aload().setParam(0);
-            code.checkcast().setType(params[0]);
-        }
-        code.invokespecial().setMethod(cons);
-        if (params.length == 0)
-            copyProperties(type, code);
-        code.areturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-
-        // new instance factory
-        m = bc.declareMethod("newInstance", ProxyBean.class,
-            new Class[] { Object.class });
-        m.makePublic();
-        code = m.getCode(true);
-        code.anew().setType(bc);
-        code.dup();
-        if (params.length == 1) {
-            code.aload().setParam(0);
-            code.checkcast().setType(params[0]);
-        }
-        code.invokespecial().setMethod("<init>", void.class, params);
-        if (params.length == 0)
-            copyProperties(type, code);
-        code.areturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-    }
-
-    /**
-     * Copy bean properties.  Called with the copy object on the stack.  Must
-     * return with the copy object on the stack.
-     */
-    private void copyProperties(Class type, Code code) {
-        int copy = code.getNextLocalsIndex();
-        code.astore().setLocal(copy);
-
-        Method[] meths = type.getMethods();
-        Method getter;
-        int mods;
-        for (Method meth : meths) {
-            mods = meth.getModifiers();
-            if (!Modifier.isPublic(mods) || Modifier.isStatic(mods))
-                continue;
-            if (!startsWith(meth.getName(), "set")
-                    || meth.getParameterTypes().length != 1)
-                continue;
-            getter = findGetter(type, meth);
-            if (getter == null)
-                continue;
-
-            // copy.setXXX(orig.getXXX());
-            code.aload().setLocal(copy);
-            code.aload().setParam(0);
-            code.checkcast().setType(type);
-            code.invokevirtual().setMethod(getter);
-            code.invokevirtual().setMethod(meth);
-        }
-        code.aload().setLocal(copy);
-    }
-
-    /**
-     * Proxy recognized methods to invoke helpers in given helper class.
-     */
-    private void proxyRecognizedMethods(BCClass bc, Class type, Class helper,
-        Class proxyType) {
-        Method[] meths = type.getMethods();
-        Class[] params;
-        Class[] afterParams;
-        Method match;
-        Method after;
-        for (Method meth : meths) {
-            // Java 8 methods with a return type of KeySetView do not need to be proxied
-            if (meth.getReturnType().getName().contains("KeySetView")) continue;
-
-            params = toHelperParameters(meth.getParameterTypes(),
-                    proxyType);
-
-            // first check for overriding method
-            try {
-                match = helper.getMethod(meth.getName(), params);
-                proxyOverrideMethod(bc, meth, match, params);
-                continue;
-            }
-            catch (NoSuchMethodException nsme) {
-            }
-            catch (Exception e) {
-                throw new GeneralException(e);
-            }
-
-            // check for before and after methods, either of which may not
-            // exist
-            match = null;
-            try {
-                match = helper.getMethod("before"
-                        + StringUtil.capitalize(meth.getName()), params);
-            }
-            catch (NoSuchMethodException nsme) {
-            }
-            catch (Exception e) {
-                throw new GeneralException(e);
-            }
-            after = null;
-            afterParams = null;
-            try {
-                afterParams = toHelperAfterParameters(params,
-                        meth.getReturnType(), (match == null)
-                                ? void.class : match.getReturnType());
-                after = helper.getMethod("after"
-                        + StringUtil.capitalize(meth.getName()), afterParams);
-            }
-            catch (NoSuchMethodException nsme) {
-            }
-            catch (Exception e) {
-                throw new GeneralException(e);
-            }
-            if (match != null || after != null)
-                proxyBeforeAfterMethod(bc, type, meth, match, params, after,
-                        afterParams);
-        }
     }
 
     /**
@@ -2057,101 +1668,6 @@ public class ProxyManagerImpl
         if (beforeRet != void.class)
             params[pos++] = beforeRet;
         return params;
-    }
-
-    /**
-     * Proxy setter methods of the given type.
-     *
-     * @return true if we find any setters, false otherwise
-     */
-    private boolean proxySetters(BCClass bc, Class type) {
-        Method[] meths = type.getMethods();
-        int setters = 0;
-        for (Method meth : meths) {
-            if (isSetter(meth) && !Modifier.isFinal(meth.getModifiers())
-                    && bc.getDeclaredMethod(meth.getName(),
-                    meth.getParameterTypes()) == null) {
-                setters++;
-                proxySetter(bc, type, meth);
-            }
-        }
-        return setters > 0;
-    }
-
-    /**
-     * Proxy the given method with one that overrides it by calling into the
-     * given helper.
-     */
-    private void proxyOverrideMethod(BCClass bc, Method meth,
-        Method helper, Class[] params) {
-        BCMethod m = bc.declareMethod(meth.getName(), meth.getReturnType(),
-            meth.getParameterTypes());
-        m.makePublic();
-        Code code = m.getCode(true);
-
-        code.aload().setThis();
-        for (int i = 1; i < params.length; i++)
-            code.xload().setParam(i - 1).setType(params[i]);
-        code.invokestatic().setMethod(helper);
-        code.xreturn().setType(meth.getReturnType());
-
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-    }
-
-    /**
-     * Proxy the given method with one that overrides it by calling into the
-     * given helper.
-     */
-    private void proxyBeforeAfterMethod(BCClass bc, Class type, Method meth,
-        Method before, Class[] params, Method after, Class[] afterParams) {
-        BCMethod m = bc.declareMethod(meth.getName(), meth.getReturnType(),
-            meth.getParameterTypes());
-        m.makePublic();
-        Code code = m.getCode(true);
-
-        // invoke before
-        int beforeRet = -1;
-        if (before != null) {
-            code.aload().setThis();
-            for (int i = 1; i < params.length; i++)
-                code.xload().setParam(i - 1).setType(params[i]);
-            code.invokestatic().setMethod(before);
-            if (after != null && before.getReturnType() != void.class) {
-                beforeRet = code.getNextLocalsIndex();
-                code.xstore().setLocal(beforeRet).
-                    setType(before.getReturnType());
-            }
-        }
-
-        // invoke super
-        code.aload().setThis();
-        for (int i = 1; i < params.length; i++)
-            code.xload().setParam(i - 1).setType(params[i]);
-        code.invokespecial().setMethod(type, meth.getName(),
-            meth.getReturnType(), meth.getParameterTypes());
-
-        // invoke after
-        if (after != null) {
-            int ret = -1;
-            if (meth.getReturnType() != void.class) {
-                ret = code.getNextLocalsIndex();
-                code.xstore().setLocal(ret).setType(meth.getReturnType());
-            }
-            code.aload().setThis();
-            for (int i = 1; i < params.length; i++)
-                code.xload().setParam(i - 1).setType(params[i]);
-            if (ret != -1)
-                code.xload().setLocal(ret).setType(meth.getReturnType());
-            if (beforeRet != -1)
-                code.xload().setLocal(beforeRet).
-                    setType(before.getReturnType());
-            code.invokestatic().setMethod(after);
-        }
-        code.xreturn().setType(meth.getReturnType());
-
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
     }
 
     /**
@@ -2204,46 +1720,6 @@ public class ProxyManagerImpl
         return str.startsWith(token)
             && (str.length() == token.length()
             || Character.isUpperCase(str.charAt(token.length())));
-    }
-
-    /**
-     * Proxy the given setter method to dirty the proxy owner.
-     */
-    private void proxySetter(BCClass bc, Class type, Method meth) {
-        Class[] params = meth.getParameterTypes();
-        Class ret = meth.getReturnType();
-        BCMethod m = bc.declareMethod(meth.getName(), ret, params);
-        m.makePublic();
-        Code code = m.getCode(true);
-        code.aload().setThis();
-        code.constant().setValue(true);
-        code.invokestatic().setMethod(Proxies.class, "dirty", void.class,
-            new Class[] { Proxy.class, boolean.class });
-        code.aload().setThis();
-        for (int i = 0; i < params.length; i++)
-            code.xload().setParam(i).setType(params[i]);
-        code.invokespecial().setMethod(type, meth.getName(), ret, params);
-        code.xreturn().setType(ret);
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-    }
-
-    /**
-     * Add a writeReplace implementation that serializes to a non-proxy type
-     * unless detached and this is a build-time generated class.
-     */
-    private void addWriteReplaceMethod(BCClass bc, boolean runtime) {
-        BCMethod m = bc.declareMethod("writeReplace", Object.class, null);
-        m.makeProtected();
-        m.getExceptions(true).addException(ObjectStreamException.class);
-        Code code = m.getCode(true);
-        code.aload().setThis();
-        code.constant().setValue(!runtime);
-        code.invokestatic().setMethod(Proxies.class, "writeReplace",
-            Object.class, new Class[] { Proxy.class, boolean.class });
-        code.areturn();
-        code.calculateMaxLocals();
-        code.calculateMaxStack();
     }
 
     /**
@@ -2353,7 +1829,6 @@ public class ProxyManagerImpl
 
         final ProxyManagerImpl mgr = new ProxyManagerImpl();
         Class cls;
-        BCClass bc;
         for (Object type : types) {
             cls = Class.forName((String) type);
             try {
@@ -2366,48 +1841,31 @@ public class ProxyManagerImpl
                 // expected if the class hasn't been generated
             }
 
-            // ASM generated proxies
-            if (Date.class.isAssignableFrom(cls) ||
-                Calendar.class.isAssignableFrom(cls) ||
-                Collection.class.isAssignableFrom(cls)) {
-                final String proxyClassName = getProxyClassName(cls, false);
 
-                byte[] bytes = null;
+            final String proxyClassName = getProxyClassName(cls, false);
 
-                if (Date.class.isAssignableFrom(cls)) {
-                    bytes = mgr.generateProxyDateBytecode(cls, false, proxyClassName);
-                }
-                else if (Calendar.class.isAssignableFrom(cls)) {
-                    bytes = mgr.generateProxyCalendarBytecode(cls, false, proxyClassName);
-                }
-                else if (Collection.class.isAssignableFrom(cls)) {
-                    bytes = mgr.generateProxyCollectionBytecode(cls, false, proxyClassName);
-                }
+            byte[] bytes = null;
 
-                if (bytes != null) {
-                    final String fileName = cls.getName().replace('.', '$') + PROXY_SUFFIX + ".class";
-                    java.nio.file.Files.write(new File(dir, fileName).toPath(), bytes);
-                }
-                continue;
+            if (Date.class.isAssignableFrom(cls)) {
+                bytes = mgr.generateProxyDateBytecode(cls, false, proxyClassName);
             }
-
-            else if (Map.class.isAssignableFrom(cls))
-                bc = mgr.generateProxyMapBytecode(cls, false);
+            else if (Calendar.class.isAssignableFrom(cls)) {
+                bytes = mgr.generateProxyCalendarBytecode(cls, false, proxyClassName);
+            }
+            else if (Collection.class.isAssignableFrom(cls)) {
+                bytes = mgr.generateProxyCollectionBytecode(cls, false, proxyClassName);
+            }
+            else if (Map.class.isAssignableFrom(cls)) {
+                bytes = mgr.generateProxyMapBytecode(cls, false, proxyClassName);
+            }
             else {
-                final Class fCls = cls;
-                // TODO Move this to J2DOPrivHelper
-                bc = AccessController
-                        .doPrivileged(new PrivilegedAction<BCClass>() {
-                            @Override
-                            public BCClass run() {
-                                return mgr.generateProxyBeanBytecode(fCls, false);
-                            }
-                        });
+                bytes = mgr.generateProxyBeanBytecode(cls, false, proxyClassName);
             }
-            // START - ALLOW PRINT STATEMENTS
-            System.out.println(bc.getName());
-            // STOP - ALLOW PRINT STATEMENTS
-            AsmAdaptor.write(bc, new File(dir, bc.getClassName() + ".class"));
+
+            if (bytes != null) {
+                final String fileName = cls.getName().replace('.', '$') + PROXY_SUFFIX + ".class";
+                java.nio.file.Files.write(new File(dir, fileName).toPath(), bytes);
+            }
         }
     }
 }
