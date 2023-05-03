@@ -109,6 +109,7 @@
                             <goal>run</goal>
                         </goals>
                     </execution>
+<!--
                     <execution>
                         <id>generate-standard-sco-proxies</id>
                         <phase>process-classes</phase>
@@ -123,6 +124,7 @@
                             <goal>run</goal>
                         </goals>
                     </execution>
+-->
                 </executions>
             </plugin>
             <plugin>
