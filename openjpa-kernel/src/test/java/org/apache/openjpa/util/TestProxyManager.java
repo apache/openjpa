@@ -1017,6 +1017,8 @@ public class TestProxyManager {
     public static class CustomBean {
         private String _string;
         private int _number;
+        private double d1;
+        private double d2;
 
         public String getString() {
             return _string;
@@ -1033,6 +1035,20 @@ public class TestProxyManager {
         public void setNumber(int number) {
             _number = number;
         }
+
+        public void setLocation(double d1, double d2) {
+            this.d1 = d1;
+            this.d2 = d2;
+        }
+
+        public double getD1() {
+            return d1;
+        }
+
+        public double getD2() {
+            return d2;
+        }
+
     }
 
     /**

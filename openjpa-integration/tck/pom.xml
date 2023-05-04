@@ -445,8 +445,8 @@ databaseName=${db.name}
 
         <dependencies>
           <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jpa_2.2_spec</artifactId>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
             <scope>compile</scope>
           </dependency>
           <dependency>
