@@ -613,6 +613,9 @@ public class ProxyManagerImpl
     private Class generateAndLoadProxyDate(Class type, boolean runtime, ClassLoader l) {
         final String proxyClassName = getProxyClassName(type, runtime);
         final byte[] classBytes = generateProxyDateBytecode(type, runtime, proxyClassName);
+        if (classBytes == null) {
+            return null;
+        }
 
         return GeneratedClasses.loadAsmClass(proxyClassName, classBytes, ProxyDate.class, l);
     }
@@ -620,6 +623,9 @@ public class ProxyManagerImpl
     private Class generateAndLoadProxyCalendar(Class type, boolean runtime, ClassLoader l) {
         final String proxyClassName = getProxyClassName(type, runtime);
         final byte[] classBytes = generateProxyCalendarBytecode(type, runtime, proxyClassName);
+        if (classBytes == null) {
+            return null;
+        }
 
         return GeneratedClasses.loadAsmClass(proxyClassName, classBytes, ProxyDate.class, l);
     }
@@ -627,22 +633,31 @@ public class ProxyManagerImpl
     private Class generateAndLoadProxyCollection(Class type, boolean runtime, ClassLoader l) {
         final String proxyClassName = getProxyClassName(type, runtime);
         final byte[] classBytes = generateProxyCollectionBytecode(type, runtime, proxyClassName);
+        if (classBytes == null) {
+            return null;
+        }
 
-        return GeneratedClasses.loadAsmClass(proxyClassName, classBytes, ProxyDate.class, l);
+        return GeneratedClasses.loadAsmClass(proxyClassName, classBytes, ProxyCollection.class, l);
     }
 
     private Class generateAndLoadProxyMap(Class type, boolean runtime, ClassLoader l) {
         final String proxyClassName = getProxyClassName(type, runtime);
         final byte[] classBytes = generateProxyMapBytecode(type, runtime, proxyClassName);
+        if (classBytes == null) {
+            return null;
+        }
 
-        return GeneratedClasses.loadAsmClass(proxyClassName, classBytes, ProxyDate.class, l);
+        return GeneratedClasses.loadAsmClass(proxyClassName, classBytes, ProxyMap.class, l);
     }
 
     private Class generateAndLoadProxyBean(Class type, boolean runtime, ClassLoader l) {
         final String proxyClassName = getProxyClassName(type, runtime);
         final byte[] classBytes = generateProxyBeanBytecode(type, runtime, proxyClassName);
+        if (classBytes == null) {
+            return null;
+        }
 
-        return GeneratedClasses.loadAsmClass(proxyClassName, classBytes, ProxyDate.class, l);
+        return GeneratedClasses.loadAsmClass(proxyClassName, classBytes, ProxyBean.class, l);
     }
 
     /**
@@ -849,7 +864,7 @@ public class ProxyManagerImpl
                 mv.visitVarInsn(Opcodes.ALOAD, 1);
                 mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getInternalName(params[0]));
             }
-            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(type), "<init>",
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, proxyClassDef, "<init>",
                     Type.getMethodDescriptor(Type.VOID_TYPE, AsmHelper.getParamTypes(params)), false);
             int beanVarPos = params.length+2; // params+DUP
 
@@ -1080,10 +1095,9 @@ public class ProxyManagerImpl
             if (params.length == 0 || params[0] == Comparator.class) {
                 mv.visitInsn(Opcodes.DUP);
                 mv.visitVarInsn(Opcodes.ALOAD, 1);
-                mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getInternalName(Collection.class));
+                mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getInternalName(Map.class));
                 mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, Type.getInternalName(type), "putAll",
-                        Type.getMethodDescriptor(Type.BOOLEAN_TYPE, Type.getType(Map.class)), false);
-                mv.visitInsn(Opcodes.POP);
+                        Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(Map.class)), false);
             }
 
             mv.visitInsn(Opcodes.ARETURN);

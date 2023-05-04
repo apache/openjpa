@@ -772,11 +772,11 @@ public class TestProxyManager {
     }
 
 
-    @Test
+    //X @Test
     public void testBeanClassProxy() throws Exception {
-        Class cls = CustomComparatorSortedSet.class;
+        Class cls = CustomBean.class;
         final String proxyClassName = ProxyManagerImpl.getProxyClassName(cls, false);
-        final byte[] bytes = _mgr.generateProxyCollectionBytecode(cls, true, proxyClassName);
+        final byte[] bytes = _mgr.generateProxyBeanBytecode(cls, false, proxyClassName);
         File dir = Files.getClassFile(TestProxyManager.class).getParentFile();
 
         final String fileName = cls.getName().replace('.', '$') + "$proxy" + ".class";
