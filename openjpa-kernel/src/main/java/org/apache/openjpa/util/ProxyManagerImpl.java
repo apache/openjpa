@@ -747,7 +747,7 @@ public class ProxyManagerImpl
         delegateConstructors(ct, type, superClassFileNname);
         addInstanceVariables(ct);
         addProxyMethods(ct, false, proxyClassDef, type);
-        addProxyCollectionMethods(ct, proxyClassDef, type);
+        addProxyMapMethods(ct, proxyClassDef, type);
         proxyRecognizedMethods(ct, proxyClassDef, type, ProxyMaps.class, ProxyMap.class);
         proxySetters(ct, proxyClassDef, type);
         addWriteReplaceMethod(ct, proxyClassDef, runtime);
@@ -1027,6 +1027,157 @@ public class ProxyManagerImpl
             mv.visitEnd();
         }
     }
+
+
+    private void addProxyMapMethods(ClassWriterTracker ct, String proxyClassDef, Class type) {
+        // change tracker
+        {
+            ct.getCw().visitField(Opcodes.ACC_PRIVATE | Opcodes.ACC_TRANSIENT,
+                    "changeTracker", Type.getDescriptor(MapChangeTracker.class), null, null).visitEnd();
+            MethodVisitor mv = ct.visitMethod(Modifier.PUBLIC, "getChangeTracker",
+                    Type.getMethodDescriptor(Type.getType(ChangeTracker.class))
+                    , null, null);
+            mv.visitCode();
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitFieldInsn(Opcodes.GETFIELD, proxyClassDef, "changeTracker", Type.getDescriptor(MapChangeTracker.class));
+
+            mv.visitInsn(Opcodes.ARETURN);
+            mv.visitMaxs(-1, -1);
+            mv.visitEnd();
+        }
+
+        // Map copy
+        {
+            Constructor cons = findCopyConstructor(type);
+            if (cons == null && SortedMap.class.isAssignableFrom(type)) {
+                cons = findComparatorConstructor(type);
+            }
+            Class[] params = (cons == null) ? new Class[0]
+                    : cons.getParameterTypes();
+
+            MethodVisitor mv = ct.visitMethod(Modifier.PUBLIC, "copy",
+                    Type.getMethodDescriptor(TYPE_OBJECT, TYPE_OBJECT)
+                    , null, null);
+            mv.visitCode();
+            mv.visitTypeInsn(Opcodes.NEW, Type.getInternalName(type));
+            mv.visitInsn(Opcodes.DUP);
+
+            if (params.length == 1) {
+                mv.visitVarInsn(Opcodes.ALOAD, 1);
+                if (params[0] == Comparator.class) {
+                    mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getInternalName(SortedMap.class));
+                    mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, Type.getInternalName(SortedMap.class), "comparator",
+                            Type.getMethodDescriptor(Type.getType(Comparator.class)), true);
+                }
+                else {
+                    // otherwise just pass the parameter
+                    mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getInternalName(params[0]));
+                }
+            }
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(type), "<init>",
+                    Type.getMethodDescriptor(Type.VOID_TYPE, AsmHelper.getParamTypes(params)), false);
+
+            if (params.length == 0 || params[0] == Comparator.class) {
+                mv.visitInsn(Opcodes.DUP);
+                mv.visitVarInsn(Opcodes.ALOAD, 1);
+                mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getInternalName(Collection.class));
+                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, Type.getInternalName(type), "putAll",
+                        Type.getMethodDescriptor(Type.BOOLEAN_TYPE, Type.getType(Map.class)), false);
+                mv.visitInsn(Opcodes.POP);
+            }
+
+            mv.visitInsn(Opcodes.ARETURN);
+            mv.visitMaxs(-1, -1);
+            mv.visitEnd();
+        }
+
+        // key type
+        {
+            ct.getCw().visitField(Opcodes.ACC_PRIVATE | Opcodes.ACC_TRANSIENT,
+                    "keyType", Type.getDescriptor(Class.class), null, null).visitEnd();
+
+            MethodVisitor mv = ct.visitMethod(Modifier.PUBLIC, "getKeyType",
+                    Type.getMethodDescriptor(Type.getType(Class.class))
+                    , null, null);
+            mv.visitCode();
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitFieldInsn(Opcodes.GETFIELD, proxyClassDef, "keyType", Type.getDescriptor(Class.class));
+
+            mv.visitInsn(Opcodes.ARETURN);
+            mv.visitMaxs(-1, -1);
+            mv.visitEnd();
+        }
+
+        // value type
+        {
+            ct.getCw().visitField(Opcodes.ACC_PRIVATE | Opcodes.ACC_TRANSIENT,
+                    "valueType", Type.getDescriptor(Class.class), null, null).visitEnd();
+
+            MethodVisitor mv = ct.visitMethod(Modifier.PUBLIC, "getValueType",
+                    Type.getMethodDescriptor(Type.getType(Class.class))
+                    , null, null);
+            mv.visitCode();
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitFieldInsn(Opcodes.GETFIELD, proxyClassDef, "valueType", Type.getDescriptor(Class.class));
+
+            mv.visitInsn(Opcodes.ARETURN);
+            mv.visitMaxs(-1, -1);
+            mv.visitEnd();
+        }
+
+        // new instance factory
+        {
+            MethodVisitor mv = ct.visitMethod(Modifier.PUBLIC, "newInstance",
+                    Type.getMethodDescriptor(Type.getType(ProxyMap.class),
+                            Type.getType(Class.class), Type.getType(Class.class), Type.getType(Comparator.class),
+                            Type.BOOLEAN_TYPE, Type.BOOLEAN_TYPE)
+                    , null, null);
+            mv.visitCode();
+            mv.visitTypeInsn(Opcodes.NEW, proxyClassDef);
+            mv.visitInsn(Opcodes.DUP);
+
+            Constructor cons = findComparatorConstructor(type);
+            Class[] params = (cons == null) ? new Class[0] : cons.getParameterTypes();
+            if (params.length == 1) {
+                mv.visitVarInsn(Opcodes.ALOAD, 3);
+            }
+
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, proxyClassDef, "<init>",
+                    Type.getMethodDescriptor(Type.VOID_TYPE, AsmHelper.getParamTypes(params)), false);
+
+            mv.visitVarInsn(Opcodes.ASTORE, 6);
+            mv.visitVarInsn(Opcodes.ALOAD, 6);
+            mv.visitVarInsn(Opcodes.ALOAD, 1);
+            mv.visitFieldInsn(Opcodes.PUTFIELD, proxyClassDef, "keyType", Type.getDescriptor(Class.class));
+
+            mv.visitVarInsn(Opcodes.ALOAD, 6);
+            mv.visitVarInsn(Opcodes.ALOAD, 2);
+            mv.visitFieldInsn(Opcodes.PUTFIELD, proxyClassDef, "valueType", Type.getDescriptor(Class.class));
+
+            mv.visitVarInsn(Opcodes.ILOAD, 4);
+            Label lNotTrack = new Label();
+            mv.visitJumpInsn(Opcodes.IFEQ, lNotTrack);
+            mv.visitVarInsn(Opcodes.ALOAD, 6);
+            mv.visitTypeInsn(Opcodes.NEW, Type.getInternalName(MapChangeTrackerImpl.class));
+
+            mv.visitInsn(Opcodes.DUP);
+            mv.visitVarInsn(Opcodes.ALOAD, 6);
+
+            mv.visitVarInsn(Opcodes.ILOAD, 5);
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(MapChangeTrackerImpl.class), "<init>",
+                    Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(Map.class), Type.BOOLEAN_TYPE),
+                    false);
+            mv.visitFieldInsn(Opcodes.PUTFIELD, proxyClassDef, "changeTracker", Type.getDescriptor(MapChangeTracker.class));
+
+            mv.visitLabel(lNotTrack);
+            mv.visitVarInsn(Opcodes.ALOAD, 6);
+
+            mv.visitInsn(Opcodes.ARETURN);
+            mv.visitMaxs(-1, -1);
+            mv.visitEnd();
+        }
+    }
+
 
     private void proxyRecognizedMethods(ClassWriterTracker ct, String proxyClassDef, Class<?> type,
                                         Class<?> helper, Class<?> proxyType) {
