@@ -596,14 +596,19 @@ public class ProxyManagerImpl
 
     private static boolean isProxyable(Class<?> cls){
         int mod = cls.getModifiers();
-        if(Modifier.isFinal(mod))
+        if(Modifier.isFinal(mod)) {
             return false;
-        if(Modifier.isProtected(mod) || Modifier.isPublic(mod))
+        }
+
+        if(Modifier.isProtected(mod) || Modifier.isPublic(mod)) {
             return true;
+        }
+
         // Default scoped class, we can only extend if it is in the same package as the generated proxy. Ideally
         // we'd fix the code gen portion and place proxies in the same pacakge as the types being proxied.
-        if(cls.getPackage().getName().equals("org.apache.openjpa.util"))
+        if(cls.getPackage().getName().equals("org.apache.openjpa.util")) {
             return true;
+        }
 
         return false;
 
@@ -891,8 +896,7 @@ public class ProxyManagerImpl
                 continue;
             }
 
-            if (!startsWith(meth.getName(), "set")
-                    || meth.getParameterTypes().length != 1) {
+            if (!startsWith(meth.getName(), "set") || meth.getParameterTypes().length != 1) {
                 continue;
             }
 
@@ -1381,9 +1385,10 @@ public class ProxyManagerImpl
             MethodVisitor mv = ct.visitMethod(Opcodes.ACC_PUBLIC, "<init>", descriptor, null, exceptionTypes);
             mv.visitCode();
             mv.visitVarInsn(Opcodes.ALOAD, 0);
-            for (int i = 1; i <= params.length; i++)
-            {
-                mv.visitVarInsn(AsmHelper.getLoadInsn(params[i-1]), i);
+            int stackPos = 1;
+            for (Class param : params) {
+                mv.visitVarInsn(AsmHelper.getLoadInsn(param), stackPos);
+                stackPos += Type.getType(param).getSize();
             }
             mv.visitMethodInsn(Opcodes.INVOKESPECIAL, superClassFileNname, "<init>", descriptor, false);
 
@@ -1718,13 +1723,13 @@ public class ProxyManagerImpl
         for (Method meth : meths) {
             if (isSetter(meth) && !Modifier.isFinal(meth.getModifiers())) {
                 setters++;
-                proxySetter(ct, proxyClassDef, type, meth);
+                proxySetter(ct, type, meth);
             }
         }
         return setters > 0;
     }
 
-    private void proxySetter(ClassWriterTracker ct, String proxyClassDef, Class type, Method meth) {
+    private void proxySetter(ClassWriterTracker ct, Class type, Method meth) {
         Class[] params = meth.getParameterTypes();
         Class ret = meth.getReturnType();
 
@@ -1744,9 +1749,11 @@ public class ProxyManagerImpl
         mv.visitVarInsn(Opcodes.ALOAD, 0);
 
         // push all the method params to the stack
-        for (int i = 1; i <= params.length; i++)
-        {
-            mv.visitVarInsn(AsmHelper.getLoadInsn(params[i-1]), i);
+        int stackPos = 1;
+        for (int i = 1; i <= params.length; i++) {
+            Class param = params[i-1];
+            mv.visitVarInsn(AsmHelper.getLoadInsn(param), stackPos);
+            stackPos += Type.getType(param).getSize();
         }
 
         mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(type), meth.getName(),
