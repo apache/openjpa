@@ -89,5 +89,5 @@ public class MetaDataToolTask
         public String[] getValues() {
             return MetaDataTool.ACTIONS;
         }
-	}
+    }
 }
