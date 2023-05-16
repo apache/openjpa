@@ -41,70 +41,71 @@ import jakarta.persistence.Table;
 @Table(name="AUTOINCPC3")
 public class AutoIncrementPC3
 {
-	@Id
-	private long				id			= 0;
+    @Id
+    private long				id			= 0;
+
     private Set                 setField    = new HashSet ();
 
-	@Column(name="strngfld", length=50)
-	private String				stringField	= null;
+    @Column(name="strngfld", length=50)
+    private String				stringField	= null;
 
-	@OneToOne(cascade={CascadeType.PERSIST, CascadeType.REMOVE})
-	private AutoIncrementPC3	oneOne		= null;
+    @OneToOne(cascade={CascadeType.PERSIST, CascadeType.REMOVE})
+    private AutoIncrementPC3	oneOne		= null;
 
-	public AutoIncrementPC3()
-	{
-	}
+    public AutoIncrementPC3()
+    {
+    }
 
-	public AutoIncrementPC3(int id)
-	{
-		this.id = id;
-	}
-
-
-	public long getId ()
-	{
-		return this.id;
-	}
+    public AutoIncrementPC3(int id)
+    {
+        this.id = id;
+    }
 
 
-	public void setId (long id)
-	{
-		this.id = id;
-	}
+    public long getId ()
+    {
+        return this.id;
+    }
 
 
-	public Set getSetField ()
-	{
-		return this.setField;
-	}
+    public void setId (long id)
+    {
+        this.id = id;
+    }
 
 
-	public void setSetField (Set setField)
-	{
-		this.setField = setField;
-	}
+    public Set getSetField ()
+    {
+        return this.setField;
+    }
 
 
-	public String getStringField ()
-	{
-		return this.stringField;
-	}
+    public void setSetField (Set setField)
+    {
+        this.setField = setField;
+    }
 
 
-	public void setStringField (String stringField)
-	{
-		this.stringField = stringField;
-	}
+    public String getStringField ()
+    {
+        return this.stringField;
+    }
 
 
-	public AutoIncrementPC3 getOneOne ()
-	{
-		return this.oneOne;
-	}
+    public void setStringField (String stringField)
+    {
+        this.stringField = stringField;
+    }
 
 
-	public void setOneOne (AutoIncrementPC3 oneOne)
-	{
-		this.oneOne = oneOne;
-	}
+    public AutoIncrementPC3 getOneOne ()
+    {
+        return this.oneOne;
+    }
+
+
+    public void setOneOne (AutoIncrementPC3 oneOne)
+    {
+        this.oneOne = oneOne;
+    }
 }

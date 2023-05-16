@@ -110,5 +110,5 @@ public class ApplicationIdToolTask
             : Files.getFile(dirName, getClassLoader());
         ApplicationIdTool.run((OpenJPAConfiguration) getConfiguration(), files,
             flags, getClassLoader ());
-	}
+    }
 }

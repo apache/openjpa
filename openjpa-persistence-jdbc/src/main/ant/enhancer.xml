@@ -87,6 +87,7 @@
             <exclude name="**/unenhanced/*.class" />
             <exclude name="**/persistence/property/AccessModsEntity.class"/>
             <exclude name="org/apache/openjpa/enhance/ids/*.class"/>
+            <exclude name="org/apache/openjpa/idtool/RecordsPerYear.class"/>
         </fileset>
         <openjpac>
             <classpath refid="cp" />
