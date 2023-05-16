@@ -1077,5 +1077,5 @@ public class PCDataGenerator
         PCDataGenerator getStorageGenerator();
 
         void setStorageGenerator (PCDataGenerator generator);
-	}
+    }
 }

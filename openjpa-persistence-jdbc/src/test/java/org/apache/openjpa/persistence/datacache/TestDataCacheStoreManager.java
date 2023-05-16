@@ -38,8 +38,10 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestDataCacheStoreManager extends SingleEMFTestCase {
     Object[] p =
-        new Object[] { CLEAR_TABLES, CachedEntityStatistics.class, "openjpa.DataCache", "true(EnableStatistics=true)",
-            "openjpa.QueryCache", "true", };
+        new Object[] { CLEAR_TABLES, CachedEntityStatistics.class,
+                "openjpa.DataCache", "true(EnableStatistics=true)",
+                "openjpa.QueryCache", "true",
+                "openjpa.DynamicDataStructs", "true"};
 
     private EntityManager em;
     private DataCacheStoreManager dsm;
