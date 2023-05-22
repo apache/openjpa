@@ -39,8 +39,8 @@ public class TestDataCachingAndUnenhancedPropertyAccess
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
-			return;
-		}
+            return;
+        }
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new UnenhancedIdentityIdPropertyAccess());

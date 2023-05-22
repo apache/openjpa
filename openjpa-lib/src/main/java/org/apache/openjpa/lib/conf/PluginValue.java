@@ -163,7 +163,7 @@ public class PluginValue extends ObjectValue {
 
     @Override
     public void setString(String str) {
-    	assertChangeable();
+        assertChangeable();
         _name = Configurations.getClassName(str);
         _name = unalias(_name);
         _props = Configurations.getProperties(str);

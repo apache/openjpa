@@ -57,6 +57,7 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.util.asm.AsmHelper;
+import org.apache.openjpa.util.asm.ClassWriterTracker;
 import org.apache.openjpa.util.proxy.DelayedArrayListProxy;
 import org.apache.openjpa.util.proxy.DelayedHashSetProxy;
 import org.apache.openjpa.util.proxy.DelayedLinkedHashSetProxy;

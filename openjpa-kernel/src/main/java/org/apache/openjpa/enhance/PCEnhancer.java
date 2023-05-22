@@ -20,6 +20,7 @@ package org.apache.openjpa.enhance;
 
 import java.io.Externalizable;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInput;
@@ -28,12 +29,15 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamClass;
 import java.io.ObjectStreamException;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
@@ -90,6 +94,8 @@ import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.ShortId;
 import org.apache.openjpa.util.StringId;
 import org.apache.openjpa.util.UserException;
+import org.apache.openjpa.util.asm.AsmHelper;
+import org.apache.openjpa.util.asm.ClassWriterTracker;
 
 import serp.bytecode.BCClass;
 import serp.bytecode.BCField;
@@ -116,6 +122,7 @@ import serp.bytecode.TableSwitchInstruction;
  * classes.
  *
  * @author Abe White
+ * @author Mark Struberg
  */
 public class PCEnhancer {
     // Designates a version for maintaining compatbility when PCEnhancer
@@ -284,8 +291,10 @@ public class PCEnhancer {
         if (repos == null) {
             _repos = conf.newMetaDataRepositoryInstance();
             _repos.setSourceMode(MetaDataModes.MODE_META);
-        } else
+        } else {
             _repos = repos;
+        }
+
         _meta = _repos.getMetaData(type.getType(), loader, false);
 
         configureOptimizeIdCopy();
@@ -327,7 +336,7 @@ public class PCEnhancer {
     }
 
     /**
-     * Whether or not <code>className</code> is the name for a
+     * Whether <code>className</code> is the name for a
      * dynamically-created persistence-capable subclass.
      *
      * @since 1.1.0
@@ -621,27 +630,44 @@ public class PCEnhancer {
      */
     public void record()
         throws IOException {
-        if (_managedType != _pc && getRedefine())
-            record(_managedType);
-        record(_pc);
+        if (_managedType != _pc && getRedefine()) {
+            record(AsmHelper.toClassWriter(_managedType));
+        }
+
+        record(AsmHelper.toClassWriter(_pc));
+
         if (_oids != null)
             for (Object oid : _oids) {
-                record((BCClass) oid);
+                record(AsmHelper.toClassWriter((BCClass) oid));
             }
     }
 
     /**
      * Write the given class.
      */
-    private void record(BCClass bc)
+    private void record(ClassWriterTracker cwt)
         throws IOException {
         if (_writer != null)
-            _writer.write(bc);
-        else if (_dir == null)
-            AsmAdaptor.write(bc);
+            _writer.write(AsmHelper.toBCClass(cwt));
+        else if (_dir == null) {
+            String name = cwt.getName().replace(".", "/");
+            ClassLoader cl = cwt.getClassLoader();
+            if (cl == null) {
+                cl = Thread.currentThread().getContextClassLoader();
+            }
+            final URL resource = cl.getResource(name + ".class");
+            try (OutputStream out = new FileOutputStream(URLDecoder.decode(resource.getFile()))) {
+                out.write(cwt.getCw().toByteArray());
+                out.flush();
+            }
+        }
         else {
-            File dir = Files.getPackageFile(_dir, bc.getPackageName(), true);
-            AsmAdaptor.write(bc, new File(dir, bc.getClassName() + ".class"));
+            String name = cwt.getName().replace(".", "/") + ".class";
+            File targetFile = new File(_dir, name);
+            if (!targetFile.getParentFile().exists()) {
+                targetFile.getParentFile().mkdirs();
+            }
+            java.nio.file.Files.write(targetFile.toPath(), cwt.getCw().toByteArray());
         }
     }
 
@@ -4920,7 +4946,7 @@ public class PCEnhancer {
             project.clear();
         }
         if(log.isInfoEnabled() && !persAwareClasses.isEmpty()){
-        	log.info(_loc.get("pers-aware-classes", persAwareClasses.size(), persAwareClasses));
+            log.info(_loc.get("pers-aware-classes", persAwareClasses.size(), persAwareClasses));
         }
         return true;
     }

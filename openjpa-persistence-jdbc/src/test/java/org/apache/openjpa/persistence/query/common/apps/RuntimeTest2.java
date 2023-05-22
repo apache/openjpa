@@ -22,7 +22,7 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
 /**
- * <p>Persitent type used in testing.</p>
+ * <p>Persistent type used in testing.</p>
  *
  * @author Abe White
  */

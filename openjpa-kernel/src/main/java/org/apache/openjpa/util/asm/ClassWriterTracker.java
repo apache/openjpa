@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.openjpa.util;
+package org.apache.openjpa.util.asm;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,21 +30,33 @@ import org.apache.xbean.asm9.MethodVisitor;
 public class ClassWriterTracker {
 
     private final ClassWriter cw;
+    private final ClassLoader cl;
+
+    private String name;
     private List<String> createdMethods = new ArrayList<>();
 
     public ClassWriterTracker(ClassWriter cw) {
+        this(cw, null);
+    }
+
+    public ClassWriterTracker(ClassWriter cw, ClassLoader cl) {
         this.cw = cw;
+        this.cl = cl;
     }
 
     public ClassWriter getCw() {
         return cw;
     }
 
+    public ClassLoader getClassLoader() {
+        return cl;
+    }
+
     public MethodVisitor visitMethod(final int access,
-                                    final String name,
-                                    final String descriptor,
-                                    final String signature,
-                                    final String[] exceptionTypes) {
+                                     final String name,
+                                     final String descriptor,
+                                     final String signature,
+                                     final String[] exceptionTypes) {
         MethodVisitor mv = cw.visitMethod(access, name, descriptor, signature, exceptionTypes);
 
         createdMethods.add(name + descriptor);
@@ -54,5 +66,13 @@ public class ClassWriterTracker {
 
     public boolean hasMethod(final String name, final String descriptor) {
         return createdMethods.contains(name + descriptor);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

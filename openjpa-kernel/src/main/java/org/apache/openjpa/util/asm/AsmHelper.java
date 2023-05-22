@@ -16,10 +16,16 @@
  */
 package org.apache.openjpa.util.asm;
 
+import java.io.ByteArrayInputStream;
 import java.lang.reflect.Method;
 
+import org.apache.xbean.asm9.ClassReader;
+import org.apache.xbean.asm9.ClassWriter;
 import org.apache.xbean.asm9.Opcodes;
 import org.apache.xbean.asm9.Type;
+
+import serp.bytecode.BCClass;
+import serp.bytecode.Project;
 
 /**
  * Utility methods to deal with ASM bytecode
@@ -30,6 +36,32 @@ public final class AsmHelper {
     private AsmHelper() {
         // utility class ct
     }
+
+    /**
+     * temporary helper class to convert BCClass to ASM
+     * @deprecated must get removed when done with migrating from Serp to ASM
+     */
+    public static ClassWriterTracker toClassWriter(BCClass bcClass) {
+        ClassReader cr = new ClassReader(bcClass.toByteArray());
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        cr.accept(cw, 0);  // 0 -> don't skip anything
+        ClassWriterTracker cwt = new ClassWriterTracker(cw, bcClass.getClassLoader());
+        cwt.setName(bcClass.getName());
+
+        return cwt;
+    }
+
+    /**
+     * temporary helper class to convert ClassWriterTracker to BCClass
+     * @deprecated must get removed when done with migrating from Serp to ASM
+     */
+    public static BCClass toBCClass(ClassWriterTracker cwt) {
+        final byte[] classBytes = cwt.getCw().toByteArray();
+        BCClass bcClass = new Project().loadClass(new ByteArrayInputStream(classBytes), cwt.getClassLoader());
+        bcClass.setName(cwt.getName());
+        return bcClass;
+    }
+
 
     /**
      * Calclates the proper Return instruction opcode for the given class
