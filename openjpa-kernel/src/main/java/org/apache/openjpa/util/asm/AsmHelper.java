@@ -23,6 +23,8 @@ import org.apache.xbean.asm9.ClassReader;
 import org.apache.xbean.asm9.ClassWriter;
 import org.apache.xbean.asm9.Opcodes;
 import org.apache.xbean.asm9.Type;
+import org.apache.xbean.asm9.tree.AbstractInsnNode;
+import org.apache.xbean.asm9.tree.VarInsnNode;
 
 import serp.bytecode.BCClass;
 import serp.bytecode.Project;
@@ -211,4 +213,32 @@ public final class AsmHelper {
         return types;
     }
 
+    /**
+     * @return true if the instruction is an LOAD instruction
+     */
+    public static boolean isLoadInsn(AbstractInsnNode insn) {
+        return insn.getOpcode() == Opcodes.ALOAD
+                || insn.getOpcode() == Opcodes.ILOAD
+                || insn.getOpcode() == Opcodes.IALOAD
+                || insn.getOpcode() == Opcodes.LLOAD
+                || insn.getOpcode() == Opcodes.LALOAD
+                || insn.getOpcode() == Opcodes.FLOAD
+                || insn.getOpcode() == Opcodes.FALOAD
+                || insn.getOpcode() == Opcodes.DLOAD
+                || insn.getOpcode() == Opcodes.DALOAD
+                || insn.getOpcode() == Opcodes.BALOAD
+                || insn.getOpcode() == Opcodes.CALOAD
+                || insn.getOpcode() == Opcodes.SALOAD;
+
+
+    }
+
+    /**
+     * @return true if the instruction is an ALOAD_0
+     */
+    public static boolean isThisInsn(AbstractInsnNode insn) {
+        return insn instanceof VarInsnNode
+                && insn.getOpcode() == Opcodes.ALOAD
+                && ((VarInsnNode)insn).var == 0;
+    }
 }

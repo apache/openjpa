@@ -21,6 +21,7 @@ package org.apache.openjpa.enhance;
 import java.io.Externalizable;
 import java.io.ObjectInput;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -34,7 +35,6 @@ import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
-import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.UserException;
 
 import serp.bytecode.BCClass;
@@ -42,48 +42,48 @@ import serp.bytecode.BCField;
 import serp.bytecode.BCMethod;
 
 /**
- *	<p>Validates that a given type meets the JPA contract, plus a few
- *  OpenJPA-specific additions for subclassing / redefinition:
+ * <p>Validates that a given type meets the JPA contract, plus a few
+ * OpenJPA-specific additions for subclassing / redefinition:
  *
- *	<ul>
- * 		<li>must have an accessible no-args constructor</li>
- * 		<li>must be a public or protected class</li>
- * 		<li>must not be final</li>
- * 		<li>must not extend an enhanced class</li>
- *		<li>all persistent data represented by accessible setter/getter
- * 			methods (persistent properties)</li>
- * 	    <li>if versioning is to be used, exactly one persistent property for
- *          the numeric version data</li> <!-- ##### is this true? -->
+ *   <ul>
+ *        <li>must have an accessible no-args constructor</li>
+ *        <li>must be a public or protected class</li>
+ *        <li>must not be final</li>
+ *        <li>must not extend an enhanced class</li>
+ *       <li>all persistent data represented by accessible setter/getter
+ *            methods (persistent properties)</li>
+ *        <li>if versioning is to be used, exactly one persistent property for
+ *         the numeric version data</li> <!-- ##### is this true? -->
  *
- *      <li>When using property access, the backing field for a persistent
- *          property must be:
- * 			<ul>
- *              <!-- ##### JPA validation of these needs to be tested -->
- * 				<li>private</li>
- * 				<li>set only in the designated setter,
- * 	                in the constructor, or in {@link Object#clone()},
- *                  <code>readObject(ObjectInputStream)</code>, or
- * 	                {@link Externalizable#readExternal(ObjectInput)}.</li>
- * 				<li>read only in the designated getter and the
- * 					constructor.</li>
- *			</ul>
- * 		</li>
- * 	</ul>
+ *     <li>When using property access, the backing field for a persistent
+ *         property must be:
+ *            <ul>
+ *             <!-- ##### JPA validation of these needs to be tested -->
+ *                <li>private</li>
+ *                <li>set only in the designated setter,
+ *                    in the constructor, or in {@link Object#clone()},
+ *                 <code>readObject(ObjectInputStream)</code>, or
+ *                    {@link Externalizable#readExternal(ObjectInput)}.</li>
+ *                <li>read only in the designated getter and the
+ *                    constructor.</li>
+ *           </ul>
+ *        </li>
+ *    </ul>
  *
- *  <p>If you use this technique and use the <code>new</code> keyword instead
- *  of a OpenJPA-supplied construction routine, OpenJPA will need to do extra
- *  work with persistent-new-flushed instances, since OpenJPA cannot in this
- *  case track what happens to such an instance.</p>
- *
- * 	@since 1.0.0
+ * <p>If you use this technique and use the <code>new</code> keyword instead
+ * of a OpenJPA-supplied construction routine, OpenJPA will need to do extra
+ * work with persistent-new-flushed instances, since OpenJPA cannot in this
+ * case track what happens to such an instance.</p>
+ * <p>
+ * @since 1.0.0
  */
 public class PCSubclassValidator {
 
     private static final Localizer loc =
-        Localizer.forPackage(PCSubclassValidator.class);
+            Localizer.forPackage(PCSubclassValidator.class);
 
     private final ClassMetaData meta;
-    private final BCClass pc;
+    private final BCClass bc;
     private final Log log;
     private final boolean failOnContractViolations;
 
@@ -91,52 +91,51 @@ public class PCSubclassValidator {
     private Collection contractViolations;
 
     public PCSubclassValidator(ClassMetaData meta, BCClass bc, Log log,
-        boolean enforceContractViolations) {
+                               boolean enforceContractViolations) {
         this.meta = meta;
-        this.pc = bc;
+        this.bc = bc;
         this.log = log;
         this.failOnContractViolations = enforceContractViolations;
     }
 
     public void assertCanSubclass() {
-        Class superclass = meta.getDescribedType();
+        Class<?> superclass = meta.getDescribedType();
         String name = superclass.getName();
-        if (superclass.isInterface())
+        if (superclass.isInterface()) {
             addError(loc.get("subclasser-no-ifaces", name), meta);
-        if (Modifier.isFinal(superclass.getModifiers()))
+        }
+        if (Modifier.isFinal(superclass.getModifiers())) {
             addError(loc.get("subclasser-no-final-classes", name), meta);
-        if (Modifier.isPrivate(superclass.getModifiers()))
+        }
+        if (Modifier.isPrivate(superclass.getModifiers())) {
             addError(loc.get("subclasser-no-private-classes", name), meta);
-        if (PersistenceCapable.class.isAssignableFrom(superclass))
+        }
+        if (PersistenceCapable.class.isAssignableFrom(superclass)) {
             addError(loc.get("subclasser-super-already-pc", name), meta);
+        }
 
         try {
-            Constructor c = superclass.getDeclaredConstructor(new Class[0]);
+            Constructor c = superclass.getDeclaredConstructor();
             if (!(Modifier.isProtected(c.getModifiers())
-                || Modifier.isPublic(c.getModifiers())))
+                    || Modifier.isPublic(c.getModifiers()))) {
                 addError(loc.get("subclasser-private-ctor", name), meta);
+            }
         }
         catch (NoSuchMethodException e) {
-            addError(loc.get("subclasser-no-void-ctor", name),
-                meta);
+            addError(loc.get("subclasser-no-void-ctor", name), meta);
         }
 
-        // if the BCClass we loaded is already pc and the superclass is not,
-        // then we should never get here, so let's make sure that the
-        // calling context is caching correctly by throwing an exception.
-        if (pc.isInstanceOf(PersistenceCapable.class) &&
-            !PersistenceCapable.class.isAssignableFrom(superclass))
-            throw new InternalException(
-                loc.get("subclasser-class-already-pc", name));
-
-        if (AccessCode.isProperty(meta.getAccessType()))
+        if (AccessCode.isProperty(meta.getAccessType())) {
             checkPropertiesAreInterceptable();
+        }
 
-        if (errors != null && !errors.isEmpty())
+        if (errors != null && !errors.isEmpty()) {
             throw new UserException(errors.toString());
+        }
         else if (contractViolations != null &&
-            !contractViolations.isEmpty() && log.isWarnEnabled())
+                !contractViolations.isEmpty() && log.isWarnEnabled()) {
             log.warn(contractViolations.toString());
+        }
     }
 
     private void checkPropertiesAreInterceptable() {
@@ -146,7 +145,7 @@ public class PCSubclassValidator {
             Method getter = getBackingMember(fmd);
             if (getter == null) {
                 addError(loc.get("subclasser-no-getter",
-                        fmd.getName()), fmd);
+                                 fmd.getName()), fmd);
                 continue;
             }
             BCField returnedField = checkGetterIsSubclassable(getter, fmd);
@@ -154,18 +153,19 @@ public class PCSubclassValidator {
             Method setter = setterForField(fmd);
             if (setter == null) {
                 addError(loc.get("subclasser-no-setter", fmd.getName()),
-                        fmd);
+                         fmd);
                 continue;
             }
             BCField assignedField = checkSetterIsSubclassable(setter, fmd);
-            if (assignedField == null)
+            if (assignedField == null) {
                 continue;
+            }
 
-            if (assignedField != returnedField)
-                addContractViolation(loc.get
-                                ("subclasser-setter-getter-field-mismatch",
-                                        fmd.getName(), returnedField, assignedField),
-                        fmd);
+            if (assignedField != returnedField) {
+                addContractViolation(loc.get("subclasser-setter-getter-field-mismatch",
+                                             fmd.getName(), returnedField, assignedField),
+                                     fmd);
+            }
 
             // ### scan through all the rest of the class to make sure it
             // ### doesn't use the field.
@@ -173,22 +173,21 @@ public class PCSubclassValidator {
     }
 
     private Method getBackingMember(FieldMetaData fmd) {
-    	Member back = fmd.getBackingMember();
-    	if (Method.class.isInstance(back))
-    		return (Method)back;
+        Member back = fmd.getBackingMember();
+        if (back instanceof Method) {
+            return (Method) back;
+        }
 
-    	Method getter = Reflection.findGetter(meta.getDescribedType(),
-    			fmd.getName(), false);
-    	if (getter != null)
-    		fmd.backingMember(getter);
-    	return getter;
+        Method getter = Reflection.findGetter(meta.getDescribedType(), fmd.getName(), false);
+        if (getter != null) {
+            fmd.backingMember(getter);
+        }
+        return getter;
     }
 
     private Method setterForField(FieldMetaData fmd) {
         try {
-            return fmd.getDeclaringType().getDeclaredMethod(
-                "set" + StringUtil.capitalize(fmd.getName()),
-                new Class[]{ fmd.getDeclaredType() });
+            return fmd.getDeclaringType().getDeclaredMethod("set" + StringUtil.capitalize(fmd.getName()), fmd.getDeclaredType());
         }
         catch (NoSuchMethodException e) {
             return null;
@@ -197,93 +196,111 @@ public class PCSubclassValidator {
 
     /**
      * @return the name of the field that is returned by <code>meth</code>, or
-     *         <code>null</code> if something other than a single field is
-     *         returned, or if it cannot be determined what is returned.
+     * <code>null</code> if something other than a single field is
+     * returned, or if it cannot be determined what is returned.
      */
     private BCField checkGetterIsSubclassable(Method meth, FieldMetaData fmd) {
         checkMethodIsSubclassable(meth, fmd);
-        BCField field = PCEnhancer.getReturnedField(getBCMethod(meth));
-        if (field == null) {
-            addContractViolation(loc.get("subclasser-invalid-getter",
-                fmd.getName()), fmd);
+        BCField bcField = PCEnhancer.getReturnedField_old(getBCMethod(meth));
+        Field field = PCEnhancer.getReturnedField(meth);
+
+        //X TODO remove
+        if (field == null && bcField != null || field != null && bcField == null ||
+            field != null && bcField != null && !field.getName().equals(bcField.getName())) {
+            throw new IllegalStateException("MSX ASMTODO " + bcField + " " + field);
+        }
+
+        if (bcField == null) {
+            addContractViolation(loc.get("subclasser-invalid-getter", fmd.getName()), fmd);
             return null;
-        } else {
-            return field;
+        }
+        else {
+            return bcField;
         }
     }
 
     /**
      * @return the field that is set in <code>meth</code>, or
-     *         <code>null</code> if something other than a single field is
-     *         set, or if it cannot be determined what is set.
+     * <code>null</code> if something other than a single field is
+     * set, or if it cannot be determined what is set.
      */
     private BCField checkSetterIsSubclassable(Method meth, FieldMetaData fmd) {
         checkMethodIsSubclassable(meth, fmd);
-        BCField field = PCEnhancer.getAssignedField(getBCMethod(meth));
-        if (field == null) {
-            addContractViolation(loc.get("subclasser-invalid-setter",
-                fmd.getName()), fmd);
+        BCField bcField = PCEnhancer.getAssignedField_old(getBCMethod(meth));
+        Field field = PCEnhancer.getAssignedField(meth);
+
+        //X TODO remove
+        if (field == null && bcField != null || field != null && bcField == null ||
+                field != null && bcField != null && !field.getName().equals(bcField.getName())) {
+            throw new IllegalStateException("MSX ASMTODO " + bcField + " " + field);
+        }
+
+        if (bcField == null) {
+            addContractViolation(loc.get("subclasser-invalid-setter", fmd.getName()), fmd);
             return null;
-        } else {
-            return field;
+        }
+        else {
+            return bcField;
         }
     }
 
     private BCMethod getBCMethod(Method meth) {
-        BCClass bc = pc.getProject().loadClass(meth.getDeclaringClass());
+        BCClass bc = this.bc.getProject().loadClass(meth.getDeclaringClass());
         return bc.getDeclaredMethod(meth.getName(), meth.getParameterTypes());
     }
 
     private void checkMethodIsSubclassable(Method meth, FieldMetaData fmd) {
         String className = fmd.getDefiningMetaData().
-            getDescribedType().getName();
+                getDescribedType().getName();
         if (!(Modifier.isProtected(meth.getModifiers())
-            || Modifier.isPublic(meth.getModifiers())))
-            addError(loc.get("subclasser-private-accessors-unsupported",
-                className, meth.getName()), fmd);
-        if (Modifier.isFinal(meth.getModifiers()))
-            addError(loc.get("subclasser-final-methods-not-allowed",
-                className, meth.getName()), fmd);
-        if (Modifier.isNative(meth.getModifiers()))
-            addContractViolation(loc.get
-                ("subclasser-native-methods-not-allowed", className,
-                    meth.getName()),
-                fmd);
-        if (Modifier.isStatic(meth.getModifiers()))
-            addError(loc.get("subclasser-static-methods-not-supported",
-                className, meth.getName()), fmd);
+                || Modifier.isPublic(meth.getModifiers()))) {
+            addError(loc.get("subclasser-private-accessors-unsupported", className, meth.getName()), fmd);
+        }
+        if (Modifier.isFinal(meth.getModifiers())) {
+            addError(loc.get("subclasser-final-methods-not-allowed", className, meth.getName()), fmd);
+        }
+        if (Modifier.isNative(meth.getModifiers())) {
+            addContractViolation(loc.get("subclasser-native-methods-not-allowed", className, meth.getName()), fmd);
+        }
+        if (Modifier.isStatic(meth.getModifiers())) {
+            addError(loc.get("subclasser-static-methods-not-supported", className, meth.getName()), fmd);
+        }
     }
 
     private void addError(Message s, ClassMetaData cls) {
-        if (errors == null)
+        if (errors == null) {
             errors = new ArrayList();
+        }
 
         errors.add(loc.get("subclasser-error-meta", s,
-            cls.getDescribedType().getName(),
-            cls.getSourceFile()));
+                           cls.getDescribedType().getName(),
+                           cls.getSourceFile()));
     }
 
     private void addError(Message s, FieldMetaData fmd) {
-        if (errors == null)
+        if (errors == null) {
             errors = new ArrayList();
+        }
 
         errors.add(loc.get("subclasser-error-field", s,
-            fmd.getFullName(),
-            fmd.getDeclaringMetaData().getSourceFile()));
+                           fmd.getFullName(),
+                           fmd.getDeclaringMetaData().getSourceFile()));
     }
 
     private void addContractViolation(Message m, FieldMetaData fmd) {
         // add the violation as an error in case we're processing violations
         // as errors; this keeps them in the order that they were found rather
         // than just adding the violations to the end of the list.
-        if (failOnContractViolations)
+        if (failOnContractViolations) {
             addError(m, fmd);
+        }
 
-        if (contractViolations == null)
+        if (contractViolations == null) {
             contractViolations = new ArrayList();
+        }
 
         contractViolations.add(loc.get
-            ("subclasser-contract-violation-field", m.getMessage(),
-                fmd.getFullName(), fmd.getDeclaringMetaData().getSourceFile()));
+                ("subclasser-contract-violation-field", m.getMessage(),
+                 fmd.getFullName(), fmd.getDeclaringMetaData().getSourceFile()));
     }
 }

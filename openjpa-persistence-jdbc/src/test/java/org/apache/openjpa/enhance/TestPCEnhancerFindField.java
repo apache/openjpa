@@ -40,7 +40,7 @@ public class TestPCEnhancerFindField
         Project proj = new Project();
         BCClass bc = proj.loadClass(getClass());
         BCMethod meth = bc.getMethods("myMethod")[0];
-        BCField field = PCEnhancer.getReturnedField(meth);
+        BCField field = PCEnhancer.getReturnedField_old(meth);
         assertEquals("field", field.getName());
     }
 }

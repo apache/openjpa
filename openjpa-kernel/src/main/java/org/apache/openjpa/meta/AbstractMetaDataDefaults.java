@@ -187,11 +187,11 @@ public abstract class AbstractMetaDataDefaults
             Member member;
             FieldMetaData fmd;
             for (int i = 0; i < fieldNames.length; i ++) {
-            	String property = fieldNames[i];
-                member = getMemberByProperty(meta, property,
-                	AccessCode.UNKNOWN, true);
-                if (member == null) // transient or indeterminable access
-                	continue;
+                String property = fieldNames[i];
+                member = getMemberByProperty(meta, property, AccessCode.UNKNOWN, true);
+                if (member == null) { // transient or indeterminable access
+                    continue;
+                }
                 fmd = meta.addDeclaredField(property, fieldTypes[i]);
                 fmd.backingMember(member);
                 populate(fmd);
@@ -285,21 +285,27 @@ public abstract class AbstractMetaDataDefaults
      * the next letter lower-cased. For other methods, returns null.
      */
     public static String getFieldName(Member member) {
-        if (member instanceof Field)
+        if (member instanceof Field) {
             return member.getName();
-        if (!(member instanceof Method))
-        	return null;
+        }
+        if (!(member instanceof Method)) {
+            return null;
+        }
         Method method = (Method) member;
         String name = method.getName();
-        if (isNormalGetter(method))
-        	name = name.substring("get".length());
-        else if (isBooleanGetter(method))
-        	name = name.substring("is".length());
-        else
+        if (isNormalGetter(method)) {
+            name = name.substring("get".length());
+        }
+        else if (isBooleanGetter(method)) {
+            name = name.substring("is".length());
+        }
+        else {
             return null;
+        }
 
-        if (name.length() == 1)
+        if (name.length() == 1) {
             return name.toLowerCase();
+        }
         return Character.toLowerCase(name.charAt(0)) + name.substring(1);
     }
 
@@ -335,7 +341,7 @@ public abstract class AbstractMetaDataDefaults
         if (fmd == null)
             return null;
         if (fmd.getBackingMember() != null)
-        	return fmd.getBackingMember();
+            return fmd.getBackingMember();
         return getMemberByProperty(fmd.getDeclaringMetaData(), fmd.getName(),
             fmd.getAccessType(), true);
     }
@@ -362,10 +368,10 @@ public abstract class AbstractMetaDataDefaults
      * where T is any non-void type.
      */
     public static boolean isNormalGetter(Method method) {
-    	String methodName = method.getName();
-    	return startsWith(methodName, "get")
-    	    && method.getParameterTypes().length == 0
-    	    && method.getReturnType() != void.class;
+        String methodName = method.getName();
+        return startsWith(methodName, "get")
+            && method.getParameterTypes().length == 0
+            && method.getReturnType() != void.class;
     }
 
     /**
@@ -374,10 +380,10 @@ public abstract class AbstractMetaDataDefaults
      * <code> public Boolean isXXX() </code>
      */
     public static boolean isBooleanGetter(Method method) {
-    	String methodName = method.getName();
-    	return startsWith(methodName, "is")
-    	    && method.getParameterTypes().length == 0
-    	    && isBoolean(method.getReturnType());
+        String methodName = method.getName();
+        return startsWith(methodName, "is")
+            && method.getParameterTypes().length == 0
+            && isBoolean(method.getReturnType());
     }
 
     /**
@@ -388,16 +394,16 @@ public abstract class AbstractMetaDataDefaults
      * <code> public T isXXX()</code> where T is boolean or Boolean.<br>
      */
     public static boolean isGetter(Method method, boolean includePrivate) {
-    	if (method == null)
-    		return false;
-    	int mods = method.getModifiers();
-    	if (!(Modifier.isPublic(mods)
-    	      || Modifier.isProtected(mods)
-    	      || (Modifier.isPrivate(mods) && includePrivate))
-    	 || Modifier.isNative(mods)
-    	 || Modifier.isStatic(mods))
-    		return false;
-    	return isNormalGetter(method) || isBooleanGetter(method);
+        if (method == null)
+            return false;
+        int mods = method.getModifiers();
+        if (!(Modifier.isPublic(mods)
+              || Modifier.isProtected(mods)
+              || (Modifier.isPrivate(mods) && includePrivate))
+         || Modifier.isNative(mods)
+         || Modifier.isStatic(mods))
+            return false;
+        return isNormalGetter(method) || isBooleanGetter(method);
     }
 
     /**
@@ -409,14 +415,14 @@ public abstract class AbstractMetaDataDefaults
     }
 
     public static boolean isBoolean(Class<?> cls) {
-    	return cls == boolean.class || cls == Boolean.class;
+        return cls == boolean.class || cls == Boolean.class;
     }
 
     public static List<String> toNames(List<? extends Member> members) {
-    	List<String> result = new ArrayList<>();
-    	for (Member m : members)
-    		result.add(m.getName());
-    	return result;
+        List<String> result = new ArrayList<>();
+        for (Member m : members)
+            result.add(m.getName());
+        return result;
     }
 
 }

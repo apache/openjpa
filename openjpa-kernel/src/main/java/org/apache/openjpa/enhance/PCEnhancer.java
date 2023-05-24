@@ -52,6 +52,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
@@ -96,6 +97,14 @@ import org.apache.openjpa.util.StringId;
 import org.apache.openjpa.util.UserException;
 import org.apache.openjpa.util.asm.AsmHelper;
 import org.apache.openjpa.util.asm.ClassWriterTracker;
+import org.apache.xbean.asm9.ClassReader;
+import org.apache.xbean.asm9.Opcodes;
+import org.apache.xbean.asm9.Type;
+import org.apache.xbean.asm9.tree.AbstractInsnNode;
+import org.apache.xbean.asm9.tree.ClassNode;
+import org.apache.xbean.asm9.tree.FieldInsnNode;
+import org.apache.xbean.asm9.tree.MethodNode;
+import org.apache.xbean.asm9.tree.VarInsnNode;
 
 import serp.bytecode.BCClass;
 import serp.bytecode.BCField;
@@ -541,14 +550,15 @@ public class PCEnhancer {
         Class<?> type = _managedType.getType();
         try {
             // if enum, skip, no need of any meta
-            if (_pc.isEnum())
+            if (type.isEnum())
                 return ENHANCE_NONE;
 
             // if managed interface, skip
-            if (_pc.isInterface())
+            if (type.isInterface())
                 return ENHANCE_INTERFACE;
 
             // check if already enhanced
+            // we cannot simply use instanceof or isAssignableFrom as we have a temp ClassLoader inbetween
             ClassLoader loader = AccessController.doPrivileged(J2DoPrivHelper.getClassLoaderAction(type));
             for (String iface : _managedType.getDeclaredInterfaceNames()) {
                 if (iface.equals(PCTYPE.getName())) {
@@ -558,10 +568,10 @@ public class PCEnhancer {
                     return ENHANCE_NONE;
                 }
             }
-            if (_log.isTraceEnabled()) {
-                _log.trace(_loc.get("enhance-start", type, loader));
-            }
 
+            if (_log.isTraceEnabled()) {
+                _log.trace(_loc.get("enhance-start", type));
+            }
 
             configureBCs();
 
@@ -569,8 +579,9 @@ public class PCEnhancer {
             // we build up a record of backing fields, etc
             if (isPropertyAccess(_meta)) {
                 validateProperties();
-                if (getCreateSubclass())
+                if (getCreateSubclass()) {
                     addAttributeTranslation();
+                }
             }
             replaceAndValidateFieldAccess();
             processViolations();
@@ -710,7 +721,7 @@ public class PCEnhancer {
                         true);
                 continue;
             }
-            returned = getReturnedField(getter);
+            returned = getReturnedField_old(getter);
             if (returned != null)
                 registerBackingFieldInfo(fmd, getter, returned);
 
@@ -738,7 +749,7 @@ public class PCEnhancer {
             }
 
             if (setter != null)
-                assigned = getAssignedField(setter);
+                assigned = getAssignedField_old(setter);
 
             if (assigned != null) {
                 if (setter != null)
@@ -848,19 +859,27 @@ public class PCEnhancer {
      * Return the field returned by the given method, or null if none.
      * Package-protected and static for testing.
      */
-    static BCField getReturnedField(BCMethod meth) {
-        return findField(meth, (AccessController.doPrivileged(
-            J2DoPrivHelper.newCodeAction())).xreturn()
+    static BCField getReturnedField_old(BCMethod meth) {
+        return findField_old(meth, new Code().xreturn()
             .setType(meth.getReturnType()), false);
     }
+
+    static Field getReturnedField(Method meth) {
+        return findField(meth, (ain) -> ain.getOpcode() == AsmHelper.getReturnInsn(meth.getReturnType()), false);
+    }
+
 
     /**
      * Return the field assigned in the given method, or null if none.
      * Package-protected and static for testing.
      */
-    static BCField getAssignedField(BCMethod meth) {
-        return findField(meth, (AccessController.doPrivileged(
+    static BCField getAssignedField_old(BCMethod meth) {
+        return findField_old(meth, (AccessController.doPrivileged(
             J2DoPrivHelper.newCodeAction())).putfield(), true);
+    }
+
+    static Field getAssignedField(Method meth) {
+        return findField(meth, (ain) -> ain.getOpcode() == Opcodes.PUTFIELD, true);
     }
 
     /**
@@ -868,8 +887,7 @@ public class PCEnhancer {
      * null if non-fields (methods, literals, parameters, variables) are
      * returned, or if non-parameters are assigned to fields.
      */
-    private static BCField findField(BCMethod meth, Instruction template,
-        boolean findAccessed) {
+    private static BCField findField_old(BCMethod meth, Instruction template, boolean findAccessed) {
         // ignore any static methods. OpenJPA only currently supports
         // non-static setters and getters
         if (meth.isStatic())
@@ -918,8 +936,7 @@ public class PCEnhancer {
                 && ((LoadInstruction) prevIns).getParam() == 0) {
                 final FieldInstruction fTemplateIns =
                     (FieldInstruction) templateIns;
-                cur = AccessController.doPrivileged(J2DoPrivHelper
-                    .getFieldInstructionFieldAction(fTemplateIns));
+                cur = fTemplateIns.getField();
             } else
                 return null;
 
@@ -935,6 +952,103 @@ public class PCEnhancer {
         }
         return field;
     }
+
+
+    private static Field findField(Method meth, Predicate<AbstractInsnNode> ain, boolean findAccessed) {
+        // ignore any static methods. OpenJPA only currently supports
+        // non-static setters and getters
+        if (Modifier.isStatic(meth.getModifiers())) {
+            return null;
+        }
+
+        ClassReader cr;
+        try {
+            cr = new ClassReader(meth.getDeclaringClass().getName());
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        ClassNode classNode = new ClassNode();
+        cr.accept(classNode, 0);
+        final MethodNode methodNode = classNode.methods.stream()
+                .filter(mn -> mn.name.equals(meth.getName()) && mn.desc.equals(Type.getMethodDescriptor(meth)))
+                .findAny().get();
+
+        Field field = null;
+        Field cur;
+        AbstractInsnNode prevInsn, earlierInsn;
+        for (AbstractInsnNode insn : methodNode.instructions) {
+            if (!ain.test(insn)) {
+                continue;
+            }
+
+            prevInsn = insn.getPrevious();
+            if (prevInsn == null) {
+                return null;
+            }
+
+            if (prevInsn.getOpcode() == Opcodes.INSTANCEOF && prevInsn.getPrevious() != null ) {
+                prevInsn = prevInsn.getPrevious();
+            }
+
+            if (prevInsn.getPrevious() == null) {
+                return null;
+            }
+
+            earlierInsn = prevInsn.getPrevious();
+
+            // if the opcode two before the template was an aload_0, check
+            // against the middle instruction based on what type of find
+            // we're doing
+            if (!AsmHelper.isLoadInsn(earlierInsn)
+                || !AsmHelper.isThisInsn(earlierInsn)) {
+                return null;
+            }
+
+            // if the middle instruction was a getfield, then it's the
+            // field that's being accessed
+            if (!findAccessed && prevInsn.getOpcode() == Opcodes.GETFIELD) {
+                final FieldInsnNode fieldInsn = (FieldInsnNode) prevInsn;
+
+                cur = getField(meth.getDeclaringClass(), fieldInsn);
+
+                // if the middle instruction was an xload_1, then the
+                // matched instruction is the field that's being set.
+            } else if (findAccessed && AsmHelper.isLoadInsn(prevInsn)
+                    && ((VarInsnNode) prevInsn).var == 1) {
+                final FieldInsnNode fieldInsn = (FieldInsnNode)insn;
+                cur = getField(meth.getDeclaringClass(), fieldInsn);
+            } else {
+                return null;
+            }
+
+
+            if (field != null && cur != field) {
+                return null;
+            }
+            field = cur;
+        }
+
+
+        return field;
+    }
+
+    private static Field getField(Class<?> clazz, FieldInsnNode fieldInsn) {
+        try {
+            final Class<?> fieldOwner = clazz.getClassLoader().loadClass(fieldInsn.owner.replace("/", "."));
+            return fieldOwner.getDeclaredField(fieldInsn.name);
+        }
+        catch (NoSuchFieldException e) {
+            if (clazz.getSuperclass() == Object.class) {
+                throw new IllegalStateException("Cannot find field " + fieldInsn + " in Class " + clazz);
+            }
+            return getField(clazz.getSuperclass(), fieldInsn);
+        }
+        catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     /**
      * Record a violation of the property access restrictions.
@@ -4895,8 +5009,8 @@ public class PCEnhancer {
         if (args == null || args.length == 0) {
             classes = repos.getPersistentTypeNames(true, loader);
             if (classes == null) {
-            	log.warn(_loc.get("no-class-to-enhance"));
-            	return false;
+                log.warn(_loc.get("no-class-to-enhance"));
+                return false;
             }
         } else {
             ClassArgParser cap = conf.getMetaDataRepositoryInstance().
@@ -4923,8 +5037,9 @@ public class PCEnhancer {
             else
                 bc = project.loadClass((Class) o);
             enhancer = new PCEnhancer(conf, bc, repos, loader);
-            if (writer != null)
+            if (writer != null) {
                 enhancer.setBytecodeWriter(writer);
+            }
             enhancer.setDirectory(flags.directory);
             enhancer.setAddDefaultConstructor(flags.addDefaultConstructor);
             status = enhancer.run();
