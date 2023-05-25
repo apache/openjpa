@@ -683,6 +683,18 @@ public class PCEnhancer {
     }
 
     /**
+     * DELTEME
+     * Check if the fields are the same
+     * @deprecated should get removed after migration to ASM is done!
+     */
+    public static void assertSameField(Field field, BCField bcField) {
+        if (field == null && bcField != null || field != null && bcField == null ||
+                field != null && bcField != null && !field.getName().equals(bcField.getName())) {
+            throw new IllegalStateException("MSX ASMTODO " + bcField + " " + field);
+        }
+    }
+
+    /**
      * Validate that the methods that use a property-access instance are
      * written correctly. This method also gathers information on each
      * property's backing field.
@@ -694,8 +706,13 @@ public class PCEnhancer {
         else
             fmds = _meta.getDeclaredFields();
         Method meth;
-        BCMethod getter, setter;
-        BCField returned, assigned = null;
+
+        BCMethod bcGetter, bcSetter;
+        BCField bcReturned, bcAssigned = null;
+
+        Method getter, setter;
+        Field returned, assigned = null;
+
         for (FieldMetaData fmd : fmds) {
 
             if (!(fmd.getBackingMember() instanceof Method)) {
@@ -714,51 +731,61 @@ public class PCEnhancer {
             // ##### this will fail if we override and don't call super.
             BCClass declaringType = _managedType.getProject()
                     .loadClass(fmd.getDeclaringType());
-            getter = declaringType.getDeclaredMethod(meth.getName(),
+            bcGetter = declaringType.getDeclaredMethod(meth.getName(),
                     meth.getParameterTypes());
-            if (getter == null) {
+            if (bcGetter == null) {
                 addViolation("property-no-getter", new Object[]{fmd},
                         true);
                 continue;
             }
-            returned = getReturnedField_old(getter);
-            if (returned != null)
-                registerBackingFieldInfo(fmd, getter, returned);
+            bcReturned = getReturnedField_old(bcGetter);
+            returned = getReturnedField(meth);
 
-            setter = declaringType.getDeclaredMethod(getSetterName(fmd),
+            //X TODO remove
+            PCEnhancer.assertSameField(returned, bcReturned);
+
+            if (bcReturned != null) {
+                registerBackingFieldInfo(fmd, bcGetter, bcReturned);
+            }
+
+            bcSetter = declaringType.getDeclaredMethod(getSetterName(fmd),
                     new Class[]{fmd.getDeclaredType()});
-            if (setter == null) {
-                if (returned == null) {
+            if (bcSetter == null) {
+                if (bcReturned == null) {
                     addViolation("property-no-setter",
                             new Object[]{fmd}, true);
                     continue;
                 }
                 else if (!getRedefine()) {
                     // create synthetic setter
-                    setter = _managedType.declareMethod(getSetterName(fmd),
+                    bcSetter = _managedType.declareMethod(getSetterName(fmd),
                             void.class, new Class[]{fmd.getDeclaredType()});
-                    setter.makePrivate();
-                    Code code = setter.getCode(true);
+                    bcSetter.makePrivate();
+                    Code code = bcSetter.getCode(true);
                     code.aload().setThis();
                     code.xload().setParam(0);
-                    code.putfield().setField(returned);
+                    code.putfield().setField(bcReturned);
                     code.vreturn();
                     code.calculateMaxStack();
                     code.calculateMaxLocals();
                 }
             }
 
-            if (setter != null)
-                assigned = getAssignedField_old(setter);
+            if (bcSetter != null) {
+                bcAssigned = getAssignedField_old(bcSetter);
 
-            if (assigned != null) {
-                if (setter != null)
-                    registerBackingFieldInfo(fmd, setter, assigned);
+                assigned = getAssignedField(getMethod(fmd.getDeclaringType(), fmd.getSetterName(), new Class[]{fmd.getDeclaredType()}));
+                assertSameField(assigned, bcAssigned);
+            }
 
-                if (assigned != returned)
+            if (bcAssigned != null) {
+                if (bcSetter != null)
+                    registerBackingFieldInfo(fmd, bcSetter, bcAssigned);
+
+                if (bcAssigned != bcReturned)
                     addViolation("property-setter-getter-mismatch", new Object[]
-                            {fmd, assigned.getName(), (returned == null)
-                                    ? null : returned.getName()}, false);
+                            {fmd, bcAssigned.getName(), (bcReturned == null)
+                                    ? null : bcReturned.getName()}, false);
             }
         }
     }
@@ -962,8 +989,9 @@ public class PCEnhancer {
         }
 
         ClassReader cr;
-        try {
-            cr = new ClassReader(meth.getDeclaringClass().getName());
+        final String classResourceName = meth.getDeclaringClass().getName().replace(".", "/") + ".class";
+        try (final InputStream classBytesStream = meth.getDeclaringClass().getClassLoader().getResourceAsStream(classResourceName)) {
+            cr = new ClassReader(classBytesStream);
         }
         catch (IOException e) {
             throw new RuntimeException(e);
@@ -987,7 +1015,9 @@ public class PCEnhancer {
                 return null;
             }
 
-            if (prevInsn.getOpcode() == Opcodes.INSTANCEOF && prevInsn.getPrevious() != null ) {
+            // skip a few non-functional ops like instanceof and checkcast
+            if ((prevInsn.getOpcode() == Opcodes.INSTANCEOF || prevInsn.getOpcode() == Opcodes.CHECKCAST)
+                    && prevInsn.getPrevious() != null ) {
                 prevInsn = prevInsn.getPrevious();
             }
 
@@ -1010,14 +1040,14 @@ public class PCEnhancer {
             if (!findAccessed && prevInsn.getOpcode() == Opcodes.GETFIELD) {
                 final FieldInsnNode fieldInsn = (FieldInsnNode) prevInsn;
 
-                cur = getField(meth.getDeclaringClass(), fieldInsn);
+                cur = getField(meth.getDeclaringClass(), fieldInsn.name);
 
                 // if the middle instruction was an xload_1, then the
                 // matched instruction is the field that's being set.
             } else if (findAccessed && AsmHelper.isLoadInsn(prevInsn)
                     && ((VarInsnNode) prevInsn).var == 1) {
                 final FieldInsnNode fieldInsn = (FieldInsnNode)insn;
-                cur = getField(meth.getDeclaringClass(), fieldInsn);
+                cur = getField(meth.getDeclaringClass(), fieldInsn.name);
             } else {
                 return null;
             }
@@ -1033,22 +1063,29 @@ public class PCEnhancer {
         return field;
     }
 
-    private static Field getField(Class<?> clazz, FieldInsnNode fieldInsn) {
+    private static Field getField(Class<?> clazz, String fieldName) {
         try {
-            final Class<?> fieldOwner = clazz.getClassLoader().loadClass(fieldInsn.owner.replace("/", "."));
-            return fieldOwner.getDeclaredField(fieldInsn.name);
+            return clazz.getDeclaredField(fieldName);
         }
         catch (NoSuchFieldException e) {
             if (clazz.getSuperclass() == Object.class) {
-                throw new IllegalStateException("Cannot find field " + fieldInsn + " in Class " + clazz);
+                throw new IllegalStateException("Cannot find field " + fieldName + " in Class " + clazz);
             }
-            return getField(clazz.getSuperclass(), fieldInsn);
-        }
-        catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            return getField(clazz.getSuperclass(), fieldName);
         }
     }
 
+    private static Method getMethod(Class<?> clazz, String methodName, Class<?>... paramTypes) {
+        try {
+            return clazz.getDeclaredMethod(methodName, paramTypes);
+        }
+        catch (NoSuchMethodException e) {
+            if (clazz.getSuperclass() == Object.class) {
+                throw new IllegalStateException("Cannot find method " + methodName + " in Class " + clazz);
+            }
+            return getMethod(clazz.getSuperclass(), methodName);
+        }
+    }
 
     /**
      * Record a violation of the property access restrictions.

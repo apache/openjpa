@@ -205,10 +205,7 @@ public class PCSubclassValidator {
         Field field = PCEnhancer.getReturnedField(meth);
 
         //X TODO remove
-        if (field == null && bcField != null || field != null && bcField == null ||
-            field != null && bcField != null && !field.getName().equals(bcField.getName())) {
-            throw new IllegalStateException("MSX ASMTODO " + bcField + " " + field);
-        }
+        PCEnhancer.assertSameField(field, bcField);
 
         if (bcField == null) {
             addContractViolation(loc.get("subclasser-invalid-getter", fmd.getName()), fmd);
@@ -230,10 +227,7 @@ public class PCSubclassValidator {
         Field field = PCEnhancer.getAssignedField(meth);
 
         //X TODO remove
-        if (field == null && bcField != null || field != null && bcField == null ||
-                field != null && bcField != null && !field.getName().equals(bcField.getName())) {
-            throw new IllegalStateException("MSX ASMTODO " + bcField + " " + field);
-        }
+        PCEnhancer.assertSameField(field, bcField);
 
         if (bcField == null) {
             addContractViolation(loc.get("subclasser-invalid-setter", fmd.getName()), fmd);
