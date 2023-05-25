@@ -24,9 +24,9 @@ import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.common.apps.Department;
 import org.apache.openjpa.persistence.common.apps.RuntimeTest2;
-import org.apache.openjpa.enhance.UnenhancedPropertyAccess;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-import org.apache.openjpa.util.UserException;
+import org.apache.openjpa.util.asm.AsmHelper;
+import org.apache.xbean.asm9.tree.ClassNode;
 import org.junit.Test;
 
 import jakarta.persistence.Access;
@@ -34,6 +34,7 @@ import jakarta.persistence.AccessType;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 import serp.bytecode.BCClass;
 import serp.bytecode.Project;
 
@@ -43,7 +44,7 @@ public class TestSubclassValidator extends SingleEMFTestCase {
         setUp("openjpa.RuntimeUnenhancedClasses", "supported",
                 Department.class,
                 RuntimeTest2.class,
-                EnhancableGetterEntity.class,
+                EnhanceableGetterEntity.class,
                 UnenhancedPropertyAccess.class,
                 CLEAR_TABLES);
     }
@@ -80,29 +81,31 @@ public class TestSubclassValidator extends SingleEMFTestCase {
 */
 
         {
-            final BCClass bcClass = project.loadClass(EnhancableGetterEntity.class.getName(), tempCl);
-            final ClassMetaData meta = repos.getMetaData(tempCl.loadClass(EnhancableGetterEntity.class.getName()), tempCl, false);
-            PCSubclassValidator subclassValidator = new PCSubclassValidator(meta, bcClass, log, true);
+            ClassNode classNode = AsmHelper.readClassNode(EnhanceableGetterEntity.class.getClassLoader(), EnhanceableGetterEntity.class.getName());
+            final BCClass bcClass = project.loadClass(EnhanceableGetterEntity.class.getName(), tempCl);
+            final ClassMetaData meta = repos.getMetaData(tempCl.loadClass(EnhanceableGetterEntity.class.getName()), tempCl, false);
+            PCSubclassValidator subclassValidator = new PCSubclassValidator(meta, classNode, bcClass, log, true);
             subclassValidator.assertCanSubclass();
         }
 
         {
+            ClassNode classNode = AsmHelper.readClassNode(UnenhancedPropertyAccess.class.getClassLoader(), UnenhancedPropertyAccess.class.getName());
             final BCClass bcClass = project.loadClass(UnenhancedPropertyAccess.class.getName(), tempCl);
             final ClassMetaData meta = repos.getMetaData(tempCl.loadClass(UnenhancedPropertyAccess.class.getName()), tempCl, false);
-            PCSubclassValidator subclassValidator = new PCSubclassValidator(meta, bcClass, log, true);
+            PCSubclassValidator subclassValidator = new PCSubclassValidator(meta, classNode, bcClass, log, true);
             subclassValidator.assertCanSubclass();
         }
     }
 
     @Entity
     @Access(AccessType.PROPERTY)
-    public static class EnhancableGetterEntity {
+    public static class EnhanceableGetterEntity {
 
         @Id
         private String id;
 
         @Basic
-        private String name;
+        protected String name;
 
         @Basic
         private String another;

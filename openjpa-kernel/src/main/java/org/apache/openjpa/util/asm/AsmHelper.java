@@ -17,6 +17,8 @@
 package org.apache.openjpa.util.asm;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 
 import org.apache.xbean.asm9.ClassReader;
@@ -24,6 +26,7 @@ import org.apache.xbean.asm9.ClassWriter;
 import org.apache.xbean.asm9.Opcodes;
 import org.apache.xbean.asm9.Type;
 import org.apache.xbean.asm9.tree.AbstractInsnNode;
+import org.apache.xbean.asm9.tree.ClassNode;
 import org.apache.xbean.asm9.tree.VarInsnNode;
 
 import serp.bytecode.BCClass;
@@ -37,6 +40,41 @@ import serp.bytecode.Project;
 public final class AsmHelper {
     private AsmHelper() {
         // utility class ct
+    }
+
+
+    /**
+     * Read the binary bytecode from the class with the given name
+     * @param classBytes the binary of the class
+     * @return the ClassNode constructed from that class
+     */
+    public static ClassNode readClassNode(byte[] classBytes) {
+        ClassReader cr = new ClassReader(classBytes);
+        ClassNode classNode = new ClassNode();
+        cr.accept(classNode, 0);
+
+        return classNode;
+    }
+
+    /**
+     * Read the binary bytecode from the class with the given name
+     * @param classLoader the ClassLoader to use
+     * @param className the fully qualified class name to read. e.g. "org.mycorp.mypackage.MyEntity"
+     * @return the ClassNode constructed from that class
+     */
+    public static ClassNode readClassNode(ClassLoader classLoader, String className) {
+        ClassReader cr;
+        final String classResourceName = className.replace(".", "/") + ".class";
+        try (final InputStream classBytesStream = classLoader.getResourceAsStream(classResourceName)) {
+            cr = new ClassReader(classBytesStream);
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        ClassNode classNode = new ClassNode();
+        cr.accept(classNode, 0);
+
+        return classNode;
     }
 
     /**

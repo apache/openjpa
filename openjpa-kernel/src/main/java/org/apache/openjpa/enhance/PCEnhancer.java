@@ -97,7 +97,6 @@ import org.apache.openjpa.util.StringId;
 import org.apache.openjpa.util.UserException;
 import org.apache.openjpa.util.asm.AsmHelper;
 import org.apache.openjpa.util.asm.ClassWriterTracker;
-import org.apache.xbean.asm9.ClassReader;
 import org.apache.xbean.asm9.Opcodes;
 import org.apache.xbean.asm9.Type;
 import org.apache.xbean.asm9.tree.AbstractInsnNode;
@@ -225,9 +224,9 @@ public class PCEnhancer {
     private Set _violations = null;
     private File _dir = null;
     private BytecodeWriter _writer = null;
-    private Map _backingFields = null; // map of set / get names => field names
-    private Map _attrsToFields = null; // map of attr names => field names
-    private Map _fieldsToAttrs = null; // map of field names => attr names
+    private Map<String, String> _backingFields = null; // map of set / get names => field names
+    private Map<String, String> _attrsToFields = null; // map of attr names => field names
+    private Map<String, String> _fieldsToAttrs = null; // map of field names => attr names
     private boolean _isAlreadyRedefined = false;
     private boolean _isAlreadySubclassed = false;
     private boolean _bcsConfigured = false;
@@ -573,12 +572,14 @@ public class PCEnhancer {
                 _log.trace(_loc.get("enhance-start", type));
             }
 
-            configureBCs();
+            final ClassNode classNode = AsmHelper.readClassNode(_managedType.toByteArray());
+
+            configureBCs(classNode);
 
             // validate properties before replacing field access so that
             // we build up a record of backing fields, etc
             if (isPropertyAccess(_meta)) {
-                validateProperties();
+                validateProperties(classNode);
                 if (getCreateSubclass()) {
                     addAttributeTranslation();
                 }
@@ -607,22 +608,21 @@ public class PCEnhancer {
         }
     }
 
-    private void configureBCs() {
+    private void configureBCs(final ClassNode classNode) {
         if (!_bcsConfigured) {
             if (getRedefine()) {
-                if (_managedType.getAttribute(REDEFINED_ATTRIBUTE) == null)
+                if (_managedType.getAttribute(REDEFINED_ATTRIBUTE) == null) {
                     _managedType.addAttribute(REDEFINED_ATTRIBUTE);
-                else
+                } else {
                     _isAlreadyRedefined = true;
+                }
             }
 
             if (getCreateSubclass()) {
-                PCSubclassValidator val = new PCSubclassValidator(
-                    _meta, _managedType, _log, _fail);
+                PCSubclassValidator val = new PCSubclassValidator(_meta, classNode, _managedType, _log, _fail);
                 val.assertCanSubclass();
 
-                _pc = _managedType.getProject().loadClass(
-                    toPCSubclassName(_managedType.getType()));
+                _pc = _managedType.getProject().loadClass(toPCSubclassName(_managedType.getType()));
                 if (_pc.getSuperclassBC() != _managedType) {
                     _pc.setSuperclass(_managedType);
                     _pc.setAbstract(_managedType.isAbstract());
@@ -699,12 +699,14 @@ public class PCEnhancer {
      * written correctly. This method also gathers information on each
      * property's backing field.
      */
-    private void validateProperties() {
+    private void validateProperties(ClassNode classNode) {
         FieldMetaData[] fmds;
-        if (getCreateSubclass())
+        if (getCreateSubclass()) {
             fmds = _meta.getFields();
-        else
+        }
+        else {
             fmds = _meta.getDeclaredFields();
+        }
         Method meth;
 
         BCMethod bcGetter, bcSetter;
@@ -728,6 +730,7 @@ public class PCEnhancer {
             }
 
             meth = (Method) fmd.getBackingMember();
+
             // ##### this will fail if we override and don't call super.
             BCClass declaringType = _managedType.getProject()
                     .loadClass(fmd.getDeclaringType());
@@ -739,12 +742,13 @@ public class PCEnhancer {
                 continue;
             }
             bcReturned = getReturnedField_old(bcGetter);
-            returned = getReturnedField(meth);
+            getter = meth;
+            returned = getReturnedField(classNode, getter);
 
             //X TODO remove
             PCEnhancer.assertSameField(returned, bcReturned);
 
-            if (bcReturned != null) {
+            if (returned != null) {
                 registerBackingFieldInfo(fmd, bcGetter, bcReturned);
             }
 
@@ -774,7 +778,7 @@ public class PCEnhancer {
             if (bcSetter != null) {
                 bcAssigned = getAssignedField_old(bcSetter);
 
-                assigned = getAssignedField(getMethod(fmd.getDeclaringType(), fmd.getSetterName(), new Class[]{fmd.getDeclaredType()}));
+                assigned = getAssignedField(classNode, getMethod(fmd.getDeclaringType(), fmd.getSetterName(), new Class[]{fmd.getDeclaredType()}));
                 assertSameField(assigned, bcAssigned);
             }
 
@@ -790,18 +794,20 @@ public class PCEnhancer {
         }
     }
 
-    private void registerBackingFieldInfo(FieldMetaData fmd, BCMethod method,
-        BCField field) {
-        if (_backingFields == null)
+    private void registerBackingFieldInfo(FieldMetaData fmd, BCMethod method, BCField field) {
+        if (_backingFields == null) {
             _backingFields = new HashMap();
+        }
         _backingFields.put(method.getName(), field.getName());
 
-        if (_attrsToFields == null)
+        if (_attrsToFields == null) {
             _attrsToFields = new HashMap();
+        }
         _attrsToFields.put(fmd.getName(), field.getName());
 
-        if (_fieldsToAttrs == null)
+        if (_fieldsToAttrs == null) {
             _fieldsToAttrs = new HashMap();
+        }
         _fieldsToAttrs.put(field.getName(), fmd.getName());
     }
 
@@ -886,13 +892,14 @@ public class PCEnhancer {
      * Return the field returned by the given method, or null if none.
      * Package-protected and static for testing.
      */
+    @Deprecated
     static BCField getReturnedField_old(BCMethod meth) {
         return findField_old(meth, new Code().xreturn()
             .setType(meth.getReturnType()), false);
     }
 
-    static Field getReturnedField(Method meth) {
-        return findField(meth, (ain) -> ain.getOpcode() == AsmHelper.getReturnInsn(meth.getReturnType()), false);
+    static Field getReturnedField(ClassNode classNode, Method meth) {
+        return findField(classNode, meth, (ain) -> ain.getOpcode() == AsmHelper.getReturnInsn(meth.getReturnType()), false);
     }
 
 
@@ -900,13 +907,14 @@ public class PCEnhancer {
      * Return the field assigned in the given method, or null if none.
      * Package-protected and static for testing.
      */
+    @Deprecated
     static BCField getAssignedField_old(BCMethod meth) {
         return findField_old(meth, (AccessController.doPrivileged(
             J2DoPrivHelper.newCodeAction())).putfield(), true);
     }
 
-    static Field getAssignedField(Method meth) {
-        return findField(meth, (ain) -> ain.getOpcode() == Opcodes.PUTFIELD, true);
+    static Field getAssignedField(ClassNode classNode, Method meth) {
+        return findField(classNode, meth, (ain) -> ain.getOpcode() == Opcodes.PUTFIELD, true);
     }
 
     /**
@@ -914,6 +922,7 @@ public class PCEnhancer {
      * null if non-fields (methods, literals, parameters, variables) are
      * returned, or if non-parameters are assigned to fields.
      */
+    @Deprecated
     private static BCField findField_old(BCMethod meth, Instruction template, boolean findAccessed) {
         // ignore any static methods. OpenJPA only currently supports
         // non-static setters and getters
@@ -980,24 +989,17 @@ public class PCEnhancer {
         return field;
     }
 
-
-    private static Field findField(Method meth, Predicate<AbstractInsnNode> ain, boolean findAccessed) {
+    private static Field findField(ClassNode classNode, Method meth, Predicate<AbstractInsnNode> ain, boolean findAccessed) {
         // ignore any static methods. OpenJPA only currently supports
         // non-static setters and getters
         if (Modifier.isStatic(meth.getModifiers())) {
             return null;
         }
 
-        ClassReader cr;
-        final String classResourceName = meth.getDeclaringClass().getName().replace(".", "/") + ".class";
-        try (final InputStream classBytesStream = meth.getDeclaringClass().getClassLoader().getResourceAsStream(classResourceName)) {
-            cr = new ClassReader(classBytesStream);
+        if (meth.getDeclaringClass().isInterface()) {
+            return null;
         }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        ClassNode classNode = new ClassNode();
-        cr.accept(classNode, 0);
+
         final MethodNode methodNode = classNode.methods.stream()
                 .filter(mn -> mn.name.equals(meth.getName()) && mn.desc.equals(Type.getMethodDescriptor(meth)))
                 .findAny().get();
@@ -3437,7 +3439,7 @@ public class PCEnhancer {
 
     /**
      * Adds a custom readObject method that delegates to the
-     * {@link ObjectInputStream#readObject} method.
+     * {@link ObjectInputStream#readObject()} method.
      */
     private void modifyReadObjectMethod(BCMethod method, boolean full) {
         Code code = method.getCode(true);
@@ -4935,7 +4937,7 @@ public class PCEnhancer {
      * <ul>
      * <li><i>-properties/-p &lt;properties file&gt;</i>: The path to a OpenJPA
      * properties file containing information as outlined in
-     * {@link Configuration}; optional.</li>
+     * {@link org.apache.openjpa.lib.conf.Configuration}; optional.</li>
      * <li><i>-&lt;property name&gt; &lt;property value&gt;</i>: All bean
      * properties of the standard OpenJPA {@link OpenJPAConfiguration} can be
      * set by using their names and supplying a value; for example:

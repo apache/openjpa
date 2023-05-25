@@ -27,6 +27,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
@@ -36,6 +37,7 @@ import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.util.UserException;
+import org.apache.xbean.asm9.tree.ClassNode;
 
 import serp.bytecode.BCClass;
 import serp.bytecode.BCField;
@@ -83,6 +85,7 @@ public class PCSubclassValidator {
             Localizer.forPackage(PCSubclassValidator.class);
 
     private final ClassMetaData meta;
+    private final ClassNode classNode;
     private final BCClass bc;
     private final Log log;
     private final boolean failOnContractViolations;
@@ -90,9 +93,10 @@ public class PCSubclassValidator {
     private Collection errors;
     private Collection contractViolations;
 
-    public PCSubclassValidator(ClassMetaData meta, BCClass bc, Log log,
+    public PCSubclassValidator(ClassMetaData meta, ClassNode classNode, BCClass bc, Log log,
                                boolean enforceContractViolations) {
         this.meta = meta;
+        this.classNode = classNode;
         this.bc = bc;
         this.log = log;
         this.failOnContractViolations = enforceContractViolations;
@@ -148,7 +152,7 @@ public class PCSubclassValidator {
                                  fmd.getName()), fmd);
                 continue;
             }
-            BCField returnedField = checkGetterIsSubclassable(getter, fmd);
+            Field returnedField = checkGetterIsSubclassable(getter, fmd);
 
             Method setter = setterForField(fmd);
             if (setter == null) {
@@ -156,12 +160,12 @@ public class PCSubclassValidator {
                          fmd);
                 continue;
             }
-            BCField assignedField = checkSetterIsSubclassable(setter, fmd);
+            Field assignedField = checkSetterIsSubclassable(setter, fmd);
             if (assignedField == null) {
                 continue;
             }
 
-            if (assignedField != returnedField) {
+            if (!Objects.equals(assignedField, returnedField)) {
                 addContractViolation(loc.get("subclasser-setter-getter-field-mismatch",
                                              fmd.getName(), returnedField, assignedField),
                                      fmd);
@@ -199,20 +203,20 @@ public class PCSubclassValidator {
      * <code>null</code> if something other than a single field is
      * returned, or if it cannot be determined what is returned.
      */
-    private BCField checkGetterIsSubclassable(Method meth, FieldMetaData fmd) {
+    private Field checkGetterIsSubclassable(Method meth, FieldMetaData fmd) {
         checkMethodIsSubclassable(meth, fmd);
         BCField bcField = PCEnhancer.getReturnedField_old(getBCMethod(meth));
-        Field field = PCEnhancer.getReturnedField(meth);
+        Field field = PCEnhancer.getReturnedField(classNode, meth);
 
         //X TODO remove
         PCEnhancer.assertSameField(field, bcField);
 
-        if (bcField == null) {
+        if (field == null) {
             addContractViolation(loc.get("subclasser-invalid-getter", fmd.getName()), fmd);
             return null;
         }
         else {
-            return bcField;
+            return field;
         }
     }
 
@@ -221,20 +225,20 @@ public class PCSubclassValidator {
      * <code>null</code> if something other than a single field is
      * set, or if it cannot be determined what is set.
      */
-    private BCField checkSetterIsSubclassable(Method meth, FieldMetaData fmd) {
+    private Field checkSetterIsSubclassable(Method meth, FieldMetaData fmd) {
         checkMethodIsSubclassable(meth, fmd);
         BCField bcField = PCEnhancer.getAssignedField_old(getBCMethod(meth));
-        Field field = PCEnhancer.getAssignedField(meth);
+        Field field = PCEnhancer.getAssignedField(classNode, meth);
 
         //X TODO remove
         PCEnhancer.assertSameField(field, bcField);
 
-        if (bcField == null) {
+        if (field == null) {
             addContractViolation(loc.get("subclasser-invalid-setter", fmd.getName()), fmd);
             return null;
         }
         else {
-            return bcField;
+            return field;
         }
     }
 
