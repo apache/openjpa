@@ -619,7 +619,7 @@ public class PCEnhancer {
             }
 
             if (getCreateSubclass()) {
-                PCSubclassValidator val = new PCSubclassValidator(_meta, classNode, _managedType, _log, _fail);
+                PCSubclassValidator val = new PCSubclassValidator(_meta, classNode, _log, _fail);
                 val.assertCanSubclass();
 
                 _pc = _managedType.getProject().loadClass(toPCSubclassName(_managedType.getType()));

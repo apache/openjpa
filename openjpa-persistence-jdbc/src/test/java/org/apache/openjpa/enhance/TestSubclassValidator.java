@@ -34,7 +34,6 @@ import jakarta.persistence.AccessType;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
 import serp.bytecode.BCClass;
 import serp.bytecode.Project;
 
@@ -84,7 +83,7 @@ public class TestSubclassValidator extends SingleEMFTestCase {
             ClassNode classNode = AsmHelper.readClassNode(EnhanceableGetterEntity.class.getClassLoader(), EnhanceableGetterEntity.class.getName());
             final BCClass bcClass = project.loadClass(EnhanceableGetterEntity.class.getName(), tempCl);
             final ClassMetaData meta = repos.getMetaData(tempCl.loadClass(EnhanceableGetterEntity.class.getName()), tempCl, false);
-            PCSubclassValidator subclassValidator = new PCSubclassValidator(meta, classNode, bcClass, log, true);
+            PCSubclassValidator subclassValidator = new PCSubclassValidator(meta, classNode, log, true);
             subclassValidator.assertCanSubclass();
         }
 
@@ -92,7 +91,7 @@ public class TestSubclassValidator extends SingleEMFTestCase {
             ClassNode classNode = AsmHelper.readClassNode(UnenhancedPropertyAccess.class.getClassLoader(), UnenhancedPropertyAccess.class.getName());
             final BCClass bcClass = project.loadClass(UnenhancedPropertyAccess.class.getName(), tempCl);
             final ClassMetaData meta = repos.getMetaData(tempCl.loadClass(UnenhancedPropertyAccess.class.getName()), tempCl, false);
-            PCSubclassValidator subclassValidator = new PCSubclassValidator(meta, classNode, bcClass, log, true);
+            PCSubclassValidator subclassValidator = new PCSubclassValidator(meta, classNode, log, true);
             subclassValidator.assertCanSubclass();
         }
     }
