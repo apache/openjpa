@@ -103,6 +103,7 @@ import org.apache.xbean.asm9.Type;
 import org.apache.xbean.asm9.tree.AbstractInsnNode;
 import org.apache.xbean.asm9.tree.ClassNode;
 import org.apache.xbean.asm9.tree.FieldInsnNode;
+import org.apache.xbean.asm9.tree.FieldNode;
 import org.apache.xbean.asm9.tree.InsnNode;
 import org.apache.xbean.asm9.tree.LdcInsnNode;
 import org.apache.xbean.asm9.tree.MethodInsnNode;
@@ -582,8 +583,13 @@ public class PCEnhancer {
             processViolations();
 
             if (_meta != null) {
-                enhanceClass();
-                addFields();
+                final ClassNodeTracker classNodeTracker = AsmHelper.toClassNode(_pc);
+
+                enhanceClass(classNodeTracker);
+                addFields(classNodeTracker);
+
+                AsmHelper.readIntoBCClass(classNodeTracker, _pc);
+
                 addStaticInitializer();
                 addPCMethods();
                 addAccessors();
@@ -3068,8 +3074,7 @@ public class PCEnhancer {
      * enhanced, and adds a default constructor for use by OpenJPA
      * if it is not already present.
      */
-    private void enhanceClass() {
-        final ClassNodeTracker classNodeTracker = AsmHelper.toClassNode(_pc);
+    private void enhanceClass(final ClassNodeTracker classNodeTracker) {
 
         // make the class implement PersistenceCapable
         final ClassNode classNode = classNodeTracker.getClassNode();
@@ -3117,7 +3122,6 @@ public class PCEnhancer {
             }
 
         }
-        AsmHelper.readIntoBCClass(classNodeTracker, _pc);
     }
 
     /**
@@ -3133,22 +3137,27 @@ public class PCEnhancer {
      * if no PersistenceCapable superclass present)</li>
      * </ul>
      */
-    private void addFields() {
-        _pc.declareField(INHERIT, int.class).setStatic(true);
-        _pc.declareField(PRE + "FieldNames", String[].class).setStatic(true);
-        _pc.declareField(PRE + "FieldTypes", Class[].class).setStatic(true);
-        _pc.declareField(PRE + "FieldFlags", byte[].class).setStatic(true);
-        _pc.declareField(SUPER, Class.class).setStatic(true);
+    private void addFields(ClassNodeTracker classNodeTracker) {
+        final ClassNode classNode = classNodeTracker.getClassNode();
+
+        classNode.fields.add(new FieldNode(Opcodes.ACC_PRIVATE | Opcodes.ACC_STATIC,
+                                           INHERIT, Type.getDescriptor(int.class), null, null));
+        classNode.fields.add(new FieldNode(Opcodes.ACC_PRIVATE | Opcodes.ACC_STATIC,
+                                           PRE + "FieldNames", Type.getDescriptor(String[].class), null, null));
+        classNode.fields.add(new FieldNode(Opcodes.ACC_PRIVATE | Opcodes.ACC_STATIC,
+                                           PRE + "FieldTypes", Type.getDescriptor(Class[].class), null, null));
+        classNode.fields.add(new FieldNode(Opcodes.ACC_PRIVATE | Opcodes.ACC_STATIC,
+                                           PRE + "FieldFlags", Type.getDescriptor(byte[].class), null, null));
+        classNode.fields.add(new FieldNode(Opcodes.ACC_PRIVATE | Opcodes.ACC_STATIC,
+                                           SUPER, Type.getDescriptor(Class.class), null, null));
+
         if (_addVersionInitFlag && _meta.getVersionField() != null) {
-            // protected transient boolean pcVersionInit;
-            BCField field = _pc.declareField(VERSION_INIT_STR, boolean.class);
-            field.makeProtected();
-            field.setTransient(true);
+            classNode.fields.add(new FieldNode(Opcodes.ACC_PROTECTED | Opcodes.ACC_TRANSIENT,
+                                               VERSION_INIT_STR, Type.getDescriptor(boolean.class), null, null));
         }
         if (_meta.getPCSuperclass() == null || getCreateSubclass()) {
-            BCField field = _pc.declareField(SM, SMTYPE);
-            field.makeProtected();
-            field.setTransient(true);
+            classNode.fields.add(new FieldNode(Opcodes.ACC_PROTECTED | Opcodes.ACC_TRANSIENT,
+                                               SM, Type.getDescriptor(SMTYPE), null, null));
         }
     }
 
