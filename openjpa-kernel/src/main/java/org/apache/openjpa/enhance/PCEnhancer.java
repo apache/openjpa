@@ -96,12 +96,15 @@ import org.apache.openjpa.util.ShortId;
 import org.apache.openjpa.util.StringId;
 import org.apache.openjpa.util.UserException;
 import org.apache.openjpa.util.asm.AsmHelper;
+import org.apache.openjpa.util.asm.ClassNodeTracker;
 import org.apache.openjpa.util.asm.ClassWriterTracker;
 import org.apache.xbean.asm9.Opcodes;
 import org.apache.xbean.asm9.Type;
 import org.apache.xbean.asm9.tree.AbstractInsnNode;
 import org.apache.xbean.asm9.tree.ClassNode;
 import org.apache.xbean.asm9.tree.FieldInsnNode;
+import org.apache.xbean.asm9.tree.InsnNode;
+import org.apache.xbean.asm9.tree.LdcInsnNode;
 import org.apache.xbean.asm9.tree.MethodNode;
 import org.apache.xbean.asm9.tree.VarInsnNode;
 
@@ -289,8 +292,7 @@ public class PCEnhancer {
      * @param loader the environment classloader to use for loading
      * classes and resources.
      */
-    public PCEnhancer(OpenJPAConfiguration conf, BCClass type,
-        MetaDataRepository repos, ClassLoader loader) {
+    public PCEnhancer(OpenJPAConfiguration conf, BCClass type, MetaDataRepository repos, ClassLoader loader) {
         _managedType = type;
         _pc = type;
 
@@ -326,8 +328,7 @@ public class PCEnhancer {
      *
      * @since 1.1.0
      */
-    public PCEnhancer(MetaDataRepository repos, BCClass type,
-        ClassMetaData meta) {
+    public PCEnhancer(MetaDataRepository repos, BCClass type, ClassMetaData meta) {
         _managedType = type;
         _pc = type;
 
@@ -371,14 +372,6 @@ public class PCEnhancer {
         }
 
         return className;
-    }
-
-    /**
-     * Constructor. Supply configuration, type, and metadata.
-     */
-    public PCEnhancer(OpenJPAConfiguration conf, BCClass type,
-        ClassMetaData meta) {
-        this(conf, type, meta.getRepository());
     }
 
     /**
@@ -3076,10 +3069,17 @@ public class PCEnhancer {
      */
     private void enhanceClass() {
         // make the class implement PersistenceCapable
-        _pc.declareInterface(PCTYPE);
+        //_pc.declareInterface(PCTYPE);
+
+        final ClassNodeTracker classNodeTracker = AsmHelper.toClassNode(_pc);
+
+        // make the class implement PersistenceCapable
+        classNodeTracker.getClassNode().interfaces.add(Type.getInternalName(PCTYPE));
 
         // add a version stamp
-        addGetEnhancementContractVersionMethod();
+        addGetEnhancementContractVersionMethod(classNodeTracker);
+
+         AsmHelper.readIntoBCClass(classNodeTracker, _pc);
 
         // find the default constructor
         BCMethod method = _pc.getDeclaredMethod("<init>", (String[]) null);
@@ -4893,6 +4893,17 @@ public class PCEnhancer {
         return setter;
     }
 
+    private void addGetEnhancementContractVersionMethod(ClassNodeTracker cnt) {
+        MethodNode methodNode = new MethodNode(Opcodes.ACC_PUBLIC,
+                                               PRE + "GetEnhancementContractVersion",
+                                               Type.getMethodDescriptor(Type.INT_TYPE),
+                                               null, null);
+        methodNode.instructions.add(new LdcInsnNode(ENHANCER_VERSION));
+        methodNode.instructions.add(new InsnNode(Opcodes.IRETURN));
+        cnt.getClassNode().methods.add(methodNode);
+    }
+
+    @Deprecated //X TODO REMOVE
     private void addGetEnhancementContractVersionMethod() {
         // public int getEnhancementContractVersion()
         BCMethod method = _pc.declareMethod(PRE +

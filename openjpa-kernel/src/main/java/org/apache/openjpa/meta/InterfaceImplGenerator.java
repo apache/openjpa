@@ -124,7 +124,7 @@ class InterfaceImplGenerator {
                 iface)).setFatal(true);
         try {
             // load the Class<?> for real.
-            impl = Class.forName(bc.getName(), true, enhLoader);
+            impl = Class.forName(enhancer.getPCBytecode().getName(), true, enhLoader);
         } catch (Throwable t) {
             throw new InternalException(_loc.get("interface-load2", iface,
                 enhLoader), t).setFatal(true);

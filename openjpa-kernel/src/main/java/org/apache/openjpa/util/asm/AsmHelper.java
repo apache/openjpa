@@ -19,6 +19,7 @@ package org.apache.openjpa.util.asm;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.apache.xbean.asm9.ClassReader;
@@ -78,7 +79,7 @@ public final class AsmHelper {
     }
 
     /**
-     * temporary helper class to convert BCClass to ASM
+     * temporary helper class to convert BCClass to ASM ClassWriter
      * @deprecated must get removed when done with migrating from Serp to ASM
      */
     public static ClassWriterTracker toClassWriter(BCClass bcClass) {
@@ -102,10 +103,44 @@ public final class AsmHelper {
         return bcClass;
     }
 
+    /**
+     * temporary helper class to convert BCClass to ASM ClassNode
+     * @deprecated must get removed when done with migrating from Serp to ASM
+     */
+    public static ClassNodeTracker toClassNode(BCClass bcClass) {
+        ClassReader cr = new ClassReader(bcClass.toByteArray());
+        ClassNode classNode = new ClassNode(Opcodes.ASM9);
+        cr.accept(classNode, 0);
+
+        return new ClassNodeTracker(classNode, bcClass.getClassLoader());
+    }
+
+    /**
+     * Take the changes from ClassNodeTracker and read it into the given BCClass instance.
+     * Effectively replace all the content of BCClass with the content from our ClassNode
+     */
+    public static void readIntoBCClass(ClassNodeTracker cnt, BCClass bcClass) {
+
+        // sadly package scoped
+        try {
+            Method readMethod = BCClass.class.getDeclaredMethod("read", InputStream.class, ClassLoader.class);
+
+            ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+            cnt.getClassNode().accept(cw);
+            final byte[] classBytes = cw.toByteArray();
+            ByteArrayInputStream bais = new ByteArrayInputStream(classBytes);
+
+            readMethod.setAccessible(true);
+            readMethod.invoke(bcClass, bais, bcClass.getClassLoader());
+        }
+        catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * Calclates the proper Return instruction opcode for the given class
-     * 
+     *
      * @param type the type to get returned
      * @return the proper Opcode RETURN, ARETURN, IRETURN, etc
      */

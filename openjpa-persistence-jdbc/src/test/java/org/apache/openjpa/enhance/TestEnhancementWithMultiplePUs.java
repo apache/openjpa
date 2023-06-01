@@ -56,7 +56,8 @@ public class TestEnhancementWithMultiplePUs
         PCEnhancer enhancer = new PCEnhancer(conf, bc, repos, loader);
 
         assertEquals(PCEnhancer.ENHANCE_PC, enhancer.run());
-        assertTrue(Arrays.asList(bc.getInterfaceNames()).contains(
+
+        assertTrue(Arrays.asList(enhancer.getPCBytecode().getInterfaceNames()).contains(
             PersistenceCapable.class.getName()));
     }
 
