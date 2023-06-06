@@ -50,6 +50,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -104,6 +105,7 @@ import org.apache.xbean.asm9.tree.AbstractInsnNode;
 import org.apache.xbean.asm9.tree.ClassNode;
 import org.apache.xbean.asm9.tree.FieldInsnNode;
 import org.apache.xbean.asm9.tree.FieldNode;
+import org.apache.xbean.asm9.tree.InsnList;
 import org.apache.xbean.asm9.tree.InsnNode;
 import org.apache.xbean.asm9.tree.LdcInsnNode;
 import org.apache.xbean.asm9.tree.MethodInsnNode;
@@ -583,15 +585,17 @@ public class PCEnhancer {
             processViolations();
 
             if (_meta != null) {
-                final ClassNodeTracker classNodeTracker = AsmHelper.toClassNode(_pc);
+                ClassNodeTracker classNodeTracker = AsmHelper.toClassNode(_pc);
 
                 enhanceClass(classNodeTracker);
                 addFields(classNodeTracker);
-
+                //X TODO finish addStaticInitializer(classNodeTracker);
                 AsmHelper.readIntoBCClass(classNodeTracker, _pc);
-
                 addStaticInitializer();
-                addPCMethods();
+
+                classNodeTracker = AsmHelper.toClassNode(_pc);
+                addPCMethods(classNodeTracker);
+
                 addAccessors();
                 addAttachDetachCode();
                 addSerializationCode();
@@ -1332,9 +1336,11 @@ public class PCEnhancer {
      * <code>pcFetchObjectId</code>, etc are defined only in the
      * least-derived PersistenceCapable type.
      */
-    private void addPCMethods()
-        throws NoSuchMethodException {
-        addClearFieldsMethod();
+    private void addPCMethods(ClassNodeTracker classNodeTracker) throws NoSuchMethodException {
+        //X addClearFieldsMethod();
+        addClearFieldsMethod(classNodeTracker.getClassNode());
+        AsmHelper.readIntoBCClass(classNodeTracker, _pc);
+
         addNewInstanceMethod(true);
         addNewInstanceMethod(false);
         addManagedFieldCountMethod();
@@ -1378,62 +1384,60 @@ public class PCEnhancer {
             addGetIDOwningClass();
         }
     }
-
+    
     /**
      * Add a method to clear all persistent fields; we'll call this from
      * the new instance method to ensure that unloaded fields have
      * default values.
      */
-    private void addClearFieldsMethod()
-        throws NoSuchMethodException {
+    private void addClearFieldsMethod(ClassNode classNode) throws NoSuchMethodException {
         // protected void pcClearFields ()
-        BCMethod method = _pc.declareMethod(PRE + "ClearFields", void.class,
-            null);
-        method.makeProtected();
-        Code code = method.getCode(true);
+        MethodNode clearFieldMethod = new MethodNode(Opcodes.ACC_PROTECTED,
+                                                     PRE + "ClearFields",
+                                                     Type.getMethodDescriptor(Type.VOID_TYPE),
+                                                     null, null);
 
-        // super.pcClearFields ()
+        final InsnList instructions = clearFieldMethod.instructions;
         if (_meta.getPCSuperclass() != null && !getCreateSubclass()) {
-            code.aload().setThis();
-            code.invokespecial().setMethod(getType(_meta.
-                getPCSuperclassMetaData()), PRE + "ClearFields", void.class,
-                null);
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 0));
+            instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
+                                                Type.getInternalName(getType(_meta.getPCSuperclassMetaData())),
+                                                PRE + "ClearFields",
+                                                Type.getMethodDescriptor(Type.VOID_TYPE)));
         }
 
         FieldMetaData[] fmds = _meta.getDeclaredFields();
         for (FieldMetaData fmd : fmds) {
-            if (fmd.getManagement() != FieldMetaData.MANAGE_PERSISTENT)
+            if (fmd.getManagement() != FieldMetaData.MANAGE_PERSISTENT) {
                 continue;
-
-            loadManagedInstance(code, false);
+            }
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 0));
             switch (fmd.getDeclaredTypeCode()) {
                 case JavaTypes.BOOLEAN:
                 case JavaTypes.BYTE:
                 case JavaTypes.CHAR:
                 case JavaTypes.INT:
                 case JavaTypes.SHORT:
-                    code.constant().setValue(0);
+                    instructions.add(getSetValueInsns(classNode, fmd, 0));
                     break;
                 case JavaTypes.DOUBLE:
-                    code.constant().setValue(0D);
+                    instructions.add(getSetValueInsns(classNode, fmd, 0D));
                     break;
                 case JavaTypes.FLOAT:
-                    code.constant().setValue(0F);
+                    instructions.add(getSetValueInsns(classNode, fmd, 0F));
                     break;
                 case JavaTypes.LONG:
-                    code.constant().setValue(0L);
+                    instructions.add(getSetValueInsns(classNode, fmd, 0L));
                     break;
                 default:
-                    code.constant().setNull();
+                    instructions.add(getSetValueInsns(classNode, fmd, null));
                     break;
             }
-
-            addSetManagedValueCode(code, fmd);
         }
+        instructions.add(new InsnNode(Opcodes.RETURN));
 
-        code.vreturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
+        classNode.methods.add(clearFieldMethod);
+
     }
 
     /**
@@ -3161,11 +3165,7 @@ public class PCEnhancer {
         }
     }
 
-    /**
-     * Modifies the class initialization method (creating one if necessary)
-     * to initialize the static fields of the PersistenceCapable instance and
-     * to register it with the impl helper.
-     */
+    @Deprecated
     private void addStaticInitializer() {
         Code code = getOrCreateClassInitCode(true);
         if (_meta.getPCSuperclass() != null) {
@@ -3175,8 +3175,8 @@ public class PCEnhancer {
             } else {
                 // pcInheritedFieldCount = <superClass>.pcGetManagedFieldCount()
                 code.invokestatic().setMethod(getType(_meta.
-                    getPCSuperclassMetaData()).getName(),
-                    PRE + "GetManagedFieldCount", int.class.getName(), null);
+                                                              getPCSuperclassMetaData()).getName(),
+                                              PRE + "GetManagedFieldCount", int.class.getName(), null);
                 code.putstatic().setField(INHERIT, int.class);
             }
 
@@ -3184,9 +3184,106 @@ public class PCEnhancer {
             // this intentionally calls getDescribedType() directly
             // instead of PCEnhancer.getType()
             code.classconstant().setClass(
-                _meta.getPCSuperclassMetaData().getDescribedType());
+                    _meta.getPCSuperclassMetaData().getDescribedType());
             code.putstatic().setField(SUPER, Class.class);
         }
+
+        // pcFieldNames = new String[] { "<name1>", "<name2>", ... };
+        FieldMetaData[] fmds = _meta.getDeclaredFields();
+        code.constant().setValue(fmds.length);
+        code.anewarray().setType(String.class);
+        for (int i = 0; i < fmds.length; i++) {
+            code.dup();
+            code.constant().setValue(i);
+            code.constant().setValue(fmds[i].getName());
+            code.aastore();
+        }
+        code.putstatic().setField(PRE + "FieldNames", String[].class);
+
+        // pcFieldTypes = new Class[] { <type1>.class, <type2>.class, ... };
+        code.constant().setValue(fmds.length);
+        code.anewarray().setType(Class.class);
+        for (int i = 0; i < fmds.length; i++) {
+            code.dup();
+            code.constant().setValue(i);
+            code.classconstant().setClass(fmds[i].getDeclaredType());
+            code.aastore();
+        }
+        code.putstatic().setField(PRE + "FieldTypes", Class[].class);
+
+        // pcFieldFlags = new byte[] { <flag1>, <flag2>, ... };
+        code.constant().setValue(fmds.length);
+        code.newarray().setType(byte.class);
+        for (int i = 0; i < fmds.length; i++) {
+            code.dup();
+            code.constant().setValue(i);
+            code.constant().setValue(getFieldFlag(fmds[i]));
+            code.bastore();
+        }
+        code.putstatic().setField(PRE + "FieldFlags", byte[].class);
+
+        // PCRegistry.register (cls,
+        //	pcFieldNames, pcFieldTypes, pcFieldFlags,
+        //  pcPCSuperclass, alias, new XXX ());
+        code.classconstant().setClass(_meta.getDescribedType());
+        code.getstatic().setField(PRE + "FieldNames", String[].class);
+        code.getstatic().setField(PRE + "FieldTypes", Class[].class);
+        code.getstatic().setField(PRE + "FieldFlags", byte[].class);
+        code.getstatic().setField(SUPER, Class.class);
+
+        if (_meta.isMapped() || _meta.isAbstract())
+            code.constant().setValue(_meta.getTypeAlias());
+        else
+            code.constant().setNull();
+
+        if (_pc.isAbstract())
+            code.constant().setNull();
+        else {
+            code.anew().setType(_pc);
+            code.dup();
+            code.invokespecial().setMethod("<init>", void.class, null);
+        }
+
+        code.invokestatic().setMethod(HELPERTYPE, "register", void.class,
+                                      new Class[]{ Class.class, String[].class, Class[].class,
+                                              byte[].class, Class.class, String.class, PCTYPE });
+
+        code.vreturn();
+        code.calculateMaxStack();
+    }
+
+    /**
+     * Modifies the class initialization method (creating one if necessary)
+     * to initialize the static fields of the PersistenceCapable instance and
+     * to register it with the impl helper.
+     */
+    private void addStaticInitializer(ClassNodeTracker classNodeTracker) {
+        final ClassNode classNode = classNodeTracker.getClassNode();
+        InsnList instructions = new InsnList();
+        if (_meta.getPCSuperclass() != null) {
+            if (getCreateSubclass()) {
+                instructions.add(new LdcInsnNode(0));
+                instructions.add(new FieldInsnNode(Opcodes.PUTFIELD, classNode.name, INHERIT, Type.getDescriptor(int.class)));
+            }
+            else {
+                // pcInheritedFieldCount = <superClass>.pcGetManagedFieldCount()
+                instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, classNode.superName,
+                                                    PRE + "GetManagedFieldCount",
+                                                    Type.getMethodDescriptor(Type.INT_TYPE)));
+                instructions.add(new FieldInsnNode(Opcodes.PUTFIELD, classNode.name, INHERIT, Type.getDescriptor(int.class)));
+            }
+
+            // pcPCSuperclass = <superClass>;
+            // this intentionally calls getDescribedType() directly
+            // instead of PCEnhancer.getType()
+            instructions.add(new LdcInsnNode(Type.getInternalName(_meta.getPCSuperclassMetaData().getDescribedType())));
+            instructions.add(new FieldInsnNode(Opcodes.PUTSTATIC, classNode.name, SUPER, Type.getDescriptor(Class.class)));
+        }
+
+        // pcFieldNames = new String[] { "<name1>", "<name2>", ... };
+        FieldMetaData[] fmds = _meta.getDeclaredFields();
+
+/*
 
         // pcFieldNames = new String[] { "<name1>", "<name2>", ... };
         FieldMetaData[] fmds = _meta.getDeclaredFields();
@@ -3250,6 +3347,15 @@ public class PCEnhancer {
 
         code.vreturn();
         code.calculateMaxStack();
+*/
+
+        // now add those instructions to the <clinit> method
+        MethodNode clinit = getOrCreateClassInitMethod(classNode);
+        final AbstractInsnNode retInsn = clinit.instructions.getLast();
+        if (retInsn.getOpcode() != Opcodes.RETURN) {
+            throw new IllegalStateException("Problem with parsing instructions. RETURN expected");
+        }
+        clinit.instructions.insertBefore(retInsn, instructions);
     }
 
     /**
@@ -3755,6 +3861,31 @@ public class PCEnhancer {
      * Helper method to get the code for the class initializer method,
      * creating the method if it does not already exist.
      */
+    private MethodNode getOrCreateClassInitMethod(ClassNode classNode) {
+        final Optional<MethodNode> clinitMethodNode = classNode.methods.stream()
+                .filter(m -> m.name.equals("<clinit>"))
+                .findFirst();
+        if (clinitMethodNode.isPresent()) {
+
+            return clinitMethodNode.get();
+        }
+        else {
+            // add static initializer method if non exists
+            MethodNode clinit = new MethodNode(Opcodes.ACC_STATIC | Opcodes.ACC_FINAL,
+                                               "<clinit>",
+                                               Type.getMethodDescriptor(Type.VOID_TYPE),
+                                               null, null);
+            clinit.instructions.add(new InsnNode(Opcodes.RETURN));
+            classNode.methods.add(clinit);
+            return clinit;
+        }
+    }
+
+    /**
+     * Helper method to get the code for the class initializer method,
+     * creating the method if it does not already exist.
+     */
+    @Deprecated
     private Code getOrCreateClassInitCode(boolean replaceLast) {
         BCMethod clinit = _pc.getDeclaredMethod("<clinit>");
         Code code;
@@ -4765,6 +4896,52 @@ public class PCEnhancer {
             code.invokevirtual().setMethod(PRE + meth.getName(),
                 meth.getReturnType(), meth.getParameterTypes());
         }
+    }
+
+    /**
+     * Store the given value into the field value specified
+     * by <code>fmd</code>. Before this method is called, the data to load will
+     * be on the top of the stack and the object that the data should be loaded
+     * into will be second in the stack.
+     */
+    private InsnList getSetValueInsns(ClassNode classNode, FieldMetaData fmd, Object value) {
+        InsnList instructions = new InsnList();
+        if (value == null) {
+            instructions.add(new InsnNode(Opcodes.ACONST_NULL));
+        }
+        else {
+            instructions.add(new LdcInsnNode(value));
+        }
+
+        // if redefining, then we must always reflect (or access the field
+        // directly if accessible), since the redefined methods will always
+        // trigger method calls to StateManager, even from internal direct-
+        // access usage. We could work around this by not redefining, and
+        // just do a subclass approach instead. But this is not a good option,
+        // since it would sacrifice lazy loading and efficient dirty tracking.
+        if (getRedefine() || isFieldAccess(fmd)) {
+            instructions.add(new FieldInsnNode(Opcodes.PUTFIELD,
+                                               Type.getInternalName(fmd.getDeclaringType()),
+                                               fmd.getName(),
+                                               Type.getDescriptor(fmd.getDeclaredType())));
+        }
+        else if (getCreateSubclass()) {
+            // property access, and we're not redefining. invoke the
+            // superclass method to bypass tracking.
+            instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
+                                                Type.getInternalName(_managedType.getType()),
+                                                getSetterName(fmd),
+                                                Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(fmd.getDeclaredType()))));
+        }
+        else {
+            // regular enhancement + property access
+            instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                                classNode.name,
+                                                PRE + getSetterName(fmd),
+                                                Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(fmd.getDeclaredType()))));
+
+        }
+        return instructions;
     }
 
     /**
