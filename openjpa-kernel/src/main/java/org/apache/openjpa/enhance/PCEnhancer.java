@@ -1341,12 +1341,14 @@ public class PCEnhancer {
      */
     private void addPCMethods(ClassNodeTracker classNodeTracker) throws NoSuchMethodException {
         addClearFieldsMethod(classNodeTracker.getClassNode());
+
         addNewInstanceMethod(classNodeTracker.getClassNode(), true);
         addNewInstanceMethod(classNodeTracker.getClassNode(), false);
 
+        addManagedFieldCountMethod(classNodeTracker.getClassNode());
+
         AsmHelper.readIntoBCClass(classNodeTracker, _pc);
 
-        addManagedFieldCountMethod();
         addReplaceFieldsMethods();
         addProvideFieldsMethods();
         addCopyFieldsMethod();
@@ -1512,19 +1514,18 @@ public class PCEnhancer {
         instructions.add(new VarInsnNode(Opcodes.ALOAD, newPcVarPos));
         instructions.add(new InsnNode(Opcodes.ARETURN));
     }
-    
+
     /**
      * Adds the <code>protected static int pcGetManagedFieldCount ()</code>
      * method to the bytecode, returning the inherited field count added
      * to the number of managed fields in the current PersistenceCapable class.
      */
-    private void addManagedFieldCountMethod() {
-        // protected static int pcGetManagedFieldCount ()
-        BCMethod method = _pc.declareMethod(PRE + "GetManagedFieldCount",
-            int.class, null);
-        method.setStatic(true);
-        method.makeProtected();
-        Code code = method.getCode(true);
+    private void addManagedFieldCountMethod(ClassNode classNode) {
+        MethodNode getFieldCountMeth = new MethodNode(Opcodes.ACC_PROTECTED | Opcodes.ACC_STATIC,
+                                                      PRE + "GetManagedFieldCount",
+                                                      Type.getMethodDescriptor(Type.INT_TYPE),
+                                                      null, null);
+        classNode.methods.add(getFieldCountMeth);
 
         // return <fields> + pcInheritedFieldCount
         // awhite: the above should work, but I'm seeing a messed up situation
@@ -1532,18 +1533,21 @@ public class PCEnhancer {
         // happens before <clinit> is ever invoked, and so our
         // pcInheritedFieldCount field isn't initialized!  so instead,
         // return <fields> + <superclass>.pcGetManagedFieldCount ()
-        code.constant().setValue(_meta.getDeclaredFields().length);
+        final InsnList instructions = getFieldCountMeth.instructions;
+        instructions.add(new LdcInsnNode(_meta.getDeclaredFields().length));
         if (_meta.getPCSuperclass() != null) {
             Class superClass = getType(_meta.getPCSuperclassMetaData());
             String superName = getCreateSubclass() ?
-                PCEnhancer.toPCSubclassName(superClass) :
-                superClass.getName();
-            code.invokestatic().setMethod(superName,
-                PRE + "GetManagedFieldCount", int.class.getName(), null);
-            code.iadd();
+                    PCEnhancer.toPCSubclassName(superClass).replace(".", "/") :
+                    Type.getInternalName(superClass);
+            instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+                                                superName,
+                                                PRE + "GetManagedFieldCount",
+                                                Type.getMethodDescriptor(Type.INT_TYPE)));
+            instructions.add(new InsnNode(Opcodes.IADD));
         }
-        code.ireturn();
-        code.calculateMaxStack();
+
+        instructions.add(new InsnNode(Opcodes.IRETURN));
     }
 
     /**
