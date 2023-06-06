@@ -107,9 +107,12 @@ import org.apache.xbean.asm9.tree.FieldInsnNode;
 import org.apache.xbean.asm9.tree.FieldNode;
 import org.apache.xbean.asm9.tree.InsnList;
 import org.apache.xbean.asm9.tree.InsnNode;
+import org.apache.xbean.asm9.tree.JumpInsnNode;
+import org.apache.xbean.asm9.tree.LabelNode;
 import org.apache.xbean.asm9.tree.LdcInsnNode;
 import org.apache.xbean.asm9.tree.MethodInsnNode;
 import org.apache.xbean.asm9.tree.MethodNode;
+import org.apache.xbean.asm9.tree.TypeInsnNode;
 import org.apache.xbean.asm9.tree.VarInsnNode;
 
 import serp.bytecode.BCClass;
@@ -1337,12 +1340,12 @@ public class PCEnhancer {
      * least-derived PersistenceCapable type.
      */
     private void addPCMethods(ClassNodeTracker classNodeTracker) throws NoSuchMethodException {
-        //X addClearFieldsMethod();
         addClearFieldsMethod(classNodeTracker.getClassNode());
+        addNewInstanceMethod(classNodeTracker.getClassNode(), true);
+        addNewInstanceMethod(classNodeTracker.getClassNode(), false);
+
         AsmHelper.readIntoBCClass(classNodeTracker, _pc);
 
-        addNewInstanceMethod(true);
-        addNewInstanceMethod(false);
         addManagedFieldCountMethod();
         addReplaceFieldsMethods();
         addProvideFieldsMethods();
@@ -1384,7 +1387,7 @@ public class PCEnhancer {
             addGetIDOwningClass();
         }
     }
-    
+
     /**
      * Add a method to clear all persistent fields; we'll call this from
      * the new instance method to ensure that unloaded fields have
@@ -1448,58 +1451,68 @@ public class PCEnhancer {
      * @param oid set to true to mimic the method version that takes
      * an oid value as well as a state manager
      */
-    private void addNewInstanceMethod(boolean oid) {
+    private void addNewInstanceMethod(ClassNode classNode, boolean oid) {
         // public PersistenceCapable pcNewInstance (...)
-        Class[] args =
-            (oid) ? new Class[]{ SMTYPE, Object.class, boolean.class }
-                : new Class[]{ SMTYPE, boolean.class };
-        BCMethod method = _pc.declareMethod(PRE + "NewInstance", PCTYPE, args);
-        Code code = method.getCode(true);
+        String desc = oid
+                ? Type.getMethodDescriptor(Type.getType(PCTYPE), Type.getType(SMTYPE), Type.getType(Object.class), Type.BOOLEAN_TYPE)
+                : Type.getMethodDescriptor(Type.getType(PCTYPE), Type.getType(SMTYPE), Type.BOOLEAN_TYPE);
+        MethodNode newInstance = new MethodNode(Opcodes.ACC_PUBLIC,
+                                                PRE + "NewInstance",
+                                                desc,
+                                                null, null);
+        classNode.methods.add(newInstance);
+        final InsnList instructions = newInstance.instructions;
 
-        // if the type is abstract, throw a UserException
         if (_pc.isAbstract()) {
-            throwException(code, USEREXCEP);
-
-            code.calculateMaxStack();
-            code.calculateMaxLocals();
+            instructions.add(throwException(USEREXCEP));
             return;
         }
 
         // XXX pc = new XXX ();
-        code.anew().setType(_pc);
-        code.dup();
-        code.invokespecial().setMethod("<init>", void.class, null);
-        int inst = code.getNextLocalsIndex();
-        code.astore().setLocal(inst);
+        instructions.add(new TypeInsnNode(Opcodes.NEW, classNode.name));
+        instructions.add(new InsnNode(Opcodes.DUP));
+        instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
+                                            classNode.name,
+                                            "<init>",
+                                            Type.getMethodDescriptor(Type.VOID_TYPE)));
+
+        int newPcVarPos = (oid) ? 4 : 3; // number of params +1
+        instructions.add(new VarInsnNode(Opcodes.ASTORE, newPcVarPos));
 
         // if (clear)
         //   pc.pcClearFields ();
-        code.iload().setParam((oid) ? 2 : 1);
-        JumpInstruction noclear = code.ifeq();
-        code.aload().setLocal(inst);
-        code.invokevirtual().setMethod(PRE + "ClearFields", void.class, null);
+        instructions.add(new VarInsnNode(Opcodes.ILOAD, (oid) ? 3 : 2));
+        LabelNode labelAfterClearFields = new LabelNode();
+        instructions.add(new JumpInsnNode(Opcodes.IFEQ, labelAfterClearFields));
+
+        // inside the if
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, newPcVarPos));
+        instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                            classNode.name,
+                                            PRE + "ClearFields",
+                                            Type.getMethodDescriptor(Type.VOID_TYPE)));
+
+        instructions.add(labelAfterClearFields);
 
         // pc.pcStateManager = sm;
-        noclear.setTarget(code.aload().setLocal(inst));
-        code.aload().setParam(0);
-        code.putfield().setField(SM, SMTYPE);
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, newPcVarPos));
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // the 1st method param
+        instructions.add(new FieldInsnNode(Opcodes.PUTFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
 
         // copy key fields from oid
         if (oid) {
-            code.aload().setLocal(inst);
-            code.aload().setParam(1);
-            code.invokevirtual().setMethod(PRE + "CopyKeyFieldsFromObjectId",
-                void.class, new Class[]{ Object.class });
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, newPcVarPos));
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 2)); // the 2nd method param, Object
+            instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                                classNode.name,
+                                                PRE + "CopyKeyFieldsFromObjectId",
+                                                Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(Object.class))));
         }
 
-        // return pc;
-        code.aload().setLocal(inst);
-        code.areturn();
-
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, newPcVarPos));
+        instructions.add(new InsnNode(Opcodes.ARETURN));
     }
-
+    
     /**
      * Adds the <code>protected static int pcGetManagedFieldCount ()</code>
      * method to the bytecode, returning the inherited field count added
@@ -3059,6 +3072,24 @@ public class PCEnhancer {
         } catch (PrivilegedActionException pae) {
              throw (NoSuchMethodException) pae.getException();
         }
+    }
+
+
+    /**
+     * Helper method to add the code necessary to throw the given
+     * exception type, sans message.
+     */
+    private InsnList throwException(Class type) {
+        InsnList instructions = new InsnList();
+        instructions.add(new TypeInsnNode(Opcodes.NEW, Type.getInternalName(type)));
+        instructions.add(new InsnNode(Opcodes.DUP));
+        instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
+                                            Type.getInternalName(type),
+                                            "<init>",
+                                            Type.getMethodDescriptor(Type.VOID_TYPE)));
+        instructions.add(new InsnNode(Opcodes.ATHROW));
+
+        return instructions;
     }
 
     /**
