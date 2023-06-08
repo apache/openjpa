@@ -1442,11 +1442,6 @@ public class ApplicationIdTool {
                 null, Type.getInternalName(Object.class), null);
 
         return GeneratedClasses.loadAsmClass(name, cw.toByteArray(), context, context.getClassLoader());
-/*X TODO DELETE
-        BCClass oid = bc.getProject().loadClass(name, null);
-        oid.addDefaultConstructor();
-        return Class.forName(name, false, bc);
-*/
     }
 
     /**

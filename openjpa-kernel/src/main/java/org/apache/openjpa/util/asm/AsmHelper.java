@@ -120,7 +120,6 @@ public final class AsmHelper {
      * Effectively replace all the content of BCClass with the content from our ClassNode
      */
     public static void readIntoBCClass(ClassNodeTracker cnt, BCClass bcClass) {
-
         // sadly package scoped
         try {
             Method readMethod = BCClass.class.getDeclaredMethod("read", InputStream.class, ClassLoader.class);
