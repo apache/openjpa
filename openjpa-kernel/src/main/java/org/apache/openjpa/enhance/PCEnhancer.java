@@ -1368,10 +1368,10 @@ public class PCEnhancer {
 
         addManagedFieldCountMethod(classNodeTracker.getClassNode());
         addReplaceFieldsMethods(classNodeTracker.getClassNode());
+        addProvideFieldsMethods(classNodeTracker.getClassNode());
 
         AsmHelper.readIntoBCClass(classNodeTracker, _pc);
 
-        addProvideFieldsMethods();
         addCopyFieldsMethod();
 
         if (_meta.getPCSuperclass() == null || getCreateSubclass()) {
@@ -1575,51 +1575,63 @@ public class PCEnhancer {
      * Adds the {@link PersistenceCapable#pcProvideField} and
      * {@link PersistenceCapable#pcProvideFields} methods to the bytecode.
      */
-    private void addProvideFieldsMethods()
-            throws NoSuchMethodException {
-        // public void pcProvideField (int fieldNumber)
-        BCMethod method = _pc.declareMethod(PRE + "ProvideField", void.class,
-                                            new Class[]{int.class});
-        Code code = method.getCode(true);
+    private void addProvideFieldsMethods(ClassNode classNode) throws NoSuchMethodException {
+        MethodNode provideFieldsMeth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                                     PRE + "ProvideField",
+                                                     Type.getMethodDescriptor(Type.VOID_TYPE, Type.INT_TYPE),
+                                                     null, null);
+        classNode.methods.add(provideFieldsMeth);
+        final InsnList instructions = provideFieldsMeth.instructions;
 
-        // adds everything through the switch ()
-        int relLocal = beginSwitchMethod(PRE + "ProvideField", code, false);
+        final int relLocal = beginSwitchMethod(classNode, PRE + "ProvideField", instructions, false);
 
         // if no fields in this inst, just throw exception
         FieldMetaData[] fmds = getCreateSubclass() ? _meta.getFields()
                 : _meta.getDeclaredFields();
-        if (fmds.length == 0)
-            throwException(code, IllegalArgumentException.class);
+        if (fmds.length == 0) {
+            instructions.add(throwException(IllegalArgumentException.class));
+        }
         else {
             // switch (val)
-            code.iload().setLocal(relLocal);
-            TableSwitchInstruction tabins = code.tableswitch();
-            tabins.setLow(0);
-            tabins.setHigh(fmds.length - 1);
+            instructions.add(new VarInsnNode(Opcodes.ILOAD, relLocal));
 
-            // <field> = pcStateManager.provided<type>Field
-            //     (this, fieldNumber);
+            LabelNode defaultCase = new LabelNode();
+            TableSwitchInsnNode ts = new TableSwitchInsnNode(0, fmds.length - 1, defaultCase);
+            instructions.add(ts);
+
+            // <field> = pcStateManager.provided<type>Field(this, fieldNumber);
             for (FieldMetaData fmd : fmds) {
-                tabins.addTarget(loadManagedInstance(code, false));
-                code.getfield().setField(SM, SMTYPE);
-                loadManagedInstance(code, false);
-                code.iload().setParam(0);
-                loadManagedInstance(code, false);
-                addGetManagedValueCode(code, fmd);
-                code.invokeinterface().setMethod(getStateManagerMethod
-                                                         (fmd.getDeclaredType(), "provided", false, false));
-                code.vreturn();
+                // case xxx:
+                LabelNode caseLabel = new LabelNode();
+                instructions.add(caseLabel);
+                ts.labels.add(caseLabel);
+
+                // load pcStateManager to stack
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
+
+                // invoke StateManager#provided
+                final Method smProvidedMeth = getStateManagerMethod(fmd.getDeclaredType(), "provided", false, false);
+
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                instructions.add(new VarInsnNode(Opcodes.ILOAD, 1)); // fieldNr int
+
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this for the getfield
+                addGetManagedValueCode(classNode, instructions, fmd, true);
+
+                instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
+                                                    Type.getInternalName(SMTYPE),
+                                                    smProvidedMeth.getName(),
+                                                    Type.getMethodDescriptor(smProvidedMeth)));
+
+                instructions.add(new InsnNode(Opcodes.RETURN));
             }
 
-            // default: throw new IllegalArgumentException ()
-            tabins.setDefaultTarget(throwException
-                                            (code, IllegalArgumentException.class));
+            instructions.add(defaultCase);
+            instructions.add(throwException(IllegalArgumentException.class));
         }
 
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-
-        addMultipleFieldsMethodVersion(method, false);
+        addMultipleFieldsMethodVersion(classNode, provideFieldsMeth, false);
     }
 
     /**
@@ -1649,13 +1661,13 @@ public class PCEnhancer {
             TableSwitchInsnNode ts = new TableSwitchInsnNode(0, fmds.length - 1, defaultCase);
             instructions.add(ts);
 
-            // <field> = pcStateManager.replace<type>Field
-            //  (this, fieldNumber);
+            // <field> = pcStateManager.replace<type>Field(this, fieldNumber);
             for (FieldMetaData fmd : fmds) {
                 // case xxx:
                 LabelNode caseLabel = new LabelNode();
                 instructions.add(caseLabel);
                 ts.labels.add(caseLabel);
+
                 instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
 
                 // load pcStateManager to stack
@@ -1665,7 +1677,6 @@ public class PCEnhancer {
                 // invoke StateManager#replace
                 instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
                 instructions.add(new VarInsnNode(Opcodes.ILOAD, 1)); // fieldNr int
-
                 final Method rmReplaceMeth = getStateManagerMethod(fmd.getDeclaredType(), "replace", true, false);
                 instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
                                                     Type.getInternalName(SMTYPE),
@@ -4552,6 +4563,54 @@ public class PCEnhancer {
      * The instance to access must already be on the top of the
      * stack when this is invoked.
      */
+    private void getfield(ClassNode classNode, InsnList instructions, Class declarer, String attrName, Class fieldType) {
+        // first, see if we can convert the attribute name to a field name
+        String fieldName = toBackingFieldName(attrName);
+        FieldNode field = findField(classNode, declarer, fieldName);
+
+        if (getCreateSubclass()  && (field == null || !((field.access & Opcodes.ACC_PUBLIC) > 0))) {
+            // we're creating the subclass, not redefining the user type.
+
+            // Reflection.getXXX(this, Reflection.findField(...));
+            throw new UnsupportedOperationException("MSX TODO IMPLEMENT!");
+        }
+        else {
+            instructions.add(new FieldInsnNode(Opcodes.GETFIELD, Type.getInternalName(declarer), fieldName, Type.getDescriptor(fieldType)));
+        }
+
+    }
+
+    private FieldNode findField(ClassNode classNode, Class clazz, String fieldName) {
+        if (classNode != null) {
+            final Optional<FieldNode> field = classNode.fields.stream()
+                    .filter(f -> f.name.equals(fieldName))
+                    .findFirst();
+            if (field.isPresent()) {
+                return field.get();
+            }
+        }
+        try {
+            final Field field = clazz.getDeclaredField(fieldName);
+            return new FieldNode(Opcodes.ACC_PRIVATE, field.getName(), Type.getDescriptor(field.getType()), null, null);
+        }
+        catch (NoSuchFieldException e) {
+            if (clazz.getSuperclass() != Object.class) {
+                return findField(null, clazz.getSuperclass(), fieldName);
+            }
+        }
+        return null;
+    }
+
+
+    /**
+     * Adds to <code>code</code> the instructions to get field
+     * <code>attrName</code> declared in type <code>declarer</code>
+     * onto the top of the stack.
+     * <p>
+     * The instance to access must already be on the top of the
+     * stack when this is invoked.
+     */
+    @Deprecated
     private void getfield(Code code, BCClass declarer, String attrName) {
         if (declarer == null)
             declarer = _managedType;
@@ -5115,6 +5174,7 @@ public class PCEnhancer {
         addGetManagedValueCode(code, fmd, true);
     }
 
+
     /**
      * Load the field value specified by <code>fmd</code> onto the stack.
      * Before this method is called, the object that the data should be loaded
@@ -5125,6 +5185,54 @@ public class PCEnhancer {
      *                      context. If <code>false</code>, then the instance on the top of the stack
      *                      might be a superclass of the current execution context's 'this' instance.
      */
+    private void addGetManagedValueCode(ClassNode classNode, InsnList instructions, FieldMetaData fmd, boolean fromSameClass) {
+        // if redefining, then we must always reflect (or access the field
+        // directly if accessible), since the redefined methods will always
+        // trigger method calls to StateManager, even from internal direct-
+        // access usage. We could work around this by not redefining, and
+        // just do a subclass approach instead. But this is not a good option,
+        // since it would sacrifice lazy loading and efficient dirty tracking.
+
+        if (getRedefine() || isFieldAccess(fmd)) {
+            getfield(classNode, instructions, getType(_meta), fmd.getName(), fmd.getDeclaredType());
+        }
+        else if (getCreateSubclass()) {
+            // property access, and we're not redefining. If we're operating
+            // on an instance that is definitely the same type as 'this', then
+            // call superclass method to bypass tracking. Otherwise, reflect
+            // to both bypass tracking and avoid class verification errors.
+            if (fromSameClass) {
+                Method meth = (Method) fmd.getBackingMember();
+                instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
+                                                    Type.getInternalName(meth.getDeclaringClass()),
+                                                    meth.getName(),
+                                                    Type.getMethodDescriptor(meth)));
+            }
+            else {
+                getfield(classNode, instructions, getType(_meta), fmd.getName(), fmd.getDeclaredType());
+            }
+        }
+        else {
+            // regular enhancement + property access
+            Method meth = (Method) fmd.getBackingMember();
+            instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                                classNode.name,
+                                                PRE + meth.getName(),
+                                                Type.getMethodDescriptor(meth)));
+        }
+    }
+
+    /**
+     * Load the field value specified by <code>fmd</code> onto the stack.
+     * Before this method is called, the object that the data should be loaded
+     * from will be on the top of the stack.
+     *
+     * @param fromSameClass if <code>true</code>, then <code>fmd</code> is
+     *                      being loaded from an instance of the same class as the current execution
+     *                      context. If <code>false</code>, then the instance on the top of the stack
+     *                      might be a superclass of the current execution context's 'this' instance.
+     */
+    @Deprecated
     private void addGetManagedValueCode(Code code, FieldMetaData fmd,
                                         boolean fromSameClass)
             throws NoSuchMethodException {
