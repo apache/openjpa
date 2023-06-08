@@ -105,6 +105,7 @@ import org.apache.xbean.asm9.tree.AbstractInsnNode;
 import org.apache.xbean.asm9.tree.ClassNode;
 import org.apache.xbean.asm9.tree.FieldInsnNode;
 import org.apache.xbean.asm9.tree.FieldNode;
+import org.apache.xbean.asm9.tree.IincInsnNode;
 import org.apache.xbean.asm9.tree.InsnList;
 import org.apache.xbean.asm9.tree.InsnNode;
 import org.apache.xbean.asm9.tree.JumpInsnNode;
@@ -1695,72 +1696,6 @@ public class PCEnhancer {
     }
 
     /**
-     * Adds the {@link PersistenceCapable#pcReplaceField} and
-     * {@link PersistenceCapable#pcReplaceFields} methods to the bytecode.
-     */
-    @Deprecated
-    private void addReplaceFieldsMethods()
-            throws NoSuchMethodException {
-        // public void pcReplaceField (int fieldNumber)
-        BCMethod method = _pc.declareMethod(PRE + "ReplaceField", void.class,
-                                            new Class[]{int.class});
-        Code code = method.getCode(true);
-
-        // adds everything through the switch ()
-        int relLocal = beginSwitchMethod(PRE + "ReplaceField", code, false);
-
-        // if no fields in this inst, just throw exception
-        FieldMetaData[] fmds = getCreateSubclass() ? _meta.getFields()
-                : _meta.getDeclaredFields();
-        if (fmds.length == 0)
-            throwException(code, IllegalArgumentException.class);
-        else {
-            // switch (val)
-            code.iload().setLocal(relLocal);
-            TableSwitchInstruction tabins = code.tableswitch();
-            tabins.setLow(0);
-            tabins.setHigh(fmds.length - 1);
-
-            // <field> = pcStateManager.replace<type>Field
-            //  (this, fieldNumber);
-            for (FieldMetaData fmd : fmds) {
-                // for the addSetManagedValueCode call below.
-                tabins.addTarget(loadManagedInstance(code, false, fmd));
-
-                loadManagedInstance(code, false, fmd);
-                code.getfield().setField(SM, SMTYPE);
-                loadManagedInstance(code, false, fmd);
-                code.iload().setParam(0);
-                code.invokeinterface().setMethod(getStateManagerMethod
-                                                         (fmd.getDeclaredType(), "replace", true, false));
-                if (!fmd.getDeclaredType().isPrimitive())
-                    code.checkcast().setType(fmd.getDeclaredType());
-
-                addSetManagedValueCode(code, fmd);
-                if (_addVersionInitFlag) {
-                    if (fmd.isVersion()) {
-                        // If this case is setting the version field
-                        // pcVersionInit = true;
-                        loadManagedInstance(code, false);
-                        code.constant().setValue(1);
-                        putfield(code, null, VERSION_INIT_STR, boolean.class);
-                    }
-                }
-                code.vreturn();
-            }
-
-            // default: throw new IllegalArgumentException ()
-            tabins.setDefaultTarget(throwException
-                                            (code, IllegalArgumentException.class));
-        }
-
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-
-        addMultipleFieldsMethodVersion(method, false);
-    }
-
-    /**
      * Adds the {@link PersistenceCapable#pcCopyFields} method to the bytecode.
      */
     private void addCopyFieldsMethod()
@@ -1922,8 +1857,53 @@ public class PCEnhancer {
      * singular version for each one.
      */
     private void addMultipleFieldsMethodVersion(ClassNode classNode, MethodNode single, boolean copy) {
-        //X TODO MSX IMPLEMENT!
-    }
+        String desc = copy
+                ? Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(Object.class), Type.getType(int[].class))
+                : Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(int[].class));
+
+        MethodNode multiMeth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                              single.name + "s",
+                                              desc,
+                                              null, null);
+        final InsnList instructions = multiMeth.instructions;
+        classNode.methods.add(multiMeth);
+
+        if (copy) {
+            throw new UnsupportedOperationException("TODO MSX IMPLEMENT FOR COPY METHOD");
+        }
+
+        // for (int i = 0;
+        int iVarPos = copy ? 3 : 2;
+        instructions.add(new InsnNode(Opcodes.ICONST_0));
+        instructions.add(new VarInsnNode(Opcodes.ISTORE, iVarPos));
+        LabelNode toI = new LabelNode();
+        instructions.add(toI);
+
+        instructions.add(new VarInsnNode(Opcodes.ILOAD, iVarPos));
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // the int[]
+        instructions.add(new InsnNode(Opcodes.ARRAYLENGTH)); // int[] parameter variable.length
+        LabelNode toEnd = new LabelNode();
+        instructions.add(new JumpInsnNode(Opcodes.IF_ICMPGE, toEnd)); // if i >= int[].length
+
+        // otherwise call the single method
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 0));        // this
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 1));        // the int[] param
+        instructions.add(new VarInsnNode(Opcodes.ILOAD, iVarPos));  // int[ i ]
+        instructions.add(new InsnNode(Opcodes.IALOAD));             // load the value at that position
+
+        // now invoke the single method
+        instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                            classNode.name,
+                                            single.name,
+                                            single.desc));
+
+        instructions.add(new IincInsnNode(iVarPos, 1));
+        instructions.add(new JumpInsnNode(Opcodes.GOTO, toI));
+
+        instructions.add(toEnd);        // end of loop
+
+        instructions.add(new InsnNode(Opcodes.RETURN));
+        }
 
     /**
      * This helper method, given the pcReplaceField or pcProvideField
@@ -1933,6 +1913,7 @@ public class PCEnhancer {
      * simply loops through the provided indexes and delegates to the
      * singular version for each one.
      */
+    @Deprecated
     private void addMultipleFieldsMethodVersion(BCMethod single, boolean copy) {
 
         // public void <method>s (int[] fields)
