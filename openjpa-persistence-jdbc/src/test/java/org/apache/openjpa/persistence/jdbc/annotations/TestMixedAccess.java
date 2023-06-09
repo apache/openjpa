@@ -39,8 +39,7 @@ public class TestMixedAccess extends AbstractCachedEMFTestCase {
         }
     }
 
-    //X TODO MSX ENABLE AGAIN, broken due to Serp does not understand ldc of class constants in PCEnhancer#putfield
-    public void DISABLED_testInappropriateTransientError() {
+    public void testInappropriateTransientError() {
         EntityManagerFactory emf = null;
         try {
             emf = createEMF(UnenhancedInappropriateTransient.class, "openjpa.RuntimeUnenhancedClasses", "supported");

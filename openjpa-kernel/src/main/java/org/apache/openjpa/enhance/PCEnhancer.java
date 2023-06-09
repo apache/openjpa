@@ -150,6 +150,7 @@ public class PCEnhancer {
     // Each enhanced class will return the value of this field via
     // public int getEnhancementContractVersion()
     public static final int ENHANCER_VERSION;
+    public static final Type TYPE_OBJECT = Type.getType(Object.class);
 
     boolean _addVersionInitFlag = true;
 
@@ -230,6 +231,19 @@ public class PCEnhancer {
     private BCClass _pc;
     private final BCClass _managedType;
     private final MetaDataRepository _repos;
+
+    /**
+     * represents the managed type.
+     */
+    private final ClassNodeTracker managedType;
+
+    /**
+     * represents the persistent class.
+     * This might be the same as {@link #managedType}
+     * but also a subclass.
+     */
+    private ClassNodeTracker pc;
+
     private final ClassMetaData _meta;
     private final Log _log;
     private Collection _oids = null;
@@ -309,6 +323,10 @@ public class PCEnhancer {
         _managedType = type;
         _pc = type;
 
+        // we assume that the original class and the enhanced class is the same
+        managedType = AsmHelper.toClassNode(type);
+        pc = managedType;
+
         _log = conf.getLog(OpenJPAConfiguration.LOG_ENHANCE);
 
         if (repos == null) {
@@ -344,6 +362,10 @@ public class PCEnhancer {
     public PCEnhancer(MetaDataRepository repos, BCClass type, ClassMetaData meta) {
         _managedType = type;
         _pc = type;
+
+        // we assume that the original class and the enhanced class is the same
+        managedType = AsmHelper.toClassNode(type);
+        pc = managedType;
 
         _log = repos.getConfiguration()
                 .getLog(OpenJPAConfiguration.LOG_ENHANCE);
@@ -594,16 +616,15 @@ public class PCEnhancer {
             processViolations();
 
             if (_meta != null) {
-                ClassNodeTracker classNodeTracker = AsmHelper.toClassNode(_pc);
-
-                enhanceClass(classNodeTracker);
-                addFields(classNodeTracker);
+                pc = AsmHelper.toClassNode(_pc);
+                enhanceClass(pc);
+                addFields(pc);
                 //X TODO finish addStaticInitializer(classNodeTracker);
-                AsmHelper.readIntoBCClass(classNodeTracker, _pc);
+                AsmHelper.readIntoBCClass(pc, _pc);
                 addStaticInitializer();
 
-                classNodeTracker = AsmHelper.toClassNode(_pc);
-                addPCMethods(classNodeTracker);
+                pc = AsmHelper.toClassNode(_pc);
+                addPCMethods(pc);
 
                 addAccessors();
                 addAttachDetachCode();
@@ -1370,9 +1391,9 @@ public class PCEnhancer {
         addReplaceFieldsMethods(classNodeTracker.getClassNode());
         addProvideFieldsMethods(classNodeTracker.getClassNode());
 
-        AsmHelper.readIntoBCClass(classNodeTracker, _pc);
+        addCopyFieldsMethod(classNodeTracker.getClassNode());
 
-        addCopyFieldsMethod();
+        AsmHelper.readIntoBCClass(classNodeTracker, _pc);
 
         if (_meta.getPCSuperclass() == null || getCreateSubclass()) {
             addStockMethods();
@@ -1477,7 +1498,7 @@ public class PCEnhancer {
     private void addNewInstanceMethod(ClassNode classNode, boolean oid) {
         // public PersistenceCapable pcNewInstance (...)
         String desc = oid
-                ? Type.getMethodDescriptor(Type.getType(PCTYPE), Type.getType(SMTYPE), Type.getType(Object.class), Type.BOOLEAN_TYPE)
+                ? Type.getMethodDescriptor(Type.getType(PCTYPE), Type.getType(SMTYPE), TYPE_OBJECT, Type.BOOLEAN_TYPE)
                 : Type.getMethodDescriptor(Type.getType(PCTYPE), Type.getType(SMTYPE), Type.BOOLEAN_TYPE);
         MethodNode newInstance = new MethodNode(Opcodes.ACC_PUBLIC,
                                                 PRE + "NewInstance",
@@ -1529,7 +1550,7 @@ public class PCEnhancer {
             instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
                                                 classNode.name,
                                                 PRE + "CopyKeyFieldsFromObjectId",
-                                                Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(Object.class))));
+                                                Type.getMethodDescriptor(Type.VOID_TYPE, TYPE_OBJECT)));
         }
 
         instructions.add(new VarInsnNode(Opcodes.ALOAD, newPcVarPos));
@@ -1706,9 +1727,61 @@ public class PCEnhancer {
         addMultipleFieldsMethodVersion(classNode, replaceFieldMeth, false);
     }
 
+
     /**
      * Adds the {@link PersistenceCapable#pcCopyFields} method to the bytecode.
      */
+    private void addCopyFieldsMethod(ClassNode classNode) {
+        MethodNode copyFieldMeth = new MethodNode(Opcodes.ACC_PROTECTED,
+                                                     PRE + "CopyField",
+                                                     Type.getMethodDescriptor(Type.VOID_TYPE,
+                                                                              Type.getObjectType(managedType.getClassNode().name),
+                                                                              Type.INT_TYPE),
+                                                     null, null);
+        classNode.methods.add(copyFieldMeth);
+        final InsnList instructions = copyFieldMeth.instructions;
+        final int relLocal = beginSwitchMethod(classNode, PRE + "CopyField", instructions, true);
+
+        // if no fields in this inst, just throw exception
+        FieldMetaData[] fmds = getCreateSubclass() ? _meta.getFields()
+                : _meta.getDeclaredFields();
+        if (fmds.length == 0)
+            instructions.add(throwException(IllegalArgumentException.class));
+        else {
+            instructions.add(new VarInsnNode(Opcodes.ILOAD, relLocal));
+
+            LabelNode defaultCase = new LabelNode();
+            TableSwitchInsnNode ts = new TableSwitchInsnNode(0, fmds.length - 1, defaultCase);
+            instructions.add(ts);
+
+            // <field> = other.<field>;
+            // or set<field> (other.get<field>);
+            for (FieldMetaData fmd : fmds) {
+                // case xxx:
+                LabelNode caseLabel = new LabelNode();
+                instructions.add(caseLabel);
+                ts.labels.add(caseLabel);
+
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // other instance
+
+                addGetManagedValueCode(classNode, instructions, fmd, false);
+                addSetManagedValueCode(classNode, instructions, fmd);
+
+                instructions.add(new InsnNode(Opcodes.RETURN));
+            }
+
+            instructions.add(defaultCase);
+            instructions.add(throwException(IllegalArgumentException.class));
+        }
+
+        addMultipleFieldsMethodVersion(classNode, copyFieldMeth, true);
+    }
+
+    /**
+     * Adds the {@link PersistenceCapable#pcCopyFields} method to the bytecode.
+     */
+    @Deprecated
     private void addCopyFieldsMethod()
             throws NoSuchMethodException {
         // public void pcCopyField (Object pc, int field)
@@ -1792,6 +1865,9 @@ public class PCEnhancer {
             String mDesc = copy
                     ? Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(pcSuperClass), Type.INT_TYPE)
                     : Type.getMethodDescriptor(Type.VOID_TYPE, Type.INT_TYPE);
+            if (copy) {
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // the instance to copy into
+            }
             instructions.add(new VarInsnNode(Opcodes.ILOAD, fieldNumber));
             instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
                                                 Type.getInternalName(pcSuperClass),
@@ -1816,6 +1892,7 @@ public class PCEnhancer {
      * @return the index in which the local variable holding the relative
      * field number is stored
      */
+    @Deprecated
     private int beginSwitchMethod(String name, Code code, boolean copy) {
         int fieldNumber = (copy) ? 1 : 0;
 
@@ -1869,7 +1946,7 @@ public class PCEnhancer {
      */
     private void addMultipleFieldsMethodVersion(ClassNode classNode, MethodNode single, boolean copy) {
         String desc = copy
-                ? Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(Object.class), Type.getType(int[].class))
+                ? Type.getMethodDescriptor(Type.VOID_TYPE, TYPE_OBJECT, Type.getType(int[].class))
                 : Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(int[].class));
 
         MethodNode multiMeth = new MethodNode(Opcodes.ACC_PUBLIC,
@@ -1879,26 +1956,92 @@ public class PCEnhancer {
         final InsnList instructions = multiMeth.instructions;
         classNode.methods.add(multiMeth);
 
+        int instVarPos = 0;
         if (copy) {
-            throw new UnsupportedOperationException("TODO MSX IMPLEMENT FOR COPY METHOD");
+            instVarPos = 3;
+            if (getCreateSubclass()) {
+                // get the managed instance into the local variable table
+
+                // (EntityType)ImplHelper.getManagedInstance(other_param1) to Stack
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // other instance
+                instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+                                                    Type.getInternalName(ImplHelper.class),
+                                                    "getManagedInstance",
+                                                    Type.getMethodDescriptor(TYPE_OBJECT, TYPE_OBJECT)));
+                instructions.add(new TypeInsnNode(Opcodes.CHECKCAST, managedType.getClassNode().name));
+                instructions.add(new VarInsnNode(Opcodes.ASTORE, instVarPos));
+
+                // there might be a difference between the classes of 'this'
+                // vs 'other' in this context; use the PC methods to get the SM
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // other_param1 object
+
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
+
+                instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+                                                    Type.getInternalName(ImplHelper.class),
+                                                    "toPersistenceCapable",
+                                                    Type.getMethodDescriptor(Type.getType(PersistenceCapable.class),
+                                                                             TYPE_OBJECT,
+                                                                             TYPE_OBJECT)));
+
+                // now we get the StateManager from the other instance
+                instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
+                                                    Type.getInternalName(PersistenceCapable.class),
+                                                    "pcGetStateManager",
+                                                    Type.getMethodDescriptor(Type.getType(StateManager.class))));
+            }
+            else {
+                // XXX other = (XXX) pc;
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // other object
+                instructions.add(new TypeInsnNode(Opcodes.CHECKCAST, pc.getClassNode().name));
+                instructions.add(new VarInsnNode(Opcodes.ASTORE, instVarPos));
+
+                // access the other's sm field directly
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, instVarPos));
+                instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
+            }
+
+            // if (other.pcStateManager != pcStateManager)
+            //    throw new IllegalArgumentException
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+            instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
+            LabelNode toEndSmCmp = new LabelNode();
+            instructions.add(new JumpInsnNode(Opcodes.IF_ACMPEQ, toEndSmCmp));
+            instructions.add(throwException(IllegalArgumentException.class));
+            instructions.add(toEndSmCmp);
+
+            // if (pcStateManager == null)
+            //  throw new IllegalStateException
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+            instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
+            LabelNode toEndSmNull = new LabelNode();
+            instructions.add(new JumpInsnNode(Opcodes.IFNONNULL, toEndSmNull));
+            instructions.add(throwException(IllegalStateException.class));
+            instructions.add(toEndSmNull);
         }
 
         // for (int i = 0;
-        int iVarPos = copy ? 3 : 2;
+        int iVarPos = copy ? 4 : 2;
         instructions.add(new InsnNode(Opcodes.ICONST_0));
         instructions.add(new VarInsnNode(Opcodes.ISTORE, iVarPos));
         LabelNode toI = new LabelNode();
         instructions.add(toI);
 
+        int fieldNumbersPos = copy? 2 :1;
+
         instructions.add(new VarInsnNode(Opcodes.ILOAD, iVarPos));
-        instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // the int[]
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, fieldNumbersPos)); // the int[]
         instructions.add(new InsnNode(Opcodes.ARRAYLENGTH)); // int[] parameter variable.length
         LabelNode toEnd = new LabelNode();
         instructions.add(new JumpInsnNode(Opcodes.IF_ICMPGE, toEnd)); // if i >= int[].length
 
         // otherwise call the single method
         instructions.add(new VarInsnNode(Opcodes.ALOAD, 0));        // this
-        instructions.add(new VarInsnNode(Opcodes.ALOAD, 1));        // the int[] param
+        if (copy) {
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, instVarPos));  // instance
+        }
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, fieldNumbersPos));        // the int[] param
         instructions.add(new VarInsnNode(Opcodes.ILOAD, iVarPos));  // int[ i ]
         instructions.add(new InsnNode(Opcodes.IALOAD));             // load the value at that position
 
@@ -1957,6 +2100,7 @@ public class PCEnhancer {
                 code.invokestatic().setMethod(ImplHelper.class,
                                               "toPersistenceCapable", PersistenceCapable.class,
                                               new Class[]{Object.class, Object.class});
+
                 code.invokeinterface().setMethod(PersistenceCapable.class,
                                                  "pcGetStateManager", StateManager.class, null);
             }
@@ -3487,7 +3631,7 @@ public class PCEnhancer {
             // pcPCSuperclass = <superClass>;
             // this intentionally calls getDescribedType() directly
             // instead of PCEnhancer.getType()
-            instructions.add(new LdcInsnNode(Type.getInternalName(_meta.getPCSuperclassMetaData().getDescribedType())));
+            instructions.add(new LdcInsnNode(Type.getType(_meta.getPCSuperclassMetaData().getDescribedType())));
             instructions.add(new FieldInsnNode(Opcodes.PUTSTATIC, classNode.name, SUPER, Type.getDescriptor(Class.class)));
         }
 
@@ -4572,7 +4716,33 @@ public class PCEnhancer {
             // we're creating the subclass, not redefining the user type.
 
             // Reflection.getXXX(this, Reflection.findField(...));
-            throw new UnsupportedOperationException("MSX TODO IMPLEMENT!");
+
+            // Reflection.findField(declarer, fieldName, true);
+            instructions.add(new LdcInsnNode(Type.getType(declarer)));
+            instructions.add(new LdcInsnNode(fieldName));
+            instructions.add(new InsnNode(Opcodes.ICONST_1)); // true
+            instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+                                                Type.getInternalName(Reflection.class),
+                                                "findField",
+                                                Type.getMethodDescriptor(Type.getType(Field.class),
+                                                                         Type.getType(Class.class), Type.getType(String.class), Type.BOOLEAN_TYPE)));
+
+            // Reflection.getXXX(this, Field as stackparam);
+            try {
+                final Method getterMethod = getReflectionGetterMethod(fieldType, Field.class);
+                instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+                                                    Type.getInternalName(Reflection.class),
+                                                    getterMethod.getName(),
+                                                    Type.getMethodDescriptor(getterMethod)));
+            }
+            catch (NoSuchMethodException e) {
+                // should never happen
+                throw new InternalException(e);
+            }
+            if (!fieldType.isPrimitive() && fieldType != Object.class) {
+                instructions.add(new TypeInsnNode(Opcodes.CHECKCAST, Type.getInternalName(fieldType)));
+            }
+
         }
         else {
             instructions.add(new FieldInsnNode(Opcodes.GETFIELD, Type.getInternalName(declarer), fieldName, Type.getDescriptor(fieldType)));
@@ -4694,10 +4864,10 @@ public class PCEnhancer {
                                                 Type.getInternalName(Reflection.class),
                                                 "set",
                                                 Type.getMethodDescriptor(Type.VOID_TYPE,
-                                                                         Type.getType(Object.class),
+                                                                         TYPE_OBJECT,
                                                                          fieldType.isPrimitive()
                                                                                  ? Type.getType(fieldType)
-                                                                                 : Type.getType(Object.class),
+                                                                                 : TYPE_OBJECT,
                                                                          Type.getType(Field.class))));
 
         }
