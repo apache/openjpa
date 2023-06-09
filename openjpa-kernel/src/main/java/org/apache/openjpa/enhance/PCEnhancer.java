@@ -120,12 +120,10 @@ import org.apache.xbean.asm9.tree.VarInsnNode;
 import serp.bytecode.BCClass;
 import serp.bytecode.BCField;
 import serp.bytecode.BCMethod;
-import serp.bytecode.ClassInstruction;
 import serp.bytecode.Code;
 import serp.bytecode.Constants;
 import serp.bytecode.Exceptions;
 import serp.bytecode.FieldInstruction;
-import serp.bytecode.GetFieldInstruction;
 import serp.bytecode.IfInstruction;
 import serp.bytecode.Instruction;
 import serp.bytecode.JumpInstruction;
@@ -600,14 +598,14 @@ public class PCEnhancer {
                 _log.trace(_loc.get("enhance-start", type));
             }
 
-            final ClassNode classNode = AsmHelper.readClassNode(_managedType.toByteArray());
+            pc = AsmHelper.toClassNode(_pc);
 
-            configureBCs(classNode);
+            configureBCs();
 
             // validate properties before replacing field access so that
             // we build up a record of backing fields, etc
             if (isPropertyAccess(_meta)) {
-                validateProperties(classNode);
+                validateProperties();
                 if (getCreateSubclass()) {
                     addAttributeTranslation();
                 }
@@ -644,7 +642,8 @@ public class PCEnhancer {
         }
     }
 
-    private void configureBCs(final ClassNode classNode) {
+    private void configureBCs() {
+        final ClassNode classNode = pc.getClassNode();
         if (!_bcsConfigured) {
             if (getRedefine()) {
                 if (_managedType.getAttribute(REDEFINED_ATTRIBUTE) == null) {
@@ -723,24 +722,12 @@ public class PCEnhancer {
     }
 
     /**
-     * DELTEME
-     * Check if the fields are the same
-     *
-     * @deprecated should get removed after migration to ASM is done!
-     */
-    public static void assertSameField(Field field, BCField bcField) {
-        if (field == null && bcField != null || field != null && bcField == null ||
-                field != null && bcField != null && !field.getName().equals(bcField.getName())) {
-            throw new IllegalStateException("MSX ASMTODO " + bcField + " " + field);
-        }
-    }
-
-    /**
      * Validate that the methods that use a property-access instance are
      * written correctly. This method also gathers information on each
      * property's backing field.
      */
-    private void validateProperties(ClassNode classNode) {
+    private void validateProperties() {
+        final ClassNode classNode = pc.getClassNode();
         FieldMetaData[] fmds;
         if (getCreateSubclass()) {
             fmds = _meta.getFields();
@@ -751,7 +738,7 @@ public class PCEnhancer {
         Method meth;
 
         BCMethod bcGetter, bcSetter;
-        BCField bcReturned, bcAssigned = null;
+        BCField bcReturned = null;
 
         Method getter, setter;
         Field returned, assigned = null;
@@ -782,60 +769,58 @@ public class PCEnhancer {
                              true);
                 continue;
             }
-            bcReturned = getReturnedField_old(bcGetter);
             getter = meth;
             returned = getReturnedField(classNode, getter);
 
-            //X TODO remove
-            PCEnhancer.assertSameField(returned, bcReturned);
 
             if (returned != null) {
-                registerBackingFieldInfo(fmd, bcGetter, bcReturned);
+                registerBackingFieldInfo(fmd, getter, returned);
             }
 
-            bcSetter = declaringType.getDeclaredMethod(getSetterName(fmd),
-                                                       new Class[]{fmd.getDeclaredType()});
-            if (bcSetter == null) {
-                if (bcReturned == null) {
+            setter = getMethod(meth.getDeclaringClass(), getSetterName(fmd), fmd.getDeclaredType());
+
+            if (setter == null) {
+                if (returned == null) {
                     addViolation("property-no-setter",
                                  new Object[]{fmd}, true);
                     continue;
                 }
                 else if (!getRedefine()) {
                     // create synthetic setter
-                    bcSetter = _managedType.declareMethod(getSetterName(fmd),
-                                                          void.class, new Class[]{fmd.getDeclaredType()});
-                    bcSetter.makePrivate();
-                    Code code = bcSetter.getCode(true);
-                    code.aload().setThis();
-                    code.xload().setParam(0);
-                    code.putfield().setField(bcReturned);
-                    code.vreturn();
-                    code.calculateMaxStack();
-                    code.calculateMaxLocals();
+                    MethodNode setterNode = new MethodNode(Opcodes.ACC_PRIVATE,
+                                                           getSetterName(fmd),
+                                                           Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(fmd.getDeclaredType())),
+                                                           null, null);
+                    //X TODO: pc or managedType?
+                    pc.getClassNode().methods.add(setterNode);
+                    InsnList instructions = setterNode.instructions;
+                    instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                    instructions.add(new VarInsnNode(AsmHelper.getLoadInsn(fmd.getDeclaredType()), 1)); // param1
+                    instructions.add(new FieldInsnNode(Opcodes.PUTFIELD,
+                                                       Type.getInternalName(returned.getDeclaringClass()),
+                                                       returned.getName(),
+                                                       Type.getDescriptor(fmd.getDeclaredType())));
+                    instructions.add(new InsnNode(Opcodes.RETURN));
                 }
             }
 
-            if (bcSetter != null) {
-                bcAssigned = getAssignedField_old(bcSetter);
-
+            if (setter != null) {
                 assigned = getAssignedField(classNode, getMethod(fmd.getDeclaringType(), fmd.getSetterName(), new Class[]{fmd.getDeclaredType()}));
-                assertSameField(assigned, bcAssigned);
             }
 
-            if (bcAssigned != null) {
-                if (bcSetter != null)
-                    registerBackingFieldInfo(fmd, bcSetter, bcAssigned);
+            if (assigned != null) {
+                if (setter != null)
+                    registerBackingFieldInfo(fmd, setter, assigned);
 
-                if (bcAssigned != bcReturned)
+                if (assigned != returned)
                     addViolation("property-setter-getter-mismatch", new Object[]
-                            {fmd, bcAssigned.getName(), (bcReturned == null)
-                                    ? null : bcReturned.getName()}, false);
+                            {fmd, assigned.getName(), (returned == null)
+                                    ? null : returned.getName()}, false);
             }
         }
     }
 
-    private void registerBackingFieldInfo(FieldMetaData fmd, BCMethod method, BCField field) {
+    private void registerBackingFieldInfo(FieldMetaData fmd, Method method, Field field) {
         if (_backingFields == null) {
             _backingFields = new HashMap();
         }
@@ -851,6 +836,7 @@ public class PCEnhancer {
         }
         _fieldsToAttrs.put(field.getName(), fmd.getName());
     }
+
 
     private void addAttributeTranslation() {
 
@@ -933,12 +919,6 @@ public class PCEnhancer {
      * Return the field returned by the given method, or null if none.
      * Package-protected and static for testing.
      */
-    @Deprecated
-    static BCField getReturnedField_old(BCMethod meth) {
-        return findField_old(meth, new Code().xreturn()
-                .setType(meth.getReturnType()), false);
-    }
-
     static Field getReturnedField(ClassNode classNode, Method meth) {
         return findField(classNode, meth, (ain) -> ain.getOpcode() == AsmHelper.getReturnInsn(meth.getReturnType()), false);
     }
@@ -948,12 +928,6 @@ public class PCEnhancer {
      * Return the field assigned in the given method, or null if none.
      * Package-protected and static for testing.
      */
-    @Deprecated
-    static BCField getAssignedField_old(BCMethod meth) {
-        return findField_old(meth, (AccessController.doPrivileged(
-                J2DoPrivHelper.newCodeAction())).putfield(), true);
-    }
-
     static Field getAssignedField(ClassNode classNode, Method meth) {
         return findField(classNode, meth, (ain) -> ain.getOpcode() == Opcodes.PUTFIELD, true);
     }
@@ -963,75 +937,6 @@ public class PCEnhancer {
      * null if non-fields (methods, literals, parameters, variables) are
      * returned, or if non-parameters are assigned to fields.
      */
-    @Deprecated
-    private static BCField findField_old(BCMethod meth, Instruction template, boolean findAccessed) {
-        // ignore any static methods. OpenJPA only currently supports
-        // non-static setters and getters
-        if (meth.isStatic())
-            return null;
-
-        Code code = meth.getCode(false);
-        if (code == null)
-            return null;
-        code.beforeFirst();
-
-        BCField field = null, cur;
-        Instruction templateIns, prevIns, earlierIns;
-        while (code.searchForward(template)) {
-            int backupCount = 3;
-            templateIns = code.previous();
-            if (!code.hasPrevious())
-                return null;
-            prevIns = code.previous();
-
-            if (prevIns instanceof ClassInstruction
-                    && code.hasPrevious()) {
-                prevIns = code.previous();
-                backupCount++;
-            }
-
-            if (!code.hasPrevious())
-                return null;
-            earlierIns = code.previous();
-
-            // if the opcode two before the template was an aload_0, check
-            // against the middle instruction based on what type of find
-            // we're doing
-            if (!(earlierIns instanceof LoadInstruction)
-                    || !((LoadInstruction) earlierIns).isThis())
-                return null;
-
-            // if the middle instruction was a getfield, then it's the
-            // field that's being accessed
-            if (!findAccessed && prevIns instanceof GetFieldInstruction) {
-                final FieldInstruction fPrevIns = (FieldInstruction) prevIns;
-                cur = AccessController.doPrivileged(
-                        J2DoPrivHelper.getFieldInstructionFieldAction(fPrevIns));
-                // if the middle instruction was an xload_1, then the
-                // matched instruction is the field that's being set.
-            }
-            else if (findAccessed && prevIns instanceof LoadInstruction
-                    && ((LoadInstruction) prevIns).getParam() == 0) {
-                final FieldInstruction fTemplateIns =
-                        (FieldInstruction) templateIns;
-                cur = fTemplateIns.getField();
-            }
-            else
-                return null;
-
-            if (field != null && cur != field)
-                return null;
-            field = cur;
-
-            // ready for next search iteration
-            while (backupCount > 0) {
-                code.next();
-                backupCount--;
-            }
-        }
-        return field;
-    }
-
     private static Field findField(ClassNode classNode, Method meth, Predicate<AbstractInsnNode> ain, boolean findAccessed) {
         // ignore any static methods. OpenJPA only currently supports
         // non-static setters and getters
@@ -1100,7 +1005,7 @@ public class PCEnhancer {
             }
 
 
-            if (field != null && cur != field) {
+            if (field != null && !cur.equals(field)) {
                 return null;
             }
             field = cur;
@@ -1781,57 +1686,6 @@ public class PCEnhancer {
     }
 
     /**
-     * Adds the {@link PersistenceCapable#pcCopyFields} method to the bytecode.
-     */
-    @Deprecated
-    private void addCopyFieldsMethod()
-            throws NoSuchMethodException {
-        // public void pcCopyField (Object pc, int field)
-        BCMethod method = _pc.declareMethod(PRE + "CopyField",
-                                            void.class.getName(),
-                                            new String[]{_managedType.getName(), int.class.getName()});
-        method.makeProtected();
-        Code code = method.getCode(true);
-
-        // adds everything through the switch ()
-        int relLocal = beginSwitchMethod(PRE + "CopyField", code, true);
-
-        // if no fields in this inst, just throw exception
-        FieldMetaData[] fmds = getCreateSubclass() ? _meta.getFields()
-                : _meta.getDeclaredFields();
-        if (fmds.length == 0)
-            throwException(code, IllegalArgumentException.class);
-        else {
-            // switch (val)
-            code.iload().setLocal(relLocal);
-            TableSwitchInstruction tabins = code.tableswitch();
-            tabins.setLow(0);
-            tabins.setHigh(fmds.length - 1);
-
-            for (FieldMetaData fmd : fmds) {
-                // <field> = other.<field>;
-                // or set<field> (other.get<field>);
-                tabins.addTarget(loadManagedInstance(code, false, fmd));
-                code.aload().setParam(0);
-                addGetManagedValueCode(code, fmd, false);
-                addSetManagedValueCode(code, fmd);
-
-                // break;
-                code.vreturn();
-            }
-
-            // default: throw new IllegalArgumentException ()
-            tabins.setDefaultTarget(throwException
-                                            (code, IllegalArgumentException.class));
-        }
-
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-
-        addMultipleFieldsMethodVersion(method, true);
-    }
-
-    /**
      * Helper method to add the code common to the beginning of both the
      * pcReplaceField method and the pcProvideField method. This includes
      * calculating the relative field number of the desired field and calling
@@ -1882,59 +1736,6 @@ public class PCEnhancer {
         }
         instructions.add(afterRelCheck);
 
-        return relLocal;
-    }
-
-    /**
-     * Helper method to add the code common to the beginning of both the
-     * pcReplaceField method and the pcProvideField method. This includes
-     * calculating the relative field number of the desired field and calling
-     * the superclass if necessary.
-     *
-     * @return the index in which the local variable holding the relative
-     * field number is stored
-     */
-    @Deprecated
-    private int beginSwitchMethod(String name, Code code, boolean copy) {
-        int fieldNumber = (copy) ? 1 : 0;
-
-        int relLocal = code.getNextLocalsIndex();
-        if (getCreateSubclass()) {
-            code.iload().setParam(fieldNumber);
-            code.istore().setLocal(relLocal);
-            return relLocal;
-        }
-
-        // int rel = fieldNumber - pcInheritedFieldCount
-        code.iload().setParam(fieldNumber);
-        code.getstatic().setField(INHERIT, int.class);
-        code.isub();
-        code.istore().setLocal(relLocal);
-        code.iload().setLocal(relLocal);
-
-        // super: if (rel < 0) super.pcReplaceField (fieldNumber); return;
-        // no super: if (rel < 0) throw new IllegalArgumentException ();
-        JumpInstruction ifins = code.ifge();
-        if (_meta.getPCSuperclass() != null) {
-            loadManagedInstance(code, false);
-            String[] args;
-            if (copy) {
-                args = new String[]{getType(_meta.getPCSuperclassMetaData()).
-                        getName(), int.class.getName()};
-                code.aload().setParam(0);
-            }
-            else
-                args = new String[]{int.class.getName()};
-            code.iload().setParam(fieldNumber);
-            code.invokespecial().setMethod(getType(_meta.
-                                                           getPCSuperclassMetaData()).getName(), name,
-                                           void.class.getName(), args);
-            code.vreturn();
-        }
-        else
-            throwException(code, IllegalArgumentException.class);
-
-        ifins.setTarget(code.nop());
         return relLocal;
     }
 
@@ -2060,110 +1861,6 @@ public class PCEnhancer {
 
         instructions.add(new InsnNode(Opcodes.RETURN));
         }
-
-    /**
-     * This helper method, given the pcReplaceField or pcProvideField
-     * method, adds the bytecode for the corresponding 'plural' version
-     * of the method -- the version that takes an int[] of fields to
-     * to access rather than a single field. The multiple fields version
-     * simply loops through the provided indexes and delegates to the
-     * singular version for each one.
-     */
-    @Deprecated
-    private void addMultipleFieldsMethodVersion(BCMethod single, boolean copy) {
-
-        // public void <method>s (int[] fields)
-        Class[] args = (copy) ? new Class[]{Object.class, int[].class}
-                : new Class[]{int[].class};
-        BCMethod method = _pc.declareMethod(single.getName() + "s",
-                                            void.class, args);
-        Code code = method.getCode(true);
-
-        int fieldNumbers = 0;
-        int inst = 0;
-        if (copy) {
-            fieldNumbers = 1;
-
-            if (getCreateSubclass()) {
-                // get the managed instance into the local variable table
-                code.aload().setParam(0);
-                code.invokestatic().setMethod(ImplHelper.class,
-                                              "getManagedInstance", Object.class,
-                                              new Class[]{Object.class});
-                code.checkcast().setType(_managedType);
-                inst = code.getNextLocalsIndex();
-                code.astore().setLocal(inst);
-
-                // there might be a difference between the classes of 'this'
-                // vs 'other' in this context; use the PC methods to get the SM
-                code.aload().setParam(0);
-                code.aload().setThis();
-                code.getfield().setField(SM, SMTYPE);
-                code.invokestatic().setMethod(ImplHelper.class,
-                                              "toPersistenceCapable", PersistenceCapable.class,
-                                              new Class[]{Object.class, Object.class});
-
-                code.invokeinterface().setMethod(PersistenceCapable.class,
-                                                 "pcGetStateManager", StateManager.class, null);
-            }
-            else {
-                // XXX other = (XXX) pc;
-                code.aload().setParam(0);
-                code.checkcast().setType(_pc);
-                inst = code.getNextLocalsIndex();
-                code.astore().setLocal(inst);
-
-                // access the other's sm field directly
-                code.aload().setLocal(inst);
-                code.getfield().setField(SM, SMTYPE);
-            }
-
-            // if (other.pcStateManager != pcStateManager)
-            //    throw new IllegalArgumentException
-
-            loadManagedInstance(code, false);
-            code.getfield().setField(SM, SMTYPE);
-            JumpInstruction ifins = code.ifacmpeq();
-            throwException(code, IllegalArgumentException.class);
-            ifins.setTarget(code.nop());
-
-            // if (pcStateManager == null)
-            //  throw new IllegalStateException
-            loadManagedInstance(code, false);
-            code.getfield().setField(SM, SMTYPE);
-            ifins = code.ifnonnull();
-            throwException(code, IllegalStateException.class);
-            ifins.setTarget(code.nop());
-        }
-
-        // for (int i = 0;
-        code.constant().setValue(0);
-        int idx = code.getNextLocalsIndex();
-        code.istore().setLocal(idx);
-        JumpInstruction testins = code.go2();
-
-        // <method> (fields[i]);
-        Instruction bodyins = loadManagedInstance(code, false);
-        if (copy)
-            code.aload().setLocal(inst);
-        code.aload().setParam(fieldNumbers);
-        code.iload().setLocal(idx);
-        code.iaload();
-        code.invokevirtual().setMethod(single);
-
-        // i++;
-        code.iinc().setIncrement(1).setLocal(idx);
-
-        // i < fields.length
-        testins.setTarget(code.iload().setLocal(idx));
-        code.aload().setParam(fieldNumbers);
-        code.arraylength();
-        code.ificmplt().setTarget(bodyins);
-        code.vreturn();
-
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-    }
 
     /**
      * Adds the 'stock' methods to the bytecode; these include methods
@@ -5893,7 +5590,7 @@ public class PCEnhancer {
         boolean skipEnhance(BCMethod m);
     }
 
-    private void addGetIDOwningClass() throws NoSuchMethodException {
+    private void addGetIDOwningClass()  {
         BCMethod method = _pc.declareMethod(PRE + "GetIDOwningClass",
             Class.class, null);
         Code code = method.getCode(true);
