@@ -660,6 +660,8 @@ public class PCEnhancer {
                 val.assertCanSubclass();
 
                 _pc = _managedType.getProject().loadClass(toPCSubclassName(_managedType.getType()));
+                _pc.setMajorVersion(_managedType.getMajorVersion());
+                _pc.setMinorVersion(_managedType.getMinorVersion());
                 if (_pc.getSuperclassBC() != _managedType) {
                     _pc.setSuperclass(_managedType);
                     _pc.setAbstract(_managedType.isAbstract());
