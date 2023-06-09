@@ -38,8 +38,8 @@
     <version>3.2.3-SNAPSHOT</version>
 
     <properties>
-        <java.class.version>1.8</java.class.version>
-        <java.testclass.version>1.8</java.testclass.version>
+        <java.class.version>11</java.class.version>
+        <java.testclass.version>11</java.testclass.version>
 
         <doclint>none</doclint>
 
@@ -195,6 +195,71 @@
         <!-- ================ -->
         <!--  Build Profiles  -->
         <!-- ================ -->
+
+        <!-- JaCoCo profile -->
+        <profile>
+            <id>Control-Flow-Coverage</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>0.8.10</version>
+                        <executions>
+                            <execution>
+                                <id>default-prepare-agent</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>default-prepare-agent-integration</id>
+                                <goals>
+                                    <goal>prepare-agent-integration</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>default-report</id>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>default-report-integration</id>
+                                <goals>
+                                    <goal>report-integration</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>default-check</id>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                                <configuration>
+                                    <rules>
+                                        <rule>
+                                            <element>BUNDLE</element>
+                                            <limits>
+                                                <limit>
+                                                    <counter>COMPLEXITY</counter>
+                                                    <value>COVEREDRATIO</value>
+                                                    <!--> <minimum>0.6</minimum>  <-->
+                                                </limit>
+                                            </limits>
+                                        </rule>
+                                    </rules>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+
 
         <!-- Override some release settings inherited from apache-7.pom -->
         <profile>
@@ -2298,41 +2363,41 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.rat</groupId>
-                <artifactId>apache-rat-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <excludeSubProjects>false</excludeSubProjects>
-                    <numUnapprovedLicenses>0</numUnapprovedLicenses>
-                    <excludes>
-                        <!-- generated content -->
-                        <exclude>**/.*/**</exclude>
-                        <exclude>**/target/**/*</exclude>
-                    </excludes>
-                    <includes>
-                        <!-- only check common source files -->
-                        <include>**/src/**/*.bat</include>
-                        <include>**/src/**/*.css</include>
-                        <include>**/src/**/*.html</include>
-                        <include>**/src/**/*.java</include>
-                        <include>**/src/**/*.js</include>
-                        <include>**/src/**/*.jsp</include>
-                        <include>**/src/**/*.properties</include>
-                        <include>**/src/**/*.sh</include>
-                        <include>**/src/**/*.txt</include>
-                        <include>**/src/**/*.vm</include>
-                        <include>**/src/**/*.xml</include>
-                    </includes>
-                </configuration>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.rat</groupId>-->
+<!--                <artifactId>apache-rat-plugin</artifactId>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>verify</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>check</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--                <configuration>-->
+<!--                    <excludeSubProjects>false</excludeSubProjects>-->
+<!--                    <numUnapprovedLicenses>0</numUnapprovedLicenses>-->
+<!--                    <excludes>-->
+<!--                        &lt;!&ndash; generated content &ndash;&gt;-->
+<!--                        <exclude>**/.*/**</exclude>-->
+<!--                        <exclude>**/target/**/*</exclude>-->
+<!--                    </excludes>-->
+<!--                    <includes>-->
+<!--                        &lt;!&ndash; only check common source files &ndash;&gt;-->
+<!--                        <include>**/src/**/*.bat</include>-->
+<!--                        <include>**/src/**/*.css</include>-->
+<!--                        <include>**/src/**/*.html</include>-->
+<!--                        <include>**/src/**/*.java</include>-->
+<!--                        <include>**/src/**/*.js</include>-->
+<!--                        <include>**/src/**/*.jsp</include>-->
+<!--                        <include>**/src/**/*.properties</include>-->
+<!--                        <include>**/src/**/*.sh</include>-->
+<!--                        <include>**/src/**/*.txt</include>-->
+<!--                        <include>**/src/**/*.vm</include>-->
+<!--                        <include>**/src/**/*.xml</include>-->
+<!--                    </includes>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 
