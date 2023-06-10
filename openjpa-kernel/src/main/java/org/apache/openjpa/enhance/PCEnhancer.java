@@ -598,7 +598,6 @@ public class PCEnhancer {
                 _log.trace(_loc.get("enhance-start", type));
             }
 
-            pc = AsmHelper.toClassNode(_pc);
 
             configureBCs();
 
@@ -606,6 +605,7 @@ public class PCEnhancer {
             // we build up a record of backing fields, etc
             if (isPropertyAccess(_meta)) {
                 validateProperties();
+                AsmHelper.readIntoBCClass(pc, _pc);
                 if (getCreateSubclass()) {
                     addAttributeTranslation();
                 }
@@ -643,7 +643,6 @@ public class PCEnhancer {
     }
 
     private void configureBCs() {
-        final ClassNode classNode = pc.getClassNode();
         if (!_bcsConfigured) {
             if (getRedefine()) {
                 if (_managedType.getAttribute(REDEFINED_ATTRIBUTE) == null) {
@@ -655,7 +654,7 @@ public class PCEnhancer {
             }
 
             if (getCreateSubclass()) {
-                PCSubclassValidator val = new PCSubclassValidator(_meta, classNode, _log, _fail);
+                PCSubclassValidator val = new PCSubclassValidator(_meta, managedType.getClassNode(), _log, _fail);
                 val.assertCanSubclass();
 
                 _pc = _managedType.getProject().loadClass(toPCSubclassName(_managedType.getType()));
@@ -669,6 +668,7 @@ public class PCEnhancer {
                 else {
                     _isAlreadySubclassed = true;
                 }
+                pc = AsmHelper.toClassNode(_pc);
             }
 
             _bcsConfigured = true;
@@ -727,7 +727,7 @@ public class PCEnhancer {
      * property's backing field.
      */
     private void validateProperties() {
-        final ClassNode classNode = pc.getClassNode();
+        final ClassNode classNode = managedType.getClassNode();
         FieldMetaData[] fmds;
         if (getCreateSubclass()) {
             fmds = _meta.getFields();
@@ -735,16 +735,11 @@ public class PCEnhancer {
         else {
             fmds = _meta.getDeclaredFields();
         }
-        Method meth;
-
-        BCMethod bcGetter, bcSetter;
-        BCField bcReturned = null;
 
         Method getter, setter;
         Field returned, assigned = null;
 
         for (FieldMetaData fmd : fmds) {
-
             if (!(fmd.getBackingMember() instanceof Method)) {
                 // If not mixed access is not defined, flag the field members,
                 // otherwise do not process them because they are valid
@@ -757,19 +752,13 @@ public class PCEnhancer {
                 continue;
             }
 
-            meth = (Method) fmd.getBackingMember();
+            getter = (Method) fmd.getBackingMember();
 
-            // ##### this will fail if we override and don't call super.
-            BCClass declaringType = _managedType.getProject()
-                    .loadClass(fmd.getDeclaringType());
-            bcGetter = declaringType.getDeclaredMethod(meth.getName(),
-                                                       meth.getParameterTypes());
-            if (bcGetter == null) {
+            if (getter == null) {
                 addViolation("property-no-getter", new Object[]{fmd},
                              true);
                 continue;
             }
-            getter = meth;
             returned = getReturnedField(classNode, getter);
 
 
@@ -777,7 +766,7 @@ public class PCEnhancer {
                 registerBackingFieldInfo(fmd, getter, returned);
             }
 
-            setter = getMethod(meth.getDeclaringClass(), getSetterName(fmd), fmd.getDeclaredType());
+            setter = getMethod(getter.getDeclaringClass(), getSetterName(fmd), fmd.getDeclaredType());
 
             if (setter == null) {
                 if (returned == null) {
@@ -948,9 +937,7 @@ public class PCEnhancer {
             return null;
         }
 
-        final MethodNode methodNode = classNode.methods.stream()
-                .filter(mn -> mn.name.equals(meth.getName()) && mn.desc.equals(Type.getMethodDescriptor(meth)))
-                .findAny().get();
+        final MethodNode methodNode = findMethodNode(classNode, meth);
 
         Field field = null;
         Field cur;
@@ -1015,6 +1002,14 @@ public class PCEnhancer {
         return field;
     }
 
+    private static MethodNode findMethodNode(ClassNode classNode, Method meth) {
+        final MethodNode methodNode = classNode.methods.stream()
+                .filter(mn -> mn.name.equals(meth.getName()) && mn.desc.equals(Type.getMethodDescriptor(meth)))
+                .findAny().get();
+        return methodNode;
+    }
+
+
     private static Field getField(Class<?> clazz, String fieldName) {
         try {
             return clazz.getDeclaredField(fieldName);
@@ -1025,6 +1020,42 @@ public class PCEnhancer {
             }
             return getField(clazz.getSuperclass(), fieldName);
         }
+    }
+
+    /**
+     * get the Method with the given methodName and params from the given classNode or clazz
+     * @param classNodeTracker
+     * @param methodName
+     */
+    private static MethodNode getMethod(ClassNodeTracker classNodeTracker, String methodName, Class<?> returnType, Class<?>... paramTypes) {
+        Type[] parms = Arrays.stream(paramTypes)
+                .map(c -> Type.getType(c))
+                .toArray(Type[]::new);
+
+        String methodDescription = Type.getMethodDescriptor(Type.getType(returnType), parms);
+
+        final Optional<MethodNode> methodNode = classNodeTracker.getClassNode().methods.stream()
+                .filter(mn -> mn.name.equals(methodName) && mn.desc.equals(methodDescription))
+                .findAny();
+        if (methodNode.isPresent()) {
+            return methodNode.get();
+        }
+
+        // otherwise look up the parent class hierarchy
+        final String superName = classNodeTracker.getClassNode().superName;
+        if (superName == null || superName.equals("java/lang/Object")) {
+            // no need to dig further
+            return null;
+        }
+        try {
+            final Class<?> parentClass = classNodeTracker.getClassLoader().loadClass(superName.replace("/", "."));
+            Method m = getMethod(parentClass, methodName, paramTypes);
+            return new MethodNode(m.getModifiers(), m.getName(), Type.getMethodDescriptor(m), null, null);
+        }
+        catch (ClassNotFoundException e) {
+            throw new RuntimeException("Illegal superclass in ClassNode " + classNodeTracker.getClassNode().name, e);
+        }
+
     }
 
     private static Method getMethod(Class<?> clazz, String methodName, Class<?>... paramTypes) {
