@@ -58,26 +58,6 @@ public class TestSubclassValidator extends SingleEMFTestCase {
         repos.setSourceMode(MetaDataModes.MODE_META);
 
         final Log log = conf.getLog(OpenJPAConfiguration.LOG_ENHANCE);
-/*
-
-        {
-            final BCClass bcClass = project.loadClass(Department.class.getName(), tempCl);
-            final ClassMetaData meta = repos.getMetaData(tempCl.loadClass(Department.class.getName()), tempCl, false);
-            PCSubclassValidator subclassValidator = new PCSubclassValidator(meta, bcClass, log, false);
-            subclassValidator.assertCanSubclass();
-        }
-
-        try {
-            final BCClass bcClass = project.loadClass(RuntimeTest2.class.getName(), tempCl);
-            final ClassMetaData meta = repos.getMetaData(tempCl.loadClass(RuntimeTest2.class.getName()), tempCl, false);
-            PCSubclassValidator subclassValidator = new PCSubclassValidator(meta, bcClass, log, true);
-            subclassValidator.assertCanSubclass();
-            fail("RuntimeTest2 validation should fail");
-        }
-        catch (UserException ue) {
-            // all fine
-        }
-*/
 
         {
             ClassNode classNode = AsmHelper.readClassNode(EnhanceableGetterEntity.class.getClassLoader(), EnhanceableGetterEntity.class.getName());

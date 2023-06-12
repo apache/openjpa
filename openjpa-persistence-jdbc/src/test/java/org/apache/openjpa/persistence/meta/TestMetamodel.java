@@ -60,24 +60,24 @@ public class TestMetamodel extends SingleEMFTestCase {
     @Override
     public void setUp() {
         if (model == null) {
-    	super.setUp(
-    	        "openjpa.RuntimeUnenhancedClasses", "unsupported",
-    	        "openjpa.DynamicEnhancementAgent", "false",
-    			ImplicitFieldAccessMappedSuperclass.class,
-    	        ImplicitFieldAccessBase.class,
-    	        ImplicitFieldAccessSubclass.class,
-    	        ExplicitFieldAccess.class,
-    	        ExplicitPropertyAccess.class,
-    	        Embed0.class,
-    	        Embed1.class,
-    	        OneOneParent.class,
-    	        OneOneChild.class,
-    	        Book.class,
-    	        Library.class,
-    	        Page.class,
-    	        Address.class,
-    	        Geocode.class);
-    	emf.createEntityManager();
+        super.setUp(
+                "openjpa.RuntimeUnenhancedClasses", "unsupported",
+                "openjpa.DynamicEnhancementAgent", "false",
+                ImplicitFieldAccessMappedSuperclass.class,
+                ImplicitFieldAccessBase.class,
+                ImplicitFieldAccessSubclass.class,
+                ExplicitFieldAccess.class,
+                ExplicitPropertyAccess.class,
+                Embed0.class,
+                Embed1.class,
+                OneOneParent.class,
+                OneOneChild.class,
+                Book.class,
+                Library.class,
+                Page.class,
+                Address.class,
+                Geocode.class);
+        emf.createEntityManager();
         model = (MetamodelImpl)emf.getMetamodel();
         }
     }
@@ -109,11 +109,11 @@ public class TestMetamodel extends SingleEMFTestCase {
     }
 
     public void testDomainClassCategorizedInPersistentCategory() {
-    	assertCategory(PersistenceType.MAPPED_SUPERCLASS, ImplicitFieldAccessMappedSuperclass.class);
-    	assertCategory(PersistenceType.ENTITY, ImplicitFieldAccessBase.class);
-    	assertCategory(PersistenceType.ENTITY, ImplicitFieldAccessSubclass.class);
-    	assertCategory(PersistenceType.EMBEDDABLE, Embed0.class);
-    	assertCategory(PersistenceType.EMBEDDABLE, Embed1.class);
+        assertCategory(PersistenceType.MAPPED_SUPERCLASS, ImplicitFieldAccessMappedSuperclass.class);
+        assertCategory(PersistenceType.ENTITY, ImplicitFieldAccessBase.class);
+        assertCategory(PersistenceType.ENTITY, ImplicitFieldAccessSubclass.class);
+        assertCategory(PersistenceType.EMBEDDABLE, Embed0.class);
+        assertCategory(PersistenceType.EMBEDDABLE, Embed1.class);
 
         assertNotNull(model.entity(ImplicitFieldAccessBase.class));
         assertNotNull(model.entity(ImplicitFieldAccessSubclass.class));
@@ -401,7 +401,7 @@ public class TestMetamodel extends SingleEMFTestCase {
     }
 
     void assertCategory(PersistenceType category, Class<?> cls) {
-    	assertEquals(cls.toString(), category, categorize(cls));
+        assertEquals(cls.toString(), category, categorize(cls));
     }
 
     Field getStaticField(Class<?> cls, String name) {

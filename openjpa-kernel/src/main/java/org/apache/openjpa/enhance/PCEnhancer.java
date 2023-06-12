@@ -5189,10 +5189,7 @@ public class PCEnhancer {
         // just do a subclass approach instead. But this is not a good option,
         // since it would sacrifice lazy loading and efficient dirty tracking.
         if (getRedefine() || isFieldAccess(fmd)) {
-            instructions.add(new FieldInsnNode(Opcodes.PUTFIELD,
-                                               Type.getInternalName(fmd.getDeclaringType()),
-                                               fmd.getName(),
-                                               Type.getDescriptor(fmd.getDeclaredType())));
+            putfield(instructions, fmd.getDeclaringType(), fmd.getName(), fmd.getDeclaredType());
         }
         else if (getCreateSubclass()) {
             // property access, and we're not redefining. invoke the
