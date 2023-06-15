@@ -101,21 +101,7 @@ import org.apache.openjpa.util.asm.ClassNodeTracker;
 import org.apache.openjpa.util.asm.ClassWriterTracker;
 import org.apache.xbean.asm9.Opcodes;
 import org.apache.xbean.asm9.Type;
-import org.apache.xbean.asm9.tree.AbstractInsnNode;
-import org.apache.xbean.asm9.tree.ClassNode;
-import org.apache.xbean.asm9.tree.FieldInsnNode;
-import org.apache.xbean.asm9.tree.FieldNode;
-import org.apache.xbean.asm9.tree.IincInsnNode;
-import org.apache.xbean.asm9.tree.InsnList;
-import org.apache.xbean.asm9.tree.InsnNode;
-import org.apache.xbean.asm9.tree.JumpInsnNode;
-import org.apache.xbean.asm9.tree.LabelNode;
-import org.apache.xbean.asm9.tree.LdcInsnNode;
-import org.apache.xbean.asm9.tree.MethodInsnNode;
-import org.apache.xbean.asm9.tree.MethodNode;
-import org.apache.xbean.asm9.tree.TableSwitchInsnNode;
-import org.apache.xbean.asm9.tree.TypeInsnNode;
-import org.apache.xbean.asm9.tree.VarInsnNode;
+import org.apache.xbean.asm9.tree.*;
 
 import serp.bytecode.BCClass;
 import serp.bytecode.BCField;
@@ -605,10 +591,10 @@ public class PCEnhancer {
             // we build up a record of backing fields, etc
             if (isPropertyAccess(_meta)) {
                 validateProperties();
-                AsmHelper.readIntoBCClass(pc, _pc);
                 if (getCreateSubclass()) {
                     addAttributeTranslation();
                 }
+                AsmHelper.readIntoBCClass(pc, _pc);
             }
             replaceAndValidateFieldAccess();
             processViolations();
@@ -801,7 +787,7 @@ public class PCEnhancer {
                 if (setter != null)
                     registerBackingFieldInfo(fmd, setter, assigned);
 
-                if (assigned != returned)
+                if (!assigned.equals(returned))
                     addViolation("property-setter-getter-mismatch", new Object[]
                             {fmd, assigned.getName(), (returned == null)
                                     ? null : returned.getName()}, false);
@@ -850,51 +836,56 @@ public class PCEnhancer {
                 return;
         }
 
-        _pc.declareInterface(AttributeTranslator.class);
-        BCMethod method = _pc.declareMethod(PRE + "AttributeIndexToFieldName",
-                                            String.class, new Class[]{int.class});
-        method.makePublic();
-        Code code = method.getCode(true);
+        ClassNode classNode = pc.getClassNode();
+        classNode.interfaces.add(Type.getInternalName(AttributeTranslator.class));
+
+        MethodNode attrIdxMeth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                                PRE + "AttributeIndexToFieldName",
+                                                Type.getMethodDescriptor(Type.getType(String.class), Type.INT_TYPE),
+                                                null, null);
+        classNode.methods.add(attrIdxMeth);
+
+        InsnList instructions = attrIdxMeth.instructions;
 
         // switch (val)
-        code.iload().setParam(0);
+        instructions.add(new VarInsnNode(Opcodes.ILOAD, 1)); // int param of the method
         if (!_meta.isMixedAccess()) {
             // if not mixed access use a table switch on all property-based fmd.
             // a table switch is more efficient with +1 incremental operations
-            TableSwitchInstruction tabins = code.tableswitch();
 
-            tabins.setLow(0);
-            tabins.setHigh(fmds.length - 1);
+            LabelNode defLbl = new LabelNode();
+            TableSwitchInsnNode switchNd = new TableSwitchInsnNode(0, fmds.length-1, defLbl);
+            instructions.add(switchNd);
 
             // case i:
             //     return <_attrsToFields.get(fmds[i].getName())>
             for (FieldMetaData fmd : fmds) {
-                tabins.addTarget(code.constant().setValue(
-                        _attrsToFields.get(fmd.getName())));
-                code.areturn();
+                LabelNode caseLabel = new LabelNode();
+                switchNd.labels.add(caseLabel);
+                instructions.add(caseLabel);
+                instructions.add(new LdcInsnNode(_attrsToFields.get(fmd.getName())));
+                instructions.add(new InsnNode(Opcodes.ARETURN));
             }
+
             // default: throw new IllegalArgumentException ()
-            tabins.setDefaultTarget(throwException
-                                            (code, IllegalArgumentException.class));
+            instructions.add(defLbl);
+            instructions.add(throwException(IllegalArgumentException.class));
         }
         else {
             // In mixed access mode, property indexes are not +1 incremental
             // a lookup switch must be used to do indexed lookup.
-            LookupSwitchInstruction lookupins = code.lookupswitch();
-
+            LabelNode defLbl = new LabelNode();
+            LookupSwitchInsnNode switchNd = new LookupSwitchInsnNode(defLbl, null, null);
+            instructions.add(switchNd);
             for (Integer i : propFmds) {
-                lookupins.addCase(i,
-                                  code.constant().setValue(
-                                          _attrsToFields.get(fmds[i].getName())));
-                code.areturn();
+                LabelNode caseLabel = new LabelNode();
+                instructions.add(caseLabel);
+                switchNd.labels.add(caseLabel);
+                switchNd.keys.add(propFmds.get(i));
+                instructions.add(new LdcInsnNode(_attrsToFields.get(fmds[i].getName())));
+                instructions.add(new InsnNode(Opcodes.ARETURN));
             }
-            // default: throw new IllegalArgumentException ()
-            lookupins.setDefaultTarget(throwException
-                                               (code, IllegalArgumentException.class));
         }
-
-        code.calculateMaxLocals();
-        code.calculateMaxStack();
     }
 
     /**
