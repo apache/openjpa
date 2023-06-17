@@ -109,16 +109,12 @@ import serp.bytecode.BCMethod;
 import serp.bytecode.Code;
 import serp.bytecode.Constants;
 import serp.bytecode.Exceptions;
-import serp.bytecode.FieldInstruction;
 import serp.bytecode.IfInstruction;
 import serp.bytecode.Instruction;
 import serp.bytecode.JumpInstruction;
 import serp.bytecode.LoadInstruction;
-import serp.bytecode.LookupSwitchInstruction;
-import serp.bytecode.MethodInstruction;
 import serp.bytecode.Project;
 import serp.bytecode.PutFieldInstruction;
-import serp.bytecode.TableSwitchInstruction;
 
 /**
  * Bytecode enhancer used to enhance persistent classes from metadata. The
@@ -594,13 +590,11 @@ public class PCEnhancer {
                 if (getCreateSubclass()) {
                     addAttributeTranslation();
                 }
-                AsmHelper.readIntoBCClass(pc, _pc);
             }
             replaceAndValidateFieldAccess();
             processViolations();
 
             if (_meta != null) {
-                pc = AsmHelper.toClassNode(_pc);
                 enhanceClass(pc);
                 addFields(pc);
                 //X TODO finish addStaticInitializer(classNodeTracker);
@@ -1098,25 +1092,12 @@ public class PCEnhancer {
      * pcGet/pcSet method. Note that this includes access to fields
      * owned by PersistenceCapable classes other than this one.
      */
-    private void replaceAndValidateFieldAccess() throws NoSuchMethodException {
-        // create template putfield/getfield instructions to search for
-        Code template = AccessController.doPrivileged(
-                J2DoPrivHelper.newCodeAction());
-        Instruction put = template.putfield();
-        Instruction get = template.getfield();
-        Instruction stat = template.invokestatic();
-
-        // look through all methods; this is done before any methods are added
-        // so we don't need to worry about excluding synthetic methods.
-        BCMethod[] methods = _managedType.getDeclaredMethods();
-        Code code;
-        for (BCMethod method : methods) {
-            code = method.getCode(false);
-
-            // don't modify the methods specified by the auxiliary enhancers
-            if (code != null && !skipEnhance(method)) {
-                replaceAndValidateFieldAccess(code, get, true, stat);
-                replaceAndValidateFieldAccess(code, put, false, stat);
+    private void replaceAndValidateFieldAccess() throws NoSuchMethodException, ClassNotFoundException {
+        final ClassNode classNode = pc.getClassNode();
+        for (MethodNode methodNode : classNode.methods) {
+            if (methodNode.instructions.size() > 0 && !skipEnhance(methodNode)) {
+                replaceAndValidateFieldAccess(classNode, methodNode, (a)-> a.getOpcode() == Opcodes.GETFIELD, true);
+                replaceAndValidateFieldAccess(classNode, methodNode, (a)-> a.getOpcode() == Opcodes.PUTFIELD, false);
             }
         }
     }
@@ -1125,28 +1106,27 @@ public class PCEnhancer {
      * Replaces all instructions matching the given template in the given
      * code block with calls to the appropriate generated getter/setter.
      *
-     * @param code the code block to modify; the code iterator will
+     * @param methodNode the code block to modify; the code iterator will
      *             be placed before the first instruction on method start,
      *             and will be after the last instruction on method completion
-     * @param ins  the template instruction to search for; either a
+     * @param insnCheck  the template instruction to search for; either a
      *             getfield or putfield instruction
      * @param get  boolean indicating if this is a get instruction
-     * @param stat template invokestatic instruction to replace with
      */
-    private void replaceAndValidateFieldAccess(Code code, Instruction ins,
-                                               boolean get, Instruction stat) throws NoSuchMethodException {
-        code.beforeFirst();
+    private void replaceAndValidateFieldAccess(ClassNode classNode, MethodNode methodNode, Predicate<AbstractInsnNode> insnCheck,
+                                               boolean get) throws NoSuchMethodException, ClassNotFoundException {
+        AbstractInsnNode currentInsn = methodNode.instructions.getFirst();
 
-        FieldInstruction fi;
-        MethodInstruction mi;
-        ClassMetaData owner;
-        String name, typeName, methodName;
-        while (code.searchForward(ins)) {
-            // back up to the matched instruction
-            fi = (FieldInstruction) code.previous();
-            name = fi.getFieldName();
-            typeName = fi.getFieldTypeName();
-            owner = getPersistenceCapableOwner(name, fi.getFieldDeclarerType());
+        // skip to the next instruction we are looking for
+        while ((currentInsn = searchNextInstruction(currentInsn, insnCheck)) != null) {
+            FieldInsnNode fi = (FieldInsnNode) currentInsn;
+            String name = fi.name;
+
+            ClassMetaData owner = null;
+            if (fi.owner != null) {
+                final Class<?> declarerType = AsmHelper.getDescribedClass(managedType.getClassLoader(), fi.owner);
+                owner = getPersistenceCapableOwner(name, declarerType);
+            }
             FieldMetaData fmd = owner == null ? null : owner.getField(name);
             if (isPropertyAccess(fmd)) {
                 // if we're directly accessing a field in another class
@@ -1155,72 +1135,97 @@ public class PCEnhancer {
                         _meta != null && !owner.getDescribedType()
                         .isAssignableFrom(_meta.getDescribedType()))
                     throw new UserException(_loc.get("property-field-access",
-                                                     new Object[]{_meta, owner, name,
-                                                             code.getMethod().getName()}));
+                                                     new Object[]{_meta, owner, name, methodNode.name}));
 
                 // if we're directly accessing a property-backing field outside
                 // the property in our own class, notify user
-                if (isBackingFieldOfAnotherProperty(name, code))
-                    addViolation("property-field-access", new Object[]{_meta,
-                            owner, name, code.getMethod().getName()}, false);
+                if (isBackingFieldOfAnotherProperty(methodNode, name)) {
+                    addViolation("property-field-access", new Object[]{_meta, owner, name, methodNode.name}, false);
+                }
             }
 
-            if (owner == null ||
-                    owner.getDeclaredField(fromBackingFieldName(name)) == null) {
-                // not persistent field?
-                code.next();
-                continue;
+            if (owner == null || owner.getDeclaredField(fromBackingFieldName(name)) == null) {
+                // not a persistent field?
             }
-            else if (!getRedefine() && !getCreateSubclass()
-                    && isFieldAccess(fmd)) {
-                // replace the instruction with a call to the generated access
-                // method
-                mi = (MethodInstruction) code.set(stat);
-
-                // invoke the proper access method, whether getter or setter
-                String prefix = (get) ? PRE + "Get" : PRE + "Set";
-                methodName = prefix + name;
+            else if (!getRedefine() && !getCreateSubclass() && isFieldAccess(fmd)) {
+                // replace the instruction with a call to the generated access method
+                Type ownerType = Type.getType(getType(owner));
+                MethodInsnNode pcCall;
                 if (get) {
-                    mi.setMethod(getType(owner).getName(),
-                                 methodName, typeName, new String[]
-                                         {getType(owner).getName()});
+                    pcCall = new MethodInsnNode(Opcodes.INVOKESTATIC,
+                                                ownerType.getInternalName(),
+                                                PRE + "Get" + name,
+                                                Type.getMethodDescriptor(Type.getType(fi.desc), ownerType));
                 }
                 else {
-                    mi.setMethod(getType(owner).getName(),
-                                 methodName, "void", new String[]
-                                         {getType(owner).getName(), typeName});
+                    pcCall = new MethodInsnNode(Opcodes.INVOKESTATIC,
+                                                ownerType.getInternalName(),
+                                                PRE + "Set" + name,
+                                                Type.getMethodDescriptor(Type.VOID_TYPE, ownerType, Type.getType(fi.desc)));
                 }
-                code.next();
+                methodNode.instructions.insertBefore(currentInsn, pcCall);
+                // and now delete the direct field access
+                methodNode.instructions.remove(currentInsn);
+
+                // next iteration will be started here.
+                currentInsn = pcCall;
             }
             else if (getRedefine()) {
                 name = fromBackingFieldName(name);
                 if (get) {
-                    addNotifyAccess(code, owner.getField(name));
-                    code.next();
+                    addNotifyAccess(methodNode, currentInsn, owner.getField(name));
                 }
                 else {
                     // insert the set operations after the field mutation, but
                     // first load the old value for use in the
                     // StateManager.settingXXX method.
-                    loadManagedInstance(code, false);
-                    final FieldInstruction fFi = fi;
-                    code.getfield().setField(
-                            AccessController.doPrivileged(J2DoPrivHelper
-                                                                  .getFieldInstructionFieldAction(fFi)));
-                    int val = code.getNextLocalsIndex();
-                    code.xstore().setLocal(val).setType(fi.getFieldType());
 
-                    // move past the putfield
-                    code.next();
-                    addNotifyMutation(code, owner.getField(name), val, -1);
+                    InsnList insns = new InsnList();
+                    insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+
+                    int valVarPos = methodNode.maxLocals++;
+                    insns.add(new VarInsnNode(AsmHelper.getCorrespondingLoadInsn(fi.getOpcode()), valVarPos));
+
+                    currentInsn = addNotifyMutation(classNode, methodNode, currentInsn, owner.getField(name), valVarPos, -1);
                 }
+
             }
-            else {
-                code.next();
-            }
-            code.calculateMaxLocals();
-            code.calculateMaxStack();
+
+            currentInsn = currentInsn.getNext();
         }
+    }
+
+    /**
+     * Scan the instructions until you found any which fits the predicate.
+     * @param currentInsn the instruction to start searching from
+     * @param insnCheck the condition which has to be met
+     * @return the instruction node we did search for or {@code null} if there is no such instruction.
+     */
+    private AbstractInsnNode searchNextInstruction(AbstractInsnNode currentInsn, Predicate<AbstractInsnNode> insnCheck) {
+        while (currentInsn != null && !insnCheck.test(currentInsn)) {
+            currentInsn = currentInsn.getNext();
+        }
+
+        return currentInsn;
+    }
+
+    /**
+     * Add the following code to the code:
+     * <code>
+     * PCHelper.accessingField(this, <absolute-index>);
+     * </code>
+     */
+    private void addNotifyAccess(MethodNode methodNode, AbstractInsnNode currentInsn, FieldMetaData fmd) {
+        InsnList insns = new InsnList();
+
+        insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        insns.add(new LdcInsnNode(fmd.getIndex()));
+        insns.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+                                     Type.getInternalName(RedefinitionHelper.class),
+                                     "accessingField",
+                                     Type.getMethodDescriptor(Type.VOID_TYPE, TYPE_OBJECT, Type.INT_TYPE)));
+
+        methodNode.instructions.insertBefore(currentInsn, insns);
     }
 
     private void addNotifyAccess(Code code, FieldMetaData fmd) {
@@ -1235,15 +1240,52 @@ public class PCEnhancer {
     /**
      * This must be called after setting the value in the object.
      *
+     * @param valVarPos   the position in the local variable table where the
+     *              old value is stored
+     * @param param the parameter position containing the new value, or
+     *              -1 if the new value is unavailable and should therefore be looked
+     *              up.
+     * @return the last inserted InsnNode
+     */
+    private AbstractInsnNode addNotifyMutation(ClassNode classNode, MethodNode methodNode, AbstractInsnNode currentInsn,
+                                   FieldMetaData fmd, int valVarPos, int param) {
+        // PCHelper.settingField(this, <absolute-index>, old, new);
+        InsnList insns = new InsnList();
+
+        insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        insns.add(new LdcInsnNode(fmd.getIndex()));
+
+        Class type = fmd.getDeclaredType();
+        // we only have special signatures for primitives and Strings
+        if (!type.isPrimitive() && type != String.class) {
+            type = Object.class;
+        }
+        insns.add(new VarInsnNode(AsmHelper.getLoadInsn(type), valVarPos));
+        if (param == -1) {
+            insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+            addGetManagedValueCode(classNode, insns, fmd, true);
+        }
+        else {
+            insns.add(new VarInsnNode(AsmHelper.getLoadInsn(type), param + 1));
+        }
+        insns.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+                                     Type.getInternalName(RedefinitionHelper.class),
+                                     "settingField",
+                                     Type.getMethodDescriptor(Type.VOID_TYPE, TYPE_OBJECT, Type.INT_TYPE, Type.getType(type))));
+
+        methodNode.instructions.insert(currentInsn, insns);
+        return insns.getLast();
+    }
+    /**
+     * This must be called after setting the value in the object.
+     *
      * @param val   the position in the local variable table where the
      *              old value is stored
      * @param param the parameter position containing the new value, or
      *              -1 if the new value is unavailable and should therefore be looked
      *              up.
-     * @throws NoSuchMethodException
      */
-    private void addNotifyMutation(Code code, FieldMetaData fmd, int val,
-                                   int param)
+    private void addNotifyMutation(Code code, FieldMetaData fmd, int val, int param)
             throws NoSuchMethodException {
         // PCHelper.settingField(this, <absolute-index>, old, new);
         code.aload().setThis();
@@ -1270,8 +1312,8 @@ public class PCEnhancer {
      * Return true if the given instruction accesses a field that is a backing
      * field of another property in this property-access class.
      */
-    private boolean isBackingFieldOfAnotherProperty(String name, Code code) {
-        String methName = code.getMethod().getName();
+    private boolean isBackingFieldOfAnotherProperty(MethodNode methodNode, String name) {
+        String methName = methodNode.name;
         return !"<init>".equals(methName)
                 && _backingFields != null
                 && !name.equals(_backingFields.get(methName))
@@ -4093,13 +4135,15 @@ public class PCEnhancer {
      * @return true if any of the auxiliary enhancers skips the given method,
      * or if the method is a constructor
      */
-    private boolean skipEnhance(BCMethod method) {
-        if ("<init>".equals(method.getName()))
+    private boolean skipEnhance(MethodNode method) {
+        if ("<init>".equals(method.name) || "<clinit>".equals(method.name)) {
             return true;
+        }
 
         for (AuxiliaryEnhancer auxEnhancer : _auxEnhancers)
-            if (auxEnhancer.skipEnhance(method))
+            if (auxEnhancer.skipEnhance(method)) {
                 return true;
+            }
 
         return false;
     }
@@ -5606,7 +5650,11 @@ public class PCEnhancer {
     public interface AuxiliaryEnhancer
     {
         void run (BCClass bc, ClassMetaData meta);
+
+        @Deprecated
         boolean skipEnhance(BCMethod m);
+
+        boolean skipEnhance(MethodNode m);
     }
 
     private void addGetIDOwningClass()  {

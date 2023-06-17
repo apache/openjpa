@@ -28,6 +28,7 @@ import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 
+import org.apache.xbean.asm9.tree.MethodNode;
 import serp.bytecode.BCClass;
 import serp.bytecode.BCMethod;
 import serp.bytecode.Code;
@@ -48,6 +49,11 @@ public class FetchStatisticsAuxEnhancer implements AuxiliaryEnhancer {
 
     @Override
     public boolean skipEnhance(BCMethod arg0) {
+        return false;
+    }
+
+    @Override
+    public boolean skipEnhance(MethodNode m) {
         return false;
     }
 

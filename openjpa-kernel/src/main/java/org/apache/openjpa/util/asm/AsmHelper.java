@@ -19,6 +19,7 @@ package org.apache.openjpa.util.asm;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -28,6 +29,7 @@ import org.apache.xbean.asm9.Opcodes;
 import org.apache.xbean.asm9.Type;
 import org.apache.xbean.asm9.tree.AbstractInsnNode;
 import org.apache.xbean.asm9.tree.ClassNode;
+import org.apache.xbean.asm9.tree.FieldInsnNode;
 import org.apache.xbean.asm9.tree.VarInsnNode;
 
 import serp.bytecode.BCClass;
@@ -39,6 +41,8 @@ import serp.bytecode.Project;
  * @author <a href="mailto:struberg@apache.org">Mark Struberg</a>
  */
 public final class AsmHelper {
+    private static final char[] PRIMITIVE_DESCRIPTORS = {'V','Z','C','B','S','I','F','J','D'};
+
     private AsmHelper() {
         // utility class ct
     }
@@ -312,5 +316,169 @@ public final class AsmHelper {
         return insn instanceof VarInsnNode
                 && insn.getOpcode() == Opcodes.ALOAD
                 && ((VarInsnNode)insn).var == 0;
+    }
+
+    /**
+     * Get the corresponding LOAD instruction for the given STORE instruction.
+     * 
+     * @param storeInsnOpcode e.g. {@link Opcodes#ISTORE}
+     * @throws IllegalArgumentException if the given opcode is not a STORE instruction
+     */
+    public static int getCorrespondingLoadInsn(int storeInsnOpcode) {
+        switch (storeInsnOpcode) {
+            case Opcodes.ISTORE:
+                return Opcodes.ILOAD;
+            case Opcodes.LSTORE:
+                return Opcodes.LLOAD;
+            case Opcodes.FSTORE:
+                return Opcodes.FLOAD;
+            case Opcodes.DSTORE:
+                return Opcodes.DLOAD;
+            case Opcodes.ASTORE:
+                return Opcodes.ALOAD;
+            case Opcodes.IASTORE:
+                return Opcodes.IALOAD;
+            case Opcodes.LASTORE:
+                return Opcodes.LALOAD;
+            case Opcodes.FASTORE:
+                return Opcodes.FALOAD;
+            case Opcodes.DASTORE:
+                return Opcodes.DALOAD;
+            case Opcodes.AASTORE:
+                return Opcodes.AALOAD;
+            case Opcodes.BASTORE:
+                return Opcodes.BALOAD;
+            case Opcodes.CASTORE:
+                return Opcodes.CALOAD;
+            case Opcodes.SASTORE:
+                return Opcodes.SALOAD;
+            default:
+                throw new IllegalArgumentException("Not a STORE instruction: " + storeInsnOpcode);
+        }
+    }
+
+    /**
+     * Get the corresponding STORE instruction for the given LOAD instruction.
+     * 
+     * @param loadInsnOpcode e.g. {@link Opcodes#FLOAD}
+     * @throws IllegalArgumentException if the given opcode is not a STORE instruction
+     */
+    public static int getCorrespondingStoreInsn(int loadInsnOpcode) {
+        switch (loadInsnOpcode) {
+            case Opcodes.ILOAD:
+                return Opcodes.ISTORE;
+            case Opcodes.LLOAD:
+                return Opcodes.LSTORE;
+            case Opcodes.FLOAD:
+                return Opcodes.FSTORE;
+            case Opcodes.DLOAD:
+                return Opcodes.DSTORE;
+            case Opcodes.ALOAD:
+                return Opcodes.ASTORE;
+            case Opcodes.IALOAD:
+                return Opcodes.IASTORE;
+            case Opcodes.LALOAD:
+                return Opcodes.LASTORE;
+            case Opcodes.FALOAD:
+                return Opcodes.FASTORE;
+            case Opcodes.DALOAD:
+                return Opcodes.DASTORE;
+            case Opcodes.AALOAD:
+                return Opcodes.AASTORE;
+            case Opcodes.BALOAD:
+                return Opcodes.BASTORE;
+            case Opcodes.CALOAD:
+                return Opcodes.CASTORE;
+            case Opcodes.SALOAD:
+                return Opcodes.SASTORE;
+            default:
+                throw new IllegalArgumentException("Not a LOAD instruction: " + loadInsnOpcode);
+        }
+    }
+
+    /**
+     * @param typeDesc the internal type descriptor from the bytecode. See {@link ClassNode#name}
+     * @param includeVoid if the Void.class type also counts as primitive
+     */
+    public static boolean isPrimitive(String typeDesc, boolean includeVoid) {
+        if (typeDesc != null && typeDesc.length() == 1) {
+            char typeChar = typeDesc.charAt(0);
+            for (int i = includeVoid ? 0: 1; i<PRIMITIVE_DESCRIPTORS.length; i++) {
+                if (PRIMITIVE_DESCRIPTORS[i] == typeChar) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get the class from the described type
+     * @param typeDesc
+     * @return described class or {@code null} if it could not be loaded
+     */
+    public static Class<?> getDescribedClass(ClassLoader classLoader, String typeDesc) {
+        if (typeDesc == null || typeDesc.isEmpty()) {
+            return null;
+        }
+        if (typeDesc.charAt(0) == '[') {
+            switch (typeDesc.charAt(1)) {
+                case 'V':
+                    throw new IllegalArgumentException("There is no such thing as a void array");
+                case 'Z':
+                    return boolean[].class;
+                case 'C':
+                    return char[].class;
+                case 'B':
+                    return byte[].class;
+                case 'S':
+                    return short[].class;
+                case 'I':
+                    return int[].class;
+                case 'F':
+                    return float[].class;
+                case 'J':
+                    return long[].class;
+                case 'D':
+                    return double[].class;
+                default:
+                    // some object array
+                    Class<?> clazz = getClass(classLoader, typeDesc.substring(1));
+                    return Array.newInstance(clazz, 0).getClass();
+            }
+        }
+
+        switch (typeDesc.charAt(0)) {
+            case 'V':
+                return void.class;
+            case 'Z':
+                return boolean.class;
+            case 'C':
+                return char.class;
+            case 'B':
+                return byte.class;
+            case 'S':
+                return short.class;
+            case 'I':
+                return int.class;
+            case 'F':
+                return float.class;
+            case 'J':
+                return long.class;
+            case 'D':
+                return double.class;
+            default:
+                // some kind of class
+                return getClass(classLoader, typeDesc);
+        }
+    }
+
+    private static Class<?> getClass(ClassLoader classLoader, String typeName) {
+        try {
+            return Class.forName(typeName.replace("/", "."), false, classLoader);
+        }
+        catch (NoClassDefFoundError | ClassNotFoundException e) {
+            return null;
+        }
     }
 }
