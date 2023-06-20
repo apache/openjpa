@@ -597,11 +597,12 @@ public class PCEnhancer {
             if (_meta != null) {
                 enhanceClass(pc);
                 addFields(pc);
-                //X TODO finish addStaticInitializer(classNodeTracker);
-                AsmHelper.readIntoBCClass(pc, _pc);
-                addStaticInitializer();
 
-                pc = AsmHelper.toClassNode(_pc);
+                //X For now we cannot take the new version as it uses LDC for classes which Serp doesn't understand.
+                //X So we can only enable it in a later step
+                //X addStaticInitializer(pc);
+                addStaticInitializer(); // removeme
+
                 addPCMethods(pc);
 
                 addAccessors();
@@ -857,7 +858,7 @@ public class PCEnhancer {
                 LabelNode caseLabel = new LabelNode();
                 switchNd.labels.add(caseLabel);
                 instructions.add(caseLabel);
-                instructions.add(new LdcInsnNode(_attrsToFields.get(fmd.getName())));
+                instructions.add(AsmHelper.getLoadConstantInsn(_attrsToFields.get(fmd.getName())));
                 instructions.add(new InsnNode(Opcodes.ARETURN));
             }
 
@@ -876,7 +877,7 @@ public class PCEnhancer {
                 instructions.add(caseLabel);
                 switchNd.labels.add(caseLabel);
                 switchNd.keys.add(propFmds.get(i));
-                instructions.add(new LdcInsnNode(_attrsToFields.get(fmds[i].getName())));
+                instructions.add(AsmHelper.getLoadConstantInsn(_attrsToFields.get(fmds[i].getName())));
                 instructions.add(new InsnNode(Opcodes.ARETURN));
             }
         }
@@ -1219,7 +1220,7 @@ public class PCEnhancer {
         InsnList insns = new InsnList();
 
         insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
-        insns.add(new LdcInsnNode(fmd.getIndex()));
+        insns.add(AsmHelper.getLoadConstantInsn(fmd.getIndex()));
         insns.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
                                      Type.getInternalName(RedefinitionHelper.class),
                                      "accessingField",
@@ -1253,7 +1254,7 @@ public class PCEnhancer {
         InsnList insns = new InsnList();
 
         insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
-        insns.add(new LdcInsnNode(fmd.getIndex()));
+        insns.add(AsmHelper.getLoadConstantInsn(fmd.getIndex()));
 
         Class type = fmd.getDeclaredType();
         // we only have special signatures for primitives and Strings
@@ -1547,7 +1548,7 @@ public class PCEnhancer {
         // pcInheritedFieldCount field isn't initialized!  so instead,
         // return <fields> + <superclass>.pcGetManagedFieldCount ()
         final InsnList instructions = getFieldCountMeth.instructions;
-        instructions.add(new LdcInsnNode(_meta.getDeclaredFields().length));
+        instructions.add(AsmHelper.getLoadConstantInsn(_meta.getDeclaredFields().length));
         if (_meta.getPCSuperclass() != null) {
             Class superClass = getType(_meta.getPCSuperclassMetaData());
             String superName = getCreateSubclass() ?
@@ -3284,6 +3285,7 @@ public class PCEnhancer {
 
     @Deprecated
     private void addStaticInitializer() {
+        AsmHelper.readIntoBCClass(pc, _pc);
         Code code = getOrCreateClassInitCode(true);
         if (_meta.getPCSuperclass() != null) {
             if (getCreateSubclass()) {
@@ -3368,6 +3370,7 @@ public class PCEnhancer {
 
         code.vreturn();
         code.calculateMaxStack();
+        pc = AsmHelper.toClassNode(_pc);
     }
 
     /**
@@ -3380,91 +3383,97 @@ public class PCEnhancer {
         InsnList instructions = new InsnList();
         if (_meta.getPCSuperclass() != null) {
             if (getCreateSubclass()) {
-                instructions.add(new LdcInsnNode(0));
-                instructions.add(new FieldInsnNode(Opcodes.PUTFIELD, classNode.name, INHERIT, Type.INT_TYPE.getDescriptor()));
+                instructions.add(AsmHelper.getLoadConstantInsn(0));
+                instructions.add(new FieldInsnNode(Opcodes.PUTSTATIC, classNode.name, INHERIT, Type.INT_TYPE.getDescriptor()));
             }
             else {
                 // pcInheritedFieldCount = <superClass>.pcGetManagedFieldCount()
                 instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, classNode.superName,
                                                     PRE + "GetManagedFieldCount",
                                                     Type.getMethodDescriptor(Type.INT_TYPE)));
-                instructions.add(new FieldInsnNode(Opcodes.PUTFIELD, classNode.name, INHERIT, Type.INT_TYPE.getDescriptor()));
+                instructions.add(new FieldInsnNode(Opcodes.PUTSTATIC, classNode.name, INHERIT, Type.INT_TYPE.getDescriptor()));
             }
 
             // pcPCSuperclass = <superClass>;
             // this intentionally calls getDescribedType() directly
             // instead of PCEnhancer.getType()
-            instructions.add(new LdcInsnNode(Type.getType(_meta.getPCSuperclassMetaData().getDescribedType())));
+            instructions.add(AsmHelper.getLoadConstantInsn(_meta.getPCSuperclassMetaData().getDescribedType()));
             instructions.add(new FieldInsnNode(Opcodes.PUTSTATIC, classNode.name, SUPER, Type.getDescriptor(Class.class)));
         }
 
-        // pcFieldNames = new String[] { "<name1>", "<name2>", ... };
         FieldMetaData[] fmds = _meta.getDeclaredFields();
 
-/*
-
         // pcFieldNames = new String[] { "<name1>", "<name2>", ... };
-        FieldMetaData[] fmds = _meta.getDeclaredFields();
-        code.constant().setValue(fmds.length);
-        code.anewarray().setType(String.class);
+        instructions.add(AsmHelper.getLoadConstantInsn(fmds.length));
+        instructions.add(new TypeInsnNode(Opcodes.ANEWARRAY, Type.getInternalName(String.class)));
         for (int i = 0; i < fmds.length; i++) {
-            code.dup();
-            code.constant().setValue(i);
-            code.constant().setValue(fmds[i].getName());
-            code.aastore();
+            instructions.add(new InsnNode(Opcodes.DUP));
+            instructions.add(AsmHelper.getLoadConstantInsn(i));
+            instructions.add(AsmHelper.getLoadConstantInsn(fmds[i].getName()));
+            instructions.add(new InsnNode(Opcodes.AASTORE));
         }
-        code.putstatic().setField(PRE + "FieldNames", String[].class);
+        instructions.add(new FieldInsnNode(Opcodes.PUTSTATIC, classNode.name, PRE + "FieldNames", Type.getDescriptor(String[].class)));
 
         // pcFieldTypes = new Class[] { <type1>.class, <type2>.class, ... };
-        code.constant().setValue(fmds.length);
-        code.anewarray().setType(Class.class);
+        instructions.add(AsmHelper.getLoadConstantInsn(fmds.length));
+        instructions.add(new TypeInsnNode(Opcodes.ANEWARRAY, Type.getInternalName(Class.class)));
         for (int i = 0; i < fmds.length; i++) {
-            code.dup();
-            code.constant().setValue(i);
-            code.classconstant().setClass(fmds[i].getDeclaredType());
-            code.aastore();
+            instructions.add(new InsnNode(Opcodes.DUP));
+            instructions.add(AsmHelper.getLoadConstantInsn(i));
+            instructions.add(AsmHelper.getLoadConstantInsn(fmds[i].getDeclaredType()));
+            instructions.add(new InsnNode(Opcodes.AASTORE));
         }
-        code.putstatic().setField(PRE + "FieldTypes", Class[].class);
+        instructions.add(new FieldInsnNode(Opcodes.PUTSTATIC, classNode.name, PRE + "FieldTypes", Type.getDescriptor(Class[].class)));
 
         // pcFieldFlags = new byte[] { <flag1>, <flag2>, ... };
-        code.constant().setValue(fmds.length);
-        code.newarray().setType(byte.class);
+        instructions.add(AsmHelper.getLoadConstantInsn(fmds.length));
+        instructions.add(new IntInsnNode(Opcodes.NEWARRAY, Opcodes.T_BYTE));
         for (int i = 0; i < fmds.length; i++) {
-            code.dup();
-            code.constant().setValue(i);
-            code.constant().setValue(getFieldFlag(fmds[i]));
-            code.bastore();
+            instructions.add(new InsnNode(Opcodes.DUP));
+            instructions.add(AsmHelper.getLoadConstantInsn(i));
+            instructions.add(AsmHelper.getLoadConstantInsn(getFieldFlag(fmds[i])));
+            instructions.add(new InsnNode(Opcodes.BASTORE));
         }
-        code.putstatic().setField(PRE + "FieldFlags", byte[].class);
+        instructions.add(new FieldInsnNode(Opcodes.PUTSTATIC, classNode.name, PRE + "FieldFlags", Type.getDescriptor(byte[].class)));
 
+/*
         // PCRegistry.register (cls,
         //    pcFieldNames, pcFieldTypes, pcFieldFlags,
         //  pcPCSuperclass, alias, new XXX ());
-        code.classconstant().setClass(_meta.getDescribedType());
-        code.getstatic().setField(PRE + "FieldNames", String[].class);
-        code.getstatic().setField(PRE + "FieldTypes", Class[].class);
-        code.getstatic().setField(PRE + "FieldFlags", byte[].class);
-        code.getstatic().setField(SUPER, Class.class);
+        instructions.add(AsmHelper.getLoadConstantInsn(_meta.getDescribedType()));
+        instructions.add(new FieldInsnNode(Opcodes.GETSTATIC, classNode.name, PRE + "FieldNames", Type.getDescriptor(String[].class)));
+        instructions.add(new FieldInsnNode(Opcodes.GETSTATIC, classNode.name, PRE + "FieldTypes", Type.getDescriptor(Class[].class)));
+        instructions.add(new FieldInsnNode(Opcodes.GETSTATIC, classNode.name, PRE + "FieldFlags", Type.getDescriptor(byte[].class)));
+        instructions.add(new FieldInsnNode(Opcodes.GETSTATIC, classNode.name, SUPER, Type.getDescriptor(Class.class)));
 
-        if (_meta.isMapped() || _meta.isAbstract())
-            code.constant().setValue(_meta.getTypeAlias());
-        else
-            code.constant().setNull();
-
-        if (_pc.isAbstract())
-            code.constant().setNull();
+        if (_meta.isMapped() || _meta.isAbstract()) {
+            instructions.add(AsmHelper.getLoadConstantInsn(_meta.getTypeAlias()));
+        }
         else {
-            code.anew().setType(_pc);
-            code.dup();
-            code.invokespecial().setMethod("<init>", void.class, null);
+            instructions.add(new InsnNode(Opcodes.ACONST_NULL));
         }
 
-        code.invokestatic().setMethod(HELPERTYPE, "register", void.class,
-            new Class[]{ Class.class, String[].class, Class[].class,
-                byte[].class, Class.class, String.class, PCTYPE });
+        if (_pc.isAbstract()) {
+            instructions.add(new InsnNode(Opcodes.ACONST_NULL));
+        }
+        else {
+            instructions.add(new TypeInsnNode(Opcodes.NEW, classNode.name));
+            instructions.add(new InsnNode(Opcodes.DUP));
+            instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
+                                                classNode.name,
+                                                "<init>",
+                                                Type.getMethodDescriptor(Type.VOID_TYPE)));
+        }
 
-        code.vreturn();
-        code.calculateMaxStack();
+        instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+                                            Type.getInternalName(HELPERTYPE),
+                                            "register",
+                                            Type.getMethodDescriptor(Type.VOID_TYPE,
+                                                                     Type.getType(Class.class), Type.getType(String[].class),
+                                                                     Type.getType(Class[].class), Type.getType(byte[].class),
+                                                                     Type.getType(Class.class), Type.getType(String.class),
+                                                                     Type.getType(PersistenceCapable.class))));
+
 */
 
         // now add those instructions to the <clinit> method
@@ -3991,9 +4000,9 @@ public class PCEnhancer {
         }
         else {
             // add static initializer method if non exists
-            MethodNode clinit = new MethodNode(Opcodes.ACC_STATIC | Opcodes.ACC_FINAL,
+            MethodNode clinit = new MethodNode(Opcodes.ACC_STATIC,
                                                "<clinit>",
-                                               Type.getMethodDescriptor(Type.VOID_TYPE),
+                                               "()V",
                                                null, null);
             clinit.instructions.add(new InsnNode(Opcodes.RETURN));
             classNode.methods.add(clinit);
@@ -4483,8 +4492,8 @@ public class PCEnhancer {
             // Reflection.getXXX(this, Reflection.findField(...));
 
             // Reflection.findField(declarer, fieldName, true);
-            instructions.add(new LdcInsnNode(Type.getType(declarer)));
-            instructions.add(new LdcInsnNode(fieldName));
+            instructions.add(AsmHelper.getLoadConstantInsn(declarer));
+            instructions.add(AsmHelper.getLoadConstantInsn(fieldName));
             instructions.add(new InsnNode(Opcodes.ICONST_1)); // true
             instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
                                                 Type.getInternalName(Reflection.class),
@@ -4615,8 +4624,8 @@ public class PCEnhancer {
         if (getRedefine() || getCreateSubclass()) {
             // Reflection.set(this, Reflection.findField(...), value);
             // Reflection.findField(declarer, fieldName, true);
-            instructions.add(new LdcInsnNode(Type.getType(declarer)));
-            instructions.add(new LdcInsnNode(fieldName));
+            instructions.add(AsmHelper.getLoadConstantInsn(declarer));
+            instructions.add(AsmHelper.getLoadConstantInsn(fieldName));
             instructions.add(new InsnNode(Opcodes.ICONST_1)); // true
             instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
                                                 Type.getInternalName(Reflection.class),
@@ -5214,7 +5223,7 @@ public class PCEnhancer {
             instructions.add(new InsnNode(Opcodes.ACONST_NULL));
         }
         else {
-            instructions.add(new LdcInsnNode(value));
+            instructions.add(AsmHelper.getLoadConstantInsn(value));
         }
 
         // if redefining, then we must always reflect (or access the field
@@ -5428,7 +5437,7 @@ public class PCEnhancer {
                                                PRE + "GetEnhancementContractVersion",
                                                Type.getMethodDescriptor(Type.INT_TYPE),
                                                null, null);
-        methodNode.instructions.add(new LdcInsnNode(ENHANCER_VERSION));
+        methodNode.instructions.add(AsmHelper.getLoadConstantInsn(ENHANCER_VERSION));
         methodNode.instructions.add(new InsnNode(Opcodes.IRETURN));
         cnt.getClassNode().methods.add(methodNode);
     }

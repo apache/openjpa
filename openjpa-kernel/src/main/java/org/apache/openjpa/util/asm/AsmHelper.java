@@ -30,6 +30,9 @@ import org.apache.xbean.asm9.Type;
 import org.apache.xbean.asm9.tree.AbstractInsnNode;
 import org.apache.xbean.asm9.tree.ClassNode;
 import org.apache.xbean.asm9.tree.FieldInsnNode;
+import org.apache.xbean.asm9.tree.InsnNode;
+import org.apache.xbean.asm9.tree.IntInsnNode;
+import org.apache.xbean.asm9.tree.LdcInsnNode;
 import org.apache.xbean.asm9.tree.VarInsnNode;
 
 import serp.bytecode.BCClass;
@@ -178,6 +181,77 @@ public final class AsmHelper {
             }
         }
         return Opcodes.ARETURN;
+    }
+
+    public static AbstractInsnNode getLoadConstantInsn(Object val) {
+        if (val == null) {
+            return new InsnNode(Opcodes.ACONST_NULL);
+        }
+        if (val instanceof Integer) {
+            final int iVal = ((Integer) val).intValue();
+            switch (iVal) {
+                case 0:
+                    return new InsnNode(Opcodes.ICONST_0);
+                case 1:
+                    return new InsnNode(Opcodes.ICONST_1);
+                case 2:
+                    return new InsnNode(Opcodes.ICONST_2);
+                case 3:
+                    return new InsnNode(Opcodes.ICONST_3);
+                case 4:
+                    return new InsnNode(Opcodes.ICONST_4);
+                case 5:
+                    return new InsnNode(Opcodes.ICONST_5);
+                default:
+                    break;
+            }
+            if (iVal < 0 && iVal >= -128 || iVal >= 6 && iVal < 128) {
+                // use bipush for small numbers
+                return new IntInsnNode(Opcodes.BIPUSH, iVal);
+            }
+            else if (iVal < -128 && iVal >= -32768 || iVal >= 128 && iVal < 32768) {
+                // use sipush for a bit bigger numbers
+                return new IntInsnNode(Opcodes.SIPUSH, iVal);
+            }
+        }
+
+        if (val instanceof Class) {
+            if (boolean.class.equals(val)) {
+                return new FieldInsnNode(Opcodes.GETSTATIC, Type.getInternalName(Boolean.class), "TYPE",
+                                         Type.getDescriptor(Class.class));
+            }
+            if (char.class.equals(val)) {
+                return new FieldInsnNode(Opcodes.GETSTATIC, Type.getInternalName(Character.class), "TYPE",
+                                         Type.getDescriptor(Class.class));
+            }
+            if (int.class.equals(val)) {
+                return new FieldInsnNode(Opcodes.GETSTATIC, Type.getInternalName(Integer.class), "TYPE",
+                                         Type.getDescriptor(Class.class));
+            }
+            if (long.class.equals(val)) {
+                return new FieldInsnNode(Opcodes.GETSTATIC, Type.getInternalName(Long.class), "TYPE",
+                                         Type.getDescriptor(Class.class));
+            }
+            if (byte.class.equals(val)) {
+                return new FieldInsnNode(Opcodes.GETSTATIC, Type.getInternalName(Byte.class), "TYPE",
+                                         Type.getDescriptor(Class.class));
+            }
+            if (short.class.equals(val)) {
+                return new FieldInsnNode(Opcodes.GETSTATIC, Type.getInternalName(Short.class), "TYPE",
+                                         Type.getDescriptor(Class.class));
+            }
+            if (float.class.equals(val)) {
+                return new FieldInsnNode(Opcodes.GETSTATIC, Type.getInternalName(Float.class), "TYPE",
+                                         Type.getDescriptor(Class.class));
+            }
+            if (double.class.equals(val)) {
+                return new FieldInsnNode(Opcodes.GETSTATIC, Type.getInternalName(Double.class), "TYPE",
+                                         Type.getDescriptor(Class.class));
+            }
+            return new LdcInsnNode(Type.getType((Class<?>) val));
+        }
+
+        return new LdcInsnNode(val);
     }
 
     /**

@@ -69,6 +69,20 @@ public class SimpleEntity implements Serializable {
     public static final String NAMED_QUERY_WITH_POSITIONAL_PARAMS = "SelectWithPositionalParameter";
     public static final String NAMED_QUERY_WITH_NAMED_PARAMS = "SelectWithNamedParameter";
 
+    public static Integer dummy;
+
+    static {
+        dummy = -32766;
+        dummy = -32767;
+        dummy = -32768;
+        dummy = -32769;
+
+        dummy = 32765;
+        dummy = 32766;
+        dummy = 32767;
+        dummy = 32768;
+    }
+
     @Id
     @GeneratedValue
     @Column(name = "ID")
