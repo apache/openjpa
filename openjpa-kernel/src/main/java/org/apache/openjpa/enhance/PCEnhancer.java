@@ -1369,11 +1369,12 @@ public class PCEnhancer {
         if (_meta.getPCSuperclass() == null || getCreateSubclass()) {
             addStockMethods();
             addGetVersionMethod();
-            AsmHelper.readIntoBCClass(pc, _pc);
             addReplaceStateManagerMethod();
+            AsmHelper.readIntoBCClass(pc, _pc);
 
-            if (_meta.getIdentityType() != ClassMetaData.ID_APPLICATION)
+            if (_meta.getIdentityType() != ClassMetaData.ID_APPLICATION) {
                 addNoOpApplicationIdentityMethods();
+            }
         }
         else { //X TODO remove whole else
             AsmHelper.readIntoBCClass(pc, _pc);
@@ -2132,39 +2133,42 @@ public class PCEnhancer {
      */
     private void addReplaceStateManagerMethod() {
         // public void pcReplaceStateManager (StateManager sm)
-        BCMethod method = _pc.declareMethod(PRE + "ReplaceStateManager",
-                                            void.class, new Class[]{SMTYPE});
-        method.getExceptions(true).addException(SecurityException.class);
-        Code code = method.getCode(true);
+        MethodNode replaceSmMeth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                                  PRE + "ReplaceStateManager",
+                                                  Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(SMTYPE)),
+                                                  null, new String[]{Type.getInternalName(SecurityException.class)});
+        final ClassNode classNode = pc.getClassNode();
+        classNode.methods.add(replaceSmMeth);
+        InsnList instructions = replaceSmMeth.instructions;
 
         // if (pcStateManager != null)
         //    pcStateManager = pcStateManager.replaceStateManager(sm);
-        loadManagedInstance(code, false);
-        code.getfield().setField(SM, SMTYPE);
-        JumpInstruction ifins = code.ifnull();
-        loadManagedInstance(code, false);
-        loadManagedInstance(code, false);
-        code.getfield().setField(SM, SMTYPE);
-        code.aload().setParam(0);
-        code.invokeinterface().setMethod(SMTYPE, "replaceStateManager",
-                                         SMTYPE, new Class[]{SMTYPE});
-        code.putfield().setField(SM, SMTYPE);
-        code.vreturn();
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
 
-        // SecurityManager sec = System.getSecurityManager ();
-        // if (sec != null)
-        //        sec.checkPermission (Permission.SET_STATE_MANAGER);
-        ifins.setTarget(code.invokestatic().setMethod(System.class,
-                                                      "getSecurityManager", SecurityManager.class, null));
+        LabelNode lblEndIfNull = new LabelNode();
+        instructions.add(new JumpInsnNode(Opcodes.IFNULL, lblEndIfNull));
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+
+        instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
+
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st method param, the new StateManager
+        instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
+                                            Type.getInternalName(SMTYPE),
+                                            "replaceStateManager",
+                                            Type.getMethodDescriptor(Type.getType(SMTYPE), Type.getType(SMTYPE))));
+        instructions.add(new FieldInsnNode(Opcodes.PUTFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
+        instructions.add(new InsnNode(Opcodes.RETURN));
+
+        instructions.add(lblEndIfNull);
 
         // pcStateManager = sm;
-        ifins.setTarget(loadManagedInstance(code, false));
-        code.aload().setParam(0);
-        code.putfield().setField(SM, SMTYPE);
-        code.vreturn();
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st method param, the new StateManager
+        instructions.add(new FieldInsnNode(Opcodes.PUTFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
 
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
+        instructions.add(new InsnNode(Opcodes.RETURN));
     }
 
     /**
