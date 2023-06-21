@@ -603,7 +603,7 @@ public class PCEnhancer {
                 //X addStaticInitializer(pc);
                 addStaticInitializer(); // removeme
 
-                addPCMethods(pc);
+                addPCMethods();
 
                 addAccessors();
                 addAttachDetachCode();
@@ -1353,27 +1353,30 @@ public class PCEnhancer {
      * <code>pcFetchObjectId</code>, etc are defined only in the
      * least-derived PersistenceCapable type.
      */
-    private void addPCMethods(ClassNodeTracker classNodeTracker) throws NoSuchMethodException {
-        addClearFieldsMethod(classNodeTracker.getClassNode());
+    private void addPCMethods() throws NoSuchMethodException {
+        addClearFieldsMethod(pc.getClassNode());
 
-        addNewInstanceMethod(classNodeTracker.getClassNode(), true);
-        addNewInstanceMethod(classNodeTracker.getClassNode(), false);
+        addNewInstanceMethod(pc.getClassNode(), true);
+        addNewInstanceMethod(pc.getClassNode(), false);
 
-        addManagedFieldCountMethod(classNodeTracker.getClassNode());
-        addReplaceFieldsMethods(classNodeTracker.getClassNode());
-        addProvideFieldsMethods(classNodeTracker.getClassNode());
+        addManagedFieldCountMethod(pc.getClassNode());
+        addReplaceFieldsMethods(pc.getClassNode());
+        addProvideFieldsMethods(pc.getClassNode());
 
-        addCopyFieldsMethod(classNodeTracker.getClassNode());
+        addCopyFieldsMethod(pc.getClassNode());
 
-        AsmHelper.readIntoBCClass(classNodeTracker, _pc);
 
         if (_meta.getPCSuperclass() == null || getCreateSubclass()) {
             addStockMethods();
             addGetVersionMethod();
+            AsmHelper.readIntoBCClass(pc, _pc);
             addReplaceStateManagerMethod();
 
             if (_meta.getIdentityType() != ClassMetaData.ID_APPLICATION)
                 addNoOpApplicationIdentityMethods();
+        }
+        else { //X TODO remove whole else
+            AsmHelper.readIntoBCClass(pc, _pc);
         }
 
         // add the app id methods to each subclass rather
@@ -1932,77 +1935,48 @@ public class PCEnhancer {
      * like {@link PersistenceCapable#pcFetchObjectId}
      * and {@link PersistenceCapable#pcIsTransactional}.
      */
-    private void addStockMethods()
-            throws NoSuchMethodException {
-        try {
-            // pcGetGenericContext
-            translateFromStateManagerMethod(
-                    AccessController.doPrivileged(
-                            J2DoPrivHelper.getDeclaredMethodAction(
-                                    SMTYPE, "get" + CONTEXTNAME, (Class[]) null)), false);
+    private void addStockMethods() throws NoSuchMethodException {
+        // pcGetGenericContext
+        translateFromStateManagerMethod(SMTYPE.getDeclaredMethod("get" + CONTEXTNAME), false);
 
-            // pcFetchObjectId
-            translateFromStateManagerMethod(
-                    AccessController.doPrivileged(
-                            J2DoPrivHelper.getDeclaredMethodAction(
-                                    SMTYPE, "fetchObjectId", (Class[]) null)), false);
+        // pcFetchObjectId
+        translateFromStateManagerMethod(SMTYPE.getDeclaredMethod("fetchObjectId"), false);
 
-            // pcIsDeleted
-            translateFromStateManagerMethod(
-                    AccessController.doPrivileged(
-                            J2DoPrivHelper.getDeclaredMethodAction(
-                                    SMTYPE, "isDeleted", (Class[]) null)), false);
+        // pcIsDeleted
+        translateFromStateManagerMethod(SMTYPE.getDeclaredMethod("isDeleted"), false);
 
-            // pcIsDirty
-            translateFromStateManagerMethod(
-                    AccessController.doPrivileged(
-                            J2DoPrivHelper.getDeclaredMethodAction(
-                                    SMTYPE, "isDirty", (Class[]) null)), true);
+        // pcIsDirty
+        translateFromStateManagerMethod(SMTYPE.getDeclaredMethod("isDirty"), true);
 
-            // pcIsNew
-            translateFromStateManagerMethod(
-                    AccessController.doPrivileged(
-                            J2DoPrivHelper.getDeclaredMethodAction(
-                                    SMTYPE, "isNew", (Class[]) null)), false);
+        // pcIsNew
+        translateFromStateManagerMethod(SMTYPE.getDeclaredMethod("isNew"), false);
 
-            // pcIsPersistent
-            translateFromStateManagerMethod(
-                    AccessController.doPrivileged(
-                            J2DoPrivHelper.getDeclaredMethodAction(
-                                    SMTYPE, "isPersistent", (Class[]) null)), false);
+        // pcIsPersistent
+        translateFromStateManagerMethod(SMTYPE.getDeclaredMethod("isPersistent"), false);
 
-            // pcIsTransactional
-            translateFromStateManagerMethod(
-                    AccessController.doPrivileged(
-                            J2DoPrivHelper.getDeclaredMethodAction(
-                                    SMTYPE, "isTransactional", (Class[]) null)), false);
+        // pcIsTransactional
+        translateFromStateManagerMethod(SMTYPE.getDeclaredMethod("isTransactional"), false);
 
-            // pcSerializing
-            translateFromStateManagerMethod(
-                    AccessController.doPrivileged(
-                            J2DoPrivHelper.getDeclaredMethodAction(
-                                    SMTYPE, "serializing", (Class[]) null)), false);
+        // pcSerializing
+        translateFromStateManagerMethod(SMTYPE.getDeclaredMethod("serializing"), false);
 
-            // pcDirty
-            translateFromStateManagerMethod(
-                    AccessController.doPrivileged(
-                            J2DoPrivHelper.getDeclaredMethodAction(
-                                    SMTYPE, "dirty", new Class[]{String.class})), false);
+        // pcDirty
+        translateFromStateManagerMethod(SMTYPE.getDeclaredMethod("dirty", String.class), false);
 
-            // pcGetStateManager
-            BCMethod meth = _pc.declareMethod(PRE + "GetStateManager",
-                                              StateManager.class, null);
-            Code code = meth.getCode(true);
-            loadManagedInstance(code, false);
-            code.getfield().setField(SM, StateManager.class);
-            code.areturn();
-            code.calculateMaxStack();
-            code.calculateMaxLocals();
-        }
-        catch (PrivilegedActionException pae) {
-            throw (NoSuchMethodException) pae.getException();
-        }
+        // pcGetStateManager
+        MethodNode getSmMeth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                              PRE + "GetStateManager",
+                                              Type.getMethodDescriptor(Type.getType(SMTYPE)),
+                                              null, null);
+        pc.getClassNode().methods.add(getSmMeth);
+
+        InsnList instructions = getSmMeth.instructions;
+
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        instructions.add(new FieldInsnNode(Opcodes.GETFIELD, pc.getClassNode().name, SM, Type.getDescriptor(SMTYPE)));
+        instructions.add(new InsnNode(Opcodes.ARETURN));
     }
+
 
     /**
      * Helper method to add a stock method to the bytecode. Each
@@ -2010,94 +1984,120 @@ public class PCEnhancer {
      * Given the StateManager method, then, this function translates it into
      * the wrapper method that should be added to the bytecode.
      */
-    private void translateFromStateManagerMethod(Method m,
-                                                 boolean isDirtyCheckMethod) {
+    private void translateFromStateManagerMethod(Method m, boolean isDirtyCheckMethod) {
         // form the name of the method by prepending 'pc' to the sm method
         String name = PRE + StringUtil.capitalize(m.getName());
         Class[] params = m.getParameterTypes();
+        Type[] paramTypes = Arrays.stream(params)
+                .map(p -> Type.getType(p))
+                .toArray(Type[]::new);
         Class returnType = m.getReturnType();
 
+        final ClassNode classNode = pc.getClassNode();
+
         // add the method to the pc
-        BCMethod method = _pc.declareMethod(name, returnType, params);
-        Code code = method.getCode(true);
+        MethodNode methodNode = new MethodNode(Opcodes.ACC_PUBLIC,
+                                               name,
+                                               Type.getMethodDescriptor(Type.getType(returnType), paramTypes),
+                                               null, null);
+        InsnList instructions = methodNode.instructions;
+        classNode.methods.add(methodNode);
 
         // if (pcStateManager == null) return <default>;
-        loadManagedInstance(code, false);
-        code.getfield().setField(SM, SMTYPE);
-        JumpInstruction ifins = code.ifnonnull();
-        if (returnType.equals(boolean.class))
-            code.constant().setValue(false);
-        else if (!returnType.equals(void.class))
-            code.constant().setNull();
-        code.xreturn().setType(returnType);
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
+
+        LabelNode lblAfterIf = new LabelNode();
+        instructions.add(new JumpInsnNode(Opcodes.IFNONNULL, lblAfterIf));
+        if (returnType.equals(boolean.class)) {
+            instructions.add(new InsnNode(Opcodes.ICONST_0)); // false
+        }
+        else if (!returnType.equals(void.class)) {
+            instructions.add(new InsnNode(Opcodes.ACONST_NULL));
+        }
+        instructions.add(new InsnNode(AsmHelper.getReturnInsn(returnType)));
+        instructions.add(lblAfterIf);
+
+        // load the StateManager onto the stack
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
 
         // if this is the dirty-check method and we're subclassing but not
         // redefining, hook into PCHelper to do the dirty check
         if (isDirtyCheckMethod && !getRedefine()) {
             // RedefinitionHelper.dirtyCheck(sm);
-            ifins.setTarget(loadManagedInstance(code, false));
-            code.getfield().setField(SM, SMTYPE);
-            code.dup(); // for the return statement below
-            code.invokestatic().setMethod(RedefinitionHelper.class,
-                                          "dirtyCheck", void.class, new Class[]{SMTYPE});
+            instructions.add(new InsnNode(Opcodes.DUP)); // duplicate the StateManager for the return statement below
+            instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+                                                Type.getInternalName(RedefinitionHelper.class),
+                                                "dirtyCheck",
+                                                Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(SMTYPE))));
         }
-        else {
-            ifins.setTarget(loadManagedInstance(code, false));
-            code.getfield().setField(SM, SMTYPE);
-        }
+
 
         // return pcStateManager.<method> (<args>);
         // managed instance loaded above in if-else block
-        for (int i = 0; i < params.length; i++)
-            code.xload().setParam(i);
-        code.invokeinterface().setMethod(m);
-        code.xreturn().setType(returnType);
+        for (int i = 0; i < params.length; i++) {
+            instructions.add(new VarInsnNode(AsmHelper.getLoadInsn(params[i]), i+1));
+        }
+        instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
+                                            Type.getInternalName(SMTYPE),
+                                            m.getName(),
+                                            Type.getMethodDescriptor(m)));
 
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
+        instructions.add(new InsnNode(AsmHelper.getReturnInsn(returnType)));
     }
 
     /**
      * Adds the {@link PersistenceCapable#pcGetVersion} method to the bytecode.
      */
-    private void addGetVersionMethod()
-            throws NoSuchMethodException {
-        BCMethod method = _pc.declareMethod(PRE + "GetVersion", Object.class,
-                                            null);
-        Code code = method.getCode(true);
+    private void addGetVersionMethod() throws NoSuchMethodException {
+        final ClassNode classNode = pc.getClassNode();
+        MethodNode getVersionMeth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                                   PRE + "GetVersion",
+                                                   Type.getMethodDescriptor(TYPE_OBJECT),
+                                                   null, null);
+        classNode.methods.add(getVersionMeth);
+        InsnList instructions = getVersionMeth.instructions;
 
         // if (pcStateManager == null)
-        loadManagedInstance(code, false);
-        code.getfield().setField(SM, SMTYPE);
-        JumpInstruction ifins = code.ifnonnull();
-        FieldMetaData versionField = _meta.getVersionField();
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
+        LabelNode lblAfterIf = new LabelNode();
+        instructions.add(new JumpInsnNode(Opcodes.IFNONNULL, lblAfterIf));
 
-        if (versionField == null)
-            code.constant().setNull(); // return null;
+        FieldMetaData versionField = _meta.getVersionField();
+        if (versionField == null) {
+            instructions.add(new InsnNode(Opcodes.ACONST_NULL));
+        }
         else {
             // return <versionField>;
             Class wrapper = toPrimitiveWrapper(versionField);
             if (wrapper != versionField.getDeclaredType()) {
-                code.anew().setType(wrapper);
-                code.dup();
+                instructions.add(new TypeInsnNode(Opcodes.NEW, Type.getInternalName(wrapper)));
+                instructions.add(new InsnNode(Opcodes.DUP));
             }
-            loadManagedInstance(code, false);
-            addGetManagedValueCode(code, versionField);
-            if (wrapper != versionField.getDeclaredType())
-                code.invokespecial().setMethod(wrapper, "<init>", void.class,
-                                               new Class[]{versionField.getDeclaredType()});
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+            addGetManagedValueCode(classNode, instructions, versionField, true);
+            if (wrapper != versionField.getDeclaredType()) {
+                instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
+                                                    Type.getInternalName(wrapper),
+                                                    "<init>",
+                                                    Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(versionField.getDeclaredType()))));
+            }
         }
-        code.areturn();
+        instructions.add(new InsnNode(Opcodes.ARETURN));
+        instructions.add(lblAfterIf);
 
         // return pcStateManager.getVersion ();
-        ifins.setTarget(loadManagedInstance(code, false));
-        code.getfield().setField(SM, SMTYPE);
-        code.invokeinterface().setMethod(SMTYPE, "getVersion", Object.class,
-                                         null);
-        code.areturn();
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
 
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
+        instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
+                                            Type.getInternalName(SMTYPE),
+                                            "getVersion",
+                                            Type.getMethodDescriptor(TYPE_OBJECT)));
+
+        instructions.add(new InsnNode(Opcodes.ARETURN));
     }
 
     /**
@@ -3388,7 +3388,8 @@ public class PCEnhancer {
             }
             else {
                 // pcInheritedFieldCount = <superClass>.pcGetManagedFieldCount()
-                instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, classNode.superName,
+                instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+                                                    classNode.superName,
                                                     PRE + "GetManagedFieldCount",
                                                     Type.getMethodDescriptor(Type.INT_TYPE)));
                 instructions.add(new FieldInsnNode(Opcodes.PUTSTATIC, classNode.name, INHERIT, Type.INT_TYPE.getDescriptor()));
@@ -3436,7 +3437,6 @@ public class PCEnhancer {
         }
         instructions.add(new FieldInsnNode(Opcodes.PUTSTATIC, classNode.name, PRE + "FieldFlags", Type.getDescriptor(byte[].class)));
 
-/*
         // PCRegistry.register (cls,
         //    pcFieldNames, pcFieldTypes, pcFieldFlags,
         //  pcPCSuperclass, alias, new XXX ());
@@ -3473,8 +3473,6 @@ public class PCEnhancer {
                                                                      Type.getType(Class[].class), Type.getType(byte[].class),
                                                                      Type.getType(Class.class), Type.getType(String.class),
                                                                      Type.getType(PersistenceCapable.class))));
-
-*/
 
         // now add those instructions to the <clinit> method
         MethodNode clinit = getOrCreateClassInitMethod(classNode);
