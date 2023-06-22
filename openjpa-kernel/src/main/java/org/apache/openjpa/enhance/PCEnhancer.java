@@ -1370,15 +1370,13 @@ public class PCEnhancer {
             addStockMethods();
             addGetVersionMethod();
             addReplaceStateManagerMethod();
-            AsmHelper.readIntoBCClass(pc, _pc);
 
             if (_meta.getIdentityType() != ClassMetaData.ID_APPLICATION) {
                 addNoOpApplicationIdentityMethods();
             }
         }
-        else { //X TODO remove whole else
-            AsmHelper.readIntoBCClass(pc, _pc);
-        }
+
+        AsmHelper.readIntoBCClass(pc, _pc);
 
         // add the app id methods to each subclass rather
         // than just the superclass, since it is possible to have
@@ -2176,53 +2174,69 @@ public class PCEnhancer {
      * identity and gives them no-op implementations.
      */
     private void addNoOpApplicationIdentityMethods() {
-        // public void pcCopyKeyFieldsToObjectId (ObjectIdFieldSupplier fs,
-        //     Object oid)
-        BCMethod method = _pc.declareMethod(PRE + "CopyKeyFieldsToObjectId",
-                                            void.class, new Class[]{OIDFSTYPE, Object.class});
-        Code code = method.getCode(true);
-        code.vreturn();
-        code.calculateMaxLocals();
+        ClassNode classNode = pc.getClassNode();
+        {
+            // public void pcCopyKeyFieldsToObjectId (ObjectIdFieldSupplier fs, Object oid)
+            MethodNode copyKeyMeth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                                    PRE + "CopyKeyFieldsToObjectId",
+                                                    Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(OIDFSTYPE), TYPE_OBJECT),
+                                                    null, null);
+            classNode.methods.add(copyKeyMeth);
+            copyKeyMeth.instructions.add(new InsnNode(Opcodes.RETURN));
+        }
 
-        // public void pcCopyKeyFieldsToObjectId (Object oid)
-        method = _pc.declareMethod(PRE + "CopyKeyFieldsToObjectId",
-                                   void.class, new Class[]{Object.class});
-        code = method.getCode(true);
-        code.vreturn();
-        code.calculateMaxLocals();
+        {
+            // public void pcCopyKeyFieldsToObjectId (Object oid)
+            MethodNode copyKeyMeth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                                     PRE + "CopyKeyFieldsToObjectId",
+                                                     Type.getMethodDescriptor(Type.VOID_TYPE, TYPE_OBJECT),
+                                                     null, null);
+            classNode.methods.add(copyKeyMeth);
+            copyKeyMeth.instructions.add(new InsnNode(Opcodes.RETURN));
+        }
 
-        // public void pcCopyKeyFieldsFromObjectId (ObjectIdFieldConsumer fc,
-        //    Object oid)
-        method = _pc.declareMethod(PRE + "CopyKeyFieldsFromObjectId",
-                                   void.class, new Class[]{OIDFCTYPE, Object.class});
-        code = method.getCode(true);
-        code.vreturn();
-        code.calculateMaxLocals();
+        {
+            // public void pcCopyKeyFieldsFromObjectId (ObjectIdFieldConsumer fc, Object oid)
+            MethodNode copyKeyMeth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                                    PRE + "CopyKeyFieldsFromObjectId",
+                                                    Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(OIDFCTYPE), TYPE_OBJECT),
+                                                    null, null);
+            classNode.methods.add(copyKeyMeth);
+            copyKeyMeth.instructions.add(new InsnNode(Opcodes.RETURN));
+        }
 
-        // public void pcCopyKeyFieldsFromObjectId (Object oid)
-        method = _pc.declareMethod(PRE + "CopyKeyFieldsFromObjectId",
-                                   void.class, new Class[]{Object.class});
-        code = method.getCode(true);
-        code.vreturn();
-        code.calculateMaxLocals();
+        {
+            // public void pcCopyKeyFieldsFromObjectId (Object oid)
+            MethodNode copyKeyMeth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                                    PRE + "CopyKeyFieldsFromObjectId",
+                                                    Type.getMethodDescriptor(Type.VOID_TYPE, TYPE_OBJECT),
+                                                    null, null);
+            classNode.methods.add(copyKeyMeth);
+            copyKeyMeth.instructions.add(new InsnNode(Opcodes.RETURN));
+        }
 
-        // public Object pcNewObjectIdInstance ()
-        method = _pc.declareMethod(PRE + "NewObjectIdInstance",
-                                   Object.class, null);
-        code = method.getCode(true);
-        code.constant().setNull();
-        code.areturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
+        {
+            // public Object pcNewObjectIdInstance ()
+            MethodNode copyKeyMeth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                                    PRE + "NewObjectIdInstance",
+                                                    Type.getMethodDescriptor(TYPE_OBJECT),
+                                                    null, null);
+            classNode.methods.add(copyKeyMeth);
+            copyKeyMeth.instructions.add(new InsnNode(Opcodes.ACONST_NULL));
+            copyKeyMeth.instructions.add(new InsnNode(Opcodes.ARETURN));
+        }
 
-        // public Object pcNewObjectIdInstance (Object obj)
-        method = _pc.declareMethod(PRE + "NewObjectIdInstance",
-                                   Object.class, new Class[]{Object.class});
-        code = method.getCode(true);
-        code.constant().setNull();
-        code.areturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
+        {
+            // public Object pcNewObjectIdInstance (Object obj)
+            MethodNode copyKeyMeth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                                    PRE + "NewObjectIdInstance",
+                                                    Type.getMethodDescriptor(TYPE_OBJECT, TYPE_OBJECT),
+                                                    null, null);
+            classNode.methods.add(copyKeyMeth);
+            copyKeyMeth.instructions.add(new InsnNode(Opcodes.ACONST_NULL));
+            copyKeyMeth.instructions.add(new InsnNode(Opcodes.ARETURN));
+
+        }
     }
 
     /**
