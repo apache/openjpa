@@ -1384,14 +1384,16 @@ public class PCEnhancer {
         // persistent class inheritance hierarchy
         if (_meta.getIdentityType() == ClassMetaData.ID_APPLICATION
                 && (_meta.getPCSuperclass() == null || getCreateSubclass() ||
-                _meta.getObjectIdType() !=
-                        _meta.getPCSuperclassMetaData().getObjectIdType())) {
+                _meta.getObjectIdType() != _meta.getPCSuperclassMetaData().getObjectIdType())) {
+            AsmHelper.readIntoBCClass(pc, _pc);
             addCopyKeyFieldsToObjectIdMethod(true);
             addCopyKeyFieldsToObjectIdMethod(false);
             addCopyKeyFieldsFromObjectIdMethod(true);
             addCopyKeyFieldsFromObjectIdMethod(false);
             if (_meta.hasAbstractPKField()) {
+                pc = AsmHelper.toClassNode(_pc);
                 addGetIDOwningClass();
+                AsmHelper.readIntoBCClass(pc, _pc);
             }
 
             if (_meta.isEmbeddable() && _meta.getIdentityType() == ClassMetaData.ID_APPLICATION) {
@@ -1402,7 +1404,9 @@ public class PCEnhancer {
             addNewObjectIdInstanceMethod(false);
         }
         else if (_meta.hasPKFieldsFromAbstractClass()) {
+            pc = AsmHelper.toClassNode(_pc);
             addGetIDOwningClass();
+            AsmHelper.readIntoBCClass(pc, _pc);
         }
     }
 
@@ -5683,15 +5687,14 @@ public class PCEnhancer {
     }
 
     private void addGetIDOwningClass()  {
-        BCMethod method = _pc.declareMethod(PRE + "GetIDOwningClass",
-            Class.class, null);
-        Code code = method.getCode(true);
+        MethodNode idOCMeth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                                PRE + "GetIDOwningClass",
+                                                Type.getMethodDescriptor(Type.getType(Class.class)),
+                                                null, null);
+        pc.getClassNode().methods.add(idOCMeth);
 
-        code.classconstant().setClass(getType(_meta));
-        code.areturn();
-
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
+        idOCMeth.instructions.add(AsmHelper.getLoadConstantInsn(getType(_meta)));
+        idOCMeth.instructions.add(new InsnNode(Opcodes.ARETURN));
     }
 
     /**
