@@ -215,6 +215,15 @@ public final class AsmHelper {
             }
         }
 
+        if (val instanceof Boolean) {
+            if (((Boolean)val) == true) {
+                return new InsnNode(Opcodes.ICONST_1);
+            }
+            else {
+                return new InsnNode(Opcodes.ICONST_0);
+            }
+        }
+
         if (val instanceof Class) {
             if (boolean.class.equals(val)) {
                 return new FieldInsnNode(Opcodes.GETSTATIC, Type.getInternalName(Boolean.class), "TYPE",
