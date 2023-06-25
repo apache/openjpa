@@ -1386,20 +1386,19 @@ public class PCEnhancer {
 
             addCopyKeyFieldsToObjectIdMethod(true);
             addCopyKeyFieldsToObjectIdMethod(false);
-
-            AsmHelper.readIntoBCClass(pc, _pc);
-
             addCopyKeyFieldsFromObjectIdMethod(true);
             addCopyKeyFieldsFromObjectIdMethod(false);
+
+
             if (_meta.hasAbstractPKField()) {
-                pc = AsmHelper.toClassNode(_pc);
                 addGetIDOwningClass();
-                AsmHelper.readIntoBCClass(pc, _pc);
             }
 
             if (_meta.isEmbeddable() && _meta.getIdentityType() == ClassMetaData.ID_APPLICATION) {
                 _log.warn(_loc.get("ID-field-in-embeddable-unsupported", _meta.toString()));
             }
+
+            AsmHelper.readIntoBCClass(pc, _pc);
 
             addNewObjectIdInstanceMethod(true);
             addNewObjectIdInstanceMethod(false);
@@ -2250,8 +2249,8 @@ public class PCEnhancer {
      * Adds the <code>pcCopyKeyFieldsToObjectId</code> methods
      * to classes using application identity.
      */
-    private void addCopyKeyFieldsToObjectIdMethod(boolean fieldManager)
-            throws NoSuchMethodException {
+    private void addCopyKeyFieldsToObjectIdMethod(boolean fieldManager) throws NoSuchMethodException {
+
         // public void pcCopyKeyFieldsToObjectId (ObjectIdFieldSupplier fs, Object oid)
         String mDesc = fieldManager
                 ? Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(OIDFSTYPE), TYPE_OBJECT)
@@ -2292,6 +2291,7 @@ public class PCEnhancer {
         }
 
         if (_meta.isObjectIdTypeShared()) {
+            // oid = ((ObjectId) id).getId ();
             instructions.add(new TypeInsnNode(Opcodes.CHECKCAST, Type.getInternalName(ObjectId.class)));
             instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
                                                 Type.getInternalName(ObjectId.class),
@@ -3087,177 +3087,233 @@ public class PCEnhancer {
      * Adds the <code>pcCopyKeyFieldsFromObjectId</code> methods
      * to classes using application identity.
      */
-    private void addCopyKeyFieldsFromObjectIdMethod(boolean fieldManager)
-            throws NoSuchMethodException {
-        // public void pcCopyKeyFieldsFromObjectId (ObjectIdFieldConsumer fc,
-        //    Object oid)
-        String[] args = (fieldManager)
-                ? new String[]{OIDFCTYPE.getName(), Object.class.getName()}
-                : new String[]{Object.class.getName()};
-        BCMethod method = _pc.declareMethod(PRE + "CopyKeyFieldsFromObjectId",
-                                            void.class.getName(), args);
-        Code code = method.getCode(true);
+    private void addCopyKeyFieldsFromObjectIdMethod(boolean fieldManager) throws NoSuchMethodException {
+        // public void pcCopyKeyFieldsFromObjectId (ObjectIdFieldConsumer fc, Object oid)
+        String mDesc = fieldManager
+                ? Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(OIDFCTYPE), TYPE_OBJECT)
+                : Type.getMethodDescriptor(Type.VOID_TYPE, TYPE_OBJECT);
+        MethodNode copyKFMeth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                               PRE + "CopyKeyFieldsFromObjectId",
+                                               mDesc,
+                                               null, null);
+        final ClassNode classNode = pc.getClassNode();
+        classNode.methods.add(copyKFMeth);
+        InsnList instructions = copyKFMeth.instructions;
+
 
         // call superclass method
         if (_meta.getPCSuperclass() != null && !getCreateSubclass()) {
-            loadManagedInstance(code, false);
-            for (int i = 0; i < args.length; i++)
-                code.aload().setParam(i);
-            code.invokespecial().setMethod(getType(_meta.
-                                                           getPCSuperclassMetaData()).getName(),
-                                           PRE + "CopyKeyFieldsFromObjectId", void.class.getName(), args);
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st parameter object
+            if (fieldManager) {
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 2)); // 2nd parameter object
+            }
+            instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
+                                                Type.getInternalName(getType(_meta.getPCSuperclassMetaData())),
+                                                PRE + "CopyKeyFieldsFromObjectId",
+                                                mDesc));
         }
 
-        if (fieldManager)
-            code.aload().setParam(1);
-        else
-            code.aload().setParam(0);
+        // Object id = oid;
+        if (fieldManager) {
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 2)); // 2nd parameter object
+        }
+        else {
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st parameter object
+        }
 
         if (!_meta.isOpenJPAIdentity() && _meta.isObjectIdTypeShared()) {
             // oid = ((ObjectId) id).getId ();
-            code.checkcast().setType(ObjectId.class);
-            code.invokevirtual().setMethod(ObjectId.class, "getId",
-                                           Object.class, null);
+            instructions.add(new TypeInsnNode(Opcodes.CHECKCAST, Type.getInternalName(ObjectId.class)));
+            instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                                Type.getInternalName(ObjectId.class),
+                                                "getId",
+                                                Type.getMethodDescriptor(TYPE_OBJECT)));
         }
 
-        // <oid type> cast = (<oid type>) oid;
-        int id = code.getNextLocalsIndex();
+        // <oid type> id = (<oid type>) oid;
+        int nextFreeVarPos = (fieldManager) ? 3 : 2;
+        int idVarPos = nextFreeVarPos++;
+
         Class oidType = _meta.getObjectIdType();
-        code.checkcast().setType(oidType);
-        code.astore().setLocal(id);
+        instructions.add(new TypeInsnNode(Opcodes.CHECKCAST, Type.getInternalName(oidType)));
+        instructions.add(new VarInsnNode(Opcodes.ASTORE, idVarPos));
 
         // fs.store<type>Field (<index>, id.<field>); or...
         // this.<field> = id.<field>
         // or for single field identity: id.getId ()
         FieldMetaData[] fmds = getCreateSubclass() ? _meta.getFields()
                 : _meta.getDeclaredFields();
-        String name;
-        Class type;
-        Class unwrapped;
-        Field field;
-        Method getter;
         for (int i = 0; i < fmds.length; i++) {
-            if (!fmds[i].isPrimaryKey())
+            if (!fmds[i].isPrimaryKey()) {
                 continue;
+            }
 
-            name = fmds[i].getName();
-            type = fmds[i].getObjectIdFieldType();
-            if (!fieldManager
-                    && fmds[i].getDeclaredTypeCode() == JavaTypes.PC) {
+            String name = fmds[i].getName();
+            Class<?> type = fmds[i].getObjectIdFieldType();
+
+            if (!fieldManager && fmds[i].getDeclaredTypeCode() == JavaTypes.PC) {
                 // if (sm == null) return;
-                loadManagedInstance(code, false);
-                code.getfield().setField(SM, SMTYPE);
-                JumpInstruction ifins = code.ifnonnull();
-                code.vreturn();
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
+
+                LabelNode lblEndIfNotNull = new LabelNode();
+                instructions.add(new JumpInsnNode(Opcodes.IFNONNULL, lblEndIfNotNull));
+                instructions.add(new InsnNode(Opcodes.RETURN));
+
+                instructions.add(lblEndIfNotNull);
+
                 // sm.getPCPrimaryKey(oid, i + pcInheritedFieldCount);
-                ifins.setTarget(loadManagedInstance(code, false));
-                code.dup(); // leave orig on stack to set value into
-                code.getfield().setField(SM, SMTYPE);
-                code.aload().setLocal(id);
-                code.constant().setValue(i);
-                code.getstatic().setField(INHERIT, int.class);
-                code.iadd();
-                code.invokeinterface().setMethod(StateManager.class,
-                                                 "getPCPrimaryKey", Object.class,
-                                                 new Class[]{Object.class, int.class});
-                code.checkcast().setType(fmds[i].getDeclaredType());
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                instructions.add(new InsnNode(Opcodes.DUP)); // leave orig on stack to set value into
+                instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, idVarPos));
+                instructions.add(AsmHelper.getLoadConstantInsn(i));
+                instructions.add(new FieldInsnNode(Opcodes.GETSTATIC, classNode.name, INHERIT, Type.INT_TYPE.getDescriptor()));
+                instructions.add(new InsnNode(Opcodes.IADD));
+                instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
+                                                    Type.getInternalName(SMTYPE),
+                                                    "getPCPrimaryKey",
+                                                    Type.getMethodDescriptor(TYPE_OBJECT, TYPE_OBJECT, Type.INT_TYPE)));
+                instructions.add(new TypeInsnNode(Opcodes.CHECKCAST, Type.getInternalName(fmds[i].getDeclaredType())));
             }
             else {
-                unwrapped = (fmds[i].getDeclaredTypeCode() == JavaTypes.PC)
-                        ? type : unwrapSingleFieldIdentity(fmds[i]);
+                Class<?> unwrapped = (fmds[i].getDeclaredTypeCode() == JavaTypes.PC) ? type : unwrapSingleFieldIdentity(fmds[i]);
                 if (fieldManager) {
-                    code.aload().setParam(0);
-                    code.constant().setValue(i);
-                    code.getstatic().setField(INHERIT, int.class);
-                    code.iadd();
+                    instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st param
+                    instructions.add(AsmHelper.getLoadConstantInsn(i));
+                    instructions.add(new FieldInsnNode(Opcodes.GETSTATIC, classNode.name, INHERIT, Type.INT_TYPE.getDescriptor()));
+                    instructions.add(new InsnNode(Opcodes.IADD));
                 }
-                else
-                    loadManagedInstance(code, false);
+                else {
+                    instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                }
 
                 if (unwrapped != type) {
-                    code.anew().setType(type);
-                    code.dup();
+                    instructions.add(new TypeInsnNode(Opcodes.NEW, Type.getInternalName(type)));
+                    instructions.add(new InsnNode(Opcodes.DUP));
                 }
-                code.aload().setLocal(id);
+
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, idVarPos));
                 if (_meta.isOpenJPAIdentity()) {
                     if (oidType == ObjectId.class) {
-                        code.invokevirtual().setMethod(oidType, "getId",
-                                                       Object.class, null);
-                        if (!fieldManager && type != Object.class)
-                            code.checkcast().setType(fmds[i].getDeclaredType());
+                        instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                                            Type.getInternalName(oidType),
+                                                            "getId",
+                                                            Type.getMethodDescriptor(TYPE_OBJECT)));
+                        if (!fieldManager && type != Object.class) {
+                            instructions.add(new TypeInsnNode(Opcodes.CHECKCAST, Type.getInternalName(fmds[i].getDeclaredType())));
+                        }
                     }
                     else if (oidType == DateId.class) {
-                        code.invokevirtual().setMethod(oidType, "getId",
-                                                       Date.class, null);
-                        if (!fieldManager && type != Date.class)
-                            code.checkcast().setType(fmds[i].getDeclaredType());
+                        instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                                            Type.getInternalName(oidType),
+                                                            "getId",
+                                                            Type.getMethodDescriptor(Type.getType(Date.class))));
+                        if (!fieldManager && type != Date.class) {
+                            instructions.add(new TypeInsnNode(Opcodes.CHECKCAST, Type.getInternalName(fmds[i].getDeclaredType())));
+                        }
                     }
                     else {
-                        code.invokevirtual().setMethod(oidType, "getId",
-                                                       unwrapped, null);
-                        if (unwrapped != type)
-                            code.invokespecial().setMethod(type, "<init>",
-                                                           void.class, new Class[]{unwrapped});
+                        instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                                            Type.getInternalName(oidType),
+                                                            "getId",
+                                                            Type.getMethodDescriptor(Type.getType(unwrapped))));
+                        if (unwrapped != type) {
+                            instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
+                                                                Type.getInternalName(type),
+                                                                "<init>",
+                                                                Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(unwrapped))));
+                        }
                     }
                 }
                 else if (isFieldAccess(fmds[i])) {
-                    field = Reflection.findField(oidType, name, true);
-                    if (Modifier.isPublic(field.getModifiers()))
-                        code.getfield().setField(field);
+                    Field field = Reflection.findField(oidType, name, true);
+                    if (Modifier.isPublic(field.getModifiers())) {
+                        instructions.add(new FieldInsnNode(Opcodes.GETFIELD,
+                                                           Type.getInternalName(field.getDeclaringClass()),
+                                                           field.getName(),
+                                                           Type.getDescriptor(field.getType())));
+                    }
                     else {
                         boolean usedFastOid = false;
                         if (_optimizeIdCopy) {
                             // If fastOids, ignore access type and try to use a public getter
-                            getter = Reflection.findGetter(oidType, name, false);
+                            Method getter = Reflection.findGetter(oidType, name, false);
                             if (getter != null && Modifier.isPublic(getter.getModifiers())) {
                                 usedFastOid = true;
-                                code.invokevirtual().setMethod(getter);
+                                instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                                                    Type.getInternalName(getter.getDeclaringClass()),
+                                                                    getter.getName(),
+                                                                    Type.getMethodDescriptor(getter)));
                             }
                         }
                         if (!usedFastOid) {
                             // Reflection.getXXX(oid, Reflection.findField(...));
-                            code.classconstant().setClass(oidType);
-                            code.constant().setValue(name);
-                            code.constant().setValue(true);
-                            code.invokestatic().setMethod(Reflection.class,
-                                                          "findField", Field.class, new Class[]{
-                                            Class.class, String.class, boolean.class});
-                            code.invokestatic().setMethod
-                                    (getReflectionGetterMethod(type, Field.class));
-                            if (!type.isPrimitive() && type != Object.class)
-                                code.checkcast().setType(type);
+                            instructions.add(AsmHelper.getLoadConstantInsn(oidType));
+                            instructions.add(AsmHelper.getLoadConstantInsn(name));
+                            instructions.add(AsmHelper.getLoadConstantInsn(true));
+                            instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+                                                                Type.getInternalName(Reflection.class),
+                                                                "findField",
+                                                                Type.getMethodDescriptor(Type.getType(Field.class), Type.getType(Class.class),
+                                                                                         Type.getType(String.class), Type.BOOLEAN_TYPE)));
+
+                            final Method reflectionGetterMethod = getReflectionGetterMethod(type, Field.class);
+                            instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+                                                                Type.getInternalName(reflectionGetterMethod.getDeclaringClass()),
+                                                                reflectionGetterMethod.getName(),
+                                                                Type.getMethodDescriptor(reflectionGetterMethod)));
+                            if (!type.isPrimitive() && type != Object.class) {
+                                instructions.add(new TypeInsnNode(Opcodes.CHECKCAST, Type.getInternalName(type)));
+                            }
                         }
                     }
                 }
                 else {
-                    getter = Reflection.findGetter(oidType, name, true);
-                    if (Modifier.isPublic(getter.getModifiers()))
-                        code.invokevirtual().setMethod(getter);
+                    Method getter = Reflection.findGetter(oidType, name, true);
+                    if (Modifier.isPublic(getter.getModifiers())) {
+                        instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                                            Type.getInternalName(getter.getDeclaringClass()),
+                                                            getter.getName(),
+                                                            Type.getMethodDescriptor(getter)));
+                    }
                     else {
                         // Reflection.getXXX(oid, Reflection.findGetter(...));
-                        code.classconstant().setClass(oidType);
-                        code.constant().setValue(name);
-                        code.constant().setValue(true);
-                        code.invokestatic().setMethod(Reflection.class,
-                                                      "findGetter", Method.class, new Class[]{
-                                        Class.class, String.class, boolean.class});
-                        code.invokestatic().setMethod
-                                (getReflectionGetterMethod(type, Method.class));
-                        if (!type.isPrimitive() && type != Object.class)
-                            code.checkcast().setType(type);
+                        instructions.add(AsmHelper.getLoadConstantInsn(oidType));
+                        instructions.add(AsmHelper.getLoadConstantInsn(name));
+                        instructions.add(AsmHelper.getLoadConstantInsn(true));
+                        instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+                                                            Type.getInternalName(Reflection.class),
+                                                            "findGetter",
+                                                            Type.getMethodDescriptor(Type.getType(Method.class), Type.getType(Class.class),
+                                                                                     Type.getType(String.class), Type.BOOLEAN_TYPE)));
+
+                        final Method reflectionGetterMethod = getReflectionGetterMethod(type, Method.class);
+                        instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+                                                            Type.getInternalName(reflectionGetterMethod.getDeclaringClass()),
+                                                            reflectionGetterMethod.getName(),
+                                                            Type.getMethodDescriptor(reflectionGetterMethod)));
+                        if (!type.isPrimitive() && type != Object.class) {
+                            instructions.add(new TypeInsnNode(Opcodes.CHECKCAST, Type.getInternalName(type)));
+                        }
                     }
                 }
             }
 
-            if (fieldManager)
-                code.invokeinterface().setMethod(getFieldConsumerMethod(type));
-            else
-                addSetManagedValueCode(code, fmds[i]);
+            if (fieldManager) {
+                final Method fieldConsumerMethod = getFieldConsumerMethod(type);
+                instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
+                                                    Type.getInternalName(fieldConsumerMethod.getDeclaringClass()),
+                                                    fieldConsumerMethod.getName(),
+                                                    Type.getMethodDescriptor(fieldConsumerMethod)));
+            }
+            else {
+                addSetManagedValueCode(classNode, instructions, fmds[i]);
+            }
         }
-        code.vreturn();
 
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
+        instructions.add(new InsnNode(Opcodes.RETURN));
     }
 
     /**
