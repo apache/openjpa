@@ -119,6 +119,10 @@ public final class AsmHelper {
         ClassNode classNode = new ClassNode(Opcodes.ASM9);
         cr.accept(classNode, 0);
 
+        if ((classNode.version & 0xffff) < 49) {
+            classNode.version = 49;
+        }
+
         return new ClassNodeTracker(classNode, bcClass.getClassLoader());
     }
 
@@ -129,6 +133,10 @@ public final class AsmHelper {
     public static void readIntoBCClass(ClassNodeTracker cnt, BCClass bcClass) {
         // sadly package scoped
         try {
+            if (bcClass.getMajorVersion() < 49) {
+                bcClass.setMajorVersion(49);
+            }
+
             Method readMethod = BCClass.class.getDeclaredMethod("read", InputStream.class, ClassLoader.class);
 
             ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);

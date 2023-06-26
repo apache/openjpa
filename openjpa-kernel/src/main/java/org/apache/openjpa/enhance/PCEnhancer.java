@@ -1365,7 +1365,6 @@ public class PCEnhancer {
 
         addCopyFieldsMethod(pc.getClassNode());
 
-
         if (_meta.getPCSuperclass() == null || getCreateSubclass()) {
             addStockMethods();
             addGetVersionMethod();
@@ -1389,7 +1388,6 @@ public class PCEnhancer {
             addCopyKeyFieldsFromObjectIdMethod(true);
             addCopyKeyFieldsFromObjectIdMethod(false);
 
-
             if (_meta.hasAbstractPKField()) {
                 addGetIDOwningClass();
             }
@@ -1398,10 +1396,9 @@ public class PCEnhancer {
                 _log.warn(_loc.get("ID-field-in-embeddable-unsupported", _meta.toString()));
             }
 
-            AsmHelper.readIntoBCClass(pc, _pc);
-
             addNewObjectIdInstanceMethod(true);
             addNewObjectIdInstanceMethod(false);
+            AsmHelper.readIntoBCClass(pc, _pc);
         }
         else if (_meta.hasPKFieldsFromAbstractClass()) {
             addGetIDOwningClass();
@@ -2869,221 +2866,6 @@ public class PCEnhancer {
     }
 
     /**
-     * Add code to extract the id of the given primary key relation field for
-     * setting into an objectid instance.
-     */
-    @Deprecated
-    private void addExtractObjectIdFieldValueCode(Code code, FieldMetaData pk) {
-        // if (val != null)
-        //  val = ((PersistenceCapable) val).pcFetchObjectId();
-        int pc = code.getNextLocalsIndex();
-        code.astore().setLocal(pc);
-        code.aload().setLocal(pc);
-        JumpInstruction ifnull1 = code.ifnull();
-        code.aload().setLocal(pc);
-        code.checkcast().setType(PersistenceCapable.class);
-        if (!pk.getTypeMetaData().isOpenJPAIdentity())
-            code.invokeinterface().setMethod(PersistenceCapable.class,
-                                             PRE + "FetchObjectId", Object.class, null);
-        else
-            code.invokeinterface().setMethod(PersistenceCapable.class,
-                                             PRE + "NewObjectIdInstance", Object.class, null);
-
-        int oid = code.getNextLocalsIndex();
-        code.astore().setLocal(oid);
-        code.aload().setLocal(oid);
-        JumpInstruction ifnull2 = code.ifnull();
-
-        // for datastore / single-field identity:
-        // if (val != null)
-        //   val = ((OpenJPAId) val).getId();
-        ClassMetaData pkmeta = pk.getDeclaredTypeMetaData();
-        int pkcode = pk.getObjectIdFieldTypeCode();
-        Class pktype = pk.getObjectIdFieldType();
-        if (pkmeta.getIdentityType() == ClassMetaData.ID_DATASTORE
-                && pkcode == JavaTypes.LONG) {
-            code.aload().setLocal(oid);
-            code.checkcast().setType(Id.class);
-            code.invokevirtual().setMethod(Id.class, "getId",
-                                           long.class, null);
-        } else if (pkmeta.getIdentityType() == ClassMetaData.ID_DATASTORE) {
-            code.aload().setLocal(oid);
-        } else if (pkmeta.isOpenJPAIdentity()) {
-            switch (pkcode) {
-                case JavaTypes.BYTE_OBJ:
-                    code.anew().setType(Byte.class);
-                    code.dup();
-                    // no break
-                case JavaTypes.BYTE:
-                    code.aload().setLocal(oid);
-                    code.checkcast().setType(ByteId.class);
-                    code.invokevirtual().setMethod(ByteId.class, "getId",
-                                                   byte.class, null);
-                    if (pkcode == JavaTypes.BYTE_OBJ)
-                        code.invokespecial().setMethod(Byte.class, "<init>",
-                                                       void.class, new Class[] {byte.class});
-                    break;
-                case JavaTypes.CHAR_OBJ:
-                    code.anew().setType(Character.class);
-                    code.dup();
-                    // no break
-                case JavaTypes.CHAR:
-                    code.aload().setLocal(oid);
-                    code.checkcast().setType(CharId.class);
-                    code.invokevirtual().setMethod(CharId.class, "getId",
-                                                   char.class, null);
-                    if (pkcode == JavaTypes.CHAR_OBJ)
-                        code.invokespecial().setMethod(Character.class,
-                                                       "<init>", void.class, new Class[] {char.class});
-                    break;
-                case JavaTypes.DOUBLE_OBJ:
-                    code.anew().setType(Double.class);
-                    code.dup();
-                    // no break
-                case JavaTypes.DOUBLE:
-                    code.aload().setLocal(oid);
-                    code.checkcast().setType(DoubleId.class);
-                    code.invokevirtual().setMethod(DoubleId.class, "getId",
-                                                   double.class, null);
-                    if (pkcode == JavaTypes.DOUBLE_OBJ)
-                        code.invokespecial().setMethod(Double.class, "<init>",
-                                                       void.class, new Class[]{double.class});
-                    break;
-                case JavaTypes.FLOAT_OBJ:
-                    code.anew().setType(Float.class);
-                    code.dup();
-                    // no break
-                case JavaTypes.FLOAT:
-                    code.aload().setLocal(oid);
-                    code.checkcast().setType(FloatId.class);
-                    code.invokevirtual().setMethod(FloatId.class, "getId",
-                                                   float.class, null);
-                    if (pkcode == JavaTypes.FLOAT_OBJ)
-                        code.invokespecial().setMethod(Float.class, "<init>",
-                                                       void.class, new Class[]{float.class});
-                    break;
-                case JavaTypes.INT_OBJ:
-                    code.anew().setType(Integer.class);
-                    code.dup();
-                    // no break
-                case JavaTypes.INT:
-                    code.aload().setLocal(oid);
-                    code.checkcast().setType(IntId.class);
-                    code.invokevirtual().setMethod(IntId.class, "getId",
-                                                   int.class, null);
-                    if (pkcode == JavaTypes.INT_OBJ)
-                        code.invokespecial().setMethod(Integer.class, "<init>",
-                                                       void.class, new Class[] {int.class});
-                    break;
-                case JavaTypes.LONG_OBJ:
-                    code.anew().setType(Long.class);
-                    code.dup();
-                    // no break
-                case JavaTypes.LONG:
-                    code.aload().setLocal(oid);
-                    code.checkcast().setType(LongId.class);
-                    code.invokevirtual().setMethod(LongId.class, "getId",
-                                                   long.class, null);
-                    if (pkcode == JavaTypes.LONG_OBJ)
-                        code.invokespecial().setMethod(Long.class, "<init>",
-                                                       void.class, new Class[] {long.class});
-                    break;
-                case JavaTypes.SHORT_OBJ:
-                    code.anew().setType(Short.class);
-                    code.dup();
-                    // no break
-                case JavaTypes.SHORT:
-                    code.aload().setLocal(oid);
-                    code.checkcast().setType(ShortId.class);
-                    code.invokevirtual().setMethod(ShortId.class, "getId",
-                                                   short.class, null);
-                    if (pkcode == JavaTypes.SHORT_OBJ)
-                        code.invokespecial().setMethod(Short.class, "<init>",
-                                                       void.class, new Class[]{short.class});
-                    break;
-                case JavaTypes.DATE:
-                    code.aload().setLocal(oid);
-                    code.checkcast().setType(DateId.class);
-                    code.invokevirtual().setMethod(DateId.class, "getId",
-                                                   Date.class, null);
-                    if (pktype != Date.class) {
-                        // java.sql.Date.class
-                        code.checkcast().setType(pktype);
-                    }
-                    break;
-                case JavaTypes.STRING:
-                    code.aload().setLocal(oid);
-                    code.checkcast().setType(StringId.class);
-                    code.invokevirtual().setMethod(StringId.class, "getId",
-                                                   String.class, null);
-                    break;
-                case JavaTypes.BIGDECIMAL:
-                    code.aload().setLocal(oid);
-                    code.checkcast().setType(BigDecimalId.class);
-                    code.invokevirtual().setMethod(BigDecimalId.class, "getId",
-                                                   BigDecimal.class, null);
-                    break;
-                case JavaTypes.BIGINTEGER:
-                    code.aload().setLocal(oid);
-                    code.checkcast().setType(BigIntegerId.class);
-                    code.invokevirtual().setMethod(BigIntegerId.class, "getId",
-                                                   BigInteger.class, null);
-                    break;
-                default:
-                    code.aload().setLocal(oid);
-                    code.checkcast().setType(ObjectId.class);
-                    code.invokevirtual().setMethod(ObjectId.class, "getId",
-                                                   Object.class, null);
-            }
-        } else if (pkmeta.getObjectIdType() != null) {
-            code.aload().setLocal(oid);
-            if (pkcode == JavaTypes.OBJECT) {
-                code.checkcast().setType(ObjectId.class);
-                code.invokevirtual().setMethod(ObjectId.class, "getId",
-                                               Object.class, null);
-            }
-            code.checkcast().setType(pktype);
-        } else
-            code.aload().setLocal(oid);
-        JumpInstruction go2 = code.go2();
-
-        // if (val == null)
-        //   val = <default>;
-        Instruction def;
-        switch (pkcode) {
-            case JavaTypes.BOOLEAN:
-                def = code.constant().setValue(false);
-                break;
-            case JavaTypes.BYTE:
-                def = code.constant().setValue((byte) 0);
-                break;
-            case JavaTypes.CHAR:
-                def = code.constant().setValue((char) 0);
-                break;
-            case JavaTypes.DOUBLE:
-                def = code.constant().setValue(0D);
-                break;
-            case JavaTypes.FLOAT:
-                def = code.constant().setValue(0F);
-                break;
-            case JavaTypes.INT:
-                def = code.constant().setValue(0);
-                break;
-            case JavaTypes.LONG:
-                def = code.constant().setValue(0L);
-                break;
-            case JavaTypes.SHORT:
-                def = code.constant().setValue((short) 0);
-                break;
-            default:
-                def = code.constant().setNull();
-        }
-        ifnull1.setTarget(def);
-        ifnull2.setTarget(def);
-        go2.setTarget(code.nop());
-    }
-
-    /**
      * Adds the <code>pcCopyKeyFieldsFromObjectId</code> methods
      * to classes using application identity.
      */
@@ -3409,91 +3191,112 @@ public class PCEnhancer {
      * Adds the pcNewObjectIdInstance method to classes using
      * application identity.
      */
-    private void addNewObjectIdInstanceMethod(boolean obj)
-            throws NoSuchMethodException {
+    private void addNewObjectIdInstanceMethod(boolean obj) throws NoSuchMethodException {
         // public Object pcNewObjectIdInstance ()
-        Class[] args = (obj) ? new Class[]{Object.class} : null;
-        BCMethod method = _pc.declareMethod(PRE + "NewObjectIdInstance",
-                                            Object.class, args);
-        Code code = method.getCode(true);
+        String mDesc = obj
+                ? Type.getMethodDescriptor(TYPE_OBJECT, TYPE_OBJECT)
+                : Type.getMethodDescriptor(TYPE_OBJECT);
+
+        MethodNode newOidMeth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                               PRE + "NewObjectIdInstance",
+                                               mDesc,
+                                               null, null);
+        final ClassNode classNode = pc.getClassNode();
+        classNode.methods.add(newOidMeth);
+        InsnList instructions = newOidMeth.instructions;
 
         Boolean usesClsString = usesClassStringIdConstructor();
         Class oidType = _meta.getObjectIdType();
         if (obj && usesClsString == null) {
             // throw new IllegalArgumentException (...);
-            String msg = _loc.get("str-cons", oidType,
-                                  _meta.getDescribedType()).getMessage();
-            code.anew().setType(IllegalArgumentException.class);
-            code.dup();
-            code.constant().setValue(msg);
-            code.invokespecial().setMethod(IllegalArgumentException.class,
-                                           "<init>", void.class, new Class[]{String.class});
-            code.athrow();
+            String msg = _loc.get("str-cons", oidType, _meta.getDescribedType()).getMessage();
 
-            code.calculateMaxStack();
-            code.calculateMaxLocals();
+            instructions.add(throwException(IllegalArgumentException.class, msg));
             return;
         }
 
         if (!_meta.isOpenJPAIdentity() && _meta.isObjectIdTypeShared()) {
             // new ObjectId (cls, oid)
-            code.anew().setType(ObjectId.class);
-            code.dup();
+            instructions.add(new TypeInsnNode(Opcodes.NEW, Type.getInternalName(ObjectId.class)));
+            instructions.add(new InsnNode(Opcodes.DUP));
+
             if (_meta.isEmbeddedOnly() || _meta.hasAbstractPKField()) {
-                code.aload().setThis();
-                code.invokevirtual().setMethod(PRE + "GetIDOwningClass",
-                                               Class.class, null);
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                                    classNode.name,
+                                                    PRE + "GetIDOwningClass",
+                                                    Type.getMethodDescriptor(Type.getType(Class.class))));
             }
             else {
-                code.classconstant().setClass(getType(_meta));
+                instructions.add(AsmHelper.getLoadConstantInsn(getType(_meta)));
             }
         }
 
         // new <oid class> ();
-        code.anew().setType(oidType);
-        code.dup();
+        instructions.add(new TypeInsnNode(Opcodes.NEW, Type.getInternalName(oidType)));
+        instructions.add(new InsnNode(Opcodes.DUP));
         if (_meta.isOpenJPAIdentity() || (obj && usesClsString == Boolean.TRUE)) {
             if ((_meta.isEmbeddedOnly()
                     && !(_meta.isEmbeddable() && _meta.getIdentityType() == ClassMetaData.ID_APPLICATION))
                     || _meta.hasAbstractPKField()) {
-                code.aload().setThis();
-                code.invokevirtual().setMethod(PRE + "GetIDOwningClass", Class.class, null);
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                                    classNode.name,
+                                                    PRE + "GetIDOwningClass",
+                                                    Type.getMethodDescriptor(Type.getType(Class.class))));
             }
             else {
-                code.classconstant().setClass(getType(_meta));
+                instructions.add(AsmHelper.getLoadConstantInsn(getType(_meta)));
             }
         }
+
+        String mDescInit = Type.getMethodDescriptor(Type.VOID_TYPE);
         if (obj) {
-            code.aload().setParam(0);
-            code.checkcast().setType(String.class);
-            if (usesClsString == Boolean.TRUE)
-                args = new Class[]{Class.class, String.class};
-            else if (usesClsString == Boolean.FALSE)
-                args = new Class[]{String.class};
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st param
+            instructions.add(new TypeInsnNode(Opcodes.CHECKCAST, Type.getInternalName(String.class)));
+
+            if (usesClsString == Boolean.TRUE) {
+                mDescInit = Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(Class.class), Type.getType(String.class));
+            }
+            else if (usesClsString == Boolean.FALSE) {
+                mDescInit = Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(String.class));
+            }
         }
         else if (_meta.isOpenJPAIdentity()) {
             // new <type>Identity (XXX.class, <pk>);
-            loadManagedInstance(code, false);
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
             FieldMetaData pk = _meta.getPrimaryKeyFields()[0];
-            addGetManagedValueCode(code, pk);
-            if (pk.getDeclaredTypeCode() == JavaTypes.PC)
-                addExtractObjectIdFieldValueCode(code, pk);
-            if (_meta.getObjectIdType() == ObjectId.class)
-                args = new Class[]{Class.class, Object.class};
-            else if (_meta.getObjectIdType() == Date.class)
-                args = new Class[]{Class.class, Date.class};
-            else
-                args = new Class[]{Class.class, pk.getObjectIdFieldType()};
+            addGetManagedValueCode(classNode, instructions, pk, true);
+            if (pk.getDeclaredTypeCode() == JavaTypes.PC) {
+                int nextFreeVarPos = 1;
+                addExtractObjectIdFieldValueCode(classNode, instructions, pk, nextFreeVarPos);
+            }
+
+            if (_meta.getObjectIdType() == ObjectId.class) {
+                mDescInit = Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(Class.class), Type.getType(Object.class));
+            }
+            else if (_meta.getObjectIdType() == Date.class) {
+                mDescInit = Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(Class.class), Type.getType(Date.class));
+            }
+            else {
+                mDescInit = Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(Class.class), Type.getType(pk.getObjectIdFieldType()));
+            }
         }
 
-        code.invokespecial().setMethod(oidType, "<init>", void.class, args);
-        if (!_meta.isOpenJPAIdentity() && _meta.isObjectIdTypeShared())
-            code.invokespecial().setMethod(ObjectId.class, "<init>",
-                                           void.class, new Class[]{Class.class, Object.class});
-        code.areturn();
+        instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
+                                            Type.getInternalName(oidType),
+                                            "<init>",
+                                            mDescInit));
 
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
+        if (!_meta.isOpenJPAIdentity() && _meta.isObjectIdTypeShared()) {
+            instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
+                                                Type.getInternalName(ObjectId.class),
+                                                "<init>",
+                                                Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(Class.class), Type.getType(Object.class))));
+
+        }
+
+        instructions.add(new InsnNode(Opcodes.ARETURN));
     }
 
     /**
@@ -3579,13 +3382,27 @@ public class PCEnhancer {
      * exception type, sans message.
      */
     private InsnList throwException(Class type) {
+        return throwException(type, null);
+    }
+
+    /**
+     * Helper method to add the code necessary to throw the given
+     * exception type, sans message.
+     */
+    private InsnList throwException(Class type, String msg) {
         InsnList instructions = new InsnList();
         instructions.add(new TypeInsnNode(Opcodes.NEW, Type.getInternalName(type)));
         instructions.add(new InsnNode(Opcodes.DUP));
+        if (msg != null) {
+            instructions.add(AsmHelper.getLoadConstantInsn(msg));
+        }
+        String desc = msg != null
+                ? Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(String.class))
+                : Type.getMethodDescriptor(Type.VOID_TYPE);
         instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
                                             Type.getInternalName(type),
                                             "<init>",
-                                            Type.getMethodDescriptor(Type.VOID_TYPE)));
+                                            desc));
         instructions.add(new InsnNode(Opcodes.ATHROW));
 
         return instructions;
