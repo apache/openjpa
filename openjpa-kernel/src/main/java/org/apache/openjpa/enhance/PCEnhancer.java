@@ -600,8 +600,8 @@ public class PCEnhancer {
 
                 //X For now we cannot take the new version as it uses LDC for classes which Serp doesn't understand.
                 //X So we can only enable it in a later step
-                //X addStaticInitializer(pc);
-                addStaticInitializer(); // removeme
+                addStaticInitializer(pc);
+                //X addStaticInitializer(); // removeme
 
                 addPCMethods();
 
@@ -1229,6 +1229,7 @@ public class PCEnhancer {
         methodNode.instructions.insertBefore(currentInsn, insns);
     }
 
+    @Deprecated
     private void addNotifyAccess(Code code, FieldMetaData fmd) {
         // PCHelper.accessingField(this, <absolute-index>);
         code.aload().setThis();
@@ -1286,6 +1287,7 @@ public class PCEnhancer {
      *              -1 if the new value is unavailable and should therefore be looked
      *              up.
      */
+    @Deprecated
     private void addNotifyMutation(Code code, FieldMetaData fmd, int val, int param)
             throws NoSuchMethodException {
         // PCHelper.settingField(this, <absolute-index>, old, new);
@@ -2533,6 +2535,7 @@ public class PCEnhancer {
      * Adds the appropriate load method for the given type and local
      * index.
      */
+    @Deprecated
     private void loadLocalValue(Code code, int locidx, int typeCode) {
         switch (typeCode) {
             case JavaTypes.CHAR:
@@ -2560,6 +2563,7 @@ public class PCEnhancer {
      * Adds the appropriate store method for the given type and local
      * index.
      */
+    @Deprecated
     private void storeLocalValue(Code code, int locidx, int typeCode) {
         switch (typeCode) {
             case JavaTypes.CHAR:
@@ -3412,6 +3416,7 @@ public class PCEnhancer {
      * Helper method to add the code necessary to throw the given
      * exception type, sans message.
      */
+    @Deprecated
     private Instruction throwException(Code code, Class type) {
         Instruction ins = code.anew().setType(type);
         code.dup();
@@ -3512,96 +3517,6 @@ public class PCEnhancer {
             classNode.fields.add(new FieldNode(Opcodes.ACC_PROTECTED | Opcodes.ACC_TRANSIENT,
                                                SM, Type.getDescriptor(SMTYPE), null, null));
         }
-    }
-
-    @Deprecated
-    private void addStaticInitializer() {
-        AsmHelper.readIntoBCClass(pc, _pc);
-        Code code = getOrCreateClassInitCode(true);
-        if (_meta.getPCSuperclass() != null) {
-            if (getCreateSubclass()) {
-                code.constant().setValue(0);
-                code.putstatic().setField(INHERIT, int.class);
-            }
-            else {
-                // pcInheritedFieldCount = <superClass>.pcGetManagedFieldCount()
-                code.invokestatic().setMethod(getType(_meta.
-                                                              getPCSuperclassMetaData()).getName(),
-                                              PRE + "GetManagedFieldCount", int.class.getName(), null);
-                code.putstatic().setField(INHERIT, int.class);
-            }
-
-            // pcPCSuperclass = <superClass>;
-            // this intentionally calls getDescribedType() directly
-            // instead of PCEnhancer.getType()
-            code.classconstant().setClass(
-                    _meta.getPCSuperclassMetaData().getDescribedType());
-            code.putstatic().setField(SUPER, Class.class);
-        }
-
-        // pcFieldNames = new String[] { "<name1>", "<name2>", ... };
-        FieldMetaData[] fmds = _meta.getDeclaredFields();
-        code.constant().setValue(fmds.length);
-        code.anewarray().setType(String.class);
-        for (int i = 0; i < fmds.length; i++) {
-            code.dup();
-            code.constant().setValue(i);
-            code.constant().setValue(fmds[i].getName());
-            code.aastore();
-        }
-        code.putstatic().setField(PRE + "FieldNames", String[].class);
-
-        // pcFieldTypes = new Class[] { <type1>.class, <type2>.class, ... };
-        code.constant().setValue(fmds.length);
-        code.anewarray().setType(Class.class);
-        for (int i = 0; i < fmds.length; i++) {
-            code.dup();
-            code.constant().setValue(i);
-            code.classconstant().setClass(fmds[i].getDeclaredType());
-            code.aastore();
-        }
-        code.putstatic().setField(PRE + "FieldTypes", Class[].class);
-
-        // pcFieldFlags = new byte[] { <flag1>, <flag2>, ... };
-        code.constant().setValue(fmds.length);
-        code.newarray().setType(byte.class);
-        for (int i = 0; i < fmds.length; i++) {
-            code.dup();
-            code.constant().setValue(i);
-            code.constant().setValue(getFieldFlag(fmds[i]));
-            code.bastore();
-        }
-        code.putstatic().setField(PRE + "FieldFlags", byte[].class);
-
-        // PCRegistry.register (cls,
-        //	pcFieldNames, pcFieldTypes, pcFieldFlags,
-        //  pcPCSuperclass, alias, new XXX ());
-        code.classconstant().setClass(_meta.getDescribedType());
-        code.getstatic().setField(PRE + "FieldNames", String[].class);
-        code.getstatic().setField(PRE + "FieldTypes", Class[].class);
-        code.getstatic().setField(PRE + "FieldFlags", byte[].class);
-        code.getstatic().setField(SUPER, Class.class);
-
-        if (_meta.isMapped() || _meta.isAbstract())
-            code.constant().setValue(_meta.getTypeAlias());
-        else
-            code.constant().setNull();
-
-        if (_pc.isAbstract())
-            code.constant().setNull();
-        else {
-            code.anew().setType(_pc);
-            code.dup();
-            code.invokespecial().setMethod("<init>", void.class, null);
-        }
-
-        code.invokestatic().setMethod(HELPERTYPE, "register", void.class,
-                                      new Class[]{Class.class, String[].class, Class[].class,
-                                              byte[].class, Class.class, String.class, PCTYPE});
-
-        code.vreturn();
-        code.calculateMaxStack();
-        pc = AsmHelper.toClassNode(_pc);
     }
 
     /**
@@ -3744,6 +3659,7 @@ public class PCEnhancer {
      * as well as creating a custom <code>writeObject</code> method if the
      * class is Serializable and does not define them.
      */
+    @Deprecated
     private void addSerializationCode() {
         if (externalizeDetached()
                 || !Serializable.class.isAssignableFrom(_meta.getDescribedType()))
@@ -3826,6 +3742,7 @@ public class PCEnhancer {
         modifyReadObjectMethod(read, full);
     }
 
+    @Deprecated
     private void addSubclassSerializationCode() {
         // for generated subclasses, serialization must write an instance of
         // the superclass instead of the subclass, so that the client VM can
@@ -3879,6 +3796,7 @@ public class PCEnhancer {
      * {@link ObjectOutputStream#defaultWriteObject} method,
      * but only after calling the internal <code>pcSerializing</code> method.
      */
+    @Deprecated
     private void modifyWriteObjectMethod(BCMethod method, boolean full) {
         Code code = method.getCode(true);
         code.beforeFirst();
@@ -3923,6 +3841,7 @@ public class PCEnhancer {
      * Adds a custom readObject method that delegates to the
      * {@link ObjectInputStream#readObject()} method.
      */
+    @Deprecated
     private void modifyReadObjectMethod(BCMethod method, boolean full) {
         Code code = method.getCode(true);
         code.beforeFirst();
@@ -3953,6 +3872,7 @@ public class PCEnhancer {
      * Creates the pcIsDetached() method to determine if an instance
      * is detached.
      */
+    @Deprecated
     private void addIsDetachedMethod()
             throws NoSuchMethodException {
         // public boolean pcIsDetached()
@@ -3987,6 +3907,7 @@ public class PCEnhancer {
      * @return true if we need a pcIsDetachedStateDefinitive method, false
      * otherwise
      */
+    @Deprecated
     private boolean writeIsDetachedMethod(Code code)
             throws NoSuchMethodException {
         // not detachable: return Boolean.FALSE
@@ -4189,6 +4110,7 @@ public class PCEnhancer {
      * Compare the given field to its Java default, returning the
      * comparison instruction. The field value will already be on the stack.
      */
+    @Deprecated
     private static JumpInstruction ifDefaultValue(Code code,
                                                   FieldMetaData fmd) {
         switch (fmd.getDeclaredTypeCode()) {
@@ -4283,6 +4205,7 @@ public class PCEnhancer {
      * subclass, create the clone() method that clears the state manager
      * that may have been initialized in a super's clone() method.
      */
+    @Deprecated
     private void addCloningCode() {
         if (_meta.getPCSuperclass() != null && !getCreateSubclass())
             return;
@@ -4412,6 +4335,7 @@ public class PCEnhancer {
      * Adds a non-static setter that delegates to the super methods, and
      * performs any necessary field tracking.
      */
+    @Deprecated
     private void addSubclassSetMethod(FieldMetaData fmd)
             throws NoSuchMethodException {
         Class propType = fmd.getDeclaredType();
@@ -4474,6 +4398,7 @@ public class PCEnhancer {
      * Adds a non-static getter that delegates to the super methods, and
      * performs any necessary field tracking.
      */
+    @Deprecated
     private void addSubclassGetMethod(FieldMetaData fmd) {
         String methName = "get" + StringUtil.capitalize(fmd.getName());
         if (_managedType.getMethods(methName, new Class[0]).length == 0)
@@ -4506,6 +4431,7 @@ public class PCEnhancer {
      * @param index the relative number of the field
      * @param fmd   metadata about the field to get
      */
+    @Deprecated
     private void addGetMethod(int index, FieldMetaData fmd)
             throws NoSuchMethodException {
         BCMethod method = createGetMethod(fmd);
@@ -4562,6 +4488,7 @@ public class PCEnhancer {
      * @param index the relative number of the field
      * @param fmd   metadata about the field to set
      */
+    @Deprecated
     private void addSetMethod(int index, FieldMetaData fmd)
             throws NoSuchMethodException {
         BCMethod method = createSetMethod(fmd);
@@ -4609,6 +4536,7 @@ public class PCEnhancer {
     /**
      * Determines which attach / detach methods to use.
      */
+    @Deprecated
     private void addAttachDetachCode()
             throws NoSuchMethodException {
         // see if any superclasses are detachable
@@ -4888,6 +4816,7 @@ public class PCEnhancer {
      * already be on the top of the stack in <code>code</code>,
      * and the instance to load into must be second.
      */
+    @Deprecated
     private void putfield(Code code, BCClass declarer, String attrName,
                           Class fieldType) {
         if (declarer == null)
@@ -4995,6 +4924,7 @@ public class PCEnhancer {
     /**
      * Add custom readExternal method.
      */
+    @Deprecated
     private void addReadExternal(boolean parentDetachable,
                                  boolean detachedState)
             throws NoSuchMethodException {
@@ -5055,6 +4985,7 @@ public class PCEnhancer {
         code.calculateMaxLocals();
     }
 
+    @Deprecated
     private void addReadExternalFields() throws NoSuchMethodException {
         Class<?>[] inargs = new Class[]{ObjectInput.class};
         BCMethod meth = _pc.declareMethod("readExternalFields", void.class, inargs);
@@ -5089,6 +5020,7 @@ public class PCEnhancer {
     /**
      * Read unmanaged fields from the stream (pcReadUnmanaged).
      */
+    @Deprecated
     private void addReadUnmanaged(Collection unmgd, boolean parentDetachable)
             throws NoSuchMethodException {
         Class[] inargs = new Class[]{ObjectInput.class};
@@ -5123,6 +5055,7 @@ public class PCEnhancer {
     /**
      * Helper method to read a field from an externalization input stream.
      */
+    @Deprecated
     private void readExternal(Code code, String fieldName, Class type,
                               FieldMetaData fmd)
             throws NoSuchMethodException {
@@ -5174,6 +5107,7 @@ public class PCEnhancer {
     /**
      * Add custom writeExternal method.
      */
+    @Deprecated
     private void addWriteExternal(boolean parentDetachable,
                                   boolean detachedState)
             throws NoSuchMethodException {
@@ -5246,6 +5180,7 @@ public class PCEnhancer {
     }
 
 
+    @Deprecated
     private void addWriteExternalFields()
             throws NoSuchMethodException {
         Class<?>[] outargs = new Class[]{ObjectOutput.class};
@@ -5280,6 +5215,7 @@ public class PCEnhancer {
     /**
      * Write unmanaged fields to the stream (pcWriteUnmanaged).
      */
+    @Deprecated
     private void addWriteUnmanaged(Collection unmgd, boolean parentDetachable)
             throws NoSuchMethodException {
         Class[] outargs = new Class[]{ObjectOutput.class};
@@ -5313,6 +5249,7 @@ public class PCEnhancer {
     /**
      * Helper method to write a field to an externalization output stream.
      */
+    @Deprecated
     private void writeExternal(Code code, String fieldName, Class type,
                                FieldMetaData fmd)
             throws NoSuchMethodException {
@@ -5342,6 +5279,7 @@ public class PCEnhancer {
                                          void.class, args);
     }
 
+    @Deprecated
     private void addGetManagedValueCode(Code code, FieldMetaData fmd)
             throws NoSuchMethodException {
         addGetManagedValueCode(code, fmd, true);
@@ -5554,6 +5492,7 @@ public class PCEnhancer {
      *
      * @return the first instruction added to <code>code</code>.
      */
+    @Deprecated
     private Instruction loadManagedInstance(Code code, boolean forStatic,
             FieldMetaData fmd) {
         if (forStatic && isFieldAccess(fmd))
@@ -5568,6 +5507,7 @@ public class PCEnhancer {
      *
      * @return the first instruction added to <code>code</code>.
      */
+    @Deprecated
     private Instruction loadManagedInstance(Code code, boolean forStatic) {
         return loadManagedInstance(code, forStatic, null);
     }
@@ -5602,6 +5542,7 @@ public class PCEnhancer {
      * Create the generated getter {@link BCMethod} for <code>fmd</code>. The
      * calling environment will then populate this method's code block.
      */
+    @Deprecated
     private BCMethod createGetMethod(FieldMetaData fmd) {
         BCMethod getter;
         if (isFieldAccess(fmd)) {
@@ -5634,6 +5575,7 @@ public class PCEnhancer {
      * Create the generated setter {@link BCMethod} for <code>fmd</code>. The
      * calling environment will then populate this method's code block.
      */
+    @Deprecated
     private BCMethod createSetMethod(FieldMetaData fmd) {
         BCMethod setter;
         if (isFieldAccess(fmd)) {
@@ -5684,6 +5626,7 @@ public class PCEnhancer {
     /**
      * Move code-related attributes from one method to another.
      */
+    @Deprecated
     private static void transferCodeAttributes(BCMethod from, BCMethod to) {
         Code code = from.getCode(false);
         if (code != null) {
