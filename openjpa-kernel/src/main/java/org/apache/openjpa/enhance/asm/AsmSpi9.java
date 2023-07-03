@@ -173,40 +173,6 @@ public class AsmSpi9 implements AsmSpi {
         return baos.toByteArray();
     }
 
-    private static class BCClassWriter extends ClassWriter {
-        private final ClassLoader _loader;
-
-        BCClassWriter(int flags, ClassLoader loader) {
-            super(flags);
-            _loader = loader;
-        }
-
-        @Override
-        protected String getCommonSuperClass(String type1, String type2) {
-            Class<?> class1;
-            Class<?> class2;
-            try {
-                class1 = _loader.loadClass(type1.replace('/', '.'));
-                class2 = _loader.loadClass(type2.replace('/', '.'));
-            } catch (ClassNotFoundException ex) {
-                throw new RuntimeException(ex);
-            }
-            if (class1.isAssignableFrom(class2)) {
-                return type1;
-            }
-            if (class2.isAssignableFrom(class1)) {
-                return type2;
-            }
-            if (class1.isInterface() || class2.isInterface()) {
-                return "java/lang/Object";
-            }
-            do {
-                class1 = class1.getSuperclass();
-            } while (!class1.isAssignableFrom(class2));
-            return class1.getName().replace('.', '/');
-        }
-    }
-
     private static class EnhancedStatusException extends RuntimeException {
 
         private static final long serialVersionUID = 1L;

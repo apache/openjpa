@@ -25,6 +25,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Optional;
 
+import org.apache.openjpa.enhance.asm.BCClassWriter;
 import org.apache.xbean.asm9.ClassReader;
 import org.apache.xbean.asm9.ClassWriter;
 import org.apache.xbean.asm9.Opcodes;
@@ -94,7 +95,7 @@ public final class AsmHelper {
      */
     public static ClassWriterTracker toClassWriter(BCClass bcClass) {
         ClassReader cr = new ClassReader(bcClass.toByteArray());
-        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        ClassWriter cw = new BCClassWriter(ClassWriter.COMPUTE_FRAMES, bcClass.getClassLoader());
         cr.accept(cw, 0);  // 0 -> don't skip anything
         ClassWriterTracker cwt = new ClassWriterTracker(cw, bcClass.getClassLoader());
         cwt.setName(bcClass.getName());
@@ -142,7 +143,7 @@ public final class AsmHelper {
 
             Method readMethod = BCClass.class.getDeclaredMethod("read", InputStream.class, ClassLoader.class);
 
-            ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+            ClassWriter cw = new BCClassWriter(ClassWriter.COMPUTE_FRAMES, bcClass.getClassLoader());
             cnt.getClassNode().accept(cw);
             final byte[] classBytes = cw.toByteArray();
             ByteArrayInputStream bais = new ByteArrayInputStream(classBytes);
