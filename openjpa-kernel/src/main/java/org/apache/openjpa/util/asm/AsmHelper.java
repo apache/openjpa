@@ -22,6 +22,8 @@ import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Optional;
 
 import org.apache.xbean.asm9.ClassReader;
 import org.apache.xbean.asm9.ClassWriter;
@@ -33,6 +35,7 @@ import org.apache.xbean.asm9.tree.FieldInsnNode;
 import org.apache.xbean.asm9.tree.InsnNode;
 import org.apache.xbean.asm9.tree.IntInsnNode;
 import org.apache.xbean.asm9.tree.LdcInsnNode;
+import org.apache.xbean.asm9.tree.MethodNode;
 import org.apache.xbean.asm9.tree.VarInsnNode;
 
 import serp.bytecode.BCClass;
@@ -150,6 +153,24 @@ public final class AsmHelper {
         catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static Optional<MethodNode> getMethodNode(ClassNode classNode, Method meth) {
+        final String mDesc = Type.getMethodDescriptor(meth);
+        return classNode.methods.stream()
+                .filter(mn -> mn.name.equals(meth.getName()) && mn.desc.equals(mDesc))
+                .findAny();
+    }
+
+    public static Optional<MethodNode> getMethodNode(ClassNode classNode, String methodName, Class<?> returnType, Class<?>... paramTypes) {
+        Type[] parms = Arrays.stream(paramTypes)
+                .map(c -> Type.getType(c))
+                .toArray(Type[]::new);
+
+        final String mDesc = Type.getMethodDescriptor(Type.getType(returnType), parms);
+        return classNode.methods.stream()
+                .filter(mn -> mn.name.equals(methodName) && mn.desc.equals(mDesc))
+                .findAny();
     }
 
     /**

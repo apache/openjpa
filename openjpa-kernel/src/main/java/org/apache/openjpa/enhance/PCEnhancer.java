@@ -50,10 +50,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
@@ -597,15 +599,12 @@ public class PCEnhancer {
             if (_meta != null) {
                 enhanceClass(pc);
                 addFields(pc);
-
-                //X For now we cannot take the new version as it uses LDC for classes which Serp doesn't understand.
-                //X So we can only enable it in a later step
                 addStaticInitializer(pc);
-                //X addStaticInitializer(); // removeme
-
                 addPCMethods();
+                addAccessors(pc);
 
-                addAccessors();
+                AsmHelper.readIntoBCClass(pc, _pc);
+
                 addAttachDetachCode();
                 addSerializationCode();
                 addCloningCode();
@@ -989,10 +988,7 @@ public class PCEnhancer {
     }
 
     private static MethodNode findMethodNode(ClassNode classNode, Method meth) {
-        final MethodNode methodNode = classNode.methods.stream()
-                .filter(mn -> mn.name.equals(meth.getName()) && mn.desc.equals(Type.getMethodDescriptor(meth)))
-                .findAny().get();
-        return methodNode;
+        return AsmHelper.getMethodNode(classNode, meth).get();
     }
 
 
@@ -1226,7 +1222,12 @@ public class PCEnhancer {
                                      "accessingField",
                                      Type.getMethodDescriptor(Type.VOID_TYPE, TYPE_OBJECT, Type.INT_TYPE)));
 
-        methodNode.instructions.insertBefore(currentInsn, insns);
+        if (methodNode.instructions.size() == 0) {
+            methodNode.instructions.add(insns);
+        }
+        else {
+            methodNode.instructions.insertBefore(currentInsn, insns);
+        }
     }
 
     @Deprecated
@@ -1273,7 +1274,7 @@ public class PCEnhancer {
         insns.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
                                      Type.getInternalName(RedefinitionHelper.class),
                                      "settingField",
-                                     Type.getMethodDescriptor(Type.VOID_TYPE, TYPE_OBJECT, Type.INT_TYPE, Type.getType(type))));
+                                     Type.getMethodDescriptor(Type.VOID_TYPE, TYPE_OBJECT, Type.INT_TYPE, Type.getType(type), Type.getType(type))));
 
         methodNode.instructions.insert(currentInsn, insns);
         return insns.getLast();
@@ -1400,14 +1401,9 @@ public class PCEnhancer {
 
             addNewObjectIdInstanceMethod(true);
             addNewObjectIdInstanceMethod(false);
-            AsmHelper.readIntoBCClass(pc, _pc);
         }
         else if (_meta.hasPKFieldsFromAbstractClass()) {
             addGetIDOwningClass();
-            AsmHelper.readIntoBCClass(pc, _pc);
-        }
-        else {
-            AsmHelper.readIntoBCClass(pc, _pc);
         }
     }
 
@@ -4313,20 +4309,19 @@ public class PCEnhancer {
      * Adds synthetic field access methods that will replace all direct
      * field accesses.
      */
-    private void addAccessors()
-            throws NoSuchMethodException {
-        FieldMetaData[] fmds = getCreateSubclass() ? _meta.getFields()
-                : _meta.getDeclaredFields();
+    private void addAccessors(ClassNodeTracker cnt) throws NoSuchMethodException {
+        ClassNode classNode = cnt.getClassNode();
+        FieldMetaData[] fmds = getCreateSubclass() ? _meta.getFields() : _meta.getDeclaredFields();
         for (int i = 0; i < fmds.length; i++) {
             if (getCreateSubclass()) {
                 if (!getRedefine() && isPropertyAccess(fmds[i])) {
-                    addSubclassSetMethod(fmds[i]);
-                    addSubclassGetMethod(fmds[i]);
+                    addSubclassSetMethod(classNode, fmds[i]);
+                    addSubclassGetMethod(classNode, fmds[i]);
                 }
             }
             else {
-                addGetMethod(i, fmds[i]);
-                addSetMethod(i, fmds[i]);
+                addGetMethod(classNode, i, fmds[i]);
+                addSetMethod(classNode, i, fmds[i]);
             }
         }
     }
@@ -4335,37 +4330,67 @@ public class PCEnhancer {
      * Adds a non-static setter that delegates to the super methods, and
      * performs any necessary field tracking.
      */
-    @Deprecated
-    private void addSubclassSetMethod(FieldMetaData fmd)
-            throws NoSuchMethodException {
+    private void addSubclassSetMethod(ClassNode classNode, FieldMetaData fmd) throws NoSuchMethodException {
         Class propType = fmd.getDeclaredType();
         String setterName = getSetterName(fmd);
-        BCMethod setter = _pc.declareMethod(setterName, void.class,
-                                            new Class[]{propType});
-        setVisibilityToSuperMethod(setter);
-        Code code = setter.getCode(true);
+
+        MethodNode newMethod = new MethodNode(Opcodes.ACC_PUBLIC,
+                                                setterName,
+                                                Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(propType)),
+                                                null, null);
+        classNode.methods.add(newMethod);
+        final InsnList instructions = newMethod.instructions;
+        int nextFreeVarPos = 2;
+
+        setVisibilityToSuperMethod(newMethod);
+
 
         // not necessary if we're already tracking access via redefinition
         if (!getRedefine()) {
             // get the orig value onto stack
-            code.aload().setThis();
-            addGetManagedValueCode(code, fmd);
-            int val = code.getNextLocalsIndex();
-            code.xstore().setLocal(val).setType(fmd.getDeclaredType());
-            addNotifyMutation(code, fmd, val, 0);
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+            addGetManagedValueCode(classNode, instructions, fmd, true);
+
+            int valVarPos = nextFreeVarPos++;
+            instructions.add(new VarInsnNode(AsmHelper.getStoreInsn(fmd.getDeclaredType()), valVarPos));
+            addNotifyMutation(classNode, newMethod, newMethod.instructions.getLast(), fmd, valVarPos, 0);
         }
 
         // ##### test case: B extends A. Methods defined in A. What
         // ##### happens?
         // super.setXXX(...)
-        code.aload().setThis();
-        code.xload().setParam(0).setType(propType);
-        code.invokespecial().setMethod(_managedType.getType(),
-                                       setterName, void.class, new Class[]{propType});
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        instructions.add(new VarInsnNode(AsmHelper.getLoadInsn(propType), 1)); // 1st param
+        instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
+                                            managedType.getClassNode().name,
+                                            setterName,
+                                            Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(propType))));
+        instructions.add(new InsnNode(Opcodes.RETURN));
+    }
 
-        code.vreturn();
-        code.calculateMaxLocals();
-        code.calculateMaxStack();
+    private boolean setVisibilityToSuperMethod(MethodNode method) {
+        ClassNode classNode = managedType.getClassNode();
+        final List<MethodNode> methods = classNode.methods.stream()
+                .filter(m -> m.name.equals(method.name) && Objects.equals(m.parameters, method.parameters))
+                .collect(Collectors.toList());
+        if (methods.isEmpty()) {
+            throw new UserException(_loc.get("no-accessor", _managedType.getName(), method.name));
+        }
+        MethodNode superMeth = methods.get(0);
+        method.access &= ~(Opcodes.ACC_PRIVATE |Opcodes.ACC_PUBLIC | Opcodes.ACC_PROTECTED);
+        if ((superMeth.access & Opcodes.ACC_PRIVATE) > 0) {
+            method.access |= Opcodes.ACC_PRIVATE;
+            return true;
+        }
+        if ((superMeth.access & Opcodes.ACC_PROTECTED) > 0) {
+            method.access |= Opcodes.ACC_PROTECTED;
+            return true;
+        }
+        if ((superMeth.access & Opcodes.ACC_PUBLIC) > 0) {
+            method.access |= Opcodes.ACC_PUBLIC;
+            return true;
+        }
+        return false;
     }
 
     private boolean setVisibilityToSuperMethod(BCMethod method) {
@@ -4398,29 +4423,40 @@ public class PCEnhancer {
      * Adds a non-static getter that delegates to the super methods, and
      * performs any necessary field tracking.
      */
-    @Deprecated
-    private void addSubclassGetMethod(FieldMetaData fmd) {
-        String methName = "get" + StringUtil.capitalize(fmd.getName());
-        if (_managedType.getMethods(methName, new Class[0]).length == 0)
-            methName = "is" + StringUtil.capitalize(fmd.getName());
-        BCMethod getter = _pc.declareMethod(methName, fmd.getDeclaredType(),
-                                            null);
-        setVisibilityToSuperMethod(getter);
-        getter.makePublic();
-        Code code = getter.getCode(true);
+    private void addSubclassGetMethod(ClassNode classNode, FieldMetaData fmd) {
+        String getterName = "get" + StringUtil.capitalize(fmd.getName());
+
+        final String finalGetterName = getterName;
+        final boolean hasGetter = managedType.getClassNode().methods.stream()
+                .filter(m -> m.name.equals(finalGetterName) && (m.parameters == null || m.parameters.isEmpty()))
+                .findAny()
+                .isPresent();
+        if (!hasGetter){
+            getterName = "is" + StringUtil.capitalize(fmd.getName());
+        }
+
+        final Class propType = fmd.getDeclaredType();
+        MethodNode getterMethod = new MethodNode(Opcodes.ACC_PUBLIC,
+                                                 getterName,
+                                                 Type.getMethodDescriptor(Type.getType(propType)),
+                                                 null, null);
+        classNode.methods.add(getterMethod);
+        final InsnList instructions = getterMethod.instructions;
+        int nextFreeVarPos = 2;
 
         // if we're not already tracking field access via reflection, then we
         // must make the getter hook in lazy loading before accessing the super
         // method.
-        if (!getRedefine())
-            addNotifyAccess(code, fmd);
+        if (!getRedefine()) {
+            addNotifyAccess(getterMethod, getterMethod.instructions.getLast(), fmd);
+        }
 
-        code.aload().setThis();
-        code.invokespecial().setMethod(_managedType.getType(), methName,
-                                       fmd.getDeclaredType(), null);
-        code.xreturn().setType(fmd.getDeclaredType());
-        code.calculateMaxLocals();
-        code.calculateMaxStack();
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
+                                            managedType.getClassNode().name,
+                                            getterName,
+                                            Type.getMethodDescriptor(Type.getType(propType))));
+        instructions.add(new InsnNode(AsmHelper.getReturnInsn(propType)));
     }
 
     /**
@@ -4431,53 +4467,51 @@ public class PCEnhancer {
      * @param index the relative number of the field
      * @param fmd   metadata about the field to get
      */
-    @Deprecated
-    private void addGetMethod(int index, FieldMetaData fmd)
-            throws NoSuchMethodException {
-        BCMethod method = createGetMethod(fmd);
-        Code code = method.getCode(true);
+    private void addGetMethod(ClassNode classNode, int index, FieldMetaData fmd) throws NoSuchMethodException {
+        MethodNode method = createGetMethod(classNode, fmd);
+        classNode.methods.add(method);
+        final InsnList instructions = method.instructions;
+        int nextFreeVarPos = 1;
 
         // if reads are not checked, just return the value
         byte fieldFlag = getFieldFlag(fmd);
-        if ((fieldFlag & PersistenceCapable.CHECK_READ) == 0
-                && (fieldFlag & PersistenceCapable.MEDIATE_READ) == 0) {
-            loadManagedInstance(code, true, fmd);
-            addGetManagedValueCode(code, fmd);
-            code.xreturn().setType(fmd.getDeclaredType());
-
-            code.calculateMaxStack();
-            code.calculateMaxLocals();
+        if ((fieldFlag & PersistenceCapable.CHECK_READ) == 0 && (fieldFlag & PersistenceCapable.MEDIATE_READ) == 0) {
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+            addGetManagedValueCode(classNode, instructions, fmd, true);
+            instructions.add(new InsnNode(AsmHelper.getReturnInsn(fmd.getDeclaredType())));
             return;
         }
 
         // if (inst.pcStateManager == null) return inst.<field>;
-        loadManagedInstance(code, true, fmd);
-        code.getfield().setField(SM, SMTYPE);
-        JumpInstruction ifins = code.ifnonnull();
-        loadManagedInstance(code, true, fmd);
-        addGetManagedValueCode(code, fmd);
-        code.xreturn().setType(fmd.getDeclaredType());
+        instructions.add(loadManagedInstance(true, fmd));
+        instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
+        LabelNode afterIfNonNull = new LabelNode();
+        instructions.add(new JumpInsnNode(Opcodes.IFNONNULL, afterIfNonNull));
+        instructions.add(loadManagedInstance(true, fmd));
+        addGetManagedValueCode(classNode, instructions, fmd, true);
+        instructions.add(new InsnNode(AsmHelper.getReturnInsn(fmd.getDeclaredType())));
 
+        instructions.add(afterIfNonNull);
         // int field = pcInheritedFieldCount + <fieldindex>;
-        int fieldLocal = code.getNextLocalsIndex();
-        ifins.setTarget(code.getstatic().setField(INHERIT, int.class));
-        code.constant().setValue(index);
-        code.iadd();
-        code.istore().setLocal(fieldLocal);
+        int fieldLocalVarPos = nextFreeVarPos++;
+        instructions.add(new FieldInsnNode(Opcodes.GETSTATIC, classNode.name, INHERIT, Type.INT_TYPE.getDescriptor()));
+        instructions.add(AsmHelper.getLoadConstantInsn(index));
+        instructions.add(new InsnNode(Opcodes.IADD));
+        instructions.add(new VarInsnNode(Opcodes.ISTORE, fieldLocalVarPos));
 
         // inst.pcStateManager.accessingField (field);
         // return inst.<field>;
-        loadManagedInstance(code, true, fmd);
-        code.getfield().setField(SM, SMTYPE);
-        code.iload().setLocal(fieldLocal);
-        code.invokeinterface().setMethod(SMTYPE, "accessingField", void.class,
-                                         new Class[]{int.class});
-        loadManagedInstance(code, true, fmd);
-        addGetManagedValueCode(code, fmd);
-        code.xreturn().setType(fmd.getDeclaredType());
+        instructions.add(loadManagedInstance(true, fmd));
+        instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
+        instructions.add(new VarInsnNode(Opcodes.ILOAD, fieldLocalVarPos));
+        instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
+                                            Type.getInternalName(SMTYPE),
+                                            "accessingField",
+                                            Type.getMethodDescriptor(Type.VOID_TYPE, Type.INT_TYPE)));
 
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
+        instructions.add(loadManagedInstance(true, fmd));
+        addGetManagedValueCode(classNode, instructions, fmd, true);
+        instructions.add(new InsnNode(AsmHelper.getReturnInsn(fmd.getDeclaredType())));
     }
 
     /**
@@ -4488,49 +4522,59 @@ public class PCEnhancer {
      * @param index the relative number of the field
      * @param fmd   metadata about the field to set
      */
-    @Deprecated
-    private void addSetMethod(int index, FieldMetaData fmd)
-            throws NoSuchMethodException {
-        BCMethod method = createSetMethod(fmd);
-        Code code = method.getCode(true);
+    private void addSetMethod(ClassNode classNode, int index, FieldMetaData fmd) throws NoSuchMethodException {
+        MethodNode method = createSetMethod(classNode, fmd);
+        classNode.methods.add(method);
+        final InsnList instructions = method.instructions;
 
         // PCEnhancer uses static methods; PCSubclasser does not.
-        int firstParamOffset = getAccessorParameterOffset(fmd);
+        // for a static method there is no 'this', so index starts with zero
+        // but in that case we have the additional entity parameter on that position!
+        int fieldParamPos = 1;
 
         // if (inst.pcStateManager == null) inst.<field> = value;
-        loadManagedInstance(code, true, fmd);
-        code.getfield().setField(SM, SMTYPE);
-        JumpInstruction ifins = code.ifnonnull();
-        loadManagedInstance(code, true, fmd);
-        code.xload().setParam(firstParamOffset);
-        addSetManagedValueCode(code, fmd);
+        instructions.add(loadManagedInstance(true, fmd));
+        instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
+
+        LabelNode lblAfterIfNonNull = new LabelNode();
+        instructions.add(new JumpInsnNode(Opcodes.IFNONNULL, lblAfterIfNonNull));
+        instructions.add(loadManagedInstance(true, fmd));
+        instructions.add(new VarInsnNode(AsmHelper.getLoadInsn(fmd.getDeclaredType()), fieldParamPos));
+        addSetManagedValueCode(classNode, instructions, fmd);
         if (fmd.isVersion() && _addVersionInitFlag) {
             // if we are setting the version, flip the versionInit flag to true
-            loadManagedInstance(code, true);
-            code.constant().setValue(1);
+
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+            instructions.add(AsmHelper.getLoadConstantInsn(1));
+
             // pcVersionInit = true;
-            putfield(code, null, VERSION_INIT_STR, boolean.class);
+            instructions.add(new FieldInsnNode(Opcodes.PUTFIELD, classNode.name, VERSION_INIT_STR, Type.BOOLEAN_TYPE.getDescriptor()));
         }
-        code.vreturn();
+        instructions.add(new InsnNode(Opcodes.RETURN));
+
+        instructions.add(lblAfterIfNonNull);
 
         // inst.pcStateManager.setting<fieldType>Field (inst,
         //     pcInheritedFieldCount + <index>, inst.<field>, value, 0);
-        ifins.setTarget(loadManagedInstance(code, true, fmd));
-        code.getfield().setField(SM, SMTYPE);
-        loadManagedInstance(code, true, fmd);
-        code.getstatic().setField(INHERIT, int.class);
-        code.constant().setValue(index);
-        code.iadd();
-        loadManagedInstance(code, true, fmd);
-        addGetManagedValueCode(code, fmd);
-        code.xload().setParam(firstParamOffset);
-        code.constant().setValue(0);
-        code.invokeinterface().setMethod(getStateManagerMethod
-                                                 (fmd.getDeclaredType(), "setting", false, true));
-        code.vreturn();
+        instructions.add(loadManagedInstance(true, fmd));
+        instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
 
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
+        instructions.add(loadManagedInstance(true, fmd));
+        instructions.add(new FieldInsnNode(Opcodes.GETSTATIC, classNode.name, INHERIT, Type.INT_TYPE.getDescriptor()));
+        instructions.add(AsmHelper.getLoadConstantInsn(index));
+        instructions.add(new InsnNode(Opcodes.IADD));
+
+        instructions.add(loadManagedInstance(true, fmd));
+        addGetManagedValueCode(classNode, instructions, fmd, true);
+        instructions.add(new VarInsnNode(AsmHelper.getLoadInsn(fmd.getDeclaredType()), fieldParamPos));
+        instructions.add(new InsnNode(Opcodes.ICONST_0));
+
+        final Method stateMgrMethod = getStateManagerMethod(fmd.getDeclaredType(), "setting", false, true);
+        instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
+                                            Type.getInternalName(stateMgrMethod.getDeclaringClass()),
+                                            stateMgrMethod.getName(),
+                                            Type.getMethodDescriptor(stateMgrMethod)));
+        instructions.add(new InsnNode(Opcodes.RETURN));
     }
 
     /**
@@ -5493,11 +5537,26 @@ public class PCEnhancer {
      * @return the first instruction added to <code>code</code>.
      */
     @Deprecated
-    private Instruction loadManagedInstance(Code code, boolean forStatic,
-            FieldMetaData fmd) {
+    private Instruction loadManagedInstance(Code code, boolean forStatic, FieldMetaData fmd) {
         if (forStatic && isFieldAccess(fmd))
             return code.aload().setParam(0);
         return code.aload().setThis();
+    }
+
+    /**
+     * Add the {@link Instruction}s to load the instance to modify onto the
+     * stack, and return it. If <code>forStatic</code> is set, then
+     * <code>code</code> is in an accessor method or another static method;
+     * otherwise, it is in one of the PC-specified methods.
+     *
+     * @return the first instruction added to <code>code</code>.
+     */
+    private AbstractInsnNode loadManagedInstance(boolean forStatic, FieldMetaData fmd) {
+        if (forStatic && isFieldAccess(fmd)) {
+            // 1st method parameter is position 0 on the stack for a STATIC method!
+            return new VarInsnNode(Opcodes.ALOAD, 0);
+        }
+        return new VarInsnNode(Opcodes.ALOAD, 0); // this
     }
 
     /**
@@ -5542,65 +5601,102 @@ public class PCEnhancer {
      * Create the generated getter {@link BCMethod} for <code>fmd</code>. The
      * calling environment will then populate this method's code block.
      */
-    @Deprecated
-    private BCMethod createGetMethod(FieldMetaData fmd) {
-        BCMethod getter;
+    private MethodNode createGetMethod(ClassNode classNode, FieldMetaData fmd) {
         if (isFieldAccess(fmd)) {
             // static <fieldtype> pcGet<field> (XXX inst)
-            BCField field = _pc.getDeclaredField(fmd.getName());
-            getter = _pc.declareMethod(PRE + "Get" + fmd.getName(), fmd.
-                getDeclaredType().getName(), new String[]{ _pc.getName() });
-            getter.setAccessFlags(field.getAccessFlags()
-                & ~Constants.ACCESS_TRANSIENT & ~Constants.ACCESS_VOLATILE);
-            getter.setStatic(true);
-            getter.setFinal(true);
+            final FieldNode field = classNode.fields.stream()
+                    .filter(f -> f.name.equals(fmd.getName()))
+                    .findFirst()
+                    .get();
+
+            MethodNode getter = new MethodNode((field.access & ~Constants.ACCESS_TRANSIENT & ~Constants.ACCESS_VOLATILE)
+                                                          | Opcodes.ACC_FINAL | Opcodes.ACC_STATIC,
+                                                  PRE + "Get" + fmd.getName(),
+                                                  Type.getMethodDescriptor(Type.getType(fmd.getDeclaredType()), Type.getObjectType(classNode.name)),
+                                                  null, null);
             return getter;
         }
 
         // property access:
-        // copy the user's getter method to a new name; we can't just reset
-        // the name, because that will also reset all calls to the method
+        // change the user's getter method to a new name and create a new method with the old name
         Method meth = (Method) fmd.getBackingMember();
-        getter = _pc.getDeclaredMethod(meth.getName(),
-            meth.getParameterTypes());
-        BCMethod newgetter = _pc.declareMethod(PRE + meth.getName(),
-            meth.getReturnType(), meth.getParameterTypes());
-        newgetter.setAccessFlags(getter.getAccessFlags());
-        newgetter.makeProtected();
-        transferCodeAttributes(getter, newgetter);
-        return getter;
+
+        MethodNode getter = AsmHelper.getMethodNode(classNode, meth).get();
+
+        // and a new method which replaces the old one
+        MethodNode newGetter =  new MethodNode(getter.access,
+                                            meth.getName(),
+                                            Type.getMethodDescriptor(meth),
+                                            null, null);
+
+        getter.name = PRE + meth.getName();
+        getter.access = (getter.access & ~Opcodes.ACC_PUBLIC & ~Opcodes.ACC_PRIVATE) | Opcodes.ACC_PROTECTED;
+
+        moveAnnotations(getter, newGetter);
+
+        // copy over all ParemeterizedType info if any.
+        newGetter.signature = getter.signature;
+
+        return newGetter;
+    }
+
+
+    /**
+     * move the annotations over from the original method to the other method
+     */
+    private void moveAnnotations(MethodNode from, MethodNode to) {
+        if (from.visibleAnnotations != null) {
+            if (to.visibleAnnotations == null) {
+                to.visibleAnnotations = new ArrayList<>();
+            }
+            to.visibleAnnotations.addAll(from.visibleAnnotations);
+
+            from.visibleAnnotations.clear();
+        }
     }
 
     /**
      * Create the generated setter {@link BCMethod} for <code>fmd</code>. The
      * calling environment will then populate this method's code block.
      */
-    @Deprecated
-    private BCMethod createSetMethod(FieldMetaData fmd) {
-        BCMethod setter;
+    private MethodNode createSetMethod(ClassNode classNode, FieldMetaData fmd) {
         if (isFieldAccess(fmd)) {
             // static void pcSet<field> (XXX inst, <fieldtype> value)
-            BCField field = _pc.getDeclaredField(fmd.getName());
-            setter = _pc.declareMethod(PRE + "Set" + fmd.getName(), void.class,
-                new Class[]{ getType(_meta), fmd.getDeclaredType() });
-            setter.setAccessFlags(field.getAccessFlags()
-                & ~Constants.ACCESS_TRANSIENT & ~Constants.ACCESS_VOLATILE);
-            setter.setStatic(true);
-            setter.setFinal(true);
+            final FieldNode field = classNode.fields.stream()
+                    .filter(f -> f.name.equals(fmd.getName()))
+                    .findFirst()
+                    .get();
+            MethodNode setter = new MethodNode((field.access & ~Constants.ACCESS_TRANSIENT & ~Constants.ACCESS_VOLATILE)
+                                                       | Opcodes.ACC_FINAL | Opcodes.ACC_STATIC,
+                                               PRE + "Set" + fmd.getName(),
+                                               Type.getMethodDescriptor(Type.VOID_TYPE,
+                                                                        Type.getType(getType(_meta)),
+                                                                        Type.getType(fmd.getDeclaredType())),
+                                               null, null);
+
             return setter;
         }
 
         // property access:
-        // copy the user's getter method to a new name; we can't just reset
-        // the name, because that will also reset all calls to the method
-        setter = _pc.getDeclaredMethod(getSetterName(fmd),
-            new Class[]{ fmd.getDeclaredType() });
-        BCMethod newsetter = _pc.declareMethod(PRE + setter.getName(),
-            setter.getReturnName(), setter.getParamNames());
-        newsetter.setAccessFlags(setter.getAccessFlags());
-        newsetter.makeProtected();
-        transferCodeAttributes(setter, newsetter);
-        return setter;
+        // change the user's setter method to a new name and create a new method with the old name
+        final MethodNode setter = AsmHelper.getMethodNode(classNode, getSetterName(fmd), void.class, fmd.getDeclaredType()).get();
+
+        final String setterName = setter.name;
+
+        // and a new method which replaces the old one
+        MethodNode newSetter =  new MethodNode(setter.access,
+                                               setterName,
+                                               setter.desc,
+                                               null, null);
+
+        setter.name = PRE + setterName;
+        setter.access = (setter.access & ~Opcodes.ACC_PRIVATE & ~Opcodes.ACC_PUBLIC) | Opcodes.ACC_PROTECTED;
+        moveAnnotations(setter, newSetter);
+
+        // copy over all ParemeterizedType info if any.
+        newSetter.signature = setter.signature;
+
+        return newSetter;
     }
 
     private void addGetEnhancementContractVersionMethod(ClassNodeTracker cnt) {
