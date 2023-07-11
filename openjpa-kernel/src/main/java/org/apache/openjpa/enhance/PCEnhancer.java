@@ -4170,37 +4170,6 @@ public class PCEnhancer {
     }
 
     /**
-     * Compare the given field to its Java default, returning the
-     * comparison instruction. The field value will already be on the stack.
-     */
-    @Deprecated
-    private static JumpInstruction ifDefaultValue(Code code,
-                                                  FieldMetaData fmd) {
-        switch (fmd.getDeclaredTypeCode()) {
-            case JavaTypes.BOOLEAN:
-            case JavaTypes.BYTE:
-            case JavaTypes.CHAR:
-            case JavaTypes.INT:
-            case JavaTypes.SHORT:
-                return code.ifeq();
-            case JavaTypes.DOUBLE:
-                code.constant().setValue(0D);
-                code.dcmpl();
-                return code.ifeq();
-            case JavaTypes.FLOAT:
-                code.constant().setValue(0F);
-                code.fcmpl();
-                return code.ifeq();
-            case JavaTypes.LONG:
-                code.constant().setValue(0L);
-                code.lcmp();
-                return code.ifeq();
-            default:
-                return code.ifnull();
-        }
-    }
-
-    /**
      * Helper method to get the code for the class initializer method,
      * creating the method if it does not already exist.
      */
