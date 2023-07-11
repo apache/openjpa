@@ -254,6 +254,36 @@ public final class AsmHelper {
             }
         }
 
+        if (val instanceof Long) {
+            if (((Long) val).longValue() == 0L) {
+                return new InsnNode(Opcodes.LCONST_0);
+            }
+            if (((Long) val).longValue() == 1L) {
+                return new InsnNode(Opcodes.LCONST_1);
+            }
+        }
+
+        if (val instanceof Float) {
+            if (((Float) val).floatValue() == 0F) {
+                return new InsnNode(Opcodes.FCONST_0);
+            }
+            if (((Float) val).floatValue() == 1F) {
+                return new InsnNode(Opcodes.FCONST_1);
+            }
+            if (((Float) val).floatValue() == 2F) {
+                return new InsnNode(Opcodes.FCONST_2);
+            }
+        }
+
+        if (val instanceof Double) {
+            if (((Double) val).doubleValue() == 0D) {
+                return new InsnNode(Opcodes.DCONST_0);
+            }
+            if (((Double) val).doubleValue() == 1D) {
+                return new InsnNode(Opcodes.DCONST_1);
+            }
+        }
+
         if (val instanceof Class) {
             if (boolean.class.equals(val)) {
                 return new FieldInsnNode(Opcodes.GETSTATIC, Type.getInternalName(Boolean.class), "TYPE",

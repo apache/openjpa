@@ -602,10 +602,8 @@ public class PCEnhancer {
                 addStaticInitializer(pc);
                 addPCMethods();
                 addAccessors(pc);
-
-                AsmHelper.readIntoBCClass(pc, _pc);
-
                 addAttachDetachCode();
+
                 addSerializationCode();
                 addCloningCode();
                 runAuxiliaryEnhancers();
@@ -3868,32 +3866,31 @@ public class PCEnhancer {
      * Creates the pcIsDetached() method to determine if an instance
      * is detached.
      */
-    @Deprecated
-    private void addIsDetachedMethod()
-            throws NoSuchMethodException {
+    private void addIsDetachedMethod(ClassNode classNode) throws NoSuchMethodException {
         // public boolean pcIsDetached()
-        BCMethod method = _pc.declareMethod(PRE + "IsDetached",
-                                            Boolean.class, null);
-        method.makePublic();
-        Code code = method.getCode(true);
-        boolean needsDefinitiveMethod = writeIsDetachedMethod(code);
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-        if (!needsDefinitiveMethod)
+        MethodNode isDetachedMeth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                               PRE + "IsDetached",
+                                               Type.getMethodDescriptor(Type.getType(Boolean.class)),
+                                               null, null);
+        classNode.methods.add(isDetachedMeth);
+
+        boolean needsDefinitiveMethod = writeIsDetachedMethod(classNode, isDetachedMeth);
+        if (!needsDefinitiveMethod) {
             return;
+        }
 
         // private boolean pcIsDetachedStateDefinitive()
         //   return false;
         // auxilliary enhancers may change the return value of this method
         // if their specs consider detached state definitive
-        method = _pc.declareMethod(ISDETACHEDSTATEDEFINITIVE, boolean.class,
-                                   null);
-        method.makePrivate();
-        code = method.getCode(true);
-        code.constant().setValue(false);
-        code.ireturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
+
+        MethodNode isDetachedStateDefinitiveMeth = new MethodNode(Opcodes.ACC_PRIVATE,
+                                                                  ISDETACHEDSTATEDEFINITIVE,
+                                                           Type.getMethodDescriptor(Type.BOOLEAN_TYPE),
+                                                           null, null);
+        classNode.methods.add(isDetachedStateDefinitiveMeth);
+        isDetachedStateDefinitiveMeth.instructions.add(AsmHelper.getLoadConstantInsn(false));
+        isDetachedStateDefinitiveMeth.instructions.add(new InsnNode(Opcodes.IRETURN));
     }
 
     /**
@@ -3903,70 +3900,91 @@ public class PCEnhancer {
      * @return true if we need a pcIsDetachedStateDefinitive method, false
      * otherwise
      */
-    @Deprecated
-    private boolean writeIsDetachedMethod(Code code)
-            throws NoSuchMethodException {
+    private boolean writeIsDetachedMethod(ClassNode classNode, MethodNode meth) throws NoSuchMethodException {
+        InsnList instructions = meth.instructions;
         // not detachable: return Boolean.FALSE
         if (!_meta.isDetachable()) {
-            code.getstatic().setField(Boolean.class, "FALSE", Boolean.class);
-            code.areturn();
+            instructions.add(new FieldInsnNode(Opcodes.GETSTATIC, Type.getInternalName(Boolean.class),
+                                               "FALSE", Type.getDescriptor(Boolean.class)));
+            instructions.add(new InsnNode(Opcodes.ARETURN));
             return false;
         }
 
         // if (sm != null)
         //     return (sm.isDetached ()) ? Boolean.TRUE : Boolean.FALSE;
-        loadManagedInstance(code, false);
-        code.getfield().setField(SM, SMTYPE);
-        JumpInstruction ifins = code.ifnull();
-        loadManagedInstance(code, false);
-        code.getfield().setField(SM, SMTYPE);
-        code.invokeinterface().setMethod(SMTYPE, "isDetached",
-                                         boolean.class, null);
-        JumpInstruction iffalse = code.ifeq();
-        code.getstatic().setField(Boolean.class, "TRUE", Boolean.class);
-        code.areturn();
-        iffalse.setTarget(code.getstatic().setField(Boolean.class, "FALSE",
-                                                    Boolean.class));
-        code.areturn();
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
+
+        LabelNode lblEndIfNull = new LabelNode();
+        instructions.add(new JumpInsnNode(Opcodes.IFNULL, lblEndIfNull));
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
+        instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
+                                            Type.getInternalName(SMTYPE),
+                                            "isDetached",
+                                            Type.getMethodDescriptor(Type.BOOLEAN_TYPE)));
+
+        LabelNode lblEndIfFalse = new LabelNode();
+        instructions.add(new JumpInsnNode(Opcodes.IFEQ, lblEndIfFalse));
+        instructions.add(new FieldInsnNode(Opcodes.GETSTATIC, Type.getInternalName(Boolean.class),
+                                           "TRUE", Type.getDescriptor(Boolean.class)));
+        instructions.add(new InsnNode(Opcodes.ARETURN));
+        instructions.add(lblEndIfFalse);
+        instructions.add(new FieldInsnNode(Opcodes.GETSTATIC, Type.getInternalName(Boolean.class),
+                                           "FALSE", Type.getDescriptor(Boolean.class)));
+        instructions.add(new InsnNode(Opcodes.ARETURN));
+        // END - if (sm != null)
+
 
         // if we use detached state:
         // if (pcGetDetachedState () != null
         //     && pcGetDetachedState != DESERIALIZED)
         //     return Boolean.TRUE;
         Boolean state = _meta.usesDetachedState();
-        JumpInstruction notdeser = null;
-        Instruction target;
+        LabelNode lblNotDeser = null;
+
         if (state != Boolean.FALSE) {
-            ifins.setTarget(loadManagedInstance(code, false));
-            code.invokevirtual().setMethod(PRE + "GetDetachedState",
-                                           Object.class, null);
-            ifins = code.ifnull();
-            loadManagedInstance(code, false);
-            code.invokevirtual().setMethod(PRE + "GetDetachedState",
-                                           Object.class, null);
-            code.getstatic().setField(PersistenceCapable.class,
-                                      "DESERIALIZED", Object.class);
-            notdeser = code.ifacmpeq();
-            code.getstatic().setField(Boolean.class, "TRUE", Boolean.class);
-            code.areturn();
+            instructions.add(lblEndIfNull);
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+            instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                                classNode.name,
+                                                PRE + "GetDetachedState",
+                                                Type.getMethodDescriptor(TYPE_OBJECT)));
+
+            lblEndIfNull = new LabelNode();
+            instructions.add(new JumpInsnNode(Opcodes.IFNULL, lblEndIfNull));
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+            instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                                classNode.name,
+                                                PRE + "GetDetachedState",
+                                                Type.getMethodDescriptor(TYPE_OBJECT)));
+            instructions.add(new FieldInsnNode(Opcodes.GETSTATIC,
+                                               Type.getInternalName(PersistenceCapable.class),
+                                               "DESERIALIZED",
+                                               TYPE_OBJECT.getDescriptor()));
+
+            lblNotDeser = new LabelNode();
+            instructions.add(new JumpInsnNode(Opcodes.IF_ACMPEQ, lblNotDeser));
+            instructions.add(new FieldInsnNode(Opcodes.GETSTATIC, Type.getInternalName(Boolean.class),
+                                               "TRUE", Type.getDescriptor(Boolean.class)));
+            instructions.add(new InsnNode(Opcodes.ARETURN));
 
             if (state == Boolean.TRUE) {
                 // if we have to use detached state:
                 // return Boolean.FALSE;
-                target = code.getstatic().setField(Boolean.class, "FALSE",
-                                                   Boolean.class);
-                ifins.setTarget(target);
-                notdeser.setTarget(target);
-                code.areturn();
+                instructions.add(lblEndIfNull);
+                instructions.add(lblNotDeser);
+                instructions.add(new FieldInsnNode(Opcodes.GETSTATIC, Type.getInternalName(Boolean.class),
+                                                   "FALSE", Type.getDescriptor(Boolean.class)));
+                instructions.add(new InsnNode(Opcodes.ARETURN));
                 return false;
             }
         }
 
-        // create artificial target to simplify
-        target = code.nop();
-        ifins.setTarget(target);
-        if (notdeser != null)
-            notdeser.setTarget(target);
+        instructions.add(lblEndIfNull);
+        if (lblNotDeser != null) {
+            instructions.add(lblNotDeser);
+        }
 
         // allow users with version or auto-assigned pk fields to manually
         // construct a "detached" instance, so check these before taking into
@@ -3976,96 +3994,104 @@ public class PCEnhancer {
         FieldMetaData version = _meta.getVersionField();
         if (state != Boolean.TRUE && version != null) {
             // if (<version> != <default>)
-            //        return true;
-            loadManagedInstance(code, false);
-            addGetManagedValueCode(code, version);
-            ifins = ifDefaultValue(code, version);
-            code.getstatic().setField(Boolean.class, "TRUE", Boolean.class);
-            code.areturn();
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+            addGetManagedValueCode(classNode, instructions, version, true);
+            LabelNode lblAfterDefault = ifDefaultValue(instructions, version);
+
+            // return true
+            instructions.add(new FieldInsnNode(Opcodes.GETSTATIC, Type.getInternalName(Boolean.class),
+                                               "TRUE", Type.getDescriptor(Boolean.class)));
+            instructions.add(new InsnNode(Opcodes.ARETURN));
+
+            instructions.add(lblAfterDefault);
+
             if (!_addVersionInitFlag) {
                 // else return false;
-                ifins.setTarget(code.getstatic().setField(Boolean.class, "FALSE", Boolean.class));
+                instructions.add(new FieldInsnNode(Opcodes.GETSTATIC, Type.getInternalName(Boolean.class),
+                                                   "FALSE", Type.getDescriptor(Boolean.class)));
+                instructions.add(new InsnNode(Opcodes.ARETURN));
             }
             else {
-                // noop
-                ifins.setTarget(code.nop());
                 // if (pcVersionInit != false)
                 // return true
                 // else return null; //  (returning null because we don't know the correct answer)
-                loadManagedInstance(code, false);
-                getfield(code, null, VERSION_INIT_STR);
-                ifins = code.ifeq();
-                code.getstatic().setField(Boolean.class, "TRUE", Boolean.class);
-                code.areturn();
-                ifins.setTarget(code.nop());
-                code.constant().setNull();
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                getfield(classNode, instructions, null, VERSION_INIT_STR, boolean.class);
+                LabelNode lblAfterEq = new LabelNode();
+                instructions.add(new JumpInsnNode(Opcodes.IFEQ, lblAfterEq));
+                instructions.add(new FieldInsnNode(Opcodes.GETSTATIC, Type.getInternalName(Boolean.class),
+                                                   "TRUE", Type.getDescriptor(Boolean.class)));
+                instructions.add(new InsnNode(Opcodes.ARETURN));
+
+                instructions.add(lblAfterEq);
+                instructions.add(AsmHelper.getLoadConstantInsn(null));
+                instructions.add(new InsnNode(Opcodes.ARETURN));
             }
-            code.areturn();
+
             return false;
         }
 
         // consider detached if auto-genned primary keys are non-default
-        ifins = null;
-        JumpInstruction ifins2 = null;
-        boolean hasAutoAssignedPK = false;
-        if (state != Boolean.TRUE
-                && _meta.getIdentityType() == ClassMetaData.ID_APPLICATION) {
+        LabelNode ifIns = null;
+        LabelNode ifIns2 = null;
+        if (state != Boolean.TRUE && _meta.getIdentityType() == ClassMetaData.ID_APPLICATION) {
             // for each pk field:
             // if (<pk> != <default> [&& !"".equals (<pk>)])
             //        return Boolean.TRUE;
             FieldMetaData[] pks = _meta.getPrimaryKeyFields();
             for (FieldMetaData pk : pks) {
-                if (pk.getValueStrategy() == ValueStrategies.NONE)
+                if (pk.getValueStrategy() == ValueStrategies.NONE) {
                     continue;
-
-                target = loadManagedInstance(code, false);
-                if (ifins != null)
-                    ifins.setTarget(target);
-                if (ifins2 != null)
-                    ifins2.setTarget(target);
-                ifins2 = null;
-
-                addGetManagedValueCode(code, pk);
-                ifins = ifDefaultValue(code, pk);
-                if (pk.getDeclaredTypeCode() == JavaTypes.STRING) {
-                    code.constant().setValue("");
-                    loadManagedInstance(code, false);
-                    addGetManagedValueCode(code, pk);
-                    code.invokevirtual().setMethod(String.class, "equals",
-                                                   boolean.class, new Class[]{Object.class});
-                    ifins2 = code.ifne();
                 }
-                code.getstatic().setField(Boolean.class, "TRUE",
-                                          Boolean.class);
-                code.areturn();
+
+                if (ifIns != null) {
+                    instructions.add(ifIns);
+                }
+                if (ifIns2 != null) {
+                    instructions.add(ifIns2);
+                }
+                ifIns2 = null;
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+
+                addGetManagedValueCode(classNode, instructions, pk, true);
+                ifIns = ifDefaultValue(instructions, pk);
+                if (pk.getDeclaredTypeCode() == JavaTypes.STRING) {
+                    instructions.add(AsmHelper.getLoadConstantInsn(""));
+                    instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                    addGetManagedValueCode(classNode, instructions, pk, true);
+                    instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                                        Type.getInternalName(String.class),
+                                                        "equals",
+                                                        Type.getMethodDescriptor(Type.BOOLEAN_TYPE, TYPE_OBJECT)));
+                    ifIns2 = new LabelNode();
+                    instructions.add(new JumpInsnNode(Opcodes.IFNE, ifIns2));
+                }
+
+                instructions.add(new FieldInsnNode(Opcodes.GETSTATIC, Type.getInternalName(Boolean.class),
+                                                   "TRUE", Type.getDescriptor(Boolean.class)));
+                instructions.add(new InsnNode(Opcodes.ARETURN));
             }
         }
-
-        // create artificial target to simplify
-        target = code.nop();
-        if (ifins != null)
-            ifins.setTarget(target);
-        if (ifins2 != null)
-            ifins2.setTarget(target);
-
-        // if has auto-assigned pk and we get to this point, must have default
-        // value, so must be new instance
-        if (hasAutoAssignedPK) {
-            code.getstatic().setField(Boolean.class, "FALSE", Boolean.class);
-            code.areturn();
-            return false;
+        if (ifIns != null) {
+            instructions.add(ifIns);
+        }
+        if (ifIns2 != null) {
+            instructions.add(ifIns2);
         }
 
         // if detached state is not definitive, just give up now and return
         // null so that the runtime will perform a DB lookup to determine
         // whether we're detached or new
-        code.aload().setThis();
-        code.invokespecial().setMethod(ISDETACHEDSTATEDEFINITIVE, boolean.class,
-                                       null);
-        ifins = code.ifne();
-        code.constant().setNull();
-        code.areturn();
-        ifins.setTarget(code.nop());
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
+                                            classNode.name,
+                                            ISDETACHEDSTATEDEFINITIVE,
+                                            Type.getMethodDescriptor(Type.BOOLEAN_TYPE)));
+        LabelNode lblAfterNe = new LabelNode();
+        instructions.add(new JumpInsnNode(Opcodes.IFNE, lblAfterNe));
+        instructions.add(AsmHelper.getLoadConstantInsn(null));
+        instructions.add(new InsnNode(Opcodes.ARETURN));
+        instructions.add(lblAfterNe);
 
         // no detached state: if instance uses detached state and it's not
         // synthetic or the instance is not serializable or the state isn't
@@ -4073,11 +4099,11 @@ public class PCEnhancer {
         if (state == null
                 && (!ClassMetaData.SYNTHETIC.equals(_meta.getDetachedState())
                 || !Serializable.class.isAssignableFrom(_meta.getDescribedType())
-                || !_repos.getConfiguration().getDetachStateInstance().
-                isDetachedStateTransient())) {
+                || !_repos.getConfiguration().getDetachStateInstance().isDetachedStateTransient())) {
             // return Boolean.FALSE
-            code.getstatic().setField(Boolean.class, "FALSE", Boolean.class);
-            code.areturn();
+            instructions.add(new FieldInsnNode(Opcodes.GETSTATIC, Type.getInternalName(Boolean.class),
+                                               "FALSE", Type.getDescriptor(Boolean.class)));
+            instructions.add(new InsnNode(Opcodes.ARETURN));
             return true;
         }
 
@@ -4087,19 +4113,60 @@ public class PCEnhancer {
         if (state == null) {
             // if (pcGetDetachedState () == null) // instead of DESERIALIZED
             //     return Boolean.FALSE;
-            loadManagedInstance(code, false);
-            code.invokevirtual().setMethod(PRE + "GetDetachedState",
-                                           Object.class, null);
-            ifins = code.ifnonnull();
-            code.getstatic().setField(Boolean.class, "FALSE", Boolean.class);
-            code.areturn();
-            ifins.setTarget(code.nop());
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+            instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                                classNode.name,
+                                                PRE + "GetDetachedState",
+                                                Type.getMethodDescriptor(TYPE_OBJECT)));
+            LabelNode lblIfNn = new LabelNode();
+            instructions.add(new JumpInsnNode(Opcodes.IFNONNULL, lblIfNn));
+            instructions.add(new FieldInsnNode(Opcodes.GETSTATIC, Type.getInternalName(Boolean.class),
+                                               "FALSE", Type.getDescriptor(Boolean.class)));
+            instructions.add(new InsnNode(Opcodes.ARETURN));
+            instructions.add(lblIfNn);
         }
 
         // give up; we just don't know
-        code.constant().setNull();
-        code.areturn();
+        instructions.add(AsmHelper.getLoadConstantInsn(null));
+        instructions.add(new InsnNode(Opcodes.ARETURN));
         return true;
+    }
+
+    /**
+     * Compare the given field to its Java default, returning the
+     * comparison instruction. The field value will already be on the stack.
+     * @return the LabelNode for the else block.
+     */
+    private static LabelNode ifDefaultValue(InsnList instructions,
+                                                  FieldMetaData fmd) {
+        LabelNode lbl = new LabelNode();
+        switch (fmd.getDeclaredTypeCode()) {
+            case JavaTypes.BOOLEAN:
+            case JavaTypes.BYTE:
+            case JavaTypes.CHAR:
+            case JavaTypes.INT:
+            case JavaTypes.SHORT:
+                instructions.add(new JumpInsnNode(Opcodes.IFEQ, lbl));
+                break;
+            case JavaTypes.DOUBLE:
+                instructions.add(AsmHelper.getLoadConstantInsn(0D));
+                instructions.add(new InsnNode(Opcodes.DCMPL));
+                instructions.add(new JumpInsnNode(Opcodes.IFEQ, lbl));
+                break;
+            case JavaTypes.FLOAT:
+                instructions.add(AsmHelper.getLoadConstantInsn(0F));
+                instructions.add(new InsnNode(Opcodes.FCMPL));
+                instructions.add(new JumpInsnNode(Opcodes.IFEQ, lbl));
+                break;
+            case JavaTypes.LONG:
+                instructions.add(AsmHelper.getLoadConstantInsn(0L));
+                instructions.add(new InsnNode(Opcodes.LCMP));
+                instructions.add(new JumpInsnNode(Opcodes.IFEQ, lbl));
+                break;
+            default:
+                instructions.add(new JumpInsnNode(Opcodes.IFNULL, lbl));
+        }
+        return lbl;
     }
 
     /**
@@ -4580,9 +4647,7 @@ public class PCEnhancer {
     /**
      * Determines which attach / detach methods to use.
      */
-    @Deprecated
-    private void addAttachDetachCode()
-            throws NoSuchMethodException {
+    private void addAttachDetachCode() throws NoSuchMethodException {
         // see if any superclasses are detachable
         boolean parentDetachable = false;
         for (ClassMetaData parent = _meta.getPCSuperclassMetaData();
@@ -4593,13 +4658,18 @@ public class PCEnhancer {
             }
         }
 
+        ClassNode classNode = pc.getClassNode();
+
         // if parent not detachable, we need to add the detach state fields and
         // accessor methods
-        if (_meta.getPCSuperclass() == null || getCreateSubclass()
-                || parentDetachable != _meta.isDetachable()) {
-            addIsDetachedMethod();
-            addDetachedStateMethods(_meta.usesDetachedState()
-                                            != Boolean.FALSE);
+        if (_meta.getPCSuperclass() == null || getCreateSubclass() || parentDetachable != _meta.isDetachable()) {
+            addIsDetachedMethod(classNode);
+            AsmHelper.readIntoBCClass(pc, _pc);
+
+            addDetachedStateMethods(_meta.usesDetachedState() != Boolean.FALSE);
+        }
+        else {
+            AsmHelper.readIntoBCClass(pc, _pc);
         }
 
         // if we detach on serialize, we also need to implement the
@@ -4607,8 +4677,7 @@ public class PCEnhancer {
         // being detached
         if (externalizeDetached()) {
             try {
-                addDetachExternalize(parentDetachable,
-                                     _meta.usesDetachedState() != Boolean.FALSE);
+                addDetachExternalize(parentDetachable, _meta.usesDetachedState() != Boolean.FALSE);
             }
             catch (NoSuchMethodException nsme) {
                 throw new GeneralException(nsme);
@@ -4720,7 +4789,8 @@ public class PCEnhancer {
 
         }
         else {
-            instructions.add(new FieldInsnNode(Opcodes.GETFIELD, Type.getInternalName(declarer), fieldName, Type.getDescriptor(fieldType)));
+            String owner = declarer != null ? Type.getInternalName(declarer) : classNode.name;
+            instructions.add(new FieldInsnNode(Opcodes.GETFIELD, owner, fieldName, Type.getDescriptor(fieldType)));
         }
 
     }
@@ -4733,6 +4803,9 @@ public class PCEnhancer {
             if (field.isPresent()) {
                 return field.get();
             }
+        }
+        if (clazz == null) {
+            return null;
         }
         try {
             final Field field = clazz.getDeclaredField(fieldName);
