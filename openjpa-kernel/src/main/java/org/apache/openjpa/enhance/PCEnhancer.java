@@ -1687,7 +1687,7 @@ public class PCEnhancer {
                     // pcVersionInit = true;
                     instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
                     instructions.add(new InsnNode(Opcodes.ICONST_1));
-                    putfield(instructions, getType(_meta), VERSION_INIT_STR, boolean.class);
+                    putfield(classNode, instructions, getType(_meta), VERSION_INIT_STR, boolean.class);
                 }
 
                 instructions.add(new InsnNode(Opcodes.RETURN));
@@ -4633,13 +4633,10 @@ public class PCEnhancer {
         // accessor methods
         if (_meta.getPCSuperclass() == null || getCreateSubclass() || parentDetachable != _meta.isDetachable()) {
             addIsDetachedMethod(classNode);
-            AsmHelper.readIntoBCClass(pc, _pc);
-
             addDetachedStateMethods(_meta.usesDetachedState() != Boolean.FALSE);
         }
-        else {
-            AsmHelper.readIntoBCClass(pc, _pc);
-        }
+
+        AsmHelper.readIntoBCClass(pc, _pc);
 
         // if we detach on serialize, we also need to implement the
         // externalizable interface to write just the state for the fields
@@ -4662,54 +4659,55 @@ public class PCEnhancer {
     private void addDetachedStateMethods(boolean impl) {
         Field detachField = _meta.getDetachedStateField();
         String name = null;
-        String declarer = null;
+        Class<?> declarer = null;
+        final ClassNode classNode = pc.getClassNode();
+
+
         if (impl && detachField == null) {
             name = PRE + "DetachedState";
-            declarer = _pc.getName();
-            BCField field = _pc.declareField(name, Object.class);
-            field.makePrivate();
-            field.setTransient(true);
+            FieldNode field = new FieldNode(Opcodes.ACC_PRIVATE | Opcodes.ACC_TRANSIENT,
+                                            name,
+                                            TYPE_OBJECT.getDescriptor(),
+                                            null, null);
+            classNode.fields.add(field);
         }
         else if (impl) {
             name = detachField.getName();
-            declarer = detachField.getDeclaringClass().getName();
+            declarer = detachField.getDeclaringClass();
         }
 
         // public Object pcGetDetachedState ()
-        BCMethod method = _pc.declareMethod(PRE + "GetDetachedState",
-                                            Object.class, null);
-        method.setStatic(false);
-        method.makePublic();
-        int access = method.getAccessFlags();
+        MethodNode getDetachedStateMeth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                                         PRE + "GetDetachedState",
+                                                         Type.getMethodDescriptor(TYPE_OBJECT),
+                                                         null, null);
+        classNode.methods.add(getDetachedStateMeth);
 
-        Code code = method.getCode(true);
         if (impl) {
             // return pcDetachedState;
-            loadManagedInstance(code, false);
-            getfield(code, _managedType.getProject().loadClass(declarer),
-                     name);
+            getDetachedStateMeth.instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+            getfield(classNode, getDetachedStateMeth.instructions, declarer, name, Object.class);
         }
-        else
-            code.constant().setNull();
-        code.areturn();
-        code.calculateMaxLocals();
-        code.calculateMaxStack();
+        else {
+            getDetachedStateMeth.instructions.add(new InsnNode(Opcodes.ACONST_NULL));
+        }
+        getDetachedStateMeth.instructions.add(new InsnNode(Opcodes.ARETURN));
+
 
         // public void pcSetDetachedState (Object state)
-        method = _pc.declareMethod(PRE + "SetDetachedState",
-                                   void.class, new Class[]{Object.class});
-        method.setAccessFlags(access);
-        code = method.getCode(true);
+        MethodNode setDetachedStateMeth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                                         PRE + "SetDetachedState",
+                                                         Type.getMethodDescriptor(Type.VOID_TYPE, TYPE_OBJECT),
+                                                         null, null);
+        classNode.methods.add(setDetachedStateMeth);
+
         if (impl) {
             // pcDetachedState = state;
-            loadManagedInstance(code, false);
-            code.aload().setParam(0);
-            putfield(code, _managedType.getProject().loadClass(declarer),
-                     name, Object.class);
+            setDetachedStateMeth.instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+            setDetachedStateMeth.instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st parameter
+            putfield(classNode, setDetachedStateMeth.instructions, declarer, name, Object.class);
         }
-        code.vreturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
+        setDetachedStateMeth.instructions.add(new InsnNode(Opcodes.RETURN));
     }
 
     /**
@@ -4859,9 +4857,11 @@ public class PCEnhancer {
      * When this method is invoked, the value to load must
      * already be on the top of the stack,
      * and the instance to load into must be second.
-     * @param declarer internal class name (org/bla/..) which contains the field
+     *
+     * @param classNode
+     * @param declarer  internal class name (org/bla/..) which contains the field
      */
-    private void putfield(InsnList instructions, Class declarer, String attrName, Class fieldType) {
+    private void putfield(ClassNode classNode, InsnList instructions, Class declarer, String attrName, Class fieldType) {
         String fieldName = toBackingFieldName(attrName);
 
         if (getRedefine() || getCreateSubclass()) {
@@ -4889,7 +4889,8 @@ public class PCEnhancer {
 
         }
         else {
-            instructions.add(new FieldInsnNode(Opcodes.PUTFIELD, Type.getInternalName(declarer), fieldName, Type.getDescriptor(fieldType)));
+            String owner = declarer != null ? Type.getInternalName(declarer) : classNode.name;
+            instructions.add(new FieldInsnNode(Opcodes.PUTFIELD, owner, fieldName, Type.getDescriptor(fieldType)));
         }
     }
 
@@ -5486,7 +5487,7 @@ public class PCEnhancer {
         // just do a subclass approach instead. But this is not a good option,
         // since it would sacrifice lazy loading and efficient dirty tracking.
         if (getRedefine() || isFieldAccess(fmd)) {
-            putfield(instructions, fmd.getDeclaringType(), fmd.getName(), fmd.getDeclaredType());
+            putfield(classNode, instructions, fmd.getDeclaringType(), fmd.getName(), fmd.getDeclaredType());
         }
         else if (getCreateSubclass()) {
             // property access, and we're not redefining. invoke the
@@ -5520,7 +5521,7 @@ public class PCEnhancer {
         // just do a subclass approach instead. But this is not a good option,
         // since it would sacrifice lazy loading and efficient dirty tracking.
         if (getRedefine() || isFieldAccess(fmd)) {
-            putfield(instructions, getType(_meta), fmd.getName(), fmd.getDeclaredType());
+            putfield(classNode, instructions, getType(_meta), fmd.getName(), fmd.getDeclaredType());
         }
         else if (getCreateSubclass()) {
             // property access, and we're not redefining. invoke the
