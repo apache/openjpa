@@ -610,15 +610,18 @@ public final class AsmHelper {
                 return long.class;
             case 'D':
                 return double.class;
+            case 'L':
+                if (typeDesc.charAt(typeDesc.length()-1) == ';')
+                return getClass(classLoader, typeDesc.substring(1, typeDesc.length()-1));
             default:
                 // some kind of class
                 return getClass(classLoader, typeDesc);
         }
     }
 
-    private static Class<?> getClass(ClassLoader classLoader, String typeName) {
+    public static Class<?> getClass(ClassLoader classLoader, String internalTypeName) {
         try {
-            return Class.forName(typeName.replace("/", "."), false, classLoader);
+            return Class.forName(internalTypeName.replace("/", "."), false, classLoader);
         }
         catch (NoClassDefFoundError | ClassNotFoundException e) {
             return null;
