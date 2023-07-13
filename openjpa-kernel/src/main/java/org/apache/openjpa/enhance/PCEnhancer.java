@@ -603,10 +603,10 @@ public class PCEnhancer {
                 addPCMethods();
                 addAccessors(pc);
                 addAttachDetachCode();
+                addSerializationCode();
 
                 AsmHelper.readIntoBCClass(pc, _pc);
 
-                addSerializationCode();
                 addCloningCode();
                 runAuxiliaryEnhancers();
                 return ENHANCE_PC;
@@ -3545,19 +3545,18 @@ public class PCEnhancer {
      * as well as creating a custom <code>writeObject</code> method if the
      * class is Serializable and does not define them.
      */
-    @Deprecated
     private void addSerializationCode() {
-        if (externalizeDetached()
-                || !Serializable.class.isAssignableFrom(_meta.getDescribedType()))
+        if (externalizeDetached() || !Serializable.class.isAssignableFrom(_meta.getDescribedType())) {
             return;
+        }
 
         if (getCreateSubclass()) {
             // ##### what should happen if a type is Externalizable? It looks
             // ##### like Externalizable classes will not be serialized as PCs
             // ##### based on this logic.
-            if (!Externalizable.class.isAssignableFrom(
-                    _meta.getDescribedType()))
+            if (!Externalizable.class.isAssignableFrom(_meta.getDescribedType())) {
                 addSubclassSerializationCode();
+            }
             return;
         }
 
@@ -3565,105 +3564,121 @@ public class PCEnhancer {
         // is detachable and uses detached state without a declared field,
         // can't add a serial version UID because we'll be adding extra fields
         // to the enhanced version
-        BCField field = _pc.getDeclaredField("serialVersionUID");
-        if (field == null) {
+        final Optional<FieldNode> serialVersionUIDNode = pc.getClassNode().fields.stream()
+                .filter(f -> f.name.equals("serialVersionUID"))
+                .findFirst();
+
+        if (serialVersionUIDNode.isEmpty()) {
             Long uid = null;
             try {
-                uid = ObjectStreamClass.lookup
-                        (_meta.getDescribedType()).getSerialVersionUID();
+                uid = ObjectStreamClass.lookup(_meta.getDescribedType()).getSerialVersionUID();
             }
             catch (Throwable t) {
                 // last-chance catch for bug #283 (which can happen
                 // in a variety of ClassLoading environments)
-                if (_log.isTraceEnabled())
+                if (_log.isTraceEnabled()) {
                     _log.warn(_loc.get("enhance-uid-access", _meta), t);
-                else
+                }
+                else {
                     _log.warn(_loc.get("enhance-uid-access", _meta));
+                }
             }
 
             // if we couldn't access the serialVersionUID, we will have to
             // skip the override of that field and not be serialization
             // compatible with non-enhanced classes
             if (uid != null) {
-                field = _pc.declareField("serialVersionUID", long.class);
-                field.makePrivate();
-                field.setStatic(true);
-                field.setFinal(true);
+                FieldNode serVersField = new FieldNode(Opcodes.ACC_PRIVATE | Opcodes.ACC_STATIC | Opcodes.ACC_FINAL,
+                                                       "serialVersionUID",
+                                                       Type.LONG_TYPE.getDescriptor(),
+                                                       null, uid);
+                pc.getClassNode().fields.add(serVersField);
 
+                /* should be done by ASM FieldNode already
                 Code code = getOrCreateClassInitCode(false);
                 code.beforeFirst();
                 code.constant().setValue(uid.longValue());
                 code.putstatic().setField(field);
-
-                code.calculateMaxStack();
+                */
             }
         }
 
+        MethodNode writeObjectMeth = AsmHelper.getMethodNode(pc.getClassNode(), "writeObject",
+                                                             void.class, ObjectOutputStream.class)
+                .orElse(null);
+
+        boolean full = writeObjectMeth == null;
+
         // add write object method
-        BCMethod write = _pc.getDeclaredMethod("writeObject",
-                                               new Class[]{ObjectOutputStream.class});
-        boolean full = write == null;
         if (full) {
             // private void writeObject (ObjectOutputStream out)
-            write = _pc.declareMethod("writeObject", void.class,
-                                      new Class[]{ObjectOutputStream.class});
-            write.getExceptions(true).addException(IOException.class);
-            write.makePrivate();
+            writeObjectMeth = new MethodNode(Opcodes.ACC_PRIVATE,
+                                             "writeObject",
+                                             Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(ObjectOutputStream.class)),
+                                             null,
+                                             new String[] {Type.getInternalName(IOException.class)});
+            pc.getClassNode().methods.add(writeObjectMeth);
         }
-        modifyWriteObjectMethod(write, full);
+        modifyWriteObjectMethod(pc.getClassNode(), writeObjectMeth, full);
 
         // and read object
-        BCMethod read = _pc.getDeclaredMethod("readObject",
-                                              new Class[]{ObjectInputStream.class});
-        full = read == null;
+        MethodNode readObjectMeth = AsmHelper.getMethodNode(pc.getClassNode(), "readObject",
+                                                            void.class, ObjectInputStream.class)
+                .orElse(null);
+
+        full = readObjectMeth == null;
         if (full) {
             // private void readObject (ObjectInputStream in)
-            read = _pc.declareMethod("readObject", void.class,
-                                     new Class[]{ObjectInputStream.class});
-            read.getExceptions(true).addException(IOException.class);
-            read.getExceptions(true).addException
-                    (ClassNotFoundException.class);
-            read.makePrivate();
+            readObjectMeth = new MethodNode(Opcodes.ACC_PRIVATE,
+                                             "readObject",
+                                             Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(ObjectInputStream.class)),
+                                             null,
+                                             new String[] {Type.getInternalName(IOException.class),
+                                                           Type.getInternalName(ClassNotFoundException.class)});
+            pc.getClassNode().methods.add(readObjectMeth);
+
         }
-        modifyReadObjectMethod(read, full);
+        modifyReadObjectMethod(pc.getClassNode(), readObjectMeth, full);
     }
 
-    @Deprecated
     private void addSubclassSerializationCode() {
         // for generated subclasses, serialization must write an instance of
         // the superclass instead of the subclass, so that the client VM can
         // deserialize successfully.
 
         // private Object writeReplace() throws ObjectStreamException
-        BCMethod method = _pc.declareMethod("writeReplace", Object.class, null);
-        method.getExceptions(true).addException(ObjectStreamException.class);
-        Code code = method.getCode(true);
+        MethodNode writeReplaceMeth = new MethodNode(Opcodes.ACC_PRIVATE,
+                                                     "writeReplace",
+                                                     Type.getMethodDescriptor(TYPE_OBJECT),
+                                                     null,
+                                                     new String[] {Type.getInternalName(ObjectStreamException.class)});
+        final ClassNode classNode = pc.getClassNode();
+        classNode.methods.add(writeReplaceMeth);
+        InsnList instructions = writeReplaceMeth.instructions;
 
         // Object o = new <managed-type>()
-        code.anew().setType(_managedType); // for return
-        code.dup(); // for post-<init> work
-        code.dup(); // for <init>
-        code.invokespecial().setMethod(_managedType.getType(), "<init>",
-                                       void.class, null);
+        instructions.add(new TypeInsnNode(Opcodes.NEW, managedType.getClassNode().name));
+        instructions.add(new InsnNode(Opcodes.DUP)); // for post-<init> work
+        instructions.add(new InsnNode(Opcodes.DUP)); // for <init>
+        instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
+                                            managedType.getClassNode().name,
+                                            "<init>",
+                                            Type.getMethodDescriptor(Type.VOID_TYPE)));
 
         // copy all the fields.
         // ##### limiting to JPA @Transient limitations
         FieldMetaData[] fmds = _meta.getFields();
         for (FieldMetaData fmd : fmds) {
-            if (fmd.isTransient())
+            if (fmd.isTransient()) {
                 continue;
+            }
             // o.<field> = this.<field> (or reflective analog)
-            code.dup(); // for putfield
-            code.aload().setThis(); // for getfield
-            getfield(code, _managedType, fmd.getName());
-            putfield(code, _managedType, fmd.getName(),
-                     fmd.getDeclaredType());
+            instructions.add(new InsnNode(Opcodes.DUP)); // for putfield
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this for getfield
+            getfield(classNode, instructions, _meta.getDescribedType(), fmd.getName(), fmd.getDeclaredType());
+            putfield(classNode, instructions, _meta.getDescribedType(), fmd.getName(), fmd.getDeclaredType());
         }
-
-        code.areturn().setType(Object.class);
-
-        code.calculateMaxLocals();
-        code.calculateMaxStack();
+        instructions.add(new InsnNode(Opcodes.ARETURN));
     }
 
     /**
@@ -3682,76 +3697,93 @@ public class PCEnhancer {
      * {@link ObjectOutputStream#defaultWriteObject} method,
      * but only after calling the internal <code>pcSerializing</code> method.
      */
-    @Deprecated
-    private void modifyWriteObjectMethod(BCMethod method, boolean full) {
-        Code code = method.getCode(true);
-        code.beforeFirst();
+    private void modifyWriteObjectMethod(ClassNode classNode, MethodNode method, boolean full) {
+        InsnList instructions = new InsnList();
 
         // bool clear = pcSerializing ();
-        loadManagedInstance(code, false);
-        code.invokevirtual().setMethod(PRE + "Serializing",
-                                       boolean.class, null);
-        int clear = code.getNextLocalsIndex();
-        code.istore().setLocal(clear);
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                            classNode.name,
+                                            PRE + "Serializing",
+                                            Type.getMethodDescriptor(Type.BOOLEAN_TYPE)));
+        int clearVarPos = full ? 2 : method.maxLocals+1;
+        instructions.add(new VarInsnNode(Opcodes.ISTORE, clearVarPos));
 
         if (full) {
             // out.defaultWriteObject ();
-            code.aload().setParam(0);
-            code.invokevirtual().setMethod(ObjectOutputStream.class,
-                                           "defaultWriteObject", void.class, null);
-            code.vreturn();
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st param
+            instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                                Type.getInternalName(ObjectOutputStream.class),
+                                                "defaultWriteObject",
+                                                Type.getMethodDescriptor(Type.VOID_TYPE)));
+            instructions.add(new InsnNode(Opcodes.RETURN));
+
+            method.instructions.insert(instructions);
+            instructions.clear();
         }
 
-        Instruction tmplate = (AccessController.doPrivileged(
-                J2DoPrivHelper.newCodeAction())).vreturn();
-        JumpInstruction toret;
-        Instruction ret;
-        code.beforeFirst();
-        while (code.searchForward(tmplate)) {
-            ret = code.previous();
-            // if (clear) pcSetDetachedState (null);
-            code.iload().setLocal(clear);
-            toret = code.ifeq();
-            loadManagedInstance(code, false);
-            code.constant().setNull();
-            code.invokevirtual().setMethod(PRE + "SetDetachedState",
-                                           void.class, new Class[]{Object.class});
-            toret.setTarget(ret);
-            code.next(); // jump over return
-        }
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
+        AbstractInsnNode insn = method.instructions.getFirst();
+        do {
+            // skip to the next RETURN instruction
+            while (insn != null && insn.getOpcode() != Opcodes.RETURN) {
+                insn = insn.getNext();
+            }
+
+            if (insn != null) {
+                InsnList insns = new InsnList();
+                insns.add(new VarInsnNode(Opcodes.ILOAD, clearVarPos));
+                LabelNode lblEndIf = new LabelNode();
+                insns.add(new JumpInsnNode(Opcodes.IFEQ, lblEndIf));
+                insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                insns.add(new InsnNode(Opcodes.ACONST_NULL));
+                insns.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                             classNode.name,
+                                             PRE + "SetDetachedState",
+                                             Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(Object.class))));
+                insns.add(lblEndIf);
+                method.instructions.insertBefore(insn, insns);
+
+                insn = insn.getNext();
+            }
+        } while (insn != null);
+
+        method.instructions.insert(instructions);
     }
 
     /**
      * Adds a custom readObject method that delegates to the
      * {@link ObjectInputStream#readObject()} method.
      */
-    @Deprecated
-    private void modifyReadObjectMethod(BCMethod method, boolean full) {
-        Code code = method.getCode(true);
-        code.beforeFirst();
+    private void modifyReadObjectMethod(ClassNode classNode, MethodNode method, boolean full) {
+        InsnList instructions = new InsnList();
 
         // if this instance uses synthetic detached state, note that it has
         // been deserialized
         if (ClassMetaData.SYNTHETIC.equals(_meta.getDetachedState())) {
-            loadManagedInstance(code, false);
-            code.getstatic().setField(PersistenceCapable.class,
-                                      "DESERIALIZED", Object.class);
-            code.invokevirtual().setMethod(PRE + "SetDetachedState",
-                                           void.class, new Class[]{Object.class});
+
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+            instructions.add(new FieldInsnNode(Opcodes.GETSTATIC,
+                                               Type.getInternalName(PersistenceCapable.class),
+                                               "DESERIALIZED",
+                                               Type.getDescriptor(Object.class)));
+
+            instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                                classNode.name,
+                                                PRE + "SetDetachedState",
+                                                Type.getMethodDescriptor(Type.VOID_TYPE, TYPE_OBJECT)));
         }
 
         if (full) {
             // in.defaultReadObject ();
-            code.aload().setParam(0);
-            code.invokevirtual().setMethod(ObjectInputStream.class,
-                                           "defaultReadObject", void.class, null);
-            code.vreturn();
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st param
+            instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                                Type.getInternalName(ObjectInputStream.class),
+                                                "defaultReadObject",
+                                                Type.getMethodDescriptor(Type.VOID_TYPE)));
+            instructions.add(new InsnNode(Opcodes.RETURN));
         }
 
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
+        method.instructions.insert(instructions);
     }
 
     /**
@@ -4083,41 +4115,6 @@ public class PCEnhancer {
             classNode.methods.add(clinit);
             return clinit;
         }
-    }
-
-    /**
-     * Helper method to get the code for the class initializer method,
-     * creating the method if it does not already exist.
-     */
-    @Deprecated
-    private Code getOrCreateClassInitCode(boolean replaceLast) {
-        BCMethod clinit = _pc.getDeclaredMethod("<clinit>");
-        Code code;
-        if (clinit != null) {
-            code = clinit.getCode(true);
-            if (replaceLast) {
-                Code template = AccessController.doPrivileged(
-                        J2DoPrivHelper.newCodeAction());
-                code.searchForward(template.vreturn());
-                code.previous();
-                code.set(template.nop());
-                code.next();
-            }
-            return code;
-        }
-
-        // add static initializer method if non exists
-        clinit = _pc.declareMethod("<clinit>", void.class, null);
-        clinit.makePackage();
-        clinit.setStatic(true);
-        clinit.setFinal(true);
-
-        code = clinit.getCode(true);
-        if (!replaceLast) {
-            code.vreturn();
-            code.previous();
-        }
-        return code;
     }
 
     /**
