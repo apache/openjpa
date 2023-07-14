@@ -605,10 +605,9 @@ public class PCEnhancer {
                 addAttachDetachCode();
                 addSerializationCode();
                 addCloningCode();
+                runAuxiliaryEnhancers();
 
                 AsmHelper.readIntoBCClass(pc, _pc);
-
-                runAuxiliaryEnhancers();
                 return ENHANCE_PC;
             }
             return ENHANCE_AWARE;
@@ -4209,7 +4208,7 @@ public class PCEnhancer {
      */
     private void runAuxiliaryEnhancers() {
         for (AuxiliaryEnhancer auxEnhancer : _auxEnhancers) {
-            auxEnhancer.run(_pc, _meta);
+            auxEnhancer.run(pc.getClassNode(), _meta);
         }
     }
 
@@ -5747,10 +5746,7 @@ public class PCEnhancer {
      */
     public interface AuxiliaryEnhancer
     {
-        void run (BCClass bc, ClassMetaData meta);
-
-        @Deprecated
-        boolean skipEnhance(BCMethod m);
+        void run (ClassNode classNode, ClassMetaData meta);
 
         boolean skipEnhance(MethodNode m);
     }
