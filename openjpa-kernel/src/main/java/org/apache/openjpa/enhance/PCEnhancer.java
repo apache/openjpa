@@ -604,10 +604,10 @@ public class PCEnhancer {
                 addAccessors(pc);
                 addAttachDetachCode();
                 addSerializationCode();
+                addCloningCode();
 
                 AsmHelper.readIntoBCClass(pc, _pc);
 
-                addCloningCode();
                 runAuxiliaryEnhancers();
                 return ENHANCE_PC;
             }
@@ -3723,29 +3723,23 @@ public class PCEnhancer {
         }
 
         AbstractInsnNode insn = method.instructions.getFirst();
-        do {
-            // skip to the next RETURN instruction
-            while (insn != null && insn.getOpcode() != Opcodes.RETURN) {
-                insn = insn.getNext();
-            }
+        // skip to the next RETURN instruction
+        while ((insn = searchNextInstruction(insn, i -> i.getOpcode() == Opcodes.RETURN)) != null) {
+            InsnList insns = new InsnList();
+            insns.add(new VarInsnNode(Opcodes.ILOAD, clearVarPos));
+            LabelNode lblEndIf = new LabelNode();
+            insns.add(new JumpInsnNode(Opcodes.IFEQ, lblEndIf));
+            insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+            insns.add(new InsnNode(Opcodes.ACONST_NULL));
+            insns.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                         classNode.name,
+                                         PRE + "SetDetachedState",
+                                         Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(Object.class))));
+            insns.add(lblEndIf);
+            method.instructions.insertBefore(insn, insns);
 
-            if (insn != null) {
-                InsnList insns = new InsnList();
-                insns.add(new VarInsnNode(Opcodes.ILOAD, clearVarPos));
-                LabelNode lblEndIf = new LabelNode();
-                insns.add(new JumpInsnNode(Opcodes.IFEQ, lblEndIf));
-                insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
-                insns.add(new InsnNode(Opcodes.ACONST_NULL));
-                insns.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
-                                             classNode.name,
-                                             PRE + "SetDetachedState",
-                                             Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(Object.class))));
-                insns.add(lblEndIf);
-                method.instructions.insertBefore(insn, insns);
-
-                insn = insn.getNext();
-            }
-        } while (insn != null);
+            insn = insn.getNext();
+        }
 
         method.instructions.insert(instructions);
     }
@@ -4126,51 +4120,58 @@ public class PCEnhancer {
      * subclass, create the clone() method that clears the state manager
      * that may have been initialized in a super's clone() method.
      */
-    @Deprecated
     private void addCloningCode() {
-        if (_meta.getPCSuperclass() != null && !getCreateSubclass())
+        if (_meta.getPCSuperclass() != null && !getCreateSubclass()) {
             return;
+        }
+
+        ClassNode classNode = pc.getClassNode();
+
+        MethodNode cloneMeth = AsmHelper.getMethodNode(classNode, "clone", Object.class)
+                                        .orElse(null);
+
+        String superName = managedType.getClassNode().superName;
 
         // add the clone method if necessary
-        BCMethod clone = _pc.getDeclaredMethod("clone",
-                                               (String[]) null);
-        String superName = _managedType.getSuperclassName();
-        Code code = null;
-        if (clone == null) {
+        if (cloneMeth == null) {
             // add clone support for base classes
             // which also implement cloneable
-            boolean isCloneable = Cloneable.class.isAssignableFrom(
-                    _managedType.getType());
-            boolean extendsObject =
-                    superName.equals(Object.class.getName());
-            if (!isCloneable || (!extendsObject && !getCreateSubclass()))
+            boolean isCloneable = Cloneable.class.isAssignableFrom(_managedType.getType());
+            boolean extendsObject = superName.equals(Object.class.getName());
+            if (!isCloneable || (!extendsObject && !getCreateSubclass())) {
                 return;
+            }
 
-            if (!getCreateSubclass())
-                if (_log.isTraceEnabled())
-                    _log.trace(
-                            _loc.get("enhance-cloneable", _managedType.getName()));
+            if (!getCreateSubclass()) {
+                if (_log.isTraceEnabled()) {
+                    _log.trace(_loc.get("enhance-cloneable", _managedType.getName()));
+                }
+            }
 
             // add clone method
             // protected Object clone () throws CloneNotSupportedException
-            clone = _pc.declareMethod("clone", Object.class, null);
-            if (!setVisibilityToSuperMethod(clone))
-                clone.makeProtected();
-            clone.getExceptions(true).addException
-                    (CloneNotSupportedException.class);
-            code = clone.getCode(true);
+            cloneMeth = new MethodNode(0,
+                                       "clone",
+                                       Type.getMethodDescriptor(TYPE_OBJECT),
+                                       null,
+                                       new String[] {Type.getInternalName(CloneNotSupportedException.class)});
+            if (!setVisibilityToSuperMethod(cloneMeth)) {
+                cloneMeth.access |= Opcodes.ACC_PROTECTED;
+            }
 
             // return super.clone ();
-            loadManagedInstance(code, false);
-            code.invokespecial().setMethod(superName, "clone",
-                                           Object.class.getName(), null);
-            code.areturn();
+            cloneMeth.instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+            cloneMeth.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
+                                                          superName,
+                                                          "clone",
+                                                          Type.getMethodDescriptor(TYPE_OBJECT)));
+            cloneMeth.instructions.add(new InsnNode(Opcodes.ARETURN));
         }
         else {
-            // get the clone method code
-            code = clone.getCode(false);
-            if (code == null)
+            if (cloneMeth.instructions.size() <=1) {
+                // if the clone method is basically empty
                 return;
+            }
         }
 
         // create template super.clone () instruction to match against
@@ -4180,17 +4181,19 @@ public class PCEnhancer {
 
         // find calls to the template instruction; on match
         // clone will be on stack
-        code.beforeFirst();
-        if (code.searchForward(template)) {
+        AbstractInsnNode insn = cloneMeth.instructions.getFirst();
+        while ((insn = searchNextInstruction(insn, i -> i.getOpcode() == Opcodes.INVOKESPECIAL &&
+                        i instanceof MethodInsnNode && ((MethodInsnNode) i).name.equals("clone"))
+                ) != null) {
             // ((<type>) clone).pcStateManager = null;
-            code.dup();
-            code.checkcast().setType(_pc);
-            code.constant().setNull();
-            code.putfield().setField(SM, SMTYPE);
+            InsnList instructions = new InsnList();
+            instructions.add(new InsnNode(Opcodes.DUP));
+            instructions.add(new TypeInsnNode(Opcodes.CHECKCAST, pc.getClassNode().name));
+            instructions.add(new InsnNode(Opcodes.ACONST_NULL));
+            instructions.add(new FieldInsnNode(Opcodes.PUTFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
 
-            // if modified, increase stack
-            code.calculateMaxStack();
-            code.calculateMaxLocals();
+            cloneMeth.instructions.insert(insn, instructions);
+            break;
         }
     }
 
@@ -4673,69 +4676,6 @@ public class PCEnhancer {
         return null;
     }
 
-
-    /**
-     * Adds to <code>code</code> the instructions to get field
-     * <code>attrName</code> declared in type <code>declarer</code>
-     * onto the top of the stack.
-     * <p>
-     * The instance to access must already be on the top of the
-     * stack when this is invoked.
-     */
-    @Deprecated
-    private void getfield(Code code, BCClass declarer, String attrName) {
-        if (declarer == null)
-            declarer = _managedType;
-
-        // first, see if we can convert the attribute name to a field name
-        String fieldName = toBackingFieldName(attrName);
-
-        // next, find the field in the managed type hierarchy
-        BCField field = null;
-        outer:
-        for (BCClass bc = _pc; bc != null; bc = bc.getSuperclassBC()) {
-            BCField[] fields = AccessController
-                    .doPrivileged(J2DoPrivHelper.getBCClassFieldsAction(bc,
-                                                                        fieldName));
-            for (BCField bcField : fields) {
-                field = bcField;
-                // if we reach a field declared in this type, then this is the
-                // most-masking field, and is the one that we want.
-                if (bcField.getDeclarer() == declarer) {
-                    break outer;
-                }
-            }
-        }
-
-        if (getCreateSubclass() && code.getMethod().getDeclarer() == _pc
-                && (field == null || !field.isPublic())) {
-            // we're creating the subclass, not redefining the user type.
-
-            // Reflection.getXXX(this, Reflection.findField(...));
-            code.classconstant().setClass(declarer);
-            code.constant().setValue(fieldName);
-            code.constant().setValue(true);
-            code.invokestatic().setMethod(Reflection.class,
-                                          "findField", Field.class, new Class[]{
-                            Class.class, String.class, boolean.class});
-            Class type = _meta.getField(attrName).getDeclaredType();
-            try {
-                code.invokestatic().setMethod(
-                        getReflectionGetterMethod(type, Field.class));
-            }
-            catch (NoSuchMethodException e) {
-                // should never happen
-                throw new InternalException(e);
-            }
-            if (!type.isPrimitive() && type != Object.class)
-                code.checkcast().setType(type);
-        }
-        else {
-            code.getfield().setField(declarer.getName(), fieldName,
-                                     field.getType().getName());
-        }
-    }
-
     /**
      * Adds to <code>code</code> the instructions to set field
      * <code>attrName</code> declared in type <code>declarer</code>
@@ -4781,43 +4721,6 @@ public class PCEnhancer {
         }
     }
 
-    /**
-     * Adds to <code>code</code> the instructions to set field
-     * <code>attrName</code> declared in type <code>declarer</code>
-     * to the value of type <code>fieldType</code> on the top of the stack.
-     * <p>
-     * When this method is invoked, the value to load must
-     * already be on the top of the stack in <code>code</code>,
-     * and the instance to load into must be second.
-     */
-    @Deprecated
-    private void putfield(Code code, BCClass declarer, String attrName,
-                          Class fieldType) {
-        if (declarer == null)
-            declarer = _managedType;
-
-        String fieldName = toBackingFieldName(attrName);
-
-        if (getRedefine() || getCreateSubclass()) {
-            // Reflection.set(this, Reflection.findField(...), value);
-            code.classconstant().setClass(declarer);
-            code.constant().setValue(fieldName);
-            code.constant().setValue(true);
-            code.invokestatic().setMethod(Reflection.class,
-                                          "findField", Field.class, new Class[]{
-                            Class.class, String.class, boolean.class});
-            code.invokestatic().setMethod(Reflection.class, "set",
-                                          void.class,
-                                          new Class[]{
-                                                  Object.class,
-                                                  fieldType.isPrimitive() ? fieldType : Object.class,
-                                                  Field.class});
-        }
-        else {
-            code.putfield()
-                    .setField(declarer.getName(), fieldName, fieldType.getName());
-        }
-    }
 
     /**
      * If using property access, see if there is a different backing field
