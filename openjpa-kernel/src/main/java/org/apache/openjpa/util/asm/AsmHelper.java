@@ -172,7 +172,7 @@ public final class AsmHelper {
 
     public static Optional<MethodNode> getMethodNode(ClassNode classNode, String methodName, Class<?> returnType, Class<?>... paramTypes) {
         Type[] parms = Arrays.stream(paramTypes)
-                .map(c -> Type.getType(c))
+                .map(Type::getType)
                 .toArray(Type[]::new);
 
         final String mDesc = Type.getMethodDescriptor(Type.getType(returnType), parms);
@@ -187,7 +187,7 @@ public final class AsmHelper {
      * @param type the type to get returned
      * @return the proper Opcode RETURN, ARETURN, IRETURN, etc
      */
-    public static int getReturnInsn(Class type) {
+    public static int getReturnInsn(Class<?> type) {
         if (type.equals(Void.TYPE)) {
             return Opcodes.RETURN;
         }
@@ -225,7 +225,7 @@ public final class AsmHelper {
             return new InsnNode(Opcodes.ACONST_NULL);
         }
         if (val instanceof Integer) {
-            final int iVal = ((Integer) val).intValue();
+            final int iVal = (Integer) val;
             switch (iVal) {
                 case 0:
                     return new InsnNode(Opcodes.ICONST_0);
@@ -253,7 +253,7 @@ public final class AsmHelper {
         }
 
         if (val instanceof Boolean) {
-            if (((Boolean)val) == true) {
+            if ((Boolean)val) {
                 return new InsnNode(Opcodes.ICONST_1);
             }
             else {
@@ -262,31 +262,31 @@ public final class AsmHelper {
         }
 
         if (val instanceof Long) {
-            if (((Long) val).longValue() == 0L) {
+            if ((Long) val == 0L) {
                 return new InsnNode(Opcodes.LCONST_0);
             }
-            if (((Long) val).longValue() == 1L) {
+            if ((Long) val == 1L) {
                 return new InsnNode(Opcodes.LCONST_1);
             }
         }
 
         if (val instanceof Float) {
-            if (((Float) val).floatValue() == 0F) {
+            if ((Float) val == 0F) {
                 return new InsnNode(Opcodes.FCONST_0);
             }
-            if (((Float) val).floatValue() == 1F) {
+            if ((Float) val == 1F) {
                 return new InsnNode(Opcodes.FCONST_1);
             }
-            if (((Float) val).floatValue() == 2F) {
+            if ((Float) val == 2F) {
                 return new InsnNode(Opcodes.FCONST_2);
             }
         }
 
         if (val instanceof Double) {
-            if (((Double) val).doubleValue() == 0D) {
+            if ((Double) val == 0D) {
                 return new InsnNode(Opcodes.DCONST_0);
             }
-            if (((Double) val).doubleValue() == 1D) {
+            if ((Double) val == 1D) {
                 return new InsnNode(Opcodes.DCONST_1);
             }
         }
@@ -416,7 +416,7 @@ public final class AsmHelper {
      * Get the internal names for the given classes
      * @see Type#getInternalName(Class) 
      */
-    public static String[] getInternalNames(Class[] classes) {
+    public static String[] getInternalNames(Class<?>[] classes) {
         String[] internalNames = new String[classes.length];
 
         for (int i=0; i<classes.length; i++) {
@@ -430,7 +430,7 @@ public final class AsmHelper {
      * get the ASM Types for the given classes
      * @see Type#getType(Method)
      */
-    public static Type[] getParamTypes(Class[] params) {
+    public static Type[] getParamTypes(Class<?>[] params) {
         Type[] types = new Type[params.length];
         for (int i=0; i<types.length; i++) {
             types[i] = Type.getType(params[i]);

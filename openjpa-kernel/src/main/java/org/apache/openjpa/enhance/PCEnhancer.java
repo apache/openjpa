@@ -31,7 +31,6 @@ import java.io.ObjectStreamClass;
 import java.io.ObjectStreamException;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -107,17 +106,7 @@ import org.apache.xbean.asm9.Type;
 import org.apache.xbean.asm9.tree.*;
 
 import serp.bytecode.BCClass;
-import serp.bytecode.BCField;
-import serp.bytecode.BCMethod;
-import serp.bytecode.Code;
-import serp.bytecode.Constants;
-import serp.bytecode.Exceptions;
-import serp.bytecode.IfInstruction;
-import serp.bytecode.Instruction;
-import serp.bytecode.JumpInstruction;
-import serp.bytecode.LoadInstruction;
 import serp.bytecode.Project;
-import serp.bytecode.PutFieldInstruction;
 
 /**
  * Bytecode enhancer used to enhance persistent classes from metadata. The
@@ -146,17 +135,17 @@ public class PCEnhancer {
     public static final String ISDETACHEDSTATEDEFINITIVE = PRE
             + "isDetachedStateDefinitive";
 
-    private static final Class PCTYPE = PersistenceCapable.class;
+    private static final Class<?> PCTYPE = PersistenceCapable.class;
     private static final String SM = PRE + "StateManager";
-    private static final Class SMTYPE = StateManager.class;
+    private static final Class<?> SMTYPE = StateManager.class;
     private static final String INHERIT = PRE + "InheritedFieldCount";
     private static final String CONTEXTNAME = "GenericContext";
-    private static final Class USEREXCEP = UserException.class;
-    private static final Class INTERNEXCEP = InternalException.class;
-    private static final Class HELPERTYPE = PCRegistry.class;
+    private static final Class<?> USEREXCEP = UserException.class;
+    private static final Class<?> INTERNEXCEP = InternalException.class;
+    private static final Class<?> HELPERTYPE = PCRegistry.class;
     private static final String SUPER = PRE + "PCSuperclass";
     private static final Class OIDFSTYPE = FieldSupplier.class;
-    private static final Class OIDFCTYPE = FieldConsumer.class;
+    private static final Class<?> OIDFCTYPE = FieldConsumer.class;
 
     private static final String VERSION_INIT_STR = PRE + "VersionInit";
 
@@ -183,18 +172,15 @@ public class PCEnhancer {
             }
         }
         _auxEnhancers = (AuxiliaryEnhancer[]) auxEnhancers.toArray
-                (new AuxiliaryEnhancer[auxEnhancers.size()]);
+                (new AuxiliaryEnhancer[0]);
 
         int rev = 0;
         Properties revisionProps = new Properties();
         try {
             InputStream in = PCEnhancer.class.getResourceAsStream("/META-INF/org.apache.openjpa.revision.properties");
             if (in != null) {
-                try {
+                try (in) {
                     revisionProps.load(in);
-                }
-                finally {
-                    in.close();
                 }
             }
             rev = GitUtils.convertGitInfoToPCEnhancerVersion(revisionProps.getProperty("openjpa.enhancer.revision"));
@@ -251,7 +237,7 @@ public class PCEnhancer {
      * up the metadata for <code>type</code> from <code>conf</code>'s
      * repository.
      */
-    public PCEnhancer(OpenJPAConfiguration conf, Class type) {
+    public PCEnhancer(OpenJPAConfiguration conf, Class<?> type) {
         this(conf, AccessController.doPrivileged(J2DoPrivHelper
                                                          .loadProjectClassAction(new Project(), type)),
              (MetaDataRepository) null);
@@ -1002,42 +988,6 @@ public class PCEnhancer {
             }
             return getField(clazz.getSuperclass(), fieldName);
         }
-    }
-
-    /**
-     * get the Method with the given methodName and params from the given classNode or clazz
-     * @param classNodeTracker
-     * @param methodName
-     */
-    private static MethodNode getMethod(ClassNodeTracker classNodeTracker, String methodName, Class<?> returnType, Class<?>... paramTypes) {
-        Type[] parms = Arrays.stream(paramTypes)
-                .map(c -> Type.getType(c))
-                .toArray(Type[]::new);
-
-        String methodDescription = Type.getMethodDescriptor(Type.getType(returnType), parms);
-
-        final Optional<MethodNode> methodNode = classNodeTracker.getClassNode().methods.stream()
-                .filter(mn -> mn.name.equals(methodName) && mn.desc.equals(methodDescription))
-                .findAny();
-        if (methodNode.isPresent()) {
-            return methodNode.get();
-        }
-
-        // otherwise look up the parent class hierarchy
-        final String superName = classNodeTracker.getClassNode().superName;
-        if (superName == null || superName.equals("java/lang/Object")) {
-            // no need to dig further
-            return null;
-        }
-        try {
-            final Class<?> parentClass = classNodeTracker.getClassLoader().loadClass(superName.replace("/", "."));
-            Method m = getMethod(parentClass, methodName, paramTypes);
-            return new MethodNode(m.getModifiers(), m.getName(), Type.getMethodDescriptor(m), null, null);
-        }
-        catch (ClassNotFoundException e) {
-            throw new RuntimeException("Illegal superclass in ClassNode " + classNodeTracker.getClassNode().name, e);
-        }
-
     }
 
     private static Method getMethod(Class<?> clazz, String methodName, Class<?>... paramTypes) {
@@ -1948,7 +1898,7 @@ public class PCEnhancer {
         String name = PRE + StringUtil.capitalize(m.getName());
         Class[] params = m.getParameterTypes();
         Type[] paramTypes = Arrays.stream(params)
-                .map(p -> Type.getType(p))
+                .map(Type::getType)
                 .toArray(Type[]::new);
         Class returnType = m.getReturnType();
 
@@ -2281,7 +2231,7 @@ public class PCEnhancer {
             if (pkfields != null) {
                 // search for a constructor on the IdClass that can be used
                 // to construct the IdClass
-                int parmOrder[] = getIdClassConstructorParmOrder(oidType, pkfields, fmds);
+                int[] parmOrder = getIdClassConstructorParmOrder(oidType, pkfields, fmds);
                 if (parmOrder != null) {
                     // If using a field manager, values must be loaded into locals so they can be properly ordered
                     // as constructor parameters.
@@ -2344,7 +2294,7 @@ public class PCEnhancer {
 
                     // invoke the public constructor to create a new local id
                     Type[] parms = Arrays.stream(clsArgs)
-                            .map(c -> Type.getType(c))
+                            .map(Type::getType)
                             .toArray(Type[]::new);
 
                     instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
@@ -3268,7 +3218,7 @@ public class PCEnhancer {
 
         // use reflection to return the right method
         String name = prefix + typeName + "Field";
-        Class[] params = (Class[]) plist.toArray(new Class[plist.size()]);
+        Class[] params = (Class[]) plist.toArray(new Class[0]);
 
         try {
             return AccessController.doPrivileged(
@@ -4166,15 +4116,10 @@ public class PCEnhancer {
             }
         }
 
-        // create template super.clone () instruction to match against
-        Instruction template = (AccessController.doPrivileged(
-                J2DoPrivHelper.newCodeAction())).invokespecial()
-                .setMethod(superName, "clone", Object.class.getName(), null);
-
         // find calls to the template instruction; on match
         // clone will be on stack
         AbstractInsnNode insn = cloneMeth.instructions.getFirst();
-        while ((insn = searchNextInstruction(insn, i -> i.getOpcode() == Opcodes.INVOKESPECIAL &&
+        if ((insn = searchNextInstruction(insn, i -> i.getOpcode() == Opcodes.INVOKESPECIAL &&
                         i instanceof MethodInsnNode && ((MethodInsnNode) i).name.equals("clone"))
                 ) != null) {
             // ((<type>) clone).pcStateManager = null;
@@ -4185,7 +4130,6 @@ public class PCEnhancer {
             instructions.add(new FieldInsnNode(Opcodes.PUTFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
 
             cloneMeth.instructions.insert(insn, instructions);
-            break;
         }
     }
 
@@ -4336,7 +4280,6 @@ public class PCEnhancer {
                                                  null, null);
         classNode.methods.add(getterMethod);
         final InsnList instructions = getterMethod.instructions;
-        int nextFreeVarPos = 2;
 
         // if we're not already tracking field access via reflection, then we
         // must make the getter hook in lazy loading before accessing the super
@@ -4377,11 +4320,11 @@ public class PCEnhancer {
         }
 
         // if (inst.pcStateManager == null) return inst.<field>;
-        instructions.add(loadManagedInstance(true, fmd));
+        instructions.add(loadManagedInstance());
         instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
         LabelNode afterIfNonNull = new LabelNode();
         instructions.add(new JumpInsnNode(Opcodes.IFNONNULL, afterIfNonNull));
-        instructions.add(loadManagedInstance(true, fmd));
+        instructions.add(loadManagedInstance());
         addGetManagedValueCode(classNode, instructions, fmd, true);
         instructions.add(new InsnNode(AsmHelper.getReturnInsn(fmd.getDeclaredType())));
 
@@ -4395,7 +4338,7 @@ public class PCEnhancer {
 
         // inst.pcStateManager.accessingField (field);
         // return inst.<field>;
-        instructions.add(loadManagedInstance(true, fmd));
+        instructions.add(loadManagedInstance());
         instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
         instructions.add(new VarInsnNode(Opcodes.ILOAD, fieldLocalVarPos));
         instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
@@ -4403,7 +4346,7 @@ public class PCEnhancer {
                                             "accessingField",
                                             Type.getMethodDescriptor(Type.VOID_TYPE, Type.INT_TYPE)));
 
-        instructions.add(loadManagedInstance(true, fmd));
+        instructions.add(loadManagedInstance());
         addGetManagedValueCode(classNode, instructions, fmd, true);
         instructions.add(new InsnNode(AsmHelper.getReturnInsn(fmd.getDeclaredType())));
     }
@@ -4427,12 +4370,12 @@ public class PCEnhancer {
         int fieldParamPos = 1;
 
         // if (inst.pcStateManager == null) inst.<field> = value;
-        instructions.add(loadManagedInstance(true, fmd));
+        instructions.add(loadManagedInstance());
         instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
 
         LabelNode lblAfterIfNonNull = new LabelNode();
         instructions.add(new JumpInsnNode(Opcodes.IFNONNULL, lblAfterIfNonNull));
-        instructions.add(loadManagedInstance(true, fmd));
+        instructions.add(loadManagedInstance());
         instructions.add(new VarInsnNode(AsmHelper.getLoadInsn(fmd.getDeclaredType()), fieldParamPos));
         addSetManagedValueCode(classNode, instructions, fmd);
         if (fmd.isVersion() && _addVersionInitFlag) {
@@ -4450,15 +4393,15 @@ public class PCEnhancer {
 
         // inst.pcStateManager.setting<fieldType>Field (inst,
         //     pcInheritedFieldCount + <index>, inst.<field>, value, 0);
-        instructions.add(loadManagedInstance(true, fmd));
+        instructions.add(loadManagedInstance());
         instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
 
-        instructions.add(loadManagedInstance(true, fmd));
+        instructions.add(loadManagedInstance());
         instructions.add(new FieldInsnNode(Opcodes.GETSTATIC, classNode.name, INHERIT, Type.INT_TYPE.getDescriptor()));
         instructions.add(AsmHelper.getLoadConstantInsn(index));
         instructions.add(new InsnNode(Opcodes.IADD));
 
-        instructions.add(loadManagedInstance(true, fmd));
+        instructions.add(loadManagedInstance());
         addGetManagedValueCode(classNode, instructions, fmd, true);
         instructions.add(new VarInsnNode(AsmHelper.getLoadInsn(fmd.getDeclaredType()), fieldParamPos));
         instructions.add(new InsnNode(Opcodes.ICONST_0));
@@ -4770,7 +4713,7 @@ public class PCEnhancer {
         final List<FieldNode> fields = managedType.getClassNode().fields;
         List<FieldNode> unmgd = new ArrayList(fields.size());
         for (FieldNode field : fields) {
-            if ((field.access & (Opcodes.ACC_TRANSIENT) | Opcodes.ACC_STATIC | Opcodes.ACC_FINAL) == 0
+            if ((field.access & (Opcodes.ACC_TRANSIENT | Opcodes.ACC_STATIC | Opcodes.ACC_FINAL)) == 0
                     && !field.name.startsWith(PRE)
                     && _meta.getDeclaredField(field.name) == null) {
                 unmgd.add(field);
@@ -5336,18 +5279,13 @@ public class PCEnhancer {
      * <code>code</code> is in an accessor method or another static method;
      * otherwise, it is in one of the PC-specified methods.
      *
-     * @return the first instruction added to <code>code</code>.
+     * @return instruction to load the persistence context to the stack.
      */
-    private AbstractInsnNode loadManagedInstance(boolean forStatic, FieldMetaData fmd) {
-        if (forStatic && isFieldAccess(fmd)) {
-            // 1st method parameter is position 0 on the stack for a STATIC method!
-            return new VarInsnNode(Opcodes.ALOAD, 0);
-        }
-        return new VarInsnNode(Opcodes.ALOAD, 0); // this
-    }
-
-    private int getAccessorParameterOffset(FieldMetaData fmd) {
-       return isFieldAccess(fmd) ? 1 : 0;
+    private AbstractInsnNode loadManagedInstance() {
+        // 1st method parameter is position 0 on the stack for a STATIC method
+        // or use the this* for a non-STATIC method
+        // In both cases we end up with ALOAD_0, while it essentially does different things.
+        return new VarInsnNode(Opcodes.ALOAD, 0);
     }
 
     /**
@@ -5373,7 +5311,7 @@ public class PCEnhancer {
     }
 
     /**
-     * Create the generated getter {@link BCMethod} for <code>fmd</code>. The
+     * Create the generated getter {@link MethodNode} for <code>fmd</code>. The
      * calling environment will then populate this method's code block.
      */
     private MethodNode createGetMethod(ClassNode classNode, FieldMetaData fmd) {
@@ -5384,7 +5322,7 @@ public class PCEnhancer {
                     .findFirst()
                     .get();
 
-            MethodNode getter = new MethodNode((field.access & ~Constants.ACCESS_TRANSIENT & ~Constants.ACCESS_VOLATILE)
+            MethodNode getter = new MethodNode((field.access & ~Opcodes.ACC_TRANSIENT & ~Opcodes.ACC_VOLATILE)
                                                           | Opcodes.ACC_FINAL | Opcodes.ACC_STATIC,
                                                   PRE + "Get" + fmd.getName(),
                                                   Type.getMethodDescriptor(Type.getType(fmd.getDeclaredType()), Type.getObjectType(classNode.name)),
@@ -5431,7 +5369,7 @@ public class PCEnhancer {
     }
 
     /**
-     * Create the generated setter {@link BCMethod} for <code>fmd</code>. The
+     * Create the generated setter {@link MethodNode} for <code>fmd</code>. The
      * calling environment will then populate this method's code block.
      */
     private MethodNode createSetMethod(ClassNode classNode, FieldMetaData fmd) {
@@ -5441,7 +5379,7 @@ public class PCEnhancer {
                     .filter(f -> f.name.equals(fmd.getName()))
                     .findFirst()
                     .get();
-            MethodNode setter = new MethodNode((field.access & ~Constants.ACCESS_TRANSIENT & ~Constants.ACCESS_VOLATILE)
+            MethodNode setter = new MethodNode((field.access & ~Opcodes.ACC_TRANSIENT & ~Opcodes.ACC_VOLATILE)
                                                        | Opcodes.ACC_FINAL | Opcodes.ACC_STATIC,
                                                PRE + "Set" + fmd.getName(),
                                                Type.getMethodDescriptor(Type.VOID_TYPE,
@@ -5550,17 +5488,14 @@ public class PCEnhancer {
      */
     public static boolean run(final String[] args, Options opts) {
         return Configurations.runAgainstAllAnchors(opts,
-            new Configurations.Runnable() {
-            @Override
-            public boolean run(Options opts) throws IOException {
-                OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
-                try {
-                    return PCEnhancer.run(conf, args, opts);
-                } finally {
-                    conf.close();
-                }
-            }
-        });
+                                                   opts1 -> {
+                                                       OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
+                                                       try {
+                                                           return run(conf, args, opts1);
+                                                       } finally {
+                                                           conf.close();
+                                                       }
+                                                   });
     }
 
     /**
@@ -5792,7 +5727,7 @@ public class PCEnhancer {
             return null;
         }
 
-        int parmOrder[] = new int[pkfields.size()];
+        int[] parmOrder = new int[pkfields.size()];
         for (MethodNode ct : cts) {
             if ((ct.access & Opcodes.ACC_PUBLIC) == 0) {
                 // ignore non public constructors

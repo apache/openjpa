@@ -50,32 +50,18 @@ public class TestAsmAdaptor
     private byte[] bytes(final Class<?> type)
     {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
-        final InputStream stream = Thread.currentThread().getContextClassLoader()
-            .getResourceAsStream(type.getName().replace('.', '/') + ".class");
-        try
-        {
+        try (InputStream stream = Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream(type.getName().replace('.', '/') + ".class")) {
             int c;
             byte[] buffer = new byte[1024];
-            while ((c = stream.read(buffer)) >= 0)
-            {
+            while ((c = stream.read(buffer)) >= 0) {
                 baos.write(buffer, 0, c);
             }
         }
-        catch (IOException e)
-        {
+        catch (IOException e) {
             fail(e.getMessage());
         }
-        finally
-        {
-            try
-            {
-                stream.close();
-            }
-            catch (IOException e)
-            {
-                // no-op
-            }
-        }
+        // no-op
         return baos.toByteArray();
     }
 
