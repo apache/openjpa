@@ -31,6 +31,7 @@ import java.io.ObjectStreamClass;
 import java.io.ObjectStreamException;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -3592,19 +3593,11 @@ public class PCEnhancer {
                                                        Type.LONG_TYPE.getDescriptor(),
                                                        null, uid);
                 pc.getClassNode().fields.add(serVersField);
-
-                /* should be done by ASM FieldNode already
-                Code code = getOrCreateClassInitCode(false);
-                code.beforeFirst();
-                code.constant().setValue(uid.longValue());
-                code.putstatic().setField(field);
-                */
             }
         }
 
-        MethodNode writeObjectMeth = AsmHelper.getMethodNode(pc.getClassNode(), "writeObject",
-                                                             void.class, ObjectOutputStream.class)
-                .orElse(null);
+        MethodNode writeObjectMeth = AsmHelper.getMethodNode(pc.getClassNode(), "writeObject",void.class, ObjectOutputStream.class)
+                                                .orElse(null);
 
         boolean full = writeObjectMeth == null;
 
@@ -4315,32 +4308,6 @@ public class PCEnhancer {
         }
         if ((superMeth.access & Opcodes.ACC_PUBLIC) > 0) {
             method.access |= Opcodes.ACC_PUBLIC;
-            return true;
-        }
-        return false;
-    }
-
-    private boolean setVisibilityToSuperMethod(BCMethod method) {
-        BCMethod[] methods = _managedType.getMethods(method.getName(),
-                                                     method.getParamTypes());
-        if (methods.length == 0)
-            throw new UserException(_loc.get("no-accessor",
-                                             _managedType.getName(), method.getName()));
-        BCMethod superMeth = methods[0];
-        if (superMeth.isPrivate()) {
-            method.makePrivate();
-            return true;
-        }
-        else if (superMeth.isPackage()) {
-            method.makePackage();
-            return true;
-        }
-        else if (superMeth.isProtected()) {
-            method.makeProtected();
-            return true;
-        }
-        else if (superMeth.isPublic()) {
-            method.makePublic();
             return true;
         }
         return false;
@@ -5363,22 +5330,6 @@ public class PCEnhancer {
         }
     }
 
-
-    /**
-     * Add the {@link Instruction}s to load the instance to modify onto the
-     * stack, and return it. If <code>forStatic</code> is set, then
-     * <code>code</code> is in an accessor method or another static method;
-     * otherwise, it is in one of the PC-specified methods.
-     *
-     * @return the first instruction added to <code>code</code>.
-     */
-    @Deprecated
-    private Instruction loadManagedInstance(Code code, boolean forStatic, FieldMetaData fmd) {
-        if (forStatic && isFieldAccess(fmd))
-            return code.aload().setParam(0);
-        return code.aload().setThis();
-    }
-
     /**
      * Add the {@link Instruction}s to load the instance to modify onto the
      * stack, and return it. If <code>forStatic</code> is set, then
@@ -5393,18 +5344,6 @@ public class PCEnhancer {
             return new VarInsnNode(Opcodes.ALOAD, 0);
         }
         return new VarInsnNode(Opcodes.ALOAD, 0); // this
-    }
-
-    /**
-     * Add the {@link Instruction}s to load the instance to modify onto the
-     * stack, and return it.  This method should not be used to load static
-     * fields.
-     *
-     * @return the first instruction added to <code>code</code>.
-     */
-    @Deprecated
-    private Instruction loadManagedInstance(Code code, boolean forStatic) {
-        return loadManagedInstance(code, forStatic, null);
     }
 
     private int getAccessorParameterOffset(FieldMetaData fmd) {
@@ -5840,67 +5779,78 @@ public class PCEnhancer {
      * a matching constructor for the provided pk fields.  If a match is found, it returns
      * the order (relative to the field metadata) of the constructor parameters.  If a match
      * is not found, returns null.
+     *
+     * We use byte code analysis to find the fields the ct works on.
     */
-    private int[] getIdClassConstructorParmOrder(Class<?> oidType, ArrayList<Integer> pkfields,
-            FieldMetaData[] fmds) {
-        Project project = new Project();
-        BCClass bc = project.loadClass(oidType);
-        BCMethod[] methods = bc.getDeclaredMethods("<init>");
-        if (methods == null || methods.length == 0) {
+    private int[] getIdClassConstructorParmOrder(Class<?> oidType, List<Integer> pkfields, FieldMetaData[] fmds) {
+        final ClassNode classNode = AsmHelper.readClassNode(oidType);
+        final List<MethodNode> cts = classNode.methods.stream()
+                .filter(m -> "<init>".equals(m.name))
+                .collect(Collectors.toList());
+
+        if (cts.isEmpty()) {
             return null;
         }
 
         int parmOrder[] = new int[pkfields.size()];
-        for (BCMethod method : methods) {
-            // constructor must be public
-            if (!method.isPublic()) {
+        for (MethodNode ct : cts) {
+            if ((ct.access & Opcodes.ACC_PUBLIC) == 0) {
+                // ignore non public constructors
                 continue;
             }
-            Class<?>[] parmTypes = method.getParamTypes();
+            Type[] argTypes = Type.getArgumentTypes(ct.desc);
+
             // make sure the constructors have the same # of parms as
             // the number of pk fields
-            if (parmTypes.length != pkfields.size()) {
+            if (listSize(pkfields) != argTypes.length) {
                 continue;
             }
 
             int parmOrderIndex = 0;
-            Code code = method.getCode(false);
-            Instruction[] ins = code.getInstructions();
-            for (int i = 0; i < ins.length; i++) {
-                if (ins[i] instanceof PutFieldInstruction) {
-                    PutFieldInstruction pfi = (PutFieldInstruction)ins[i];
-                    for (int j = 0; j < pkfields.size(); j++) {
-                        int fieldNum = pkfields.get(j);
-                        // Compare the field being set with the current pk field
-                        String parmName = fmds[fieldNum].getName();
-                        Class<?> parmType = fmds[fieldNum].getType();
-                        if (parmName.equals(pfi.getFieldName())) {
-                            // backup and examine the load instruction parm
-                            if (i > 0 && ins[i-1] instanceof LoadInstruction) {
-                                LoadInstruction li = (LoadInstruction)ins[i-1];
-                                // Get the local index from the instruction.  This will be the index
-                                // of the constructor parameter.  must be less than or equal to the
-                                // max parm index to prevent from picking up locals that could have
-                                // been produced within the constructor.  Also make sure the parm type
-                                // matches the fmd type
-                                int parm = li.getLocal();
-                                if (parm <= pkfields.size() && parmTypes[parm-1].equals(parmType)) {
-                                    parmOrder[parmOrderIndex] = fieldNum;
-                                    parmOrderIndex++;
-                                }
-                            } else {
-                                // Some other instruction found. can't make a determination of which local/parm
-                                // is being used on the putfield.
-                                break;
+            AbstractInsnNode insn =  ct.instructions.getFirst();
+            // skip to the next PUTFIELD instruction
+            while ((insn = searchNextInstruction(insn, i -> i.getOpcode() == Opcodes.PUTFIELD)) != null) {
+                FieldInsnNode putField = (FieldInsnNode) insn;
+                for (int i = 0; i < pkfields.size(); i++) {
+                    int fieldNum = pkfields.get(i);
+                    // Compare the field being set with the current pk field
+                    String parmName = fmds[fieldNum].getName();
+                    Class<?> parmType = fmds[fieldNum].getType();
+                    if (parmName.equals(putField.name)) {
+                        // backup and examine the load instruction parm
+                        if (AsmHelper.isLoadInsn(insn.getPrevious())) {
+                            // Get the local index from the instruction.  This will be the index
+                            // of the constructor parameter.  must be less than or equal to the
+                            // max parm index to prevent from picking up locals that could have
+                            // been produced within the constructor.  Also make sure the parm type
+                            // matches the fmd type
+
+                            VarInsnNode loadInsn = (VarInsnNode) insn.getPrevious();
+
+                            int parm = AsmHelper.getParamIndex(ct, loadInsn.var);
+                            if (parm < pkfields.size() && argTypes[parm].equals(Type.getType(parmType))) {
+                                parmOrder[parmOrderIndex] = fieldNum;
+                                parmOrderIndex++;
                             }
+                        } else {
+                            // Some other instruction found. can't make a determination of which local/parm
+                            // is being used on the putfield.
+                            break;
                         }
                     }
                 }
+
+                insn = insn.getNext();
             }
             if (parmOrderIndex == pkfields.size()) {
                 return parmOrder;
             }
         }
+
         return null;
+    }
+
+    private int listSize(Collection<?> coll) {
+        return coll == null ? 0 : coll.size();
     }
 }

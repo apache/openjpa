@@ -57,15 +57,22 @@ public final class AsmHelper {
 
     /**
      * Read the binary bytecode from the class with the given name
-     * @param classBytes the binary of the class
+     * @param clazz the class to read into the ClassNode
      * @return the ClassNode constructed from that class
      */
-    public static ClassNode readClassNode(byte[] classBytes) {
-        ClassReader cr = new ClassReader(classBytes);
-        ClassNode classNode = new ClassNode();
-        cr.accept(classNode, 0);
+    public static ClassNode readClassNode(Class<?> clazz) {
+        int extPos = clazz.getName().lastIndexOf('.') + 1;
+        String className = clazz.getName().substring(extPos);
+        try (InputStream in = clazz.getResourceAsStream(className + ".class")) {
+            ClassReader cr = new ClassReader(in);
+            ClassNode classNode = new ClassNode();
+            cr.accept(classNode, 0);
 
-        return classNode;
+            return classNode;
+        }
+        catch (IOException ioe) {
+            throw new RuntimeException(ioe);
+        }
     }
 
     /**
@@ -433,6 +440,30 @@ public final class AsmHelper {
     }
 
     /**
+     * Determine the 0-based index of the parameter of LOAD or STORE position varPos
+     * @param methodNode
+     * @param varPos the position on the stack
+     * @return the index of the parameter which corresponds to this varPos
+     */
+    public static int getParamIndex(MethodNode methodNode, int varPos) {
+        boolean isStatic = (methodNode.access & Opcodes.ACC_STATIC) > 0;
+        if (!isStatic) {
+            // only static methods start with 0
+            // non-static have the this* on pos 0.
+            varPos--;
+        }
+        final Type[] paramTypes = Type.getArgumentTypes(methodNode.desc);
+        int pos = 0;
+        for (int i=0; i<paramTypes.length; i++) {
+            if (pos==varPos) {
+                return i;
+            }
+            pos += paramTypes[i].getSize();
+        }
+        throw new IllegalArgumentException("Cannot determine parameter position " + varPos + " for method " + methodNode.name);
+    }
+
+    /**
      * @return true if the instruction is an LOAD instruction
      */
     public static boolean isLoadInsn(AbstractInsnNode insn) {
@@ -448,9 +479,8 @@ public final class AsmHelper {
                 || insn.getOpcode() == Opcodes.BALOAD
                 || insn.getOpcode() == Opcodes.CALOAD
                 || insn.getOpcode() == Opcodes.SALOAD;
-
-
     }
+
 
     /**
      * @return true if the instruction is an ALOAD_0
@@ -627,4 +657,5 @@ public final class AsmHelper {
             return null;
         }
     }
+
 }

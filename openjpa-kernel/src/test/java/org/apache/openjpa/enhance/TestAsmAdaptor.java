@@ -19,6 +19,7 @@
 package org.apache.openjpa.enhance;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -26,10 +27,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.openjpa.util.QueryException;
+import org.apache.openjpa.util.asm.AsmHelper;
+import org.apache.xbean.asm9.tree.ClassNode;
 import org.junit.Test;
 
 public class TestAsmAdaptor
 {
+    @Test
+    public void testAsmHelper() throws Exception {
+        final ClassNode classNode = AsmHelper.readClassNode(QueryException.class);
+        assertNotNull(classNode);
+    }
     @Test
     public void isEnhanced()
     {
