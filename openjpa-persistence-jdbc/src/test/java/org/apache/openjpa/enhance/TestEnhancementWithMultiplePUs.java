@@ -59,8 +59,7 @@ public class TestEnhancementWithMultiplePUs
 
         assertEquals(PCEnhancer.ENHANCE_PC, enhancer.run());
 
-        assertTrue(Arrays.asList(enhancer.getPCBytecode().getInterfaceNames()).contains(
-            PersistenceCapable.class.getName()));
+        assertTrue(enhancer.getPCBytecode().getClassNode().interfaces.contains(Type.getInternalName(PersistenceCapable.class)));
     }
 
     private BCClass assertNotPC(ClassLoader loader, Project project,

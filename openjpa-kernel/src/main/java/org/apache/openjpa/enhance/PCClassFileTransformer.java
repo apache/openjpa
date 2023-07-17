@@ -32,8 +32,9 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.GeneralException;
+import org.apache.openjpa.util.asm.AsmHelper;
+import org.apache.openjpa.util.asm.ClassNodeTracker;
 
-import serp.bytecode.BCClass;
 import serp.bytecode.Project;
 
 
@@ -153,9 +154,8 @@ public class PCClassFileTransformer
 
                 if (enhancer.run() == PCEnhancer.ENHANCE_NONE)
                     return null;
-                BCClass pcb = enhancer.getPCBytecode();
-                returnBytes = AsmAdaptor.toByteArray(pcb, pcb.toByteArray());
-                return returnBytes;
+                ClassNodeTracker cnt = enhancer.getPCBytecode();
+                return AsmHelper.toByteArray(cnt);
             } finally {
                 AccessController.doPrivileged(J2DoPrivHelper.setContextClassLoaderAction(oldLoader));
             }

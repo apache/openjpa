@@ -19,7 +19,6 @@
 package org.apache.openjpa.junit5.internal;
 
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
-import org.apache.openjpa.enhance.AsmAdaptor;
 import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.lib.log.JULLogFactory;
@@ -28,17 +27,16 @@ import org.apache.openjpa.lib.log.LogFactoryImpl;
 import org.apache.openjpa.lib.log.SLF4JLogFactory;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.PersistenceMetaDataFactory;
+import org.apache.openjpa.util.asm.AsmHelper;
+import org.apache.openjpa.util.asm.ClassNodeTracker;
 import org.apache.xbean.asm9.AnnotationVisitor;
 import org.apache.xbean.asm9.ClassReader;
 import org.apache.xbean.asm9.Type;
 import org.apache.xbean.asm9.shade.commons.EmptyVisitor;
 import org.apache.xbean.finder.ClassLoaders;
-import serp.bytecode.BCClass;
+
 import serp.bytecode.Project;
 
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.Entity;
-import jakarta.persistence.MappedSuperclass;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -275,8 +273,8 @@ public class OpenJPADirectoriesEnhancer implements Runnable {
                 if (enhancer.run() == PCEnhancer.ENHANCE_NONE) {
                     return null;
                 }
-                final BCClass pcb = enhancer.getPCBytecode();
-                return AsmAdaptor.toByteArray(pcb, pcb.toByteArray());
+                final ClassNodeTracker cnt = enhancer.getPCBytecode();
+                return AsmHelper.toByteArray(cnt);
             } catch (final IOException e) {
                 throw new IllegalStateException(e);
             } finally {

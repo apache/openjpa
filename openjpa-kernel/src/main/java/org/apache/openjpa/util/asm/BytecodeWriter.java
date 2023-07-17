@@ -20,8 +20,6 @@ package org.apache.openjpa.util.asm;
 
 import java.io.IOException;
 
-import serp.bytecode.BCClass;
-
 /**
  * Control how enhanced bytecode is written.
  *

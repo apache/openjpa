@@ -124,7 +124,8 @@ class InterfaceImplGenerator {
                 iface)).setFatal(true);
         try {
             // load the Class<?> for real.
-            impl = Class.forName(enhancer.getPCBytecode().getName(), true, enhLoader);
+            String pcClassName = enhancer.getPCBytecode().getClassNode().name.replace("/", ".");
+            impl = Class.forName(pcClassName, true, enhLoader);
         } catch (Throwable t) {
             throw new InternalException(_loc.get("interface-load2", iface,
                 enhLoader), t).setFatal(true);

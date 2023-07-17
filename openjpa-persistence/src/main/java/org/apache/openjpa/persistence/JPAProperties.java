@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.persistence;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;

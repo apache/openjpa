@@ -100,7 +100,6 @@ import org.apache.openjpa.util.StringId;
 import org.apache.openjpa.util.UserException;
 import org.apache.openjpa.util.asm.AsmHelper;
 import org.apache.openjpa.util.asm.ClassNodeTracker;
-import org.apache.openjpa.util.asm.ClassWriterTracker;
 import org.apache.xbean.asm9.Opcodes;
 import org.apache.xbean.asm9.Type;
 import org.apache.xbean.asm9.tree.*;
@@ -378,8 +377,8 @@ public class PCEnhancer {
      * Return the bytecode representation of the persistence-capable class
      * being manipulated.
      */
-    public BCClass getPCBytecode() {
-        return _pc;
+    public ClassNodeTracker getPCBytecode() {
+        return pc;
     }
 
     /**
