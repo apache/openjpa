@@ -32,6 +32,8 @@ import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
+import org.apache.openjpa.util.asm.ClassNodeTracker;
+import org.apache.xbean.asm9.Type;
 
 import serp.bytecode.BCClass;
 import serp.bytecode.Project;
@@ -84,9 +86,8 @@ public class TestEnhancementWithMultiplePUs
         Project project = new Project();
 
         // make sure that the class is not already enhanced for some reason
-        String className =
-            "org.apache.openjpa.enhance.UnenhancedBootstrapInstance";
-        BCClass bc = assertNotPC(loader, project, className);
+        String className = "org/apache/openjpa/enhance/UnenhancedBootstrapInstance";
+        assertNotPC(loader, project, className);
 
         // build up a writer that just stores to a list so that we don't
         // mutate the disk.
@@ -94,10 +95,9 @@ public class TestEnhancementWithMultiplePUs
         BytecodeWriter writer = new BytecodeWriter() {
 
             @Override
-            public void write(BCClass type) throws IOException {
-                assertTrue(Arrays.asList(type.getInterfaceNames()).contains(
-                    PersistenceCapable.class.getName()));
-                written.add(type.getName());
+            public void write(ClassNodeTracker cnt) throws IOException {
+                assertTrue(cnt.getClassNode().interfaces.contains(Type.getInternalName(PersistenceCapable.class)));
+                written.add(cnt.getClassNode().name);
             }
         };
 
@@ -135,9 +135,9 @@ public class TestEnhancementWithMultiplePUs
         BytecodeWriter writer = new BytecodeWriter() {
 
             @Override
-            public void write(BCClass type) throws IOException {
-                assertTrue(Arrays.asList(type.getInterfaceNames()).contains(PersistenceCapable.class.getName()));
-                written.add(type.getName());
+            public void write(ClassNodeTracker cnt) throws IOException {
+                assertTrue(cnt.getClassNode().interfaces.contains(Type.getInternalName(PersistenceCapable.class)));
+                written.add(cnt.getClassNode().name);
             }
         };
 
@@ -156,8 +156,8 @@ public class TestEnhancementWithMultiplePUs
 
         // ensure that we do process the classes listed in the PUs
         assertTrue(written.contains(
-            "org.apache.openjpa.enhance.UnenhancedBootstrapInstance"));
+            "org/apache/openjpa/enhance/UnenhancedBootstrapInstance"));
         assertTrue(written.contains(
-            "org.apache.openjpa.enhance.UnenhancedBootstrapInstance2"));
+            "org/apache/openjpa/enhance/UnenhancedBootstrapInstance2"));
     }
 }

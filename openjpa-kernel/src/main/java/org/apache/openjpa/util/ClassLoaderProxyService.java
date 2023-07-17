@@ -106,6 +106,7 @@ public class ClassLoaderProxyService
                             definePackageFor(pck, protectionDomain);
                         }
                         existing = super.defineClass(proxyClassName, proxyBytes, 0, proxyBytes.length);
+
                         resolveClass(existing);
                         classes.put(key, existing);
                     }

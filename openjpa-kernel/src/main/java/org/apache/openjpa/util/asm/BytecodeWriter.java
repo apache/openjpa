@@ -29,5 +29,5 @@ import serp.bytecode.BCClass;
  */
 public interface BytecodeWriter {
 
-    void write(BCClass type) throws IOException;
+    void write(ClassNodeTracker type) throws IOException;
 }

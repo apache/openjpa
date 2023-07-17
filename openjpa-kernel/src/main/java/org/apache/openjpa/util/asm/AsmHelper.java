@@ -111,6 +111,15 @@ public final class AsmHelper {
     }
 
     /**
+     * Create a byte[] of that class represented by the ClassNodeTracker
+     */
+    public static byte[] toByteArray(ClassNodeTracker cnt) {
+        ClassWriter cw = new BCClassWriter(ClassWriter.COMPUTE_FRAMES, cnt.getClassLoader());
+        cnt.getClassNode().accept(cw);
+        return cw.toByteArray();
+    }
+
+    /**
      * temporary helper class to convert ClassWriterTracker to BCClass
      * @deprecated must get removed when done with migrating from Serp to ASM
      */

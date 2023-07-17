@@ -56,7 +56,7 @@ public class GeneratedClasses {
 
     /**
      * Load the class represented by the given bytecode.
-     * @deprecated move to ASM
+     * @deprecated move to ASM {@link #loadAsmClass(String, byte[], Class, ClassLoader)}
      */
     public static Class loadBCClass(BCClass bc, ClassLoader loader) {
         BCClassLoader bcloader = AccessController
