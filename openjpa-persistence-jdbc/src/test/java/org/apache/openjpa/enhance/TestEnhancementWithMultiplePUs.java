@@ -51,8 +51,7 @@ public class TestEnhancementWithMultiplePUs
                 getClass().getClassLoader()));
         Project project = new Project();
 
-        String className =
-            "org.apache.openjpa.enhance.UnenhancedBootstrapInstance";
+        String className = "org.apache.openjpa.enhance.UnenhancedBootstrapInstance";
         BCClass bc = assertNotPC(loader, project, className);
 
         PCEnhancer enhancer = new PCEnhancer(conf, bc, repos, loader);
@@ -62,8 +61,7 @@ public class TestEnhancementWithMultiplePUs
         assertTrue(enhancer.getPCBytecode().getClassNode().interfaces.contains(Type.getInternalName(PersistenceCapable.class)));
     }
 
-    private BCClass assertNotPC(ClassLoader loader, Project project,
-        String className) {
+    private BCClass assertNotPC(ClassLoader loader, Project project, String className) {
         BCClass bc = project.loadClass(className, loader);
         assertFalse(className + " must not be enhanced already; it was.",
             Arrays.asList(bc.getInterfaceNames()).contains(

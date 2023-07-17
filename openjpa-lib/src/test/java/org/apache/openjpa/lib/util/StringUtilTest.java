@@ -193,8 +193,6 @@ public class StringUtilTest {
         long start = System.nanoTime();
         for (int i = 1; i < 10000000; i++) {
             StringUtil.split(val, "sd", 0);
-            //X val.split("sd");
-            //X serp.util.Strings.split(val, "sd", 0);
         }
 
         long stop = System.nanoTime();

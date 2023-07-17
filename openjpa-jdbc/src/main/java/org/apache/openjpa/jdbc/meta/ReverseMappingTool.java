@@ -45,6 +45,7 @@ import java.util.TreeSet;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.ApplicationIdTool;
 import org.apache.openjpa.enhance.CodeGenerator;
+import org.apache.openjpa.enhance.SerpPrivacyHelper;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.meta.strats.FullClassStrategy;
@@ -183,7 +184,7 @@ public class ReverseMappingTool
     private final Map _tables = new HashMap();
     private final Project _project = new Project();
     private final BCClassLoader _loader = AccessController
-        .doPrivileged(J2DoPrivHelper.newBCClassLoaderAction(_project));
+        .doPrivileged(SerpPrivacyHelper.newBCClassLoaderAction(_project));
     private StrategyInstaller _strat = null;
     private String _package = null;
     private File _dir = null;

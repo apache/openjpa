@@ -34,7 +34,7 @@ import java.security.AccessController;
 public class JavaVersions {
 
     /**
-     * Java version; one of 2, 3, 4, 5, 6, or 7.
+     * Java version; one of 2, 3, 4, 5, 6, 7, or later.
      */
     public static final int VERSION;
 
@@ -57,8 +57,9 @@ public class JavaVersions {
             VERSION = 7;
         else if ("1.8".equals(specVersion))
             VERSION = 8;
-        else
-            VERSION = 9; // maybe someday...
+        else {
+            VERSION = Integer.parseInt(specVersion);
+        }
     }
 
     /**

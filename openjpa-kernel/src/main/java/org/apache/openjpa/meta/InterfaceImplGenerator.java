@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 import org.apache.openjpa.enhance.PCEnhancer;
+import org.apache.openjpa.enhance.SerpPrivacyHelper;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.StringUtil;
@@ -81,18 +82,18 @@ class InterfaceImplGenerator {
         ClassLoader parentLoader = AccessController.doPrivileged(
             J2DoPrivHelper.getClassLoaderAction(iface));
         BCClassLoader loader = AccessController
-            .doPrivileged(J2DoPrivHelper.newBCClassLoaderAction(_project,
-                parentLoader));
+            .doPrivileged(SerpPrivacyHelper.newBCClassLoaderAction(_project,
+                                                                   parentLoader));
         BCClassLoader enhLoader = AccessController
-            .doPrivileged(J2DoPrivHelper.newBCClassLoaderAction(_enhProject,
-                parentLoader));
+            .doPrivileged(SerpPrivacyHelper.newBCClassLoaderAction(_enhProject,
+                                                                   parentLoader));
         BCClass bc = _project.loadClass(getClassName(meta));
         bc.declareInterface(iface);
         ClassMetaData sup = meta.getPCSuperclassMetaData();
         if (sup != null) {
             bc.setSuperclass(sup.getInterfaceImpl());
             enhLoader = AccessController
-                .doPrivileged(J2DoPrivHelper.newBCClassLoaderAction(
+                .doPrivileged(SerpPrivacyHelper.newBCClassLoaderAction(
                     _enhProject, AccessController
                         .doPrivileged(J2DoPrivHelper.getClassLoaderAction(sup
                             .getInterfaceImpl()))));

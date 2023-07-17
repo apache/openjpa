@@ -233,8 +233,7 @@ public class PCEnhancer {
      * repository.
      */
     public PCEnhancer(OpenJPAConfiguration conf, Class<?> type) {
-        this(conf, AccessController.doPrivileged(J2DoPrivHelper
-                                                         .loadProjectClassAction(new Project(), type)),
+        this(conf, AccessController.doPrivileged(SerpPrivacyHelper.loadProjectClassAction(new Project(), type)),
              (MetaDataRepository) null);
     }
 
@@ -244,8 +243,7 @@ public class PCEnhancer {
      * and then loading from <code>conf</code>'s repository.
      */
     public PCEnhancer(OpenJPAConfiguration conf, ClassMetaData meta) {
-        this(conf, AccessController.doPrivileged(J2DoPrivHelper
-                                                         .loadProjectClassAction(new Project(), meta.getDescribedType())),
+        this(conf, AccessController.doPrivileged(SerpPrivacyHelper.loadProjectClassAction(new Project(), meta.getDescribedType())),
              meta.getRepository());
     }
 

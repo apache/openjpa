@@ -20,6 +20,7 @@ package org.apache.openjpa.util;
 
 import java.security.AccessController;
 
+import org.apache.openjpa.enhance.SerpPrivacyHelper;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 
 import serp.bytecode.BCClass;
@@ -60,7 +61,7 @@ public class GeneratedClasses {
      */
     public static Class loadBCClass(BCClass bc, ClassLoader loader) {
         BCClassLoader bcloader = AccessController
-                .doPrivileged(J2DoPrivHelper.newBCClassLoaderAction(bc
+                .doPrivileged(SerpPrivacyHelper.newBCClassLoaderAction(bc
                         .getProject(), loader));
         try {
             Class c = Class.forName(bc.getName(), true, bcloader);
