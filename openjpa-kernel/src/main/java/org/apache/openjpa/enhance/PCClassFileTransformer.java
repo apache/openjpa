@@ -34,8 +34,12 @@ import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.asm.AsmHelper;
 import org.apache.openjpa.util.asm.ClassNodeTracker;
+import org.apache.xbean.asm9.ClassReader;
+import org.apache.xbean.asm9.ClassVisitor;
+import org.apache.xbean.asm9.Opcodes;
 
 import serp.bytecode.Project;
+import static java.util.Arrays.asList;
 
 
 /**
@@ -221,7 +225,46 @@ public class PCClassFileTransformer
      * {@link PersistenceCapable}.
      */
     private static boolean isEnhanced(byte[] b) {
-        return AsmAdaptor.isEnhanced(b);
+        if (b == null)
+        {
+            return false;
+        }
+        final ClassReader cr = new ClassReader(b);
+        try
+        {
+            cr.accept(new ClassVisitor(Opcodes.ASM9)
+            {
+                @Override
+                public void visit(final int i, final int i1,
+                                  final String name, final String s,
+                                  final String parent, final String[] interfaces)
+                {
+                    boolean enhanced = interfaces != null && interfaces.length > 0 &&
+                            asList(interfaces).contains("org/apache/openjpa/enhance/PersistenceCapable");
+                    if (!enhanced && name != null && parent != null &&
+                            !"java/lang/Object".equals(parent) && !name.equals(parent)) {
+                        enhanced = isEnhanced(AsmHelper.getClassBytes(parent));
+                    }
+                    throw new EnhancedStatusException(enhanced);
+                }
+            }, 0);
+            return false;
+        } catch (final EnhancedStatusException e) {
+            return e.status;
+        } catch (final Exception e) {
+            return false;
+        }
+    }
+
+
+    private static class EnhancedStatusException extends RuntimeException {
+
+        private static final long serialVersionUID = 1L;
+        private final boolean status;
+
+        private EnhancedStatusException(final boolean status) {
+            this.status = status;
+        }
     }
 
     public static class Reentrant extends PCClassFileTransformer {

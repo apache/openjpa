@@ -17,6 +17,7 @@
 package org.apache.openjpa.util.asm;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Array;
@@ -110,6 +111,32 @@ public final class AsmHelper {
         return cwt;
     }
 
+
+    public static byte[] getClassBytes(final String typeName)
+    {
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+        final InputStream stream = Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream(typeName + ".class");
+        if (stream == null) {
+            return null;
+        }
+        try {
+            int c;
+            byte[] buffer = new byte[1024];
+            while ((c = stream.read(buffer)) >= 0) {
+                baos.write(buffer, 0, c);
+            }
+        } catch (IOException e) {
+            return null;
+        } finally {
+            try {
+                stream.close();
+            } catch (IOException e) {
+                // no-op
+            }
+        }
+        return baos.toByteArray();
+    }
     /**
      * Create a byte[] of that class represented by the ClassNodeTracker
      */
