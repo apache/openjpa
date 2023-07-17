@@ -111,6 +111,14 @@ public class ClassLoaderProxyService
                         classes.put(key, existing);
                     }
                 }
+                try
+                {
+                    Class.forName(existing.getName(), true, existing.getClassLoader());
+                }
+                catch (ClassNotFoundException e)
+                {
+                    // no-op, not critical, will be done at first instantiation but shouldn't happen anyway
+                }
             }
             return existing;
         }

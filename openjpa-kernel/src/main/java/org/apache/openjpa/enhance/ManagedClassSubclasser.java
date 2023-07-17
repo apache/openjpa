@@ -291,15 +291,7 @@ public class ManagedClassSubclasser {
                 // this is the new subclass
                 ClassLoader loader = GeneratedClasses.getMostDerivedLoader(cls, PersistenceCapable.class);
                 String className = cnt.getClassNode().name.replace("/", ".");
-                final Class subclass = GeneratedClasses.loadAsmClass(className, byteArray, cls, loader);
-                try {
-                    // Ugly workaround to trigger clinit static initializer block :(
-                    subclass.newInstance();
-                }
-                catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-                subs.add(subclass);
+                subs.add(GeneratedClasses.loadAsmClass(className, byteArray, cls, loader));
             }
         }
     }
