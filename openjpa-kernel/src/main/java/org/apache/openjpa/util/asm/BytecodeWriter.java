@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.openjpa.lib.util;
+package org.apache.openjpa.util.asm;
 
 import java.io.IOException;
 

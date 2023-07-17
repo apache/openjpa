@@ -32,7 +32,7 @@ import java.util.Set;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.util.BytecodeWriter;
+import org.apache.openjpa.util.asm.BytecodeWriter;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Localizer.Message;

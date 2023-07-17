@@ -62,7 +62,7 @@ import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.ClassArgParser;
-import org.apache.openjpa.lib.util.BytecodeWriter;
+import org.apache.openjpa.util.asm.BytecodeWriter;
 import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
@@ -124,16 +124,13 @@ public class PCEnhancer {
     public static final int ENHANCER_VERSION;
     public static final Type TYPE_OBJECT = Type.getType(Object.class);
 
-    boolean _addVersionInitFlag = true;
-
     public static final int ENHANCE_NONE = 0;
     public static final int ENHANCE_AWARE = 2 << 0;
     public static final int ENHANCE_INTERFACE = 2 << 1;
     public static final int ENHANCE_PC = 2 << 2;
 
     public static final String PRE = "pc";
-    public static final String ISDETACHEDSTATEDEFINITIVE = PRE
-            + "isDetachedStateDefinitive";
+    public static final String ISDETACHEDSTATEDEFINITIVE = PRE + "isDetachedStateDefinitive";
 
     private static final Class<?> PCTYPE = PersistenceCapable.class;
     private static final String SM = PRE + "StateManager";
@@ -149,10 +146,8 @@ public class PCEnhancer {
 
     private static final String VERSION_INIT_STR = PRE + "VersionInit";
 
-    private static final Localizer _loc = Localizer.forPackage
-            (PCEnhancer.class);
-    private static final String REDEFINED_ATTRIBUTE
-            = PCEnhancer.class.getName() + "#redefined-type";
+    private static final Localizer _loc = Localizer.forPackage(PCEnhancer.class);
+    private static final String REDEFINED_ATTRIBUTE = PCEnhancer.class.getName() + "#redefined-type";
 
     private static final AuxiliaryEnhancer[] _auxEnhancers;
 
@@ -200,6 +195,8 @@ public class PCEnhancer {
     private BCClass _pc;
     private final BCClass _managedType;
     private final MetaDataRepository _repos;
+    boolean _addVersionInitFlag = true;
+
 
     /**
      * represents the managed type.

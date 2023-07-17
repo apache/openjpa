@@ -27,7 +27,7 @@ import java.util.List;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.lib.conf.Configurations;
-import org.apache.openjpa.lib.util.BytecodeWriter;
+import org.apache.openjpa.util.asm.BytecodeWriter;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.meta.MetaDataRepository;
@@ -136,8 +136,7 @@ public class TestEnhancementWithMultiplePUs
 
             @Override
             public void write(BCClass type) throws IOException {
-                assertTrue(Arrays.asList(type.getInterfaceNames()).contains(
-                    PersistenceCapable.class.getName()));
+                assertTrue(Arrays.asList(type.getInterfaceNames()).contains(PersistenceCapable.class.getName()));
                 written.add(type.getName());
             }
         };
