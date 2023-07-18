@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import org.apache.openjpa.enhance.asm.BCClassWriter;
+import org.apache.xbean.asm9.Attribute;
 import org.apache.xbean.asm9.ClassReader;
 import org.apache.xbean.asm9.ClassWriter;
 import org.apache.xbean.asm9.Opcodes;
@@ -50,6 +51,9 @@ import serp.bytecode.Project;
  */
 public final class AsmHelper {
     private static final char[] PRIMITIVE_DESCRIPTORS = {'V','Z','C','B','S','I','F','J','D'};
+    private static final Attribute[] ATTRS = new Attribute[] {
+            new RedefinedAttribute()
+    };
 
     private AsmHelper() {
         // utility class ct
@@ -67,7 +71,7 @@ public final class AsmHelper {
         try (InputStream in = clazz.getResourceAsStream(className + ".class")) {
             ClassReader cr = new ClassReader(in);
             ClassNode classNode = new ClassNode();
-            cr.accept(classNode, 0);
+            cr.accept(classNode, ATTRS, 0);
 
             return classNode;
         }
@@ -92,7 +96,7 @@ public final class AsmHelper {
             throw new RuntimeException(e);
         }
         ClassNode classNode = new ClassNode();
-        cr.accept(classNode, 0);
+        cr.accept(classNode, ATTRS, 0);
 
         return classNode;
     }
@@ -104,7 +108,7 @@ public final class AsmHelper {
     public static ClassWriterTracker toClassWriter(BCClass bcClass) {
         ClassReader cr = new ClassReader(bcClass.toByteArray());
         ClassWriter cw = new BCClassWriter(ClassWriter.COMPUTE_FRAMES, bcClass.getClassLoader());
-        cr.accept(cw, 0);  // 0 -> don't skip anything
+        cr.accept(cw, ATTRS, 0);  // 0 -> don't skip anything
         ClassWriterTracker cwt = new ClassWriterTracker(cw, bcClass.getClassLoader());
         cwt.setName(bcClass.getName());
 
@@ -164,7 +168,7 @@ public final class AsmHelper {
     public static ClassNodeTracker toClassNode(BCClass bcClass) {
         ClassReader cr = new ClassReader(bcClass.toByteArray());
         ClassNode classNode = new ClassNode(Opcodes.ASM9);
-        cr.accept(classNode, 0);
+        cr.accept(classNode, ATTRS, 0);
 
         if ((classNode.version & 0xffff) < 49) {
             classNode.version = 49;

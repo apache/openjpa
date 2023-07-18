@@ -100,6 +100,8 @@ import org.apache.openjpa.util.StringId;
 import org.apache.openjpa.util.UserException;
 import org.apache.openjpa.util.asm.AsmHelper;
 import org.apache.openjpa.util.asm.ClassNodeTracker;
+import org.apache.openjpa.util.asm.RedefinedAttribute;
+import org.apache.xbean.asm9.Attribute;
 import org.apache.xbean.asm9.Opcodes;
 import org.apache.xbean.asm9.Type;
 import org.apache.xbean.asm9.tree.*;
@@ -132,6 +134,7 @@ public class PCEnhancer {
     public static final String ISDETACHEDSTATEDEFINITIVE = PRE + "isDetachedStateDefinitive";
 
     private static final Class<?> PCTYPE = PersistenceCapable.class;
+    private static final Type TYPE_PCTYPE = Type.getType(PersistenceCapable.class);
     private static final String SM = PRE + "StateManager";
     private static final Class<?> SMTYPE = StateManager.class;
     private static final String INHERIT = PRE + "InheritedFieldCount";
@@ -146,7 +149,6 @@ public class PCEnhancer {
     private static final String VERSION_INIT_STR = PRE + "VersionInit";
 
     private static final Localizer _loc = Localizer.forPackage(PCEnhancer.class);
-    private static final String REDEFINED_ATTRIBUTE = PCEnhancer.class.getName() + "#redefined-type";
 
     private static final AuxiliaryEnhancer[] _auxEnhancers;
 
@@ -536,30 +538,32 @@ public class PCEnhancer {
      * @return <code>ENHANCE_*</code> constant
      */
     public int run() {
-        Class<?> type = _managedType.getType();
         try {
             // if enum, skip, no need of any meta
-            if (type.isEnum())
+            if ((managedType.getClassNode().access & Opcodes.ACC_ENUM) > 0) {
                 return ENHANCE_NONE;
+            }
 
             // if managed interface, skip
-            if (type.isInterface())
+            if ((managedType.getClassNode().access & Opcodes.ACC_INTERFACE) > 0) {
                 return ENHANCE_INTERFACE;
+            }
 
             // check if already enhanced
             // we cannot simply use instanceof or isAssignableFrom as we have a temp ClassLoader inbetween
-            ClassLoader loader = AccessController.doPrivileged(J2DoPrivHelper.getClassLoaderAction(type));
-            for (String iface : _managedType.getDeclaredInterfaceNames()) {
-                if (iface.equals(PCTYPE.getName())) {
+            ClassLoader loader = managedType.getClassLoader();
+            for (String iface : managedType.getClassNode().interfaces) {
+                final String pctypeInternalName = TYPE_PCTYPE.getInternalName();
+                if (iface.equals(pctypeInternalName)) {
                     if (_log.isTraceEnabled()) {
-                        _log.trace(_loc.get("pc-type", type, loader));
+                        _log.trace(_loc.get("pc-type", managedType.getClassNode().name, loader));
                     }
                     return ENHANCE_NONE;
                 }
             }
 
             if (_log.isTraceEnabled()) {
-                _log.trace(_loc.get("enhance-start", type));
+                _log.trace(_loc.get("enhance-start", managedType.getClassNode().name));
             }
 
 
@@ -597,15 +601,21 @@ public class PCEnhancer {
         }
         catch (Exception e) {
             throw new GeneralException(_loc.get("enhance-error",
-                                                type.getName(), e.getMessage()), e);
+                                                managedType.getClassNode().name, e.getMessage()), e);
         }
     }
 
     private void configureBCs() {
         if (!_bcsConfigured) {
             if (getRedefine()) {
-                if (_managedType.getAttribute(REDEFINED_ATTRIBUTE) == null) {
-                    _managedType.addAttribute(REDEFINED_ATTRIBUTE);
+                final boolean isRedefined = managedType.getClassNode().attrs != null &&
+                        managedType.getClassNode().attrs.stream().anyMatch(a -> a.isUnknown() && a.type.equals(RedefinedAttribute.ATTR_TYPE));
+
+                if (!isRedefined) {
+                    if (managedType.getClassNode().attrs == null) {
+                        managedType.getClassNode().attrs = new ArrayList<>();
+                    }
+                    managedType.getClassNode().attrs.add(new RedefinedAttribute());
                 }
                 else {
                     _isAlreadyRedefined = true;
