@@ -4076,7 +4076,7 @@ public class PCEnhancer {
         if (cloneMeth == null) {
             // add clone support for base classes
             // which also implement cloneable
-            boolean isCloneable = Cloneable.class.isAssignableFrom(_managedType.getType());
+            boolean isCloneable = Cloneable.class.isAssignableFrom(managedType.getType());
             boolean extendsObject = superName.equals(Object.class.getName());
             if (!isCloneable || (!extendsObject && !getCreateSubclass())) {
                 return;

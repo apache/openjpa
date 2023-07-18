@@ -39,4 +39,13 @@ public class ClassNodeTracker {
     public ClassLoader getClassLoader() {
         return cl;
     }
+
+    public Class<?> getType() {
+        try {
+            return Class.forName(classNode.name.replace("/", "."), false, cl);
+        }
+        catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
