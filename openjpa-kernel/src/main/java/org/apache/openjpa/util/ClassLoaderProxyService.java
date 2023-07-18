@@ -34,7 +34,12 @@ public class ClassLoaderProxyService
 
     public ClassLoaderProxyService(Configuration config, final ClassLoader parentLoader)
     {
-        this.loader = new ProxiesClassLoader(parentLoader, false);
+        if (parentLoader instanceof ProxiesClassLoader) {
+            this.loader = (ProxiesClassLoader) parentLoader;
+        }
+        else {
+            this.loader = new ProxiesClassLoader(parentLoader, false);
+        }
     }
 
     protected ClassLoaderProxyService(final ProxiesClassLoader loader)

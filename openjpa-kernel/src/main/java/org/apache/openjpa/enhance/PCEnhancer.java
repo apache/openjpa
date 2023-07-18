@@ -631,7 +631,7 @@ public class PCEnhancer {
             if (getCreateSubclass()) {
                 PCSubclassValidator val = new PCSubclassValidator(_meta, managedType.getClassNode(), _log, _fail);
                 val.assertCanSubclass();
-
+                pc = AsmHelper.copyClassNode(managedType, toPCSubclassName(managedType));
                 _pc = _managedType.getProject().loadClass(toPCSubclassName(managedType));
                 _pc.setMajorVersion(_managedType.getMajorVersion());
                 _pc.setMinorVersion(_managedType.getMinorVersion());

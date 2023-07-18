@@ -26,7 +26,6 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Optional;
 
-import org.apache.openjpa.enhance.asm.BCClassWriter;
 import org.apache.xbean.asm9.Attribute;
 import org.apache.xbean.asm9.ClassReader;
 import org.apache.xbean.asm9.ClassWriter;
@@ -78,6 +77,26 @@ public final class AsmHelper {
         catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }
+    }
+
+    /**
+     * Copy the binary information from the ClassNodeTracker to a new one
+     * @param cntIn the original ASM class representation
+     * @param newClassName the class name of the new ClassNodeTracker
+     * @return a new ClassNodeTracker
+     */
+    public static ClassNodeTracker copyClassNode(ClassNodeTracker cntIn, String newClassName) {
+        final byte[] classBytes = toByteArray(cntIn);
+
+        ClassReader cr = new ClassReader(classBytes);
+        ClassNode classNode = new ClassNode(Opcodes.ASM9);
+        cr.accept(classNode, ATTRS, 0);
+
+        if ((classNode.version & 0xffff) < 49) {
+            classNode.version = 49;
+        }
+
+        return new ClassNodeTracker(classNode, cntIn.getClassLoader());
     }
 
     /**

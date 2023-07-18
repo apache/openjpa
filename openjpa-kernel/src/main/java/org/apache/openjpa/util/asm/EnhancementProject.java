@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.openjpa.enhance.asm;
+package org.apache.openjpa.util.asm;
 
 import java.util.HashMap;
 

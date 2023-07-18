@@ -14,10 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.openjpa.enhance.asm;
-
-import org.apache.openjpa.util.asm.AsmHelper;
-import org.apache.openjpa.util.asm.ClassNodeTracker;
+package org.apache.openjpa.util.asm;
 
 
 /**
