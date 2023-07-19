@@ -22,7 +22,6 @@ import org.apache.openjpa.persistence.PersistenceProviderImpl;
 import org.apache.openjpa.persistence.entity.EntityA;
 import org.apache.openjpa.persistence.entity.EntityB;
 import org.apache.openjpa.persistence.entity.EntityC;
-import org.apache.openjpa.util.UserException;
 
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.spi.PersistenceProvider;

@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.persistence.compat;
 
-import java.util.Iterator;
 import java.util.List;
 
 import jakarta.persistence.EntityManager;

@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.persistence.results.cls;
 
-import java.util.Iterator;
 import java.util.List;
 
 import jakarta.persistence.EntityManager;

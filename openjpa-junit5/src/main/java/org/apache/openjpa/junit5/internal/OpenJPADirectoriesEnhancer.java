@@ -36,8 +36,6 @@ import org.apache.xbean.asm9.Type;
 import org.apache.xbean.asm9.shade.commons.EmptyVisitor;
 import org.apache.xbean.finder.ClassLoaders;
 
-import serp.bytecode.Project;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;

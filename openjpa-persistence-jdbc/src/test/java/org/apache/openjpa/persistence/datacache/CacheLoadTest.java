@@ -21,7 +21,6 @@ package org.apache.openjpa.persistence.datacache;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import jakarta.persistence.EntityManager;

@@ -102,7 +102,6 @@ import org.apache.openjpa.util.asm.AsmHelper;
 import org.apache.openjpa.util.asm.ClassNodeTracker;
 import org.apache.openjpa.util.asm.EnhancementProject;
 import org.apache.openjpa.util.asm.RedefinedAttribute;
-import org.apache.xbean.asm9.Attribute;
 import org.apache.xbean.asm9.Opcodes;
 import org.apache.xbean.asm9.Type;
 import org.apache.xbean.asm9.tree.*;

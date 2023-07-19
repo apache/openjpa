@@ -20,11 +20,7 @@ package org.apache.openjpa.util;
 
 import java.security.AccessController;
 
-import org.apache.openjpa.enhance.SerpPrivacyHelper;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
-
-import serp.bytecode.BCClass;
-import serp.bytecode.BCClassLoader;
 
 /**
  * Utility methods when generating classes, including at runtime.
@@ -53,23 +49,6 @@ public class GeneratedClasses {
             return l1;
         }
         return l2;
-    }
-
-    /**
-     * Load the class represented by the given bytecode.
-     * @deprecated move to ASM {@link #loadAsmClass(String, byte[], Class, ClassLoader)}
-     */
-    public static Class loadBCClass(BCClass bc, ClassLoader loader) {
-        BCClassLoader bcloader = AccessController
-                .doPrivileged(SerpPrivacyHelper.newBCClassLoaderAction(bc
-                        .getProject(), loader));
-        try {
-            Class c = Class.forName(bc.getName(), true, bcloader);
-            bc.getProject().clear();
-            return c;
-        } catch (Throwable t) {
-            throw new GeneralException(bc.getName()).setCause(t);
-        }
     }
 
     public static Class loadAsmClass(String className, byte[] classBytes, Class<?> proxiedClass, ClassLoader loader) {

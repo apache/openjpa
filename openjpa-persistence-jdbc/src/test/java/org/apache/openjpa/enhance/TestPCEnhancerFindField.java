@@ -22,16 +22,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.apache.openjpa.util.asm.AsmHelper;
-import org.apache.openjpa.util.asm.ClassNodeTracker;
-import org.apache.xbean.asm9.ClassReader;
-import org.apache.xbean.asm9.Opcodes;
 import org.apache.xbean.asm9.tree.ClassNode;
 
 import junit.framework.TestCase;
-import serp.bytecode.BCClass;
-import serp.bytecode.BCField;
-import serp.bytecode.BCMethod;
-import serp.bytecode.Project;
 
 public class TestPCEnhancerFindField
     extends TestCase {
