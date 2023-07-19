@@ -44,9 +44,6 @@ import org.apache.xbean.asm9.tree.InsnNode;
 import org.apache.xbean.asm9.tree.MethodNode;
 import org.apache.xbean.asm9.tree.VarInsnNode;
 
-import serp.bytecode.BCClass;
-import serp.bytecode.Project;
-
 /**
  * Creates implementations of managed interfaces.  Will throw exceptions
  * on unknown properties.
@@ -112,12 +109,9 @@ class InterfaceImplGenerator {
             throw new InternalException(_loc.get("interface-load", iface, loader), t).setFatal(true);
         }
 
-        // copy the BCClass<?> into the enhancer project.
-        //X bc = _enhProject.loadClass(new ByteArrayInputStream(_bc.toByteArray()), loader);
-        //X TODO REMOVE
-        BCClass _bc = new Project().loadClass(getClassName(meta));
-        AsmHelper.readIntoBCClass(bc, _bc);
-        ClassNodeTracker bcEnh = AsmHelper.toClassNode(_enhProject, _bc);
+        // copy the current class bytecode into the enhancer project.
+        final byte[] classBytes = AsmHelper.toByteArray(bc);
+        final ClassNodeTracker bcEnh = _enhProject.loadClass(classBytes, parentLoader);
         PCEnhancer enhancer = new PCEnhancer(_repos, bcEnh, meta);
 
         int result = enhancer.run();
