@@ -47,14 +47,4 @@ public class SerpPrivacyHelper extends J2DoPrivHelper {
         };
     }
 
-    public static PrivilegedAction<BCClassLoader> newBCClassLoaderAction(
-        final Project project) {
-        return new PrivilegedAction<BCClassLoader>() {
-            @Override
-            public BCClassLoader run() {
-                return new BCClassLoader(project);
-            }
-        };
-    }
-
 }

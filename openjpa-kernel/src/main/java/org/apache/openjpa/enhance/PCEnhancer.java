@@ -3296,8 +3296,7 @@ public class PCEnhancer {
             ctNode.instructions.add(new InsnNode(Opcodes.RETURN));
             classNode.methods.add(ctNode);
 
-            if (!(_meta.getDescribedType().isInterface() || getCreateSubclass())
-                    && _log.isWarnEnabled()) {
+            if (!(_meta.getDescribedType().isInterface() || getCreateSubclass()) && _log.isWarnEnabled()) {
                 _log.warn(_loc.get("enhance-adddefaultconst", classNode.name, access));
             }
 
