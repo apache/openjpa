@@ -81,16 +81,13 @@ class InterfaceImplGenerator {
         // distinct temp project / loader for enhancing
         EnhancementProject _enhProject = new EnhancementProject();
 
-        ClassLoader parentLoader = AccessController.doPrivileged(
-            J2DoPrivHelper.getClassLoaderAction(iface));
+        ClassLoader parentLoader = AccessController.doPrivileged(J2DoPrivHelper.getClassLoaderAction(iface));
         EnhancementClassLoader loader = new EnhancementClassLoader(_project, parentLoader);
-        EnhancementClassLoader enhLoader = new EnhancementClassLoader(_enhProject, parentLoader);
         ClassNodeTracker bc = _project.loadClass(getClassName(meta), loader);
         bc.declareInterface(iface);
         ClassMetaData sup = meta.getPCSuperclassMetaData();
         if (sup != null) {
             bc.getClassNode().superName = Type.getInternalName(sup.getInterfaceImpl());
-            enhLoader = new EnhancementClassLoader(_enhProject, sup.getInterfaceImpl().getClassLoader());
         }
 
         FieldMetaData[] fields = meta.getDeclaredFields();
@@ -123,7 +120,9 @@ class InterfaceImplGenerator {
             EnhancementProject finalProject = new EnhancementProject();
             EnhancementClassLoader finalLoader = new EnhancementClassLoader(finalProject, parentLoader);
             final byte[] classBytes2 = AsmHelper.toByteArray(enhancer.getPCBytecode());
-            ClassNodeTracker bcEnh2 = finalProject.loadClass(classBytes2, finalLoader);
+
+            // this is just to make the ClassLoader aware of the bytecode for the enhanced class
+            finalProject.loadClass(classBytes2, finalLoader);
 
             String pcClassName = enhancer.getPCBytecode().getClassNode().name.replace("/", ".");
             impl = Class.forName(pcClassName, true, finalLoader);
