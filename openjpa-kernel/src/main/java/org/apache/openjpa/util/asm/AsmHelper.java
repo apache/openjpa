@@ -50,7 +50,7 @@ import serp.bytecode.Project;
  */
 public final class AsmHelper {
     private static final char[] PRIMITIVE_DESCRIPTORS = {'V','Z','C','B','S','I','F','J','D'};
-    private static final Attribute[] ATTRS = new Attribute[] {
+    public static final Attribute[] ATTRS = new Attribute[] {
             new RedefinedAttribute()
     };
 
@@ -80,39 +80,19 @@ public final class AsmHelper {
     }
 
     /**
-     * Copy the binary information from the ClassNodeTracker to a new one
-     * @param cntIn the original ASM class representation
-     * @param newClassName the class name of the new ClassNodeTracker
-     * @return a new ClassNodeTracker
-     */
-    public static ClassNodeTracker copyClassNode(ClassNodeTracker cntIn, String newClassName) {
-        final byte[] classBytes = toByteArray(cntIn);
-
-        ClassReader cr = new ClassReader(classBytes);
-        ClassNode classNode = new ClassNode(Opcodes.ASM9);
-        cr.accept(classNode, ATTRS, 0);
-
-        if ((classNode.version & 0xffff) < 49) {
-            classNode.version = 49;
-        }
-
-        return new ClassNodeTracker(classNode, cntIn.getClassLoader());
-    }
-
-    /**
      * Read the binary bytecode from the class with the given name
      * @param classLoader the ClassLoader to use
      * @param className the fully qualified class name to read. e.g. "org.mycorp.mypackage.MyEntity"
      * @return the ClassNode constructed from that class
      */
-    public static ClassNode readClassNode(ClassLoader classLoader, String className) {
+    public static ClassNode readClassNode(ClassLoader classLoader, String className) throws ClassNotFoundException {
         ClassReader cr;
         final String classResourceName = className.replace(".", "/") + ".class";
         try (final InputStream classBytesStream = classLoader.getResourceAsStream(classResourceName)) {
             cr = new ClassReader(classBytesStream);
         }
         catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ClassNotFoundException("Cannot read ClassNode for class " + className, e);
         }
         ClassNode classNode = new ClassNode();
         cr.accept(classNode, ATTRS, 0);
@@ -184,7 +164,7 @@ public final class AsmHelper {
      * temporary helper class to convert BCClass to ASM ClassNode
      * @deprecated must get removed when done with migrating from Serp to ASM
      */
-    public static ClassNodeTracker toClassNode(BCClass bcClass) {
+    public static ClassNodeTracker toClassNode(EnhancementProject project, BCClass bcClass) {
         ClassReader cr = new ClassReader(bcClass.toByteArray());
         ClassNode classNode = new ClassNode(Opcodes.ASM9);
         cr.accept(classNode, ATTRS, 0);
@@ -193,7 +173,8 @@ public final class AsmHelper {
             classNode.version = 49;
         }
 
-        return new ClassNodeTracker(classNode, bcClass.getClassLoader());
+        final ClassNodeTracker cnt = new ClassNodeTracker(project, classNode, bcClass.getClassLoader());
+        return cnt;
     }
 
     /**

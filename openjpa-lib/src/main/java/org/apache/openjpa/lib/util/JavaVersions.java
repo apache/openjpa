@@ -58,7 +58,15 @@ public class JavaVersions {
         else if ("1.8".equals(specVersion))
             VERSION = 8;
         else {
-            VERSION = Integer.parseInt(specVersion);
+            int v;
+            try {
+                v = Integer.parseInt(specVersion);
+            }
+            catch (NumberFormatException nfe) {
+                // default to Java 8
+                v = 8;
+            }
+            VERSION = v;
         }
     }
 

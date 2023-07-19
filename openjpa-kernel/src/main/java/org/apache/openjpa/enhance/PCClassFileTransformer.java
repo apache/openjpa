@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.enhance;
 
-import java.io.ByteArrayInputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.AccessController;
@@ -34,11 +33,11 @@ import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.asm.AsmHelper;
 import org.apache.openjpa.util.asm.ClassNodeTracker;
+import org.apache.openjpa.util.asm.EnhancementProject;
 import org.apache.xbean.asm9.ClassReader;
 import org.apache.xbean.asm9.ClassVisitor;
 import org.apache.xbean.asm9.Opcodes;
 
-import serp.bytecode.Project;
 import static java.util.Arrays.asList;
 
 
@@ -149,9 +148,9 @@ public class PCClassFileTransformer
             ClassLoader oldLoader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
             AccessController.doPrivileged(J2DoPrivHelper.setContextClassLoaderAction(_tmpLoader));
             try {
-                PCEnhancer enhancer = new PCEnhancer(_repos.getConfiguration(),
-                        new Project().loadClass(new ByteArrayInputStream(bytes),
-                                _tmpLoader), _repos);
+                EnhancementProject project = new EnhancementProject();
+                final ClassNodeTracker bc = project.loadClass(bytes, _tmpLoader);
+                PCEnhancer enhancer = new PCEnhancer(_repos.getConfiguration(), bc, _repos);
                 enhancer.setAddDefaultConstructor(_flags.addDefaultConstructor);
                 enhancer.setEnforcePropertyRestrictions
                         (_flags.enforcePropertyRestrictions);

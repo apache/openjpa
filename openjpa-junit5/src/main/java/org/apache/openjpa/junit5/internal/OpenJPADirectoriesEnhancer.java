@@ -29,6 +29,7 @@ import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.PersistenceMetaDataFactory;
 import org.apache.openjpa.util.asm.AsmHelper;
 import org.apache.openjpa.util.asm.ClassNodeTracker;
+import org.apache.openjpa.util.asm.EnhancementProject;
 import org.apache.xbean.asm9.AnnotationVisitor;
 import org.apache.xbean.asm9.ClassReader;
 import org.apache.xbean.asm9.Type;
@@ -265,18 +266,16 @@ public class OpenJPADirectoriesEnhancer implements Runnable {
             final Thread thread = Thread.currentThread();
             final ClassLoader old = thread.getContextClassLoader();
             thread.setContextClassLoader(tmpLoader);
-            try (final InputStream stream = new ByteArrayInputStream(classBytes)) {
+            try {
                 final PCEnhancer enhancer = new PCEnhancer(
                         repos.getConfiguration(),
-                        new Project().loadClass(stream, tmpLoader),
+                        new EnhancementProject().loadClass(classBytes, tmpLoader),
                         repos, tmpLoader);
                 if (enhancer.run() == PCEnhancer.ENHANCE_NONE) {
                     return null;
                 }
                 final ClassNodeTracker cnt = enhancer.getPCBytecode();
                 return AsmHelper.toByteArray(cnt);
-            } catch (final IOException e) {
-                throw new IllegalStateException(e);
             } finally {
                 thread.setContextClassLoader(old);
             }

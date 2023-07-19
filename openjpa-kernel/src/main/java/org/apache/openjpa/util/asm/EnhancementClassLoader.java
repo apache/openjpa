@@ -32,7 +32,7 @@ public class EnhancementClassLoader extends ClassLoader {
         this.project = project;
     }
 
-    public EnhancementClassLoader(ClassLoader parent, EnhancementProject project) {
+    public EnhancementClassLoader(EnhancementProject project, ClassLoader parent) {
         super(parent);
         this.project = project;
     }
@@ -41,6 +41,15 @@ public class EnhancementClassLoader extends ClassLoader {
         return project;
     }
 
+    @Override
+    public Class<?> loadClass(String name) throws ClassNotFoundException {
+        return super.loadClass(name);
+    }
+
+    @Override
+    protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+        return super.loadClass(name, resolve);
+    }
 
     protected Class findClass(String name) throws ClassNotFoundException {
         byte[] bytes;

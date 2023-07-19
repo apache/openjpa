@@ -16,6 +16,9 @@
  */
 package org.apache.openjpa.util.asm;
 
+import java.util.ArrayList;
+
+import org.apache.xbean.asm9.Type;
 import org.apache.xbean.asm9.tree.ClassNode;
 
 /**
@@ -26,10 +29,31 @@ import org.apache.xbean.asm9.tree.ClassNode;
 public class ClassNodeTracker {
     private final ClassNode classNode;
     private final ClassLoader cl;
+    private final EnhancementProject project;
 
-    public ClassNodeTracker(ClassNode classNode, ClassLoader cl) {
+    public ClassNodeTracker(EnhancementProject project, ClassNode classNode, ClassLoader cl) {
+        this.project = project;
         this.classNode = classNode;
-        this.cl = cl;
+        if (hasEnhancementCl(cl)) {
+            this.cl = cl;
+        }
+        else {
+            this.cl = new EnhancementClassLoader(project, cl);
+        }
+        project.putClass(classNode.name.replace("/", "."), this);
+    }
+
+    private boolean hasEnhancementCl(ClassLoader cl) {
+        boolean hasEhCl = false;
+        do {
+            if (cl instanceof EnhancementClassLoader) {
+                hasEhCl = true;
+                break;
+            }
+            cl = cl.getParent();
+        } while (cl != null);
+
+        return hasEhCl;
     }
 
     public ClassNode getClassNode() {
@@ -40,6 +64,10 @@ public class ClassNodeTracker {
         return cl;
     }
 
+    public EnhancementProject getProject() {
+        return project;
+    }
+
     public Class<?> getType() {
         try {
             return Class.forName(classNode.name.replace("/", "."), false, cl);
@@ -47,5 +75,12 @@ public class ClassNodeTracker {
         catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void declareInterface(Class<?> iface) {
+        if (classNode.interfaces == null) {
+            classNode.interfaces = new ArrayList<>();
+        }
+        classNode.interfaces.add(Type.getInternalName(iface));
     }
 }

@@ -248,10 +248,10 @@ public class PCRegistry {
      * Look up the metadata for a <code>PersistenceCapable</code> class.
      */
     private static Meta getMeta(Class<?> pcClass) {
-        Meta ret = (Meta) _metas.get(pcClass);
-        if (ret == null)
-            throw new IllegalStateException(_loc.get("no-meta", pcClass).
-                getMessage());
+        Meta ret = _metas.get(pcClass);
+        if (ret == null) {
+            throw new IllegalStateException(_loc.get("no-meta", pcClass).getMessage());
+        }
         return ret;
     }
 

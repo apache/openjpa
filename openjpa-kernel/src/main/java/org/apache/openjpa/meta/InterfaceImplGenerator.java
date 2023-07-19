@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.meta;
 
-import java.io.ByteArrayInputStream;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
@@ -28,14 +27,17 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 import org.apache.openjpa.enhance.PCEnhancer;
-import org.apache.openjpa.enhance.SerpPrivacyHelper;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.util.InternalException;
+import org.apache.openjpa.util.asm.AsmHelper;
+import org.apache.openjpa.util.asm.ClassNodeTracker;
+import org.apache.openjpa.util.asm.EnhancementClassLoader;
+import org.apache.openjpa.util.asm.EnhancementProject;
+import org.apache.xbean.asm9.Type;
 
 import serp.bytecode.BCClass;
-import serp.bytecode.BCClassLoader;
 import serp.bytecode.BCField;
 import serp.bytecode.BCMethod;
 import serp.bytecode.Code;
@@ -49,16 +51,13 @@ import serp.bytecode.Project;
  * @author Steve Kim
  */
 class InterfaceImplGenerator {
-    private static final Localizer _loc = Localizer.forPackage
-        (InterfaceImplGenerator.class);
+    private static final Localizer _loc = Localizer.forPackage(InterfaceImplGenerator.class);
     private static final String POSTFIX = "openjpaimpl";
 
     private final MetaDataRepository _repos;
     private final Map<Class<?>,Class<?>> _impls = new WeakHashMap<>();
-    private final Project _project = new Project();
+    private final EnhancementProject _project = new EnhancementProject();
 
-    // distinct project / loader for enhanced version of class
-    private final Project _enhProject = new Project();
 
     /**
      * Constructor.  Supply repository.
@@ -79,45 +78,46 @@ class InterfaceImplGenerator {
         if (impl != null)
             return impl;
 
+        // distinct temp project / loader for enhancing
+        EnhancementProject _enhProject = new EnhancementProject();
+
         ClassLoader parentLoader = AccessController.doPrivileged(
             J2DoPrivHelper.getClassLoaderAction(iface));
-        BCClassLoader loader = AccessController
-            .doPrivileged(SerpPrivacyHelper.newBCClassLoaderAction(_project,
-                                                                   parentLoader));
-        BCClassLoader enhLoader = AccessController
-            .doPrivileged(SerpPrivacyHelper.newBCClassLoaderAction(_enhProject,
-                                                                   parentLoader));
-        BCClass bc = _project.loadClass(getClassName(meta));
+        EnhancementClassLoader loader = new EnhancementClassLoader(_project, parentLoader);
+        EnhancementClassLoader enhLoader = new EnhancementClassLoader(_enhProject, parentLoader);
+        ClassNodeTracker bc = _project.loadClass(getClassName(meta), loader);
         bc.declareInterface(iface);
         ClassMetaData sup = meta.getPCSuperclassMetaData();
         if (sup != null) {
-            bc.setSuperclass(sup.getInterfaceImpl());
-            enhLoader = AccessController
-                .doPrivileged(SerpPrivacyHelper.newBCClassLoaderAction(
-                    _enhProject, AccessController
-                        .doPrivileged(J2DoPrivHelper.getClassLoaderAction(sup
-                            .getInterfaceImpl()))));
+            bc.getClassNode().superName = Type.getInternalName(sup.getInterfaceImpl());
+            //X enhLoader = new EnhancementClassLoader(_enhProject, sup.getInterfaceImpl().getClassLoader());
         }
 
         FieldMetaData[] fields = meta.getDeclaredFields();
         Set<Method> methods = new HashSet<>();
+
+        //X TODO REMOVE
+        BCClass _bc = new Project().loadClass(getClassName(meta));
+        AsmHelper.readIntoBCClass(bc, _bc);
+
         for (FieldMetaData field : fields) {
-            addField(bc, iface, field, methods);
+            addField(_bc, iface, field, methods);
         }
-        invalidateNonBeanMethods(bc, iface, methods);
+        invalidateNonBeanMethods(_bc, iface, methods);
 
         // first load the base Class<?> as the enhancer requires the class
         // to be available
         try {
-            meta.setInterfaceImpl(Class.forName(bc.getName(), true, loader));
+            meta.setInterfaceImpl(Class.forName(_bc.getName(), true, loader));
         } catch (Throwable t) {
             throw new InternalException(_loc.get("interface-load", iface,
                 loader), t).setFatal(true);
         }
+
         // copy the BCClass<?> into the enhancer project.
-        bc = _enhProject.loadClass(new ByteArrayInputStream(bc.toByteArray()),
-            loader);
-        PCEnhancer enhancer = new PCEnhancer(_repos, bc, meta);
+        //X bc = _enhProject.loadClass(new ByteArrayInputStream(_bc.toByteArray()), loader);
+        ClassNodeTracker bcEnh = AsmHelper.toClassNode(_enhProject, _bc);
+        PCEnhancer enhancer = new PCEnhancer(_repos, bcEnh, meta);
 
         int result = enhancer.run();
         if (result != PCEnhancer.ENHANCE_PC)
@@ -128,8 +128,8 @@ class InterfaceImplGenerator {
             String pcClassName = enhancer.getPCBytecode().getClassNode().name.replace("/", ".");
             impl = Class.forName(pcClassName, true, enhLoader);
         } catch (Throwable t) {
-            throw new InternalException(_loc.get("interface-load2", iface,
-                enhLoader), t).setFatal(true);
+            //X throw new InternalException(_loc.get("interface-load2", iface, enhLoader), t).setFatal(true);
+            throw new InternalException(_loc.get("interface-load2", iface, loader), t).setFatal(true);
         }
         // cache the generated impl.
         _impls.put(iface, impl);

@@ -18,8 +18,9 @@ package org.apache.openjpa.util.asm;
 
 import java.util.HashMap;
 
-import org.apache.openjpa.util.asm.AsmHelper;
-import org.apache.openjpa.util.asm.ClassNodeTracker;
+import org.apache.openjpa.lib.util.JavaVersions;
+import org.apache.xbean.asm9.ClassReader;
+import org.apache.xbean.asm9.Opcodes;
 import org.apache.xbean.asm9.tree.ClassNode;
 
 
@@ -30,24 +31,34 @@ import org.apache.xbean.asm9.tree.ClassNode;
  */
 public class EnhancementProject {
 
-    private HashMap<String, ClassNodeTracker> classNodTrackers = new HashMap<>();
+    private HashMap<String, ClassNodeTracker> classNodeTrackers = new HashMap<>();
 
 
     /**
      * Return true if the project already contains the given class.
      */
     public boolean containsClass(String type) {
-        return classNodTrackers.containsKey(type);
+        return classNodeTrackers.containsKey(type);
     }
 
 
     /**
      * Load a class with the given name.
      *
+     * @param name the fully qualified class name
      * @see #loadClass(String,ClassLoader)
      */
     public ClassNodeTracker loadClass(String name) {
         return loadClass(name, null);
+    }
+
+    /**
+     * Load a class with the given type.
+     *
+     * @see #loadClass(String,ClassLoader)
+     */
+    public ClassNodeTracker loadClass(Class<?> type) {
+        return loadClass(type.getName(), type.getClassLoader());
     }
 
     /**
@@ -66,7 +77,7 @@ public class EnhancementProject {
      * @throws RuntimeException on parse error
      */
     public ClassNodeTracker loadClass(String name, ClassLoader loader) {
-        ClassNodeTracker cached = classNodTrackers.get(name);
+        ClassNodeTracker cached = classNodeTrackers.get(name);
         if (cached != null) {
             return cached;
         }
@@ -76,10 +87,54 @@ public class EnhancementProject {
             loader = Thread.currentThread().getContextClassLoader();
         }
 
-        final ClassNode classNode = AsmHelper.readClassNode(loader, name);
-        ClassNodeTracker cnt = new ClassNodeTracker(classNode, loader);
-        classNodTrackers.put(name, cnt);
+        ClassNode classNode;
+        try {
+            classNode = AsmHelper.readClassNode(loader, name);
+        }
+        catch (ClassNotFoundException e) {
+            // otherwise create a new ClassNode
+            classNode = new ClassNode(Opcodes.ASM9);
+            classNode.version = detectJavaBytecodeVersion();
+            classNode.name = name.replace(".", "/");
+            classNode.access = Opcodes.ACC_PUBLIC;
+            classNode.superName = "java/lang/Object";
+        }
+        ClassNodeTracker cnt = new ClassNodeTracker(this, classNode, loader);
         return cnt;
+    }
+
+    /**
+     * 49 Java 1.5
+     * 50 Java 1.6
+     * 51 Java 1.7
+     * 52 Java 1.8
+     * 53 Java9
+     * 54 Java10
+     * 55 Java11
+     * etc
+     *
+     * @return the bytecode version of the current VM
+     */
+    private int detectJavaBytecodeVersion() {
+        return JavaVersions.VERSION + 44;
+    }
+
+    public ClassNodeTracker loadClass(byte[] bytes, ClassLoader loader) {
+        ClassReader cr = new ClassReader(bytes);
+        ClassNode classNode = new ClassNode();
+        cr.accept(classNode, AsmHelper.ATTRS, 0);
+        ClassNodeTracker cnt = new ClassNodeTracker(this, classNode, loader);
+        String name = classNode.name.replace("/", ".");
+        classNodeTrackers.put(name, cnt);
+        return cnt;
+    }
+
+    public void clear() {
+        classNodeTrackers.clear();
+    }
+
+    void putClass(String name, ClassNodeTracker cnt) {
+        classNodeTrackers.put(name, cnt);
     }
 
 }

@@ -100,14 +100,13 @@ import org.apache.openjpa.util.StringId;
 import org.apache.openjpa.util.UserException;
 import org.apache.openjpa.util.asm.AsmHelper;
 import org.apache.openjpa.util.asm.ClassNodeTracker;
+import org.apache.openjpa.util.asm.EnhancementProject;
 import org.apache.openjpa.util.asm.RedefinedAttribute;
 import org.apache.xbean.asm9.Attribute;
 import org.apache.xbean.asm9.Opcodes;
 import org.apache.xbean.asm9.Type;
 import org.apache.xbean.asm9.tree.*;
 
-import serp.bytecode.BCClass;
-import serp.bytecode.Project;
 
 /**
  * Bytecode enhancer used to enhance persistent classes from metadata. The
@@ -193,11 +192,14 @@ public class PCEnhancer {
         }
     }
 
-    private BCClass _pc;
-    private final BCClass _managedType;
     private final MetaDataRepository _repos;
+    private final ClassMetaData _meta;
+    private final Log _log;
+
     boolean _addVersionInitFlag = true;
 
+
+    private final EnhancementProject project;
 
     /**
      * represents the managed type.
@@ -211,8 +213,6 @@ public class PCEnhancer {
      */
     private ClassNodeTracker pc;
 
-    private final ClassMetaData _meta;
-    private final Log _log;
     private boolean _defCons = true;
     private boolean _redefine = false;
     private boolean _subclass = false;
@@ -235,8 +235,7 @@ public class PCEnhancer {
      * repository.
      */
     public PCEnhancer(OpenJPAConfiguration conf, Class<?> type) {
-        this(conf, AccessController.doPrivileged(SerpPrivacyHelper.loadProjectClassAction(new Project(), type)),
-             (MetaDataRepository) null);
+        this(conf, new EnhancementProject().loadClass(type), (MetaDataRepository) null);
     }
 
     /**
@@ -245,8 +244,7 @@ public class PCEnhancer {
      * and then loading from <code>conf</code>'s repository.
      */
     public PCEnhancer(OpenJPAConfiguration conf, ClassMetaData meta) {
-        this(conf, AccessController.doPrivileged(SerpPrivacyHelper.loadProjectClassAction(new Project(), meta.getDescribedType())),
-             meta.getRepository());
+        this(conf, new EnhancementProject().loadClass(meta.getDescribedType()), meta.getRepository());
     }
 
     /**
@@ -260,12 +258,11 @@ public class PCEnhancer {
      *              because the configuration might be an
      *              implementation-specific subclass whose metadata
      *              required more than just base metadata files
-     * @deprecated use {@link #PCEnhancer(OpenJPAConfiguration, BCClass,
+     * @deprecated use {@link #PCEnhancer(OpenJPAConfiguration, ClassNodeTracker,
      * MetaDataRepository, ClassLoader)} instead.
      */
     @Deprecated
-    public PCEnhancer(OpenJPAConfiguration conf, BCClass type,
-                      MetaDataRepository repos) {
+    public PCEnhancer(OpenJPAConfiguration conf, ClassNodeTracker type, MetaDataRepository repos) {
         this(conf, type, repos, null);
     }
 
@@ -283,12 +280,11 @@ public class PCEnhancer {
      * @param loader the environment classloader to use for loading
      *               classes and resources.
      */
-    public PCEnhancer(OpenJPAConfiguration conf, BCClass type, MetaDataRepository repos, ClassLoader loader) {
-        _managedType = type;
-        _pc = type;
+    public PCEnhancer(OpenJPAConfiguration conf, ClassNodeTracker type, MetaDataRepository repos, ClassLoader loader) {
 
         // we assume that the original class and the enhanced class is the same
-        managedType = AsmHelper.toClassNode(type);
+        project = type.getProject();
+        managedType = type;
         pc = managedType;
 
         _log = conf.getLog(OpenJPAConfiguration.LOG_ENHANCE);
@@ -323,12 +319,10 @@ public class PCEnhancer {
      * @param meta  the metadata to use for processing this type.
      * @since 1.1.0
      */
-    public PCEnhancer(MetaDataRepository repos, BCClass type, ClassMetaData meta) {
-        _managedType = type;
-        _pc = type;
-
+    public PCEnhancer(MetaDataRepository repos, ClassNodeTracker type, ClassMetaData meta) {
         // we assume that the original class and the enhanced class is the same
-        managedType = AsmHelper.toClassNode(type);
+        project = type.getProject();
+        managedType = type;
         pc = managedType;
 
         _log = repos.getConfiguration()
@@ -597,7 +591,6 @@ public class PCEnhancer {
                 addCloningCode();
                 runAuxiliaryEnhancers();
 
-                AsmHelper.readIntoBCClass(pc, _pc);
                 return ENHANCE_PC;
             }
             return ENHANCE_AWARE;
@@ -631,19 +624,19 @@ public class PCEnhancer {
             if (getCreateSubclass()) {
                 PCSubclassValidator val = new PCSubclassValidator(_meta, managedType.getClassNode(), _log, _fail);
                 val.assertCanSubclass();
-                pc = AsmHelper.copyClassNode(managedType, toPCSubclassName(managedType));
-                _pc = _managedType.getProject().loadClass(toPCSubclassName(managedType));
-                _pc.setMajorVersion(_managedType.getMajorVersion());
-                _pc.setMinorVersion(_managedType.getMinorVersion());
-                if (_pc.getSuperclassBC() != _managedType) {
-                    _pc.setSuperclass(_managedType);
-                    _pc.setAbstract(_managedType.isAbstract());
-                    _pc.declareInterface(DynamicPersistenceCapable.class);
+                pc = project.loadClass(toPCSubclassName(managedType));
+                if (pc.getClassNode().superName.equals("java/lang/Object")) {
+                    // set the parent class
+                    pc.getClassNode().superName = managedType.getClassNode().name;
+                    if ((managedType.getClassNode().access & Opcodes.ACC_ABSTRACT) > 0) {
+                        pc.getClassNode().access |= Opcodes.ACC_ABSTRACT;
+                    }
+
+                    pc.declareInterface(DynamicPersistenceCapable.class);
                 }
                 else {
                     _isAlreadySubclassed = true;
                 }
-                pc = AsmHelper.toClassNode(_pc);
             }
 
             _bcsConfigured = true;
@@ -1408,7 +1401,7 @@ public class PCEnhancer {
         classNode.methods.add(newInstance);
         final InsnList instructions = newInstance.instructions;
 
-        if (_pc.isAbstract()) {
+        if ((pc.getClassNode().access & Opcodes.ACC_ABSTRACT) > 0) {
             instructions.add(throwException(USEREXCEP));
             return;
         }
@@ -3317,7 +3310,7 @@ public class PCEnhancer {
                 accessMode = Opcodes.ACC_PUBLIC;
                 access = "public";
             }
-            else if (_pc.isFinal()) {
+            else if ((pc.getClassNode().access & Opcodes.ACC_FINAL) > 0) {
                 accessMode = Opcodes.ACC_PRIVATE;
                 access = "private";
             }
@@ -3461,7 +3454,7 @@ public class PCEnhancer {
             instructions.add(new InsnNode(Opcodes.ACONST_NULL));
         }
 
-        if (_pc.isAbstract()) {
+        if ((pc.getClassNode().access & Opcodes.ACC_ABSTRACT) > 0) {
             instructions.add(new InsnNode(Opcodes.ACONST_NULL));
         }
         else {
@@ -4716,7 +4709,7 @@ public class PCEnhancer {
 
         // declare externalizable interface
         if (!Externalizable.class.isAssignableFrom(_meta.getDescribedType())) {
-            pc.getClassNode().interfaces.add(Type.getInternalName(Externalizable.class));
+            pc.declareInterface(Externalizable.class);
         }
 
         // make sure the user doesn't already have custom externalization or
@@ -5602,8 +5595,8 @@ public class PCEnhancer {
             }
         }
 
-        Project project = new Project();
-        BCClass bc;
+        EnhancementProject project = new EnhancementProject();
+        ClassNodeTracker cnt;
         PCEnhancer enhancer;
         Collection persAwareClasses = new HashSet();
 
@@ -5614,12 +5607,12 @@ public class PCEnhancer {
             }
 
             if (o instanceof String) {
-                bc = project.loadClass((String) o, loader);
+                cnt = project.loadClass((String) o, loader);
             }
             else {
-                bc = project.loadClass((Class) o);
+                cnt = project.loadClass((Class) o);
             }
-            enhancer = new PCEnhancer(conf, bc, repos, loader);
+            enhancer = new PCEnhancer(conf, cnt, repos, loader);
             if (writer != null) {
                 enhancer.setBytecodeWriter(writer);
             }
