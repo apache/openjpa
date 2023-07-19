@@ -34,14 +34,16 @@ import org.apache.xbean.asm9.Type;
 import org.apache.xbean.asm9.tree.AbstractInsnNode;
 import org.apache.xbean.asm9.tree.ClassNode;
 import org.apache.xbean.asm9.tree.FieldInsnNode;
+import org.apache.xbean.asm9.tree.InsnList;
 import org.apache.xbean.asm9.tree.InsnNode;
 import org.apache.xbean.asm9.tree.IntInsnNode;
 import org.apache.xbean.asm9.tree.LdcInsnNode;
+import org.apache.xbean.asm9.tree.MethodInsnNode;
 import org.apache.xbean.asm9.tree.MethodNode;
+import org.apache.xbean.asm9.tree.TypeInsnNode;
 import org.apache.xbean.asm9.tree.VarInsnNode;
 
 import serp.bytecode.BCClass;
-import serp.bytecode.Project;
 
 /**
  * Utility methods to deal with ASM bytecode
@@ -100,21 +102,6 @@ public final class AsmHelper {
         return classNode;
     }
 
-    /**
-     * temporary helper class to convert BCClass to ASM ClassWriter
-     * @deprecated must get removed when done with migrating from Serp to ASM
-     */
-    public static ClassWriterTracker toClassWriter(BCClass bcClass) {
-        ClassReader cr = new ClassReader(bcClass.toByteArray());
-        ClassWriter cw = new BCClassWriter(ClassWriter.COMPUTE_FRAMES, bcClass.getClassLoader());
-        cr.accept(cw, ATTRS, 0);  // 0 -> don't skip anything
-        ClassWriterTracker cwt = new ClassWriterTracker(cw, bcClass.getClassLoader());
-        cwt.setName(bcClass.getName());
-
-        return cwt;
-    }
-
-
     public static byte[] getClassBytes(final String typeName)
     {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
@@ -147,17 +134,6 @@ public final class AsmHelper {
         ClassWriter cw = new BCClassWriter(ClassWriter.COMPUTE_FRAMES, cnt.getClassLoader());
         cnt.getClassNode().accept(cw);
         return cw.toByteArray();
-    }
-
-    /**
-     * temporary helper class to convert ClassWriterTracker to BCClass
-     * @deprecated must get removed when done with migrating from Serp to ASM
-     */
-    public static BCClass toBCClass(ClassWriterTracker cwt) {
-        final byte[] classBytes = cwt.getCw().toByteArray();
-        BCClass bcClass = new Project().loadClass(new ByteArrayInputStream(classBytes), cwt.getClassLoader());
-        bcClass.setName(cwt.getName());
-        return bcClass;
     }
 
     /**
@@ -688,6 +664,39 @@ public final class AsmHelper {
                 return getClass(classLoader, typeDesc);
         }
     }
+
+
+    /**
+     * Helper method to add the code necessary to throw the given
+     * exception type, sans message.
+     */
+    public static InsnList throwException(Class type) {
+        return throwException(type, null);
+    }
+
+    /**
+     * Helper method to add the code necessary to throw the given
+     * exception type, sans message.
+     */
+    public static InsnList throwException(Class type, String msg) {
+        InsnList instructions = new InsnList();
+        instructions.add(new TypeInsnNode(Opcodes.NEW, Type.getInternalName(type)));
+        instructions.add(new InsnNode(Opcodes.DUP));
+        if (msg != null) {
+            instructions.add(AsmHelper.getLoadConstantInsn(msg));
+        }
+        String desc = msg != null
+                ? Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(String.class))
+                : Type.getMethodDescriptor(Type.VOID_TYPE);
+        instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
+                                            Type.getInternalName(type),
+                                            "<init>",
+                                            desc));
+        instructions.add(new InsnNode(Opcodes.ATHROW));
+
+        return instructions;
+    }
+
 
     public static Class<?> getClass(ClassLoader classLoader, String internalTypeName) {
         try {

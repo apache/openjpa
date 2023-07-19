@@ -35,13 +35,16 @@ import org.apache.openjpa.util.asm.AsmHelper;
 import org.apache.openjpa.util.asm.ClassNodeTracker;
 import org.apache.openjpa.util.asm.EnhancementClassLoader;
 import org.apache.openjpa.util.asm.EnhancementProject;
+import org.apache.xbean.asm9.Opcodes;
 import org.apache.xbean.asm9.Type;
+import org.apache.xbean.asm9.tree.ClassNode;
+import org.apache.xbean.asm9.tree.FieldInsnNode;
+import org.apache.xbean.asm9.tree.FieldNode;
+import org.apache.xbean.asm9.tree.InsnNode;
+import org.apache.xbean.asm9.tree.MethodNode;
+import org.apache.xbean.asm9.tree.VarInsnNode;
 
 import serp.bytecode.BCClass;
-import serp.bytecode.BCField;
-import serp.bytecode.BCMethod;
-import serp.bytecode.Code;
-import serp.bytecode.Constants;
 import serp.bytecode.Project;
 
 /**
@@ -90,32 +93,30 @@ class InterfaceImplGenerator {
         ClassMetaData sup = meta.getPCSuperclassMetaData();
         if (sup != null) {
             bc.getClassNode().superName = Type.getInternalName(sup.getInterfaceImpl());
-            //X enhLoader = new EnhancementClassLoader(_enhProject, sup.getInterfaceImpl().getClassLoader());
+            enhLoader = new EnhancementClassLoader(_enhProject, sup.getInterfaceImpl().getClassLoader());
         }
 
         FieldMetaData[] fields = meta.getDeclaredFields();
         Set<Method> methods = new HashSet<>();
 
-        //X TODO REMOVE
-        BCClass _bc = new Project().loadClass(getClassName(meta));
-        AsmHelper.readIntoBCClass(bc, _bc);
-
         for (FieldMetaData field : fields) {
-            addField(_bc, iface, field, methods);
+            addField(bc, iface, field, methods);
         }
-        invalidateNonBeanMethods(_bc, iface, methods);
+        invalidateNonBeanMethods(bc, iface, methods);
 
         // first load the base Class<?> as the enhancer requires the class
         // to be available
         try {
-            meta.setInterfaceImpl(Class.forName(_bc.getName(), true, loader));
+            meta.setInterfaceImpl(Class.forName(bc.getClassNode().name.replace("/", "."), true, loader));
         } catch (Throwable t) {
-            throw new InternalException(_loc.get("interface-load", iface,
-                loader), t).setFatal(true);
+            throw new InternalException(_loc.get("interface-load", iface, loader), t).setFatal(true);
         }
 
         // copy the BCClass<?> into the enhancer project.
         //X bc = _enhProject.loadClass(new ByteArrayInputStream(_bc.toByteArray()), loader);
+        //X TODO REMOVE
+        BCClass _bc = new Project().loadClass(getClassName(meta));
+        AsmHelper.readIntoBCClass(bc, _bc);
         ClassNodeTracker bcEnh = AsmHelper.toClassNode(_enhProject, _bc);
         PCEnhancer enhancer = new PCEnhancer(_repos, bcEnh, meta);
 
@@ -125,8 +126,14 @@ class InterfaceImplGenerator {
                 iface)).setFatal(true);
         try {
             // load the Class<?> for real.
+            EnhancementProject finalProject = new EnhancementProject();
+            EnhancementClassLoader finalLoader = new EnhancementClassLoader(finalProject, parentLoader);
+            final byte[] classBytes2 = AsmHelper.toByteArray(enhancer.getPCBytecode());
+            ClassNodeTracker bcEnh2 = finalProject.loadClass(classBytes2, finalLoader);
+
             String pcClassName = enhancer.getPCBytecode().getClassNode().name.replace("/", ".");
-            impl = Class.forName(pcClassName, true, enhLoader);
+            impl = Class.forName(pcClassName, true, finalLoader);
+
         } catch (Throwable t) {
             //X throw new InternalException(_loc.get("interface-load2", iface, enhLoader), t).setFatal(true);
             throw new InternalException(_loc.get("interface-load2", iface, loader), t).setFatal(true);
@@ -140,63 +147,58 @@ class InterfaceImplGenerator {
      * Add bean getters and setters, also recording seen methods
      * into the given set.
      */
-    private void addField (BCClass bc, Class<?> iface, FieldMetaData fmd,
-        Set<Method> methods) {
-        String name = fmd.getName();
+    private void addField (ClassNodeTracker cnt, Class<?> iface, FieldMetaData fmd, Set<Method> methods) {
+        final ClassNode classNode = cnt.getClassNode();
+        String fieldName = fmd.getName();
         Class<?> type = fmd.getDeclaredType();
-        BCField field = bc.declareField(name, type);
-        field.setAccessFlags(Constants.ACCESS_PRIVATE);
+        FieldNode field = new FieldNode(Opcodes.ACC_PRIVATE, fieldName, Type.getDescriptor(type), null, null);
+        classNode.fields.add(field);
 
         // getter
-        name = StringUtil.capitalize(name);
-        String prefix = isGetter(iface, fmd) ? "get" : "is";
-        BCMethod meth = bc.declareMethod(prefix + name, type, null);
-        meth.makePublic();
-        Code code = meth.getCode(true);
-        code.aload().setThis();
-        code.getfield().setField(field);
-        code.xreturn().setType(type);
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-        methods.add(getMethodSafe(iface, meth.getName(), null));
+        String getterName = (isGetter(iface, fmd) ? "get" : "is") + StringUtil.capitalize(fieldName);
+        MethodNode meth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                         getterName,
+                                         Type.getMethodDescriptor(Type.getType(type)),
+                                         null, null);
+        classNode.methods.add(meth);
+        meth.instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        meth.instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, fieldName, Type.getDescriptor(type)));
+        meth.instructions.add(new InsnNode(AsmHelper.getReturnInsn(type)));
+        methods.add(getMethodSafe(iface, meth.name, null));
 
         // setter
-        meth = bc.declareMethod("set" + name, void.class, new Class[]{type});
-        meth.makePublic();
-        code = meth.getCode(true);
-        code.aload().setThis();
-        code.xload().setParam(0).setType(type);
-        code.putfield().setField(field);
-        code.vreturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-        methods.add(getMethodSafe(iface, meth.getName(), type));
+        String setterName = "set" + StringUtil.capitalize(fieldName);
+        meth = new MethodNode(Opcodes.ACC_PUBLIC,
+                              setterName,
+                              Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(type)),
+                              null, null);
+        classNode.methods.add(meth);
+        meth.instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        meth.instructions.add(new VarInsnNode(AsmHelper.getLoadInsn(type), 1)); // 1st parameter
+        meth.instructions.add(new FieldInsnNode(Opcodes.PUTFIELD, classNode.name, fieldName, Type.getDescriptor(type)));
+        meth.instructions.add(new InsnNode(Opcodes.RETURN));
+        methods.add(getMethodSafe(iface, meth.name, type));
     }
 
     /**
      * Invalidate methods on the interface which are not managed.
      */
-    private void invalidateNonBeanMethods(BCClass bc, Class<?> iface,
-        Set<Method> methods) {
-        Method[] meths = (Method[]) AccessController.doPrivileged(
-            J2DoPrivHelper.getDeclaredMethodsAction(iface));
-        BCMethod meth;
-        Code code;
-        Class<?> type = _repos.getMetaDataFactory().getDefaults().
-            getUnimplementedExceptionType();
+    private void invalidateNonBeanMethods(ClassNodeTracker cnt, Class<?> iface, Set<Method> methods) {
+        Method[] meths = AccessController.doPrivileged(J2DoPrivHelper.getDeclaredMethodsAction(iface));
+
+
+        Class<?> unimplementedExceptionType = _repos.getMetaDataFactory().getDefaults().getUnimplementedExceptionType();
+
         for (Method method : meths) {
-            if (methods.contains(method))
+            if (methods.contains(method)) {
                 continue;
-            meth = bc.declareMethod(method.getName(),
-                    method.getReturnType(), method.getParameterTypes());
-            meth.makePublic();
-            code = meth.getCode(true);
-            code.anew().setType(type);
-            code.dup();
-            code.invokespecial().setMethod(type, "<init>", void.class, null);
-            code.athrow();
-            code.calculateMaxLocals();
-            code.calculateMaxStack();
+            }
+            MethodNode methodNode = new MethodNode(Opcodes.ACC_PUBLIC,
+                                                   method.getName(),
+                                                   Type.getMethodDescriptor(method),
+                                                   null, null);
+            methodNode.instructions.add(AsmHelper.throwException(unimplementedExceptionType));
+            cnt.getClassNode().methods.add(methodNode);
         }
     }
 

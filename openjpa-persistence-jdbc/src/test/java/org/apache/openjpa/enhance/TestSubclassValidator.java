@@ -26,6 +26,7 @@ import org.apache.openjpa.persistence.common.apps.Department;
 import org.apache.openjpa.persistence.common.apps.RuntimeTest2;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.util.asm.AsmHelper;
+import org.apache.openjpa.util.asm.EnhancementProject;
 import org.apache.xbean.asm9.tree.ClassNode;
 import org.junit.Test;
 
@@ -34,8 +35,6 @@ import jakarta.persistence.AccessType;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import serp.bytecode.BCClass;
-import serp.bytecode.Project;
 
 public class TestSubclassValidator extends SingleEMFTestCase {
     @Override
@@ -50,7 +49,7 @@ public class TestSubclassValidator extends SingleEMFTestCase {
 
     @Test
     public void testBcSubclassValidator() throws Exception {
-        Project project = new Project();
+        EnhancementProject project = new EnhancementProject();
         TemporaryClassLoader tempCl = new TemporaryClassLoader(this.getClass().getClassLoader());
         final OpenJPAConfiguration conf = emf.getConfiguration();
 
@@ -61,7 +60,7 @@ public class TestSubclassValidator extends SingleEMFTestCase {
 
         {
             ClassNode classNode = AsmHelper.readClassNode(EnhanceableGetterEntity.class.getClassLoader(), EnhanceableGetterEntity.class.getName());
-            final BCClass bcClass = project.loadClass(EnhanceableGetterEntity.class.getName(), tempCl);
+            project.loadClass(EnhanceableGetterEntity.class.getName(), tempCl);
             final ClassMetaData meta = repos.getMetaData(tempCl.loadClass(EnhanceableGetterEntity.class.getName()), tempCl, false);
             PCSubclassValidator subclassValidator = new PCSubclassValidator(meta, classNode, log, true);
             subclassValidator.assertCanSubclass();
@@ -69,7 +68,7 @@ public class TestSubclassValidator extends SingleEMFTestCase {
 
         {
             ClassNode classNode = AsmHelper.readClassNode(UnenhancedPropertyAccess.class.getClassLoader(), UnenhancedPropertyAccess.class.getName());
-            final BCClass bcClass = project.loadClass(UnenhancedPropertyAccess.class.getName(), tempCl);
+            project.loadClass(UnenhancedPropertyAccess.class.getName(), tempCl);
             final ClassMetaData meta = repos.getMetaData(tempCl.loadClass(UnenhancedPropertyAccess.class.getName()), tempCl, false);
             PCSubclassValidator subclassValidator = new PCSubclassValidator(meta, classNode, log, true);
             subclassValidator.assertCanSubclass();

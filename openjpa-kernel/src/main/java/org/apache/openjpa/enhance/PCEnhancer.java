@@ -849,7 +849,7 @@ public class PCEnhancer {
 
             // default: throw new IllegalArgumentException ()
             instructions.add(defLbl);
-            instructions.add(throwException(IllegalArgumentException.class));
+            instructions.add(AsmHelper.throwException(IllegalArgumentException.class));
         }
         else {
             // In mixed access mode, property indexes are not +1 incremental
@@ -1401,7 +1401,7 @@ public class PCEnhancer {
         final InsnList instructions = newInstance.instructions;
 
         if ((pc.getClassNode().access & Opcodes.ACC_ABSTRACT) > 0) {
-            instructions.add(throwException(USEREXCEP));
+            instructions.add(AsmHelper.throwException(USEREXCEP));
             return;
         }
 
@@ -1503,7 +1503,7 @@ public class PCEnhancer {
         FieldMetaData[] fmds = getCreateSubclass() ? _meta.getFields()
                 : _meta.getDeclaredFields();
         if (fmds.length == 0) {
-            instructions.add(throwException(IllegalArgumentException.class));
+            instructions.add(AsmHelper.throwException(IllegalArgumentException.class));
         }
         else {
             // switch (val)
@@ -1542,7 +1542,7 @@ public class PCEnhancer {
             }
 
             instructions.add(defaultCase);
-            instructions.add(throwException(IllegalArgumentException.class));
+            instructions.add(AsmHelper.throwException(IllegalArgumentException.class));
         }
 
         addMultipleFieldsMethodVersion(classNode, provideFieldsMeth, false);
@@ -1565,7 +1565,7 @@ public class PCEnhancer {
         FieldMetaData[] fmds = getCreateSubclass() ? _meta.getFields()
                 : _meta.getDeclaredFields();
         if (fmds.length == 0) {
-            instructions.add(throwException(IllegalArgumentException.class));
+            instructions.add(AsmHelper.throwException(IllegalArgumentException.class));
         }
         else {
             // switch (val)
@@ -1614,7 +1614,7 @@ public class PCEnhancer {
             }
 
             instructions.add(defaultCase);
-            instructions.add(throwException(IllegalArgumentException.class));
+            instructions.add(AsmHelper.throwException(IllegalArgumentException.class));
         }
 
         addMultipleFieldsMethodVersion(classNode, replaceFieldMeth, false);
@@ -1639,7 +1639,7 @@ public class PCEnhancer {
         FieldMetaData[] fmds = getCreateSubclass() ? _meta.getFields()
                 : _meta.getDeclaredFields();
         if (fmds.length == 0) {
-            instructions.add(throwException(IllegalArgumentException.class));
+            instructions.add(AsmHelper.throwException(IllegalArgumentException.class));
         }
         else {
             instructions.add(new VarInsnNode(Opcodes.ILOAD, relLocal));
@@ -1666,7 +1666,7 @@ public class PCEnhancer {
             }
 
             instructions.add(defaultCase);
-            instructions.add(throwException(IllegalArgumentException.class));
+            instructions.add(AsmHelper.throwException(IllegalArgumentException.class));
         }
 
         addMultipleFieldsMethodVersion(classNode, copyFieldMeth, true);
@@ -1719,7 +1719,7 @@ public class PCEnhancer {
             instructions.add(new InsnNode(Opcodes.RETURN));
         }
         else {
-            instructions.add(throwException(IllegalArgumentException.class));
+            instructions.add(AsmHelper.throwException(IllegalArgumentException.class));
         }
         instructions.add(afterRelCheck);
 
@@ -1798,7 +1798,7 @@ public class PCEnhancer {
             instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
             LabelNode toEndSmCmp = new LabelNode();
             instructions.add(new JumpInsnNode(Opcodes.IF_ACMPEQ, toEndSmCmp));
-            instructions.add(throwException(IllegalArgumentException.class));
+            instructions.add(AsmHelper.throwException(IllegalArgumentException.class));
             instructions.add(toEndSmCmp);
 
             // if (pcStateManager == null)
@@ -1807,7 +1807,7 @@ public class PCEnhancer {
             instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, SM, Type.getDescriptor(SMTYPE)));
             LabelNode toEndSmNull = new LabelNode();
             instructions.add(new JumpInsnNode(Opcodes.IFNONNULL, toEndSmNull));
-            instructions.add(throwException(IllegalStateException.class));
+            instructions.add(AsmHelper.throwException(IllegalStateException.class));
             instructions.add(toEndSmNull);
         }
 
@@ -2179,7 +2179,7 @@ public class PCEnhancer {
 
         // single field identity always throws exception
         if (_meta.isOpenJPAIdentity()) {
-            instructions.add(throwException(INTERNEXCEP));
+            instructions.add(AsmHelper.throwException(INTERNEXCEP));
             return;
         }
 
@@ -3078,7 +3078,7 @@ public class PCEnhancer {
             // throw new IllegalArgumentException (...);
             String msg = _loc.get("str-cons", oidType, _meta.getDescribedType()).getMessage();
 
-            instructions.add(throwException(IllegalArgumentException.class, msg));
+            instructions.add(AsmHelper.throwException(IllegalArgumentException.class, msg));
             return;
         }
 
@@ -3245,38 +3245,6 @@ public class PCEnhancer {
         catch (PrivilegedActionException pae) {
             throw (NoSuchMethodException) pae.getException();
         }
-    }
-
-
-    /**
-     * Helper method to add the code necessary to throw the given
-     * exception type, sans message.
-     */
-    private InsnList throwException(Class type) {
-        return throwException(type, null);
-    }
-
-    /**
-     * Helper method to add the code necessary to throw the given
-     * exception type, sans message.
-     */
-    private InsnList throwException(Class type, String msg) {
-        InsnList instructions = new InsnList();
-        instructions.add(new TypeInsnNode(Opcodes.NEW, Type.getInternalName(type)));
-        instructions.add(new InsnNode(Opcodes.DUP));
-        if (msg != null) {
-            instructions.add(AsmHelper.getLoadConstantInsn(msg));
-        }
-        String desc = msg != null
-                ? Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(String.class))
-                : Type.getMethodDescriptor(Type.VOID_TYPE);
-        instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
-                                            Type.getInternalName(type),
-                                            "<init>",
-                                            desc));
-        instructions.add(new InsnNode(Opcodes.ATHROW));
-
-        return instructions;
     }
 
     /**

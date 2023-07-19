@@ -20,9 +20,7 @@ import java.security.PrivilegedAction;
 
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 
-import serp.bytecode.BCClass;
 import serp.bytecode.BCClassLoader;
-import serp.bytecode.BCField;
 import serp.bytecode.Project;
 
 /**
@@ -59,39 +57,4 @@ public class SerpPrivacyHelper extends J2DoPrivHelper {
         };
     }
 
-    /**
-     * Return a PrivilegeAction object for BCClass.getFields().
-     *
-     * Requires security policy:
-     *   'permission java.lang.RuntimePermission "getClassLoader";'
-     *
-     * @return BCField
-     */
-    public static PrivilegedAction<BCField[]> getBCClassFieldsAction(
-            final BCClass bcClass, final String fieldName) {
-        return new PrivilegedAction<BCField []>() {
-            @Override
-            public BCField [] run() {
-                return bcClass.getFields(fieldName);
-            }
-        };
-    }
-
-    /**
-     * Return a PrivilegeAction object for Project.loadClass().
-     *
-     * Requires security policy:
-     *   'permission java.lang.RuntimePermission "createClassLoader";'
-     *
-     * @return BCClass
-     */
-    public static PrivilegedAction<BCClass> loadProjectClassAction(
-        final Project project, final Class<?> clazz) {
-        return new PrivilegedAction<BCClass>() {
-            @Override
-            public BCClass run() {
-                return project.loadClass(clazz);
-            }
-        };
-    }
 }

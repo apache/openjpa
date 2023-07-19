@@ -124,8 +124,6 @@ public class EnhancementProject {
         ClassNode classNode = new ClassNode();
         cr.accept(classNode, AsmHelper.ATTRS, 0);
         ClassNodeTracker cnt = new ClassNodeTracker(this, classNode, loader);
-        String name = classNode.name.replace("/", ".");
-        classNodeTrackers.put(name, cnt);
         return cnt;
     }
 
