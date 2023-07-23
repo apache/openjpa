@@ -26,10 +26,8 @@ import org.apache.openjpa.lib.util.Localizer.Message;
  * @author Abe White
  * @since 0.3.2
  */
-public class InternalException
-    extends OpenJPAException {
+public class InternalException extends OpenJPAException {
 
-    
     private static final long serialVersionUID = 1L;
 
     public InternalException() {

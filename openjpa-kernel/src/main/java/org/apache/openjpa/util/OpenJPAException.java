@@ -35,8 +35,7 @@ import org.apache.openjpa.lib.util.Localizer.Message;
  * @author Abe White
  * @since 0.4.0
  */
-public abstract class OpenJPAException
-    extends RuntimeException
+public abstract class OpenJPAException extends RuntimeException
     implements Serializable, ExceptionInfo {
 
     private static final long serialVersionUID = 1L;

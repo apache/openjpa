@@ -27,7 +27,7 @@ import org.apache.xbean.asm9.tree.ClassNode;
  * @author <a href="mailto:struberg@apache.org">Mark Struberg</a>
  */
 public class ClassNodeTracker {
-    private final ClassNode classNode;
+    private ClassNode classNode;
     private final ClassLoader cl;
     private final EnhancementProject project;
 
@@ -58,6 +58,10 @@ public class ClassNodeTracker {
 
     public ClassNode getClassNode() {
         return classNode;
+    }
+
+    public void setClassNode(ClassNode classNode) {
+        this.classNode = classNode;
     }
 
     public ClassLoader getClassLoader() {

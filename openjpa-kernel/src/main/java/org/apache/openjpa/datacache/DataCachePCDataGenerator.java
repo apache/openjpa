@@ -29,10 +29,13 @@ import org.apache.openjpa.enhance.PCDataGenerator;
 import org.apache.openjpa.kernel.AbstractPCData;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueMetaData;
+import org.apache.openjpa.util.asm.AsmHelper;
+import org.apache.openjpa.util.asm.ClassNodeTracker;
 
 import serp.bytecode.BCClass;
 import serp.bytecode.BCField;
@@ -40,6 +43,7 @@ import serp.bytecode.BCMethod;
 import serp.bytecode.Code;
 import serp.bytecode.Instruction;
 import serp.bytecode.JumpInstruction;
+import serp.bytecode.Project;
 
 /**
  * A {@link PCDataGenerator} instance which generates properly
@@ -78,12 +82,18 @@ public class DataCachePCDataGenerator extends PCDataGenerator {
     }
 
     @Override
-    protected void decorate(BCClass bc, ClassMetaData meta) {
-        enhanceToData(bc);
-        enhanceToNestedData(bc);
-        replaceNewEmbeddedPCData(bc);
-        addSynchronization(bc);
-        addTimeout(bc);
+    protected void decorate(ClassNodeTracker cnt, ClassMetaData meta) {
+        //X TODO REMOVE
+        BCClass _bc = new Project().loadClass(cnt.getClassNode().name.replace("/", "."));
+        AsmHelper.readIntoBCClass(cnt, _bc);
+
+        enhanceToData(_bc);
+        enhanceToNestedData(_bc);
+        replaceNewEmbeddedPCData(_bc);
+        addSynchronization(_bc);
+        addTimeout(_bc);
+
+        cnt.setClassNode(AsmHelper.toClassNode(cnt.getProject(), _bc).getClassNode());
     }
 
     private void enhanceToData(BCClass bc) {
@@ -183,6 +193,44 @@ public class DataCachePCDataGenerator extends PCDataGenerator {
 
         code.calculateMaxLocals();
         code.calculateMaxStack();
+    }
+
+    /**
+     * Add a bean field of the given name and type.
+     */
+    @Deprecated
+    private BCField addBeanField(BCClass bc, String name, Class type) {
+        if (name == null)
+            throw new IllegalArgumentException("name == null");
+
+        // private <type> <name>
+        BCField field = bc.declareField(name, type);
+        field.setAccessFlags(getFieldAccess());
+        name = StringUtil.capitalize(name);
+
+        // getter
+        String prefix = (type == boolean.class) ? "is" : "get";
+        BCMethod method = bc.declareMethod(prefix + name, type, null);
+        method.makePublic();
+        Code code = method.getCode(true);
+        code.aload().setThis();
+        code.getfield().setField(field);
+        code.xreturn().setType(type);
+        code.calculateMaxStack();
+        code.calculateMaxLocals();
+
+        // setter
+        method = bc.declareMethod("set" + name, void.class,
+                                  new Class[]{ type });
+        method.makePublic();
+        code = method.getCode(true);
+        code.aload().setThis();
+        code.xload().setParam(0).setType(type);
+        code.putfield().setField(field);
+        code.vreturn();
+        code.calculateMaxStack();
+        code.calculateMaxLocals();
+        return field;
     }
 
     private void addTimeout(BCClass bc) {
