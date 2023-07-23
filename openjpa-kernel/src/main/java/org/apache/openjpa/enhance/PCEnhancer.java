@@ -121,7 +121,6 @@ public class PCEnhancer {
     // Each enhanced class will return the value of this field via
     // public int getEnhancementContractVersion()
     public static final int ENHANCER_VERSION;
-    public static final Type TYPE_OBJECT = Type.getType(Object.class);
 
     public static final int ENHANCE_NONE = 0;
     public static final int ENHANCE_AWARE = 2 << 0;
@@ -1177,7 +1176,7 @@ public class PCEnhancer {
         insns.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
                                      Type.getInternalName(RedefinitionHelper.class),
                                      "accessingField",
-                                     Type.getMethodDescriptor(Type.VOID_TYPE, TYPE_OBJECT, Type.INT_TYPE)));
+                                     Type.getMethodDescriptor(Type.VOID_TYPE, AsmHelper.TYPE_OBJECT, Type.INT_TYPE)));
 
         if (methodNode.instructions.size() == 0) {
             methodNode.instructions.add(insns);
@@ -1221,7 +1220,8 @@ public class PCEnhancer {
         insns.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
                                      Type.getInternalName(RedefinitionHelper.class),
                                      "settingField",
-                                     Type.getMethodDescriptor(Type.VOID_TYPE, TYPE_OBJECT, Type.INT_TYPE, Type.getType(type), Type.getType(type))));
+                                     Type.getMethodDescriptor(Type.VOID_TYPE,
+                                                              AsmHelper.TYPE_OBJECT, Type.INT_TYPE, Type.getType(type), Type.getType(type))));
 
         methodNode.instructions.insert(currentInsn, insns);
         return insns.getLast();
@@ -1336,8 +1336,9 @@ public class PCEnhancer {
                                                      PRE + "ClearFields",
                                                      Type.getMethodDescriptor(Type.VOID_TYPE),
                                                      null, null);
-
+        classNode.methods.add(clearFieldMethod);
         final InsnList instructions = clearFieldMethod.instructions;
+
         if (_meta.getPCSuperclass() != null && !getCreateSubclass()) {
             instructions.add(new VarInsnNode(Opcodes.ALOAD, 0));
             instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
@@ -1375,9 +1376,6 @@ public class PCEnhancer {
             }
         }
         instructions.add(new InsnNode(Opcodes.RETURN));
-
-        classNode.methods.add(clearFieldMethod);
-
     }
 
     /**
@@ -1391,7 +1389,7 @@ public class PCEnhancer {
     private void addNewInstanceMethod(ClassNode classNode, boolean oid) {
         // public PersistenceCapable pcNewInstance (...)
         String desc = oid
-                ? Type.getMethodDescriptor(Type.getType(PCTYPE), Type.getType(SMTYPE), TYPE_OBJECT, Type.BOOLEAN_TYPE)
+                ? Type.getMethodDescriptor(Type.getType(PCTYPE), Type.getType(SMTYPE), AsmHelper.TYPE_OBJECT, Type.BOOLEAN_TYPE)
                 : Type.getMethodDescriptor(Type.getType(PCTYPE), Type.getType(SMTYPE), Type.BOOLEAN_TYPE);
         MethodNode newInstance = new MethodNode(Opcodes.ACC_PUBLIC,
                                                 PRE + "NewInstance",
@@ -1443,7 +1441,7 @@ public class PCEnhancer {
             instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
                                                 classNode.name,
                                                 PRE + "CopyKeyFieldsFromObjectId",
-                                                Type.getMethodDescriptor(Type.VOID_TYPE, TYPE_OBJECT)));
+                                                Type.getMethodDescriptor(Type.VOID_TYPE, AsmHelper.TYPE_OBJECT)));
         }
 
         instructions.add(new VarInsnNode(Opcodes.ALOAD, newPcVarPos));
@@ -1736,7 +1734,7 @@ public class PCEnhancer {
      */
     private void addMultipleFieldsMethodVersion(ClassNode classNode, MethodNode single, boolean copy) {
         String desc = copy
-                ? Type.getMethodDescriptor(Type.VOID_TYPE, TYPE_OBJECT, Type.getType(int[].class))
+                ? Type.getMethodDescriptor(Type.VOID_TYPE, AsmHelper.TYPE_OBJECT, Type.getType(int[].class))
                 : Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(int[].class));
 
         MethodNode multiMeth = new MethodNode(Opcodes.ACC_PUBLIC,
@@ -1757,7 +1755,7 @@ public class PCEnhancer {
                 instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
                                                     Type.getInternalName(ImplHelper.class),
                                                     "getManagedInstance",
-                                                    Type.getMethodDescriptor(TYPE_OBJECT, TYPE_OBJECT)));
+                                                    Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT, AsmHelper.TYPE_OBJECT)));
                 instructions.add(new TypeInsnNode(Opcodes.CHECKCAST, managedType.getClassNode().name));
                 instructions.add(new VarInsnNode(Opcodes.ASTORE, instVarPos));
 
@@ -1772,8 +1770,8 @@ public class PCEnhancer {
                                                     Type.getInternalName(ImplHelper.class),
                                                     "toPersistenceCapable",
                                                     Type.getMethodDescriptor(Type.getType(PersistenceCapable.class),
-                                                                             TYPE_OBJECT,
-                                                                             TYPE_OBJECT)));
+                                                                             AsmHelper.TYPE_OBJECT,
+                                                                             AsmHelper.TYPE_OBJECT)));
 
                 // now we get the StateManager from the other instance
                 instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
@@ -1973,7 +1971,7 @@ public class PCEnhancer {
         final ClassNode classNode = pc.getClassNode();
         MethodNode getVersionMeth = new MethodNode(Opcodes.ACC_PUBLIC,
                                                    PRE + "GetVersion",
-                                                   Type.getMethodDescriptor(TYPE_OBJECT),
+                                                   Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT),
                                                    null, null);
         classNode.methods.add(getVersionMeth);
         InsnList instructions = getVersionMeth.instructions;
@@ -2014,7 +2012,7 @@ public class PCEnhancer {
         instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
                                             Type.getInternalName(SMTYPE),
                                             "getVersion",
-                                            Type.getMethodDescriptor(TYPE_OBJECT)));
+                                            Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT)));
 
         instructions.add(new InsnNode(Opcodes.ARETURN));
     }
@@ -2099,7 +2097,7 @@ public class PCEnhancer {
             // public void pcCopyKeyFieldsToObjectId (ObjectIdFieldSupplier fs, Object oid)
             MethodNode copyKeyMeth = new MethodNode(Opcodes.ACC_PUBLIC,
                                                     PRE + "CopyKeyFieldsToObjectId",
-                                                    Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(OIDFSTYPE), TYPE_OBJECT),
+                                                    Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(OIDFSTYPE), AsmHelper.TYPE_OBJECT),
                                                     null, null);
             classNode.methods.add(copyKeyMeth);
             copyKeyMeth.instructions.add(new InsnNode(Opcodes.RETURN));
@@ -2109,7 +2107,7 @@ public class PCEnhancer {
             // public void pcCopyKeyFieldsToObjectId (Object oid)
             MethodNode copyKeyMeth = new MethodNode(Opcodes.ACC_PUBLIC,
                                                     PRE + "CopyKeyFieldsToObjectId",
-                                                    Type.getMethodDescriptor(Type.VOID_TYPE, TYPE_OBJECT),
+                                                    Type.getMethodDescriptor(Type.VOID_TYPE, AsmHelper.TYPE_OBJECT),
                                                     null, null);
             classNode.methods.add(copyKeyMeth);
             copyKeyMeth.instructions.add(new InsnNode(Opcodes.RETURN));
@@ -2119,7 +2117,7 @@ public class PCEnhancer {
             // public void pcCopyKeyFieldsFromObjectId (ObjectIdFieldConsumer fc, Object oid)
             MethodNode copyKeyMeth = new MethodNode(Opcodes.ACC_PUBLIC,
                                                     PRE + "CopyKeyFieldsFromObjectId",
-                                                    Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(OIDFCTYPE), TYPE_OBJECT),
+                                                    Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(OIDFCTYPE), AsmHelper.TYPE_OBJECT),
                                                     null, null);
             classNode.methods.add(copyKeyMeth);
             copyKeyMeth.instructions.add(new InsnNode(Opcodes.RETURN));
@@ -2129,7 +2127,7 @@ public class PCEnhancer {
             // public void pcCopyKeyFieldsFromObjectId (Object oid)
             MethodNode copyKeyMeth = new MethodNode(Opcodes.ACC_PUBLIC,
                                                     PRE + "CopyKeyFieldsFromObjectId",
-                                                    Type.getMethodDescriptor(Type.VOID_TYPE, TYPE_OBJECT),
+                                                    Type.getMethodDescriptor(Type.VOID_TYPE, AsmHelper.TYPE_OBJECT),
                                                     null, null);
             classNode.methods.add(copyKeyMeth);
             copyKeyMeth.instructions.add(new InsnNode(Opcodes.RETURN));
@@ -2139,7 +2137,7 @@ public class PCEnhancer {
             // public Object pcNewObjectIdInstance ()
             MethodNode copyKeyMeth = new MethodNode(Opcodes.ACC_PUBLIC,
                                                     PRE + "NewObjectIdInstance",
-                                                    Type.getMethodDescriptor(TYPE_OBJECT),
+                                                    Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT),
                                                     null, null);
             classNode.methods.add(copyKeyMeth);
             copyKeyMeth.instructions.add(new InsnNode(Opcodes.ACONST_NULL));
@@ -2150,7 +2148,7 @@ public class PCEnhancer {
             // public Object pcNewObjectIdInstance (Object obj)
             MethodNode copyKeyMeth = new MethodNode(Opcodes.ACC_PUBLIC,
                                                     PRE + "NewObjectIdInstance",
-                                                    Type.getMethodDescriptor(TYPE_OBJECT, TYPE_OBJECT),
+                                                    Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT, AsmHelper.TYPE_OBJECT),
                                                     null, null);
             classNode.methods.add(copyKeyMeth);
             copyKeyMeth.instructions.add(new InsnNode(Opcodes.ACONST_NULL));
@@ -2167,8 +2165,8 @@ public class PCEnhancer {
 
         // public void pcCopyKeyFieldsToObjectId (ObjectIdFieldSupplier fs, Object oid)
         String mDesc = fieldManager
-                ? Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(OIDFSTYPE), TYPE_OBJECT)
-                : Type.getMethodDescriptor(Type.VOID_TYPE, TYPE_OBJECT);
+                ? Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(OIDFSTYPE), AsmHelper.TYPE_OBJECT)
+                : Type.getMethodDescriptor(Type.VOID_TYPE, AsmHelper.TYPE_OBJECT);
         MethodNode copyKFMeth = new MethodNode(Opcodes.ACC_PUBLIC,
                                                PRE + "CopyKeyFieldsToObjectId",
                                                mDesc,
@@ -2210,7 +2208,7 @@ public class PCEnhancer {
             instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
                                                 Type.getInternalName(ObjectId.class),
                                                 "getId",
-                                                Type.getMethodDescriptor(TYPE_OBJECT)));
+                                                Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT)));
         }
 
         // <oid type> id = (<oid type>) oid;
@@ -2290,7 +2288,7 @@ public class PCEnhancer {
                                 instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
                                                                     Type.getInternalName(ObjectId.class),
                                                                     "getId",
-                                                                    Type.getMethodDescriptor(TYPE_OBJECT)));
+                                                                    Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT)));
                             }
 
                             // if the type of this field meta data is
@@ -2323,7 +2321,8 @@ public class PCEnhancer {
                     instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
                                                         Type.getInternalName(ApplicationIds.class),
                                                         "setAppId",
-                                                        Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(ObjectId.class), TYPE_OBJECT)));
+                                                        Type.getMethodDescriptor(Type.VOID_TYPE,
+                                                                                 Type.getType(ObjectId.class), AsmHelper.TYPE_OBJECT)));
                     instructions.add(new InsnNode(Opcodes.RETURN));
                     return;
                 }
@@ -2394,7 +2393,7 @@ public class PCEnhancer {
                     instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
                                                         Type.getInternalName(ObjectId.class),
                                                         "getId",
-                                                        Type.getMethodDescriptor(TYPE_OBJECT)));
+                                                        Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT)));
                 }
 
                 // if the type of this field meta data is
@@ -2418,16 +2417,16 @@ public class PCEnhancer {
                 instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
                                                     Type.getInternalName(Reflection.class),
                                                     "set",
-                                                    Type.getMethodDescriptor(Type.VOID_TYPE, TYPE_OBJECT, Type.getType(Field.class),
-                                                                             (type.isPrimitive()) ? Type.getType(type) : TYPE_OBJECT)));
+                                                    Type.getMethodDescriptor(Type.VOID_TYPE, AsmHelper.TYPE_OBJECT, Type.getType(Field.class),
+                                                                             (type.isPrimitive()) ? Type.getType(type) : AsmHelper.TYPE_OBJECT)));
 
             }
             else if (reflect) {
                 instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
                                                     Type.getInternalName(Reflection.class),
                                                     "set",
-                                                    Type.getMethodDescriptor(Type.VOID_TYPE, TYPE_OBJECT, Type.getType(Method.class),
-                                                                             (type.isPrimitive()) ? Type.getType(type) : TYPE_OBJECT)));
+                                                    Type.getMethodDescriptor(Type.VOID_TYPE, AsmHelper.TYPE_OBJECT, Type.getType(Method.class),
+                                                                             (type.isPrimitive()) ? Type.getType(type) : AsmHelper.TYPE_OBJECT)));
             }
             else if (field != null) {
                 instructions.add(new FieldInsnNode(Opcodes.PUTFIELD,
@@ -2466,13 +2465,13 @@ public class PCEnhancer {
             instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
                                                 Type.getInternalName(PersistenceCapable.class),
                                                 PRE + "FetchObjectId",
-                                                Type.getMethodDescriptor(TYPE_OBJECT)));
+                                                Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT)));
         }
         else {
             instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
                                                 Type.getInternalName(PersistenceCapable.class),
                                                 PRE + "NewObjectIdInstance",
-                                                Type.getMethodDescriptor(TYPE_OBJECT)));
+                                                Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT)));
         }
 
         int oidVarPos = nextFreeVarPos++;
@@ -2679,7 +2678,7 @@ public class PCEnhancer {
                 instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
                                                     Type.getInternalName(ObjectId.class),
                                                     "getId",
-                                                    Type.getMethodDescriptor(TYPE_OBJECT)));
+                                                    Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT)));
             }
             instructions.add(new TypeInsnNode(Opcodes.CHECKCAST, Type.getInternalName(pktype)));
         }
@@ -2735,8 +2734,8 @@ public class PCEnhancer {
     private void addCopyKeyFieldsFromObjectIdMethod(boolean fieldManager) throws NoSuchMethodException {
         // public void pcCopyKeyFieldsFromObjectId (ObjectIdFieldConsumer fc, Object oid)
         String mDesc = fieldManager
-                ? Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(OIDFCTYPE), TYPE_OBJECT)
-                : Type.getMethodDescriptor(Type.VOID_TYPE, TYPE_OBJECT);
+                ? Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(OIDFCTYPE), AsmHelper.TYPE_OBJECT)
+                : Type.getMethodDescriptor(Type.VOID_TYPE, AsmHelper.TYPE_OBJECT);
         MethodNode copyKFMeth = new MethodNode(Opcodes.ACC_PUBLIC,
                                                PRE + "CopyKeyFieldsFromObjectId",
                                                mDesc,
@@ -2773,7 +2772,7 @@ public class PCEnhancer {
             instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
                                                 Type.getInternalName(ObjectId.class),
                                                 "getId",
-                                                Type.getMethodDescriptor(TYPE_OBJECT)));
+                                                Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT)));
         }
 
         // <oid type> id = (<oid type>) oid;
@@ -2819,7 +2818,7 @@ public class PCEnhancer {
                 instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
                                                     Type.getInternalName(SMTYPE),
                                                     "getPCPrimaryKey",
-                                                    Type.getMethodDescriptor(TYPE_OBJECT, TYPE_OBJECT, Type.INT_TYPE)));
+                                                    Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT, AsmHelper.TYPE_OBJECT, Type.INT_TYPE)));
                 instructions.add(new TypeInsnNode(Opcodes.CHECKCAST, Type.getInternalName(fmds[i].getDeclaredType())));
             }
             else {
@@ -2845,7 +2844,7 @@ public class PCEnhancer {
                         instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
                                                             Type.getInternalName(oidType),
                                                             "getId",
-                                                            Type.getMethodDescriptor(TYPE_OBJECT)));
+                                                            Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT)));
                         if (!fieldManager && type != Object.class) {
                             instructions.add(new TypeInsnNode(Opcodes.CHECKCAST, Type.getInternalName(fmds[i].getDeclaredType())));
                         }
@@ -3061,8 +3060,8 @@ public class PCEnhancer {
     private void addNewObjectIdInstanceMethod(boolean obj) throws NoSuchMethodException {
         // public Object pcNewObjectIdInstance ()
         String mDesc = obj
-                ? Type.getMethodDescriptor(TYPE_OBJECT, TYPE_OBJECT)
-                : Type.getMethodDescriptor(TYPE_OBJECT);
+                ? Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT, AsmHelper.TYPE_OBJECT)
+                : Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT);
 
         MethodNode newOidMeth = new MethodNode(Opcodes.ACC_PUBLIC,
                                                PRE + "NewObjectIdInstance",
@@ -3581,7 +3580,7 @@ public class PCEnhancer {
         // private Object writeReplace() throws ObjectStreamException
         MethodNode writeReplaceMeth = new MethodNode(Opcodes.ACC_PRIVATE,
                                                      "writeReplace",
-                                                     Type.getMethodDescriptor(TYPE_OBJECT),
+                                                     Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT),
                                                      null,
                                                      new String[]{Type.getInternalName(ObjectStreamException.class)});
         final ClassNode classNode = pc.getClassNode();
@@ -3696,7 +3695,7 @@ public class PCEnhancer {
             instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
                                                 classNode.name,
                                                 PRE + "SetDetachedState",
-                                                Type.getMethodDescriptor(Type.VOID_TYPE, TYPE_OBJECT)));
+                                                Type.getMethodDescriptor(Type.VOID_TYPE, AsmHelper.TYPE_OBJECT)));
         }
 
         if (full) {
@@ -3799,7 +3798,7 @@ public class PCEnhancer {
             instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
                                                 classNode.name,
                                                 PRE + "GetDetachedState",
-                                                Type.getMethodDescriptor(TYPE_OBJECT)));
+                                                Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT)));
 
             lblEndIfNull = new LabelNode();
             instructions.add(new JumpInsnNode(Opcodes.IFNULL, lblEndIfNull));
@@ -3807,11 +3806,11 @@ public class PCEnhancer {
             instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
                                                 classNode.name,
                                                 PRE + "GetDetachedState",
-                                                Type.getMethodDescriptor(TYPE_OBJECT)));
+                                                Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT)));
             instructions.add(new FieldInsnNode(Opcodes.GETSTATIC,
                                                Type.getInternalName(PersistenceCapable.class),
                                                "DESERIALIZED",
-                                               TYPE_OBJECT.getDescriptor()));
+                                               AsmHelper.TYPE_OBJECT.getDescriptor()));
 
             lblNotDeser = new LabelNode();
             instructions.add(new JumpInsnNode(Opcodes.IF_ACMPEQ, lblNotDeser));
@@ -3912,7 +3911,7 @@ public class PCEnhancer {
                     instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
                                                         Type.getInternalName(String.class),
                                                         "equals",
-                                                        Type.getMethodDescriptor(Type.BOOLEAN_TYPE, TYPE_OBJECT)));
+                                                        Type.getMethodDescriptor(Type.BOOLEAN_TYPE, AsmHelper.TYPE_OBJECT)));
                     ifIns2 = new LabelNode();
                     instructions.add(new JumpInsnNode(Opcodes.IFNE, ifIns2));
                 }
@@ -3967,7 +3966,7 @@ public class PCEnhancer {
             instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
                                                 classNode.name,
                                                 PRE + "GetDetachedState",
-                                                Type.getMethodDescriptor(TYPE_OBJECT)));
+                                                Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT)));
             LabelNode lblIfNn = new LabelNode();
             instructions.add(new JumpInsnNode(Opcodes.IFNONNULL, lblIfNn));
             instructions.add(new FieldInsnNode(Opcodes.GETSTATIC, Type.getInternalName(Boolean.class),
@@ -4085,7 +4084,7 @@ public class PCEnhancer {
             // protected Object clone () throws CloneNotSupportedException
             cloneMeth = new MethodNode(0,
                                        "clone",
-                                       Type.getMethodDescriptor(TYPE_OBJECT),
+                                       Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT),
                                        null,
                                        new String[]{Type.getInternalName(CloneNotSupportedException.class)});
             if (!setVisibilityToSuperMethod(cloneMeth)) {
@@ -4097,7 +4096,7 @@ public class PCEnhancer {
             cloneMeth.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
                                                           superName,
                                                           "clone",
-                                                          Type.getMethodDescriptor(TYPE_OBJECT)));
+                                                          Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT)));
             cloneMeth.instructions.add(new InsnNode(Opcodes.ARETURN));
         }
         else {
@@ -4458,7 +4457,7 @@ public class PCEnhancer {
             name = PRE + "DetachedState";
             FieldNode field = new FieldNode(Opcodes.ACC_PRIVATE | Opcodes.ACC_TRANSIENT,
                                             name,
-                                            TYPE_OBJECT.getDescriptor(),
+                                            AsmHelper.TYPE_OBJECT.getDescriptor(),
                                             null, null);
             classNode.fields.add(field);
         }
@@ -4470,7 +4469,7 @@ public class PCEnhancer {
         // public Object pcGetDetachedState ()
         MethodNode getDetachedStateMeth = new MethodNode(Opcodes.ACC_PUBLIC,
                                                          PRE + "GetDetachedState",
-                                                         Type.getMethodDescriptor(TYPE_OBJECT),
+                                                         Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT),
                                                          null, null);
         classNode.methods.add(getDetachedStateMeth);
 
@@ -4488,7 +4487,7 @@ public class PCEnhancer {
         // public void pcSetDetachedState (Object state)
         MethodNode setDetachedStateMeth = new MethodNode(Opcodes.ACC_PUBLIC,
                                                          PRE + "SetDetachedState",
-                                                         Type.getMethodDescriptor(Type.VOID_TYPE, TYPE_OBJECT),
+                                                         Type.getMethodDescriptor(Type.VOID_TYPE, AsmHelper.TYPE_OBJECT),
                                                          null, null);
         classNode.methods.add(setDetachedStateMeth);
 
@@ -4609,10 +4608,10 @@ public class PCEnhancer {
                                                 Type.getInternalName(Reflection.class),
                                                 "set",
                                                 Type.getMethodDescriptor(Type.VOID_TYPE,
-                                                                         TYPE_OBJECT,
+                                                                         AsmHelper.TYPE_OBJECT,
                                                                          fieldType.isPrimitive()
                                                                                  ? Type.getType(fieldType)
-                                                                                 : TYPE_OBJECT,
+                                                                                 : AsmHelper.TYPE_OBJECT,
                                                                          Type.getType(Field.class))));
 
         }
@@ -4766,11 +4765,11 @@ public class PCEnhancer {
             instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
                                                 Type.getInternalName(ObjectInput.class),
                                                 "readObject",
-                                                Type.getMethodDescriptor(TYPE_OBJECT)));
+                                                Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT)));
             instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
                                                 classNode.name,
                                                 PRE + "SetDetachedState",
-                                                Type.getMethodDescriptor(Type.VOID_TYPE, TYPE_OBJECT)));
+                                                Type.getMethodDescriptor(Type.VOID_TYPE, AsmHelper.TYPE_OBJECT)));
 
             // pcReplaceStateManager ((StateManager) in.readObject ());
             instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
@@ -4778,7 +4777,7 @@ public class PCEnhancer {
             instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
                                                 Type.getInternalName(ObjectInput.class),
                                                 "readObject",
-                                                Type.getMethodDescriptor(TYPE_OBJECT)));
+                                                Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT)));
 
             instructions.add(new TypeInsnNode(Opcodes.CHECKCAST, Type.getInternalName(StateManager.class)));
             instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
@@ -4890,7 +4889,7 @@ public class PCEnhancer {
         // <field> = in.read<type> ();
         instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
         instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st param
-        Type retType = isPrimitive ? fieldType : TYPE_OBJECT;
+        Type retType = isPrimitive ? fieldType : AsmHelper.TYPE_OBJECT;
         instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
                                             Type.getInternalName(ObjectInput.class),
                                             methName,
@@ -5001,18 +5000,18 @@ public class PCEnhancer {
             instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
                                                 classNode.name,
                                                 PRE + "GetDetachedState",
-                                                Type.getMethodDescriptor(TYPE_OBJECT)));
+                                                Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT)));
             instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
                                                 Type.getInternalName(ObjectOutput.class),
                                                 "writeObject",
-                                                Type.getMethodDescriptor(Type.VOID_TYPE, TYPE_OBJECT)));
+                                                Type.getMethodDescriptor(Type.VOID_TYPE, AsmHelper.TYPE_OBJECT)));
 
             instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st param
             instructions.add(AsmHelper.getLoadConstantInsn(null));
             instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
                                                 Type.getInternalName(ObjectOutput.class),
                                                 "writeObject",
-                                                Type.getMethodDescriptor(Type.VOID_TYPE, TYPE_OBJECT)));
+                                                Type.getMethodDescriptor(Type.VOID_TYPE, AsmHelper.TYPE_OBJECT)));
         }
         if (go2 != null) {
             instructions.add(go2);
@@ -5133,7 +5132,7 @@ public class PCEnhancer {
             mdesc = Type.getMethodDescriptor(Type.VOID_TYPE, Type.INT_TYPE);
         }
         else if (!isPrimitive) {
-            mdesc = Type.getMethodDescriptor(Type.VOID_TYPE, TYPE_OBJECT);
+            mdesc = Type.getMethodDescriptor(Type.VOID_TYPE, AsmHelper.TYPE_OBJECT);
         }
         else {
             mdesc = Type.getMethodDescriptor(Type.VOID_TYPE, fieldType);

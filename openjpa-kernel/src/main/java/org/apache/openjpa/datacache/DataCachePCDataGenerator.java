@@ -36,6 +36,17 @@ import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.asm.AsmHelper;
 import org.apache.openjpa.util.asm.ClassNodeTracker;
+import org.apache.xbean.asm9.Opcodes;
+import org.apache.xbean.asm9.Type;
+import org.apache.xbean.asm9.tree.ClassNode;
+import org.apache.xbean.asm9.tree.FieldInsnNode;
+import org.apache.xbean.asm9.tree.InsnList;
+import org.apache.xbean.asm9.tree.InsnNode;
+import org.apache.xbean.asm9.tree.JumpInsnNode;
+import org.apache.xbean.asm9.tree.LabelNode;
+import org.apache.xbean.asm9.tree.MethodInsnNode;
+import org.apache.xbean.asm9.tree.MethodNode;
+import org.apache.xbean.asm9.tree.VarInsnNode;
 
 import serp.bytecode.BCClass;
 import serp.bytecode.BCField;
@@ -83,11 +94,12 @@ public class DataCachePCDataGenerator extends PCDataGenerator {
 
     @Override
     protected void decorate(ClassNodeTracker cnt, ClassMetaData meta) {
+        enhanceToData(cnt);
+
         //X TODO REMOVE
         BCClass _bc = new Project().loadClass(cnt.getClassNode().name.replace("/", "."));
         AsmHelper.readIntoBCClass(cnt, _bc);
 
-        enhanceToData(_bc);
         enhanceToNestedData(_bc);
         replaceNewEmbeddedPCData(_bc);
         addSynchronization(_bc);
@@ -96,30 +108,45 @@ public class DataCachePCDataGenerator extends PCDataGenerator {
         cnt.setClassNode(AsmHelper.toClassNode(cnt.getProject(), _bc).getClassNode());
     }
 
-    private void enhanceToData(BCClass bc) {
-        BCMethod meth = bc.declareMethod("toData", Object.class,
-            new Class []{ FieldMetaData.class, Object.class,
-            StoreContext.class });
-        Code code = meth.getCode(true);
+    private void enhanceToData(ClassNodeTracker cnt) {
+        ClassNode classNode = cnt.getClassNode();
+        MethodNode meth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                         "toData",
+                                         Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT,
+                                                                  Type.getType(FieldMetaData.class),
+                                                                  AsmHelper.TYPE_OBJECT,
+                                                                  Type.getType(StoreContext.class)),
+                                         null, null);
+        classNode.methods.add(meth);
+        final InsnList instructions = meth.instructions;
+
         // if (fmd.isLRS ()))
         // 		return NULL;
-        code.aload().setParam(0);
-        code.invokevirtual().setMethod(FieldMetaData.class, "isLRS",
-            boolean.class, null);
-        JumpInstruction ifins = code.ifeq();
-        code.getstatic().setField(AbstractPCData.class, "NULL", Object.class);
-        code.areturn();
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st param, FieldMetaData
+        instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                            Type.getInternalName(FieldMetaData.class),
+                                            "isLRS",
+                                            Type.getMethodDescriptor(Type.BOOLEAN_TYPE)));
+        LabelNode lblEndIfEq = new LabelNode();
+        instructions.add(new JumpInsnNode(Opcodes.IFEQ, lblEndIfEq));
+        instructions.add(new FieldInsnNode(Opcodes.GETSTATIC, Type.getInternalName(AbstractPCData.class),
+                                           "NULL", AsmHelper.TYPE_OBJECT.getDescriptor()));
+        instructions.add(new InsnNode(Opcodes.ARETURN));
+
+        instructions.add(lblEndIfEq);
         // super.toData (fmd, val, ctx);
-        ifins.setTarget(code.aload().setThis());
-        code.aload().setParam(0);
-        code.aload().setParam(1);
-        code.aload().setParam(2);
-        code.invokespecial().setMethod(AbstractPCData.class, "toData",
-            Object.class, new Class[]{ FieldMetaData.class, Object.class,
-            StoreContext.class });
-        code.areturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 0));
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st param, FieldMetaData
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 2)); // 2nd param, Object
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 3)); // 3rd param, StoreContext
+        instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
+                                            Type.getInternalName(AbstractPCData.class),
+                                            "toData",
+                                            Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT,
+                                                                     Type.getType(FieldMetaData.class),
+                                                                     AsmHelper.TYPE_OBJECT,
+                                                                     Type.getType(StoreContext.class))));
+        instructions.add(new InsnNode(Opcodes.ARETURN));
     }
 
     private void enhanceToNestedData(BCClass bc) {

@@ -319,12 +319,12 @@ public class PCDataGenerator extends DynamicStorageGenerator {
             instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
                                                 Type.getInternalName(OpenJPAStateManager.class),
                                                 "getImplData",
-                                                Type.getMethodDescriptor(Type.getType(Object.class))));
+                                                Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT)));
 
             instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
                                                 classNode.name,
                                                 "setImplData",
-                                                Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(Object.class))));
+                                                Type.getMethodDescriptor(Type.VOID_TYPE, AsmHelper.TYPE_OBJECT)));
 
             instructions.add(lblEndIfEq);
             instructions.add(new InsnNode(Opcodes.RETURN));
@@ -348,7 +348,7 @@ public class PCDataGenerator extends DynamicStorageGenerator {
             instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
                                                 Type.getInternalName(OpenJPAStateManager.class),
                                                 "getImplData",
-                                                Type.getMethodDescriptor(Type.getType(Object.class))));
+                                                Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT)));
             LabelNode lblEndIf = new LabelNode();
             instructions.add(new JumpInsnNode(Opcodes.IFNONNULL, lblEndIf));
             instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
@@ -363,7 +363,7 @@ public class PCDataGenerator extends DynamicStorageGenerator {
             instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
                                                 Type.getInternalName(OpenJPAStateManager.class),
                                                 "setImplData",
-                                                Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(Object.class), Type.BOOLEAN_TYPE)));
+                                                Type.getMethodDescriptor(Type.VOID_TYPE, AsmHelper.TYPE_OBJECT, Type.BOOLEAN_TYPE)));
             instructions.add(lblEndIf);
             instructions.add(lblEndIf2);
             instructions.add(new InsnNode(Opcodes.RETURN));
@@ -556,7 +556,7 @@ public class PCDataGenerator extends DynamicStorageGenerator {
             instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
                                                 Type.getInternalName(OpenJPAStateManager.class),
                                                 "getVersion",
-                                                Type.getMethodDescriptor(Type.getType(Object.class))));
+                                                Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT)));
             instructions.add(new FieldInsnNode(Opcodes.PUTFIELD, classNode.name, versionField.name, versionField.desc));
             instructions.add(new InsnNode(Opcodes.RETURN));
         }
@@ -576,7 +576,7 @@ public class PCDataGenerator extends DynamicStorageGenerator {
             instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
                                                 Type.getInternalName(OpenJPAStateManager.class),
                                                 "getVersion",
-                                                Type.getMethodDescriptor(Type.getType(Object.class))));
+                                                Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT)));
 
             LabelNode lblEndIf = new LabelNode();
             instructions.add(new JumpInsnNode(Opcodes.IFNONNULL, lblEndIf));
@@ -586,7 +586,7 @@ public class PCDataGenerator extends DynamicStorageGenerator {
             instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
                                                 Type.getInternalName(OpenJPAStateManager.class),
                                                 "setVersion",
-                                                Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(Object.class))));
+                                                Type.getMethodDescriptor(Type.VOID_TYPE, AsmHelper.TYPE_OBJECT)));
 
             instructions.add(lblEndIf);
             instructions.add(new InsnNode(Opcodes.RETURN));

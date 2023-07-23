@@ -51,6 +51,7 @@ import serp.bytecode.BCClass;
  * @author <a href="mailto:struberg@apache.org">Mark Struberg</a>
  */
 public final class AsmHelper {
+    public static final Type TYPE_OBJECT = Type.getType(Object.class);
     private static final char[] PRIMITIVE_DESCRIPTORS = {'V','Z','C','B','S','I','F','J','D'};
     public static final Attribute[] ATTRS = new Attribute[] {
             new RedefinedAttribute()
