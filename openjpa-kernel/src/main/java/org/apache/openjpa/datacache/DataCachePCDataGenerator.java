@@ -96,12 +96,12 @@ public class DataCachePCDataGenerator extends PCDataGenerator {
         enhanceToData(cnt);
         enhanceToNestedData(cnt);
         replaceNewEmbeddedPCData(cnt);
+        addSynchronization(cnt);
 
         //X TODO REMOVE
         BCClass _bc = new Project().loadClass(cnt.getClassNode().name.replace("/", "."));
         AsmHelper.readIntoBCClass(cnt, _bc);
 
-        addSynchronization(_bc);
         addTimeout(_bc);
 
         cnt.setClassNode(AsmHelper.toClassNode(cnt.getProject(), _bc).getClassNode());
@@ -322,12 +322,12 @@ public class DataCachePCDataGenerator extends PCDataGenerator {
         code.calculateMaxLocals();
     }
 
-    private void addSynchronization(BCClass bc) {
-        BCMethod[] methods = bc.getDeclaredMethods();
-        for (BCMethod bcMethod : methods) {
-            if (bcMethod.isPublic()
-                    && _synchs.contains(bcMethod.getName()))
-                bcMethod.setSynchronized(true);
+    private void addSynchronization(ClassNodeTracker cnt) {
+        final ClassNode classNode = cnt.getClassNode();
+        for (MethodNode m : classNode.methods) {
+            if ((m.access & Opcodes.ACC_PUBLIC) > 0 && _synchs.contains(m.name)) {
+                m.access |= Opcodes.ACC_SYNCHRONIZED;
+            }
         }
 
         // add synchronized isLoaded call.
@@ -335,17 +335,20 @@ public class DataCachePCDataGenerator extends PCDataGenerator {
         // {
         // 		return super.isLoaded (field);
         // }
-        BCMethod method = bc.declareMethod("isLoaded", boolean.class,
-            new Class[]{ int.class });
-        method.setSynchronized(true);
-        Code code = method.getCode(true);
-        code.aload().setThis();
-        code.iload().setParam(0);
-        code.invokespecial().setMethod(AbstractPCData.class, "isLoaded",
-            boolean.class, new Class[]{ int.class });
-        code.calculateMaxLocals();
-        code.calculateMaxStack();
-        code.ireturn();
+        MethodNode meth = new MethodNode(Opcodes.ACC_PUBLIC | Opcodes.ACC_SYNCHRONIZED,
+                                         "isLoaded",
+                                         Type.getMethodDescriptor(Type.BOOLEAN_TYPE, Type.INT_TYPE),
+                                         null, null);
+        classNode.methods.add(meth);
+        InsnList instructions = meth.instructions;
+
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        instructions.add(new VarInsnNode(Opcodes.ILOAD, 1)); // 1st parameter int
+        instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
+                                            Type.getInternalName(AbstractPCData.class),
+                                            "isLoaded",
+                                            Type.getMethodDescriptor(Type.BOOLEAN_TYPE, Type.INT_TYPE)));
+        instructions.add(new InsnNode(Opcodes.IRETURN));
     }
 
     /**
