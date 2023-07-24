@@ -44,6 +44,7 @@ import org.apache.xbean.asm9.tree.JumpInsnNode;
 import org.apache.xbean.asm9.tree.LabelNode;
 import org.apache.xbean.asm9.tree.MethodInsnNode;
 import org.apache.xbean.asm9.tree.MethodNode;
+import org.apache.xbean.asm9.tree.TypeInsnNode;
 import org.apache.xbean.asm9.tree.VarInsnNode;
 
 import serp.bytecode.BCClass;
@@ -94,12 +95,12 @@ public class DataCachePCDataGenerator extends PCDataGenerator {
     protected void decorate(ClassNodeTracker cnt, ClassMetaData meta) {
         enhanceToData(cnt);
         enhanceToNestedData(cnt);
+        replaceNewEmbeddedPCData(cnt);
 
         //X TODO REMOVE
         BCClass _bc = new Project().loadClass(cnt.getClassNode().name.replace("/", "."));
         AsmHelper.readIntoBCClass(cnt, _bc);
 
-        replaceNewEmbeddedPCData(_bc);
         addSynchronization(_bc);
         addTimeout(_bc);
 
@@ -216,26 +217,33 @@ public class DataCachePCDataGenerator extends PCDataGenerator {
         instructions.add(new InsnNode(Opcodes.ARETURN));
     }
 
-    private void replaceNewEmbeddedPCData(BCClass bc) {
-        BCMethod meth = bc.declareMethod("newEmbeddedPCData",
-            AbstractPCData.class, new Class[]{ OpenJPAStateManager.class });
-        Code code = meth.getCode(true);
+    private void replaceNewEmbeddedPCData(ClassNodeTracker cnt) {
+        ClassNode classNode = cnt.getClassNode();
+        MethodNode meth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                         "newEmbeddedPCData",
+                                         Type.getMethodDescriptor(Type.getType(AbstractPCData.class),
+                                                                  Type.getType(OpenJPAStateManager.class)),
+                                         null, null);
+        classNode.methods.add(meth);
+        final InsnList instructions = meth.instructions;
 
-        // return new DataCachePCDataImpl(sm.getObjectId(), sm.getMetaData());
-        code.anew().setType(DataCachePCDataImpl.class);
-        code.dup();
-        code.aload().setParam(0);
-        code.invokeinterface().setMethod(OpenJPAStateManager.class, "getId",
-            Object.class, null);
-        code.aload().setParam(0);
-        code.invokeinterface().setMethod(OpenJPAStateManager.class,
-            "getMetaData", ClassMetaData.class, null);
-        code.invokespecial().setMethod(DataCachePCDataImpl.class, "<init>",
-            void.class, new Class[] { Object.class, ClassMetaData.class });
-        code.areturn();
-
-        code.calculateMaxLocals();
-        code.calculateMaxStack();
+        instructions.add(new TypeInsnNode(Opcodes.NEW, Type.getInternalName(DataCachePCDataImpl.class)));
+        instructions.add(new InsnNode(Opcodes.DUP));
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st param
+        instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
+                                            Type.getInternalName(OpenJPAStateManager.class),
+                                            "getId",
+                                            Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT)));
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st param
+        instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
+                                            Type.getInternalName(OpenJPAStateManager.class),
+                                            "getMetaData",
+                                            Type.getMethodDescriptor(Type.getType(ClassMetaData.class))));
+        instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
+                                            Type.getInternalName(DataCachePCDataImpl.class),
+                                            "<init>",
+                                            Type.getMethodDescriptor(Type.VOID_TYPE, AsmHelper.TYPE_OBJECT, Type.getType(ClassMetaData.class))));
+        instructions.add(new InsnNode(Opcodes.ARETURN));
     }
 
     /**
