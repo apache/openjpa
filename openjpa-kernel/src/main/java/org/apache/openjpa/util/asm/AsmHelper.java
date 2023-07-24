@@ -708,4 +708,33 @@ public final class AsmHelper {
         }
     }
 
+    /**
+     * Calculate the next local variable position.
+     * For a non-static method the position 0 on the stack is the this pointer.
+     * After that there are all the method parameters.
+     * For a static method the method parameters begin at position zero.
+     * This method does calculate the first unused stack position which can be used for xLOAD/xSTORE opterations, e.g.
+     * <code>
+     * int nextVarPos = AsmHelper.getLocalVarPos(myMethodNode);
+     * instructions.add(AsmHelper.getLoadConstantInsn(4711));
+     * instructions.add(new VarInsnNode(Opcodes.ISTORE, nextVarPos);
+     * </code>
+     *
+     * @return the 0-based position on the stack at which the local variables can be located.
+     */
+    public static int getLocalVarPos(MethodNode meth) {
+        final Type[] paramTypes = Type.getArgumentTypes(meth.desc);
+
+        // stack position 0 is this pointer for non-static methods
+        // In other words: for a static method the first free stack location is 1,
+        // for non-static it is 2
+        int pos = ((meth.access & Opcodes.ACC_STATIC) > 0) ? 1 : 2;
+
+        // and now add the size of the parameters
+        for (Type paramType : paramTypes) {
+            pos += paramType.getSize();
+        }
+
+        return pos;
+    }
 }

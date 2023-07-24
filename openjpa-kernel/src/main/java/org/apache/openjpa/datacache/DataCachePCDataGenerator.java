@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.datacache;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -95,12 +93,12 @@ public class DataCachePCDataGenerator extends PCDataGenerator {
     @Override
     protected void decorate(ClassNodeTracker cnt, ClassMetaData meta) {
         enhanceToData(cnt);
+        enhanceToNestedData(cnt);
 
         //X TODO REMOVE
         BCClass _bc = new Project().loadClass(cnt.getClassNode().name.replace("/", "."));
         AsmHelper.readIntoBCClass(cnt, _bc);
 
-        enhanceToNestedData(_bc);
         replaceNewEmbeddedPCData(_bc);
         addSynchronization(_bc);
         addTimeout(_bc);
@@ -149,25 +147,36 @@ public class DataCachePCDataGenerator extends PCDataGenerator {
         instructions.add(new InsnNode(Opcodes.ARETURN));
     }
 
-    private void enhanceToNestedData(BCClass bc) {
-        BCMethod meth = bc.declareMethod("toNestedData", Object.class,
-            new Class []{ ValueMetaData.class, Object.class,
-            StoreContext.class });
-        Code code = meth.getCode(true);
+    private void enhanceToNestedData(ClassNodeTracker cnt) {
+        ClassNode classNode = cnt.getClassNode();
+        MethodNode meth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                         "toNestedData",
+                                         Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT,
+                                                                  Type.getType(ValueMetaData.class),
+                                                                  AsmHelper.TYPE_OBJECT,
+                                                                  Type.getType(StoreContext.class)),
+                                         null, null);
+        classNode.methods.add(meth);
+        final InsnList instructions = meth.instructions;
 
         // if (val == null)
         // 		return null;
-        code.aload().setParam(1);
-        JumpInstruction ifins = code.ifnonnull();
-        code.constant().setNull();
-        code.areturn();
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st param, ValueMetaData
 
+        LabelNode lblEndIfNN = new LabelNode();
+        instructions.add(new JumpInsnNode(Opcodes.IFNONNULL, lblEndIfNN));
+        instructions.add(new InsnNode(Opcodes.ACONST_NULL));
+        instructions.add(new InsnNode(Opcodes.ARETURN));
+
+        instructions.add(lblEndIfNN);
         // int type = vmd.getDeclaredTypeCode ();
-        ifins.setTarget(code.aload().setParam(0));
-        code.invokeinterface().setMethod(ValueMetaData.class,
-            "getDeclaredTypeCode", int.class, null);
-        int local = code.getNextLocalsIndex();
-        code.istore().setLocal(local);
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st param, ValueMetaData
+        instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
+                                            Type.getInternalName(ValueMetaData.class),
+                                            "getDeclaredTypeCode",
+                                            Type.getMethodDescriptor(Type.INT_TYPE)));
+        int varPos = AsmHelper.getLocalVarPos(meth);
+        instructions.add(new VarInsnNode(Opcodes.ISTORE, varPos));
 
         // if (type != JavaTypes.COLLECTION &&
         // 	   type != JavaTypes.MAP &&
@@ -175,29 +184,36 @@ public class DataCachePCDataGenerator extends PCDataGenerator {
         // 	   return super.toNestedData(type, val, ctx);
         // 	else
         // 		return NULL;
-        Collection jumps = new ArrayList(3);
-        code.iload().setLocal(local);
-        code.constant().setValue(JavaTypes.COLLECTION);
-        jumps.add(code.ificmpeq());
-        code.iload().setLocal(local);
-        code.constant().setValue(JavaTypes.MAP);
-        jumps.add(code.ificmpeq());
-        code.iload().setLocal(local);
-        code.constant().setValue(JavaTypes.ARRAY);
-        jumps.add(code.ificmpeq());
-        code.aload().setThis();
-        code.aload().setParam(0);
-        code.aload().setParam(1);
-        code.aload().setParam(2);
-        code.invokespecial().setMethod(AbstractPCData.class, "toNestedData",
-            Object.class, new Class[]{ ValueMetaData.class, Object.class,
-            StoreContext.class });
-        code.areturn();
-        setTarget(code.getstatic().setField
-            (AbstractPCData.class, "NULL", Object.class), jumps);
-        code.areturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
+        LabelNode lblEndIf = new LabelNode();
+        instructions.add(new VarInsnNode(Opcodes.ILOAD, varPos));
+        instructions.add(AsmHelper.getLoadConstantInsn(JavaTypes.COLLECTION));
+        instructions.add(new JumpInsnNode(Opcodes.IF_ICMPEQ, lblEndIf));
+        instructions.add(new VarInsnNode(Opcodes.ILOAD, varPos));
+        instructions.add(AsmHelper.getLoadConstantInsn(JavaTypes.MAP));
+        instructions.add(new JumpInsnNode(Opcodes.IF_ICMPEQ, lblEndIf));
+        instructions.add(new VarInsnNode(Opcodes.ILOAD, varPos));
+        instructions.add(AsmHelper.getLoadConstantInsn(JavaTypes.ARRAY));
+        instructions.add(new JumpInsnNode(Opcodes.IF_ICMPEQ, lblEndIf));
+
+        // if block
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st param, ValueMetaData
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 2)); // 2nd param, Object
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 3)); // 3rd param, StoreContext
+        instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
+                                            Type.getInternalName(AbstractPCData.class),
+                                            "toNestedData",
+                                            Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT,
+                                                                     Type.getType(ValueMetaData.class),
+                                                                     AsmHelper.TYPE_OBJECT,
+                                                                     Type.getType(StoreContext.class))));
+        instructions.add(new InsnNode(Opcodes.ARETURN));
+
+        // end if
+        instructions.add(lblEndIf);
+        instructions.add(new FieldInsnNode(Opcodes.GETSTATIC, Type.getInternalName(AbstractPCData.class),
+                                           "NULL", AsmHelper.TYPE_OBJECT.getDescriptor()));
+        instructions.add(new InsnNode(Opcodes.ARETURN));
     }
 
     private void replaceNewEmbeddedPCData(BCClass bc) {
