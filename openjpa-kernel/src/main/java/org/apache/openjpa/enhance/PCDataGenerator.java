@@ -48,19 +48,18 @@ import org.apache.xbean.asm9.tree.InsnList;
 import org.apache.xbean.asm9.tree.InsnNode;
 import org.apache.xbean.asm9.tree.JumpInsnNode;
 import org.apache.xbean.asm9.tree.LabelNode;
+import org.apache.xbean.asm9.tree.LookupSwitchInsnNode;
 import org.apache.xbean.asm9.tree.MethodInsnNode;
 import org.apache.xbean.asm9.tree.MethodNode;
 import org.apache.xbean.asm9.tree.TypeInsnNode;
 import org.apache.xbean.asm9.tree.VarInsnNode;
 
 import serp.bytecode.BCClass;
-import serp.bytecode.BCField;
 import serp.bytecode.BCMethod;
 import serp.bytecode.Code;
 import serp.bytecode.Constants;
 import serp.bytecode.Instruction;
 import serp.bytecode.JumpInstruction;
-import serp.bytecode.LookupSwitchInstruction;
 import serp.bytecode.Project;
 
 /**
@@ -173,11 +172,11 @@ public class PCDataGenerator extends DynamicStorageGenerator {
         addImplDataMethods(bc, meta);
         addGetType(bc, meta);
         addVersionMethods(bc);
+        addFieldImplDataMethods(bc, meta);
 
         BCClass _bc = new Project().loadClass(bc.getClassNode().name.replace("/", "."));
         AsmHelper.readIntoBCClass(bc, _bc);
 
-        addFieldImplDataMethods(_bc, meta);
         addLoadMethod(_bc, meta);
         addLoadWithFieldsMethod(_bc, meta);
         addStoreMethods(_bc, meta);
@@ -373,163 +372,199 @@ public class PCDataGenerator extends DynamicStorageGenerator {
     /**
      * Add methods for loading and storing class-level impl data.
      */
-    private void addFieldImplDataMethods(BCClass bc, ClassMetaData meta) {
-        // public void loadImplData(OpenJPAStateManager sm, int i)
-        BCMethod meth = bc.declareMethod("loadImplData", void.class,
-            new Class[]{ OpenJPAStateManager.class, int.class });
-        meth.makePrivate();
-        Code code = meth.getCode(true);
-
+    private void addFieldImplDataMethods(ClassNodeTracker cnt, ClassMetaData meta) {
+        ClassNode classNode = cnt.getClassNode();
         int count = countImplDataFields(meta);
-        BCField impl = null;
-        if (count == 0)
-            code.vreturn();
-        else {
-            // Object[] fieldImpl
-            impl = bc.declareField("fieldImpl", Object[].class);
-            impl.makePrivate();
+        FieldNode impl = null;
 
-            // if (fieldImpl != null)
-            code.aload().setThis();
-            code.getfield().setField(impl);
-            JumpInstruction ifins = code.ifnonnull();
-            code.vreturn();
+        // public void loadImplData(OpenJPAStateManager sm, int i)
+        {
+            MethodNode meth = new MethodNode(Opcodes.ACC_PRIVATE,
+                                             "loadImplData",
+                                             Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(OpenJPAStateManager.class), Type.INT_TYPE),
+                                             null, null);
+            classNode.methods.add(meth);
+            InsnList instructions = meth.instructions;
 
-            // Object obj = null;
-            int obj = code.getNextLocalsIndex();
-            ifins.setTarget(code.constant().setNull());
-            code.astore().setLocal(obj);
-
-            // establish switch target, then move before it
-            Instruction target = code.aload().setLocal(obj);
-            code.previous();
-
-            // switch(i)
-            code.iload().setParam(1);
-            LookupSwitchInstruction lswitch = code.lookupswitch();
-            FieldMetaData[] fields = meta.getFields();
-            int cacheable = 0;
-            for (int i = 0; i < fields.length; i++) {
-                if (!usesImplData(fields[i]))
-                    continue;
-                // case x: obj = fieldImpl[y]; break;
-                lswitch.addCase(i, code.aload().setThis());
-                code.getfield().setField(impl);
-                code.constant().setValue(cacheable++);
-                code.aaload();
-                code.astore().setLocal(obj);
-                code.go2().setTarget(target);
+            if (count == 0) {
+                instructions.add(new InsnNode(Opcodes.RETURN));
             }
-            lswitch.setDefaultTarget(target);
+            else {
+                // Object[] fieldImpl
+                impl = new FieldNode(Opcodes.ACC_PRIVATE, "fieldImpl", Type.getDescriptor(Object[].class), null, null);
+                classNode.fields.add(impl);
 
-            // if (obj != null)
-            code.next();    // jump back over target
-            ifins = code.ifnonnull();
-            code.vreturn();
+                // if (fieldImpl != null)
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, impl.name, impl.desc));
 
-            // sm.setImplData(index, impl);
-            ifins.setTarget(code.aload().setParam(0));
-            code.iload().setParam(1);
-            code.aload().setLocal(obj);
-            code.invokeinterface().setMethod(OpenJPAStateManager.class,
-                "setImplData", void.class,
-                new Class[]{ int.class, Object.class });
-            code.vreturn();
+                LabelNode lblEndIf = new LabelNode();
+                instructions.add(new JumpInsnNode(Opcodes.IFNONNULL, lblEndIf));
+                instructions.add(new InsnNode(Opcodes.RETURN));
+                instructions.add(lblEndIf);
+
+                // Object obj = null;
+                int objVarPos = AsmHelper.getLocalVarPos(meth);
+                instructions.add(new InsnNode(Opcodes.ACONST_NULL));
+                instructions.add(new VarInsnNode(Opcodes.ASTORE, objVarPos));
+
+                LabelNode lblEnd = new LabelNode();
+                instructions.add(new VarInsnNode(Opcodes.ILOAD, 2));
+                // switch(i)
+                LookupSwitchInsnNode lSwitch = new LookupSwitchInsnNode(lblEnd, null, null);
+                FieldMetaData[] fields = meta.getFields();
+                int cacheable = 0;
+                for (int i = 0; i < fields.length; i++) {
+                    if (!usesImplData(fields[i])) {
+                        continue;
+                    }
+
+                    // case x: obj = fieldImpl[y]; break;
+                    LabelNode lblCase = new LabelNode();
+                    instructions.add(lblCase);
+                    lSwitch.keys.add(i);
+                    lSwitch.labels.add(lblCase);
+                    instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, impl.name, impl.desc));
+                    instructions.add(AsmHelper.getLoadConstantInsn(cacheable++));
+                    instructions.add(new InsnNode(Opcodes.AALOAD));
+                    instructions.add(new VarInsnNode(Opcodes.ASTORE, objVarPos));
+                    instructions.add(new JumpInsnNode(Opcodes.GOTO, lblEnd));
+                }
+                // 'default:' is empty
+
+                instructions.add(lblEnd);
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, objVarPos));
+
+                // if (obj != null) return;
+                lblEndIf = new LabelNode();
+                instructions.add(new JumpInsnNode(Opcodes.IFNONNULL, lblEndIf));
+                instructions.add(new InsnNode(Opcodes.RETURN));
+
+                // end if
+                instructions.add(lblEndIf);
+
+                // sm.setImplData(index, impl);
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st parameter OpenJPAStateManager
+                instructions.add(new VarInsnNode(Opcodes.ILOAD, 2)); // 2nd parameter int
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, objVarPos)); // the previously stored fieldImpl
+                instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
+                                                    Type.getInternalName(OpenJPAStateManager.class),
+                                                    "setImplData",
+                                                    Type.getMethodDescriptor(Type.VOID_TYPE, Type.INT_TYPE, AsmHelper.TYPE_OBJECT)));
+                instructions.add(new InsnNode(Opcodes.RETURN));
+            }
         }
-        code.calculateMaxLocals();
-        code.calculateMaxStack();
 
         // void storeImplData(OpenJPAStateManager sm, int index, boolean loaded)
-        meth = bc.declareMethod("storeImplData", void.class,
-            new Class[]{ OpenJPAStateManager.class, int.class, boolean.class });
-        code = meth.getCode(true);
-        if (count == 0)
-            code.vreturn();
-        else {
-            // int arrIdx = -1;
-            // switch(index)
-            int arrIdx = code.getNextLocalsIndex();
-            code.constant().setValue(-1);
-            code.istore().setLocal(arrIdx);
-            code.iload().setParam(1);
-            LookupSwitchInstruction lswitch = code.lookupswitch();
+        {
+            MethodNode meth = new MethodNode(Opcodes.ACC_PRIVATE,
+                                             "storeImplData",
+                                             Type.getMethodDescriptor(Type.VOID_TYPE,
+                                                                      Type.getType(OpenJPAStateManager.class), Type.INT_TYPE, Type.BOOLEAN_TYPE),
+                                             null, null);
+            classNode.methods.add(meth);
+            InsnList instructions = meth.instructions;
 
-            // establish switch target, then move before it
-            Instruction switchTarget = code.iload().setLocal(arrIdx);
-            code.previous();
-
-            FieldMetaData[] fields = meta.getFields();
-            int cacheable = 0;
-            for (int i = 0; i < fields.length; i++) {
-                if (!usesImplData(fields[i]))
-                    continue;
-                // case x: arrIdx = y; break;
-                lswitch.addCase(i, code.constant().setValue(cacheable++));
-                code.istore().setLocal(arrIdx);
-                code.go2().setTarget(switchTarget);
+            if (count == 0) {
+                instructions.add(new InsnNode(Opcodes.RETURN));
             }
-            lswitch.setDefaultTarget(switchTarget);
-            code.next();    // step over switch target
+            else {
+                // int arrIdx = -1;
+                // switch(index)
+                int arrIdxVarPos = AsmHelper.getLocalVarPos(meth);
+                instructions.add(AsmHelper.getLoadConstantInsn(-1));
+                instructions.add(new VarInsnNode(Opcodes.ISTORE, arrIdxVarPos));
+                instructions.add(new VarInsnNode(Opcodes.ILOAD, 2)); // 2nd param int
 
-            // if (arrIdx != -1)
-            code.constant().setValue(-1);
-            JumpInstruction ifins = code.ificmpne();
-            code.vreturn();
+                LabelNode lblEnd = new LabelNode();
+                // switch(i)
+                LookupSwitchInsnNode lSwitch = new LookupSwitchInsnNode(lblEnd, null, null);
 
-            // create null target, then move before it
-            Instruction nullTarget = code.aload().setThis();
-            code.previous();
+                FieldMetaData[] fields = meta.getFields();
+                int cacheable = 0;
+                for (int i = 0; i < fields.length; i++) {
+                    if (!usesImplData(fields[i])) {
+                        continue;
+                    }
 
-            // if (loaded)
-            ifins.setTarget(code.iload().setParam(2));
-            code.ifeq().setTarget(nullTarget);
+                    // case x: arrIdx = y; break;
+                    LabelNode lblCase = new LabelNode();
+                    instructions.add(lblCase);
+                    lSwitch.keys.add(i);
+                    lSwitch.labels.add(lblCase);
+                    instructions.add(AsmHelper.getLoadConstantInsn(cacheable++));
+                    instructions.add(new VarInsnNode(Opcodes.ISTORE, arrIdxVarPos));
+                    instructions.add(new JumpInsnNode(Opcodes.GOTO, lblEnd));
+                }
+                // 'default:' is empty
 
-            // Object obj = sm.getImplData(index)
-            int obj = code.getNextLocalsIndex();
-            code.aload().setParam(0);
-            code.iload().setParam(1);
-            code.invokeinterface().setMethod(OpenJPAStateManager.class,
-                "getImplData", Object.class, new Class[]{ int.class });
-            code.astore().setLocal(obj);
+                instructions.add(lblEnd);
 
-            // if (obj != null)
-            code.aload().setLocal(obj);
-            code.ifnull().setTarget(nullTarget);
+                // if (arrIdx != -1)
+                instructions.add(AsmHelper.getLoadConstantInsn(-1));
+                LabelNode lblEndIf = new LabelNode();
+                instructions.add(new JumpInsnNode(Opcodes.IF_ICMPNE, lblEndIf));
+                instructions.add(new InsnNode(Opcodes.RETURN));
 
-            // if (fieldImpl == null)
-            //         fieldImpl = new Object[fields];
-            code.aload().setThis();
-            code.getfield().setField(impl);
-            ifins = code.ifnonnull();
-            code.aload().setThis();
-            code.constant().setValue(count);
-            code.anewarray().setType(Object.class);
-            code.putfield().setField(impl);
+                // end if
+                instructions.add(lblEndIf);
 
-            // fieldImpl[arrIdx] = obj;
-            // return;
-            ifins.setTarget(code.aload().setThis());
-            code.getfield().setField(impl);
-            code.iload().setLocal(arrIdx);
-            code.aload().setLocal(obj);
-            code.aastore();
-            code.vreturn();
+                // if (loaded)
+                instructions.add(new VarInsnNode(Opcodes.ILOAD, 3)); // 3rd param, boolean
+                lblEndIf = new LabelNode();
+                instructions.add(new JumpInsnNode(Opcodes.IFEQ, lblEndIf));
 
-            // if (fieldImpl != null)
-            //         fieldImpl[index] = null;
-            code.next(); // step over nullTarget
-            code.getfield().setField(impl);
-            ifins = code.ifnonnull();
-            code.vreturn();
-            ifins.setTarget(code.aload().setThis());
-            code.getfield().setField(impl);
-            code.iload().setLocal(arrIdx);
-            code.constant().setNull();
-            code.aastore();
-            code.vreturn();
+                // Object obj = sm.getImplData(index)
+                int objVarPos = arrIdxVarPos+1;
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st param, OpenJPAStateManager
+                instructions.add(new VarInsnNode(Opcodes.ILOAD, 2)); // 2st param, int
+                instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
+                                                    Type.getInternalName(OpenJPAStateManager.class),
+                                                    "getImplData",
+                                                    Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT, Type.INT_TYPE)));
+                instructions.add(new VarInsnNode(Opcodes.ASTORE, objVarPos));
+
+                // if (fieldImpl == null)
+                //     fieldImpl = new Object[fields];
+
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, impl.name, impl.desc));
+
+                LabelNode lblEndIfNN = new LabelNode();
+                instructions.add(new JumpInsnNode(Opcodes.IFNONNULL, lblEndIfNN));
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                instructions.add(AsmHelper.getLoadConstantInsn(count));
+                instructions.add(new TypeInsnNode(Opcodes.ANEWARRAY, Type.getInternalName(Object.class)));
+                instructions.add(new FieldInsnNode(Opcodes.PUTFIELD, classNode.name, impl.name, impl.desc));
+                instructions.add(lblEndIfNN);
+
+                // fieldImpl[arrIdx] = obj;
+                // return;
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, impl.name, impl.desc));
+                instructions.add(new VarInsnNode(Opcodes.ILOAD, arrIdxVarPos));
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, objVarPos));
+                instructions.add(new InsnNode(Opcodes.AASTORE));
+                instructions.add(new InsnNode(Opcodes.RETURN));
+
+                instructions.add(lblEndIf);
+
+                // if (fieldImpl != null)
+                //         fieldImpl[index] = null;
+                instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, impl.name, impl.desc));
+                lblEndIfNN = new LabelNode();
+                instructions.add(new JumpInsnNode(Opcodes.IFNONNULL, lblEndIfNN));
+                instructions.add(new InsnNode(Opcodes.RETURN));
+
+                instructions.add(lblEndIfNN);
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, impl.name, impl.desc));
+                instructions.add(new VarInsnNode(Opcodes.ILOAD, arrIdxVarPos));
+                instructions.add(new InsnNode(Opcodes.ACONST_NULL));
+                instructions.add(new InsnNode(Opcodes.AASTORE));
+                instructions.add(new InsnNode(Opcodes.RETURN));
+            }
         }
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
     }
 
     /**
@@ -1094,24 +1129,6 @@ public class PCDataGenerator extends DynamicStorageGenerator {
     }
 
     /**
-     * Add method which defers to AbstractPCData.
-     */
-    protected void callAbstractPCData(BCClass bc, String name, Class<?> retType,
-        Class<?>[] args) {
-        BCMethod meth = bc.declareMethod(name, retType, args);
-        Code code = meth.getCode(true);
-        code.aload().setThis();
-        for (int i = 0; i < args.length; i++)
-            code.xload().setParam(i).setType(args[i]);
-        code.invokevirtual().setMethod(AbstractPCData.class, name, retType,
-            args);
-        if (!void.class.equals(retType))
-            code.xreturn().setType(retType);
-        code.calculateMaxLocals();
-        code.calculateMaxStack();
-    }
-
-    /**
      * Set the collection of {@link JumpInstruction}s to the given instruction,
      * clearing the collection in the process.
      */
@@ -1139,8 +1156,6 @@ public class PCDataGenerator extends DynamicStorageGenerator {
     public interface DynamicPCData extends PCData {
 
         void setId(Object oid);
-
-        PCDataGenerator getStorageGenerator();
 
         void setStorageGenerator (PCDataGenerator generator);
     }
