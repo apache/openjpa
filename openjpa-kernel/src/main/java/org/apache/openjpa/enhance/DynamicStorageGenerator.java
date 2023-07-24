@@ -42,10 +42,6 @@ import org.apache.xbean.asm9.tree.TableSwitchInsnNode;
 import org.apache.xbean.asm9.tree.TypeInsnNode;
 import org.apache.xbean.asm9.tree.VarInsnNode;
 
-import serp.bytecode.Code;
-import serp.bytecode.Constants;
-import serp.bytecode.Instruction;
-
 
 /**
  * Factory for creating new {@link DynamicStorage} classes. Can be
@@ -162,7 +158,7 @@ public class DynamicStorageGenerator {
 
     /**
      * Return the default field ACCESS constant for generated fields from
-     * {@link Constants}.
+     * {@link Opcodes}.
      */
     protected int getFieldAccess() {
         return Opcodes.ACC_PRIVATE;
@@ -566,17 +562,6 @@ public class DynamicStorageGenerator {
         if (storageType == JavaTypes.OBJECT)
             return fieldType >= JavaTypes.OBJECT;
         return fieldType == storageType;
-    }
-
-    /**
-     * Throw an exception of the given type.
-     */
-    protected Instruction throwException(Code code, Class type) {
-        Instruction ins = code.anew().setType(type);
-        code.dup();
-        code.invokespecial().setMethod(type, "<init>", void.class, null);
-        code.athrow();
-        return ins;
     }
 
     /**
