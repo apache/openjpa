@@ -27,7 +27,6 @@ import org.apache.openjpa.enhance.PCDataGenerator;
 import org.apache.openjpa.kernel.AbstractPCData;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
@@ -38,6 +37,7 @@ import org.apache.xbean.asm9.Opcodes;
 import org.apache.xbean.asm9.Type;
 import org.apache.xbean.asm9.tree.ClassNode;
 import org.apache.xbean.asm9.tree.FieldInsnNode;
+import org.apache.xbean.asm9.tree.FieldNode;
 import org.apache.xbean.asm9.tree.InsnList;
 import org.apache.xbean.asm9.tree.InsnNode;
 import org.apache.xbean.asm9.tree.JumpInsnNode;
@@ -46,14 +46,6 @@ import org.apache.xbean.asm9.tree.MethodInsnNode;
 import org.apache.xbean.asm9.tree.MethodNode;
 import org.apache.xbean.asm9.tree.TypeInsnNode;
 import org.apache.xbean.asm9.tree.VarInsnNode;
-
-import serp.bytecode.BCClass;
-import serp.bytecode.BCField;
-import serp.bytecode.BCMethod;
-import serp.bytecode.Code;
-import serp.bytecode.Instruction;
-import serp.bytecode.JumpInstruction;
-import serp.bytecode.Project;
 
 /**
  * A {@link PCDataGenerator} instance which generates properly
@@ -97,14 +89,16 @@ public class DataCachePCDataGenerator extends PCDataGenerator {
         enhanceToNestedData(cnt);
         replaceNewEmbeddedPCData(cnt);
         addSynchronization(cnt);
+        addTimeout(cnt);
 
         //X TODO REMOVE
+/*
         BCClass _bc = new Project().loadClass(cnt.getClassNode().name.replace("/", "."));
         AsmHelper.readIntoBCClass(cnt, _bc);
 
-        addTimeout(_bc);
 
         cnt.setClassNode(AsmHelper.toClassNode(cnt.getProject(), _bc).getClassNode());
+*/
     }
 
     private void enhanceToData(ClassNodeTracker cnt) {
@@ -246,80 +240,50 @@ public class DataCachePCDataGenerator extends PCDataGenerator {
         instructions.add(new InsnNode(Opcodes.ARETURN));
     }
 
-    /**
-     * Add a bean field of the given name and type.
-     */
-    @Deprecated
-    private BCField addBeanField(BCClass bc, String name, Class type) {
-        if (name == null)
-            throw new IllegalArgumentException("name == null");
+    private void addTimeout(ClassNodeTracker cnt) {
+        cnt.declareInterface(DataCachePCData.class);
+        cnt.declareInterface(Timed.class);
 
-        // private <type> <name>
-        BCField field = bc.declareField(name, type);
-        field.setAccessFlags(getFieldAccess());
-        name = StringUtil.capitalize(name);
+        FieldNode field = addBeanField(cnt, "timeout", long.class);
 
-        // getter
-        String prefix = (type == boolean.class) ? "is" : "get";
-        BCMethod method = bc.declareMethod(prefix + name, type, null);
-        method.makePublic();
-        Code code = method.getCode(true);
-        code.aload().setThis();
-        code.getfield().setField(field);
-        code.xreturn().setType(type);
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
 
-        // setter
-        method = bc.declareMethod("set" + name, void.class,
-                                  new Class[]{ type });
-        method.makePublic();
-        code = method.getCode(true);
-        code.aload().setThis();
-        code.xload().setParam(0).setType(type);
-        code.putfield().setField(field);
-        code.vreturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-        return field;
-    }
-
-    private void addTimeout(BCClass bc) {
-        bc.declareInterface(DataCachePCData.class);
-        bc.declareInterface(Timed.class);
+        ClassNode classNode = cnt.getClassNode();
 
         // public boolean isTimedOut ();
-        BCField field = addBeanField(bc, "timeout", long.class);
-        BCMethod meth = bc.declareMethod("isTimedOut", boolean.class, null);
-        Code code = meth.getCode(true);
+        MethodNode meth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                         "isTimedOut",
+                                         Type.getMethodDescriptor(Type.BOOLEAN_TYPE),
+                                         null, null);
+        classNode.methods.add(meth);
+        final InsnList instructions = meth.instructions;
 
-        // if (timeout == -1) ...
-        code.aload().setThis();
-        code.getfield().setField(field);
-        code.constant().setValue(-1L);
-        code.lcmp();
-        JumpInstruction ifneg = code.ifeq();
+        // if (timeout != -1 ...
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, field.name, field.desc));
+        instructions.add(AsmHelper.getLoadConstantInsn(-1L));
+        instructions.add(new InsnNode(Opcodes.LCMP));
 
-        // if (timeout >= System.currentTimeMillis ())
-        code.aload().setThis();
-        code.getfield().setField(field);
-        code.invokestatic().setMethod(System.class, "currentTimeMillis",
-            long.class, null);
-        code.lcmp();
-        JumpInstruction ifnexp = code.ifge();
+        LabelNode lblEndIf = new LabelNode();
+        instructions.add(new JumpInsnNode(Opcodes.IFEQ, lblEndIf));
+
+        // ... && timeout < System.currentTimeMillis ())
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, field.name, field.desc));
+        instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+                                            Type.getInternalName(System.class),
+                                            "currentTimeMillis",
+                                            Type.getMethodDescriptor(Type.LONG_TYPE)));
+        instructions.add(new InsnNode(Opcodes.LCMP));
+        instructions.add(new JumpInsnNode(Opcodes.IFGE, lblEndIf));
 
         // return true;
-        code.constant().setValue(1);
+        instructions.add(new InsnNode(Opcodes.ICONST_1));
+        instructions.add(new InsnNode(Opcodes.IRETURN));
 
         // ... else return false;
-        JumpInstruction go2 = code.go2();
-        Instruction flse = code.constant().setValue(0);
-        ifneg.setTarget(flse);
-        ifnexp.setTarget(flse);
-        go2.setTarget(code.ireturn());
-
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
+        instructions.add(lblEndIf);
+        instructions.add(new InsnNode(Opcodes.ICONST_0));
+        instructions.add(new InsnNode(Opcodes.IRETURN));
     }
 
     private void addSynchronization(ClassNodeTracker cnt) {
