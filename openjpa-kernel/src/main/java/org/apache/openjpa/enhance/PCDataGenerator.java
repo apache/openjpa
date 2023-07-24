@@ -173,11 +173,11 @@ public class PCDataGenerator extends DynamicStorageGenerator {
         addGetType(bc, meta);
         addVersionMethods(bc);
         addFieldImplDataMethods(bc, meta);
+        addLoadMethod(bc, meta);
 
         BCClass _bc = new Project().loadClass(bc.getClassNode().name.replace("/", "."));
         AsmHelper.readIntoBCClass(bc, _bc);
 
-        addLoadMethod(_bc, meta);
         addLoadWithFieldsMethod(_bc, meta);
         addStoreMethods(_bc, meta);
         addNewEmbedded(_bc);
@@ -628,59 +628,86 @@ public class PCDataGenerator extends DynamicStorageGenerator {
         }
     }
 
-    private void addLoadMethod(BCClass bc, ClassMetaData meta) {
-        // public void load(OpenJPAStateManager sm, FetchConfiguration fetch,
-        //         Object context)
-        Code code = addLoadMethod(bc, false);
-        FieldMetaData[] fmds = meta.getFields();
-        Collection<Instruction> jumps = new LinkedList<>();
-        Collection<Instruction> jumps2;
+    private void addLoadMethod(ClassNodeTracker cnt, ClassMetaData meta) {
+        final ClassNode classNode = cnt.getClassNode();
 
-        int local = code.getNextLocalsIndex();
-        code.constant().setNull();
-        code.astore().setLocal(local);
-        int inter = code.getNextLocalsIndex();
-        code.constant().setNull();
-        code.astore().setLocal(inter);
+        // public void load(OpenJPAStateManager sm, FetchConfiguration fetch, Object context)
+        MethodNode meth = addLoadMethod(cnt, false);
+        InsnList instructions = meth.instructions;
+
+        FieldMetaData[] fmds = meta.getFields();
+
+        int localVarPos = AsmHelper.getLocalVarPos(meth);
+        instructions.add(new InsnNode(Opcodes.ACONST_NULL));
+        instructions.add(new VarInsnNode(Opcodes.ASTORE, localVarPos));
+        int interVarPos = localVarPos + 1;
+        instructions.add(new InsnNode(Opcodes.ACONST_NULL));
+        instructions.add(new VarInsnNode(Opcodes.ASTORE, interVarPos));
 
         int objectCount = 0;
         boolean intermediate;
+        LabelNode lblEndIf = null;
         for (int i = 0; i < fmds.length; i++) {
-            jumps2 = new LinkedList<>();
-            intermediate = usesIntermediate(fmds[i]);
-            setTarget(code.aload().setThis(), jumps);
-            // if (loaded.get(i)) or (!loaded.get(i)) depending on inter resp
-            code.getfield().setField("loaded", BitSet.class);
-            code.constant().setValue(i);
-            code.invokevirtual().setMethod(BitSet.class, "get",
-                boolean.class, new Class[]{ int.class });
-            jumps.add(code.ifne());
 
-            if (intermediate)
-                addLoadIntermediate(code, i, objectCount, jumps2, inter);
-            jumps2.add(code.go2());
+            if (lblEndIf != null) {
+                instructions.add(lblEndIf);
+            }
+            lblEndIf = new LabelNode();
+
+            intermediate = usesIntermediate(fmds[i]);
+
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+
+            // if (loaded.get(i)) or (!loaded.get(i)) depending on inter resp
+            instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, "loaded", Type.getDescriptor(BitSet.class)));
+            instructions.add(AsmHelper.getLoadConstantInsn(i));
+            instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                                Type.getInternalName(BitSet.class),
+                                                "get",
+                                                Type.getMethodDescriptor(Type.BOOLEAN_TYPE, Type.INT_TYPE)));
+            instructions.add(new JumpInsnNode(intermediate ? Opcodes.IFNE : Opcodes.IFEQ, lblEndIf));
 
             // if (fetch.requiresFetch(fmds[i])!=FetchConfiguration.FETCH_NONE)
-            setTarget(code.aload().setParam(1), jumps);
-            code.aload().setParam(0);
-            code.invokeinterface().setMethod(OpenJPAStateManager.class,
-                "getMetaData", ClassMetaData.class, null);
-            code.constant().setValue(fmds[i].getIndex());
-            code.invokevirtual().setMethod(ClassMetaData.class,
-                "getField", FieldMetaData.class, new Class[]{int.class});
-            code.invokeinterface().setMethod (FetchConfiguration.class,
-                "requiresFetch", int.class, new Class[]{FieldMetaData.class});
-            code.constant().setValue(FetchConfiguration.FETCH_NONE);
-            jumps2.add(code.ificmpeq());
-            addLoad(bc, code, fmds[i], objectCount, local, false);
 
-            jumps = jumps2;
-            if (replaceType(fmds[i]) >= JavaTypes.OBJECT)
+            if (intermediate) {
+                addLoadIntermediate(classNode, instructions, i, objectCount, interVarPos);
+
+                LabelNode lblElse = lblEndIf;
+                lblEndIf = new LabelNode();
+                instructions.add(new JumpInsnNode(Opcodes.GOTO, lblEndIf));
+                instructions.add(lblElse);
+            }
+
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 2)); // 2nd param FetchConfiguration
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st param OpenJPAStateManager
+            instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
+                                                Type.getInternalName(OpenJPAStateManager.class),
+                                                "getMetaData",
+                                                Type.getMethodDescriptor(Type.getType(ClassMetaData.class))));
+            instructions.add(AsmHelper.getLoadConstantInsn(fmds[i].getIndex()));
+            instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                                Type.getInternalName(ClassMetaData.class),
+                                                "getField",
+                                                Type.getMethodDescriptor(Type.getType(FieldMetaData.class), Type.INT_TYPE)));
+            instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
+                                                Type.getInternalName(FetchConfiguration.class),
+                                                "requiresFetch",
+                                                Type.getMethodDescriptor(Type.INT_TYPE, Type.getType(FieldMetaData.class))));
+            instructions.add(AsmHelper.getLoadConstantInsn(FetchConfiguration.FETCH_NONE));
+            instructions.add(new JumpInsnNode(Opcodes.IF_ICMPEQ, lblEndIf));
+            addLoad(classNode, instructions, fmds[i], objectCount, localVarPos, false);
+
+
+            if (replaceType(fmds[i]) >= JavaTypes.OBJECT) {
                 objectCount++;
+            }
         }
-        setTarget(code.vreturn(), jumps);
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
+
+        if (lblEndIf != null) {
+            instructions.add(lblEndIf);
+        }
+
+        instructions.add(new InsnNode(Opcodes.RETURN));
     }
 
     private void addLoadWithFieldsMethod(BCClass bc, ClassMetaData meta) {
@@ -754,114 +781,148 @@ public class PCDataGenerator extends DynamicStorageGenerator {
     /**
      * Declare and start the base load method.
      */
-    private Code addLoadMethod(BCClass bc, boolean fields) {
-        Class<?>[] args = null;
-        if (fields)
-            args = new Class[]{ OpenJPAStateManager.class, BitSet.class,
-                FetchConfiguration.class, Object.class };
-        else
-            args = new Class[]{ OpenJPAStateManager.class,
-                FetchConfiguration.class, Object.class };
-        BCMethod load = bc.declareMethod("load", void.class, args);
-        Code code = load.getCode(true);
+    private MethodNode addLoadMethod(ClassNodeTracker cnt, boolean fields) {
+        String mDesc;
+        if (fields) {
+            mDesc = Type.getMethodDescriptor(Type.VOID_TYPE,
+                                             Type.getType(OpenJPAStateManager.class),
+                                             Type.getType(BitSet.class),
+                                             Type.getType(FetchConfiguration.class),
+                                             AsmHelper.TYPE_OBJECT);
+        }
+        else {
+            mDesc = Type.getMethodDescriptor(Type.VOID_TYPE,
+                                             Type.getType(OpenJPAStateManager.class),
+                                             Type.getType(FetchConfiguration.class),
+                                             AsmHelper.TYPE_OBJECT);
+        }
+        MethodNode meth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                         "load",
+                                         mDesc,
+                                         null, null);
+        cnt.getClassNode().methods.add(meth);
 
-        //loadVersion(sm);
-        code.aload().setThis();
-        code.aload().setParam(0);
-        code.invokevirtual().setMethod("loadVersion", void.class,
-            new Class[]{ OpenJPAStateManager.class });
+        // loadVersion(sm);
+        meth.instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        meth.instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // OpenJPAStateManager
+        meth.instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                                 cnt.getClassNode().name,
+                                                 "loadVersion",
+                                                 Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(OpenJPAStateManager.class))));
 
         //loadImplData(sm);
-        code.aload().setThis();
-        code.aload().setParam(0);
-        code.invokevirtual().setMethod("loadImplData", void.class,
-            new Class[]{ OpenJPAStateManager.class });
-        return code;
+        meth.instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        meth.instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // OpenJPAStateManager
+        meth.instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                                 cnt.getClassNode().name,
+                                                 "loadImplData",
+                                                 Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(OpenJPAStateManager.class))));
+        return meth;
     }
 
     /**
      * Add the field load.
      */
-    private Instruction addLoad(BCClass bc, Code code, FieldMetaData fmd,
-        int objectCount, int local, boolean fields) {
+    private void addLoad(ClassNode classNode, InsnList instructions, FieldMetaData fmd,
+                         int objectCount, int localVarPos, boolean fields) {
         int index = fmd.getIndex();
         int typeCode = replaceType(fmd);
-        Instruction first;
         if (typeCode < JavaTypes.OBJECT) {
             // sm.store<type>(i, field<i>)
             Class<?> type = forType(fmd.getTypeCode());
-            first = code.aload().setParam(0);
-            code.constant().setValue(index);
-            code.aload().setThis();
-            code.getfield().setField(getFieldName(index), type);
-            code.invokeinterface().setMethod(OpenJPAStateManager.class,
-                "store" + StringUtil.capitalize(type.getName()),
-                void.class, new Class[]{ int.class, type });
-        } else {
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st param
+            instructions.add(AsmHelper.getLoadConstantInsn(index));
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+            instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, getFieldName(index), Type.getDescriptor(type)));
+            instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
+                                                Type.getInternalName(OpenJPAStateManager.class),
+                                                "store" + StringUtil.capitalize(type.getName()),
+                                                Type.getMethodDescriptor(Type.VOID_TYPE, Type.INT_TYPE, Type.getType(type))));
+        }
+        else {
             // fmd = sm.getMetaData().getField(i);
             int offset = fields ? 1 : 0;
-            first = code.aload().setParam(0);
-            code.invokeinterface().setMethod(OpenJPAStateManager.class,
-                "getMetaData", ClassMetaData.class, null);
-            code.constant().setValue(fmd.getIndex());
-            code.invokevirtual().setMethod(ClassMetaData.class, "getField",
-                FieldMetaData.class, new Class[]{ int.class });
-            code.astore().setLocal(local);
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st param
+            instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
+                                                Type.getInternalName(OpenJPAStateManager.class),
+                                                "getMetaData",
+                                                Type.getMethodDescriptor(Type.getType(ClassMetaData.class))));
+            instructions.add(AsmHelper.getLoadConstantInsn(index));
+            instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                                Type.getInternalName(ClassMetaData.class),
+                                                "getField",
+                                                Type.getMethodDescriptor(Type.getType(FieldMetaData.class), Type.INT_TYPE)));
+            instructions.add(new VarInsnNode(Opcodes.ASTORE, localVarPos));
+
             // sm.storeField(i, toField(sm, fmd, objects[objectCount],
             //         fetch, context);
-            code.aload().setParam(0);
-            code.constant().setValue(index);
-            code.aload().setThis();
-            code.aload().setParam(0);
-            code.aload().setLocal(local);
-            code.aload().setThis();
-            code.getfield().setField("objects", Object[].class);
-            code.constant().setValue(objectCount);
-            code.aaload();
-            code.aload().setParam(1 + offset);
-            code.aload().setParam(2 + offset);
-            code.invokevirtual().setMethod(bc.getName(), "toField",
-                Object.class.getName(), toStrings(new Class[]{
-                OpenJPAStateManager.class, FieldMetaData.class,
-                Object.class, FetchConfiguration.class, Object.class }));
-            code.invokeinterface().setMethod(OpenJPAStateManager.class,
-                "storeField", void.class,
-                new Class[]{ int.class, Object.class });
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st param
+            instructions.add(AsmHelper.getLoadConstantInsn(index));
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st param
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, localVarPos));
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+            instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, "objects", Type.getDescriptor(Object[].class)));
+            instructions.add(AsmHelper.getLoadConstantInsn(objectCount));
+            instructions.add(new InsnNode(Opcodes.AALOAD));
+
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 2+offset));
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 3+offset));
+            instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                                classNode.name,
+                                                "toField",
+                                                Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT,
+                                                                         Type.getType(OpenJPAStateManager.class),
+                                                                         Type.getType(FieldMetaData.class),
+                                                                         AsmHelper.TYPE_OBJECT,
+                                                                         Type.getType(FetchConfiguration.class),
+                                                                         AsmHelper.TYPE_OBJECT)));
+            instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
+                                                Type.getInternalName(OpenJPAStateManager.class),
+                                                "storeField",
+                                                Type.getMethodDescriptor(Type.VOID_TYPE, Type.INT_TYPE, AsmHelper.TYPE_OBJECT)));
         }
-        return first;
     }
 
     /**
      * Load intermediate data if possible.
      */
-    private Instruction addLoadIntermediate(Code code, int index,
-        int objectCount, Collection<Instruction> jumps2, int inter) {
+    private void addLoadIntermediate(ClassNode classNode, InsnList instructions, int index, int objectCount, int interVarPos) {
         // {
-        //         Object inter = objects[objectCount];
-        Instruction first = code.aload().setThis();
-        code.getfield().setField("objects", Object[].class);
-        code.constant().setValue(objectCount);
-        code.aaload();
-        code.astore().setLocal(inter);
-        //         if (inter != null && !sm.getLoaded().get(index))
-        code.aload().setLocal(inter);
-        jumps2.add(code.ifnull());
-        code.aload().setParam(0);
-        code.invokeinterface().setMethod(OpenJPAStateManager.class,
-            "getLoaded", BitSet.class, null);
-        code.constant().setValue(index);
-        code.invokevirtual().setMethod(BitSet.class, "get",
-            boolean.class, new Class[]{ int.class });
-        jumps2.add(code.ifne());
+        //    Object inter = objects[objectCount];
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, "objects", Type.getDescriptor(Object[].class)));
+        instructions.add(AsmHelper.getLoadConstantInsn(objectCount));
+        instructions.add(new InsnNode(Opcodes.AALOAD));
+        instructions.add(new VarInsnNode(Opcodes.ASTORE, interVarPos));
+
+        //    if (inter != null && !sm.getLoaded().get(index))
+        LabelNode lblEndIf = new LabelNode();
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, interVarPos));
+        instructions.add(new JumpInsnNode(Opcodes.IFNULL, lblEndIf));
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st param
+        instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
+                                            Type.getInternalName(OpenJPAStateManager.class),
+                                            "getLoaded",
+                                            Type.getMethodDescriptor(Type.getType(BitSet.class))));
+        instructions.add(AsmHelper.getLoadConstantInsn(index));
+        instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                            Type.getInternalName(BitSet.class),
+                                            "get",
+                                            Type.getMethodDescriptor(Type.BOOLEAN_TYPE, Type.INT_TYPE)));
+        instructions.add(new JumpInsnNode(Opcodes.IFNE, lblEndIf));
+
         //            sm.setIntermediate(index, inter);
-        //    }  // end else
-        code.aload().setParam(0);
-        code.constant().setValue(index);
-        code.aload().setLocal(inter);
-        code.invokeinterface().setMethod(OpenJPAStateManager.class,
-            "setIntermediate", void.class,
-            new Class[]{ int.class, Object.class });
-        return first;
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st Param
+        instructions.add(AsmHelper.getLoadConstantInsn(index));
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, interVarPos));
+        instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
+                                            Type.getInternalName(OpenJPAStateManager.class),
+                                            "setIntermediate",
+                                            Type.getMethodDescriptor(Type.VOID_TYPE, Type.INT_TYPE, AsmHelper.TYPE_OBJECT)));
+
+        //    }  // end if - done with lblEndIf
+        instructions.add(lblEndIf);
     }
 
     private void addStoreMethods(BCClass bc, ClassMetaData meta) {
@@ -1148,6 +1209,123 @@ public class PCDataGenerator extends DynamicStorageGenerator {
             strings[i] = cls[i].getName();
         return strings;
     }
+
+    /**
+     * Declare and start the base load method.
+     */
+    @Deprecated
+    private Code addLoadMethod(BCClass bc, boolean fields) {
+        Class<?>[] args = null;
+        if (fields)
+            args = new Class[]{ OpenJPAStateManager.class, BitSet.class,
+                    FetchConfiguration.class, Object.class };
+        else
+            args = new Class[]{ OpenJPAStateManager.class,
+                    FetchConfiguration.class, Object.class };
+        BCMethod load = bc.declareMethod("load", void.class, args);
+        Code code = load.getCode(true);
+
+        //loadVersion(sm);
+        code.aload().setThis();
+        code.aload().setParam(0);
+        code.invokevirtual().setMethod("loadVersion", void.class,
+                                       new Class[]{ OpenJPAStateManager.class });
+
+        //loadImplData(sm);
+        code.aload().setThis();
+        code.aload().setParam(0);
+        code.invokevirtual().setMethod("loadImplData", void.class,
+                                       new Class[]{ OpenJPAStateManager.class });
+        return code;
+    }
+
+
+    /**
+     * Add the field load.
+     */
+    private Instruction addLoad(BCClass bc, Code code, FieldMetaData fmd,
+                                int objectCount, int local, boolean fields) {
+        int index = fmd.getIndex();
+        int typeCode = replaceType(fmd);
+        Instruction first;
+        if (typeCode < JavaTypes.OBJECT) {
+            // sm.store<type>(i, field<i>)
+            Class<?> type = forType(fmd.getTypeCode());
+            first = code.aload().setParam(0);
+            code.constant().setValue(index);
+            code.aload().setThis();
+            code.getfield().setField(getFieldName(index), type);
+            code.invokeinterface().setMethod(OpenJPAStateManager.class,
+                                             "store" + StringUtil.capitalize(type.getName()),
+                                             void.class, new Class[]{ int.class, type });
+        } else {
+            // fmd = sm.getMetaData().getField(i);
+            int offset = fields ? 1 : 0;
+            first = code.aload().setParam(0);
+            code.invokeinterface().setMethod(OpenJPAStateManager.class,
+                                             "getMetaData", ClassMetaData.class, null);
+            code.constant().setValue(fmd.getIndex());
+            code.invokevirtual().setMethod(ClassMetaData.class, "getField",
+                                           FieldMetaData.class, new Class[]{ int.class });
+            code.astore().setLocal(local);
+            // sm.storeField(i, toField(sm, fmd, objects[objectCount],
+            // 		fetch, context);
+            code.aload().setParam(0);
+            code.constant().setValue(index);
+            code.aload().setThis();
+            code.aload().setParam(0);
+            code.aload().setLocal(local);
+            code.aload().setThis();
+            code.getfield().setField("objects", Object[].class);
+            code.constant().setValue(objectCount);
+            code.aaload();
+            code.aload().setParam(1 + offset);
+            code.aload().setParam(2 + offset);
+            code.invokevirtual().setMethod(bc.getName(), "toField",
+                                           Object.class.getName(), toStrings(new Class[]{
+                            OpenJPAStateManager.class, FieldMetaData.class,
+                            Object.class, FetchConfiguration.class, Object.class }));
+            code.invokeinterface().setMethod(OpenJPAStateManager.class,
+                                             "storeField", void.class,
+                                             new Class[]{ int.class, Object.class });
+        }
+        return first;
+    }
+
+    /**
+     * Load intermediate data if possible.
+     */
+    @Deprecated
+    private Instruction addLoadIntermediate(Code code, int index,
+                                            int objectCount, Collection<Instruction> jumps2, int inter) {
+        // {
+        // 		Object inter = objects[objectCount];
+        Instruction first = code.aload().setThis();
+        code.getfield().setField("objects", Object[].class);
+        code.constant().setValue(objectCount);
+        code.aaload();
+        code.astore().setLocal(inter);
+        // 		if (inter != null && !sm.getLoaded().get(index))
+        code.aload().setLocal(inter);
+        jumps2.add(code.ifnull());
+        code.aload().setParam(0);
+        code.invokeinterface().setMethod(OpenJPAStateManager.class,
+                                         "getLoaded", BitSet.class, null);
+        code.constant().setValue(index);
+        code.invokevirtual().setMethod(BitSet.class, "get",
+                                       boolean.class, new Class[]{ int.class });
+        jumps2.add(code.ifne());
+        //			sm.setIntermediate(index, inter);
+        //	}  // end else
+        code.aload().setParam(0);
+        code.constant().setValue(index);
+        code.aload().setLocal(inter);
+        code.invokeinterface().setMethod(OpenJPAStateManager.class,
+                                         "setIntermediate", void.class,
+                                         new Class[]{ int.class, Object.class });
+        return first;
+    }
+
 
     /**
      * Dynamic {@link PCData}s generated will implement this interface

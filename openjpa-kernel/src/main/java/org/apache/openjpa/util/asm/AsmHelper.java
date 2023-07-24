@@ -728,7 +728,7 @@ public final class AsmHelper {
         // stack position 0 is this pointer for non-static methods
         // In other words: for a static method the first free stack location is 1,
         // for non-static it is 2
-        int pos = ((meth.access & Opcodes.ACC_STATIC) > 0) ? 1 : 2;
+        int pos = ((meth.access & Opcodes.ACC_STATIC) > 0) ? 0 : 1;
 
         // and now add the size of the parameters
         for (Type paramType : paramTypes) {
