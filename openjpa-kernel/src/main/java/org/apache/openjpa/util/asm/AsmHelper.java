@@ -43,8 +43,6 @@ import org.apache.xbean.asm9.tree.MethodNode;
 import org.apache.xbean.asm9.tree.TypeInsnNode;
 import org.apache.xbean.asm9.tree.VarInsnNode;
 
-import serp.bytecode.BCClass;
-
 /**
  * Utility methods to deal with ASM bytecode
  * 
@@ -135,49 +133,6 @@ public final class AsmHelper {
         ClassWriter cw = new BCClassWriter(ClassWriter.COMPUTE_FRAMES, cnt.getClassLoader());
         cnt.getClassNode().accept(cw);
         return cw.toByteArray();
-    }
-
-    /**
-     * temporary helper class to convert BCClass to ASM ClassNode
-     * @deprecated must get removed when done with migrating from Serp to ASM
-     */
-    public static ClassNodeTracker toClassNode(EnhancementProject project, BCClass bcClass) {
-        ClassReader cr = new ClassReader(bcClass.toByteArray());
-        ClassNode classNode = new ClassNode(Opcodes.ASM9);
-        cr.accept(classNode, ATTRS, 0);
-
-        if ((classNode.version & 0xffff) < 49) {
-            classNode.version = 49;
-        }
-
-        final ClassNodeTracker cnt = new ClassNodeTracker(project, classNode, bcClass.getClassLoader());
-        return cnt;
-    }
-
-    /**
-     * Take the changes from ClassNodeTracker and read it into the given BCClass instance.
-     * Effectively replace all the content of BCClass with the content from our ClassNode
-     */
-    public static void readIntoBCClass(ClassNodeTracker cnt, BCClass bcClass) {
-        // sadly package scoped
-        try {
-            if (bcClass.getMajorVersion() < 49) {
-                bcClass.setMajorVersion(49);
-            }
-
-            Method readMethod = BCClass.class.getDeclaredMethod("read", InputStream.class, ClassLoader.class);
-
-            ClassWriter cw = new BCClassWriter(ClassWriter.COMPUTE_FRAMES, bcClass.getClassLoader());
-            cnt.getClassNode().accept(cw);
-            final byte[] classBytes = cw.toByteArray();
-            ByteArrayInputStream bais = new ByteArrayInputStream(classBytes);
-
-            readMethod.setAccessible(true);
-            readMethod.invoke(bcClass, bais, bcClass.getClassLoader());
-        }
-        catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public static Optional<MethodNode> getMethodNode(ClassNode classNode, Method meth) {

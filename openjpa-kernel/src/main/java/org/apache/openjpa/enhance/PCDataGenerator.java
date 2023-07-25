@@ -52,11 +52,6 @@ import org.apache.xbean.asm9.tree.MethodNode;
 import org.apache.xbean.asm9.tree.TypeInsnNode;
 import org.apache.xbean.asm9.tree.VarInsnNode;
 
-import serp.bytecode.BCClass;
-import serp.bytecode.BCMethod;
-import serp.bytecode.Code;
-import serp.bytecode.Constants;
-import serp.bytecode.Project;
 
 /**
  * Generates {@link PCData} instances which avoid primitive wrappers
@@ -173,13 +168,7 @@ public class PCDataGenerator extends DynamicStorageGenerator {
         addLoadWithFieldsMethod(bc, meta);
         addStoreMethods(bc, meta);
         addNewEmbedded(bc);
-
-        BCClass _bc = new Project().loadClass(bc.getClassNode().name.replace("/", "."));
-        AsmHelper.readIntoBCClass(bc, _bc);
-
-        addGetData(_bc);
-
-        bc = AsmHelper.toClassNode(bc.getProject(), _bc);
+        addGetData(bc);
 
         decorate(bc, meta);
     }
@@ -277,7 +266,7 @@ public class PCDataGenerator extends DynamicStorageGenerator {
     private void addBaseFields(ClassNodeTracker bc) {
         addBeanField(bc, "id", Object.class);
         FieldNode field = addBeanField(bc, "storageGenerator", PCDataGenerator.class);
-        field.access |= Constants.ACCESS_TRANSIENT;
+        field.access |= Opcodes.ACC_TRANSIENT;
     }
 
     /**
@@ -1236,18 +1225,24 @@ public class PCDataGenerator extends DynamicStorageGenerator {
         instructions.add(new InsnNode(Opcodes.ARETURN));
     }
 
-    private void addGetData(BCClass bc) {
+    private void addGetData(ClassNodeTracker cnt) {
+        ClassNode classNode = cnt.getClassNode();
+
+        MethodNode meth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                         "getData",
+                                         Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT, Type.INT_TYPE),
+                                         null, null);
+        classNode.methods.add(meth);
+        InsnList instructions = meth.instructions;
+
         // return getObjectField(i);
-        BCMethod method = bc.declareMethod("getData", Object.class,
-            new Class[]{ int.class });
-        Code code = method.getCode(true);
-        code.aload().setThis();
-        code.iload().setParam(0);
-        code.invokevirtual().setMethod("getObject", Object.class,
-            new Class[]{ int.class });
-        code.areturn();
-        code.calculateMaxLocals();
-        code.calculateMaxStack();
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        instructions.add(new VarInsnNode(Opcodes.ILOAD, 1)); // 1st parameter int
+        instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                            classNode.name,
+                                            "getObject",
+                                            Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT, Type.INT_TYPE)));
+        instructions.add(new InsnNode(Opcodes.ARETURN));
     }
 
     /////////////
