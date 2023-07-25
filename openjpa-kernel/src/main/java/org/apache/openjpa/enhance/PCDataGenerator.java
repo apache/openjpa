@@ -172,11 +172,11 @@ public class PCDataGenerator extends DynamicStorageGenerator {
         addLoadMethod(bc, meta);
         addLoadWithFieldsMethod(bc, meta);
         addStoreMethods(bc, meta);
+        addNewEmbedded(bc);
 
         BCClass _bc = new Project().loadClass(bc.getClassNode().name.replace("/", "."));
         AsmHelper.readIntoBCClass(bc, _bc);
 
-        addNewEmbedded(_bc);
         addGetData(_bc);
 
         bc = AsmHelper.toClassNode(bc.getProject(), _bc);
@@ -1205,27 +1205,35 @@ public class PCDataGenerator extends DynamicStorageGenerator {
                                                                      Type.getType(OpenJPAStateManager.class), Type.INT_TYPE, Type.BOOLEAN_TYPE)));
     }
 
-    private void addNewEmbedded(BCClass bc) {
-        // void newEmbeddedPCData(OpenJPAStateManager embedded)
-        BCMethod meth = bc.declareMethod("newEmbeddedPCData", PCData.class,
-            new Class[]{ OpenJPAStateManager.class });
-        Code code = meth.getCode(true);
+    private void addNewEmbedded(ClassNodeTracker cnt) {
+        ClassNode classNode = cnt.getClassNode();
+        MethodNode meth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                         "newEmbeddedPCData",
+                                         Type.getMethodDescriptor(Type.getType(PCData.class), Type.getType(OpenJPAStateManager.class)),
+                                         null, null);
+        classNode.methods.add(meth);
+        InsnList instructions = meth.instructions;
+
         // return getStorageGenerator().generatePCData
         //         (sm.getId(), sm.getMetaData());
-        code.aload().setThis();
-        code.getfield().setField("storageGenerator", PCDataGenerator.class);
-        code.aload().setParam(0);
-        code.invokeinterface().setMethod(OpenJPAStateManager.class,
-            "getId", Object.class, null);
-        code.aload().setParam(0);
-        code.invokeinterface().setMethod(OpenJPAStateManager.class,
-            "getMetaData", ClassMetaData.class, null);
-        code.invokevirtual().setMethod(PCDataGenerator.class,
-            "generatePCData", PCData.class, new Class[]
-            { Object.class, ClassMetaData.class });
-        code.areturn();
-        code.calculateMaxLocals();
-        code.calculateMaxStack();
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, "storageGenerator", Type.getDescriptor(PCDataGenerator.class)));
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st parameter OpenJPAStateManager
+        instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
+                                            Type.getInternalName(OpenJPAStateManager.class),
+                                            "getId",
+                                            Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT)));
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st parameter OpenJPAStateManager
+        instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
+                                            Type.getInternalName(OpenJPAStateManager.class),
+                                            "getMetaData",
+                                            Type.getMethodDescriptor(Type.getType(ClassMetaData.class))));
+        instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                            Type.getInternalName(PCDataGenerator.class),
+                                            "generatePCData",
+                                            Type.getMethodDescriptor(Type.getType(PCData.class),
+                                                                     AsmHelper.TYPE_OBJECT, Type.getType(ClassMetaData.class))));
+        instructions.add(new InsnNode(Opcodes.ARETURN));
     }
 
     private void addGetData(BCClass bc) {
