@@ -19,7 +19,6 @@
 package org.apache.openjpa.enhance;
 
 import java.util.BitSet;
-import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -57,8 +56,6 @@ import serp.bytecode.BCClass;
 import serp.bytecode.BCMethod;
 import serp.bytecode.Code;
 import serp.bytecode.Constants;
-import serp.bytecode.Instruction;
-import serp.bytecode.JumpInstruction;
 import serp.bytecode.Project;
 
 /**
@@ -1290,28 +1287,6 @@ public class PCDataGenerator extends DynamicStorageGenerator {
                 count++;
         return count;
     }
-
-    /**
-     * Set the collection of {@link JumpInstruction}s to the given instruction,
-     * clearing the collection in the process.
-     */
-    protected void setTarget(Instruction ins, Collection<Instruction> jumps) {
-        for (Instruction jump : jumps) {
-            ((JumpInstruction) jump).setTarget(ins);
-        }
-        jumps.clear();
-    }
-
-    /**
-     * Transform the given array of classes to strings.
-     */
-    private static String[] toStrings(Class<?>[] cls) {
-        String[] strings = new String[cls.length];
-        for (int i = 0; i < strings.length; i++)
-            strings[i] = cls[i].getName();
-        return strings;
-    }
-
 
     /**
      * Dynamic {@link PCData}s generated will implement this interface
