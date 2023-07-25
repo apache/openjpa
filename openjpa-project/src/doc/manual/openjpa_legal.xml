@@ -45,9 +45,6 @@ Apache OpenJPA is released under the <ulink url="http://www.apache.org/licenses/
         <para>
 Apache OpenJPA includes the persistence and orm schemas from the JPA specifications and elects to include this software in this distribution under the <ulink url="https://glassfish.dev.java.net/public/CDDL+GPL.html">CDDL license.</ulink>
         </para>
-        <para>
-Apache OpenJPA includes software developed by the SERP project, which uses the <ulink url="http://www.opensource.org/licenses/bsd-license.php">BSD license</ulink>
-        </para>
     </section>
 
     <section id="openjpa_legal_notice">
@@ -79,9 +76,6 @@ The openjpa-all aggregate JAR includes software developed by the:
                 <listitem><para>
     JCP JSR-317 JPA 2.0 schemas
                 </para></listitem>
-                <listitem><para>
-    SERP project
-                </para></listitem>
             </itemizedlist>
         </para>
     </section>
@@ -97,15 +91,6 @@ Copyright (C) 2006,2011 The Apache Software Foundation.
             </para>
             <para>
 Apache, OpenJPA and the Apache feather logo are trademarks of Apache Software Foundation.
-            </para>
-        </section>
-        <section id="openjpa_legal_copyright_serp">
-            <title>Serp</title>
-            <para>
-OpenJPA includes software developed by the SERP project.
-            </para>
-            <para>
-Copyright (c) 2002-2006, A. Abram White. All rights reserved.
             </para>
         </section>
         <section id="openjpa_legal_copyright_sun">

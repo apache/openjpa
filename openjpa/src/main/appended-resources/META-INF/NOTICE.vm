@@ -18,9 +18,6 @@
 ##
 
 
-OpenJPA includes software developed by the SERP project
-Copyright (c) 2002-2006, A. Abram White. All rights reserved.
-
 OpenJPA includes the persistence and orm schemas from the JPA specifications.
 Copyright 2005-2007 Sun Microsystems, Inc. All rights reserved.
 OpenJPA elects to include this software in this distribution under the

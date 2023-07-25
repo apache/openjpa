@@ -56,16 +56,6 @@ grant CodeBase "${db2.base}/-" {
 // The following permissions are required by OpenJPA implementation.
 
 // ----------------------------------------------------------------
-// Serp:  E.g.
-//  -Dserp.base="file:///C:\.m2\repository\net\sourceforge\serp\serp\1.11.0"
-
-grant CodeBase "${serp.base}/-" {
-
-    permission java.io.FilePermission   "<<ALL FILES>>", "read,write";
-    permission java.lang.RuntimePermission               "createClassLoader";
-};
-
-// ----------------------------------------------------------------
 // OpeJPA:  E.g.
 //  -Dopenjpa.base=file:///C:\openjpa.cur\openjpa-all\target
 

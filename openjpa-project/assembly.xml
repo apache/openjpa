@@ -130,7 +130,6 @@
             <unpack>false</unpack>
             <scope>runtime</scope>
             <includes>
-                <include>net.sourceforge.serp:serp</include>
                 <include>org.apache.derby:derby</include>
 
                 <include>org.apache.commons:commons-pool2</include>

@@ -20,7 +20,7 @@ package org.apache.openjpa.lib.util.testlocalizer;
 
 /**
  * Helper class used so that the localizer.properties file in this package
- * can be accessed. The properties cannot be in the same package(serp.util)
+ * can be accessed. The properties cannot be in the same package
  * as the main tester class because other utilities in the source line might
  * eventually want to use a localizer.properties file for that package.
  *

@@ -353,19 +353,6 @@ public class JDBCConfigurationImpl
         identifierUtilPlugin.setString(aliases[0]);
         identifierUtilPlugin.setInstantiatingGetter("getIdentifierUtilInstance");
 
-
-        // this static initializer is to get past a weird
-        // ClassCircularityError that happens only under IBM's
-        // JDK 1.3.1 on Linux from within the JRun ClassLoader;
-        // while exact causes are unknown, it is almost certainly
-        // a bug in JRun, and we can get around it by forcing
-        // Instruction.class to be loaded and initialized
-        // before TypedInstruction.class
-        try { serp.bytecode.lowlevel.Entry.class.getName(); }
-        catch (Throwable t) {}
-        try { serp.bytecode.Instruction.class.getName(); }
-        catch (Throwable t) {}
-
         supportedOptions().add(OPTION_QUERY_SQL);
         supportedOptions().add(OPTION_JDBC_CONNECTION);
         supportedOptions().remove(OPTION_VALUE_INCREMENT);
