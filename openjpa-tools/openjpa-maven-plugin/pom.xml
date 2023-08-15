@@ -42,7 +42,7 @@
     <inceptionYear>2011</inceptionYear>
     <properties>
         <checkstyle.suppressions.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}suppressions.xml</checkstyle.suppressions.location>
-        <min.maven.version>3.3.9</min.maven.version>
+        <min.maven.version>3.8.1</min.maven.version>
     </properties>
     <prerequisites>
         <maven>${min.maven.version}</maven>
