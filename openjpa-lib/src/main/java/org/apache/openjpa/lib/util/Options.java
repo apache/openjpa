@@ -24,6 +24,7 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -428,6 +429,11 @@ public class Options extends TypedProperties {
                 if (type == primWrapper[0])
                     return stringToObject(str, (Class<?>) primWrapper[1]);
 
+        // special case for Durations
+        if (type == Duration.class) {
+            return Duration.ofMillis(Long.valueOf(str));
+        }
+
         // look for a string constructor
         Exception err = null;
         try {
@@ -627,7 +633,7 @@ public class Options extends TypedProperties {
      */
     private static class EmptyOptions extends Options {
 
-        
+
         private static final long serialVersionUID = 1L;
 
         @Override
