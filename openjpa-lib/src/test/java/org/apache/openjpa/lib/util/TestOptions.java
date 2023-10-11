@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.lib.util;
 
+import java.time.Duration;
 import java.util.Properties;
 
 import org.junit.Before;
@@ -103,9 +104,11 @@ public class TestOptions {
         inner = new Inner();
         opts = new Options();
         opts.setProperty("mixed", "STR,1");
+        opts.setProperty("maxWait", "10000");
         opts.setInto(inner);
         assertEquals(1, inner.getInt());
         assertEquals("STR", inner.getString());
+        assertEquals(10_000, inner.getMaxWait().toMillis());
     }
 
     /**
@@ -124,6 +127,7 @@ public class TestOptions {
         private Inner _nullInner = null;
         private int[] _range1 = new int[2];
         private int[] _range2 = new int[2];
+        private Duration _maxWait = Duration.ofMillis(-1);
 
         public Inner() {
         }
@@ -199,6 +203,14 @@ public class TestOptions {
 
         public void setNullInner(Inner in) {
             _nullInner = in;
+        }
+
+        public Duration getMaxWait() {
+            return _maxWait;
+        }
+
+        public void setMaxWait(Duration dur) {
+            _maxWait = dur;
         }
     }
 
