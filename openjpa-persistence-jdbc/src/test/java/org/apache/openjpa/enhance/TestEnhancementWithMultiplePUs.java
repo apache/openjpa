@@ -26,12 +26,14 @@ import java.util.List;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.lib.conf.Configurations;
+import org.apache.openjpa.util.asm.AsmHelper;
 import org.apache.openjpa.util.asm.BytecodeWriter;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
 import org.apache.openjpa.util.asm.ClassNodeTracker;
+import org.apache.openjpa.util.asm.EnhancementClassLoader;
 import org.apache.openjpa.util.asm.EnhancementProject;
 import org.apache.xbean.asm9.Type;
 
@@ -52,10 +54,23 @@ public class TestEnhancementWithMultiplePUs
         ClassNodeTracker bc = assertNotPC(loader, project, className);
 
         PCEnhancer enhancer = new PCEnhancer(conf, bc, repos, loader);
+        enhancer.setCreateSubclass(true);
 
         assertEquals(PCEnhancer.ENHANCE_PC, enhancer.run());
 
         assertTrue(enhancer.getPCBytecode().getClassNode().interfaces.contains(Type.getInternalName(PersistenceCapable.class)));
+
+        // load the Class<?> for real.
+        EnhancementProject finalProject = new EnhancementProject();
+        EnhancementClassLoader finalLoader = new EnhancementClassLoader(finalProject, this.getClass().getClassLoader());
+        final byte[] classBytes2 = AsmHelper.toByteArray(enhancer.getPCBytecode());
+
+        // this is just to make the ClassLoader aware of the bytecode for the enhanced class
+        finalProject.loadClass(classBytes2, finalLoader);
+
+        String pcClassName = enhancer.getPCBytecode().getClassNode().name.replace("/", ".");
+        final Class<?> implClass = Class.forName(pcClassName, true, finalLoader);
+        assertNotNull(implClass);
     }
 
     private ClassNodeTracker assertNotPC(ClassLoader loader, EnhancementProject project, String className) {

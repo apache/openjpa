@@ -42,6 +42,8 @@ public class UnenhancedFieldAccess
     @Version public int version;
     protected String stringField = "foo";
 
+    private long longVal;
+
     @Basic(fetch = FetchType.LAZY)
     private String lazyField = "lazy";
 
@@ -63,6 +65,15 @@ public class UnenhancedFieldAccess
     @Override
     public String getLazyField() {
         return lazyField;
+    }
+
+
+    public long getLongVal() {
+        return longVal;
+    }
+
+    public void setLongVal(long longVal) {
+        this.longVal = longVal;
     }
 
     @Override

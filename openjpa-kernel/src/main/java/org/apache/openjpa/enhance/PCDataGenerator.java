@@ -64,8 +64,7 @@ import org.apache.xbean.asm9.tree.VarInsnNode;
  */
 public class PCDataGenerator extends DynamicStorageGenerator {
 
-    private static final Localizer _loc = Localizer.forPackage
-        (PCDataGenerator.class);
+    private static final Localizer _loc = Localizer.forPackage(PCDataGenerator.class);
 
     protected static final String POSTFIX = "$openjpapcdata";
 
@@ -89,8 +88,10 @@ public class PCDataGenerator extends DynamicStorageGenerator {
      * Return a {@link PCData} instance for the given oid and metadata.
      */
     public PCData generatePCData(Object oid, ClassMetaData meta) {
-        if (meta == null)
+        if (meta == null) {
             return null;
+        }
+
         Class<?> type = meta.getDescribedType();
         DynamicStorage storage = _generated.get(type);
         if (storage == null) {
@@ -110,13 +111,15 @@ public class PCDataGenerator extends DynamicStorageGenerator {
      * Actually generate the factory instance.
      */
     private DynamicStorage generateStorage(ClassMetaData meta) {
-        if (_log.isTraceEnabled())
+        if (_log.isTraceEnabled()) {
             _log.trace(_loc.get("pcdata-generate", meta));
+        }
 
         FieldMetaData[] fields = meta.getFields();
         int[] types = new int[fields.length];
-        for (int i = 0; i < types.length; i++)
+        for (int i = 0; i < types.length; i++) {
             types[i] = replaceType(fields[i]);
+        }
         return generateStorage(types, meta);
     }
 
@@ -128,8 +131,10 @@ public class PCDataGenerator extends DynamicStorageGenerator {
 
     @Override
     protected int getCreateFieldMethods(int typeCode) {
-        if (typeCode >= JavaTypes.OBJECT)
+        if (typeCode >= JavaTypes.OBJECT) {
             return POLICY_SILENT;
+        }
+
         // don't bother creating set/get<Primitive> methods
         return POLICY_EMPTY;
     }

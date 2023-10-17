@@ -1215,6 +1215,7 @@ public class PCEnhancer {
             addGetManagedValueCode(classNode, insns, fmd, true);
         }
         else {
+            // the method parameter
             insns.add(new VarInsnNode(AsmHelper.getLoadInsn(type), param + 1));
         }
         insns.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
@@ -4195,7 +4196,7 @@ public class PCEnhancer {
                                               null, null);
         classNode.methods.add(newMethod);
         final InsnList instructions = newMethod.instructions;
-        int nextFreeVarPos = 2;
+        int nextFreeVarPos = 1 + Type.getType(propType).getSize();
 
         setVisibilityToSuperMethod(newMethod);
 
