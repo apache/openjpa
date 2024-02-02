@@ -35,7 +35,7 @@
     <name>OpenJPA Parent POM</name>
     <description>Apache OpenJPA implementation of Jakarta JPA 3.1</description>
 
-    <version>4.0.0</version>
+    <version>4.0.1-SNAPSHOT</version>
 
     <properties>
         <java.class.version>11</java.class.version>
@@ -175,7 +175,7 @@
         <connection>scm:git:https://gitbox.apache.org/repos/asf/openjpa.git</connection>
         <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/openjpa.git</developerConnection>
         <url>https://gitbox.apache.org/repos/asf/openjpa.git</url>
-      <tag>4.0.0</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <modules>
