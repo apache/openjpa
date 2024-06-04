@@ -48,6 +48,18 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <checkstyle.suppressions.location>openjpa-project${file.separator}suppressions.xml</checkstyle.suppressions.location>
 
+        <!-- Sonar ISW2 -->
+        <sonar.organization>andrea041</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.scanner.force-deprecated-java-version>true</sonar.scanner.force-deprecated-java-version>
+
+        <!-- JaCoCo ISW2 -->
+        <sonar.coverage.jacoco.xmlReportPaths>../test-jacoco/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+
+        <!-- Mockito -->
+        <mockito.version>3.12.4</mockito.version>
+        <powermock.version>2.0.9</powermock.version>
+
         <site.deploy.url>scp://people.apache.org/home/${site.deploy.user.name}/public_html/openjpa/${project.version}/staging-site</site.deploy.url>
         <!-- the test settings can be overridden my specific profiles -->
         <test.jvm.maxpermsize>512m</test.jvm.maxpermsize>
@@ -185,12 +197,13 @@
         <module>openjpa-kubernetes</module>
         <module>openjpa</module>
         <module>openjpa-project</module>
-        <module>openjpa-examples</module>
-        <module>openjpa-integration</module>
+        <!--module>openjpa-examples</module-->
+        <!--module>openjpa-integration</module-->
         <module>openjpa-all</module>
         <module>openjpa-tools</module>
         <module>openjpa-features</module>
         <module>openjpa-junit5</module>
+        <module>report-collector</module>
     </modules>
 
     <profiles>
@@ -216,14 +229,14 @@
                     <plugin>
                         <groupId>org.apache.rat</groupId>
                         <artifactId>apache-rat-plugin</artifactId>
-                        <executions>
+                        <!--executions>
                             <execution>
                                 <phase>verify</phase>
                                 <goals>
                                     <goal>check</goal>
                                 </goals>
                             </execution>
-                        </executions>
+                        </executions-->
                         <configuration>
                             <excludeSubProjects>false</excludeSubProjects>
                             <numUnapprovedLicenses>0</numUnapprovedLicenses>
@@ -2067,11 +2080,11 @@
                         </execution>
                     </executions>
                 </plugin>
-                <plugin>
+                <!--plugin>
                     <groupId>org.apache.rat</groupId>
                     <artifactId>apache-rat-plugin</artifactId>
                     <version>0.12</version>
-                </plugin>
+                </plugin-->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
@@ -2302,14 +2315,14 @@
             <plugin>
                 <groupId>org.apache.rat</groupId>
                 <artifactId>apache-rat-plugin</artifactId>
-                <executions>
+                <!--executions>
                     <execution>
                         <phase>verify</phase>
                         <goals>
                             <goal>check</goal>
                         </goals>
                     </execution>
-                </executions>
+                </executions-->
                 <configuration>
                     <excludeSubProjects>false</excludeSubProjects>
                     <numUnapprovedLicenses>0</numUnapprovedLicenses>

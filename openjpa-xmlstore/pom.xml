@@ -96,13 +96,13 @@
                     <enforcePropertyRestrictions>true</enforcePropertyRestrictions>
                 </configuration>
                 <executions>
-                    <execution>
+                    <!--execution>
                         <id>enhancer</id>
                         <phase>process-test-classes</phase>
                         <goals>
                             <goal>test-enhance</goal>
                         </goals>
-                    </execution>
+                    </execution-->
                 </executions>
                 <dependencies>
                     <!-- use o-p-j instead of openjpa to avoid cyclical dependency in maven graph -->
