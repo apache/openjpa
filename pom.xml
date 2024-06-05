@@ -51,7 +51,6 @@
         <!-- Sonar ISW2 -->
         <sonar.organization>andrea041</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.scanner.force-deprecated-java-version>true</sonar.scanner.force-deprecated-java-version>
 
         <!-- JaCoCo ISW2 -->
         <sonar.coverage.jacoco.xmlReportPaths>../test-jacoco/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
@@ -207,6 +206,30 @@
     </modules>
 
     <profiles>
+        <profile>
+            <id>JaCoCo</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>0.8.10</version>
+                        <executions>
+                            <execution>
+                                <id>prepare-agent</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
         <!-- ================ -->
         <!--  Build Profiles  -->
         <!-- ================ -->
@@ -226,12 +249,6 @@
             </properties>
             <build>
                 <plugins>
-                    <!-- JaCoCo plugin multi module -->
-                    <plugin>
-                        <groupId>org.jacoco</groupId>
-                        <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>0.8.11</version>
-                    </plugin>
                     <plugin>
                         <groupId>org.apache.rat</groupId>
                         <artifactId>apache-rat-plugin</artifactId>
@@ -373,34 +390,6 @@
         <!--  Test Profiles  -->
         <!-- =============== -->
         <profile>
-            <id>JaCoCo</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-                <!--
-                <property>
-                  <name>!skipCoverage</name>
-                </property>
-                -->
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.jacoco</groupId>
-                        <artifactId>jacoco-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>prepare-agent</id>
-                                <goals>
-                                    <goal>prepare-agent</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <profile>
             <id>debug</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
@@ -443,9 +432,6 @@
                            <includes>
                                <include />
                            </includes>
-                           <systemPropertyVariables>
-                               <jacoco-agent.destfile>**/jacoco.exec</jacoco-agent.destfile>
-                           </systemPropertyVariables>
                        </configuration>
                    </plugin>
                 </plugins>
@@ -1910,6 +1896,17 @@
             </dependency>
 
             <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-inline</artifactId>
+                <version>${mockito.version}</version>
+            </dependency>
+
+            <dependency>
               <groupId>io.fabric8</groupId>
               <artifactId>kubernetes-client</artifactId>
               <version>${kubernetes-client.version}</version>
@@ -1958,6 +1955,16 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-inline</artifactId>
+            <version>${mockito.version}</version>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -2017,14 +2024,12 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven.surefire.version}</version>
-                    <configuration>
+                    <!--configuration>
                         <argLine>${surefire.jvm.args}</argLine>
                         <redirectTestOutputToFile>true</redirectTestOutputToFile>
                         <trimStackTrace>false</trimStackTrace>
                         <useSystemClassLoader>true</useSystemClassLoader>
                         <excludes>
-                            <!-- exclude classes that include a $; inner classes
-                                 are not test cases per OpenJPA standards -->
                             <exclude>org/apache/openjpa/**/*$*.class</exclude>
                         </excludes>
                     <systemProperties>
@@ -2081,7 +2086,7 @@
                             <value>${tests.openjpa.driverDataSource}</value>
                         </property>
                     </systemProperties>
-                    </configuration>
+                    </configuration-->
                 </plugin>
                 <plugin>
                     <groupId>io.fabric8</groupId>
@@ -2417,5 +2422,4 @@
             </plugin>
         </plugins>
     </reporting>
-
 </project>
