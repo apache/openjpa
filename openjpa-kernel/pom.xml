@@ -35,6 +35,11 @@
     <name>OpenJPA Kernel</name>
     <description>OpenJPA Kernel</description>
 
+    <properties>
+        <pitest.version>1.14.0</pitest.version>
+        <ba-dua.version>0.6.0</ba-dua.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
@@ -178,14 +183,7 @@
                     <plugin>
                         <groupId>org.pitest</groupId>
                         <artifactId>pitest-maven</artifactId>
-                        <version>1.14.0</version>
-                        <dependencies>
-                            <dependency>
-                                <groupId>org.pitest</groupId>
-                                <artifactId>pitest-junit5-plugin</artifactId>
-                                <version>1.2.0</version>
-                            </dependency>
-                        </dependencies>
+                        <version>${pitest.version}</version>
                         <configuration>
                             <targetClasses>
                                 <param>org.apache.openjpa.util.ProxyManagerImpl</param>
@@ -201,7 +199,7 @@
                         </configuration>
                         <executions>
                             <execution>
-                                <id>pit report</id>
+                                <id>PIT Report</id>
                                 <phase>test-compile</phase>
                                 <goals>
                                     <goal>mutationCoverage</goal>
@@ -213,15 +211,13 @@
             </build>
         </profile>
 
+        <!-- Ba-Dua -->
         <profile>
             <id>Ba-Dua</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
-            <properties>
-                <ba-dua.version>0.6.0</ba-dua.version>
-                <argLine>-javaagent:target/dependency/ba-dua-agent-rt-${ba-dua.version}-all.jar -Doutput.file=${project.build.directory}/badua.ser</argLine>
-            </properties>
+
             <dependencies>
                 <dependency>
                     <groupId>br.usp.each.saeg</groupId>
@@ -278,6 +274,14 @@
                                 </configuration>
                             </execution>
                         </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>3.0.0-M4</version>
+                        <configuration>
+                            <argLine>-javaagent:target/dependency/ba-dua-agent-rt-${ba-dua.version}-all.jar -Doutput.file=${project.build.directory}/badua.ser</argLine>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>

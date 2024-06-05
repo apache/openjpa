@@ -1,3 +1,5 @@
+package org.apache.openjpa.util;
+
 public class Istance {
     private String dummy;
 
