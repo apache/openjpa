@@ -3,7 +3,7 @@ name: ISW2 Testing OpenJPA JaCoCo
 on:
   push:
     branches:
-      - master
+      - isw2
   pull_request:
     types: [opened, synchronize, reopened]
 
