@@ -24,8 +24,8 @@ public class CacheMapGetTest {
     private CacheMap cacheMap;
     private Object output;
     private Integer dummyValue = 5;
-    private SizedMap softMap;
     private boolean inSoftMap;
+    private int softMapSize = 512;
 
     private static final String NULL = "null";
     private static final String VALID = "valid";
@@ -42,16 +42,17 @@ public class CacheMapGetTest {
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
                 {NULL, false, false, null},
+                {NULL, true, false, 5},
                 {VALID, true, false, 5},
                 {VALID, false, false, null},
                 {INVALID, true, false, null},
                 {INVALID, false, false, null},
                 // Test cases added based on JaCoCo results
-                {NULL, false, true, null},
+                {NULL, false, true, 5},
                 {VALID, true, true, 5},
-                {VALID, false, true, null},
+                {VALID, false, false, null},
                 {INVALID, true, true, null},
-                {INVALID, false, true, null}
+                {INVALID, false, false, null}
         });
     }
 
@@ -65,11 +66,8 @@ public class CacheMapGetTest {
             cacheMap.put(key, dummyValue);
 
         if (inSoftMap) {
-            softMap = new ConcurrentReferenceHashMap(AbstractReferenceMap.ReferenceStrength.HARD,
-                    AbstractReferenceMap.ReferenceStrength.SOFT);
-
-            cacheMap.setSoftReferenceSize(512);
-            cacheMap.put(softMap, key, dummyValue);
+            cacheMap.setSoftReferenceSize(softMapSize);
+            cacheMap.put(cacheMap.softMap, key, dummyValue);
         }
 
         //pinnedMap = new ConcurrentHashMap();
