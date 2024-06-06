@@ -1,5 +1,9 @@
 package org.apache.openjpa.util;
 
+import org.apache.openjpa.lib.util.SizedMap;
+import org.apache.openjpa.lib.util.collections.AbstractReferenceMap;
+import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
+import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -10,7 +14,7 @@ import org.junit.runners.Parameterized;
 import java.util.Arrays;
 import java.util.Collection;
 
-import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.*;
 
 @RunWith(Parameterized.class)
 public class CacheMapGetTest {
@@ -19,26 +23,35 @@ public class CacheMapGetTest {
     private boolean existingKey;
     private CacheMap cacheMap;
     private Object output;
-    private static Integer dummyValue = 5;
+    private Integer dummyValue = 5;
+    private SizedMap softMap;
+    private boolean inSoftMap;
 
     private static final String NULL = "null";
     private static final String VALID = "valid";
     private static final String INVALID = "invalid";
 
-    public CacheMapGetTest(String keyType, boolean existingKey, Object output) {
+    public CacheMapGetTest(String keyType, boolean existingKey, boolean inSoftMap, Object output) {
         this.keyType = keyType;
         this.existingKey = existingKey;
         this.output = output;
+        this.inSoftMap = inSoftMap;
     }
 
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-                {NULL, false, NullPointerException.class},
-                {VALID, true, dummyValue},
-                {VALID, false, null},
-                {INVALID, true, null},
-                {INVALID, false, null}
+                {NULL, false, false, null},
+                {VALID, true, false, 5},
+                {VALID, false, false, null},
+                {INVALID, true, false, null},
+                {INVALID, false, false, null},
+                // Test cases added based on JaCoCo results
+                {NULL, false, true, null},
+                {VALID, true, true, 5},
+                {VALID, false, true, null},
+                {INVALID, true, true, null},
+                {INVALID, false, true, null}
         });
     }
 
@@ -50,21 +63,26 @@ public class CacheMapGetTest {
 
         if (existingKey)
             cacheMap.put(key, dummyValue);
+
+        if (inSoftMap) {
+            softMap = new ConcurrentReferenceHashMap(AbstractReferenceMap.ReferenceStrength.HARD,
+                    AbstractReferenceMap.ReferenceStrength.SOFT);
+
+            cacheMap.setSoftReferenceSize(512);
+            cacheMap.put(softMap, key, dummyValue);
+        }
+
+        //pinnedMap = new ConcurrentHashMap();
     }
 
     @Test
     public void test() {
-        try {
-            Object res = cacheMap.get(key);
+        Object res = cacheMap.get(key);
 
-            if (output != null && keyType.equals(VALID)) {
-                Assert.assertEquals(output, res);
-            } else {
-                Assert.assertNull(res);
-            }
-        } catch (Exception e) {
-            assert output != null;
-            Assert.assertEquals(output.getClass(), e.getClass());
+        if (output != null && keyType.equals(VALID) || keyType.equals(NULL)) {
+            Assert.assertEquals(output, res);
+        } else {
+            Assert.assertNull(res);
         }
     }
 
