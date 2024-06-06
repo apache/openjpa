@@ -47,7 +47,7 @@ public class CacheMapGetTest {
                 {VALID, false, false, null},
                 {INVALID, true, false, null},
                 {INVALID, false, false, null},
-                // Test cases added based on JaCoCo results
+                // Test cases added after JaCoCo results
                 {NULL, false, true, 5},
                 {VALID, true, true, 5},
                 {VALID, false, false, null},
@@ -69,8 +69,6 @@ public class CacheMapGetTest {
             cacheMap.setSoftReferenceSize(softMapSize);
             cacheMap.put(cacheMap.softMap, key, dummyValue);
         }
-
-        //pinnedMap = new ConcurrentHashMap();
     }
 
     @Test
