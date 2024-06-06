@@ -185,11 +185,11 @@
                         <version>${pitest.version}</version>
                         <configuration>
                             <targetClasses>
-                                <param>org.apache.openjpa.util.ProxyManagerImpl</param>
+                                <param>org.apache.openjpa.util.CacheMap</param>
                             </targetClasses>
                             <targetTests>
-                                <param>org.apache.openjpa.util.ProxyManagerImplCopyTest</param>
-                                <param>org.apache.openjpa.util.ProxyManagerImplCreateTest</param>
+                                <param>org.apache.openjpa.util.CacheMapGetTest</param>
+                                <param>org.apache.openjpa.util.CacheMapPutTest</param>
                             </targetTests>
                             <avoidCallsTo>
                                 <avoidCallsTo>org.slf4j</avoidCallsTo>
