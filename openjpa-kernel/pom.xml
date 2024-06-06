@@ -37,7 +37,6 @@
 
     <properties>
         <pitest.version>1.14.0</pitest.version>
-        <ba-dua.version>0.6.0</ba-dua.version>
     </properties>
 
     <dependencies>
@@ -98,7 +97,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
+            <!--plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
@@ -129,8 +128,8 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
+            </plugin-->
+            <!--plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <executions>
@@ -141,7 +140,7 @@
                         </goals>
                         <configuration>
                             <excludes>
-                                <!-- do not include com/ibm UOW classes in the jar! -->
+                                <!- do not include com/ibm UOW classes in the jar! ->
                                 <exclude>com</exclude>
                                 <exclude>com/**/*</exclude>
                             </excludes>
@@ -163,7 +162,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin-->
         </plugins>
     </build>
 
@@ -190,6 +189,7 @@
                             </targetClasses>
                             <targetTests>
                                 <param>org.apache.openjpa.util.ProxyManagerImplCopyTest</param>
+                                <param>org.apache.openjpa.util.ProxyManagerImplCreateTest</param>
                             </targetTests>
                             <avoidCallsTo>
                                 <avoidCallsTo>org.slf4j</avoidCallsTo>
@@ -217,7 +217,9 @@
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
-
+            <properties>
+                <ba-dua.version>0.6.0</ba-dua.version>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>br.usp.each.saeg</groupId>
@@ -278,7 +280,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
-                        <version>3.0.0-M4</version>
                         <configuration>
                             <argLine>-javaagent:target/dependency/ba-dua-agent-rt-${ba-dua.version}-all.jar -Doutput.file=${project.build.directory}/badua.ser</argLine>
                         </configuration>
@@ -286,6 +287,7 @@
                 </plugins>
             </build>
         </profile>
+
     </profiles>
 
 </project>
