@@ -78,7 +78,6 @@ public class CacheMapPutTest {
     @Before
     public void setUp() {
         cacheMap = spy(new CacheMap());
-        pinnedSize = cacheMap.pinnedMap.size();
 
         setParam(keyType);
         setParam(valueType);
