@@ -1,9 +1,5 @@
 package org.apache.openjpa.util;
 
-import org.apache.openjpa.lib.util.SizedMap;
-import org.apache.openjpa.lib.util.collections.AbstractReferenceMap;
-import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
-import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -50,9 +46,11 @@ public class CacheMapGetTest {
                 // Test cases added after JaCoCo results
                 {NULL, false, true, 5},
                 {VALID, true, true, 5},
-                {VALID, false, false, null},
+                {VALID, false, true, 5},
                 {INVALID, true, true, null},
-                {INVALID, false, false, null}
+                {INVALID, false, true, null},
+                // Test cases added to have better perform on PIT
+                {NULL, true, true, 5}
         });
     }
 
@@ -80,6 +78,20 @@ public class CacheMapGetTest {
         } else {
             Assert.assertNull(res);
         }
+
+        /* All mutations killed */
+        if (existingKey && inSoftMap && !keyType.equals(INVALID)) {
+            verify(cacheMap, times(2)).put(key, dummyValue);
+        } else if (inSoftMap) {
+            verify(cacheMap).setSoftReferenceSize(softMapSize);
+            if (!existingKey || !keyType.equals(VALID)) {
+                verify(cacheMap).put(cacheMap.softMap, key, dummyValue);
+            }
+        } else if (existingKey) {
+            verify(cacheMap).put(key, dummyValue);
+        }
+
+        verify(cacheMap).get(key);
     }
 
     @After
