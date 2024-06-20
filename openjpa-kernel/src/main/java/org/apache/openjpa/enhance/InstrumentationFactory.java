@@ -28,6 +28,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
 import java.security.AccessController;
 import java.security.CodeSource;
 import java.security.PrivilegedAction;
@@ -148,7 +149,7 @@ public class InstrumentationFactory {
      */
     private static String createAgentJar() throws IOException {
         File file =
-            File.createTempFile(InstrumentationFactory.class.getName(), ".jar");
+            Files.createTempFile(InstrumentationFactory.class.getName(), ".jar").toFile();
         file.deleteOnExit();
 
         ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(file));
