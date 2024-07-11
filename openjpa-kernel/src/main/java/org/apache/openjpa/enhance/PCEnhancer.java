@@ -56,6 +56,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
@@ -148,6 +149,10 @@ public class PCEnhancer {
     private static final Localizer _loc = Localizer.forPackage(PCEnhancer.class);
 
     private static final AuxiliaryEnhancer[] _auxEnhancers;
+
+    private static final Method LONG_VALUE_OF = Stream.of(Long.class.getDeclaredMethods())
+            .filter(m -> "valueOf".equals(m.getName()) && long.class == m.getParameterTypes()[0])
+            .findAny().get();
 
     static {
         Class[] classes = Services.getImplementorClasses(
@@ -2834,7 +2839,7 @@ public class PCEnhancer {
                     instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
                 }
 
-                if (unwrapped != type) {
+                if (unwrapped != type && type != Long.class) {
                     instructions.add(new TypeInsnNode(Opcodes.NEW, Type.getInternalName(type)));
                     instructions.add(new InsnNode(Opcodes.DUP));
                 }
@@ -2865,10 +2870,17 @@ public class PCEnhancer {
                                                             "getId",
                                                             Type.getMethodDescriptor(Type.getType(unwrapped))));
                         if (unwrapped != type) {
-                            instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
-                                                                Type.getInternalName(type),
-                                                                "<init>",
-                                                                Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(unwrapped))));
+                            if (type == Long.class) {
+                                instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+                                                                    Type.getInternalName(type),
+                                                                    LONG_VALUE_OF.getName(),
+                                                                    Type.getMethodDescriptor(LONG_VALUE_OF)));
+                            } else {
+                                instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
+                                                                    Type.getInternalName(type),
+                                                                    "<init>",
+                                                                    Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(unwrapped))));
+                            }
                         }
                     }
                 }
