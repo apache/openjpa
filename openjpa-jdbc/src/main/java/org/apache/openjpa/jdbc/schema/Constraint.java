@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.
+ * under the License.    
  */
 package org.apache.openjpa.jdbc.schema;
 
@@ -27,8 +27,10 @@ import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
  *
  * @author Abe White
  */
-public abstract class Constraint extends ReferenceCounter {
-    private static final long serialVersionUID = 1L;
+@SuppressWarnings("serial")
+public abstract class Constraint
+    extends ReferenceCounter {
+
     private DBIdentifier _name = DBIdentifier.NULL;
     private QualifiedDBIdentifier _fullPath = null;
     private Table _table = null;
@@ -50,7 +52,6 @@ public abstract class Constraint extends ReferenceCounter {
      * @param table the local table of the constraint
      * @deprecated
      */
-    @Deprecated
     Constraint(String name, Table table) {
         this(DBIdentifier.newConstant(name), table);
     }
@@ -83,7 +84,6 @@ public abstract class Constraint extends ReferenceCounter {
      * Return the column's table name.
      * @deprecated
      */
-    @Deprecated
     public String getTableName() {
         return getTableIdentifier().getName();
     }
@@ -97,7 +97,6 @@ public abstract class Constraint extends ReferenceCounter {
      * columns whose table object is not set.
      * @deprecated
      */
-    @Deprecated
     public void setTableName(String name) {
         setTableIdentifier(DBIdentifier.newTable(name));
     }
@@ -109,12 +108,11 @@ public abstract class Constraint extends ReferenceCounter {
           _fullPath = null;
       }
 
-
+    
     /**
      * Return the column table's schema name.
      * @deprecated
      */
-    @Deprecated
     public String getSchemaName() {
         return getSchemaIdentifier().getName();
     }
@@ -128,7 +126,6 @@ public abstract class Constraint extends ReferenceCounter {
      * columns whose table object is not set.
      * @deprecated
      */
-    @Deprecated
     public void setSchemaName(String schema) {
         setSchemaIdentifier(DBIdentifier.newSchema(schema));
     }
@@ -143,7 +140,6 @@ public abstract class Constraint extends ReferenceCounter {
      * Return the column's name.
      * @deprecated
      */
-    @Deprecated
     public String getColumnName() {
         return getColumnIdentifier().getName();
     }
@@ -157,7 +153,6 @@ public abstract class Constraint extends ReferenceCounter {
      * columns whose table object is not set.
      * @deprecated
      */
-    @Deprecated
     public void setColumnName(String name) {
         setColumnIdentifier(DBIdentifier.newColumn(name));
     }
@@ -172,11 +167,10 @@ public abstract class Constraint extends ReferenceCounter {
      * Return the name of the constraint.
      * @deprecated
      */
-    @Deprecated
     public String getName() {
         return getIdentifier().getName();
     }
-
+    
     public DBIdentifier getIdentifier() {
         return _name == null ? DBIdentifier.NULL : _name;
     }
@@ -187,7 +181,6 @@ public abstract class Constraint extends ReferenceCounter {
      * constraint already belongs to a table.
      * @deprecated
      */
-    @Deprecated
     public void setName(String name) {
         setIdentifier(DBIdentifier.newConstraint(name));
     }
@@ -203,7 +196,6 @@ public abstract class Constraint extends ReferenceCounter {
      * Return the full name of the constraint.
      * @deprecated
      */
-    @Deprecated
     public String getFullName() {
         return getFullIdentifier().getName();
     }
@@ -218,8 +210,8 @@ public abstract class Constraint extends ReferenceCounter {
     public DBIdentifier getFullIdentifier() {
         return getQualifiedPath().getIdentifier();
     }
-
-
+    
+    
     /**
      * Return whether this constraint is a logical constraint only; i.e.
      * if it does not exist in the database.
@@ -240,7 +232,6 @@ public abstract class Constraint extends ReferenceCounter {
         _deferred = deferred;
     }
 
-    @Override
     public String toString() {
         if (!getIdentifier().isNull())
             return getIdentifier().getName();
@@ -250,31 +241,48 @@ public abstract class Constraint extends ReferenceCounter {
         return "<" + name.toLowerCase() + ">";
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((_columnName == null) ? 0 : _columnName.hashCode());
+		result = prime * result + ((_name == null) ? 0 : _name.hashCode());
+		result = prime * result + ((_schemaName == null) ? 0 : _schemaName.hashCode());
+		result = prime * result + ((_tableName == null) ? 0 : _tableName.hashCode());
+		return result;
+	}
 
-        Constraint that = (Constraint) o;
-
-        if (_deferred != that._deferred) return false;
-        if (_name != null ? !_name.equals(that._name) : that._name != null) return false;
-        if (_fullPath != null ? !_fullPath.equals(that._fullPath) : that._fullPath != null) return false;
-        if (_table != null ? !_table.equals(that._table) : that._table != null) return false;
-        if (_tableName != null ? !_tableName.equals(that._tableName) : that._tableName != null) return false;
-        if (_schemaName != null ? !_schemaName.equals(that._schemaName) : that._schemaName != null) return false;
-        return _columnName != null ? _columnName.equals(that._columnName) : that._columnName == null;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = _name != null ? _name.hashCode() : 0;
-        result = 31 * result + (_fullPath != null ? _fullPath.hashCode() : 0);
-        result = 31 * result + (_table != null ? _table.hashCode() : 0);
-        result = 31 * result + (_tableName != null ? _tableName.hashCode() : 0);
-        result = 31 * result + (_schemaName != null ? _schemaName.hashCode() : 0);
-        result = 31 * result + (_columnName != null ? _columnName.hashCode() : 0);
-        result = 31 * result + (_deferred ? 1 : 0);
-        return result;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Constraint other = (Constraint) obj;
+		if (_columnName == null) {
+			if (other._columnName != null)
+				return false;
+		} else if (!_columnName.equals(other._columnName))
+			return false;
+		if (_name == null) {
+			if (other._name != null)
+				return false;
+		} else if (!_name.equals(other._name))
+			return false;
+		if (_schemaName == null) {
+			if (other._schemaName != null)
+				return false;
+		} else if (!_schemaName.equals(other._schemaName))
+			return false;
+		if (_tableName == null) {
+			if (other._tableName != null)
+				return false;
+		} else if (!_tableName.equals(other._tableName))
+			return false;
+		return true;
+	}
+    
+    
 }
