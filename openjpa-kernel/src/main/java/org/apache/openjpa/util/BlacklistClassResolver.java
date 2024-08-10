@@ -18,7 +18,33 @@
  */
 package org.apache.openjpa.util;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
+
 public class BlacklistClassResolver {
+    private static final String MATCH_ANY = "*";
+    private static final Set<String> PRIMITIVES = Set.of(
+        boolean.class.getName(),
+        byte.class.getName(),
+        char.class.getName(),
+        double.class.getName(),
+        float.class.getName(),
+        int.class.getName(),
+        long.class.getName(),
+        short.class.getName()
+    );
+    private static final List<String> PRIMITIVE_ARRAY = List.of(
+        (new boolean[0]).getClass().getName(),
+        (new byte[0]).getClass().getName(),
+        (new char[0]).getClass().getName(),
+        (new double[0]).getClass().getName(),
+        (new float[0]).getClass().getName(),
+        (new int[0]).getClass().getName(),
+        (new long[0]).getClass().getName(),
+        (new short[0]).getClass().getName()
+    );
+
     public static final BlacklistClassResolver DEFAULT = new BlacklistClassResolver(
         toArray(System.getProperty(
             "openjpa.serialization.class.blacklist",
@@ -34,7 +60,10 @@ public class BlacklistClassResolver {
     }
 
     protected boolean isBlacklisted(final String name) {
-        return (whitelist != null && !contains(whitelist, name)) || contains(blacklist, name);
+        if (contains(whitelist, name) || isPrimitive(name)) {
+            return false;
+        }
+        return contains(blacklist, name);
     }
 
     public final String check(final String name) {
@@ -44,16 +73,33 @@ public class BlacklistClassResolver {
         return name;
     }
 
+    private static boolean isPrimitive(final String name) {
+        if (PRIMITIVES.contains(name)) {
+            return true;
+        }
+        for (String arr : PRIMITIVE_ARRAY) {
+            if (name.endsWith(arr)) { // array can be [[[[B for ex.
+                return true;
+            }
+        }
+        return false;
+    }
+
     private static String[] toArray(final String property) {
-        return property == null ? null : property.split(" *, *");
+        return property == null
+            ? new String[] {}
+            : Stream.of(property.split(" *, *"))
+                .filter(item -> item != null && !item.isEmpty())
+                .toArray(String[]::new);
     }
 
     private static boolean contains(final String[] list, String name) {
-        if (list != null) {
-            for (final String white : list) {
-                if (name.startsWith(white)) {
-                    return true;
-                }
+        for (final String white : list) {
+            if (MATCH_ANY.equals(white)) {
+                return true;
+            }
+            if (name.startsWith(white)) {
+                return true;
             }
         }
         return false;
