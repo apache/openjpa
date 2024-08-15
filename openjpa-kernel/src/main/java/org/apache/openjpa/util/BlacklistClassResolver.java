@@ -18,32 +18,10 @@
  */
 package org.apache.openjpa.util;
 
-import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
 
 public class BlacklistClassResolver {
     private static final String MATCH_ANY = "*";
-    private static final Set<String> PRIMITIVES = Set.of(
-        boolean.class.getName(),
-        byte.class.getName(),
-        char.class.getName(),
-        double.class.getName(),
-        float.class.getName(),
-        int.class.getName(),
-        long.class.getName(),
-        short.class.getName()
-    );
-    private static final List<String> PRIMITIVE_ARRAY = List.of(
-        (new boolean[0]).getClass().getName(),
-        (new byte[0]).getClass().getName(),
-        (new char[0]).getClass().getName(),
-        (new double[0]).getClass().getName(),
-        (new float[0]).getClass().getName(),
-        (new int[0]).getClass().getName(),
-        (new long[0]).getClass().getName(),
-        (new short[0]).getClass().getName()
-    );
 
     public static final BlacklistClassResolver DEFAULT = new BlacklistClassResolver(
         toArray(System.getProperty(
@@ -51,19 +29,24 @@ public class BlacklistClassResolver {
             "org.codehaus.groovy.runtime.,org.apache.commons.collections4.functors.,org.apache.xalan")),
         toArray(System.getProperty("openjpa.serialization.class.whitelist")));
 
+    private final boolean allWhite;
+    private final boolean allBlack;
     private final String[] blacklist;
     private final String[] whitelist;
 
     protected BlacklistClassResolver(final String[] blacklist, final String[] whitelist) {
+        allWhite = Stream.of(whitelist).anyMatch(white -> MATCH_ANY.equals(white));
+        allBlack = Stream.of(blacklist).anyMatch(black -> MATCH_ANY.equals(black));
+
         this.whitelist = whitelist;
         this.blacklist = blacklist;
     }
 
     protected boolean isBlacklisted(final String name) {
-        if (contains(whitelist, name) || isPrimitive(name)) {
+        if (allWhite || contains(whitelist, name)) {
             return false;
         }
-        return contains(blacklist, name);
+        return allBlack || contains(blacklist, name);
     }
 
     public final String check(final String name) {
@@ -71,18 +54,6 @@ public class BlacklistClassResolver {
             throw new SecurityException(name + " is not whitelisted as deserialisable, prevented before loading.");
         }
         return name;
-    }
-
-    private static boolean isPrimitive(final String name) {
-        if (PRIMITIVES.contains(name)) {
-            return true;
-        }
-        for (String arr : PRIMITIVE_ARRAY) {
-            if (name.endsWith(arr)) { // array can be [[[[B for ex.
-                return true;
-            }
-        }
-        return false;
     }
 
     private static String[] toArray(final String property) {
@@ -95,9 +66,6 @@ public class BlacklistClassResolver {
 
     private static boolean contains(final String[] list, String name) {
         for (final String white : list) {
-            if (MATCH_ANY.equals(white)) {
-                return true;
-            }
             if (name.startsWith(white)) {
                 return true;
             }
