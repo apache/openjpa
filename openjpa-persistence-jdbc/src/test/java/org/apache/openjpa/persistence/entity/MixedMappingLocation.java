@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.entity;
 
-import javax.persistence.Basic;
+import jakarta.persistence.Basic;
 
 /**
  * This class doesn't have an @Entity and @Basic on purpose.

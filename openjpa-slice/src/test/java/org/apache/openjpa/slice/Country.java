@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.slice;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Version;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Version;
 
 /**
  * A persistence entity to be replicated across multiple databases. A

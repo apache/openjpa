@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.inheritance.entity;
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Entity;
 
 @Entity
 public class SubclassF extends BaseClass3 implements ManagedIface2  {

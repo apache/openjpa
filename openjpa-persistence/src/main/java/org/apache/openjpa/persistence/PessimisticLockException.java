@@ -36,7 +36,7 @@ import org.apache.openjpa.util.StoreException;
  * @since 2.0.0
  */
 public class PessimisticLockException
-    extends javax.persistence.PessimisticLockException
+    extends jakarta.persistence.PessimisticLockException
     implements Serializable, ExceptionInfo {
 
     private static final long serialVersionUID = 1L;

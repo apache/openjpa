@@ -36,7 +36,7 @@ import org.apache.openjpa.util.StoreException;
  * @since 0.4.0
  */
 public class OptimisticLockException
-    extends javax.persistence.OptimisticLockException
+    extends jakarta.persistence.OptimisticLockException
     implements Serializable, ExceptionInfo {
 
     

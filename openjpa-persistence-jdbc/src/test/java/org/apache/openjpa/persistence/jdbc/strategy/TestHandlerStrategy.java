@@ -15,7 +15,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.strategy;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.jdbc.strategy.MappedEntity.Key;

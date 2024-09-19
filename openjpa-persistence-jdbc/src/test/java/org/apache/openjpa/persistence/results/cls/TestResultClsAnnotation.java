@@ -18,11 +18,10 @@
  */
 package org.apache.openjpa.persistence.results.cls;
 
-import java.util.Iterator;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;

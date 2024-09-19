@@ -22,9 +22,9 @@
 **/
 package org.apache.openjpa.jira1794;
 
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.StaticMetamodel
+@jakarta.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.jira1794.AggEntity.class)
 public class AggEntity_ {
     public static volatile SingularAttribute<AggEntity,Short> pshortVal;

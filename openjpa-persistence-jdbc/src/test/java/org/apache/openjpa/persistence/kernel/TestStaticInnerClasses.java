@@ -27,12 +27,6 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 public class TestStaticInnerClasses extends BaseKernelTest {
@@ -52,8 +46,8 @@ public class TestStaticInnerClasses extends BaseKernelTest {
     @Override
     public void setUp()
         throws Exception {
-        super.setUp(Inner.class);
-        Inner inner = new Inner("foo");
+        super.setUp(StaticInnerClassesContainer.Inner.class);
+        StaticInnerClassesContainer.Inner inner = new StaticInnerClassesContainer.Inner("foo");
         inner.addTwin();
         OpenJPAEntityManager pm = getPM();
         startTx(pm);
@@ -65,7 +59,7 @@ public class TestStaticInnerClasses extends BaseKernelTest {
 
     public void testGetById() {
         OpenJPAEntityManager pm = getPM();
-        Inner inner = pm.find(Inner.class, _oid);
+        StaticInnerClassesContainer.Inner inner = pm.find(StaticInnerClassesContainer.Inner.class, _oid);
         assertNotNull(inner);
         assertEquals("foo", inner.getString());
         endEm(pm);
@@ -121,28 +115,4 @@ public class TestStaticInnerClasses extends BaseKernelTest {
 
     }
 
-    @Entity
-    @Table(name="StaticInner")
-    public static class Inner {
-
-        @SuppressWarnings("unused")
-        private int num = 0;
-        private String string = null;
-        private List twins = new LinkedList();
-
-        protected Inner() {
-        }
-
-        public Inner(String string) {
-            this.string = string;
-        }
-
-        public void addTwin() {
-            twins.add(new Inner(string));
-        }
-
-        public String getString() {
-            return string;
-        }
-    }
 }

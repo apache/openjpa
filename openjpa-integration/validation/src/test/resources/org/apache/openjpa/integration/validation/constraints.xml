@@ -26,13 +26,13 @@
     <bean class="XMLSuper" ignore-annotations="false">
         <getter name="superStrValue">
         <valid/>
-            <constraint annotation="javax.validation.constraints.NotNull"/>
+            <constraint annotation="jakarta.validation.constraints.NotNull"/>
         </getter>
     </bean>
     <bean class="XMLBase" ignore-annotations="false">
         <getter name="strValue">
         <valid/>
-            <constraint annotation="javax.validation.constraints.NotNull"/>
+            <constraint annotation="jakarta.validation.constraints.NotNull"/>
         </getter>
     </bean>
 </constraint-mappings>

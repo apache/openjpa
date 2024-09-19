@@ -18,7 +18,7 @@ package org.apache.openjpa.persistence.osgi;
 
 import java.util.Hashtable;
 
-import javax.persistence.spi.PersistenceProvider;
+import jakarta.persistence.spi.PersistenceProvider;
 
 import org.apache.openjpa.ee.OSGiManagedRuntime;
 import org.apache.openjpa.persistence.PersistenceProviderImpl;
@@ -35,7 +35,7 @@ import org.osgi.framework.ServiceRegistration;
  */
 public class PersistenceActivator implements BundleActivator {
     // following is so Aries can find and extend us for OSGi RFC 143
-    public static final String PERSISTENCE_PROVIDER_ARIES = "javax.persistence.provider";
+    public static final String PERSISTENCE_PROVIDER_ARIES = "jakarta.persistence.provider";
     // following would be set by Aries to expose their OSGi enabled provider
     public static final String PERSISTENCE_PROVIDER = PersistenceProvider.class.getName();
     public static final String OSGI_PERSISTENCE_PROVIDER = PersistenceProviderImpl.class.getName();
@@ -50,10 +50,10 @@ public class PersistenceActivator implements BundleActivator {
         PersistenceActivator.ctx = ctx;
         PersistenceProvider provider = new PersistenceProviderImpl();
         Hashtable<String, String> props = new Hashtable<>();
-        // Aries queries for service providers by property "javax.persistence.provider"
+        // Aries queries for service providers by property "jakarta.persistence.provider"
         props.put(PERSISTENCE_PROVIDER_ARIES, OSGI_PERSISTENCE_PROVIDER);
         // The persistence service tracker in the geronimo spec api bundle examines
-        // the property named "javax.persistence.PersistenceProvider" rather than
+        // the property named "jakarta.persistence.PersistenceProvider" rather than
         // the the property provided for Aries.  In order to properly track the OpenJPA
         // provider, this property must be set upon service registration.
         props.put(PERSISTENCE_PROVIDER, OSGI_PERSISTENCE_PROVIDER);

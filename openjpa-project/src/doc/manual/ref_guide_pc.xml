@@ -633,7 +633,7 @@ OpenJPA's
 <classname>org.apache.openjpa.persistence.DataStoreId</classname></ulink> class
 annotation. This annotation has <literal>strategy</literal> and <literal>
 generator</literal> properties that mirror the same-named properties on the
-standard <classname>javax.persistence.GeneratedValue</classname> annotation
+standard <classname>jakarta.persistence.GeneratedValue</classname> annotation
 described in <xref linkend="jpa_overview_meta_id"/> of the JPA Overview.
             </para>
             <para>
@@ -1495,7 +1495,7 @@ operations on collections without requiring them to be loaded. Delayed proxies a
 loaded when an operation is performed that requires loading, such
 as iteration, size, serialization, and indexOf.  They can also be loaded by casting the
 proxy to a <ulink url="../../apidocs/org/apache/openjpa/util/DelayedProxy.html"><classname>
-org.apache.openjpa.util.DelayedProxy</classname></ulink> and invoking the
+                            org.apache.openjpa.util.proxy.DelayedProxy</classname></ulink> and invoking the
 <methodname>load</methodname> method. If a broker factory is available after detaching the owning
 entity, a collection may be available for delayed loading after the persistence context has been
 cleared. In post-detachment, entities that are loaded are not associated with a persistence context.

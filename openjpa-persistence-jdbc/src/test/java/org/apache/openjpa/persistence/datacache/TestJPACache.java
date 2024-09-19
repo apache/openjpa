@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.datacache;
 
 import java.util.ArrayList;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -82,14 +82,14 @@ public class TestJPACache extends SingleEMFTestCase {
     /**
      * Ensure the cached returned by emf.getCache supports the JPA and OpenJPA interfaces. Expected interfaces are
      * <ul>
-     * <li>javax.persistence.Cache</li>
+     * <li>jakarta.persistence.Cache</li>
      * <li>org.apache.openjpa.persistence.StoreCache</li>
      * </ul>
      */
     public void testInterfacesReturned() {
         Object cache = emf.getCache();
         assertNotNull("Cache is not enabled", cache);
-        assertTrue(cache instanceof javax.persistence.Cache);
+        assertTrue(cache instanceof jakarta.persistence.Cache);
         assertTrue(cache instanceof org.apache.openjpa.persistence.StoreCache);
     }
 

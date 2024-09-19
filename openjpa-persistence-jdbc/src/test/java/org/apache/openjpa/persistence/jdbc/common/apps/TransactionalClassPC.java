@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 /**
  * <p>Transactional type used in testing.</p>

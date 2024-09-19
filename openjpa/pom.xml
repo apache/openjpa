@@ -28,7 +28,7 @@
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>
-        <version>3.2.3-SNAPSHOT</version>
+        <version>4.0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>openjpa</artifactId>
@@ -89,80 +89,11 @@
                             <transformers>
                                 <!-- Need to concatinate the services resources:
                                  org.apache.openjpa.lib.conf.ProductDerivation
-                                 javax.persistence.spi.PersistenceProvider
+                                 jakarta.persistence.spi.PersistenceProvider
                                  org.apache.openjpa.kernel.exps.ExpressionParser
                                 -->
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
                             </transformers>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>shade-jakarta</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <shadedArtifactAttached>true</shadedArtifactAttached>
-                            <shadedClassifierName>jakarta</shadedClassifierName>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <createSourcesJar>${createSources}</createSourcesJar>
-                            <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-                                <!-- Need to add some MANIFEST.MF metadata -->
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <manifestEntries>
-                                        <Automatic-Module-Name>org.apache.openjpa</Automatic-Module-Name>
-                                    </manifestEntries>
-                                </transformer>
-                            </transformers>
-                            <artifactSet>
-                                <includes>
-                                    <include>org.apache.openjpa:openjpa-lib</include>
-                                    <include>org.apache.openjpa:openjpa-kernel</include>
-                                    <include>org.apache.openjpa:openjpa-jdbc</include>
-                                    <include>org.apache.openjpa:openjpa-persistence</include>
-                                    <include>org.apache.openjpa:openjpa-persistence-jdbc</include>
-                                    <include>org.apache.openjpa:openjpa-xmlstore</include>
-                                    <include>org.apache.openjpa:openjpa-slice</include>
-                                </includes>
-                            </artifactSet>
-                            <relocations>
-                                <relocation>
-                                    <pattern>javax.annotation</pattern>
-                                    <shadedPattern>jakarta.annotation</shadedPattern>
-                                    <excludes>
-                                        <exclude>javax.annotation.processing.**</exclude>
-                                    </excludes>
-                                </relocation>
-                                <relocation>
-                                    <pattern>javax.jms</pattern>
-                                    <shadedPattern>jakarta.jms</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>javax.persistence</pattern>
-                                    <shadedPattern>jakarta.persistence</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>javax.servlet</pattern>
-                                    <shadedPattern>jakarta.servlet</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>javax.transaction</pattern>
-                                    <shadedPattern>jakarta.transaction</shadedPattern>
-                                    <excludes>
-                                        <exclude>javax.transaction.xa.**</exclude>
-                                    </excludes>
-                                </relocation>
-                                <relocation>
-                                    <pattern>javax.validation</pattern>
-                                    <shadedPattern>jakarta.validation</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>javax.xml.bind</pattern>
-                                    <shadedPattern>jakarta.xml.bind</shadedPattern>
-                                </relocation>
-                            </relocations>
                         </configuration>
                     </execution>
                 </executions>
@@ -181,9 +112,9 @@
                         <Agent-Class>org.apache.openjpa.enhance.InstrumentationFactory</Agent-Class>
                         <Can-Redefine-Classes>true</Can-Redefine-Classes>
                         <Can-Retransform-Classes>true</Can-Retransform-Classes>
-                        <Specification-Title>JSR-338 Java Persistence</Specification-Title>
-                        <Specification-Vendor>ORACLE, Inc.</Specification-Vendor>
-                        <Specification-Version>2.2</Specification-Version>
+                        <Specification-Title>Jakarta Persistence</Specification-Title>
+                        <Specification-Vendor>Eclipse Foundation</Specification-Vendor>
+                        <Specification-Version>3.0</Specification-Version>
                         <Automatic-Module-Name>org.apache.openjpa</Automatic-Module-Name>
                         <!-- OSGi Bundle Metadata -->
                         <Bundle-DocURL>${project.url}</Bundle-DocURL>
@@ -201,14 +132,13 @@
                             org.slf4j.*;resolution:=optional,
                             org.apache.commons.logging.*;resolution:=optional,
                             javax.activation.xa*;resolution:=optional,
-                            javax.jms.*;version="[1.1.0,1.2)";resolution:=optional,
-                            javax.transaction.*;version="[1.1,1.3)";resolution:=optional,
-                            javax.validation.*;version="[1.0.0,1.1)";resolution:=optional,
-                            javax.xml.bind.*;resolution:=optional,
-                            serp.*;resolution:=optional,
+                            jakarta.jms.*;version="[1.1.0,1.2)";resolution:=optional,
+                            jakarta.transaction.*;version="[1.1,1.3)";resolution:=optional,
+                            jakarta.validation.*;version="[1.0.0,1.1)";resolution:=optional,
+                            jakarta.xml.bind.*;resolution:=optional,
                             org.apache.commons.dbcp2.*;resolution:=optional,
                             org.apache.commons.pool2.*;resolution:=optional,
-                            javax.persistence.*;version="[1.1.0,2.2)",
+                            jakarta.persistence.*;version="[1.1.0,2.2)",
                             *
                         </Import-Package>
                     </instructions>

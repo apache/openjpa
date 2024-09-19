@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.integration.slf4j;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.log.SLF4JLogFactory;

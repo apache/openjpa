@@ -32,8 +32,7 @@ public class TestDynamicStorageGenerator
         super(s, "enhancecactusapp");
     }
 
-    public void testStorage()
-        throws Exception {
+    public void testStorage() throws Exception {
 
         DynamicStorageGenerator gen = new DynamicStorageGenerator();
         int[] types = new int[]{
@@ -48,8 +47,7 @@ public class TestDynamicStorageGenerator
             JavaTypes.STRING,
             JavaTypes.OBJECT
         };
-        DynamicStorage storage = gen.generateStorage(types,
-            "org.apache.openjpa.enhance.Test");
+        DynamicStorage storage = gen.generateStorage(types, "org.apache.openjpa.enhance.Test");
         storage = storage.newInstance();
 
         storage.setBoolean(0, true);
@@ -71,8 +69,7 @@ public class TestDynamicStorageGenerator
         assertEquals(4, storage.getShort(4));
         assertEquals(5, storage.getLong(5));
         assertTrue(6.59 < storage.getFloat(6) && 6.61 > storage.getFloat(6));
-        assertTrue(7.69 < storage.getDouble(7)
-            && 7.71 > storage.getDouble(7));
+        assertTrue(7.69 < storage.getDouble(7) && 7.71 > storage.getDouble(7));
         assertEquals("field8", storage.getObject(8));
         assertEquals(date, storage.getObject(9));
     }

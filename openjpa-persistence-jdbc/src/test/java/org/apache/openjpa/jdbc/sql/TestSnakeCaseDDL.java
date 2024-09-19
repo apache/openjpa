@@ -23,10 +23,9 @@ import org.apache.openjpa.persistence.PersistenceProviderImpl;
 import org.apache.openjpa.persistence.PersistenceUnitInfoImpl;
 import org.junit.Test;
 
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Id;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.ResultSet;
@@ -36,8 +35,10 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import static java.util.Collections.singleton;
 import static org.junit.Assert.assertEquals;
@@ -63,30 +64,32 @@ public class TestSnakeCaseDDL {
 
         final PersistenceUnitInfoImpl persistenceUnitInfo = new PersistenceUnitInfoImpl();
         persistenceUnitInfo.setExcludeUnlistedClasses(true);
-        persistenceUnitInfo.addManagedClassName(MyEntity1.class.getName());
-        persistenceUnitInfo.addManagedClassName(MyEntity2.class.getName());
+        persistenceUnitInfo.addManagedClassName(SnakeCaseDDLMy1Entity.class.getName());
+        persistenceUnitInfo.addManagedClassName(SnakeCaseDDLMy2Entity.class.getName());
         final BasicDataSource ds = new BasicDataSource();
         ds.setDriver(derbyDriver);
         ds.setUrl("jdbc:derby:memory:ddlInSnakeCase;create=true");
         persistenceUnitInfo.setJtaDataSource(ds);
         persistenceUnitInfo.setProperty("openjpa.jdbc.DBDictionary", "derby(javaToDbColumnNameProcessing=snake_case)");
         new PersistenceProviderImpl().generateSchema(persistenceUnitInfo, new HashMap<>());
-        final Collection<String> createdTables = new HashSet<>();
-        final Map<String, Collection<String>> columns = new HashMap<>();
+        final Map<String, String> createdTables = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        final Map<String, Collection<String>> columns = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         try (final Connection connection = ds.getConnection()) {
             try (final ResultSet tables = connection.getMetaData()
-                    .getTables(null, null, "TestSnakeCaseDDL$MyEntity%", null)) {
+                    .getTables(null, null, "%", null)) {
                 while (tables.next()) {
                     final String table = tables.getString(3);
-                    createdTables.add(table);
+                    if (table.toUpperCase(Locale.ROOT).startsWith("SNAKE")) {
+                        createdTables.put(table.toUpperCase(Locale.ROOT), table);
+                    }
                 }
             }
-            for (final String table : createdTables) {
+            for (final Map.Entry<String, String> table : createdTables.entrySet()) {
                 try (final Statement statement = connection.createStatement()) {
-                    try (final ResultSet rs = statement.executeQuery("select * from \"" + table + "\"")) {
+                    try (final ResultSet rs = statement.executeQuery("select * from \"" + table.getValue() + "\"")) {
                         final ResultSetMetaData metaData = rs.getMetaData();
                         final Set<String> columnNames = new HashSet<>();
-                        columns.put(table, columnNames);
+                        columns.put(table.getValue(), columnNames);
                         for (int i = 1; i <= metaData.getColumnCount(); i++) {
                             columnNames.add(metaData.getColumnName(i));
                         }
@@ -101,7 +104,7 @@ public class TestSnakeCaseDDL {
                 final EntityManager em = entityManagerFactory.createEntityManager();
                 em.getTransaction().begin();
                 try {
-                    final MyEntity1 entity = new MyEntity1();
+                    final SnakeCaseDDLMy1Entity entity = new SnakeCaseDDLMy1Entity();
                     entity.setFooBar("1");
                     entity.setThisField(123);
                     em.persist(entity);
@@ -118,7 +121,7 @@ public class TestSnakeCaseDDL {
             {
                 final EntityManager em = entityManagerFactory.createEntityManager();
                 try {
-                    final MyEntity1 myEntity1 = em.find(MyEntity1.class, "1");
+                    final SnakeCaseDDLMy1Entity myEntity1 = em.find(SnakeCaseDDLMy1Entity.class, "1");
                     assertNotNull(myEntity1);
                     assertEquals("1", myEntity1.getFooBar());
                     assertEquals(123, myEntity1.getThisField());
@@ -126,9 +129,10 @@ public class TestSnakeCaseDDL {
                     em.close();
                 }
             }
+            final String tableName = createdTables.get("SnakeCaseDDLMy1Entity".toUpperCase(Locale.ROOT));
             try (final Connection connection = ds.getConnection();
                  final Statement statement = connection.createStatement();
-                 final ResultSet rs = statement.executeQuery("select foo_bar, this_field from \"TestSnakeCaseDDL$MyEntity1\"")) {
+                 final ResultSet rs = statement.executeQuery("select foo_bar, this_field from \"" + tableName + "\"")) {
                 assertTrue (rs.next());
                 assertEquals("1", rs.getString(1));
                 assertEquals(123, rs.getInt(2));
@@ -138,39 +142,10 @@ public class TestSnakeCaseDDL {
             entityManagerFactory.close();
         }
         ds.close();
-        assertEquals(2, columns.get("TestSnakeCaseDDL$MyEntity1").size());
-        assertTrue(columns.get("TestSnakeCaseDDL$MyEntity1").contains("FOO_BAR"));
-        assertTrue(columns.get("TestSnakeCaseDDL$MyEntity1").contains("THIS_FIELD"));
-        assertEquals(singleton("ANOTHER_FIELD"), columns.get("TestSnakeCaseDDL$MyEntity2"));
+        assertEquals(2, columns.get("SnakeCaseDDLMy1Entity").size());
+        assertTrue(columns.get("SnakeCaseDDLMy1Entity").contains("FOO_BAR"));
+        assertTrue(columns.get("SnakeCaseDDLMy1Entity").contains("THIS_FIELD"));
+        assertEquals(singleton("ANOTHER_FIELD"), columns.get("SnakeCaseDDLMy2Entity"));
     }
 
-    @Entity
-    public static class MyEntity1 {
-        @Id
-        private String fooBar;
-
-        private int thisField;
-
-        public int getThisField() {
-            return thisField;
-        }
-
-        public void setThisField(int thisField) {
-            this.thisField = thisField;
-        }
-
-        public String getFooBar() {
-            return fooBar;
-        }
-
-        public void setFooBar(String fooBar) {
-            this.fooBar = fooBar;
-        }
-    }
-
-    @Entity
-    public static class MyEntity2 {
-        @Id
-        private String anotherField;
-    }
 }

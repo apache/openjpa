@@ -20,10 +20,10 @@ package org.apache.openjpa.persistence.datacache.common.apps;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.MapKey;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.MapKey;
 
 @Entity
 public class M2MEntityE  {

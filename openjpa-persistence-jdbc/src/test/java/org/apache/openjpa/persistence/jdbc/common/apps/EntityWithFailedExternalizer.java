@@ -20,9 +20,9 @@ package org.apache.openjpa.persistence.jdbc.common.apps;
 
 import java.io.Serializable;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.PersistenceException;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.PersistenceException;
 
 @Entity
 public class EntityWithFailedExternalizer implements Serializable {

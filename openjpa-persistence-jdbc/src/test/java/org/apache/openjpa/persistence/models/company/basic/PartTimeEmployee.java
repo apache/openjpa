@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.models.company.basic;
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Entity;
 
 import org.apache.openjpa.persistence.models.company.IPartTimeEmployee;
 

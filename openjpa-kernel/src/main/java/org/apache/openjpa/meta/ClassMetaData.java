@@ -717,27 +717,27 @@ public class ClassMetaData
      * Sets the access type.
      */
     public void setAccessType(int type) {
-    	if (type == _accessType || type == AccessCode.UNKNOWN)
-    		return;
-    	if (!AccessCode.isValidClassCode(type)) {
+        if (type == _accessType || type == AccessCode.UNKNOWN)
+            return;
+        if (!AccessCode.isValidClassCode(type)) {
             throw new IllegalArgumentException(_loc.get("access-type-invalid",
-    		    this, AccessCode.toClassString(type)).getMessage());
-    	}
-    	if (_accessType != AccessCode.UNKNOWN) { // changing access type
-    	    _repos.getLog().trace(_loc.get("access-type-change",
-    		    this, AccessCode.toClassString(type),
-    		    AccessCode.toClassString(_accessType)).getMessage());
-    	}
+                                                        this, AccessCode.toClassString(type)).getMessage());
+        }
+        if (_accessType != AccessCode.UNKNOWN) { // changing access type
+            _repos.getLog().trace(_loc.get("access-type-change",
+                                           this, AccessCode.toClassString(type),
+                                           AccessCode.toClassString(_accessType)).getMessage());
+        }
         _accessType = type;
     }
 
     /**
-     * Asserts the the given field (which must belong to this receiver)
+     * Asserts the given field (which must belong to this receiver)
      * can be set to the given access code. If the field code is allowed,
-     * it may have the side-effect of changing the access code of this receiver.
+     * it may have the side effect of changing the access code of this receiver.
      */
     void mergeFieldAccess(FieldMetaData fmd, int fCode) {
-    	setAccessType(AccessCode.mergeFieldCode(this, fmd, fCode));
+        setAccessType(AccessCode.mergeFieldCode(this, fmd, fCode));
     }
 
     /**
@@ -751,7 +751,7 @@ public class ClassMetaData
      * Affirms if attributes of this class use mixed access types.
      */
     public boolean isMixedAccess() {
-    	return AccessCode.isMixed(_accessType);
+        return AccessCode.isMixed(_accessType);
     }
 
     /**

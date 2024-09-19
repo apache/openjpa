@@ -1602,6 +1602,9 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             if (_log.isTraceEnabled())
                 _log.trace(nsme);
         }
+        catch (NoClassDefFoundError ndcfe) {
+            throw ndcfe;
+        }
         return null;
     }
 

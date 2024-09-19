@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 
 /**
  * A persistent class using a {@link IdTestClass separate class} as its primary identifier.

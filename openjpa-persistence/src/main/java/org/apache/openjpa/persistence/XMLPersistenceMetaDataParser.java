@@ -18,11 +18,11 @@
  */
 package org.apache.openjpa.persistence;
 
-import static javax.persistence.CascadeType.DETACH;
-import static javax.persistence.CascadeType.MERGE;
-import static javax.persistence.CascadeType.PERSIST;
-import static javax.persistence.CascadeType.REFRESH;
-import static javax.persistence.CascadeType.REMOVE;
+import static jakarta.persistence.CascadeType.DETACH;
+import static jakarta.persistence.CascadeType.MERGE;
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.CascadeType.REFRESH;
+import static jakarta.persistence.CascadeType.REMOVE;
 import static org.apache.openjpa.meta.MetaDataModes.MODE_MAPPING;
 import static org.apache.openjpa.meta.MetaDataModes.MODE_META;
 import static org.apache.openjpa.meta.MetaDataModes.MODE_NONE;
@@ -96,9 +96,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.Stack;
 
-import javax.persistence.CascadeType;
-import javax.persistence.GenerationType;
-import javax.persistence.LockModeType;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.LockModeType;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;

@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.lock.extended;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 /**
  * LockScopeTestCase subclass to test entities:

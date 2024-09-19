@@ -18,11 +18,11 @@
  */
 package org.apache.openjpa.persistence.jdbc.mapping.bidi;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 /**
  * Demonstrate usage of a JoinTable for a bi-directional one-to-many mapping.

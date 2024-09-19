@@ -21,8 +21,8 @@ package org.apache.openjpa.persistence.lockmgr;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import javax.persistence.EntityManager;
-import javax.persistence.LockModeType;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;

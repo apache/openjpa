@@ -21,8 +21,8 @@ package org.apache.openjpa.persistence.lockmgr;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import javax.persistence.EntityManager;
-import javax.persistence.LockModeType;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 
 import org.apache.openjpa.jdbc.sql.DB2Dictionary;
 import org.apache.openjpa.jdbc.sql.DBDictionary;

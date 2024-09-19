@@ -23,8 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.LockModeType;
-import javax.persistence.PessimisticLockScope;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.PessimisticLockScope;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
@@ -47,7 +47,7 @@ public class TestLocking extends SQLListenerTestCase {
 
     public void testExtendedLockScope() throws Exception {
         Map<String, Object> props = new HashMap<>();
-        props.put("javax.persistence.lock.scope", PessimisticLockScope.EXTENDED);
+        props.put("jakarta.persistence.lock.scope", PessimisticLockScope.EXTENDED);
 
         OpenJPAEntityManagerSPI em1 = emf.createEntityManager();
         OpenJPAEntityManagerSPI em2 = emf.createEntityManager();
@@ -61,7 +61,7 @@ public class TestLocking extends SQLListenerTestCase {
         //
         // pg 86
         // Element collections and relationships owned by the entity that are contained in join tables will be
-        // locked if the javax.persistence.lock.scope property is specified with a value of
+        // locked if the jakarta.persistence.lock.scope property is specified with a value of
         // PessimisticLockScope.EXTENDED. The state of entities referenced by such relationships will
         // not be locked (unless those entities are explicitly locked). This property may be passed as an argument
         // to the methods of the EntityManager, Query, and TypedQuery interfaces that allow lock modes

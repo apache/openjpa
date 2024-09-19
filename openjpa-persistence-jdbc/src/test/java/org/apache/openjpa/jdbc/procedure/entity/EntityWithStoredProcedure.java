@@ -18,17 +18,17 @@
  */
 package org.apache.openjpa.jdbc.procedure.entity;
 
-import static javax.persistence.ParameterMode.INOUT;
-import static javax.persistence.ParameterMode.OUT;
+import static jakarta.persistence.ParameterMode.INOUT;
+import static jakarta.persistence.ParameterMode.OUT;
 
-import javax.persistence.Entity;
-import javax.persistence.EntityResult;
-import javax.persistence.Id;
-import javax.persistence.NamedStoredProcedureQueries;
-import javax.persistence.NamedStoredProcedureQuery;
-import javax.persistence.SqlResultSetMapping;
-import javax.persistence.SqlResultSetMappings;
-import javax.persistence.StoredProcedureParameter;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityResult;
+import jakarta.persistence.Id;
+import jakarta.persistence.NamedStoredProcedureQueries;
+import jakarta.persistence.NamedStoredProcedureQuery;
+import jakarta.persistence.SqlResultSetMapping;
+import jakarta.persistence.SqlResultSetMappings;
+import jakarta.persistence.StoredProcedureParameter;
 
 @Entity
 @NamedStoredProcedureQueries({

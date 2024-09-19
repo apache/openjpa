@@ -20,11 +20,11 @@ package org.apache.openjpa.persistence.managedinterface;
 
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 
 import org.apache.openjpa.persistence.ManagedInterface;
 import org.apache.openjpa.persistence.PersistentCollection;

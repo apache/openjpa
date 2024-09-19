@@ -24,7 +24,7 @@ package org.apache.openjpa.persistence.cache.jpa;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Cache;
+import jakarta.persistence.Cache;
 
 import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;

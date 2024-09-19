@@ -187,7 +187,7 @@ public class OracleDictionary
             log.warn("Both 'supportsAutoAssign' and 'useTriggersForAutoAssign' were specified, such configuration will never work,"
                     + " please use 'supportsAutoAssign'");
         }
-        // support auto increment columns javax.persistence.GenerationType#IDENTITY
+        // support auto increment columns jakarta.persistence.GenerationType#IDENTITY
         supportsAutoAssign = true;
         autoAssignClause = "GENERATED ALWAYS AS IDENTITY";
 

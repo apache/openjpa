@@ -20,8 +20,8 @@ package org.apache.openjpa.persistence.identity;
 
 import java.math.BigInteger;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 /**
  * @author <a href="mailto:mnachev@gmail.com">Miroslav Nachev</a>

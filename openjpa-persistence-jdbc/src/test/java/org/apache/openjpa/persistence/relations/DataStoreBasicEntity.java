@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.persistence.relations;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.Version;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Version;
 
 import org.apache.openjpa.persistence.DataStoreId;
 

@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.lifecycle;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.enhance.UnenhancedPropertyAccess;
 import org.apache.openjpa.kernel.Broker;

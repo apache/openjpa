@@ -18,12 +18,12 @@
  */
 package org.apache.openjpa.persistence.jpql.joins;
 
-import javax.persistence.metamodel.ListAttribute;
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.ListAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.StaticMetamodel
+@jakarta.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.jpql.joins.Department.class)
-@javax.annotation.Generated
+@jakarta.annotation.Generated
 (value="org.apache.openjpa.persistence.meta.AnnotationProcessor6",date="Tue Jun 03 09:13:08 CDT 2014")
 public class Department_ {
     public static volatile SingularAttribute<Department,Integer> deptno;

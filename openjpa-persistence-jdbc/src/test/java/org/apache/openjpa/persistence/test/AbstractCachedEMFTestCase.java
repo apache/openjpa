@@ -21,7 +21,7 @@ package org.apache.openjpa.persistence.test;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Broker;

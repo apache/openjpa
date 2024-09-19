@@ -40,7 +40,7 @@ public class JPQLParser
     private static final long serialVersionUID = 1L;
     private static final Localizer _loc =
         Localizer.forPackage(JPQLParser.class);
-    public static final String LANG_JPQL = "javax.persistence.JPQL";
+    public static final String LANG_JPQL = "jakarta.persistence.JPQL";
 
     @Override
     public Object parse(String ql, ExpressionStoreQuery query) {

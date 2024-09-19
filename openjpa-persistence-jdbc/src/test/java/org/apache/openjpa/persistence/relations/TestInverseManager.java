@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.relations;
 
 import java.util.Arrays;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.merge.model.Toy;
 import org.apache.openjpa.persistence.merge.model.ToyBox;

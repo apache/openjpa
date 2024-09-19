@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence;
 
-import static javax.persistence.AccessType.FIELD;
-import static javax.persistence.AccessType.PROPERTY;
+import static jakarta.persistence.AccessType.FIELD;
+import static jakarta.persistence.AccessType.PROPERTY;
 import static org.apache.openjpa.persistence.PersistenceStrategy.BASIC;
 import static org.apache.openjpa.persistence.PersistenceStrategy.ELEM_COLL;
 import static org.apache.openjpa.persistence.PersistenceStrategy.EMBEDDED;
@@ -50,25 +50,25 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.Basic;
-import javax.persistence.ElementCollection;
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
-import javax.persistence.EmbeddedId;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.PostLoad;
-import javax.persistence.PostPersist;
-import javax.persistence.PostRemove;
-import javax.persistence.PostUpdate;
-import javax.persistence.PrePersist;
-import javax.persistence.PreRemove;
-import javax.persistence.PreUpdate;
-import javax.persistence.Transient;
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
+import jakarta.persistence.Basic;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PostPersist;
+import jakarta.persistence.PostRemove;
+import jakarta.persistence.PostUpdate;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreRemove;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Transient;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.Reflection;
@@ -907,7 +907,7 @@ public class PersistenceMetaDataDefaults
     }
 
     /**
-     * Selects all element annotated with <code>javax.persistence.*</code> or
+     * Selects all element annotated with <code>jakarta.persistence.*</code> or
      * <code>org.apache.openjpa.*</code> annotation except the annotations
      * marked to be ignored.
      */
@@ -918,7 +918,7 @@ public class PersistenceMetaDataDefaults
                     .getAnnotationsAction(obj));
         	for (Annotation anno : annos) {
         		String name = anno.annotationType().getName();
-                if ((name.startsWith("javax.persistence.")
+                if ((name.startsWith("jakarta.persistence.")
                   || name.startsWith("org.apache.openjpa.persistence."))
                   && !_ignoredAnnos.contains(name))
                 	return true;

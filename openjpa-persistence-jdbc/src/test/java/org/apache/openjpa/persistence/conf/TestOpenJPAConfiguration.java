@@ -61,7 +61,7 @@ public class TestOpenJPAConfiguration
         map.put("openjpa.ConnectionFactory2", cfactory2);
         map.put("openjpa.Optimistic", Boolean.FALSE);
         map.put("openjpa.LockTimeout", 503);
-        map.put("javax.persistence.query.timeout", 1500);
+        map.put("jakarta.persistence.query.timeout", 1500);
 
         // use new conf so no unexpected restrictions on type of connection
         // factory

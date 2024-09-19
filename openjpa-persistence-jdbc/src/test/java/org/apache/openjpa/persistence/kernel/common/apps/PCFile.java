@@ -22,11 +22,11 @@ package org.apache.openjpa.persistence.kernel.common.apps;
  * @author <A HREF="mailto:pinaki.poddar@gmail.com>Pinaki Poddar</A>
  */
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class PCFile {

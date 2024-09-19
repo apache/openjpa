@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.kernel.common.apps;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 /**
  * @author <A HREF="mailto:pinaki.poddar@gmail.com>Pinaki Poddar</A>

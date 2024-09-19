@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.enhance.common.apps;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 @Entity
 public class NoClone implements Cloneable {

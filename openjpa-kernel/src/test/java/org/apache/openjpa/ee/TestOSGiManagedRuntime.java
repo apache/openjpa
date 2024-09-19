@@ -24,14 +24,14 @@ import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.List;
 
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.InvalidTransactionException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
+import jakarta.transaction.HeuristicMixedException;
+import jakarta.transaction.HeuristicRollbackException;
+import jakarta.transaction.InvalidTransactionException;
+import jakarta.transaction.NotSupportedException;
+import jakarta.transaction.RollbackException;
+import jakarta.transaction.SystemException;
+import jakarta.transaction.Transaction;
+import jakarta.transaction.TransactionManager;
 
 import org.apache.openjpa.util.InternalException;
 import org.junit.Test;
@@ -52,11 +52,11 @@ import junit.framework.AssertionFailedError;
 import static org.junit.Assert.*;
 
 /**
- * Test javax.transaction.TransactionManager OSGi service discovery.
+ * Test jakarta.transaction.TransactionManager OSGi service discovery.
  */
 public class TestOSGiManagedRuntime {
 
-    private static final String TXN_MANAGER_CLASS_NAME = "javax.transaction.TransactionManager";
+    private static final String TXN_MANAGER_CLASS_NAME = "jakarta.transaction.TransactionManager";
 
     /**
      * A transaction manager instance an nothing more.
@@ -155,7 +155,7 @@ public class TestOSGiManagedRuntime {
     };
 
     /**
-     * A fake bundle context with a reference counter for a javax.transaction.TRansactionManager
+     * A fake bundle context with a reference counter for a jakarta.transaction.TRansactionManager
      */
     private static final class TestBundleContext implements BundleContext {
 

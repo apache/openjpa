@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.persistence.kernel.common.apps;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 
 /**
  * A base entity to verify behavior of dynamically constructed FetchPlan by

@@ -23,8 +23,8 @@ package org.apache.openjpa.persistence.jdbc.kernel;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.jdbc.common.apps.AutoIncrementOpOrderPCSub;

@@ -137,7 +137,7 @@ a distributed environment, as caches in different JVMs or created from different
 There are two ways to enable the basic single-factory cache. One is using
 <link linkend="openjpa.DataCache"><literal>openjpa.DataCache</literal></link>
 property, the other is using JPA standard shared-cache-mode element or the
-javax.persistence.sharedCache.mode property.
+jakarta.persistence.sharedCache.mode property.
             </para>
             <section id="ref_guide_data_cache">
             <title>
@@ -369,7 +369,7 @@ an UPDATE or DELETE statement. The default for the value is <literal>true</liter
                 Integration with JPA standard shared cache mode
             </title>
             <para>
-                JPA 2.0 specification introduced the standard data cache configuration through the shared-cache-mode element or javax.persistence.
+                JPA 2.0 specification introduced the standard data cache configuration through the shared-cache-mode element or jakarta.persistence.
 sharedCache.mode property.
             </para>
             <para>
@@ -383,14 +383,14 @@ sharedCache.mode property.
             <para>
                 If the shared cache mode is to turn on the caching, the cache setting configured through openjpa.DataCache
                 , like cacheSize and SoftReferenceSize, will be used to initialize or manage the cache. The Types and ExcludeTypes
-                 property in openjpa.DataCache will be ingnored since the shared cache mode in conjunction with the javax.persistence.Cacheable
+                 property in openjpa.DataCache will be ingnored since the shared cache mode in conjunction with the jakarta.persistence.Cacheable
                  annotation already defines what will be cached.
             </para>
             <example id="shared-cache-mode-none">
                 <para>
 <programlisting>
 &lt;property name="openjpa.DataCache" value="true"/&gt;
-&lt;property name="javax.persistence.sharedCache.mode" value="NONE"/&gt;
+&lt;property name="jakarta.persistence.sharedCache.mode" value="NONE"/&gt;
 </programlisting>
                 </para>
                 <para>
@@ -402,7 +402,7 @@ sharedCache.mode property.
                 <para>
 <programlisting>
 &lt;property name="openjpa.DataCache" value="true(ExcludedTypes=foo.bar.Person;foo.bar.Employee)"/&gt;
-&lt;property name="javax.persistence.sharedCache.mode" value="ALL"/&gt;
+&lt;property name="jakarta.persistence.sharedCache.mode" value="ALL"/&gt;
 </programlisting>
                 </para>
                 <para>
@@ -414,7 +414,7 @@ sharedCache.mode property.
                 <para>
 <programlisting>
 &lt;property name="openjpa.DataCache" value="true(ExcludedTypes=foo.bar.Person;foo.bar.Employee)"/&gt;
-&lt;property name="javax.persistence.sharedCache.mode" value="ENABLE_SELECTIVE"/&gt;
+&lt;property name="jakarta.persistence.sharedCache.mode" value="ENABLE_SELECTIVE"/&gt;
 </programlisting>
                 </para>
                 <para>
@@ -480,7 +480,7 @@ tips on how to use this package to extend OpenJPA's caching service yourself.
             <para>
 Rather than use the low-level <literal>org.apache.openjpa.datacache</literal>
 package APIs, JPA users should typically access the data cache through the JPA
-standard <classname>javax.persistence.Cache</classname> interface, or OpenJPA's
+standard <classname>jakarta.persistence.Cache</classname> interface, or OpenJPA's
 high-level
 <ulink url="../../apidocs/org/apache/openjpa/persistence/StoreCache.html">
 <classname>org.apache.openjpa.persistence.StoreCache</classname></ulink> facade.
@@ -493,16 +493,16 @@ number of read or write requests and hit ratio of the cache.
             </para>
 <section id="ref_guide_cache_use_JPA">
 <title>Using the JPA standard Cache interface</title>
-    You may obtain the <classname>javax.persistence.Cache</classname> through
+    You may obtain the <classname>jakarta.persistence.Cache</classname> through
     the EntityManagerFactory.getCache() method.
     <example id="ref_guide_cache_access_jpa_standard">
         <title>
             Accessing the Cache
         </title>
         <programlisting>
-import javax.persistence.Cache;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+import jakarta.persistence.Cache;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 . . .
 EntityManagerFactory emf =
     Persistence.createEntityManagerFactory("myPersistenceUnit");
@@ -512,7 +512,7 @@ Cache cache = emf.getCache();
     </example>
 
     <example id="ref_guide_cache_use_jpa_standard">
-        <title>Using the javax.persistence.Cache interface</title>
+        <title>Using the jakarta.persistence.Cache interface</title>
         <programlisting>
 // Check whether the cache contains an entity with a provided ID
 Cache cache = emf.getCache();
@@ -1394,7 +1394,7 @@ for a JPQL query.
 	ignore any cached SQL query, by setting
 	<literal>QueryHints.HINT_IGNORE_PREPARED_QUERY</literal> or
 	<literal>"openjpa.hint.IgnorePreparedQuery"</literal> to <literal>true</literal>
-	via standard <literal>javax.persistence.Query.setHint(String, Object)</literal> method. If a
+	via standard <literal>jakarta.persistence.Query.setHint(String, Object)</literal> method. If a
 	SQL query has been cached corresponding to the JPQL query prior to this
 	execution, then the cached SQL remains in the cache and will be reused
 	for any subsequent execution of the same JPQL query.

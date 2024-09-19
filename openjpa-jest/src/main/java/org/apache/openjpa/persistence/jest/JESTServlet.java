@@ -21,7 +21,7 @@ package org.apache.openjpa.persistence.jest;
 
 import java.io.IOException;
 
-import javax.persistence.Persistence;
+import jakarta.persistence.Persistence;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

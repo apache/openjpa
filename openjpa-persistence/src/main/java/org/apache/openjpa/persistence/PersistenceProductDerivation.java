@@ -37,10 +37,10 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Set;
 
-import javax.persistence.SharedCacheMode;
-import javax.persistence.ValidationMode;
-import javax.persistence.spi.PersistenceUnitInfo;
-import javax.persistence.spi.PersistenceUnitTransactionType;
+import jakarta.persistence.SharedCacheMode;
+import jakarta.persistence.ValidationMode;
+import jakarta.persistence.spi.PersistenceUnitInfo;
+import jakarta.persistence.spi.PersistenceUnitTransactionType;
 
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -97,7 +97,7 @@ public class PersistenceProductDerivation
     private HashMap<String, PUNameCollision> _puNameCollisions
         = new HashMap<>();
 
-    public static final String PREFIX = "javax.persistence";
+    public static final String PREFIX = "jakarta.persistence";
 
     // These are properties that are invalid to be configured at the provider level.
     private static final String[] _invalidPersistenceProperties =
@@ -109,8 +109,8 @@ public class PersistenceProductDerivation
     protected String _providerImplName;
 
     static {
-        _hints.add("javax.persistence.lock.timeout");
-        _hints.add("javax.persistence.query.timeout");
+        _hints.add("jakarta.persistence.lock.timeout");
+        _hints.add("jakarta.persistence.query.timeout");
 
         _hints.add("openjpa.FetchPlan.ExtendedPathLookup");
         _hints.add("openjpa.FetchBatchSize");
@@ -180,7 +180,7 @@ public class PersistenceProductDerivation
         throws Exception {
         // make sure JPA is available
         AccessController.doPrivileged(J2DoPrivHelper.getClassLoaderAction(
-            javax.persistence.EntityManagerFactory.class));
+            jakarta.persistence.EntityManagerFactory.class));
     }
 
     @Override

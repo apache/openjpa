@@ -18,14 +18,12 @@
  */
 package org.apache.openjpa.persistence;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.persistence.CacheRetrieveMode;
-import javax.persistence.CacheStoreMode;
+import jakarta.persistence.CacheRetrieveMode;
+import jakarta.persistence.CacheStoreMode;
 
 import org.apache.openjpa.kernel.DataCacheRetrieveMode;
 import org.apache.openjpa.kernel.DataCacheStoreMode;
@@ -44,7 +42,7 @@ import org.apache.openjpa.lib.util.StringUtil;
  */
 public class JPAProperties {
     private static final String REGEX_DOT           = "\\.";
-    public static final String PREFIX              = "javax.persistence.";
+    public static final String PREFIX              = "jakarta.persistence.";
 
     public static final String PROVIDER            = PREFIX + "provider";
     public static final String TRANSACTION_TYPE    = PREFIX + "transactionType";
@@ -72,7 +70,7 @@ public class JPAProperties {
     public static final String VALIDATE_PRE_PERSIST = PREFIX + "validation.group.pre-persist";
     public static final String VALIDATE_PRE_REMOVE  = PREFIX + "validation.group.pre-remove";
     public static final String VALIDATE_PRE_UPDATE  = PREFIX + "validation.group.pre-update";
-    public static final String VALIDATE_GROUP_DEFAULT = "javax.validation.groups.Default";
+    public static final String VALIDATE_GROUP_DEFAULT = "jakarta.validation.groups.Default";
 
     private static Map<String,String> _names = new HashMap<>();
 
@@ -95,7 +93,7 @@ public class JPAProperties {
     /**
      * Is the given key appears to be a valid JPA specification defined key?
      *
-     * @return true if the given string merely prefixed with <code>javax.persistence.</code>.
+     * @return true if the given string merely prefixed with <code>jakarta.persistence.</code>.
      * Does not really check all the keys defined in the specification.
      */
     public static boolean isValidKey(String key) {
@@ -105,9 +103,9 @@ public class JPAProperties {
     /**
      * Gets a bean-style property name from the given key.
      *
-     * @param key must begin with JPA property prefix <code>javax.persistence</code>
+     * @param key must begin with JPA property prefix <code>jakarta.persistence</code>
      *
-     * @return concatenates each part of the string leaving out <code>javax.persistence.</code> prefix.
+     * @return concatenates each part of the string leaving out <code>jakarta.persistence.</code> prefix.
      * Part of string is what appears between DOT character.
      */
     public static String getBeanProperty(String key) {

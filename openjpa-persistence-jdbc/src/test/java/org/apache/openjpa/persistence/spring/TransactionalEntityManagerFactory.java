@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.spring;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 public interface TransactionalEntityManagerFactory {
     EntityManager getTransactionalEntityManager();

@@ -23,10 +23,10 @@
 
 package org.apache.openjpa.persistence.embed;
 
-import javax.persistence.metamodel.SetAttribute;
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.SetAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.StaticMetamodel
+@jakarta.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.embed.Embed_Coll_Integer.class)
 public class Embed_Coll_Integer_ {
     public static volatile SingularAttribute<Embed_Coll_Integer,Integer> intVal1;

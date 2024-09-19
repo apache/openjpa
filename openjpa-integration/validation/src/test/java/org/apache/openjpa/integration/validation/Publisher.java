@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.integration.validation;
 
-import javax.persistence.Basic;
-import javax.persistence.Embeddable;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.Size;
 
 @Embeddable
 public class Publisher {

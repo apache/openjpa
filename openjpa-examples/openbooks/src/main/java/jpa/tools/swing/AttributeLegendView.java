@@ -17,7 +17,7 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.image.BufferedImage;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;

@@ -24,9 +24,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 
 import org.apache.openjpa.kernel.QueryStatistics;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;

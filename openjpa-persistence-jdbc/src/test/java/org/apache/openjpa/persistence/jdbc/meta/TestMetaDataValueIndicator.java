@@ -27,8 +27,6 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
-import java.util.Iterator;
-
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.strats.SuperclassDiscriminatorStrategy;
 import org.apache.openjpa.jdbc.meta.strats.ValueMapDiscriminatorStrategy;

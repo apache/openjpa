@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.order;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class Inning {

@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.conf;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
@@ -73,7 +73,7 @@ public class TestQueryHints extends SingleEMFTestCase {
     }
 
     public void testSupportedHintsContainJPAQueryHints() {
-        assertSupportedHint("javax.persistence.query.timeout", true);
+        assertSupportedHint("jakarta.persistence.query.timeout", true);
     }
 
     public void testUnrecognizedKeyIsIgnored() {
@@ -149,15 +149,15 @@ public class TestQueryHints extends SingleEMFTestCase {
     }
 
     public void testJPAHintSetsFetchPlan() {
-        query.setHint("javax.persistence.lock.timeout", 5671);
-        query.setHint("javax.persistence.query.timeout", 7500);
+        query.setHint("jakarta.persistence.lock.timeout", 5671);
+        query.setHint("jakarta.persistence.query.timeout", 7500);
         assertEquals(5671, query.getFetchPlan().getLockTimeout());
         assertEquals(7500, query.getFetchPlan().getQueryTimeout());
     }
 
     public void testInvalidLockTimeoutHint() {
         try {
-            query.setHint("javax.persistence.lock.timeout", -5671);
+            query.setHint("jakarta.persistence.lock.timeout", -5671);
             fail("Expected setHint to fail with an IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // expected
@@ -166,7 +166,7 @@ public class TestQueryHints extends SingleEMFTestCase {
 
     public void testInvalidQueryTimeoutHint() {
         try {
-            query.setHint("javax.persistence.query.timeout", -7500);
+            query.setHint("jakarta.persistence.query.timeout", -7500);
             fail("Expected setHint to fail with an IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // expected

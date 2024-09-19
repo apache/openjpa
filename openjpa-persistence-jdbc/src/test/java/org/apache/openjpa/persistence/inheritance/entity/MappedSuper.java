@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.persistence.inheritance.entity;
 
-import javax.persistence.Basic;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 
 @MappedSuperclass
 public class MappedSuper {

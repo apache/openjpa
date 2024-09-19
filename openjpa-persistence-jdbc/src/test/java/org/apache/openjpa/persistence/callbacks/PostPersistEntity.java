@@ -18,10 +18,10 @@
  */
 package org.apache.openjpa.persistence.callbacks;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.PostPersist;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.PostPersist;
 
 /**
  * A persistent entity to test that when PostPersist callback is invoked can

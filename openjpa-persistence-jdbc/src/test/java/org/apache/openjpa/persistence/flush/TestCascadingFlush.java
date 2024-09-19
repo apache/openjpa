@@ -26,7 +26,7 @@ import java.io.ObjectOutputStream;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.OpenJPAPersistence;

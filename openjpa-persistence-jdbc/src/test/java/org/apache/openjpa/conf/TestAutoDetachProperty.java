@@ -21,9 +21,9 @@ package org.apache.openjpa.conf;
 import java.util.EnumSet;
 import java.util.HashMap;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 
 import org.apache.openjpa.persistence.AutoDetachType;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;

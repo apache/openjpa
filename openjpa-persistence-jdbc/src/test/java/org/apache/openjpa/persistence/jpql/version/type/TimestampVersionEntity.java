@@ -21,13 +21,12 @@ package org.apache.openjpa.persistence.jpql.version.type;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Version;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Version;
 
 @Entity
 public class TimestampVersionEntity implements Serializable {
-    
     private static final long serialVersionUID = 1L;
 
     @Id

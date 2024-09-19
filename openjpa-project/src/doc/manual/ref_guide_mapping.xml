@@ -2129,7 +2129,7 @@ same order they were in when last stored, you must declare an order column. An
 order column can be declared using OpenJPA's
 <ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/OrderColumn">
 <classname>org.apache.openjpa.persistence.jdbc.OrderColumn</classname></ulink>
-annotation or the JPA 2.0 <classname>javax.persistence.OrderColumn</classname>
+annotation or the JPA 2.0 <classname>jakarta.persistence.OrderColumn</classname>
 annotation or <literal>order-column</literal> orm element as defined in
 <xref linkend="jpa_overview_meta_xml"/>.
 OpenJPA's

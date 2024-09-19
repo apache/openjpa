@@ -18,11 +18,13 @@
  */
 package org.apache.openjpa.enhance;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+import org.apache.openjpa.util.asm.AsmHelper;
+import org.apache.xbean.asm9.tree.ClassNode;
+
 import junit.framework.TestCase;
-import serp.bytecode.BCClass;
-import serp.bytecode.BCField;
-import serp.bytecode.BCMethod;
-import serp.bytecode.Project;
 
 public class TestPCEnhancerFindField
     extends TestCase {
@@ -36,11 +38,12 @@ public class TestPCEnhancerFindField
             return field;
     }
 
-    public void testPCEnhancerFindField() {
-        Project proj = new Project();
-        BCClass bc = proj.loadClass(getClass());
-        BCMethod meth = bc.getMethods("myMethod")[0];
-        BCField field = PCEnhancer.getReturnedField(meth);
+    public void testPCEnhancerFindField() throws Exception {
+        ClassNode classNode = AsmHelper.readClassNode(this.getClass().getClassLoader(), TestPCEnhancerFindField.class.getName());
+
+        Method meth = TestPCEnhancerFindField.class.getMethod("myMethod");
+
+        Field field = PCEnhancer.getReturnedField(classNode, meth);
         assertEquals("field", field.getName());
     }
 }

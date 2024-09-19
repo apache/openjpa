@@ -57,12 +57,12 @@ import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataFactory;
 import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
+import org.apache.openjpa.util.GeneratedClasses;
 import org.apache.openjpa.util.InvalidStateException;
 import org.apache.openjpa.util.UserException;
-
-import serp.bytecode.BCClass;
-import serp.bytecode.BCClassLoader;
-import serp.bytecode.Project;
+import org.apache.xbean.asm9.ClassWriter;
+import org.apache.xbean.asm9.Opcodes;
+import org.apache.xbean.asm9.Type;
 
 /**
  * Generates a class appropriate for use as an application identity class.
@@ -116,8 +116,7 @@ public class ApplicationIdTool {
      * Constructs a new tool instance capable of generating an
      * object id class for <code>meta</code>.
      */
-    public ApplicationIdTool(OpenJPAConfiguration conf, Class type,
-        ClassMetaData meta) {
+    public ApplicationIdTool(OpenJPAConfiguration conf, Class type, ClassMetaData meta) {
         _log = conf.getLog(OpenJPAConfiguration.LOG_ENHANCE);
 
         _type = type;
@@ -828,8 +827,8 @@ public class ApplicationIdTool {
                     append(name).closeParen().closeParen();
             } else if (type == char[].class) {
                 // ((name == null && other.name == null)
-                //	|| (name != null && String.valueOf (name).
-                //	equals (String.valueOf (other.name))))
+                //    || (name != null && String.valueOf (name).
+                //    equals (String.valueOf (other.name))))
                 code.append("(").openParen(false).append(name).
                     append(" == null && other.").append(name).
                     append(" == null").closeParen().endl();
@@ -843,7 +842,7 @@ public class ApplicationIdTool {
                     closeParen().append(")");
             } else {
                 // ((name == null && other.name == null)
-                //	|| (name != null && name.equals (other.name)))
+                //    || (name != null && name.equals (other.name)))
                 code.append("(").openParen(false).append(name).
                     append(" == null && other.").append(name).
                     append(" == null").closeParen().endl();
@@ -1375,14 +1374,12 @@ public class ApplicationIdTool {
         ApplicationIdTool tool;
         Class cls;
         ClassMetaData meta;
-        BCClassLoader bc = AccessController
-            .doPrivileged(J2DoPrivHelper.newBCClassLoaderAction(new Project()));
         for (Object aClass : classes) {
             cls = (Class) aClass;
             log.info(_loc.get("appid-running", cls));
 
             meta = repos.getMetaData(cls, null, false);
-            setObjectIdType(meta, flags, bc);
+            setObjectIdType(meta, flags);
 
             tool = new ApplicationIdTool(conf, cls, meta);
             tool.setDirectory(flags.directory);
@@ -1396,15 +1393,13 @@ public class ApplicationIdTool {
             else
                 log.info(_loc.get("appid-norun"));
         }
-        bc.getProject().clear();
         return true;
     }
 
     /**
      * Set the object id type of the given metadata.
      */
-    private static void setObjectIdType(ClassMetaData meta, Flags flags,
-        BCClassLoader bc)
+    private static void setObjectIdType(ClassMetaData meta, Flags flags)
         throws ClassNotFoundException {
         if (meta == null || (meta.getObjectIdType() != null
             && (!meta.isOpenJPAIdentity() || flags.name == null))
@@ -1413,18 +1408,19 @@ public class ApplicationIdTool {
 
         Class desc = meta.getDescribedType();
         Class cls = null;
-        if (flags.name != null)
-            cls = loadClass(desc, flags.name, bc);
-        else if (flags.suffix != null)
-            cls = loadClass(desc, desc.getName() + flags.suffix, bc);
+        if (flags.name != null) {
+            cls = loadClass(desc, flags.name);
+        }
+        else if (flags.suffix != null) {
+            cls = loadClass(desc, desc.getName() + flags.suffix);
+        }
         meta.setObjectIdType(cls, false);
     }
 
     /**
      * Load the given class name even if it does not exist.
      */
-    private static Class loadClass(Class context, String name,
-        BCClassLoader bc)
+    private static Class loadClass(Class context, String name)
         throws ClassNotFoundException {
         if (name.indexOf('.') == -1 && context.getName().indexOf('.') != -1)
             name = ClassUtil.getPackageName(context) + "." + name;
@@ -1441,9 +1437,11 @@ public class ApplicationIdTool {
         }
 
         // create class
-        BCClass oid = bc.getProject().loadClass(name, null);
-        oid.addDefaultConstructor();
-        return Class.forName(name, false, bc);
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        cw.visit(Opcodes.V11, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, name.replace(".", "/"),
+                null, Type.getInternalName(Object.class), null);
+
+        return GeneratedClasses.loadAsmClass(name, cw.toByteArray(), context, context.getClassLoader());
     }
 
     /**
@@ -1479,11 +1477,11 @@ public class ApplicationIdTool {
      * object id classes.
      */
     public interface ObjectIdLoader
-	{
-		/**
+    {
+        /**
          * Turn on the loading of all identity classes, even if they don't
          * exist.
-	 	 */
-		void setLoadObjectIds ();
-	}
+          */
+        void setLoadObjectIds ();
+    }
 }

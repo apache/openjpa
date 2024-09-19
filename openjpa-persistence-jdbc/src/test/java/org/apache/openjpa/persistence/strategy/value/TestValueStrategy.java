@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.strategy.value;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 

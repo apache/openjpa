@@ -41,7 +41,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  * <LI> a) the delegator adds RuntimeException to each of the original service methods.
  * The original {@link TradingService} has not defined the exception in its method signature,
  * However, the actual implementation of {@link TradingService} is based on
- * JPA and hence will throw <code>javax.persistence.PersistenceException</code>. To propagate
+ * JPA and hence will throw <code>jakarta.persistence.PersistenceException</code>. To propagate
  * these exceptions to the client, these exceptions need to be translated for serialization by
  * GWT compiler and will bring in heavier dependency.
  * <br>
@@ -51,7 +51,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  * <code>com.google.gwt.user.client.rpc.RemoteService</code>. But the discipline used for this
  * application dictates that the <em>service interface</em> be independent of either
  * how it is implemented or how it will be accessed. That is why original {@link TradingService}
- * definition neither depends on <code>javax.persistence.*</code> nor on <code>com.google.gwt.*</code>.
+ * definition neither depends on <code>jakarta.persistence.*</code> nor on <code>com.google.gwt.*</code>.
  * <p>
  * Because the interface is delegated, it is not necessary to have the same method name or
  * even signature. It may not have to declare all the original service interface methods either.

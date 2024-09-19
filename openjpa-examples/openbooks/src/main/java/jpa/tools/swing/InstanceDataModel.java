@@ -15,8 +15,8 @@ package jpa.tools.swing;
 
 import java.util.List;
 
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.EntityType;
+import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.EntityType;
 import javax.swing.table.AbstractTableModel;
 
 public class InstanceDataModel<T> extends AbstractTableModel {

@@ -27,7 +27,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.event.AbstractLifecycleListener;
 import org.apache.openjpa.event.AbstractTransactionListener;

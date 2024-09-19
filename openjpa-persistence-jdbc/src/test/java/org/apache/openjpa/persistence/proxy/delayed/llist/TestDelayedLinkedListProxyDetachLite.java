@@ -20,12 +20,12 @@ package org.apache.openjpa.persistence.proxy.delayed.llist;
 
 import java.util.Collection;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.persistence.proxy.delayed.IDepartment;
 import org.apache.openjpa.persistence.proxy.delayed.IEmployee;
-import org.apache.openjpa.util.DelayedLinkedListProxy;
+import org.apache.openjpa.util.proxy.DelayedLinkedListProxy;
 
 public class TestDelayedLinkedListProxyDetachLite extends TestDelayedLinkedListProxy {
 

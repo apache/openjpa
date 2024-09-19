@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.kernel;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.event.AbstractLifecycleListener;
 import org.apache.openjpa.event.AbstractTransactionListener;

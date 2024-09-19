@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.query.common.apps;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 @Entity
 public class TransactionalClassPC {

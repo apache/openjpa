@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.identity;
 
 import java.math.BigDecimal;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;

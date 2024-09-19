@@ -30,7 +30,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.datacache.ConcurrentDataCache;
 import org.apache.openjpa.datacache.DataCache;
@@ -73,7 +73,7 @@ import org.apache.openjpa.util.CacheMap;
 import org.apache.openjpa.util.Id;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.OpenJPAException;
-import org.apache.openjpa.util.ProxyDate;
+import org.apache.openjpa.util.proxy.ProxyDate;
 
 import junit.framework.AssertionFailedError;
 

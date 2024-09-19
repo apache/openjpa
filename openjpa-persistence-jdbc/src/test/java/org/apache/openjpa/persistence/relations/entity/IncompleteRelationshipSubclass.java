@@ -19,7 +19,7 @@
 
 package org.apache.openjpa.persistence.relations.entity;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 /**
  * This class simply extends IncompleteRelationshipParentEntity.

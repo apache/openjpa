@@ -78,7 +78,7 @@ Statement</classname>, and executing that <classname>Statement</classname> to
 obtain a <classname>ResultSet</classname>. And of course, you are free to
 continue using this low-level approach to SQL execution in your JPA
 applications. However, JPA also supports executing SQL queries through the
-<classname>javax.persistence.Query</classname> interface introduced in
+<classname>jakarta.persistence.Query</classname> interface introduced in
 <xref linkend="jpa_overview_query"/>. Using a JPA SQL query, you can
 retrieve either persistent objects or projections of column values. The
 following sections detail each use.

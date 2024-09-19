@@ -29,9 +29,9 @@ import java.lang.annotation.Target;
  * New instances of this type can be created by invoking
  * {@link OpenJPAEntityManager#createInstance(Class)}.
  * Interfaces with this annotation should also be annotated with one of the JPA
- * entity annotations ({@link javax.persistence.Entity @Entity},
- * {@link javax.persistence.MappedSuperclass @MappedSuperclass},
- * or {@link javax.persistence.Embeddable @Embeddable}).
+ * entity annotations ({@link jakarta.persistence.Entity @Entity},
+ * {@link jakarta.persistence.MappedSuperclass @MappedSuperclass},
+ * or {@link jakarta.persistence.Embeddable @Embeddable}).
  *
  * @since 1.1.0
  * @published

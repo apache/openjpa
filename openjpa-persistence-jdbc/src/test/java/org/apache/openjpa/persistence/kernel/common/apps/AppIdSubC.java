@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.kernel.common.apps;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 /**
  * Concrete subclass that defines two more primary key fields than its

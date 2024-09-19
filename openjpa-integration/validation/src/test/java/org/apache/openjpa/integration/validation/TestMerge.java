@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.integration.validation;
 
-import javax.persistence.EntityManager;
-import javax.validation.ConstraintViolationException;
+import jakarta.persistence.EntityManager;
+import jakarta.validation.ConstraintViolationException;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.log.Log;

@@ -3,7 +3,7 @@
 == Preface
 Thank you for downloading this release of Apache OpenJPA.
 
-Apache OpenJPA is an implementation of the Java Persistence API specification.
+Apache OpenJPA is an implementation of the Jakarta Persistence API 3.0 specification.
 
 
 == License

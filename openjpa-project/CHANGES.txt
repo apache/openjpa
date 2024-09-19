@@ -133,7 +133,7 @@ Bug
     [OPENJPA-2821] - Subclassing enhancer must use AsmAdapter
     [OPENJPA-2828] - org.apache.openjpa.kernel.conf.Specification.equals() : returns true even if different
     [OPENJPA-2829] - javax script execution does not ignore empty lines
-    [OPENJPA-2830] - javax.persistence.sql-load-script-source does not support ";" in strings
+    [OPENJPA-2830] - jakarta.persistence.sql-load-script-source does not support ";" in strings
     [OPENJPA-2832] - DROP COLUMN does not use delimiters and always add double quotes
     [OPENJPA-2834] - Performance issue while deploying in Wildfly EAP with OpenJPA-3.1.1
     [OPENJPA-2842] - openjpa.Log=log4j vs log4j2 - reintroduce log4j support and add explicit log4j2 support

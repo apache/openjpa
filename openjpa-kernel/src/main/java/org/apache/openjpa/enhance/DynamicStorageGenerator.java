@@ -19,30 +19,36 @@
 package org.apache.openjpa.enhance;
 
 import java.lang.reflect.Constructor;
-import java.security.AccessController;
 
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.InternalException;
+import org.apache.openjpa.util.asm.AsmHelper;
+import org.apache.openjpa.util.asm.ClassNodeTracker;
+import org.apache.openjpa.util.asm.EnhancementClassLoader;
+import org.apache.openjpa.util.asm.EnhancementProject;
+import org.apache.xbean.asm9.Opcodes;
+import org.apache.xbean.asm9.Type;
+import org.apache.xbean.asm9.tree.ClassNode;
+import org.apache.xbean.asm9.tree.FieldInsnNode;
+import org.apache.xbean.asm9.tree.FieldNode;
+import org.apache.xbean.asm9.tree.InsnList;
+import org.apache.xbean.asm9.tree.InsnNode;
+import org.apache.xbean.asm9.tree.JumpInsnNode;
+import org.apache.xbean.asm9.tree.LabelNode;
+import org.apache.xbean.asm9.tree.MethodInsnNode;
+import org.apache.xbean.asm9.tree.MethodNode;
+import org.apache.xbean.asm9.tree.TableSwitchInsnNode;
+import org.apache.xbean.asm9.tree.TypeInsnNode;
+import org.apache.xbean.asm9.tree.VarInsnNode;
 
-import serp.bytecode.BCClass;
-import serp.bytecode.BCClassLoader;
-import serp.bytecode.BCField;
-import serp.bytecode.BCMethod;
-import serp.bytecode.Code;
-import serp.bytecode.Constants;
-import serp.bytecode.Instruction;
-import serp.bytecode.JumpInstruction;
-import serp.bytecode.LoadInstruction;
-import serp.bytecode.Project;
-import serp.bytecode.TableSwitchInstruction;
 
 /**
  * Factory for creating new {@link DynamicStorage} classes. Can be
  * extended to decorate/modify the generated instances behavior.
  *
  * @author Steve Kim
+ * @author Mark Struberg rework to ASM
  * @since 0.3.2.0
  */
 public class DynamicStorageGenerator {
@@ -95,11 +101,8 @@ public class DynamicStorageGenerator {
     };
 
     // the project/classloader for the classes.
-    private final Project _project = new Project();
-    private final BCClassLoader _loader =
-        AccessController.doPrivileged(J2DoPrivHelper.newBCClassLoaderAction(
-            _project, AccessController.doPrivileged(J2DoPrivHelper
-                .getClassLoaderAction(DynamicStorage.class))));
+    private final EnhancementProject _project = new EnhancementProject();
+    private final EnhancementClassLoader _loader = new EnhancementClassLoader(_project, DynamicStorage.class.getClassLoader());
 
     /**
      * Generate a generic {@link DynamicStorage} instance with the given
@@ -111,9 +114,9 @@ public class DynamicStorageGenerator {
             return null;
 
         String name = getClassName(obj);
-        BCClass bc = _project.loadClass(name);
+        ClassNodeTracker bc = _project.loadClass(name);
         declareClasses(bc);
-        bc.addDefaultConstructor().makePublic();
+        addDefaultConstructor(bc);
 
         int objectCount = declareFields(types, bc);
         addFactoryMethod(bc);
@@ -125,6 +128,26 @@ public class DynamicStorageGenerator {
         return createFactory(bc);
     }
 
+    private void addDefaultConstructor(ClassNodeTracker cnt) {
+        ClassNode classNode = cnt.getClassNode();
+        // find the default constructor
+        final boolean hasDefaultCt = classNode.methods.stream()
+                .anyMatch(m -> m.name.equals("<init>") && m.desc.equals("()V"));
+        if (!hasDefaultCt) {
+            MethodNode ctNode = new MethodNode(Opcodes.ACC_PUBLIC,
+                                               "<init>",
+                                               Type.getMethodDescriptor(Type.VOID_TYPE),
+                                               null, null);
+            ctNode.instructions.add(new VarInsnNode(Opcodes.ALOAD, 0));
+            ctNode.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, classNode.superName,
+                                                       "<init>", "()V"));
+            ctNode.instructions.add(new InsnNode(Opcodes.RETURN));
+            classNode.methods.add(ctNode);
+        }
+    }
+
+
+
     /**
      * Return a class name to use for the given user key. By default,
      * returns the stringified key prefixed by PREFIX.
@@ -135,10 +158,10 @@ public class DynamicStorageGenerator {
 
     /**
      * Return the default field ACCESS constant for generated fields from
-     * {@link Constants}.
+     * {@link Opcodes}.
      */
     protected int getFieldAccess() {
-        return Constants.ACCESS_PRIVATE;
+        return Opcodes.ACC_PRIVATE;
     }
 
     /**
@@ -159,18 +182,17 @@ public class DynamicStorageGenerator {
     /**
      * Decorate the generated class.
      */
-    protected void decorate(Object obj, BCClass cls, int[] types) {
+    protected void decorate(Object obj, ClassNodeTracker cls, int[] types) {
     }
 
     /**
      * Create a stub factory instance for the given class.
      */
-    protected DynamicStorage createFactory(BCClass bc) {
+    protected DynamicStorage createFactory(ClassNodeTracker bc) {
         try {
-            Class cls = Class.forName(bc.getName(), false, _loader);
+            Class cls = Class.forName(bc.getClassNode().name.replace("/", "."), false, _loader);
             Constructor cons = cls.getConstructor((Class[]) null);
-            DynamicStorage data = (DynamicStorage) cons.newInstance
-                ((Object[]) null);
+            DynamicStorage data = (DynamicStorage) cons.newInstance((Object[]) null);
             _project.clear(); // remove old refs
             return data;
         } catch (Throwable t) {
@@ -181,74 +203,90 @@ public class DynamicStorageGenerator {
     /**
      * Add interface or superclass declarations to the generated class.
      */
-    protected void declareClasses(BCClass bc) {
+    protected void declareClasses(ClassNodeTracker bc) {
         bc.declareInterface(DynamicStorage.class);
     }
 
     /**
      * Implement the newInstance method.
      */
-    private void addFactoryMethod(BCClass bc) {
-        BCMethod method = bc.declareMethod("newInstance",
-            DynamicStorage.class, null);
-        Code code = method.getCode(true);
-        code.anew().setType(bc);
-        code.dup();
-        code.invokespecial().setMethod(bc.getName(), "<init>", "void", null);
-        code.areturn();
-        code.calculateMaxLocals();
-        code.calculateMaxStack();
+    private void addFactoryMethod(ClassNodeTracker bc) {
+        final ClassNode classNode = bc.getClassNode();
+        MethodNode method = new MethodNode(Opcodes.ACC_PUBLIC,
+                                           "newInstance",
+                                           Type.getMethodDescriptor(Type.getType(DynamicStorage.class)),
+                                           null, null);
+        classNode.methods.add(method);
+        InsnList instructions = method.instructions;
+        instructions.add(new TypeInsnNode(Opcodes.NEW, classNode.name));
+        instructions.add(new InsnNode(Opcodes.DUP));
+        instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
+                                            classNode.name,
+                                            "<init>",
+                                            Type.getMethodDescriptor(Type.VOID_TYPE)));
+        instructions.add(new InsnNode(Opcodes.ARETURN));
     }
 
     /**
      * Implement getFieldCount/getObjectCount.
      */
-    private void addFieldCount(BCClass bc, int[] types, int objectCount) {
-        BCMethod method = bc.declareMethod("getFieldCount", int.class, null);
-        Code code = method.getCode(true);
-        code.constant().setValue(types.length);
-        code.ireturn();
-        code.calculateMaxLocals();
-        code.calculateMaxStack();
+    private void addFieldCount(ClassNodeTracker bc, int[] types, int objectCount) {
+        final ClassNode classNode = bc.getClassNode();
+        MethodNode getFc = new MethodNode(Opcodes.ACC_PUBLIC,
+                                           "getFieldCount",
+                                           Type.getMethodDescriptor(Type.INT_TYPE),
+                                           null, null);
+        classNode.methods.add(getFc);
+        getFc.instructions.add(AsmHelper.getLoadConstantInsn(types.length));
+        getFc.instructions.add(new InsnNode(Opcodes.IRETURN));
 
-        method = bc.declareMethod("getObjectCount", int.class, null);
-        code = method.getCode(true);
-        code.constant().setValue(objectCount);
-        code.ireturn();
-        code.calculateMaxLocals();
-        code.calculateMaxStack();
+        MethodNode getOc = new MethodNode(Opcodes.ACC_PUBLIC,
+                                          "getObjectCount",
+                                          Type.getMethodDescriptor(Type.INT_TYPE),
+                                          null, null);
+        classNode.methods.add(getOc);
+        getOc.instructions.add(AsmHelper.getLoadConstantInsn(objectCount));
+        getOc.instructions.add(new InsnNode(Opcodes.IRETURN));
     }
 
     /**
      * Implement initialize.
      */
-    private void addInitialize(BCClass bc, int objectCount) {
-        BCMethod meth = bc.declareMethod("initialize", void.class, null);
-        Code code = meth.getCode(true);
-        JumpInstruction ifins = null;
+    private void addInitialize(ClassNodeTracker bc, int objectCount) {
+        final ClassNode classNode = bc.getClassNode();
+        MethodNode initMeth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                          "initialize",
+                                          Type.getMethodDescriptor(Type.VOID_TYPE),
+                                          null, null);
+        classNode.methods.add(initMeth);
+        InsnList instructions = initMeth.instructions;
+
+        LabelNode lblEndIf = null;
         if (objectCount > 0) {
             // if (objects == null)
             // 		objects = new Object[objectCount];
-            code.aload().setThis();
-            code.getfield().setField("objects", Object[].class);
-            ifins = code.ifnonnull();
-            code.aload().setThis();
-            code.constant().setValue(objectCount);
-            code.anewarray().setType(Object.class);
-            code.putfield().setField("objects", Object[].class);
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+            instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, "objects", Type.getDescriptor(Object[].class)));
+            lblEndIf = new LabelNode();
+            instructions.add(new JumpInsnNode(Opcodes.IFNONNULL, lblEndIf));
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+            instructions.add(AsmHelper.getLoadConstantInsn(objectCount));
+            instructions.add(new TypeInsnNode(Opcodes.ANEWARRAY, Type.getInternalName(Object.class)));
+            instructions.add(new FieldInsnNode(Opcodes.PUTFIELD, classNode.name, "objects", Type.getDescriptor(Object[].class)));
         }
-        Instruction ins = code.vreturn();
-        if (ifins != null)
-            ifins.setTarget(ins);
-        code.calculateMaxLocals();
-        code.calculateMaxStack();
+
+        if (lblEndIf != null) {
+            instructions.add(lblEndIf);
+        }
+        instructions.add(new InsnNode(Opcodes.RETURN));
     }
 
     /**
      * Declare the primitive fields and the object field.
      */
-    private int declareFields(int[] types, BCClass bc) {
-        bc.declareField("objects", Object[].class).makePrivate();
+    private int declareFields(int[] types, ClassNodeTracker bc) {
+        ClassNode classNode = bc.getClassNode();
+        classNode.fields.add(new FieldNode(Opcodes.ACC_PRIVATE, "objects", Type.getDescriptor(Object[].class), null, null));
 
         int objectCount = 0;
         Class type;
@@ -257,8 +295,7 @@ public class DynamicStorageGenerator {
             if (type == Object.class)
                 objectCount++;
             else {
-                BCField field = bc.declareField(getFieldName(i), type);
-                field.setAccessFlags(getFieldAccess());
+                classNode.fields.add(new FieldNode(Opcodes.ACC_PRIVATE, getFieldName(i), Type.getDescriptor(type), null, null));
             }
         }
         return objectCount;
@@ -267,7 +304,7 @@ public class DynamicStorageGenerator {
     /**
      * Add all the typed set by index method.
      */
-    private void addSetMethods(BCClass bc, int[] types, int totalObjects) {
+    private void addSetMethods(ClassNodeTracker bc, int[] types, int totalObjects) {
         for (int type : TYPES) {
             addSetMethod(type, bc, types, totalObjects);
         }
@@ -276,77 +313,104 @@ public class DynamicStorageGenerator {
     /**
      * Add the typed set by index method.
      */
-    private void addSetMethod(int typeCode, BCClass bc, int[] types,
-        int totalObjects) {
+    private void addSetMethod(int typeCode, ClassNodeTracker bc, int[] types, int totalObjects) {
         int handle = getCreateFieldMethods(typeCode);
-        if (handle == POLICY_EMPTY)
+        if (handle == POLICY_EMPTY) {
             return;
+        }
+
         Class type = forType(typeCode);
+
         // public void set<Type> (int field, <type> val)
         String name = Object.class.equals(type) ? "Object" : StringUtil.capitalize(type.getName());
         name = "set" + name;
-        BCMethod method = bc.declareMethod(name, void.class,
-            new Class[]{ int.class, type });
-        method.makePublic();
-        Code code = method.getCode(true);
+
+        ClassNode classNode = bc.getClassNode();
+        MethodNode method = new MethodNode(Opcodes.ACC_PUBLIC,
+                                           name,
+                                           Type.getMethodDescriptor(Type.VOID_TYPE, Type.INT_TYPE, Type.getType(type)),
+                                           null, null);
+        classNode.methods.add(method);
+        InsnList instructions = method.instructions;
+
         // switch (field)
-        code.aload().setParam(0);
-        TableSwitchInstruction tabins = code.tableswitch();
-        tabins.setLow(0);
-        tabins.setHigh(types.length - 1);
-        Instruction defaultIns;
-        if (handle == POLICY_SILENT) {
-            defaultIns = code.vreturn();
-        }
-        else {
-            defaultIns = throwException(code, IllegalArgumentException.class);
-        }
-        tabins.setDefaultTarget(defaultIns);
+        instructions.add(new VarInsnNode(Opcodes.ILOAD, 1)); // switch on first parameter which is an int
+
+        LabelNode defLbl = new LabelNode();
+        TableSwitchInsnNode switchNd = new TableSwitchInsnNode(0, types.length - 1, defLbl);
+        instructions.add(switchNd);
+
+
         int objectCount = 0;
         for (int i = 0; i < types.length; i++) {
             // default: throw new IllegalArgumentException
             if (!isCompatible(types[i], typeCode)) {
-                tabins.addTarget(tabins.getDefaultTarget());
+                LabelNode caseLbl = new LabelNode();
+                switchNd.labels.add(caseLbl);
+                instructions.add(caseLbl);
+                instructions.add(getDefaultSetInstructions(handle));
                 continue;
             }
 
-            tabins.addTarget(code.aload().setThis());
+            LabelNode caseLbl = new LabelNode();
+            switchNd.labels.add(caseLbl);
+            instructions.add(caseLbl);
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+
             if (typeCode >= JavaTypes.OBJECT) {
                 // if (objects == null)
                 // 		objects = new Object[totalObjects];
-                code.aload().setThis();
-                code.getfield().setField("objects", Object[].class);
-                JumpInstruction ifins = code.ifnonnull();
-                code.aload().setThis();
-                code.constant().setValue(totalObjects);
-                code.anewarray().setType(Object.class);
-                code.putfield().setField("objects", Object[].class);
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, "objects", Type.getDescriptor(Object[].class)));
+
+                LabelNode lblEndNonNull = new LabelNode();
+                instructions.add(new JumpInsnNode(Opcodes.IFNONNULL, lblEndNonNull));
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                instructions.add(AsmHelper.getLoadConstantInsn(totalObjects));
+                instructions.add(new TypeInsnNode(Opcodes.ANEWARRAY, Type.getInternalName(Object.class)));
+                instructions.add(new FieldInsnNode(Opcodes.PUTFIELD, classNode.name, "objects", Type.getDescriptor(Object[].class)));
+
+                instructions.add(lblEndNonNull);
 
                 // objects[objectCount] = val;
-                ifins.setTarget(code.aload().setThis());
-                code.getfield().setField("objects", Object[].class);
-                code.constant().setValue(objectCount);
-                code.aload().setParam(1);
-                code.aastore();
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, "objects", Type.getDescriptor(Object[].class)));
+                instructions.add(AsmHelper.getLoadConstantInsn(objectCount));
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 2)); // 2nd param
+                instructions.add(new InsnNode(Opcodes.AASTORE));
+
                 objectCount++;
             } else {
                 // case i: fieldi = val;
-                LoadInstruction load = code.xload();
-                load.setType(type);
-                load.setParam(1);
-                code.putfield().setField("field" + i, type);
+                instructions.add(new VarInsnNode(AsmHelper.getLoadInsn(type), 2)); // 2nd param is primitive
+                instructions.add(new FieldInsnNode(Opcodes.PUTFIELD, classNode.name, "field" + i, Type.getInternalName(type)));
             }
             // return
-            code.vreturn();
+            instructions.add(new InsnNode(Opcodes.RETURN));
         }
-        code.calculateMaxLocals();
-        code.calculateMaxStack();
+
+
+        // default:
+        instructions.add(defLbl);
+        instructions.add(getDefaultSetInstructions(handle));
+    }
+
+    private static InsnList getDefaultSetInstructions(int handle) {
+        InsnList defaultInsns;
+        if (handle == POLICY_SILENT) {
+            defaultInsns = new InsnList();
+            defaultInsns.add(new InsnNode(Opcodes.RETURN));
+        }
+        else {
+            defaultInsns = AsmHelper.throwException(IllegalArgumentException.class);
+        }
+        return defaultInsns;
     }
 
     /**
      * Add all typed get by index method for the given fields.
      */
-    private void addGetMethods(BCClass bc, int[] types) {
+    private void addGetMethods(ClassNodeTracker bc, int[] types) {
         for (int type : TYPES) {
             addGetMethod(type, bc, types);
         }
@@ -355,64 +419,90 @@ public class DynamicStorageGenerator {
     /**
      * Add typed get by index method.
      */
-    private void addGetMethod(int typeCode, BCClass bc, int[] types) {
+    private void addGetMethod(int typeCode, ClassNodeTracker bc, int[] types) {
         int handle = getCreateFieldMethods(typeCode);
-        if (handle == POLICY_EMPTY)
+        if (handle == POLICY_EMPTY) {
             return;
+        }
         Class type = forType(typeCode);
+
         // public <type> get<Type>Field (int field)
-        String name = Object.class.equals(type) ? "Object" :
-            StringUtil.capitalize(type.getName());
-        name = "get" + name;
-        BCMethod method = bc.declareMethod(name, type,
-            new Class[]{ int.class });
-        method.makePublic();
-        Code code = method.getCode(true);
+        String name = "get" + (Object.class.equals(type) ? "Object" : StringUtil.capitalize(type.getName()));
+
+        ClassNode classNode = bc.getClassNode();
+        MethodNode meth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                         name,
+                                         Type.getMethodDescriptor(Type.getType(type), Type.INT_TYPE),
+                                         null, null);
+        classNode.methods.add(meth);
+        InsnList instructions = meth.instructions;
+
         // switch (field)
-        code.aload().setParam(0);
-        TableSwitchInstruction tabins = code.tableswitch();
-        tabins.setLow(0);
-        tabins.setHigh(types.length - 1);
-        Instruction defaultIns = null;
-        if (typeCode == JavaTypes.OBJECT && handle == POLICY_SILENT) {
-            defaultIns = code.constant().setNull();
-            code.areturn();
-        } else
-            defaultIns = throwException
-                (code, IllegalArgumentException.class);
-        tabins.setDefaultTarget(defaultIns);
+        instructions.add(new VarInsnNode(Opcodes.ILOAD, 1)); // switch on first parameter which is an int
+
+        LabelNode defLbl = new LabelNode();
+        TableSwitchInsnNode switchNd = new TableSwitchInsnNode(0, types.length - 1, defLbl);
+        instructions.add(switchNd);
+
+
         int objectCount = 0;
         for (int i = 0; i < types.length; i++) {
             // default: throw new IllegalArgumentException
             if (!isCompatible(types[i], typeCode)) {
-                tabins.addTarget(tabins.getDefaultTarget());
+                LabelNode caseLbl = new LabelNode();
+                switchNd.labels.add(caseLbl);
+                instructions.add(caseLbl);
+                instructions.add(getDefaultGetInstructions(typeCode, handle));
                 continue;
             }
 
-            tabins.addTarget(code.aload().setThis());
+            LabelNode caseLbl = new LabelNode();
+            switchNd.labels.add(caseLbl);
+            instructions.add(caseLbl);
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
             if (typeCode >= JavaTypes.OBJECT) {
                 // if (objects == null)
                 // 		return null;
                 // return objects[objectCount];
-                code.aload().setThis();
-                code.getfield().setField("objects", Object[].class);
-                JumpInstruction ifins = code.ifnonnull();
-                code.constant().setNull();
-                code.areturn();
-                ifins.setTarget(code.aload().setThis());
-                code.getfield().setField("objects", Object[].class);
-                code.constant().setValue(objectCount);
-                code.aaload();
-                code.areturn();
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, "objects", Type.getDescriptor(Object[].class)));
+
+                LabelNode lblEndNonNull = new LabelNode();
+                instructions.add(new JumpInsnNode(Opcodes.IFNONNULL, lblEndNonNull));
+                instructions.add(new InsnNode(Opcodes.ACONST_NULL));
+                instructions.add(new InsnNode(Opcodes.ARETURN));
+
+                instructions.add(lblEndNonNull);
+                instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, "objects", Type.getDescriptor(Object[].class)));
+                instructions.add(AsmHelper.getLoadConstantInsn(objectCount));
+                instructions.add(new InsnNode(Opcodes.AALOAD));
+                instructions.add(new InsnNode(Opcodes.ARETURN));
+
                 objectCount++;
             } else {
                 // case i: return fieldi;
-                code.getfield().setField("field" + i, type);
-                code.xreturn().setType(type);
+                instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, "field" + i, Type.getInternalName(type)));
+                instructions.add(new InsnNode(AsmHelper.getReturnInsn(type)));
             }
         }
-        code.calculateMaxLocals();
-        code.calculateMaxStack();
+
+        // default:
+        instructions.add(defLbl);
+        instructions.add(getDefaultGetInstructions(typeCode, handle));
+    }
+
+    private static InsnList getDefaultGetInstructions(int typeCode, int handle) {
+        InsnList defaultInsns;
+        if (typeCode == JavaTypes.OBJECT && handle == POLICY_SILENT) {
+            defaultInsns = new InsnList();
+            defaultInsns.add(new InsnNode(Opcodes.ACONST_NULL));
+            defaultInsns.add(new InsnNode(Opcodes.ARETURN));
+        }
+        else {
+            defaultInsns = AsmHelper.throwException(IllegalArgumentException.class);
+        }
+        return defaultInsns;
     }
 
     /////////////
@@ -420,56 +510,48 @@ public class DynamicStorageGenerator {
     /////////////
 
     /**
-     * Clear code associated with the given method signature, and return
-     * the empty code. Will return null if the method should be empty.
-     */
-    protected Code replaceMethod(BCClass bc, String name, Class retType,
-        Class[] args, boolean remove) {
-        bc.removeDeclaredMethod(name, args);
-        BCMethod meth = bc.declareMethod(name, retType, args);
-        Code code = meth.getCode(true);
-        if (!remove)
-            return code;
-        code.xreturn().setType(retType);
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
-        return null;
-    }
-
-    /**
      * Add a bean field of the given name and type.
      */
-    protected BCField addBeanField(BCClass bc, String name, Class type) {
-        if (name == null)
+    protected FieldNode addBeanField(ClassNodeTracker bc, String name, Class type) {
+        if (name == null) {
             throw new IllegalArgumentException("name == null");
+        }
+
+        ClassNode classNode = bc.getClassNode();
 
         // private <type> <name>
-        BCField field = bc.declareField(name, type);
-        field.setAccessFlags(getFieldAccess());
+        FieldNode field = new FieldNode(getFieldAccess(), name, Type.getDescriptor(type), null, null);
+        classNode.fields.add(field);
+
         name = StringUtil.capitalize(name);
 
         // getter
-        String prefix = (type == boolean.class) ? "is" : "get";
-        BCMethod method = bc.declareMethod(prefix + name, type, null);
-        method.makePublic();
-        Code code = method.getCode(true);
-        code.aload().setThis();
-        code.getfield().setField(field);
-        code.xreturn().setType(type);
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
+        {
+            String prefix = (type == boolean.class) ? "is" : "get";
+            MethodNode meth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                             prefix + name,
+                                             Type.getMethodDescriptor(Type.getType(type)),
+                                             null, null);
+            classNode.methods.add(meth);
+            meth.instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+            meth.instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, field.name, Type.getDescriptor(type)));
+            meth.instructions.add(new InsnNode(AsmHelper.getReturnInsn(type)));
+        }
 
         // setter
-        method = bc.declareMethod("set" + name, void.class,
-            new Class[]{ type });
-        method.makePublic();
-        code = method.getCode(true);
-        code.aload().setThis();
-        code.xload().setParam(0).setType(type);
-        code.putfield().setField(field);
-        code.vreturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
+        {
+            MethodNode meth = new MethodNode(Opcodes.ACC_PUBLIC,
+                                             "set" + name,
+                                             Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(type)),
+                                             null, null);
+            classNode.methods.add(meth);
+
+            meth.instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+            meth.instructions.add(new VarInsnNode(AsmHelper.getLoadInsn(type), 1)); // value parameter
+            meth.instructions.add(new FieldInsnNode(Opcodes.PUTFIELD, classNode.name, field.name, Type.getDescriptor(type)));
+            meth.instructions.add(new InsnNode(Opcodes.RETURN));
+
+        }
         return field;
     }
 
@@ -480,17 +562,6 @@ public class DynamicStorageGenerator {
         if (storageType == JavaTypes.OBJECT)
             return fieldType >= JavaTypes.OBJECT;
         return fieldType == storageType;
-    }
-
-    /**
-     * Throw an exception of the given type.
-     */
-    protected Instruction throwException(Code code, Class type) {
-        Instruction ins = code.anew().setType(type);
-        code.dup();
-        code.invokespecial().setMethod(type, "<init>", void.class, null);
-        code.athrow();
-        return ins;
     }
 
     /**
@@ -530,9 +601,10 @@ public class DynamicStorageGenerator {
      */
     protected Class getWrapper(Class c) {
         for (Class[] wrapper : WRAPPERS) {
-            if (wrapper[0].equals(c))
+            if (wrapper[0].equals(c)) {
                 return wrapper[1];
+            }
         }
-		return c;
-	}
+        return c;
+    }
 }

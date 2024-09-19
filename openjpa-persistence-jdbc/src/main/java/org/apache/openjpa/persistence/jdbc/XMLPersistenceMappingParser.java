@@ -65,10 +65,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.DiscriminatorType;
-import javax.persistence.EnumType;
-import javax.persistence.InheritanceType;
-import javax.persistence.TemporalType;
+import jakarta.persistence.DiscriminatorType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.TemporalType;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;

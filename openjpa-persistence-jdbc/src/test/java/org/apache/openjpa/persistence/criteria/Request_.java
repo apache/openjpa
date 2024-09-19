@@ -25,9 +25,9 @@ package org.apache.openjpa.persistence.criteria;
 
 import java.sql.Date;
 
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.StaticMetamodel
+@jakarta.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.Request.class)
 public class Request_ {
     public static volatile SingularAttribute<Request,Short> status;

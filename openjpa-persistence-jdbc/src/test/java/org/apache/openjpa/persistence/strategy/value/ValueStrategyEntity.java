@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.strategy.value;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 import org.apache.openjpa.persistence.jdbc.Strategy;
 

@@ -20,15 +20,15 @@ package org.apache.openjpa.persistence.query.common.apps;
 
 import java.io.Serializable;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.NamedNativeQueries;
-import javax.persistence.NamedNativeQuery;
-import javax.persistence.QueryHint;
-import javax.persistence.Table;
-import javax.persistence.Version;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.NamedNativeQueries;
+import jakarta.persistence.NamedNativeQuery;
+import jakarta.persistence.QueryHint;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 
 @Entity
 @Table(name = "qtimeout")
@@ -39,11 +39,11 @@ import javax.persistence.Version;
     query = "select id from qtimeout where mod(DELAY(2,id),2)=1"),
 @NamedNativeQuery(name = "Hint0msec",
     query = "select id from qtimeout where mod(DELAY(2,id),2)=0",
-    hints = { @QueryHint(name = "javax.persistence.query.timeout",
+    hints = { @QueryHint(name = "jakarta.persistence.query.timeout",
         value = "0") }),
 @NamedNativeQuery(name = "Hint1000msec",
     query = "select id from qtimeout where mod(DELAY(2,id),2)=0",
-    hints = { @QueryHint(name = "javax.persistence.query.timeout",
+    hints = { @QueryHint(name = "jakarta.persistence.query.timeout",
         value = "1000") })
 })
 public class QTimeout implements Serializable {

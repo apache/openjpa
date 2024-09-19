@@ -20,11 +20,11 @@ package org.apache.openjpa.persistence.discriminator.fetch;
 
 import java.util.Collection;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity(name="D_F_Manager")
 @Table(name="D_F_MANAGER")

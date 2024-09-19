@@ -20,8 +20,8 @@ package org.apache.openjpa.persistence.discriminator;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import org.apache.openjpa.jdbc.meta.Discriminator;
 import org.apache.openjpa.meta.JavaTypes;

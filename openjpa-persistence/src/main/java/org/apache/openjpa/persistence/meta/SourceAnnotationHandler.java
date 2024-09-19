@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.meta;
 
-import static javax.persistence.AccessType.FIELD;
-import static javax.persistence.AccessType.PROPERTY;
+import static jakarta.persistence.AccessType.FIELD;
+import static jakarta.persistence.AccessType.PROPERTY;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -45,16 +45,16 @@ import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.Embeddable;
-import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Transient;
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Transient;
 
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.AccessCode;
@@ -489,7 +489,7 @@ public class SourceAnnotationHandler
 
     /**
      * Affirms if the given element is annotated with <em>any</em>
-     * <code>javax.persistence.*</code> or <code>org.apache.openjpa.*</code>
+     * <code>jakarta.persistence.*</code> or <code>org.apache.openjpa.*</code>
      * annotation.
      */
     public static boolean isAnnotated(Element e) {
@@ -518,7 +518,7 @@ public class SourceAnnotationHandler
      * annotations.
      *
      * @param annos null checks for any annotation that starts with
-     *            'javax.persistence.' or 'openjpa.*'.
+     *            'jakarta.persistence.' or 'openjpa.*'.
      *
      */
     public static boolean isAnnotatedWith(Element e, Set<String> annos) {
@@ -528,7 +528,7 @@ public class SourceAnnotationHandler
         if (annos == null) {
             for (AnnotationMirror mirror : mirrors) {
                 String name = mirror.getAnnotationType().toString();
-                if (startsWith(name, "javax.persistence.")
+                if (startsWith(name, "jakarta.persistence.")
                  || startsWith(name, "org.apache.openjpa."))
                     return true;
             }

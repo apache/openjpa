@@ -17,7 +17,7 @@
  * under the License.
  */
 package org.apache.openjpa.persistence.enhance.identity;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class PersonId1 {

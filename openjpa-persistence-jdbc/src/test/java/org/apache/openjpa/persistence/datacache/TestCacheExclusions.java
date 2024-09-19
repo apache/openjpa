@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
@@ -213,7 +213,7 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
             + Item.class.getName() + _tSep + Purchase.class.getName() + _tSep
             + Order.class.getName() + ")");
         emf =
-            (OpenJPAEntityManagerFactorySPI) javax.persistence.Persistence
+            (OpenJPAEntityManagerFactorySPI) jakarta.persistence.Persistence
                 .createEntityManagerFactory("test", props);
         return emf;
     }

@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class CachedEmployee extends CachedPerson {

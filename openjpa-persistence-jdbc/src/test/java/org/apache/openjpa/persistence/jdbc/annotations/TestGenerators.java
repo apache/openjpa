@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.ClassRedefiner;

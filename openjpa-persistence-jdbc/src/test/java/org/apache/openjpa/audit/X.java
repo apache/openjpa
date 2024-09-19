@@ -20,8 +20,8 @@ package org.apache.openjpa.audit;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 
 /**

@@ -80,12 +80,14 @@
             <exclude name="**/proxy/entities/*.class" />
             <exclude name="**/xml/*.class" />
             <exclude name="**/Unenhanced*.class" />
+            <exclude name="**/Test*.class"/>
             <exclude name="org/apache/openjpa/enhance/EnhancedSuperClass.class"/>
             <exclude name="org/apache/openjpa/enhance/EnhancedSubClass.class"/>
             <exclude name="**/AbstractUnenhanced*.class" />
             <exclude name="**/unenhanced/*.class" />
             <exclude name="**/persistence/property/AccessModsEntity.class"/>
             <exclude name="org/apache/openjpa/enhance/ids/*.class"/>
+            <exclude name="org/apache/openjpa/idtool/RecordsPerYear.class"/>
         </fileset>
         <openjpac>
             <classpath refid="cp" />

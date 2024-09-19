@@ -21,7 +21,7 @@ package org.apache.openjpa.persistence.spring;
 import java.util.EnumSet;
 import java.util.List;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.AutoDetachType;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;

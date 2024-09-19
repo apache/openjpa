@@ -142,9 +142,9 @@ public final class SQLBuffer
 
         if (!paramOnly) {
             if (sqlIndex == _sql.length())
-                _sql.append(buf._sql.toString());
+                _sql.append(buf._sql);
             else
-                _sql.insert(sqlIndex, buf._sql.toString());
+                _sql.insert(sqlIndex, buf._sql);
         }
 
         if (buf._params != null) {
@@ -326,7 +326,7 @@ public final class SQLBuffer
         if (o == null)
             _sql.append("NULL");
         else if (o instanceof Raw)
-            _sql.append(o.toString());
+            _sql.append(o);
         else {
             Class<?> type = Filters.wrap(o.getClass());
             if (useParamToken || !validParamLiteralType(type)) {
@@ -366,7 +366,7 @@ public final class SQLBuffer
 
                 } else if ( type == Character.class ) {
                     if (_dict.storeCharsAsNumbers) {
-                        _sql.append(Integer.toString((Character) o));
+                        _sql.append(o);
                     } else {
                         _sql.append("'" + o.toString().replace("'", "''") + "'");
                     }
@@ -375,7 +375,7 @@ public final class SQLBuffer
                     // We store B(b)ooleans as ints. Convert
                     _sql.append(_dict.getBooleanRepresentation().getRepresentation(b));
                 } else {
-                    _sql.append(o.toString());
+                    _sql.append(o);
                 }
             }
         }

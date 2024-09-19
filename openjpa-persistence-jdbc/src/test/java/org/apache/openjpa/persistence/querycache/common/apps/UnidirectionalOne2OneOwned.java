@@ -19,9 +19,9 @@
 
 package org.apache.openjpa.persistence.querycache.common.apps;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Version;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Version;
 
 import org.apache.openjpa.persistence.datacache.TestDataCacheBehavesIdentical;
 /**

@@ -51,19 +51,19 @@ OpenJPA component:
         <itemizedlist>
             <listitem>
                 <para>
-<classname>javax.persistence.EntityManagerFactory</classname>: <emphasis>
+<classname>jakarta.persistence.EntityManagerFactory</classname>: <emphasis>
 <classname>org.apache.openjpa.kernel.BrokerFactory</classname></emphasis>
                 </para>
             </listitem>
             <listitem>
                 <para>
-<classname>javax.persistence.EntityManager</classname>: <emphasis><classname>
+<classname>jakarta.persistence.EntityManager</classname>: <emphasis><classname>
 org.apache.openjpa.kernel.Broker</classname></emphasis>
                 </para>
             </listitem>
             <listitem>
                 <para>
-<classname>javax.persistence.Query</classname>: <emphasis><classname>
+<classname>jakarta.persistence.Query</classname>: <emphasis><classname>
 org.apache.openjpa.kernel.Query</classname></emphasis>
                 </para>
             </listitem>
@@ -240,7 +240,7 @@ below</link>.
             <para>
 The <classname>org.apache.openjpa.persistence.OpenJPAEntityManagerFactory
 </classname> interface extends the basic <classname>
-javax.persistence.EntityManagerFactory</classname> with OpenJPA-specific
+jakarta.persistence.EntityManagerFactory</classname> with OpenJPA-specific
 features. The <classname>OpenJPAEntityManagerFactory</classname> offers APIs to
 access the OpenJPA data and query caches and to perform other OpenJPA-specific
 operations. See the
@@ -273,7 +273,7 @@ All OpenJPA <classname>EntityManager</classname>s implement the
 <ulink url="../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
 <classname>org.apache.openjpa.persistence.OpenJPAEntityManager</classname>
 </ulink> interface. This interface extends the standard <classname>
-javax.persistence.EntityManager</classname>. Just as the standard <classname>
+jakarta.persistence.EntityManager</classname>. Just as the standard <classname>
 EntityManager</classname> is the primary window into JPA services, the
 <classname>OpenJPAEntityManager</classname> is the primary window from JPA into
 OpenJPA-specific functionality. We strongly encourage you to investigate the API
@@ -363,7 +363,7 @@ for (Magazine m : mags)
             <para>
 In addition to the <classname>EntityManager</classname> object cache the JPA
 specification provides access to a second level cache via the
-javax.persistence.Cache interface. OpenJPA provides further extensions via
+jakarta.persistence.Cache interface. OpenJPA provides further extensions via
 the org.apache.openjpa.persistence.StoreCache interface documented at
 <ulink url="../../apidocs/org/apache/openjpa/persistence/StoreCache.html">
 <classname>org.apache.openjpa.persistence.StoreCache</classname></ulink>.
@@ -454,7 +454,7 @@ FetchPlan</classname>s.
             <para>
 <ulink url="../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityTransaction.html">
 <classname>org.apache.openjpa.persistence.OpenJPAEntityTransaction</classname></ulink>
-extends <classname>javax.persistence.EntityTransaction</classname> to provide
+extends <classname>jakarta.persistence.EntityTransaction</classname> to provide
 additional transaction-debugging capabilities and some concurrency-related
 commit and rollback features.
             </para>
@@ -472,7 +472,7 @@ commit and rollback features.
 <ulink url="../../apidocs/org/apache/openjpa/persistence/OpenJPAPersistence.html">
 <classname>org.apache.openjpa.persistence.OpenJPAPersistence</classname></ulink>
 is a static helper class that adds OpenJPA-specific utility methods to
-<classname>javax.persistence.Persistence</classname>.
+<classname>jakarta.persistence.Persistence</classname>.
             </para>
         </section>
     </section>

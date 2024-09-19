@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.inheritance.jointable.onetomany;
 
 import java.io.Serializable;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 @Entity
 public class UMLClass extends UMLType implements Serializable {

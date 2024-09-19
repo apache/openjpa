@@ -24,7 +24,7 @@ import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.jdbc.sql.SelectExecutor;
-import org.apache.openjpa.util.ProxyCalendar;
+import org.apache.openjpa.util.proxy.ProxyCalendar;
 
 /**
  * Object provider implementation wrapped around a {@link Select}.

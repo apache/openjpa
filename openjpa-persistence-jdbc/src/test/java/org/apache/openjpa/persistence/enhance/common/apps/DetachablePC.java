@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.enhance.common.apps;
 
 import java.io.Serializable;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 @Entity
 public class DetachablePC

@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.maps.m2mmapex6;
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 @Access(AccessType.FIELD)

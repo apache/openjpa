@@ -21,12 +21,12 @@ package
 
 import java.util.Date;
 
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 
-@javax.persistence.MappedSuperclass
+@jakarta.persistence.MappedSuperclass
 @Inheritance(strategy=InheritanceType.JOINED)
 @IdClass(PartyId.class)
 public class Party1 {

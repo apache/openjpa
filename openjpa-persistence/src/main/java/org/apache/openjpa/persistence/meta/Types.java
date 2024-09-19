@@ -19,11 +19,11 @@
 
 package org.apache.openjpa.persistence.meta;
 
-import javax.persistence.metamodel.EmbeddableType;
-import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.IdentifiableType;
-import javax.persistence.metamodel.MappedSuperclassType;
-import javax.persistence.metamodel.Type;
+import jakarta.persistence.metamodel.EmbeddableType;
+import jakarta.persistence.metamodel.EntityType;
+import jakarta.persistence.metamodel.IdentifiableType;
+import jakarta.persistence.metamodel.MappedSuperclassType;
+import jakarta.persistence.metamodel.Type;
 
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -252,7 +252,7 @@ public class Types {
         }
 
         @Override
-        public javax.persistence.metamodel.Type.PersistenceType getPersistenceType() {
+        public jakarta.persistence.metamodel.Type.PersistenceType getPersistenceType() {
             return PersistenceType.ENTITY;
         }
     }

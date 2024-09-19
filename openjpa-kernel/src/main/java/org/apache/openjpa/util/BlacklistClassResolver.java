@@ -18,23 +18,35 @@
  */
 package org.apache.openjpa.util;
 
+import java.util.stream.Stream;
+
 public class BlacklistClassResolver {
+    private static final String MATCH_ANY = "*";
+
     public static final BlacklistClassResolver DEFAULT = new BlacklistClassResolver(
         toArray(System.getProperty(
             "openjpa.serialization.class.blacklist",
             "org.codehaus.groovy.runtime.,org.apache.commons.collections4.functors.,org.apache.xalan")),
         toArray(System.getProperty("openjpa.serialization.class.whitelist")));
 
+    private final boolean allWhite;
+    private final boolean allBlack;
     private final String[] blacklist;
     private final String[] whitelist;
 
     protected BlacklistClassResolver(final String[] blacklist, final String[] whitelist) {
+        allWhite = Stream.of(whitelist).anyMatch(white -> MATCH_ANY.equals(white));
+        allBlack = Stream.of(blacklist).anyMatch(black -> MATCH_ANY.equals(black));
+
         this.whitelist = whitelist;
         this.blacklist = blacklist;
     }
 
     protected boolean isBlacklisted(final String name) {
-        return (whitelist != null && !contains(whitelist, name)) || contains(blacklist, name);
+        if (allWhite || contains(whitelist, name)) {
+            return false;
+        }
+        return allBlack || contains(blacklist, name);
     }
 
     public final String check(final String name) {
@@ -45,15 +57,17 @@ public class BlacklistClassResolver {
     }
 
     private static String[] toArray(final String property) {
-        return property == null ? null : property.split(" *, *");
+        return property == null
+            ? new String[] {}
+            : Stream.of(property.split(" *, *"))
+                .filter(item -> item != null && !item.isEmpty())
+                .toArray(String[]::new);
     }
 
     private static boolean contains(final String[] list, String name) {
-        if (list != null) {
-            for (final String white : list) {
-                if (name.startsWith(white)) {
-                    return true;
-                }
+        for (final String white : list) {
+            if (name.startsWith(white)) {
+                return true;
             }
         }
         return false;

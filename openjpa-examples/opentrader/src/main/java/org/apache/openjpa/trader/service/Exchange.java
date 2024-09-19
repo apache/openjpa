@@ -25,9 +25,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContextType;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContextType;
+import jakarta.persistence.TypedQuery;
 
 import org.apache.openjpa.lib.log.LogFactory;
 import org.apache.openjpa.trader.domain.Ask;

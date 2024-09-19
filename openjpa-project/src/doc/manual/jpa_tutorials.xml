@@ -636,7 +636,7 @@ container managed, and thus injected or looked up via JNDI. Application managed
 <classname>EntityManager</classname>s can be used in both managed and unmanaged
 environments, and are created by an <classname>EntityManagerFactory</classname>
 . An <classname>EntityManagerFactory</classname> can be obtained from the
-<classname>javax.persistence.Persistence</classname> class. This class provides
+<classname>jakarta.persistence.Persistence</classname> class. This class provides
 some convenience methods for obtaining an <classname>EntityManagerFactory
 </classname>.
                             </para>
@@ -1530,7 +1530,7 @@ common method. In EJBs using bean managed transactions, you can control
 transactions through the <classname>javax.transaction.UserTransaction
 </classname> interface. Furthermore, outside of session beans you can control
 the JPA layer's transaction via the <classname>
-javax.persistence.EntityTransaction</classname> interface.
+jakarta.persistence.EntityTransaction</classname> interface.
                     </para>
                 </listitem>
                 <listitem>

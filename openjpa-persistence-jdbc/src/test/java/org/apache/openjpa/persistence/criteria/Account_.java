@@ -23,9 +23,9 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.StaticMetamodel
+@jakarta.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.Account.class)
 public class Account_ {
     public static volatile SingularAttribute<Account,Integer> balance;

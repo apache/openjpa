@@ -27,7 +27,7 @@
   <parent>
       <groupId>org.apache.openjpa</groupId>
       <artifactId>openjpa-examples</artifactId>
-      <version>3.2.3-SNAPSHOT</version>
+      <version>4.0.1-SNAPSHOT</version>
   </parent>
 
   <groupId>org.apache.openjpa.openjpa-examples</groupId>
@@ -38,7 +38,6 @@
   <description>Apache OpenJPA Examples - image-gallery</description>
 
   <properties>
-    <test.jvm.maxpermsize>256m</test.jvm.maxpermsize>
     <test.jvm.maxheapsize>1024m</test.jvm.maxheapsize>
     <test.jvm.arguments>-Xmx${test.jvm.maxheapsize}</test.jvm.arguments>
     <surefire.jvm.args>${test.jvm.arguments}</surefire.jvm.args>

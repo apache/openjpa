@@ -23,13 +23,13 @@
 
 package org.apache.openjpa.persistence.meta;
 
-import javax.persistence.metamodel.CollectionAttribute;
-import javax.persistence.metamodel.ListAttribute;
-import javax.persistence.metamodel.MapAttribute;
-import javax.persistence.metamodel.SetAttribute;
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.CollectionAttribute;
+import jakarta.persistence.metamodel.ListAttribute;
+import jakarta.persistence.metamodel.MapAttribute;
+import jakarta.persistence.metamodel.SetAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.StaticMetamodel
+@jakarta.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.meta.ImplicitFieldAccessBase.class)
 public class ImplicitFieldAccessBase_ extends ImplicitFieldAccessMappedSuperclass_  {
     public static volatile SingularAttribute<ImplicitFieldAccessBase,Integer> boxedInt;

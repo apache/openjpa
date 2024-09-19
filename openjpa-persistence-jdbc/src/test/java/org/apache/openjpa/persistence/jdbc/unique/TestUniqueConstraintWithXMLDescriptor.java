@@ -21,7 +21,7 @@ package org.apache.openjpa.persistence.jdbc.unique;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.jdbc.SQLSniffer;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;

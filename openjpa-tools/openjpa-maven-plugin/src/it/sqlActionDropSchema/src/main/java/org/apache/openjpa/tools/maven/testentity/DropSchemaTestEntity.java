@@ -18,10 +18,10 @@
  */
 package org.apache.openjpa.tools.maven.testentity;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Enumerated;
-import javax.persistence.EnumType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 
 
 @Entity

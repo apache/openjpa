@@ -21,8 +21,8 @@ package org.apache.openjpa.persistence.jdbc.sqlcache;
 import java.util.List;
 import java.util.Properties;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.kernel.exps.QueryExpressions;

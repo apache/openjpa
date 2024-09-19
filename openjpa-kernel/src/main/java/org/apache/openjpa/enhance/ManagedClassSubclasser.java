@@ -18,9 +18,10 @@
  */
 package org.apache.openjpa.enhance;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,8 +33,8 @@ import java.util.Set;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.util.BytecodeWriter;
-import org.apache.openjpa.lib.util.Files;
+import org.apache.openjpa.util.asm.AsmHelper;
+import org.apache.openjpa.util.asm.BytecodeWriter;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.meta.AccessCode;
@@ -46,8 +47,7 @@ import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.UserException;
-
-import serp.bytecode.BCClass;
+import org.apache.openjpa.util.asm.ClassNodeTracker;
 
 /**
  * Redefines the method bodies of existing unenhanced classes to make them
@@ -65,7 +65,7 @@ public class ManagedClassSubclasser {
      * OpenJPA to handle new instances of the unenhanced type. If this is
      * invoked in a Java 6 environment, this method will redefine the methods
      * for each class in the argument list such that field accesses are
-     * intercepted in-line. If invoked in a Java 5 environment, this
+     * intercepted in-line. If invoked in a Java 5 environment or very new Java versions, this
      * redefinition is not possible; in these contexts, when using field
      * access, OpenJPA will need to do state comparisons to detect any change
      * to any instance at any time, and when using property access, OpenJPA
@@ -136,8 +136,8 @@ public class ManagedClassSubclasser {
 
             enhancer.setBytecodeWriter(new BytecodeWriter() {
                 @Override
-                public void write(BCClass bc) throws IOException {
-                    ManagedClassSubclasser.write(bc, enhancer, map, c, subs, ints);
+                public void write(ClassNodeTracker cnt) throws IOException {
+                    ManagedClassSubclasser.write(cnt, enhancer, map, c, subs, ints);
                 }
             });
             if (redefine) {
@@ -174,9 +174,9 @@ public class ManagedClassSubclasser {
             }
         }
 
-        if (unspecified != null && !unspecified.isEmpty())
-            throw new UserException(_loc.get("unspecified-unenhanced-types", Exceptions.toClassNames(classes),
-                    unspecified));
+        if (unspecified != null && !unspecified.isEmpty()) {
+            throw new UserException(_loc.get("unspecified-unenhanced-types", Exceptions.toClassNames(classes), unspecified));
+        }
 
         ClassRedefiner.redefineClasses(conf, map);
         for (Class<?> cls : map.keySet()) {
@@ -269,55 +269,53 @@ public class ManagedClassSubclasser {
         }
     }
 
-    private static void write(BCClass bc, PCEnhancer enhancer,
-        Map<Class<?>, byte[]> map, Class<?> cls, List<Class<?>> subs, List<Class<?>> ints)
+    private static void write(ClassNodeTracker cnt, PCEnhancer enhancer, Map<Class<?>, byte[]> map,
+                              Class<?> cls, List<Class<?>> subs, List<Class<?>> ints)
         throws IOException {
 
-        if (bc == enhancer.getManagedTypeBytecode()) {
+        if (cnt == enhancer.getManagedTypeBytecode()) {
             // if it was already defined, don't put it in the map,
             // but do set the metadata accordingly.
             if (enhancer.isAlreadyRedefined())
-                ints.add(bc.getType());
+                ints.add(cls);
             else {
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                AsmAdaptor.write(bc, baos);
-                map.put(bc.getType(), baos.toByteArray());
-                debugBytecodes(bc);
+                final byte[] byteArray = AsmHelper.toByteArray(cnt);
+                map.put(cls, byteArray);
+                debugBytecodes(cnt, byteArray);
             }
         } else {
             if (!enhancer.isAlreadySubclassed()) {
-                debugBytecodes(bc);
+                final byte[] byteArray = AsmHelper.toByteArray(cnt);
+                debugBytecodes(cnt, byteArray);
 
                 // this is the new subclass
-                ClassLoader loader = GeneratedClasses.getMostDerivedLoader(
-                    cls, PersistenceCapable.class);
-                subs.add(GeneratedClasses.loadBCClass(bc, loader));
+                ClassLoader loader = GeneratedClasses.getMostDerivedLoader(cls, PersistenceCapable.class);
+                String className = cnt.getClassNode().name.replace("/", ".");
+                subs.add(GeneratedClasses.loadAsmClass(className, byteArray, cls, loader));
             }
         }
     }
 
-    public static void debugBytecodes(BCClass bc) throws IOException {
+    public static void debugBytecodes(ClassNodeTracker cnt, byte[] classBytes) throws IOException {
         // Write the bytecodes to disk for debugging purposes.
-        if ("true".equals(System.getProperty(
-            ManagedClassSubclasser.class.getName() + ".dumpBytecodes")))
+        if ("true".equals(System.getProperty(ManagedClassSubclasser.class.getName() + ".dumpBytecodes")))
         {
             File tmp = new File(System.getProperty("java.io.tmpdir"));
             File dir = new File(tmp, "openjpa");
             dir = new File(dir, "pcsubclasses");
             dir.mkdirs();
-            dir = Files.getPackageFile(dir, bc.getPackageName(), true);
-            File f = new File(dir, bc.getClassName() + ".class");
+            File f = new File(dir, cnt.getClassNode().name + ".class");
+
             // START - ALLOW PRINT STATEMENTS
             System.err.println("Writing to " + f);
             // STOP - ALLOW PRINT STATEMENTS
-            AsmAdaptor.write(bc, f);
+
+            Files.write(f.toPath(), classBytes, StandardOpenOption.WRITE);
         }
     }
 
-    private static void setIntercepting(OpenJPAConfiguration conf,
-        ClassLoader envLoader, Class<?> cls) {
-        ClassMetaData meta = conf.getMetaDataRepositoryInstance()
-            .getMetaData(cls, envLoader, true);
+    private static void setIntercepting(OpenJPAConfiguration conf, ClassLoader envLoader, Class<?> cls) {
+        ClassMetaData meta = conf.getMetaDataRepositoryInstance().getMetaData(cls, envLoader, true);
         meta.setIntercepting(true);
     }
 

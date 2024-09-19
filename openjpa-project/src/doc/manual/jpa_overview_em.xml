@@ -875,7 +875,7 @@ controls whether to flush transactional changes before executing queries. This
 allows the query results to take into account changes you have made during the
 current transaction. Available
 <ulink url="http://download.oracle.com/javaee/6/api/javax/persistence/FlushModeType.html">
-<classname>javax.persistence.FlushModeType</classname></ulink> constants are:
+<classname>jakarta.persistence.FlushModeType</classname></ulink> constants are:
         </para>
         <itemizedlist>
             <listitem>
@@ -1021,7 +1021,7 @@ public void lock(Object entity, LockModeType mode);
         </indexterm>
 This method locks the given entity using the named mode. The
 <ulink url="http://download.oracle.com/javaee/6/api/javax/persistence/LockModeType.html">
-<classname>javax.persistence.LockModeType</classname></ulink> enum defines eight
+<classname>jakarta.persistence.LockModeType</classname></ulink> enum defines eight
 modes:
         </para>
         <itemizedlist>

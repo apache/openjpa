@@ -21,9 +21,9 @@ package org.apache.openjpa.persistence.proxy.delayed.tset;
 import java.util.Collection;
 import java.util.PriorityQueue;
 
-import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
 
 import org.apache.openjpa.persistence.proxy.delayed.IAccount;
 import org.apache.openjpa.persistence.proxy.delayed.IMember;

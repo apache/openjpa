@@ -18,11 +18,11 @@
  */
 package org.apache.openjpa.persistence.discriminator.fetch;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity(name="D_F_Employee")
 @Table(name="D_F_EMPLOYEE")

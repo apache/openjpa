@@ -19,8 +19,8 @@
 package
     org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
 
-import javax.persistence.PostUpdate;
-import javax.persistence.PrePersist;
+import jakarta.persistence.PostUpdate;
+import jakarta.persistence.PrePersist;
 
 public class LongNameValidator
 {

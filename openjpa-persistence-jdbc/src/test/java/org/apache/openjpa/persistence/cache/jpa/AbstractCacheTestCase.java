@@ -22,7 +22,7 @@ import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
@@ -38,8 +38,8 @@ import org.apache.openjpa.persistence.cache.jpa.model.XmlUncacheableEntity;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
 public abstract class AbstractCacheTestCase extends AbstractPersistenceTestCase {
-    protected final String RETRIEVE_MODE_PROP = "javax.persistence.cache.retrieveMode";
-    protected final String STORE_MODE_PROP = "javax.persistence.cache.storeMode";
+    protected final String RETRIEVE_MODE_PROP = "jakarta.persistence.cache.retrieveMode";
+    protected final String STORE_MODE_PROP = "jakarta.persistence.cache.storeMode";
 
     protected static OpenJPAEntityManagerFactorySPI emf = null;
 

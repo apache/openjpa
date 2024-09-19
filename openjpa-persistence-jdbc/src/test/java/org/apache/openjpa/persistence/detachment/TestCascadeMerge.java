@@ -21,7 +21,7 @@ package org.apache.openjpa.persistence.detachment;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.kernel.EntityF;
 import org.apache.openjpa.jdbc.kernel.EntityG;

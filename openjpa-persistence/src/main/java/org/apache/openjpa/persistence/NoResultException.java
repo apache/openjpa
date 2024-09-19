@@ -36,7 +36,7 @@ import org.apache.openjpa.util.UserException;
  * @since 0.4.0
  */
 public class NoResultException
-    extends javax.persistence.NoResultException
+    extends jakarta.persistence.NoResultException
     implements Serializable, ExceptionInfo {
 
     

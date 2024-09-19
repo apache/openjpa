@@ -37,21 +37,21 @@
 
     <persistence-unit name="new-style">
     	<properties>
-            <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver"/>
-            <property name="javax.persistence.jdbc.url"    value="jdbc:derby:target/database/openjpa-test-database;create=true"/>
+            <property name="jakarta.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+            <property name="jakarta.persistence.jdbc.url"    value="jdbc:derby:target/database/openjpa-test-database;create=true"/>
     	</properties>
     </persistence-unit>
 
     <persistence-unit name="mixed-style">
     	<properties>
-            <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+            <property name="jakarta.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver"/>
             <property name="openjpa.ConnectionURL"    value="jdbc:derby:target/database/openjpa-test-database;create=true"/>
     	</properties>
     </persistence-unit>
 
     <persistence-unit name="conflict-style">
     	<properties>
-            <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+            <property name="jakarta.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver"/>
             <property name="openjpa.ConnectionDriverName" value="org.apache.derby.jdbc.EmbeddedDriver"/>
             <property name="openjpa.ConnectionURL"    value="jdbc:derby:target/database/openjpa-test-database;create=true"/>
     	</properties>

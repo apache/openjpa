@@ -21,11 +21,10 @@ package org.apache.openjpa.persistence.managedinterface;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.Query;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.Query;
 
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.Extent;

@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.event.common.apps;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 @Entity
 

@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.simple;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
 

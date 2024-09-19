@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.relations;
 
 import java.util.Iterator;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;

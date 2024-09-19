@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.ee;
 
-import javax.transaction.TransactionManager;
+import jakarta.transaction.TransactionManager;
 
 import org.apache.openjpa.util.InternalException;
 import org.osgi.framework.BundleActivator;
@@ -31,7 +31,7 @@ import org.osgi.framework.ServiceReference;
 
 /**
  * <p>Implementation of the {@link ManagedRuntime} interface that listens
- * for an OSGi service with interface <code>javax.transaction.TransactionManager</code>
+ * for an OSGi service with interface <code>jakarta.transaction.TransactionManager</code>
  * to create a {@link TransactionManager} for controlling transactions.</p>
  *
  * <p>The support for a transaction manager is usually activated inside an OSGi
@@ -87,7 +87,7 @@ public class OSGiManagedRuntime extends AbstractManagedRuntime {
     /**
      * <p>Register a service listener to the given bundle context by
      * {@link BundleContext#addServiceListener(ServiceListener,String)} with a filter
-     *  expression of <code>(objectClass=javax.transaction.TransactionManager)</code>.</p>
+     *  expression of <code>(objectClass=jakarta.transaction.TransactionManager)</code>.</p>
      *
      *  <p>The caller is responsible for calling
      *  {@link #deregisterServiceListener(BundleContext)}, when
@@ -106,9 +106,9 @@ public class OSGiManagedRuntime extends AbstractManagedRuntime {
         listener = new Listener(bundleContext);
 
         bundleContext.addServiceListener(listener, "(" + Constants.OBJECTCLASS
-            + "=javax.transaction.TransactionManager)");
+            + "=jakarta.transaction.TransactionManager)");
 
-        serviceReference = bundleContext.getServiceReference("javax.transaction.TransactionManager");
+        serviceReference = bundleContext.getServiceReference("jakarta.transaction.TransactionManager");
 
         if (serviceReference != null) {
             transactionManager = (TransactionManager)bundleContext.getService(serviceReference);
@@ -147,7 +147,7 @@ public class OSGiManagedRuntime extends AbstractManagedRuntime {
         synchronized (OSGiManagedRuntime.class) {
 
             if (transactionManager == null) {
-                throw new InternalException("No javax.transaction.TransactionManager " +
+                throw new InternalException("No jakarta.transaction.TransactionManager " +
                 		"service is currently registered as an OSGi service.");
             }
 

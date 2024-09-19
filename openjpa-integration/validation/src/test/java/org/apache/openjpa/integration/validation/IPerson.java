@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.integration.validation;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 public interface IPerson {
 

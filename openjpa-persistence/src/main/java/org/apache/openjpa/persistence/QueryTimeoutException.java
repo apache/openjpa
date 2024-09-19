@@ -25,7 +25,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 
 import org.apache.openjpa.util.ExceptionInfo;
 import org.apache.openjpa.util.Exceptions;
@@ -37,7 +37,7 @@ import org.apache.openjpa.util.StoreException;
  * @since 2.0.0
  */
 public class QueryTimeoutException
-    extends javax.persistence.QueryTimeoutException
+    extends jakarta.persistence.QueryTimeoutException
     implements Serializable, ExceptionInfo {
 
     private static final long serialVersionUID = 1L;

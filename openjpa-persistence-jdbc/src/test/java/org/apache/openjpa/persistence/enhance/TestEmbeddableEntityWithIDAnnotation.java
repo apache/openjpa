@@ -19,7 +19,7 @@
 
 package org.apache.openjpa.persistence.enhance;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.enhance.common.apps.EmbeddableEntityWithIDAnnotation;
 import org.apache.openjpa.persistence.enhance.common.apps.IDOwningClassTestEntity;

@@ -21,9 +21,9 @@ package org.apache.openjpa.persistence.enhance.common.apps;
 
 // default package
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Id;
 
 /**
  * BillingNoteId entity. @author MyEclipse Persistence Tools

@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.query.xml;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 

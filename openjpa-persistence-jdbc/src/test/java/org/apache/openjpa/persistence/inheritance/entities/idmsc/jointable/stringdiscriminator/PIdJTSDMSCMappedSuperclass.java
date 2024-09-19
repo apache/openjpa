@@ -19,7 +19,7 @@
 
 package org.apache.openjpa.persistence.inheritance.entities.idmsc.jointable.stringdiscriminator;
 
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.MappedSuperclass;
 
 import org.apache.openjpa.persistence.inheritance.entities.testinterfaces.MSC;
 

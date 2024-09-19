@@ -20,9 +20,9 @@ package org.apache.openjpa.persistence.inheritance.entity;
 
 import java.util.List;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 
 /**
  * Test case and domain classes were originally part of the reported issue

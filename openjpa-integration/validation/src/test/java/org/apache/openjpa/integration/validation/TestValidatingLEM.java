@@ -21,10 +21,10 @@ package org.apache.openjpa.integration.validation;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.ValidationMode;
-import javax.validation.Validation;
-import javax.validation.ValidatorFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.ValidationMode;
+import jakarta.validation.Validation;
+import jakarta.validation.ValidatorFactory;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
@@ -149,7 +149,7 @@ public class TestValidatingLEM extends SingleEMFTestCase {
         // create the Map to test overrides
         //   Just use current class object, as we have no provider to test with
         Map<String,Object> props = new HashMap<>();
-        props.put("javax.persistence.validation.mode",
+        props.put("jakarta.persistence.validation.mode",
             String.valueOf(ValidationMode.CALLBACK));
         // create our EMF w/ props
         OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
@@ -192,13 +192,13 @@ public class TestValidatingLEM extends SingleEMFTestCase {
         ValidatorFactory factory = null;
         try {
             factory = Validation.buildDefaultValidatorFactory();
-        } catch (javax.validation.ValidationException e) {
+        } catch (jakarta.validation.ValidationException e) {
             fail("testValidatingLEM4() - no validation providers found" + e);
         }
         assertNotNull(factory);
         // create the Map to test overrides
         Map<String,Object> props = new HashMap<>();
-        props.put("javax.persistence.validation.factory", factory);
+        props.put("jakarta.persistence.validation.factory", factory);
         // create our EMF w/ props
         OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
             OpenJPAPersistence.createEntityManagerFactory(

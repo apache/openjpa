@@ -51,7 +51,7 @@ deployment options.
                 </seealso>
             </indexterm>
             <para>
-The JPA Overview describes the <classname>javax.persistence.Persistence
+The JPA Overview describes the <classname>jakarta.persistence.Persistence
 </classname> class. You can use <classname>Persistence</classname> to obtain
 <classname>EntityManagerFactory</classname> instances, as demonstrated in
 <xref linkend="jpa_overview_persistence"/>. OpenJPA also extends

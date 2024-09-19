@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Selection;
 
 import org.apache.openjpa.kernel.exps.Value;
 

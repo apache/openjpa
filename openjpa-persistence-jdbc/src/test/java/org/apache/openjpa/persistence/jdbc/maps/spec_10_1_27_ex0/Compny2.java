@@ -21,9 +21,9 @@ package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_27_ex0;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Compny2 {

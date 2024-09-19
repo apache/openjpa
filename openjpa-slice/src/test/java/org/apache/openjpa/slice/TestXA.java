@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.slice;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 public class TestXA extends SliceTestCase {
     @Override

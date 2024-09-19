@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.persistence.relations;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Version;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Version;
 
 @Entity
 public class Util1xmRt {

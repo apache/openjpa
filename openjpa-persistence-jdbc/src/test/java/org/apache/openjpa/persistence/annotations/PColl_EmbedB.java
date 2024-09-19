@@ -17,9 +17,9 @@
  * under the License.
  */
 package org.apache.openjpa.persistence.annotations;
-import javax.persistence.CascadeType;
-import javax.persistence.Embeddable;
-import javax.persistence.ManyToOne;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.ManyToOne;
 
 @Embeddable
 public class PColl_EmbedB {

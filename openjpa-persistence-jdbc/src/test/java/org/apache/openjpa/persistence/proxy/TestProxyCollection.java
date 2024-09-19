@@ -20,11 +20,11 @@ package org.apache.openjpa.persistence.proxy;
 
 import java.util.LinkedHashSet;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.util.ChangeTracker;
-import org.apache.openjpa.util.ProxyCollection;
+import org.apache.openjpa.util.proxy.ProxyCollection;
 
 /**
  * Tests proxying and change tracking of collection fields for modification in

@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.FlushModeType;
 
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;

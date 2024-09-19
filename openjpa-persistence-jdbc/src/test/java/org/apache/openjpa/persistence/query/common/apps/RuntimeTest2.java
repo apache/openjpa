@@ -18,11 +18,11 @@
  */
 package org.apache.openjpa.persistence.query.common.apps;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
 /**
- * <p>Persitent type used in testing.</p>
+ * <p>Persistent type used in testing.</p>
  *
  * @author Abe White
  */

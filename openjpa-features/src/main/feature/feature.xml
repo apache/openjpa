@@ -21,16 +21,15 @@
     <feature name="openjpa" description="Apache OpenJPA 3 persistence engine support" version="${project.version}">
         <details>Apache OpenJPA persistence engine</details>
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
-        <bundle dependency="true">mvn:org.eclipse.persistence/javax.persistence/2.1.0</bundle>
+        <bundle dependency="true">mvn:org.eclipse.persistence/jakarta.persistence/2.1.0</bundle>
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-annotation_1.0_spec/1.1.1</bundle>
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-el_1.0_spec/1.0.1</bundle>
-	<bundle dependency="true">mvn:org.apache.commons/commons-pool2/${pool2.version}</bundle>
+        <bundle dependency="true">mvn:org.apache.commons/commons-pool2/${pool2.version}</bundle>
         <bundle dependency="true">mvn:org.apache.commons/commons-dbcp2/2.7.0</bundle>
-        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.serp/1.14.1_1</bundle>
         <bundle dependency="true">mvn:org.apache.xbean/xbean-asm9-shaded/${xbean.version}</bundle>
         <bundle>mvn:org.apache.openjpa/openjpa/${project.version}</bundle>
         <capability>
-            osgi.service;objectClass=javax.persistence.spi.PersistenceProvider;effective:=active;javax.persistence.provider=org.apache.openjpa.persistence.PersistenceProviderImpl
+            osgi.service;objectClass=jakarta.persistence.spi.PersistenceProvider;effective:=active;jakarta.persistence.provider=org.apache.openjpa.persistence.PersistenceProviderImpl
         </capability>
     </feature>
 

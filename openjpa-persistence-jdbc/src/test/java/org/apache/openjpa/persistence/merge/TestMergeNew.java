@@ -21,7 +21,7 @@ package org.apache.openjpa.persistence.merge;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 

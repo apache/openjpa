@@ -91,7 +91,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
 
     public void testSchemaGenMetadataDrop() throws Exception {
         Map<String, String> properties = new HashMap<>();
-        properties.put("javax.persistence.schema-generation.database.action", "drop");
+        properties.put("jakarta.persistence.schema-generation.database.action", "drop");
 
         SchemaGroup dbSchemaGroup = getSchemaGroup(properties);
 
@@ -103,7 +103,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
 
     public void testSchemaGenMetadataCreate() throws Exception {
         Map<String, String> properties = new HashMap<>();
-        properties.put("javax.persistence.schema-generation.database.action", "create");
+        properties.put("jakarta.persistence.schema-generation.database.action", "create");
 
         SchemaGroup dbSchemaGroup = getSchemaGroup(properties);
 
@@ -115,7 +115,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
 
     public void testSchemaGenMetadataDropAndCreate() throws Exception {
         Map<String, String> properties = new HashMap<>();
-        properties.put("javax.persistence.schema-generation.database.action", "drop-and-create");
+        properties.put("jakarta.persistence.schema-generation.database.action", "drop-and-create");
 
         SchemaGroup dbSchemaGroup = getSchemaGroup(properties);
 
@@ -129,9 +129,9 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
         testSchemaGenMetadataCreate();
 
         Map<String, String> properties = new HashMap<>();
-        properties.put("javax.persistence.schema-generation.database.action", "drop");
-        properties.put("javax.persistence.schema-generation.drop-source", "script");
-        properties.put("javax.persistence.schema-generation.drop-script-source",
+        properties.put("jakarta.persistence.schema-generation.database.action", "drop");
+        properties.put("jakarta.persistence.schema-generation.drop-source", "script");
+        properties.put("jakarta.persistence.schema-generation.drop-script-source",
                        "org/apache/openjpa/persistence/jdbc/schema/drop.sql");
 
         SchemaGroup dbSchemaGroup = getSchemaGroup(properties);
@@ -156,9 +156,9 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
 
 
         Map<String, String> properties = new HashMap<>();
-        properties.put("javax.persistence.schema-generation.database.action", "create");
-        properties.put("javax.persistence.schema-generation.create-source", "script");
-        properties.put("javax.persistence.schema-generation.create-script-source",
+        properties.put("jakarta.persistence.schema-generation.database.action", "create");
+        properties.put("jakarta.persistence.schema-generation.create-source", "script");
+        properties.put("jakarta.persistence.schema-generation.create-script-source",
                        createSql);
 
         SchemaGroup dbSchemaGroup = getSchemaGroup(properties);
@@ -187,12 +187,12 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
         }
 
         Map<String, String> properties = new HashMap<>();
-        properties.put("javax.persistence.schema-generation.database.action", "drop-and-create");
-        properties.put("javax.persistence.schema-generation.drop-source", "script");
-        properties.put("javax.persistence.schema-generation.drop-script-source",
+        properties.put("jakarta.persistence.schema-generation.database.action", "drop-and-create");
+        properties.put("jakarta.persistence.schema-generation.drop-source", "script");
+        properties.put("jakarta.persistence.schema-generation.drop-script-source",
                        "org/apache/openjpa/persistence/jdbc/schema/drop.sql");
-        properties.put("javax.persistence.schema-generation.create-source", "script");
-        properties.put("javax.persistence.schema-generation.create-script-source",
+        properties.put("jakarta.persistence.schema-generation.create-source", "script");
+        properties.put("jakarta.persistence.schema-generation.create-script-source",
                        createSql);
 
         SchemaGroup dbSchemaGroup = getSchemaGroup(properties);
@@ -215,12 +215,12 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
         } catch (SQLException e) {}
 
         Map<String, String> properties = new HashMap<>();
-        properties.put("javax.persistence.schema-generation.database.action", "drop-and-create");
-        properties.put("javax.persistence.schema-generation.drop-source", "metadata-then-script");
-        properties.put("javax.persistence.schema-generation.drop-script-source",
+        properties.put("jakarta.persistence.schema-generation.database.action", "drop-and-create");
+        properties.put("jakarta.persistence.schema-generation.drop-source", "metadata-then-script");
+        properties.put("jakarta.persistence.schema-generation.drop-script-source",
                        "org/apache/openjpa/persistence/jdbc/schema/drop-after-metadata.sql");
-        properties.put("javax.persistence.schema-generation.create-source", "metadata-then-script");
-        properties.put("javax.persistence.schema-generation.create-script-source",
+        properties.put("jakarta.persistence.schema-generation.create-source", "metadata-then-script");
+        properties.put("jakarta.persistence.schema-generation.create-script-source",
                        "org/apache/openjpa/persistence/jdbc/schema/create-after-metadata.sql");
 
         SchemaGroup dbSchemaGroup = getSchemaGroup(properties);
@@ -246,8 +246,8 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
         } catch (SQLException e) {}
 
         Map<String, String> properties = new HashMap<>();
-        properties.put("javax.persistence.schema-generation.database.action", "create");
-        properties.put("javax.persistence.schema-generation.create-script-source",
+        properties.put("jakarta.persistence.schema-generation.database.action", "create");
+        properties.put("jakarta.persistence.schema-generation.create-script-source",
                        "org/apache/openjpa/persistence/jdbc/schema/create-after-metadata.sql");
 
         SchemaGroup dbSchemaGroup = getSchemaGroup(properties);
@@ -258,7 +258,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
 
     public void testSchemaGenNoCreateSourceAndCreateScriptSourceSpecified() throws Exception {
         Map<String, String> properties = new HashMap<>();
-        properties.put("javax.persistence.schema-generation.database.action", "create");
+        properties.put("jakarta.persistence.schema-generation.database.action", "create");
 
         SchemaGroup dbSchemaGroup = getSchemaGroup(properties);
 
@@ -272,8 +272,8 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
         testSchemaGenMetadataCreate();
 
         Map<String, String> properties = new HashMap<>();
-        properties.put("javax.persistence.schema-generation.database.action", "drop");
-        properties.put("javax.persistence.schema-generation.drop-script-source",
+        properties.put("jakarta.persistence.schema-generation.database.action", "drop");
+        properties.put("jakarta.persistence.schema-generation.drop-script-source",
                        "org/apache/openjpa/persistence/jdbc/schema/drop.sql");
 
         SchemaGroup dbSchemaGroup = getSchemaGroup(properties);
@@ -288,7 +288,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
         testSchemaGenMetadataDropAndCreate();
 
         Map<String, String> properties = new HashMap<>();
-        properties.put("javax.persistence.sql-load-script-source",
+        properties.put("jakarta.persistence.sql-load-script-source",
                        "org/apache/openjpa/persistence/jdbc/schema/load.sql");
 
         OpenJPAEntityManagerFactory pmf = getEmf(properties);
@@ -310,8 +310,8 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
 
     public void testSchemaGenOutputScriptCreate() throws Exception {
         Map<String, String> properties = new HashMap<>();
-        properties.put("javax.persistence.schema-generation.database.action", "create");
-        properties.put("javax.persistence.schema-generation.scripts.create-target",
+        properties.put("jakarta.persistence.schema-generation.database.action", "create");
+        properties.put("jakarta.persistence.schema-generation.scripts.create-target",
                        "target/create-db-output.sql");
 
         getEmf(properties).createEntityManager();
@@ -323,8 +323,8 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
 
     public void testSchemaGenOutputScriptDrop() throws Exception {
         Map<String, String> properties = new HashMap<>();
-        properties.put("javax.persistence.schema-generation.database.action", "drop");
-        properties.put("javax.persistence.schema-generation.scripts.drop-target",
+        properties.put("jakarta.persistence.schema-generation.database.action", "drop");
+        properties.put("jakarta.persistence.schema-generation.scripts.drop-target",
                        "target/drop-db-output.sql");
 
         getEmf(properties).createEntityManager();
@@ -336,10 +336,10 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
 
     public void testSchemaGenOutputScriptDropAndCreate() throws Exception {
         Map<String, String> properties = new HashMap<>();
-        properties.put("javax.persistence.schema-generation.database.action", "drop-and-create");
-        properties.put("javax.persistence.schema-generation.scripts.create-target",
+        properties.put("jakarta.persistence.schema-generation.database.action", "drop-and-create");
+        properties.put("jakarta.persistence.schema-generation.scripts.create-target",
                        "target/create-db-output.sql");
-        properties.put("javax.persistence.schema-generation.scripts.drop-target",
+        properties.put("jakarta.persistence.schema-generation.scripts.drop-target",
                        "target/drop-db-output.sql");
 
         getEmf(properties).createEntityManager();

@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.persistence.proxy.entities;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 
 @Entity
 @AttributeOverride(name="lastUpdateDate", column=@Column(name="LAST_UPDATE_TS"))

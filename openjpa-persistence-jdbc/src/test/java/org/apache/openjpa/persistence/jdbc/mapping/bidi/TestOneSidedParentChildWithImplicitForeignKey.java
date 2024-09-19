@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.mapping.bidi;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;

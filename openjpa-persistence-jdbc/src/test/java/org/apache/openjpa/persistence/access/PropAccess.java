@@ -18,14 +18,14 @@
  */
 package org.apache.openjpa.persistence.access;
 
-import static javax.persistence.AccessType.PROPERTY;
+import static jakarta.persistence.AccessType.PROPERTY;
 
-import javax.persistence.Access;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.NamedQuery;
-import javax.persistence.Version;
+import jakarta.persistence.Access;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Version;
 
 @Entity
 @Access(value=PROPERTY)

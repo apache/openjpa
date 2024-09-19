@@ -18,15 +18,15 @@
  */
 package org.apache.openjpa.persistence.delimited.identifiers;
 
-import javax.persistence.ColumnResult;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.Entity;
-import javax.persistence.EntityResult;
-import javax.persistence.FieldResult;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.SqlResultSetMapping;
-import javax.persistence.Table;
+import jakarta.persistence.ColumnResult;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityResult;
+import jakarta.persistence.FieldResult;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.SqlResultSetMapping;
+import jakarta.persistence.Table;
 
 @SqlResultSetMapping(name="AnimalResultSet",
     entities={@EntityResult(entityClass=Animal2.class,

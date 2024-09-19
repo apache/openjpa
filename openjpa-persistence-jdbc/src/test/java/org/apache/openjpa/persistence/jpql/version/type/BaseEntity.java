@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.jpql.version.type;
 
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Version;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Version;
 
 @MappedSuperclass
 abstract class BaseEntity {

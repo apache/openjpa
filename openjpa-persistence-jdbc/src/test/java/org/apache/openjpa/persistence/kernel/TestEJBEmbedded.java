@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.kernel.common.apps.ComplexEmbeddedPC;
 import org.apache.openjpa.persistence.kernel.common.apps.EmbeddedOwnerPC;

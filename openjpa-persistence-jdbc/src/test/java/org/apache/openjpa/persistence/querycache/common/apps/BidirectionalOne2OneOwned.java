@@ -18,10 +18,10 @@ package org.apache.openjpa.persistence.querycache.common.apps;
  * specific language governing permissions and limitations
  * under the License.
  */
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.Version;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Version;
 
 import org.apache.openjpa.persistence.datacache.TestDataCacheBehavesIdentical;
 

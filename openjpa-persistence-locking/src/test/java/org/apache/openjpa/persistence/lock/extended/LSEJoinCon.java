@@ -23,11 +23,11 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
-import javax.persistence.Entity;
-import javax.persistence.LockModeType;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.QueryHint;
+import jakarta.persistence.Entity;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.QueryHint;
 
 @NamedQueries ( value={
         @NamedQuery(
@@ -39,7 +39,7 @@ import javax.persistence.QueryHint;
             name="findLSEJoinConExtended"
             , query="SELECT c FROM LSEJoinCon c WHERE c.firstName LIKE :firstName"
             , lockMode=LockModeType.PESSIMISTIC_WRITE
-            , hints={@QueryHint(name="javax.persistence.lock.scope",value="EXTENDED")}
+            , hints={@QueryHint(name="jakarta.persistence.lock.scope",value="EXTENDED")}
             )
         }
     )

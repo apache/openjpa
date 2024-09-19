@@ -530,12 +530,12 @@
                 <para>
                     In previous releases, the MappingTool mapped <literal>java.math.BigDecimal</literal> fields to the database type
                     DOUBLE, and as such, ignored <literal>column</literal> and <literal>precision</literal> values that might have been specified via the
-                    <literal>javax.persistence.Column</literal> annotation.
+                    <literal>jakarta.persistence.Column</literal> annotation.
                 </para>
                 <para>
                     From the 2.3.0 release, <literal>java.math.BigDecimal</literal> fields are now mapped to the database type DECIMAL
                     and it is very likely that you will need to specify <literal>column</literal> and <literal>precision</literal> via
-                    the <literal>javax.persistence.Column</literal> annotation.
+                    the <literal>jakarta.persistence.Column</literal> annotation.
                 </para>
             </section>
             <section id="jpa_2.3_RequiresSearchStringEscapeForLike">

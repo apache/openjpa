@@ -20,12 +20,12 @@ package org.apache.openjpa.persistence.proxy.delayed.hset;
 
 import java.util.Collection;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.persistence.proxy.delayed.IDepartment;
 import org.apache.openjpa.persistence.proxy.delayed.IEmployee;
-import org.apache.openjpa.util.DelayedHashSetProxy;
+import org.apache.openjpa.util.proxy.DelayedHashSetProxy;
 
 public class TestDelayedHashSetProxyDetachLite extends TestDelayedHashSetProxy {
 

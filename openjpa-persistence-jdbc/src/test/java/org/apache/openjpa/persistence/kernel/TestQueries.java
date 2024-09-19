@@ -28,7 +28,6 @@
 package org.apache.openjpa.persistence.kernel;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;

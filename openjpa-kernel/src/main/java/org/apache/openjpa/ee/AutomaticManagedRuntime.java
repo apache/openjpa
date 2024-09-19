@@ -21,9 +21,9 @@ package org.apache.openjpa.ee;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.transaction.NotSupportedException;
-import javax.transaction.SystemException;
-import javax.transaction.TransactionManager;
+import jakarta.transaction.NotSupportedException;
+import jakarta.transaction.SystemException;
+import jakarta.transaction.TransactionManager;
 
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -56,14 +56,14 @@ public class AutomaticManagedRuntime extends AbstractManagedRuntime
     implements ManagedRuntime, Configurable {
 
     private static final String [] JNDI_LOCS = new String []{
-        "javax.transaction.TransactionManager", // weblogic
+        "jakarta.transaction.TransactionManager", // weblogic
         "java:/TransactionManager", // jboss, jrun, Geronimo
         "java:/DefaultDomain/TransactionManager", // jrun too
         "java:comp/pm/TransactionManager", // orion & oracle
         "java:comp/TransactionManager", // generic
         "java:appserver/TransactionManager", // GlassFish
         "java:pm/TransactionManager", // borland
-        "aries:services/javax.transaction.TransactionManager", // Apache Aries
+        "aries:services/jakarta.transaction.TransactionManager", // Apache Aries
     };
     private static final String [] METHODS = new String[]{
         "com.arjuna.jta.JTA_TransactionManager.transactionManager", // hp

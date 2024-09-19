@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.jdbc.maps.update;
 
 import java.io.Serializable;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 /**
  * A LocalizedString is any text string combined with a language code. The

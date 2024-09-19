@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;

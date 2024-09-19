@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.merge;
 
 import java.sql.Date;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 

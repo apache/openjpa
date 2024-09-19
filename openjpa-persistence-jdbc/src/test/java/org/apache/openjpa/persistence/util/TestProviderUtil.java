@@ -25,10 +25,10 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.spi.LoadState;
-import javax.persistence.spi.PersistenceProvider;
-import javax.persistence.spi.ProviderUtil;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.spi.LoadState;
+import jakarta.persistence.spi.PersistenceProvider;
+import jakarta.persistence.spi.ProviderUtil;
 
 import org.apache.openjpa.persistence.PersistenceProviderImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;

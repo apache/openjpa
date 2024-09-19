@@ -20,8 +20,8 @@ package org.apache.openjpa.audit;
 
 import java.util.Collection;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.apache.openjpa.ee.ManagedRuntime;
 import org.apache.openjpa.kernel.Audited;

@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.enhance;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
@@ -39,8 +39,8 @@ public class TestDataCachingAndUnenhancedPropertyAccess
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
-			return;
-		}
+            return;
+        }
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new UnenhancedIdentityIdPropertyAccess());

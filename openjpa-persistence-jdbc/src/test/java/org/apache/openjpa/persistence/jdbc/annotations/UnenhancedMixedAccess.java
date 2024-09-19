@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Transient;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 
 @Entity
 public class UnenhancedMixedAccess {

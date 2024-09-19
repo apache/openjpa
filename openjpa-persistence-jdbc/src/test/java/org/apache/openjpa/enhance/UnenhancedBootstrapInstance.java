@@ -18,11 +18,50 @@
  */
 package org.apache.openjpa.enhance;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 
 @Entity
+@IdClass(UnenhancedBootstrapInstanceId.class)
 public class UnenhancedBootstrapInstance {
+    private long billNumber;
+    private long billVersion;
+    private long billRevision;
+    private String billDescription;
+
     @Id
-    private int id;
+    public long getBillNumber() {
+        return billNumber;
+    }
+
+    public void setBillNumber(final long number) {
+        billNumber = number;
+    }
+
+    @Id
+    public long getBillVersion() {
+        return billVersion;
+    }
+
+    public void setBillVersion(final long version) {
+        billVersion = version;
+    }
+
+    @Id
+    public long getBillRevision() {
+        return billRevision;
+    }
+
+    public void setBillRevision(final long revision) {
+        billRevision = revision;
+    }
+
+    public String getBillDescription() {
+        return billDescription;
+    }
+
+    public void setBillDescription(final String description) {
+        billDescription = description;
+    }
 }

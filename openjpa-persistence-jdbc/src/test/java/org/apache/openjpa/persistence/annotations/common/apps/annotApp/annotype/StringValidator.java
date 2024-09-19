@@ -19,8 +19,8 @@
 package
     org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
 
-import javax.persistence.PostPersist;
-import javax.persistence.PrePersist;
+import jakarta.persistence.PostPersist;
+import jakarta.persistence.PrePersist;
 
 public class StringValidator
 {

@@ -20,9 +20,9 @@ package org.apache.openjpa.persistence.models.company.basic;
 
 import java.util.Date;
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
-import javax.persistence.OneToOne;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
 
 import org.apache.openjpa.persistence.models.company.ICompany;
 import org.apache.openjpa.persistence.models.company.IEmployee;

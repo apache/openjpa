@@ -19,9 +19,9 @@
 package org.apache.openjpa.persistence.jdbc.annotations;
 
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 
 

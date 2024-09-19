@@ -20,8 +20,8 @@ package org.apache.openjpa.persistence.criteria;
 
 import java.util.Date;
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Entity;
 
 @Entity
 public class Exempt extends Employee {

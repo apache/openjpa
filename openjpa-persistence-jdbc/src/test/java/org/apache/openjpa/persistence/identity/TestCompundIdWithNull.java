@@ -21,7 +21,7 @@ package org.apache.openjpa.persistence.identity;
 import java.sql.Connection;
 import java.util.List;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
@@ -65,36 +65,36 @@ public class TestCompundIdWithNull extends SingleEMFTestCase {
     }
 
     public void testSimpleCompoundIdTestEntity() throws Exception  {
-			EntityManager em = emf.createEntityManager();
-			String jpql = "SELECT o FROM SimpleCompoundIdTestEntity o ORDER BY o.secondId";
-			List<SimpleCompoundIdTestEntity> list = em.createQuery(jpql,SimpleCompoundIdTestEntity.class)
-			    .getResultList();
-			assertEquals(2, list.size());
-			assertEquals(Long.valueOf(123), list.get(0).getSecondId());
+            EntityManager em = emf.createEntityManager();
+            String jpql = "SELECT o FROM SimpleCompoundIdTestEntity o ORDER BY o.secondId";
+            List<SimpleCompoundIdTestEntity> list = em.createQuery(jpql,SimpleCompoundIdTestEntity.class)
+                .getResultList();
+            assertEquals(2, list.size());
+            assertEquals(Long.valueOf(123), list.get(0).getSecondId());
 
-			SimpleCompoundIdTestEntity secondResult = list.get(1);
-			assertNotNull("BUG (JIRA-1397)! Result list contains null in second element", secondResult);
-			assertNull(secondResult.getSecondId());
-			em.close();
-	}
+            SimpleCompoundIdTestEntity secondResult = list.get(1);
+            assertNotNull("BUG (JIRA-1397)! Result list contains null in second element", secondResult);
+            assertNull(secondResult.getSecondId());
+            em.close();
+    }
 
 
-	public void testComplexCompoundIdTestEntity() throws Exception  {
-			EntityManager em = emf.createEntityManager();
-			String jpql = "SELECT o FROM ComplexCompoundIdTestEntity o ORDER BY o.type";
-			List<ComplexCompoundIdTestEntity> list = em.createQuery(jpql,ComplexCompoundIdTestEntity.class)
-			    .getResultList();
-			assertEquals(2, list.size());
-			ComplexCompoundIdTestEntity secondResult = list.get(1);
-			assertNotNull("Result list contains null in second element", secondResult);
-			assertNull("Result list's second record secondId field was not null", secondResult.getType());
-			em.close();
-	}
+    public void testComplexCompoundIdTestEntity() throws Exception  {
+        EntityManager em = emf.createEntityManager();
+        String jpql = "SELECT o FROM ComplexCompoundIdTestEntity o ORDER BY o.type";
+        List<ComplexCompoundIdTestEntity> list = em.createQuery(jpql,ComplexCompoundIdTestEntity.class)
+            .getResultList();
+        assertEquals(2, list.size());
+        ComplexCompoundIdTestEntity secondResult = list.get(1);
+        assertNotNull("Result list contains null in second element", secondResult);
+        assertNull("Result list's second record secondId field was not null", secondResult.getType());
+        em.close();
+    }
 
-	/**
-	 * Create tables with logical compound keys without non-null constraint.
-	 * Populate them with null values in some of the columns.
-	 */
+    /**
+     * Create tables with logical compound keys without non-null constraint.
+     * Populate them with null values in some of the columns.
+     */
     private void createTables(EntityManager em) throws Exception {
         em.getTransaction().begin();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);

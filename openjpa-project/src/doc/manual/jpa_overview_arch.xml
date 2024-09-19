@@ -66,7 +66,7 @@ goes unused.
             </indexterm>
 <emphasis role="bold"><link linkend="jpa_overview_persistence"><classname>
 Persistence</classname></link></emphasis>: The <classname>
-javax.persistence.Persistence</classname> class contains static helper methods
+jakarta.persistence.Persistence</classname> class contains static helper methods
 to obtain <classname>EntityManagerFactory</classname> instances in a
 vendor-neutral fashion.
             </para>
@@ -80,7 +80,7 @@ vendor-neutral fashion.
             </indexterm>
 <emphasis role="bold"><link linkend="jpa_overview_emfactory"><classname>
 EntityManagerFactory</classname></link></emphasis>: The <classname>
-javax.persistence.EntityManagerFactory</classname> class is a factory for
+jakarta.persistence.EntityManagerFactory</classname> class is a factory for
 <classname> EntityManager</classname> s.
             </para>
         </listitem>
@@ -92,7 +92,7 @@ javax.persistence.EntityManagerFactory</classname> class is a factory for
                 </primary>
             </indexterm>
 <emphasis role="bold"><link linkend="jpa_overview_em"><classname>EntityManager
-</classname></link></emphasis>: The <classname>javax.persistence.EntityManager
+</classname></link></emphasis>: The <classname>jakarta.persistence.EntityManager
 </classname> is the primary JPA interface used by applications. Each
 <classname>EntityManager</classname> manages a set of persistent objects, and
 has APIs to insert new objects and delete existing ones. When used outside the
@@ -124,7 +124,7 @@ datastore records.
 <emphasis role="bold"><link linkend="jpa_overview_trans"><classname>
 EntityTransaction</classname></link></emphasis>: Each <classname>EntityManager
 </classname> has a one-to-one relation with a single <classname>
-javax.persistence.EntityTransaction</classname>. <classname>
+jakarta.persistence.EntityTransaction</classname>. <classname>
 EntityTransaction</classname>s allow operations on persistent data to be
 grouped into units of work that either completely succeed or completely fail,
 leaving the datastore in its original state. These all-or-nothing operations
@@ -176,7 +176,7 @@ are important for maintaining data integrity.
                 </primary>
             </indexterm>
 <emphasis role="bold"><link linkend="jpa_overview_query"><classname>Query
-</classname></link></emphasis>: The <classname>javax.persistence.Query
+</classname></link></emphasis>: The <classname>jakarta.persistence.Query
 </classname> interface is implemented by each JPA vendor to find persistent
 objects that meet certain criteria. JPA standardizes support for queries using
 both the Java Persistence Query Language (JPQL) and the Structured Query
@@ -297,7 +297,7 @@ The diagram above depicts the JPA exception architecture. All
 exceptions are unchecked. JPA uses standard exceptions where
 appropriate, most notably <classname>IllegalArgumentException</classname>s and
 <classname>IllegalStateException</classname>s. The specification also provides
-a few JPA-specific exceptions in the <literal>javax.persistence</literal>
+a few JPA-specific exceptions in the <literal>jakarta.persistence</literal>
 package. These exceptions should be self-explanatory. See the
 <ulink url="http://download.oracle.com/javaee/6/api/">Javadoc</ulink> for
 additional details on JPA exceptions.

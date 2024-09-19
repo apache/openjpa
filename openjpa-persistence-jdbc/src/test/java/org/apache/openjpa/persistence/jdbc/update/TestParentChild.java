@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.update;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.schema.ForeignKey;

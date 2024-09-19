@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
-import javax.persistence.EntityManager;
-import javax.persistence.LockModeType;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 
 import org.apache.openjpa.persistence.EntityManagerImpl;
 import org.apache.openjpa.persistence.EntityNotFoundException;

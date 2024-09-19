@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.persistence.criteria.results;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 
 /**
  * A simple class for testing select projections.

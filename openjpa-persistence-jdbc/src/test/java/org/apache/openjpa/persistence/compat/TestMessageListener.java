@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.compat;
 
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 
 import org.apache.openjpa.conf.OpenJPAVersion;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;

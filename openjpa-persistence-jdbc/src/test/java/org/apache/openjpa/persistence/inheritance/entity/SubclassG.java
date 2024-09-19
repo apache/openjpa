@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.persistence.inheritance.entity;
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Inheritance;
 
 @Entity
 @Inheritance

@@ -49,17 +49,11 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipFile;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 
-import serp.bytecode.BCClass;
-import serp.bytecode.BCClassLoader;
-import serp.bytecode.BCField;
-import serp.bytecode.Code;
-import serp.bytecode.FieldInstruction;
-import serp.bytecode.Project;
 
 /**
  * Helper class to obtain the Privilege(Exception)Action object to perform
@@ -108,17 +102,11 @@ import serp.bytecode.Project;
  * <li>URL.openStream
  * <li>URLConnection.getContent
  * <li>ZipFile new
- * <li>serp.bytecode.Code new
- * <li>serp.bytecode.BCClassLoader new
- * <li>serp.bytecode.BCClass.write
- * <li>serp.bytecode.BCClass.getFields
- * <li>serp.bytecode.FieldInstruction.getField
- * <li>serp.bytecode.Project.loadClass
  * <li>AnnotatedElement.getAnnotations
  * <li>AnnotatedElement.getDeclaredAnnotations
  * <li>AnnotatedElement.isAnnotationPresent
- * <li>javax.validation.Validator.validate
- * <li>javax.validation.Validation.buildDefaultValidatorFactory
+ * <li>jakarta.validation.Validator.validate
+ * <li>jakarta.validation.Validation.buildDefaultValidatorFactory
  * </ul>
  *
  * If these methods are used, the following sample usage patterns should be
@@ -1068,22 +1056,6 @@ public abstract class J2DoPrivHelper {
         };
     }
 
-    /**
-     * Return a PrivilegeAction object for new serp.bytecode.Code().
-     *
-     * Requires security policy:
-     *   'permission java.lang.RuntimePermission "getClassLoader";'
-     *
-     * @return serp.bytecode.Code
-     */
-    public static PrivilegedAction<Code> newCodeAction() {
-        return new PrivilegedAction<Code>() {
-            @Override
-            public Code run() {
-                return new Code();
-            }
-        };
-    }
 
     /**
      * Return a PrivilegeAction object for new TemporaryClassLoader().
@@ -1121,106 +1093,6 @@ public abstract class J2DoPrivHelper {
         };
     }
 
-    /**
-     * Return a PrivilegeAction object for new BCClassLoader().
-     *
-     * Requires security policy:
-     *   'permission java.lang.RuntimePermission "createClassLoader";'
-     *
-     * @return BCClassLoader
-     */
-    public static PrivilegedAction<BCClassLoader> newBCClassLoaderAction(
-        final Project project, final ClassLoader parent) {
-        return new PrivilegedAction<BCClassLoader>() {
-            @Override
-            public BCClassLoader run() {
-                return new BCClassLoader(project, parent);
-            }
-        };
-    }
-
-    public static PrivilegedAction<BCClassLoader> newBCClassLoaderAction(
-        final Project project) {
-        return new PrivilegedAction<BCClassLoader>() {
-            @Override
-            public BCClassLoader run() {
-                return new BCClassLoader(project);
-            }
-        };
-    }
-
-    /**
-     * Return a PrivilegeAction object for BCClass.getFields().
-     *
-     * Requires security policy:
-     *   'permission java.lang.RuntimePermission "getClassLoader";'
-     *
-     * @return BCField
-     */
-    public static PrivilegedAction<BCField []> getBCClassFieldsAction(
-        final BCClass bcClass, final String fieldName) {
-        return new PrivilegedAction<BCField []>() {
-            @Override
-            public BCField [] run() {
-                return bcClass.getFields(fieldName);
-            }
-        };
-    }
-
-    /**
-     * Return a PrivilegeAction object for FieldInstruction.getField().
-     *
-     * Requires security policy:
-     *   'permission java.lang.RuntimePermission "getClassLoader";'
-     *
-     * @return BCField
-     */
-    public static PrivilegedAction<BCField> getFieldInstructionFieldAction
-    (
-        final FieldInstruction instruction) {
-        return new PrivilegedAction<BCField>() {
-            @Override
-            public BCField run() {
-                return instruction.getField();
-            }
-        };
-    }
-
-    /**
-     * Return a PrivilegeAction object for Project.loadClass().
-     *
-     * Requires security policy:
-     *   'permission java.lang.RuntimePermission "createClassLoader";'
-     *
-     * @return BCClass
-     */
-    public static PrivilegedAction<BCClass> loadProjectClassAction(
-        final Project project, final Class<?> clazz) {
-        return new PrivilegedAction<BCClass>() {
-            @Override
-            public BCClass run() {
-                return project.loadClass(clazz);
-            }
-        };
-    }
-
-    /**
-     * Return a PrivilegeAction object for Project.loadClass().
-     *
-     * Requires security policy:
-     *   'permission java.lang.RuntimePermission "getClassLoader";'
-     *
-     * @return BCClass
-     */
-    public static PrivilegedAction<BCClass> loadProjectClassAction(
-        final Project project, final String clazzName) {
-        return new PrivilegedAction<BCClass>() {
-            @Override
-            public BCClass run() {
-                return project.loadClass(clazzName);
-            }
-        };
-    }
 
     /**
      * Return a PrivilegeAction object for AnnotatedElement.getAnnotations().
@@ -1303,7 +1175,7 @@ public abstract class J2DoPrivHelper {
     }
 
     /**
-     * Return a PrivilegeAction object for javax.validation.Validator.validate().
+     * Return a PrivilegeAction object for jakarta.validation.Validator.validate().
      *
      * Requires security policy: 'permission java.lang.RuntimePermission "accessDeclaredMemeber";'
      */
@@ -1318,7 +1190,7 @@ public abstract class J2DoPrivHelper {
     }
 
     /**
-     * Return a PrivilegeAction object for javax.validation.Validation.buildDefaultValidatorFactory().
+     * Return a PrivilegeAction object for jakarta.validation.Validation.buildDefaultValidatorFactory().
      *
      * Requires security policy: 'permission java.lang.RuntimePermission "createClassLoader";'
      */

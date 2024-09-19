@@ -20,12 +20,12 @@ package org.apache.openjpa.persistence.jdbc.order;
 
 import java.util.List;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OrderBy;
-import javax.persistence.OrderColumn;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.OrderColumn;
 
 @Entity
 public class ObOcEntity {

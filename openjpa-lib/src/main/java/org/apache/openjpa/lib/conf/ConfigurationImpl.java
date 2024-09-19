@@ -769,7 +769,7 @@ public class ConfigurationImpl
     /**
      * Adds a prefix <code>"openjpa."</code> to the given key, if necessary. A key is
      * considered without prefix if it starts neither of <code>"openjpa."</code>,
-     * <code>"java."</code> and <code>"javax."</code>.
+     * <code>"java."</code>, <code>"javax."</code> and {@code "jakarta."}.
      */
     String fixPrefix(String key) {
         return (key == null || hasKnownPrefix(key)) ? key : "openjpa."+key;
@@ -835,7 +835,7 @@ public class ConfigurationImpl
      */
     private void warnInvalidProperty(String propName) {
         if (propName != null &&
-           (propName.startsWith("java.") || propName.startsWith("javax.persistence")|| propName.startsWith("sun.")))
+           (propName.startsWith("java.") || propName.startsWith("jakarta.persistence")|| propName.startsWith("sun.")))
             return;
         if (!isInvalidProperty(propName))
             return;

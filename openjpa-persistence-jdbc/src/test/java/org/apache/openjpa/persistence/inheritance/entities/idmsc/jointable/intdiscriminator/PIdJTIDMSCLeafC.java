@@ -19,8 +19,8 @@
 
 package org.apache.openjpa.persistence.inheritance.entities.idmsc.jointable.intdiscriminator;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
 import org.apache.openjpa.persistence.inheritance.entities.testinterfaces.LeafC;
 

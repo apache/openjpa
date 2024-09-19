@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.meta;
 
 import java.util.Map;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.Broker;

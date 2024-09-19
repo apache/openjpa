@@ -19,9 +19,9 @@
 package org.apache.openjpa.persistence.jdbc.annotations;
 
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.GeneratedValue;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.GeneratedValue;
 
 @Embeddable
 public class EmbeddedIdClass {

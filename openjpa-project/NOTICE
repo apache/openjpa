@@ -15,14 +15,10 @@ The OpenJPA binary assembly and openjpa-all includes software developed by the:
     Apache Geronimo project
         Java EE Specs - JMS 1.1, JTA 1.1, Bean Validation 1.0 and JPA 2.0
     Apache Incubtor - Bean Validation project
-    SERP project
 
 
 The following copyright notice(s) were affixed to portions of this code
 with which this file is now or was at one time distributed.
-
-OpenJPA includes software developed by the SERP project
-Copyright (c) 2002-2006, A. Abram White. All rights reserved.
 
 OpenJPA includes the persistence and orm schemas from the JPA specifications.
 Copyright 2005-2009 Sun Microsystems, Inc. All rights reserved.

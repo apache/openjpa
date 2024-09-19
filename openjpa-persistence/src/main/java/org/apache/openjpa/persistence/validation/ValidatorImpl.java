@@ -23,12 +23,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.ValidationMode;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
-import javax.validation.metadata.BeanDescriptor;
+import jakarta.persistence.ValidationMode;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import jakarta.validation.metadata.BeanDescriptor;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.event.LifecycleEvent;
@@ -377,7 +377,7 @@ public class ValidatorImpl extends AbstractValidator {
         ValidatorFactory factory = null;
         try {
             factory = AccessController.doPrivileged(J2DoPrivHelper.buildDefaultValidatorFactoryAction());
-        } catch (javax.validation.ValidationException e) {
+        } catch (jakarta.validation.ValidationException e) {
             if (_log != null && _log.isTraceEnabled())
                 _log.trace(_loc.get("factory-create-failed"), e);
         }
@@ -388,7 +388,7 @@ public class ValidatorImpl extends AbstractValidator {
     // the default validation group and pre-remove will not validate (no
     // validation group)
     private void addDefaultValidationGroups() {
-        addValidationGroup(JPAProperties.VALIDATE_PRE_PERSIST, javax.validation.groups.Default.class);
-        addValidationGroup(JPAProperties.VALIDATE_PRE_UPDATE,  javax.validation.groups.Default.class);
+        addValidationGroup(JPAProperties.VALIDATE_PRE_PERSIST, jakarta.validation.groups.Default.class);
+        addValidationGroup(JPAProperties.VALIDATE_PRE_UPDATE,  jakarta.validation.groups.Default.class);
     }
 }

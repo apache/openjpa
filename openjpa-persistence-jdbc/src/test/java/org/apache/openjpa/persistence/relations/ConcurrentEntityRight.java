@@ -21,10 +21,10 @@ package org.apache.openjpa.persistence.relations;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.MapKey;
-import javax.persistence.OneToMany;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.MapKey;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class ConcurrentEntityRight {
@@ -34,7 +34,7 @@ public class ConcurrentEntityRight {
 	private String strData;
 
 	@OneToMany(mappedBy="rightEntity", targetEntity=ConcurrentEntityLeft.class,
-			cascade={javax.persistence.CascadeType.ALL})
+			cascade={jakarta.persistence.CascadeType.ALL})
 	@MapKey(name="strData")
 	private Map<String, ConcurrentEntityLeft> leftEntityMap;
 

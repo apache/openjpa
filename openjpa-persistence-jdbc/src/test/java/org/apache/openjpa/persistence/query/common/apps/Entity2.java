@@ -20,10 +20,10 @@ package org.apache.openjpa.persistence.query.common.apps;
 
 import java.io.Serializable;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 //@Entity(name="entity2ExplicitName")
 

@@ -20,9 +20,9 @@ package org.apache.openjpa.persistence.criteria;
 
 import java.sql.Timestamp;
 
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.*;
 
 public class TestSubqueries extends CriteriaTest {
 

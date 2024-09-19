@@ -20,15 +20,15 @@ package org.apache.openjpa.enhance;
 
 import java.io.Serializable;
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.Table;
-import javax.persistence.Version;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 
 @Entity
 @Table(name="UN_FIELD")
@@ -41,6 +41,8 @@ public class UnenhancedFieldAccess
     @Id @GeneratedValue private int id;
     @Version public int version;
     protected String stringField = "foo";
+
+    private long longVal;
 
     @Basic(fetch = FetchType.LAZY)
     private String lazyField = "lazy";
@@ -63,6 +65,15 @@ public class UnenhancedFieldAccess
     @Override
     public String getLazyField() {
         return lazyField;
+    }
+
+
+    public long getLongVal() {
+        return longVal;
+    }
+
+    public void setLongVal(long longVal) {
+        this.longVal = longVal;
     }
 
     @Override

@@ -25,10 +25,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.LockModeType;
-import javax.persistence.PessimisticLockScope;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.PessimisticLockScope;
+import jakarta.persistence.Query;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
@@ -55,7 +55,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  * the foreign key) will not be locked by default.
  *
  * Element collections and relationships owned by the entity that are contained
- * in join tables will be locked if the javax.persistence.lock.scope property is
+ * in join tables will be locked if the jakarta.persistence.lock.scope property is
  * specified with a value of PessimisticLockScope.EXTENDED. The state of
  * entities referenced by such relationships will not be locked (unless those
  * entities are explicitly locked). This property may be passed as an argument
@@ -94,7 +94,7 @@ public abstract class LockScopeTestCase extends SQLListenerTestCase {
     protected void commonSetUp(Class<?>... eClasses ) {
         normalProps = new HashMap<>();
         extendedProps = new HashMap<>();
-        extendedProps.put("javax.persistence.lock.scope", PessimisticLockScope.EXTENDED);
+        extendedProps.put("jakarta.persistence.lock.scope", PessimisticLockScope.EXTENDED);
 
         for( Class<?> eClazz : eClasses) {
             empTableName.add(getMapping(eClazz).getTable().getFullName());
@@ -241,7 +241,7 @@ public abstract class LockScopeTestCase extends SQLListenerTestCase {
             getLog().info(" *Query " + entityName + "(" + id0 + ") with PESSIMISTIC_READ lock");
             Query q = em.createQuery(queryString);
             if (extended) {
-                q = q.setHint("javax.persistence.lock.scope", PessimisticLockScope.EXTENDED);
+                q = q.setHint("jakarta.persistence.lock.scope", PessimisticLockScope.EXTENDED);
             }
             q = q.setLockMode(LockModeType.PESSIMISTIC_READ);
             q = q.setParameter("firstName", "firstName%" + id0);
@@ -289,7 +289,7 @@ public abstract class LockScopeTestCase extends SQLListenerTestCase {
             getLog().info(" *Query " + entityName + "(" + id0 + ") with PESSIMISTIC_WRITE lock");
             Query q = em.createNamedQuery(namedQueryString);
             if (extended) {
-                q = q.setHint("javax.persistence.lock.scope", PessimisticLockScope.EXTENDED);
+                q = q.setHint("jakarta.persistence.lock.scope", PessimisticLockScope.EXTENDED);
             }
             q = q.setParameter("firstName", "firstName%" + id0);
             List<T> es = q.getResultList();

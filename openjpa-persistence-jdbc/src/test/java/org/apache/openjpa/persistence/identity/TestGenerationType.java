@@ -20,9 +20,9 @@ package org.apache.openjpa.persistence.identity;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.Query;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
@@ -33,7 +33,7 @@ import junit.textui.TestRunner;
 
 /**
  * Simple test case to test the GenerationType for
- * {@link javax.persistence.Id}.
+ * {@link jakarta.persistence.Id}.
  * Tests both ways of generated keys retrieval: separate query
  * and JDBC3 {@link java.sql.Statement#getGeneratedKeys}
  * if the database supports them.

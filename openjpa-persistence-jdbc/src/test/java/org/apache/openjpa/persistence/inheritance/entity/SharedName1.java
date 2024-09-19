@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.inheritance.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 /**
  * This class has the same name as {@link

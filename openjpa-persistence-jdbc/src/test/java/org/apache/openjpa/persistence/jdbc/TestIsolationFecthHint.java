@@ -19,7 +19,7 @@
 
 package org.apache.openjpa.persistence.jdbc;
 
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DB2Dictionary;
@@ -30,33 +30,32 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestIsolationFecthHint extends SQLListenerTestCase{
 
-	@Override
+    @Override
     public void setUp(){
-		setUp(AllFieldTypes.class, CLEAR_TABLES);
-
-	}
+        setUp(AllFieldTypes.class, CLEAR_TABLES);
+    }
 
     public void testFetchPlanIsolationURHint(){
-    	OpenJPAEntityManagerSPI em = emf.createEntityManager();
+        OpenJPAEntityManagerSPI em = emf.createEntityManager();
         try {
-        	DBDictionary dict = ((JDBCConfiguration) em.getConfiguration())
+            DBDictionary dict = ((JDBCConfiguration) em.getConfiguration())
                     .getDBDictionaryInstance();
-        	 if (dict instanceof DB2Dictionary) {
-        		 AllFieldTypes allFieldTypes = new AllFieldTypes();
-            	allFieldTypes.setStringField("testString");
-            	allFieldTypes.setIntField(2012);
+            if (dict instanceof DB2Dictionary) {
+                AllFieldTypes allFieldTypes = new AllFieldTypes();
+                allFieldTypes.setStringField("testString");
+                allFieldTypes.setIntField(2012);
 
-            	em.getTransaction().begin();
-            	em.persist(allFieldTypes);
-            	Query query = em.createQuery("select e from AllFieldTypes e where e.stringField = ?1");
-            	query.setParameter(1, "testString");
-            	query.setHint("openjpa.FetchPlan.Isolation", "READ_UNCOMMITTED");
-            	assertEquals(1, query.getResultList().size());
-            	assertContainsSQL("FOR READ ONLY WITH UR");
-            	em.getTransaction().rollback();
-    		}
+                em.getTransaction().begin();
+                em.persist(allFieldTypes);
+                Query query = em.createQuery("select e from AllFieldTypes e where e.stringField = ?1");
+                query.setParameter(1, "testString");
+                query.setHint("openjpa.FetchPlan.Isolation", "READ_UNCOMMITTED");
+                assertEquals(1, query.getResultList().size());
+                assertContainsSQL("FOR READ ONLY WITH UR");
+                em.getTransaction().rollback();
+            }
         } finally {
-        	em.close();
+            em.close();
         }
     }
 }

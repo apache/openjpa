@@ -24,18 +24,18 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.Attribute.PersistentAttributeType;
-import javax.persistence.metamodel.Bindable.BindableType;
-import javax.persistence.metamodel.CollectionAttribute;
-import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.IdentifiableType;
-import javax.persistence.metamodel.ListAttribute;
-import javax.persistence.metamodel.ManagedType;
-import javax.persistence.metamodel.PluralAttribute.CollectionType;
-import javax.persistence.metamodel.SetAttribute;
-import javax.persistence.metamodel.SingularAttribute;
-import javax.persistence.metamodel.Type.PersistenceType;
+import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute.PersistentAttributeType;
+import jakarta.persistence.metamodel.Bindable.BindableType;
+import jakarta.persistence.metamodel.CollectionAttribute;
+import jakarta.persistence.metamodel.EntityType;
+import jakarta.persistence.metamodel.IdentifiableType;
+import jakarta.persistence.metamodel.ListAttribute;
+import jakarta.persistence.metamodel.ManagedType;
+import jakarta.persistence.metamodel.PluralAttribute.CollectionType;
+import jakarta.persistence.metamodel.SetAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.Type.PersistenceType;
 
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.embed.Address;
@@ -60,24 +60,24 @@ public class TestMetamodel extends SingleEMFTestCase {
     @Override
     public void setUp() {
         if (model == null) {
-    	super.setUp(
-    	        "openjpa.RuntimeUnenhancedClasses", "unsupported",
-    	        "openjpa.DynamicEnhancementAgent", "false",
-    			ImplicitFieldAccessMappedSuperclass.class,
-    	        ImplicitFieldAccessBase.class,
-    	        ImplicitFieldAccessSubclass.class,
-    	        ExplicitFieldAccess.class,
-    	        ExplicitPropertyAccess.class,
-    	        Embed0.class,
-    	        Embed1.class,
-    	        OneOneParent.class,
-    	        OneOneChild.class,
-    	        Book.class,
-    	        Library.class,
-    	        Page.class,
-    	        Address.class,
-    	        Geocode.class);
-    	emf.createEntityManager();
+        super.setUp(
+                "openjpa.RuntimeUnenhancedClasses", "unsupported",
+                "openjpa.DynamicEnhancementAgent", "false",
+                ImplicitFieldAccessMappedSuperclass.class,
+                ImplicitFieldAccessBase.class,
+                ImplicitFieldAccessSubclass.class,
+                ExplicitFieldAccess.class,
+                ExplicitPropertyAccess.class,
+                Embed0.class,
+                Embed1.class,
+                OneOneParent.class,
+                OneOneChild.class,
+                Book.class,
+                Library.class,
+                Page.class,
+                Address.class,
+                Geocode.class);
+        emf.createEntityManager();
         model = (MetamodelImpl)emf.getMetamodel();
         }
     }
@@ -109,11 +109,11 @@ public class TestMetamodel extends SingleEMFTestCase {
     }
 
     public void testDomainClassCategorizedInPersistentCategory() {
-    	assertCategory(PersistenceType.MAPPED_SUPERCLASS, ImplicitFieldAccessMappedSuperclass.class);
-    	assertCategory(PersistenceType.ENTITY, ImplicitFieldAccessBase.class);
-    	assertCategory(PersistenceType.ENTITY, ImplicitFieldAccessSubclass.class);
-    	assertCategory(PersistenceType.EMBEDDABLE, Embed0.class);
-    	assertCategory(PersistenceType.EMBEDDABLE, Embed1.class);
+        assertCategory(PersistenceType.MAPPED_SUPERCLASS, ImplicitFieldAccessMappedSuperclass.class);
+        assertCategory(PersistenceType.ENTITY, ImplicitFieldAccessBase.class);
+        assertCategory(PersistenceType.ENTITY, ImplicitFieldAccessSubclass.class);
+        assertCategory(PersistenceType.EMBEDDABLE, Embed0.class);
+        assertCategory(PersistenceType.EMBEDDABLE, Embed1.class);
 
         assertNotNull(model.entity(ImplicitFieldAccessBase.class));
         assertNotNull(model.entity(ImplicitFieldAccessSubclass.class));
@@ -167,7 +167,7 @@ public class TestMetamodel extends SingleEMFTestCase {
         ManagedType<ImplicitFieldAccessBase> e0 = model.entity(ImplicitFieldAccessBase.class);
         ManagedType<ExplicitFieldAccess> r1 = model.entity(ExplicitFieldAccess.class);
         CollectionAttribute<?,?> relColl = e0.getCollection("collectionRelation", ExplicitFieldAccess.class);
-        assertEquals(javax.persistence.metamodel.PluralAttribute.CollectionType.COLLECTION,
+        assertEquals(jakarta.persistence.metamodel.PluralAttribute.CollectionType.COLLECTION,
                 relColl.getCollectionType());
         assertEquals(e0, relColl.getDeclaringType());
         assertEquals(r1, relColl.getElementType());
@@ -193,7 +193,7 @@ public class TestMetamodel extends SingleEMFTestCase {
         ManagedType<ImplicitFieldAccessBase> e0 = model.entity(ImplicitFieldAccessBase.class);
         ManagedType<ExplicitFieldAccess> r1 = model.entity(ExplicitFieldAccess.class);
         SetAttribute<?, ?> relSet = e0.getSet("setRelation", ExplicitFieldAccess.class);
-        assertEquals(javax.persistence.metamodel.PluralAttribute.CollectionType.SET, relSet.getCollectionType());
+        assertEquals(jakarta.persistence.metamodel.PluralAttribute.CollectionType.SET, relSet.getCollectionType());
         assertEquals(e0, relSet.getDeclaringType());
         assertEquals(r1, relSet.getElementType());
         assertEquals(ExplicitFieldAccess.class, relSet.getBindableJavaType());
@@ -401,7 +401,7 @@ public class TestMetamodel extends SingleEMFTestCase {
     }
 
     void assertCategory(PersistenceType category, Class<?> cls) {
-    	assertEquals(cls.toString(), category, categorize(cls));
+        assertEquals(cls.toString(), category, categorize(cls));
     }
 
     Field getStaticField(Class<?> cls, String name) {

@@ -20,8 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -52,7 +52,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  *     2.2) using the QueryHint annotation
  *     2.3) using setHint()
  *   3) Setting timeout to msecs < DELAY value causes new
- *      javax.persistence.QueryTimeoutException for databases that do not
+ *      jakarta.persistence.QueryTimeoutException for databases that do not
  *      cause a rollback or a PersistenceException if they do, when set by:
  *     3.1) using persistence.xml PU properties (or createEMF Map properties)
  *     3.2) using the QueryHint annotation
@@ -161,9 +161,9 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             em = emf.createEntityManager();
             assertNotNull(em);
             Query q = em.createNamedQuery("NoHintList");
-            // verify no default javax.persistence.query.timeout is supplied
+            // verify no default jakarta.persistence.query.timeout is supplied
             Map<String, Object> hints = q.getHints();
-            assertFalse(hints.containsKey("javax.persistence.query.timeout"));
+            assertFalse(hints.containsKey("jakarta.persistence.query.timeout"));
             try {
                 long startTime = System.currentTimeMillis();
                 @SuppressWarnings("unchecked")
@@ -205,9 +205,9 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             Query q = em.createQuery("UPDATE QTimeout q SET q.stringField = " +
                 ":strVal WHERE q.id = 1");
             q.setParameter("strVal", new String("updated"));
-            // verify no default javax.persistence.query.timeout is supplied
+            // verify no default jakarta.persistence.query.timeout is supplied
             Map<String, Object> hints = q.getHints();
-            assertFalse(hints.containsKey("javax.persistence.query.timeout"));
+            assertFalse(hints.containsKey("jakarta.persistence.query.timeout"));
             try {
                 long startTime = System.currentTimeMillis();
                 em.getTransaction().begin();
@@ -249,7 +249,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
         Integer setTime = 0;
         // create the Map to test overrides
         Map<String,String >props = new HashMap<>();
-        props.put("javax.persistence.query.timeout", "0");
+        props.put("jakarta.persistence.query.timeout", "0");
 
         try {
             // create our EMF with our timeout property
@@ -261,13 +261,13 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             assertNotNull(conf);
             assertEquals("Map provided query timeout", setTime.intValue(),
                 conf.getQueryTimeout());
-            // verify no default javax.persistence.query.timeout is supplied
+            // verify no default jakarta.persistence.query.timeout is supplied
             // as the Map properties are not passed through as hints
             em = emf.createEntityManager();
             assertNotNull(em);
             OpenJPAQuery q = em.createNamedQuery("NoHintSingle");
             Map<String, Object> hints = q.getHints();
-            assertFalse(hints.containsKey("javax.persistence.query.timeout"));
+            assertFalse(hints.containsKey("jakarta.persistence.query.timeout"));
             // verify internal config values were updated
             assertEquals("Map provided query timeout", setTime.intValue(),
                 q.getFetchPlan().getQueryTimeout());
@@ -311,13 +311,13 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             em = emf.createEntityManager();
             assertNotNull(em);
             Query q = em.createNamedQuery("Hint0msec");
-            // verify javax.persistence.query.timeout is supplied
+            // verify jakarta.persistence.query.timeout is supplied
             Map<String, Object> hints = q.getHints();
-            assertTrue(hints.containsKey("javax.persistence.query.timeout"));
+            assertTrue(hints.containsKey("jakarta.persistence.query.timeout"));
             Integer timeout = new Integer(
-                (String) hints.get("javax.persistence.query.timeout"));
+                (String) hints.get("jakarta.persistence.query.timeout"));
             getLog().trace("testQueryTimeout22a() - Retrieved hint " +
-                "javax.persistence.query.timeout=" + timeout);
+                "jakarta.persistence.query.timeout=" + timeout);
             assertEquals(timeout, new Integer(0));
 
             try {
@@ -362,20 +362,20 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             assertNotNull(em);
             Query q = em.createNamedQuery("NoHintSingle");
 
-            // verify no default javax.persistence.query.timeout is supplied
+            // verify no default jakarta.persistence.query.timeout is supplied
             Map<String, Object> hints = q.getHints();
-            assertFalse(hints.containsKey("javax.persistence.query.timeout"));
+            assertFalse(hints.containsKey("jakarta.persistence.query.timeout"));
 
             // update the timeout value to 0 and verify it was set
             getLog().trace("testQueryTimeout23b() - Setting hint " +
-                "javax.persistence.query.timeout=" + setTime);
-            q.setHint("javax.persistence.query.timeout", setTime);
+                "jakarta.persistence.query.timeout=" + setTime);
+            q.setHint("jakarta.persistence.query.timeout", setTime);
             hints = q.getHints();
-            assertTrue(hints.containsKey("javax.persistence.query.timeout"));
+            assertTrue(hints.containsKey("jakarta.persistence.query.timeout"));
             Integer timeout = (Integer) hints.get(
-                "javax.persistence.query.timeout");
+                "jakarta.persistence.query.timeout");
             getLog().trace("testQueryTimeout23b() - Retrieved hint " +
-                "javax.persistence.query.timeout=" + timeout);
+                "jakarta.persistence.query.timeout=" + timeout);
             assertEquals(timeout, setTime);
 
             try {
@@ -433,9 +433,9 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             assertNotNull(em);
             OpenJPAQuery q = em.createNativeQuery(nativeUpdateStr);
             q.setParameter(1, new String("updated"));
-            // verify no default javax.persistence.query.timeout is supplied
+            // verify no default jakarta.persistence.query.timeout is supplied
             Map<String, Object> hints = q.getHints();
-            assertFalse(hints.containsKey("javax.persistence.query.timeout"));
+            assertFalse(hints.containsKey("jakarta.persistence.query.timeout"));
             // verify internal config values were updated
             assertEquals("PU provided query timeout", setTime.intValue(),
                 q.getFetchPlan().getQueryTimeout());
@@ -499,7 +499,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
 
         // create the Map to test overrides
         Map<String,String> props = new HashMap<>();
-        props.put("javax.persistence.query.timeout", "0");
+        props.put("jakarta.persistence.query.timeout", "0");
 
         try {
             // create our EMF with our PU set timeout property
@@ -516,15 +516,15 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             assertNotNull(em);
             OpenJPAQuery q = em.createNamedQuery("Hint1000msec");
             setTime = 1000;
-            // verify javax.persistence.query.timeout hint via annotation set
+            // verify jakarta.persistence.query.timeout hint via annotation set
             Map<String, Object> hints = q.getHints();
-            assertTrue(hints.containsKey("javax.persistence.query.timeout"));
+            assertTrue(hints.containsKey("jakarta.persistence.query.timeout"));
             Integer timeout = new Integer((String) hints.get(
-                "javax.persistence.query.timeout"));
+                "jakarta.persistence.query.timeout"));
             getLog().trace(
-                "testQueryTimeout32a() - Found javax.persistence.query.timeout="
+                "testQueryTimeout32a() - Found jakarta.persistence.query.timeout="
                 + timeout);
-            assertTrue("Expected to find a javax.persistence.query.timeout="
+            assertTrue("Expected to find a jakarta.persistence.query.timeout="
                 + setTime, (timeout.intValue() == setTime.intValue()));
             // verify internal config values were updated
             assertEquals("QueryHint provided query timeout", setTime.intValue(),
@@ -575,18 +575,18 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             assertNotNull(em);
             Query q = em.createNamedQuery("NoHintSingle");
 
-            // verify no default javax.persistence.query.timeout is supplied
+            // verify no default jakarta.persistence.query.timeout is supplied
             Map<String, Object> hints = q.getHints();
-            assertFalse(hints.containsKey("javax.persistence.query.timeout"));
+            assertFalse(hints.containsKey("jakarta.persistence.query.timeout"));
 
             // update the timeout value and verify it was set
             getLog().trace("testQueryTimeout33b() - Setting hint " +
-                "javax.persistence.query.timeout=" + setTime);
-            q.setHint("javax.persistence.query.timeout", setTime);
+                "jakarta.persistence.query.timeout=" + setTime);
+            q.setHint("jakarta.persistence.query.timeout", setTime);
             hints = q.getHints();
-            assertTrue(hints.containsKey("javax.persistence.query.timeout"));
+            assertTrue(hints.containsKey("jakarta.persistence.query.timeout"));
             Integer timeout = (Integer) hints.get(
-                "javax.persistence.query.timeout");
+                "jakarta.persistence.query.timeout");
             assertEquals(timeout, setTime);
 
             try {
@@ -657,18 +657,18 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             // q.setParameter(2, new String("inserted"));
             OpenJPAQuery q = em.createNativeQuery(nativeUpdateStr);
             q.setParameter(1, new String("updated"));
-            // verify no default javax.persistence.query.timeout is supplied
+            // verify no default jakarta.persistence.query.timeout is supplied
             Map<String, Object> hints = q.getHints();
-            assertFalse(hints.containsKey("javax.persistence.query.timeout"));
+            assertFalse(hints.containsKey("jakarta.persistence.query.timeout"));
             // update the query timeout value and verify it was set
             setTime = 1000;
             getLog().trace("testQueryTimeout33c() - Setting hint " +
-                "javax.persistence.query.timeout=" + setTime);
-            q.setHint("javax.persistence.query.timeout", setTime);
+                "jakarta.persistence.query.timeout=" + setTime);
+            q.setHint("jakarta.persistence.query.timeout", setTime);
             hints = q.getHints();
-            assertTrue(hints.containsKey("javax.persistence.query.timeout"));
+            assertTrue(hints.containsKey("jakarta.persistence.query.timeout"));
             Integer timeout = (Integer) hints.get(
-                "javax.persistence.query.timeout");
+                "jakarta.persistence.query.timeout");
             assertEquals(timeout, setTime);
             // verify internal config values were updated
             assertEquals("PU provided query timeout", setTime.intValue(),
@@ -730,21 +730,21 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             assertNotNull(em);
             Query q = em.createNamedQuery("NoHintSingle");
 
-            // verify no default javax.persistence.query.timeout is supplied
+            // verify no default jakarta.persistence.query.timeout is supplied
             Map<String, Object> hints = q.getHints();
-            assertFalse(hints.containsKey("javax.persistence.query.timeout"));
+            assertFalse(hints.containsKey("jakarta.persistence.query.timeout"));
 
             // update the timeout value to -1 and verify it was set
             getLog().trace("testQueryTimeout4() - Setting hint " +
-                "javax.persistence.query.timeout="
+                "jakarta.persistence.query.timeout="
                 + setTime);
-            q.setHint("javax.persistence.query.timeout", setTime);
+            q.setHint("jakarta.persistence.query.timeout", setTime);
             hints = q.getHints();
-            assertTrue(hints.containsKey("javax.persistence.query.timeout"));
+            assertTrue(hints.containsKey("jakarta.persistence.query.timeout"));
             Integer timeout = (Integer) hints.get(
-                "javax.persistence.query.timeout");
+                "jakarta.persistence.query.timeout");
             getLog().trace("testQueryTimeout4() - Retrieved hint " +
-                "javax.persistence.query.timeout="
+                "jakarta.persistence.query.timeout="
                 + timeout);
             assertEquals(timeout, setTime);
 
@@ -784,15 +784,15 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             assertNotNull(em);
             Query q = em.createNamedQuery("NoHintSingle");
 
-            // verify no default javax.persistence.query.timeout is supplied
+            // verify no default jakarta.persistence.query.timeout is supplied
             Map<String, Object> hints = q.getHints();
-            assertFalse(hints.containsKey("javax.persistence.query.timeout"));
+            assertFalse(hints.containsKey("jakarta.persistence.query.timeout"));
 
             // update the timeout value to -2000 and verify it was set
             getLog().trace("testQueryTimeout5() - Setting hint " +
-                "javax.persistence.query.timeout="
+                "jakarta.persistence.query.timeout="
                 + setTime);
-            q.setHint("javax.persistence.query.timeout", setTime);
+            q.setHint("jakarta.persistence.query.timeout", setTime);
             fail("Expected testQueryTimeout5() to throw a " +
                 "IllegalArgumentException");
         } catch (Exception e) {

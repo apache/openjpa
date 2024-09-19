@@ -25,8 +25,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import javax.persistence.CascadeType;
-import javax.persistence.FetchType;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.FetchType;
 
 /**
  * Metadata annotation for a persistent field.

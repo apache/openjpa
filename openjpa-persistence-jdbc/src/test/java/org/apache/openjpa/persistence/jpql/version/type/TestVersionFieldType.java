@@ -21,8 +21,8 @@ package org.apache.openjpa.persistence.jpql.version.type;
 import java.sql.Timestamp;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 

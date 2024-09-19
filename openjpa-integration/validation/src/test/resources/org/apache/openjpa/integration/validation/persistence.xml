@@ -95,8 +95,8 @@
         <properties>
             <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema"/>
-            <property name="javax.persistence.validation.group.pre-remove"
-                value="javax.validation.groups.Default"/>
+            <property name="jakarta.persistence.validation.group.pre-remove"
+                value="jakarta.validation.groups.Default"/>
         </properties>
     </persistence-unit>
 
@@ -106,7 +106,7 @@
         <properties>
             <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema"/>
-            <property name="javax.persistence.validation.group.pre-persist"
+            <property name="jakarta.persistence.validation.group.pre-persist"
                 value=""/>
         </properties>
     </persistence-unit>
@@ -117,7 +117,7 @@
         <properties>
             <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema"/>
-            <property name="javax.persistence.validation.group.pre-update"
+            <property name="jakarta.persistence.validation.group.pre-update"
                 value=""/>
         </properties>
     </persistence-unit>
@@ -128,11 +128,11 @@
         <properties>
             <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema"/>
-            <property name="javax.persistence.validation.group.pre-persist"
+            <property name="jakarta.persistence.validation.group.pre-persist"
                 value="org.apache.openjpa.integration.validation.ValGroup1"/>
-            <property name="javax.persistence.validation.group.pre-update"
+            <property name="jakarta.persistence.validation.group.pre-update"
                 value="org.apache.openjpa.integration.validation.ValGroup1"/>
-            <property name="javax.persistence.validation.group.pre-remove"
+            <property name="jakarta.persistence.validation.group.pre-remove"
                 value="org.apache.openjpa.integration.validation.ValGroup1"/>
         </properties>
     </persistence-unit>
@@ -154,12 +154,12 @@
             <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema"/>
             <!--  OPENJPA-1685 Filter whitespace from group list -->
-            <property name="javax.persistence.validation.group.pre-persist"
+            <property name="jakarta.persistence.validation.group.pre-persist"
                 value="org.apache.openjpa.integration.validation.ValGroup1,
                        org.apache.openjpa.integration.validation.ValGroup2"/>
-            <property name="javax.persistence.validation.group.pre-update"
+            <property name="jakarta.persistence.validation.group.pre-update"
                 value=""/>
-            <property name="javax.persistence.validation.group.pre-remove"
+            <property name="jakarta.persistence.validation.group.pre-remove"
                 value="org.apache.openjpa.integration.validation.ValGroup2  "/>
         </properties>
     </persistence-unit>

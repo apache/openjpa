@@ -19,8 +19,8 @@
 
 package org.apache.openjpa.persistence.criteria.results;
 
-import javax.persistence.metamodel.SingularAttribute;
-import javax.persistence.metamodel.StaticMetamodel;
+import jakarta.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.StaticMetamodel;
 
 @StaticMetamodel(value=Producer.class)
 public class Producer_ {

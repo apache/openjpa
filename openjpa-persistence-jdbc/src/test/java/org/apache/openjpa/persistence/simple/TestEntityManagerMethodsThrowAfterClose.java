@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.simple;
 
-import javax.persistence.FlushModeType;
-import javax.persistence.LockModeType;
+import jakarta.persistence.FlushModeType;
+import jakarta.persistence.LockModeType;
 
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
 

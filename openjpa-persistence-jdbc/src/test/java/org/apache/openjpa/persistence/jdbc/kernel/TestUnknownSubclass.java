@@ -29,7 +29,7 @@ package org.apache.openjpa.persistence.jdbc.kernel;
 
 import java.sql.Connection;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import javax.sql.DataSource;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;

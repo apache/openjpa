@@ -23,9 +23,9 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.TemporalType;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.persistence.TemporalType;
 
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.jdbc.query.domain.TimeEntity;

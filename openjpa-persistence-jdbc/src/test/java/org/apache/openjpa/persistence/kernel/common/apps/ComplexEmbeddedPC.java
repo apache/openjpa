@@ -21,10 +21,10 @@ package org.apache.openjpa.persistence.kernel.common.apps;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToOne;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
 
 /**
  * <p>Embedded type used in testing.</p>

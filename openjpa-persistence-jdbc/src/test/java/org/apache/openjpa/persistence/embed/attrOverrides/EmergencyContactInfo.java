@@ -21,10 +21,10 @@ package org.apache.openjpa.persistence.embed.attrOverrides;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Embeddable;
-import javax.persistence.OneToOne;
-import javax.persistence.OrderBy;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.OrderBy;
 
 
 @Embeddable

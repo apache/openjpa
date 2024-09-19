@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.jdbc.meta;
 
 import java.util.Iterator;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.jdbc.common.apps.ConstantJoinPC4;
 import org.apache.openjpa.persistence.jdbc.common.apps.ConstantJoinPC5;

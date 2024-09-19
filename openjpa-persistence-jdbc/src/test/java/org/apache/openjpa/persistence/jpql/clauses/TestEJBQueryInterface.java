@@ -20,8 +20,8 @@ package org.apache.openjpa.persistence.jpql.clauses;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.NamedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NamedQuery;
 
 import org.apache.openjpa.persistence.common.apps.Entity1;
 import org.apache.openjpa.persistence.common.apps.Entity2;

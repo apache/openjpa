@@ -36,17 +36,17 @@
 
         <properties>
         <!-- Use these for MySQL
-            <property name="javax.persistence.jdbc.driver"   value="com.mysql.jdbc.Driver"/>
-            <property name="javax.persistence.jdbc.url"      value="jdbc:mysql://localhost/OpenBooks"/>
-            <property name="javax.persistence.jdbc.user"     value="user"/>
-            <property name="javax.persistence.jdbc.password" value="password"/>
+            <property name="jakarta.persistence.jdbc.driver"   value="com.mysql.jdbc.Driver"/>
+            <property name="jakarta.persistence.jdbc.url"      value="jdbc:mysql://localhost/OpenBooks"/>
+            <property name="jakarta.persistence.jdbc.user"     value="user"/>
+            <property name="jakarta.persistence.jdbc.password" value="password"/>
         -->
 
         <!-- Use these for derby -->
-            <property name="javax.persistence.jdbc.driver"   value="org.apache.derby.jdbc.EmbeddedDriver"/>
-            <property name="javax.persistence.jdbc.url"      value="jdbc:derby:memory:OpenBooks;create=true"/>
-            <property name="javax.persistence.jdbc.user"     value=""/>
-            <property name="javax.persistence.jdbc.password" value=""/>
+            <property name="jakarta.persistence.jdbc.driver"   value="org.apache.derby.jdbc.EmbeddedDriver"/>
+            <property name="jakarta.persistence.jdbc.url"      value="jdbc:derby:memory:OpenBooks;create=true"/>
+            <property name="jakarta.persistence.jdbc.user"     value=""/>
+            <property name="jakarta.persistence.jdbc.password" value=""/>
 
 
             <property name="openjpa.DataCache"                value="true"/>

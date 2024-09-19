@@ -21,51 +21,62 @@ package org.apache.openjpa.enhance;
 import java.io.IOException;
 import java.security.AccessController;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.lib.conf.Configurations;
-import org.apache.openjpa.lib.util.BytecodeWriter;
+import org.apache.openjpa.util.asm.AsmHelper;
+import org.apache.openjpa.util.asm.BytecodeWriter;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
+import org.apache.openjpa.util.asm.ClassNodeTracker;
+import org.apache.openjpa.util.asm.EnhancementClassLoader;
+import org.apache.openjpa.util.asm.EnhancementProject;
+import org.apache.xbean.asm9.Type;
 
-import serp.bytecode.BCClass;
-import serp.bytecode.Project;
 
 public class TestEnhancementWithMultiplePUs
     extends AbstractCachedEMFTestCase {
 
-    public void testExplicitEnhancementWithClassNotInFirstPU()
-        throws ClassNotFoundException {
+    public void testExplicitEnhancementWithClassNotInFirstPU() throws ClassNotFoundException {
         OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
         Configurations.populateConfiguration(conf, new Options());
         MetaDataRepository repos = conf.getMetaDataRepositoryInstance();
         ClassLoader loader = AccessController
             .doPrivileged(J2DoPrivHelper.newTemporaryClassLoaderAction(
                 getClass().getClassLoader()));
-        Project project = new Project();
+        EnhancementProject project = new EnhancementProject();
 
-        String className =
-            "org.apache.openjpa.enhance.UnenhancedBootstrapInstance";
-        BCClass bc = assertNotPC(loader, project, className);
+        String className = "org.apache.openjpa.enhance.UnenhancedBootstrapInstance";
+        ClassNodeTracker bc = assertNotPC(loader, project, className);
 
         PCEnhancer enhancer = new PCEnhancer(conf, bc, repos, loader);
+        enhancer.setCreateSubclass(true);
 
         assertEquals(PCEnhancer.ENHANCE_PC, enhancer.run());
-        assertTrue(Arrays.asList(bc.getInterfaceNames()).contains(
-            PersistenceCapable.class.getName()));
+
+        assertTrue(enhancer.getPCBytecode().getClassNode().interfaces.contains(Type.getInternalName(PersistenceCapable.class)));
+
+        // load the Class<?> for real.
+        EnhancementProject finalProject = new EnhancementProject();
+        EnhancementClassLoader finalLoader = new EnhancementClassLoader(finalProject, this.getClass().getClassLoader());
+        final byte[] classBytes2 = AsmHelper.toByteArray(enhancer.getPCBytecode());
+
+        // this is just to make the ClassLoader aware of the bytecode for the enhanced class
+        finalProject.loadClass(classBytes2, finalLoader);
+
+        String pcClassName = enhancer.getPCBytecode().getClassNode().name.replace("/", ".");
+        final Class<?> implClass = Class.forName(pcClassName, true, finalLoader);
+        assertNotNull(implClass);
     }
 
-    private BCClass assertNotPC(ClassLoader loader, Project project,
-        String className) {
-        BCClass bc = project.loadClass(className, loader);
-        assertFalse(className + " must not be enhanced already; it was.",
-            Arrays.asList(bc.getInterfaceNames()).contains(
-                PersistenceCapable.class.getName()));
+    private ClassNodeTracker assertNotPC(ClassLoader loader, EnhancementProject project, String className) {
+        ClassNodeTracker bc = project.loadClass(className, loader);
+        assertTrue(className + " must not be enhanced already; it was.",
+            bc.getClassNode().interfaces == null || !bc.getClassNode().interfaces.contains(Type.getInternalName(PersistenceCapable.class)));
         return bc;
     }
 
@@ -80,12 +91,11 @@ public class TestEnhancementWithMultiplePUs
         ClassLoader loader = AccessController
             .doPrivileged(J2DoPrivHelper.newTemporaryClassLoaderAction(
                 getClass().getClassLoader()));
-        Project project = new Project();
+        EnhancementProject project = new EnhancementProject();
 
         // make sure that the class is not already enhanced for some reason
-        String className =
-            "org.apache.openjpa.enhance.UnenhancedBootstrapInstance";
-        BCClass bc = assertNotPC(loader, project, className);
+        String className = "org/apache/openjpa/enhance/UnenhancedBootstrapInstance";
+        assertNotPC(loader, project, className);
 
         // build up a writer that just stores to a list so that we don't
         // mutate the disk.
@@ -93,10 +103,9 @@ public class TestEnhancementWithMultiplePUs
         BytecodeWriter writer = new BytecodeWriter() {
 
             @Override
-            public void write(BCClass type) throws IOException {
-                assertTrue(Arrays.asList(type.getInterfaceNames()).contains(
-                    PersistenceCapable.class.getName()));
-                written.add(type.getName());
+            public void write(ClassNodeTracker cnt) throws IOException {
+                assertTrue(cnt.getClassNode().interfaces.contains(Type.getInternalName(PersistenceCapable.class)));
+                written.add(cnt.getClassNode().name);
             }
         };
 
@@ -120,7 +129,7 @@ public class TestEnhancementWithMultiplePUs
         ClassLoader loader = AccessController
             .doPrivileged(J2DoPrivHelper.newTemporaryClassLoaderAction(
                 getClass().getClassLoader()));
-        Project project = new Project();
+        EnhancementProject project = new EnhancementProject();
 
         // make sure that the classes is not already enhanced for some reason
         assertNotPC(loader, project,
@@ -134,10 +143,9 @@ public class TestEnhancementWithMultiplePUs
         BytecodeWriter writer = new BytecodeWriter() {
 
             @Override
-            public void write(BCClass type) throws IOException {
-                assertTrue(Arrays.asList(type.getInterfaceNames()).contains(
-                    PersistenceCapable.class.getName()));
-                written.add(type.getName());
+            public void write(ClassNodeTracker cnt) throws IOException {
+                assertTrue(cnt.getClassNode().interfaces.contains(Type.getInternalName(PersistenceCapable.class)));
+                written.add(cnt.getClassNode().name);
             }
         };
 
@@ -149,14 +157,15 @@ public class TestEnhancementWithMultiplePUs
         // not attempt to enhance.
         opts.setProperty("MetaDataRepository",
             "org.apache.openjpa.enhance.RestrictedMetaDataRepository(excludedTypes=" +
-            "org.apache.openjpa.persistence.jdbc.annotations.UnenhancedMixedAccess)");
+            "\"org.apache.openjpa.persistence.jdbc.annotations.UnenhancedMixedAccess," +
+            "org.apache.openjpa.idtool.RecordsPerYear\")");
         opts.put(PCEnhancer.class.getName() + "#bytecodeWriter", writer);
         PCEnhancer.run(null, opts);
 
         // ensure that we do process the classes listed in the PUs
         assertTrue(written.contains(
-            "org.apache.openjpa.enhance.UnenhancedBootstrapInstance"));
+            "org/apache/openjpa/enhance/UnenhancedBootstrapInstance"));
         assertTrue(written.contains(
-            "org.apache.openjpa.enhance.UnenhancedBootstrapInstance2"));
+            "org/apache/openjpa/enhance/UnenhancedBootstrapInstance2"));
     }
 }

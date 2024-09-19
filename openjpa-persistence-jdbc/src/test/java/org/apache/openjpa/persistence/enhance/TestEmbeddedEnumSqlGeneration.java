@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.enhance;
 
 import java.io.IOException;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;

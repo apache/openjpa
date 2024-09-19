@@ -21,7 +21,6 @@ package org.apache.openjpa.persistence.jdbc.kernel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;

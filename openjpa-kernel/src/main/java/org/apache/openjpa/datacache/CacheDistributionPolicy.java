@@ -28,9 +28,9 @@ import org.apache.openjpa.lib.conf.Configurable;
  * This policy is activated for each instance if and only if the cache settings specified in metadata
  * such as JPA specification defined {@link Cacheable @Cacheable} annotation or OpenJPA specific
  * {@link org.apache.openjpa.persistence.DataCache @DataCache} annotation or configuration property
- * such as <code>javax.persistence.sharedCache.mode</code> determined the type of the instance being cachable.
+ * such as <code>jakarta.persistence.sharedCache.mode</code> determined the type of the instance being cachable.
  * <br>
- * For example, a specific policy will never be active for when <code>javax.persistence.sharedCache.mode</code>
+ * For example, a specific policy will never be active for when <code>jakarta.persistence.sharedCache.mode</code>
  * is set to <code>NONE</code>.
  * <br>
  * Distribution Policies are configurable. So a specific policy can be configured as

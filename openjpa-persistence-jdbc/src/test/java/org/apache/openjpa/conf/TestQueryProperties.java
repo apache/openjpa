@@ -53,8 +53,8 @@ public class TestQueryProperties extends SingleEMFTestCase {
         super.setUp(QTimeout.class, CLEAR_TABLES);
         // create the Map to test overrides
         props = new HashMap<>();
-        props.put("javax.persistence.lock.timeout", "12000");
-        props.put("javax.persistence.query.timeout", "7000");
+        props.put("jakarta.persistence.lock.timeout", "12000");
+        props.put("jakarta.persistence.query.timeout", "7000");
     }
 
     public void testNoProperties() {
@@ -93,8 +93,8 @@ public class TestQueryProperties extends SingleEMFTestCase {
             q = em1.createNamedQuery("NoHintList");
             // verify no Query hints
             hints = q.getHints();
-            assertFalse(hints.containsKey("javax.persistence.lock.timeout"));
-            assertFalse(hints.containsKey("javax.persistence.query.timeout"));
+            assertFalse(hints.containsKey("jakarta.persistence.lock.timeout"));
+            assertFalse(hints.containsKey("jakarta.persistence.query.timeout"));
             // verify default config values of no timeouts
             timeout = q.getFetchPlan().getLockTimeout();
             assertEquals("Expected no default lock timeout", lTime.intValue(),
@@ -130,14 +130,14 @@ public class TestQueryProperties extends SingleEMFTestCase {
              * return these default values.
              *
             hints = q.getHints();
-            assertTrue(hints.containsKey("javax.persistence.lock.timeout"));
-            assertTrue(hints.containsKey("javax.persistence.query.timeout"));
+            assertTrue(hints.containsKey("jakarta.persistence.lock.timeout"));
+            assertTrue(hints.containsKey("jakarta.persistence.query.timeout"));
             timeout = new Integer((String) hints.get(
-                "javax.persistence.lock.timeout"));
+                "jakarta.persistence.lock.timeout"));
             assertEquals("Expected Map updated lockTimeout",
                 lTime.intValue(), timeout.intValue());
             timeout = new Integer((String) hints.get(
-                "javax.persistence.query.timeout"));
+                "jakarta.persistence.query.timeout"));
             assertEquals("Expected Map updated queryTimeout",
                 qTime.intValue(), timeout.intValue());
             */
@@ -155,17 +155,17 @@ public class TestQueryProperties extends SingleEMFTestCase {
             // verify setHint overrides Map provided properties
             lTime = 15000;
             qTime = 10000;
-            q.setHint("javax.persistence.lock.timeout", lTime);
-            q.setHint("javax.persistence.query.timeout", qTime);
+            q.setHint("jakarta.persistence.lock.timeout", lTime);
+            q.setHint("jakarta.persistence.query.timeout", qTime);
             hints = q.getHints();
             // verify getHints values were updated
-            timeout = (Integer) hints.get("javax.persistence.lock.timeout");
+            timeout = (Integer) hints.get("jakarta.persistence.lock.timeout");
             assertEquals(
-                "Expected setHint updated javax.persistence.lock.timeout",
+                "Expected setHint updated jakarta.persistence.lock.timeout",
                 lTime.intValue(), timeout.intValue());
-            timeout = (Integer) hints.get("javax.persistence.query.timeout");
+            timeout = (Integer) hints.get("jakarta.persistence.query.timeout");
             assertEquals(
-                "Expected setHint updated javax.persistence.query.timeout",
+                "Expected setHint updated jakarta.persistence.query.timeout",
                 qTime.intValue(), timeout.intValue());
             // verify internal config values were updated
             timeout = q.getFetchPlan().getLockTimeout();
@@ -260,7 +260,7 @@ public class TestQueryProperties extends SingleEMFTestCase {
             // verify getHints values were updated
             hints = q.getHints();
             timeout = new Integer((String)hints.get(
-                    "javax.persistence.query.timeout"));
+                    "jakarta.persistence.query.timeout"));
             assertEquals("Expected QueryHints updated query timeout",
                 qTime.intValue(), timeout.intValue());
             // verify internal config value was updated
@@ -274,14 +274,14 @@ public class TestQueryProperties extends SingleEMFTestCase {
             // verify setHint overrides QueryHint provided properties
             lTime = 15000;
             qTime = 10000;
-            q.setHint("javax.persistence.lock.timeout", lTime);
-            q.setHint("javax.persistence.query.timeout", qTime);
+            q.setHint("jakarta.persistence.lock.timeout", lTime);
+            q.setHint("jakarta.persistence.query.timeout", qTime);
             // verify getHints values were updated
             hints = q.getHints();
-            timeout = (Integer) hints.get("javax.persistence.lock.timeout");
+            timeout = (Integer) hints.get("jakarta.persistence.lock.timeout");
             assertEquals("Expected setHint updated lock timeout",
                 lTime.intValue(), timeout.intValue());
-            timeout = (Integer) hints.get("javax.persistence.query.timeout");
+            timeout = (Integer) hints.get("jakarta.persistence.query.timeout");
             assertEquals("Expected setHint updated query timeout",
                 qTime.intValue(), timeout.intValue());
             // verify internal config values were updated

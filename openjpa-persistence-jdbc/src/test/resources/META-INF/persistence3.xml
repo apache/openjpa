@@ -29,22 +29,22 @@
     <persistence-unit name="qtimeout-with-properties">
     	<class>org.apache.openjpa.persistence.query.common.apps.QTimeout</class>
         <properties>
-            <property name="javax.persistence.lock.timeout" value="10000"/>
-            <property name="javax.persistence.query.timeout" value="5000"/>
+            <property name="jakarta.persistence.lock.timeout" value="10000"/>
+            <property name="jakarta.persistence.query.timeout" value="5000"/>
         </properties>
     </persistence-unit>
 
     <persistence-unit name="qtimeout-0msecs">
     	<class>org.apache.openjpa.persistence.query.common.apps.QTimeout</class>
         <properties>
-            <property name="javax.persistence.query.timeout" value="0"/>
+            <property name="jakarta.persistence.query.timeout" value="0"/>
         </properties>
     </persistence-unit>
 
     <persistence-unit name="qtimeout-1000msecs">
     	<class>org.apache.openjpa.persistence.query.common.apps.QTimeout</class>
         <properties>
-            <property name="javax.persistence.query.timeout" value="1000"/>
+            <property name="jakarta.persistence.query.timeout" value="1000"/>
         </properties>
     </persistence-unit>
 
