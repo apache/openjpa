@@ -26,7 +26,7 @@
     <parent>
       <groupId>org.apache</groupId>
       <artifactId>apache</artifactId>
-      <version>29</version>
+      <version>33</version>
     </parent>
 
     <groupId>org.apache.openjpa</groupId>
@@ -2367,7 +2367,7 @@
                 <configuration>
                     <show>package</show>
                     <quiet>true</quiet>
-                    <source>${java.class.version}</source>
+                    <release>${java.class.version}</release>
                     <links>
                         <link>https://docs.oracle.com/en/java/javase/11/docs/api/</link>
                     </links>
