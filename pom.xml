@@ -86,15 +86,10 @@
         <!-- other common versions -->
         <kubernetes-client.version>6.13.3</kubernetes-client.version>
         <slf4j.version>2.0.16</slf4j.version>
-        <!-- Compile Java source/target class level -->
-        <compile.class.source>${java.class.version}</compile.class.source>
-        <compile.class.target>${java.class.version}</compile.class.target>
-        <compile.testclass.source>${java.testclass.version}</compile.testclass.source>
-        <compile.testclass.target>${java.testclass.version}</compile.testclass.target>
 
-        <maven.javadoc.version>3.8.0</maven.javadoc.version>
+        <maven.javadoc.version>3.10.0</maven.javadoc.version>
         <javadoc.additionalparam />
-        <maven.surefire.version>3.4.0</maven.surefire.version>
+        <maven.surefire.version>3.5.0</maven.surefire.version>
 
         <xbean.version>4.25</xbean.version>
         <bval.version>3.0.1</bval.version>
@@ -1952,10 +1947,9 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.0</version>
+                    <version>3.13.0</version>
                     <configuration>
-                        <source>${compile.class.source}</source>
-                        <target>${compile.class.target}</target>
+                        <release>${java.class.version}</release>
                         <encoding>${project.build.sourceEncoding}</encoding>
                     </configuration>
                 </plugin>
@@ -1969,6 +1963,7 @@
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>${maven.javadoc.version}</version>
                     <configuration>
+                        <release>${java.class.version}</release>
                         <encoding>${project.build.sourceEncoding}</encoding>
                         <doclint>none</doclint>
                         <additionalJOption>
@@ -2237,8 +2232,7 @@
                             <goal>testCompile</goal>
                         </goals>
                         <configuration>
-                            <source>${compile.testclass.source}</source>
-                            <target>${compile.testclass.target}</target>
+                            <release>${java.class.version}</release>
                         </configuration>
                     </execution>
                 </executions>
