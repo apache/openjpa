@@ -27,7 +27,6 @@ import jakarta.persistence.Version;
 
 @Entity
 public class TimestampVersionEntity implements Serializable {
-    
     private static final long serialVersionUID = 1L;
 
     @Id
