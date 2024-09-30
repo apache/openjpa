@@ -778,6 +778,7 @@ public class PersistenceProductDerivation
         private static final String PERSISTENCE_XSD_2_0 = "persistence_2_0.xsd";
         private static final String PERSISTENCE_XSD_2_1 = "persistence_2_1.xsd";
         private static final String PERSISTENCE_XSD_2_2 = "persistence_2_2.xsd";
+        private static final String PERSISTENCE_XSD_3_0 = "persistence_3_0.xsd";
 
         private static final Localizer _loc = Localizer.forPackage
             (ConfigurationParser.class);
@@ -856,6 +857,10 @@ public class PersistenceProductDerivation
             else if (XMLVersionParser.VERSION_2_2.equals(_persistenceVersion)
                     || (_schemaLocation != null && _schemaLocation.indexOf(PERSISTENCE_XSD_2_2) != -1)) {
                 persistencexsd = "persistence_2_2-xsd.rsrc";
+            }
+            else if (XMLVersionParser.VERSION_3_0.equals(_persistenceVersion)
+                    || (_schemaLocation != null && _schemaLocation.indexOf(PERSISTENCE_XSD_3_0) != -1)) {
+                persistencexsd = "persistence_3_0-xsd.rsrc";
             }
 
             return getClass().getResourceAsStream(persistencexsd);

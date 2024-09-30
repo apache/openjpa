@@ -308,6 +308,7 @@ public class XMLPersistenceMetaDataParser
     private static final String ORM_XSD_2_0 = "orm_2_0.xsd";
     private static final String ORM_XSD_2_1 = "orm_2_1.xsd";
     private static final String ORM_XSD_2_2 = "orm_2_2.xsd";
+    private static final String ORM_XSD_3_0 = "orm_3_0.xsd";
 
     /**
      * Constructor; supply configuration.
@@ -590,6 +591,9 @@ public class XMLPersistenceMetaDataParser
         } else if (XMLVersionParser.VERSION_2_2.equals(_ormVersion)
                 || (_schemaLocation != null && _schemaLocation.indexOf(ORM_XSD_2_2) > -1)) {
             ormxsd = "orm_2_2.xsd.rsrc";
+        } else if (XMLVersionParser.VERSION_3_0.equals(_ormVersion)
+                || (_schemaLocation != null && _schemaLocation.indexOf(ORM_XSD_3_0) > -1)) {
+            ormxsd = "orm_3_0-xsd.rsrc";
         }
 
         List<InputStream> schema = new ArrayList<>();

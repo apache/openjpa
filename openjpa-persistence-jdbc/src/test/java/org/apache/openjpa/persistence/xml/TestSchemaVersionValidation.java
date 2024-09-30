@@ -90,6 +90,11 @@ public class TestSchemaVersionValidation {
         doCreateEmf("XSDTest", "offline_persistence-2_1-orm-2_2.xml");
     }
 
+    @Test
+    public void testOffline3_0Persistence3_0OrmXml() {
+        doCreateEmf("XSDTest", "offline_persistence-3_0-orm-3_0.xml");
+    }
+
     private void doCreateEmf(String name, String xml) {
         doCreateEmf(name, xml, true);
     }
