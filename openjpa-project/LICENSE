@@ -425,6 +425,8 @@ The exceptions are as follows:
     http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd)
   orm_2_2-xsd.rsrc - Eclipse Public License v1.0 - included in the openjpa jar, taken from:
     http://xmlns.jcp.org/xml/ns/persistence/orm_2_2.xsd)
+  orm_3_0-xsd.rsrc - Eclipse Public License v2.0 - included in the openjpa jar, taken from:
+    https://jakarta.ee/xml/ns/persistence/orm/orm_3_0.xsd
   persistence-xsd.rsrc - included in the openjpa jar, taken from:
     http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd)
   persistence_2_0-xsd.rsrc - included in the openjpa jar, taken from:
@@ -433,6 +435,8 @@ The exceptions are as follows:
     http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd).
   persistence_2_2-xsd.rsrc - Eclipse Public License v1.0 - included in the openjpa jar, taken from:
     http://www.oracle.com/webfolder/technetwork/jsc/xml/ns/persistence/persistence_2_2.xsd).
+  persistence_3_0-xsd.rsrc - Eclipse Public License v2.0 - included in the openjpa jar, taken from:
+    https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd
   websphere-uow-api.jar - this jar file contains WebSphere proprietary
     API code which is licensed for use when compiling OpenJPA. The
     jar is not distributed with OpenJPA and is only included with the
