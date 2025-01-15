@@ -841,6 +841,9 @@ public class JDBCStoreQuery
             return Filters.divide(val1, c1, val2, c2);
         else if (op.equals(org.apache.openjpa.jdbc.kernel.exps.Math.MOD))
             return Filters.mod(val1, c1, val2, c2);
+        else if (op.equals(org.apache.openjpa.jdbc.kernel.exps.Math.POWER)) {
+            return Filters.power(val1, c1, val2, c2);
+        }
         throw new UnsupportedException();
     }
 

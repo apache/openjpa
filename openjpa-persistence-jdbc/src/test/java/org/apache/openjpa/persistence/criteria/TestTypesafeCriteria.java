@@ -49,6 +49,7 @@ import jakarta.persistence.metamodel.Metamodel;
 
 import org.apache.openjpa.jdbc.sql.AbstractSQLServerDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
+import org.apache.openjpa.persistence.common.utils.DatabaseHelper;
 import org.apache.openjpa.persistence.test.AllowFailure;
 
 /**
@@ -182,6 +183,78 @@ public class TestTypesafeCriteria extends CriteriaTest {
         Root<Account> account = c.from(Account.class);
 
         c.select(account).where(cb.equal(cb.abs(account.get(Account_.balance)), 100));
+        assertEquivalence(c, jpql);
+    }
+
+    public void testCeilingExpression() {
+        String jpql = "select a from Account a where ceiling(a.balance)=100";
+
+        CriteriaQuery<Account> c = cb.createQuery(Account.class);
+        Root<Account> account = c.from(Account.class);
+
+        c.select(account).where(cb.equal(cb.ceiling(account.get(Account_.balance)), 100));
+        assertEquivalence(c, jpql);
+    }
+
+    public void testExponentialExpression() {
+        String jpql = "select a from Account a where exp(a.balance)=100";
+
+        CriteriaQuery<Account> c = cb.createQuery(Account.class);
+        Root<Account> account = c.from(Account.class);
+
+        c.select(account).where(cb.equal(cb.exp(account.get(Account_.balance)), 100));
+        assertEquivalence(c, jpql);
+    }
+
+    public void testFloorExpression() {
+        String jpql = "select a from Account a where floor(a.balance)=100";
+
+        CriteriaQuery<Account> c = cb.createQuery(Account.class);
+        Root<Account> account = c.from(Account.class);
+
+        c.select(account).where(cb.equal(cb.floor(account.get(Account_.balance)), 100));
+        assertEquivalence(c, jpql);
+    }
+
+    public void testLnExpression() {
+        String jpql = "select a from Account a where ln(a.balance)=100";
+
+        CriteriaQuery<Account> c = cb.createQuery(Account.class);
+        Root<Account> account = c.from(Account.class);
+
+        c.select(account).where(cb.equal(cb.ln(account.get(Account_.balance)), 100));
+        assertEquivalence(c, jpql);
+    }
+
+    public void testSignExpression() {
+        String jpql = "select a from Account a where sign(a.balance)=1";
+
+        CriteriaQuery<Account> c = cb.createQuery(Account.class);
+        Root<Account> account = c.from(Account.class);
+
+        c.select(account).where(cb.equal(cb.sign(account.get(Account_.balance)), 1));
+        assertEquivalence(c, jpql);
+    }
+
+    public void testPowerExpression() {
+        DatabaseHelper.createPowerFunctionIfNecessary(getEntityManager(), getDictionary());
+        String jpql = "select a from Account a where power(a.balance, 7)=1";
+
+        CriteriaQuery<Account> c = cb.createQuery(Account.class);
+        Root<Account> account = c.from(Account.class);
+
+        c.select(account).where(cb.equal(cb.power(account.get(Account_.balance), 7), 1));
+        assertEquivalence(c, jpql);
+    }
+
+    public void testRoundExpression() {
+        DatabaseHelper.createRoundFunctionIfNecessary(getEntityManager(), getDictionary());
+        String jpql = "select a from Account a where round(a.balance, 1)=1";
+
+        CriteriaQuery<Account> c = cb.createQuery(Account.class);
+        Root<Account> account = c.from(Account.class);
+
+        c.select(account).where(cb.equal(cb.round(account.get(Account_.balance), 1), 1));
         assertEquivalence(c, jpql);
     }
 
@@ -1645,4 +1718,5 @@ public class TestTypesafeCriteria extends CriteriaTest {
 
         assertEquivalence(cq, jpql);
     }
+
 }
