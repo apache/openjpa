@@ -43,6 +43,8 @@ public class Math
     public static final String MULTIPLY = "*";
     public static final String DIVIDE = "/";
     public static final String MOD = "MOD";
+    public static final String POWER = "POWER";
+    public static final String ROUND = "ROUND";
 
     private final Val _val1;
     private final Val _val2;

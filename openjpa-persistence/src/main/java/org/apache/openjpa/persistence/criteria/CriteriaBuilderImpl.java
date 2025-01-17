@@ -20,9 +20,13 @@ package org.apache.openjpa.persistence.criteria;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.channels.UnsupportedAddressTypeException;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -148,6 +152,46 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
     @Override
     public <N extends Number> Expression<N> abs(Expression<N> x) {
         return new Expressions.Abs<>(x);
+    }
+    
+    @Override
+    public <N extends Number> Expression<N> ceiling(Expression<N> x) {
+    	return new Expressions.Ceiling<>(x);
+    }
+
+    @Override
+    public Expression<Double> exp(Expression<? extends Number> x) {
+        return new Expressions.Exponential(x);
+    }
+
+    @Override
+    public <N extends Number> Expression<N> floor(Expression<N> x) {
+        return new Expressions.Floor<>(x);
+    }
+
+    @Override
+    public Expression<Double> ln(Expression<? extends Number> x) {
+        return new Expressions.NaturalLogarithm(x);
+    }
+
+    @Override
+    public Expression<Integer> sign(Expression<? extends Number> x) {
+        return new Expressions.Sign(x);
+    }
+
+    @Override
+    public Expression<Double> power(Expression<? extends Number> x, Number y) {
+        return new Expressions.Power<>(x, y);
+    }
+
+    @Override
+    public Expression<Double> power(Expression<? extends Number> x, Expression<? extends Number> y) {
+        return new Expressions.Power<>(x, y);
+    }
+
+    @Override
+    public <T extends Number> Expression<T> round(Expression<T> x, Integer n) {
+        return new Expressions.Round<>(x, new Expressions.Constant<>(n));
     }
 
     @Override
@@ -983,4 +1027,23 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
     public ComparisonStyle qbeStyle() {
         return new ComparisonStyle.Default();
     }
+
+    @Override
+    public Expression<LocalDate> localDate() {
+        // TODO Implement localDate
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Expression<LocalDateTime> localDateTime() {
+        // TODO Implement ceiling op
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Expression<LocalTime> localTime() {
+        // TODO Implement localTime op
+        throw new UnsupportedOperationException();
+    }
+
 }

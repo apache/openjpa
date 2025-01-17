@@ -21,6 +21,7 @@ package org.apache.openjpa.kernel;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.sql.Time;
@@ -65,6 +66,8 @@ public class Filters {
     private static final int OP_MULTIPLY = 2;
     private static final int OP_DIVIDE = 3;
     private static final int OP_MOD = 4;
+    private static final int OP_POWER = 5;
+    private static final int OP_ROUND = 6;
 
     private static final Localizer _loc = Localizer.forPackage(Filters.class);
 
@@ -481,6 +484,17 @@ public class Filters {
     }
 
     /**
+     * Power the base to the exponent
+     */
+    public static Object power(Object o1, Class<?> c1, Object o2, Class<?> c2) {
+        return op(o1, c1, o2, c2, OP_POWER);
+    }
+
+    public static Object round(Object o1, Class<?> c1, Object o2, Class<?> c2) {
+        return op(o1, c1, o2, c2, OP_ROUND);
+    }
+
+    /**
      * Perform the given operation on two numbers.
      */
     private static Object op(Object o1, Class<?> c1, Object o2, Class<?> c2, int op) {
@@ -546,6 +560,10 @@ public class Filters {
             case OP_MOD:
                 tot = n1 % n2;
                 break;
+            case OP_POWER:
+                return Math.pow(n1, n2);
+            case OP_ROUND:
+                tot = n1;
             default:
                 throw new InternalException();
         }
@@ -573,7 +591,12 @@ public class Filters {
             case OP_MOD:
                 tot = n1 % n2;
                 break;
-            default:
+            case OP_POWER:
+                return Math.pow(n1, n2);
+            case OP_ROUND:
+                BigDecimal bg = new BigDecimal(Float.toString(n1));
+                return bg.setScale(Math.toIntExact(Math.round(n2)), RoundingMode.HALF_EVEN).floatValue();
+        default:
                 throw new InternalException();
         }
         return tot;
@@ -600,6 +623,12 @@ public class Filters {
             case OP_MOD:
                 tot = n1 % n2;
                 break;
+            case OP_POWER:
+                tot = Math.pow(n1, n2);
+                break;
+            case OP_ROUND:
+                BigDecimal bg = new BigDecimal(Double.toString(n1));
+                return bg.setScale(Math.toIntExact(Math.round(n2)), RoundingMode.HALF_EVEN).doubleValue();
             default:
                 throw new InternalException();
         }
@@ -627,6 +656,10 @@ public class Filters {
             case OP_MOD:
                 tot = n1 % n2;
                 break;
+            case OP_POWER:
+                return Math.pow(n1, n2);
+            case OP_ROUND:
+                return n1;
             default:
                 throw new InternalException();
         }
@@ -649,6 +682,10 @@ public class Filters {
                 return n1.divide(n2, scale, BigDecimal.ROUND_HALF_UP);
             case OP_MOD:
                 throw new UserException(_loc.get("mod-bigdecimal"));
+            case OP_POWER:
+                return n1.pow(n2.intValue());
+            case OP_ROUND:
+                return n1.setScale(n2.intValue(), RoundingMode.HALF_EVEN);
             default:
                 throw new InternalException();
         }
@@ -667,6 +704,10 @@ public class Filters {
                 return n1.multiply(n2);
             case OP_DIVIDE:
                 return n1.divide(n2);
+            case OP_POWER:
+                return n1.pow(n2.intValue());
+            case OP_ROUND:
+                return n1;
             default:
                 throw new InternalException();
         }

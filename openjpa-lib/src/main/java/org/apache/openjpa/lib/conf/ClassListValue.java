@@ -56,21 +56,18 @@ public class ClassListValue extends Value {
     @Override
     protected void setInternalString(String val) {
         String[] vals = StringUtil.split(val, ",", 0);
-        if (vals != null) {
-            for (int i = 0; i < vals.length; i++)
-                vals[i] = vals[i].trim();
+        if (vals.length == 0) {
+            set(null);
+            return;
         }
-
         final ClassLoader loader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
-        set(ofNullable(StringUtil.split(val, ",", 0))
-                .map(it -> Stream.of(it).map(v -> {
-                    try {
-                        return loader.loadClass(v.trim());
-                    } catch (final ClassNotFoundException e) {
-                        throw new IllegalStateException(e);
-                    }
-                }).toArray(Class<?>[]::new))
-                .orElse(null));
+        set(Stream.of(vals).map(v -> {
+            try {
+                return loader.loadClass(v.trim());
+            } catch (final ClassNotFoundException e) {
+                throw new IllegalStateException(e);
+            }
+        }).toArray(Class<?>[]::new));
     }
 
     @Override

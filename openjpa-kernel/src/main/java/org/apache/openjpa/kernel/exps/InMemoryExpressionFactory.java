@@ -624,6 +624,42 @@ public class InMemoryExpressionFactory
     public Value abs(Value val) {
         return new Abs((Val) val);
     }
+    
+    @Override
+    public Value ceiling(Value val) {
+    	return new Ceiling((Val) val);
+    }
+
+    @Override
+    public Value exp(Value val) {
+        return new Exponential((Val) val);
+    }
+
+    @Override
+    public Value floor(Value val) {
+        return new Floor((Val) val);
+    }
+
+    @Override
+    public Value ln(Value val) {
+        return new NaturalLogarithm(((Val) val));
+    }
+
+    @Override
+    public Value sign(Value val) {
+        return new Sign((Val) val);
+    }
+
+    @Override
+    public Value power(Value base, Value exponent) {
+        return new Power((Val) base, (Val) exponent);
+    }
+
+    @Override
+    public Value round(Value num, Value precision) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
     @Override
     public Value indexOf(Value val1, Value val2) {
