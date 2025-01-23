@@ -19,6 +19,7 @@
 package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.io.Serializable;
+import java.time.temporal.Temporal;
 import java.util.Date;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -28,6 +29,8 @@ import org.apache.openjpa.jdbc.meta.strats.VerticalClassStrategy;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.Arguments;
+import org.apache.openjpa.kernel.exps.DateTimeExtractField;
+import org.apache.openjpa.kernel.exps.DateTimeExtractPart;
 import org.apache.openjpa.kernel.exps.Expression;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.FilterListener;
@@ -355,12 +358,27 @@ public class JDBCExpressionFactory
 
     @Override
     public <T extends Date> Value getCurrentTime(Class<T> dateType) {
-        return  new CurrentDate(dateType);
+        return new CurrentDate(dateType);
     }
 
     @Override
     public <T extends Date> Value getCurrentTimestamp(Class<T> dateType) {
-        return  new CurrentDate(dateType);
+        return new CurrentDate(dateType);
+    }
+
+    @Override
+    public <T extends Temporal> Value getCurrentLocalDateTime(Class<T> temporalType) {
+        return new CurrentTemporal(temporalType);
+    }
+
+    @Override
+    public Value getDateTimeField(DateTimeExtractField field, Value value) {
+        return new ExtractDateTimeField((Val) value, field);
+    }
+
+    @Override
+    public Value getDateTimePart(DateTimeExtractPart part, Value value) {
+        return new ExtractDateTimePart((Val) value, part);
     }
 
     @Override

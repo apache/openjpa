@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.kernel.exps;
 
+import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -537,6 +538,21 @@ public class InMemoryExpressionFactory
     @Override
     public <T extends Date> Value getCurrentTimestamp(Class<T> dateType) {
         return new CurrentDate(dateType);
+    }
+
+    @Override
+    public <T extends Temporal> Value getCurrentLocalDateTime(Class<T> temporalType) {
+        return new CurrentTemporal(temporalType);
+    }
+
+    @Override
+    public Value getDateTimeField(DateTimeExtractField field, Value value) {
+        return new ExtractDateTimeField(field, (Val) value);
+    }
+
+    @Override
+    public Value getDateTimePart(DateTimeExtractPart part, Value value) {
+        return new ExtractDateTimePart(part, (Val) value);
     }
 
     @Override

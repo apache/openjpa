@@ -298,6 +298,7 @@ public class DBDictionary
     public String currentTimeFunction = "CURRENT_TIME";
     public String currentTimestampFunction = "CURRENT_TIMESTAMP";
     public String dropTableSQL = "DROP TABLE {0}";
+    public String extractDateTimeFieldFunction = "EXTRACT({0} FROM {1})";
 
     // types
     public boolean storageLimitationsFatal = false;

@@ -168,6 +168,8 @@ TOKEN [ IGNORE_CASE ]: /* basics */
 	|	< VALUE: "VALUE" >
 	|	< TYPE: "TYPE" >
 	|	< ENTRY: "ENTRY" >
+	|   < LOCAL: "LOCAL" >
+	|   < EXTRACT: "EXTRACT" >
 }
 
 TOKEN [ IGNORE_CASE ]: /* aggregates */
@@ -214,12 +216,33 @@ TOKEN [ IGNORE_CASE ]: /* functions returning numerics */
 	|	< INDEX: "INDEX" >
 }
 
+TOKEN [ IGNORE_CASE ]: /* datetime fields */
+{
+	< YEAR: "YEAR" >
+	|   < QUARTER: "QUARTER" >
+	|   < MONTH: "MONTH" >
+	|   < WEEK: "WEEK" >
+	|   < DAY: "DAY" >
+	|   < HOUR: "HOUR" >
+	|   < MINUTE: "MINUTE" >
+	|   < SECOND: "SECOND" >
+}
+
+TOKEN [ IGNORE_CASE ]: /* datetime part */
+{
+	< DATE: "DATE" >
+	|	< TIME: "TIME" >
+}
+
 
 TOKEN [ IGNORE_CASE ]: /* functions returning datetime */
 {
 	< CURRENT_DATE: "CURRENT_DATE" >
 	|	< CURRENT_TIME: "CURRENT_TIME" >
 	|	< CURRENT_TIMESTAMP: "CURRENT_TIMESTAMP" >
+	|	< LOCAL_DATETIME: <LOCAL> (" ")+ "DATETIME" >
+	|   < LOCAL_DATE: <LOCAL> (" ")+ "DATE" >
+	|   < LOCAL_TIME: <LOCAL> (" ")+ "TIME" >
 }
 
 TOKEN [ IGNORE_CASE ]: /* type of query */
@@ -926,14 +949,14 @@ void datetime_comp() : { }
 
 void scalar_function() : { }
 {
-    functions_returning_numerics()
-        | functions_returning_datetime()
+    LOOKAHEAD(5) functions_returning_numerics() 
+		| LOOKAHEAD(5) functions_returning_datetime()
         | functions_returning_strings()
 }
 
 void arithmetic_value() : { }
 {
-	path() | functions_returning_numerics() | "(" subquery() ")"
+	path() | LOOKAHEAD(5) functions_returning_numerics() | "(" subquery() ")"
 }
 
 
@@ -1233,7 +1256,7 @@ void trim_specification() : { }
 
 void functions_returning_numerics() : { }
 {
-	length() | locate() | abs() | sqrt() | mod() | size() | index()
+	LOOKAHEAD(6) length() | locate() | abs() | sqrt() | mod() | size() | index() | extract_datetime_field()
 }
 
 
@@ -1284,11 +1307,38 @@ void index() #INDEX : { }
     <INDEX> "(" identification_variable() ")"
 }
 
+void datetime_field() : { }
+{
+	( <YEAR> #YEAR | <QUARTER> #QUARTER | <MONTH> #MONTH | <WEEK> #WEEK | <DAY> #DAY | <HOUR> #HOUR | <MINUTE> #MINUTE | <SECOND> #SECOND )
+}
+
+void extract_datetime_field() #EXTRACTDATETIMEFIELD : {}
+{
+	<EXTRACT> "(" datetime_field() <FROM> datetime_expression() ")"
+
+}
+
+void datetime_part() : {}
+{
+	( <DATE> #DATE | <TIME> #TIME )
+
+}
+
+void extract_datetime_part() #EXTRACTDATETIMEPART : {}
+{
+	<EXTRACT> "(" datetime_part() <FROM> datetime_expression() ")"
+
+}
+
 void functions_returning_datetime() : { }
 {
-	(<CURRENT_DATE> #CURRENTDATE)
-	| (<CURRENT_TIME> #CURRENTTIME)
-	| (<CURRENT_TIMESTAMP> #CURRENTTIMESTAMP)
+	LOOKAHEAD(6) <CURRENT_DATE> #CURRENTDATE
+	| <CURRENT_TIME> #CURRENTTIME
+	| <CURRENT_TIMESTAMP> #CURRENTTIMESTAMP
+	| <LOCAL_DATETIME> #LOCALDATETIME
+	| <LOCAL_DATE> #LOCALDATE
+	| <LOCAL_TIME> #LOCALTIME
+	| extract_datetime_part() 
 }
 
 
@@ -1382,6 +1432,20 @@ void path_component() #IDENTIFICATIONVARIABLE :
 	| t = <CURRENT_DATE>
 	| t = <CURRENT_TIME>
 	| t = <CURRENT_TIMESTAMP>
+	| t = <LOCAL_DATETIME>
+	| t = <LOCAL_TIME>
+	| t = <LOCAL_DATE>
+	| t = <LOCAL>
+	| t = <DATE>
+	| t = <TIME>
+	| t = <YEAR>
+	| t = <QUARTER>
+	| t = <MONTH>
+	| t = <WEEK>
+	| t = <DAY>
+	| t = <HOUR>
+	| t = <MINUTE>
+	| t = <SECOND>
 	| t = <SELECT>
 	| t = <DISTINCT>
 	| t = <FROM>

@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.kernel.exps;
 
+import java.time.temporal.ChronoField;
+import java.time.temporal.Temporal;
 import java.util.Date;
 
 import org.apache.openjpa.meta.ClassMetaData;
@@ -241,6 +243,21 @@ public interface ExpressionFactory {
      * Return a value representing the current timestamp.
      */
     <T extends Date> Value getCurrentTimestamp(Class<T> timestampType);
+
+    /**
+     * Return a value representing the current local temporal.
+     */
+    <T extends Temporal> Value getCurrentLocalDateTime(Class<T> temporalType);
+
+    /**
+     * Returns the integer or double value of the required ChronoField from the temporal value
+     */
+    Value getDateTimeField(DateTimeExtractField field, Value value);
+
+    /**
+     * Return the Date or time part of the given temporal value
+     */
+    Value getDateTimePart(DateTimeExtractPart part, Value value);
 
     /**
      * Return a value representing a parameter for the given value. The

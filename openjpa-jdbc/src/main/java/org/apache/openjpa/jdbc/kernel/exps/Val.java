@@ -75,6 +75,8 @@ public interface Val
     int WHENSCALAR_VAL = 16;
     int COALESCE_VAL = 17;
     int NULLIF_VAL = 18;
+    int EXTRACTDTF_VAL = 24;
+    int EXTRACTDTP_VAL = 25;
 
     /**
      * Initialize the value. This method should recursively initialize any

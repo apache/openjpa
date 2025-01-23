@@ -25,6 +25,10 @@ import java.math.BigDecimal;
 import java.security.AccessController;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -47,6 +51,8 @@ import org.apache.openjpa.kernel.ResultShape;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.kernel.exps.AbstractExpressionBuilder;
 import org.apache.openjpa.kernel.exps.Context;
+import org.apache.openjpa.kernel.exps.DateTimeExtractField;
+import org.apache.openjpa.kernel.exps.DateTimeExtractPart;
 import org.apache.openjpa.kernel.exps.Expression;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Literal;
@@ -1439,6 +1445,51 @@ public class JPQLExpressionBuilder
             case JJTCURRENTTIMESTAMP:
                 return factory.getCurrentTimestamp(Timestamp.class);
 
+            case JJTLOCALDATETIME:
+                return factory.getCurrentLocalDateTime(LocalDateTime.class);
+
+            case JJTLOCALDATE:
+                return factory.getCurrentLocalDateTime(LocalDate.class);
+
+            case JJTLOCALTIME:
+                return factory.getCurrentLocalDateTime(LocalTime.class);
+
+            case JJTYEAR:
+                return DateTimeExtractField.YEAR;
+
+            case JJTQUARTER:
+                return DateTimeExtractField.QUARTER;
+
+            case JJTMONTH:
+                return DateTimeExtractField.MONTH;
+            
+            case JJTWEEK:
+                return DateTimeExtractField.WEEK;
+            
+            case JJTDAY:
+                return DateTimeExtractField.DAY;
+            
+            case JJTHOUR:
+                return DateTimeExtractField.HOUR;
+            
+            case JJTMINUTE:
+                return DateTimeExtractField.MINUTE;
+
+            case JJTSECOND:
+                return DateTimeExtractField.SECOND;
+
+            case JJTDATE:
+                return DateTimeExtractPart.DATE;
+            
+            case JJTTIME:
+                return DateTimeExtractPart.TIME;
+
+            case JJTEXTRACTDATETIMEFIELD:
+                return factory.getDateTimeField((DateTimeExtractField) eval(firstChild(node)), getValue(secondChild(node)));
+            
+            case JJTEXTRACTDATETIMEPART:
+                return factory.getDateTimePart((DateTimeExtractPart) eval(firstChild(node)), getValue(secondChild(node)));
+
             case JJTSELECTEXTENSION:
                 assertQueryExtensions("SELECT");
                 return eval(onlyChild(node));
@@ -2503,6 +2554,15 @@ public class JPQLExpressionBuilder
                 throw new UserException(_loc.get("missing-positional-parameter", resolver.getQueryContext()
                     .getQueryString(), parameterTypes.keySet().toString()));
             }
+        }
+    }
+
+    private DateTimeExtractField resolveDateTimeExtractFieldType(JPQLNode node) {
+        String value = node.text;
+        try {
+            return DateTimeExtractField.valueOf(value.toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            return null;
         }
     }
 }
