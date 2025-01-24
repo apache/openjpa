@@ -216,7 +216,6 @@ public class PostgresDictionary extends DBDictionary {
 
         // PostgreSQL requires to escape search strings
         requiresSearchStringEscapeForLike = true;
-        extractDateTimeFieldFunction = "EXTRACT({0} FROM {1}::TIMESTAMP)";
     }
 
 

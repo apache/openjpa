@@ -412,7 +412,7 @@ extends AbstractCachedEMFTestCase {
             em.getTransaction().commit();
 
             // on some databases KEY is a forbidden name for columns.
-            String keyColumn = getDbDictioary(emf).getInvalidColumnWordSet().contains("KEY")
+            String keyColumn = getDbDictionary(emf).getInvalidColumnWordSet().contains("KEY")
                             ? "KEY0"
                             : "KEY";
             assertSQLFragnments(sql, "CREATE TABLE C_U1M_Map_FK", "Uni1MFK_ID", keyColumn);

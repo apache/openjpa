@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.jpql.functions;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.temporal.ChronoField;
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -33,7 +36,6 @@ import org.apache.openjpa.persistence.common.apps.CompUser;
 import org.apache.openjpa.persistence.common.apps.FemaleUser;
 import org.apache.openjpa.persistence.common.apps.MaleUser;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
-import org.junit.Ignore;
 
 public class TestEJBQLFunction extends AbstractTestCase {
 
@@ -543,7 +545,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractYear() {
-        if (getDbDictioary(getEmf()) instanceof DerbyDictionary) {
+        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
             // Derby does not support EXTRACT
             return;
         }
@@ -559,7 +561,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractBirthYear() {
-        if (getDbDictioary(getEmf()) instanceof DerbyDictionary) {
+        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
             // Derby does not support EXTRACT
             return;
         }
@@ -581,7 +583,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractQUARTER() {
-        if (getDbDictioary(getEmf()) instanceof DerbyDictionary) {
+        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
             // Derby does not support EXTRACT
             return;
         }
@@ -597,7 +599,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractMONTH() {
-        if (getDbDictioary(getEmf()) instanceof DerbyDictionary) {
+        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
             // Derby does not support EXTRACT
             return;
         }
@@ -613,7 +615,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractWEEK() {
-        if (getDbDictioary(getEmf()) instanceof DerbyDictionary) {
+        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
             // Derby does not support EXTRACT
             return;
         }
@@ -629,7 +631,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractDAY() {
-        if (getDbDictioary(getEmf()) instanceof DerbyDictionary) {
+        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
             // Derby does not support EXTRACT
             return;
         }
@@ -645,7 +647,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractHOUR() {
-        if (getDbDictioary(getEmf()) instanceof DerbyDictionary) {
+        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
             // Derby does not support EXTRACT
             return;
         }
@@ -661,7 +663,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractMINUTE() {
-        if (getDbDictioary(getEmf()) instanceof DerbyDictionary) {
+        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
             // Derby does not support EXTRACT
             return;
         }
@@ -677,7 +679,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractSECOND() {
-        if (getDbDictioary(getEmf()) instanceof DerbyDictionary) {
+        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
             // Derby does not support EXTRACT
             return;
         }
@@ -695,6 +697,23 @@ public class TestEJBQLFunction extends AbstractTestCase {
         assertEquals(13f, (float) result.get(3));
         assertEquals(-6f, (float) result.get(4));
         assertEquals(0f, (float) result.get(5));
+        endEm(em);
+    }
+
+    public void testExtractHourFromLocalTime() {
+        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
+            // Derby does not support EXTRACT
+            return;
+        }
+        EntityManager em = currentEntityManager();
+        String query = "SELECT (EXTRACT(HOUR FROM LOCAL TIME) - c.age) FROM CompUser as c WHERE c.age = 23";
+        Integer expected = LocalTime.now().get(ChronoField.HOUR_OF_DAY) - 23;
+        
+        List<Integer> result = em.createQuery(query, Integer.class).getResultList();
+
+        assertEquals(1, result.size());
+        assertEquals(expected, result.get(0));
+
         endEm(em);
     }
 
