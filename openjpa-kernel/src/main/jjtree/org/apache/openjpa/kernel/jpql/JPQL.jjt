@@ -949,14 +949,14 @@ void datetime_comp() : { }
 
 void scalar_function() : { }
 {
-    LOOKAHEAD(5) functions_returning_numerics() 
-		| LOOKAHEAD(5) functions_returning_datetime()
+    LOOKAHEAD(2) functions_returning_numerics() 
+		| LOOKAHEAD(2) functions_returning_datetime()
         | functions_returning_strings()
 }
 
 void arithmetic_value() : { }
 {
-	path() | LOOKAHEAD(5) functions_returning_numerics() | "(" subquery() ")"
+	path() | LOOKAHEAD(2) functions_returning_numerics() | "(" subquery() ")"
 }
 
 
@@ -1256,7 +1256,7 @@ void trim_specification() : { }
 
 void functions_returning_numerics() : { }
 {
-	LOOKAHEAD(6) length() | locate() | abs() | sqrt() | mod() | size() | index() | extract_datetime_field()
+	LOOKAHEAD(2) length() | locate() | abs() | sqrt() | mod() | size() | index() | extract_datetime_field()
 }
 
 
@@ -1332,7 +1332,7 @@ void extract_datetime_part() #EXTRACTDATETIMEPART : {}
 
 void functions_returning_datetime() : { }
 {
-	LOOKAHEAD(6) <CURRENT_DATE> #CURRENTDATE
+	LOOKAHEAD(2) <CURRENT_DATE> #CURRENTDATE
 	| <CURRENT_TIME> #CURRENTTIME
 	| <CURRENT_TIMESTAMP> #CURRENTTIMESTAMP
 	| <LOCAL_DATETIME> #LOCALDATETIME
