@@ -20,12 +20,6 @@ package org.apache.openjpa.persistence.criteria;
 
 import jakarta.persistence.EntityManager;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-
-import org.apache.openjpa.kernel.Broker;
-import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.criteria.results.Bar;
 import org.apache.openjpa.persistence.criteria.results.Foo;

@@ -47,8 +47,9 @@ public class Floor
             || wrap == Double.class
             || wrap == Long.class
             || wrap == BigDecimal.class
-            || wrap == BigInteger.class)
+            || wrap == BigInteger.class) {
             return Filters.unwrap(c);
+        }
         return int.class;
     }
 

@@ -20,6 +20,7 @@ package org.apache.openjpa.kernel.exps;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 
 import org.apache.openjpa.kernel.Filters;
 
@@ -47,8 +48,9 @@ class Ceiling
             || wrap == Double.class
             || wrap == Long.class
             || wrap == BigDecimal.class
-            || wrap == BigInteger.class)
+            || wrap == BigInteger.class) {
             return Filters.unwrap(c);
+        }
         return int.class;
     }
 
@@ -56,17 +58,17 @@ class Ceiling
     protected Object operate(Object o, Class c) {
         c = Filters.wrap(c);
         if (c == Integer.class)
-            return Math.abs(((Number) o).intValue());
+            return Math.ceil(((Number) o).intValue());
         if (c == Float.class)
-            return Math.abs(((Number) o).floatValue());
+            return Math.ceil(((Number) o).floatValue());
         if (c == Double.class)
-            return Math.abs(((Number) o).doubleValue());
+            return Math.ceil(((Number) o).doubleValue());
         if (c == Long.class)
-            return Math.abs(((Number) o).longValue());
+            return Math.ceil(((Number) o).longValue());
         if (c == BigDecimal.class)
-            return ((BigDecimal) o).abs();
+            return ((BigDecimal) o).setScale(0, RoundingMode.CEILING);
         if (c == BigInteger.class)
-            return ((BigInteger) o).abs();
+            return ((BigInteger) o);
 
         // default to int
         return Math.ceil(((Number) o).intValue());
