@@ -46,6 +46,7 @@ import jakarta.persistence.spi.LoadState;
 import jakarta.persistence.spi.PersistenceProvider;
 import jakarta.persistence.spi.PersistenceUnitInfo;
 import jakarta.persistence.spi.ProviderUtil;
+import jakarta.persistence.spi.TransformerException;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
@@ -384,12 +385,12 @@ public class PersistenceProviderImpl
 
         @Override
         public byte[] transform(ClassLoader cl, String name, Class<?> previousVersion, ProtectionDomain pd, byte[] bytes)
-                throws IllegalClassFormatException {
+                throws TransformerException {
             try {
                 return _trans.transform(cl, name, previousVersion, pd, bytes);
             }
             catch (IllegalClassFormatException e) {
-                throw e;
+                throw new TransformerException(e);
             }
         }
     }

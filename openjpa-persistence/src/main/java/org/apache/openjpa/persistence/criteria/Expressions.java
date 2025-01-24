@@ -1612,7 +1612,7 @@ class Expressions {
         }
     }
 
-    public static class SimpleCase<C,R> extends ExpressionImpl<R> implements CriteriaBuilder.SimpleCase<C,R> {
+    public static class SimpleCase<C, R> extends ExpressionImpl<R> implements CriteriaBuilder.SimpleCase<C,R> {
         private final List<Expression<? extends R>> thens = new ArrayList<>();
         private final List<Expression<C>> whens = new ArrayList<>();
         private Expression<? extends R> otherwise;
@@ -1632,9 +1632,16 @@ class Expressions {
             return caseOperand;
         }
 
-        public SimpleCase<C,R> when(Expression<C> when, Expression<? extends R> then) {
-            whens.add(when);
+        public SimpleCase<C,R> when(Expression<? extends C> when, Expression<? extends R> then) {
+            whens.add((Expression<C>) when);
             thens.add(then);
+            return this;
+        }
+
+        @Override
+        public SimpleCase<C, R> when(Expression<? extends C> condition, R result) {
+            whens.add((Expression<C>) condition);
+            thens.add(new Constant<>(result));
             return this;
         }
 
