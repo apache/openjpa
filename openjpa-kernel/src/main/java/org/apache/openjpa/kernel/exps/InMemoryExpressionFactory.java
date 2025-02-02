@@ -657,8 +657,7 @@ public class InMemoryExpressionFactory
 
     @Override
     public Value round(Value num, Value precision) {
-        // TODO Auto-generated method stub
-        return null;
+        return new Round((Val) num, (Val) precision);
     }
 
     @Override

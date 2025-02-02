@@ -42,10 +42,14 @@ public class DatabaseHelper {
 
     private static final String CREATE_DERBYDB_POWER_FUNCTION_SQL = "CREATE FUNCTION POWER(a DOUBLE, b DOUBLE) " + 
             "RETURNS DOUBLE PARAMETER STYLE JAVA NO SQL LANGUAGE JAVA EXTERNAL NAME 'java.lang.Math.pow'";
+
+    private static final String DROP_DERBYDB_POWER_FUNCTION_SQL = "DROP FUNCTION POWER";
     
     private static final String CREATE_DERBYDB_ROUND_FUNCTION_SQL = "CREATE FUNCTION ROUND(a DOUBLE, b INTEGER) " + 
             "RETURNS DOUBLE PARAMETER STYLE JAVA NO SQL LANGUAGE JAVA " + 
             "EXTERNAL NAME 'org.apache.openjpa.persistence.common.utils.DatabaseHelper.roundFunction'";
+    
+    private static final String DROP_DERBYDB_ROUND_FUNCTION_SQL = "DROP FUNCTION ROUND";
 
     /**
      * Creates the POWER function on DerbyDB, ignoring exceptions if it already exists.
@@ -56,7 +60,22 @@ public class DatabaseHelper {
             try {
                 exec(em, true, 10, CREATE_DERBYDB_POWER_FUNCTION_SQL);
             } catch (Exception ex) {
-                ex.printStackTrace();
+                // swallowing because the function probably already exists and any exceptions
+                // should have been ignored on exec.
+            }
+        }
+    }
+
+    /**
+     * Drops the POWER function on DerbyDB.
+     * 
+     */
+    public static void dropPowerFunction(EntityManager em, DBDictionary dict) {
+        if (dict instanceof DerbyDictionary) {
+            try {
+                exec(em, true, 10, DROP_DERBYDB_POWER_FUNCTION_SQL);
+            } catch (Exception ex) {
+                // swallowing because this is just a clean-up
             }
         }
     }
@@ -70,9 +89,21 @@ public class DatabaseHelper {
             try {
                 exec(em, true, 10, CREATE_DERBYDB_ROUND_FUNCTION_SQL);
             } catch (Exception ex) {
-                ex.printStackTrace();
+                // swallowing because the function probably already exists and any exceptions
+                // should have been ignored on exec.
             }
         }
+    }
+
+    public static void dropRoundFunction(EntityManager em, DBDictionary dict) {
+        if (dict instanceof DerbyDictionary) {
+            try {
+                exec(em, true, 10, DROP_DERBYDB_ROUND_FUNCTION_SQL);
+            } catch (Exception ex) {
+                // swallowing because this is just a clean-up
+            }
+        }
+
     }
 
     /**

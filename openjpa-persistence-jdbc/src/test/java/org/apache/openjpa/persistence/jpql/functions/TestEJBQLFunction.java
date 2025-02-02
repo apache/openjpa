@@ -25,6 +25,7 @@ import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.jdbc.sql.SybaseDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
@@ -92,6 +93,18 @@ public class TestEJBQLFunction extends AbstractTestCase {
 
         endTx(em);
         endEm(em);
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        OpenJPAEntityManagerSPI em = (OpenJPAEntityManagerSPI) currentEntityManager();
+
+        DBDictionary dict = ((JDBCConfiguration) em.getConfiguration()).getDBDictionaryInstance();
+        DatabaseHelper.dropPowerFunction(em, dict);
+        DatabaseHelper.dropRoundFunction(em, dict);
+
+        endEm(em);
+        super.tearDown();
     }
 
     public void testConcatSubStringFunc() {
@@ -510,6 +523,20 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    public void testCEILINGFuncNegative() {
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT CEILING(0.4 - SUM(c.age)) FROM CompUser c";
+
+        List result = em.createQuery(query).getResultList();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(-152L, ((BigDecimal) result.get(0)).longValue());
+
+        endEm(em);
+    }
+
     public void testEXPFunc() {
         EntityManager em = currentEntityManager();
 
@@ -534,6 +561,20 @@ public class TestEJBQLFunction extends AbstractTestCase {
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(152L, ((BigDecimal) result.get(0)).longValue());
+
+        endEm(em);
+    }
+
+    public void testFLOORFuncNegative() {
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT FLOOR(10.4 - SUM(c.age)) FROM CompUser c";
+
+        List result = em.createQuery(query).getResultList();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(-143L, ((BigDecimal) result.get(0)).longValue());
 
         endEm(em);
     }

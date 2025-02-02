@@ -245,6 +245,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
 
         c.select(account).where(cb.equal(cb.power(account.get(Account_.balance), 7), 1));
         assertEquivalence(c, jpql);
+        DatabaseHelper.dropPowerFunction(getEntityManager(), getDictionary());
     }
 
     public void testRoundExpression() {
@@ -256,6 +257,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
 
         c.select(account).where(cb.equal(cb.round(account.get(Account_.balance), 1), 1));
         assertEquivalence(c, jpql);
+        DatabaseHelper.dropRoundFunction(getEntityManager(), getDictionary());
     }
 
     public void testAvgExpression() {
