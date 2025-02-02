@@ -3181,12 +3181,15 @@ public class DBDictionary
         }
 
         boolean mod = "MOD".equals(op);
-        if (mod) {
-            if (supportsModOperator)
+        boolean power = "POWER".equals(op);
+        boolean round = "ROUND".equals(op);
+        if (mod || power || round) {
+            if (supportsModOperator && mod)
                 op = "%";
             else
                 buf.append(op);
         }
+
         buf.append("(");
 
         if (castlhs)
@@ -3194,7 +3197,7 @@ public class DBDictionary
         else
             lhs.appendTo(buf);
 
-        if (mod && !supportsModOperator)
+        if ((mod && !supportsModOperator) || power || round)
             buf.append(", ");
         else
             buf.append(" ").append(op).append(" ");

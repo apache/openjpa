@@ -208,6 +208,13 @@ TOKEN [ IGNORE_CASE ]: /* functions returning numerics */
 	< LENGTH: "LENGTH" >
 	|	< LOCATE: "LOCATE" >
 	|	< ABS: "ABS" >
+	|   < CEILING: "CEILING" >
+	|	< EXP: "EXP" >
+	|   < FLOOR: "FLOOR" >
+	|   < LN: "LN" >
+	|	< SIGN: "SIGN" >
+	|	< POWER: "POWER" >
+	|	< ROUND: "ROUND" >
 	|	< SQRT: "SQRT" >
 	|	< MOD: "MOD" >
 	|	< SIZE: "SIZE" >
@@ -1233,7 +1240,7 @@ void trim_specification() : { }
 
 void functions_returning_numerics() : { }
 {
-	length() | locate() | abs() | sqrt() | mod() | size() | index()
+	length() | locate() | abs() | ceiling() | exp() | floor() | ln() | sign() | power() | round() | sqrt() | mod() | size() | index()
 }
 
 
@@ -1258,6 +1265,47 @@ void abs() #ABS : { }
 
 }
 
+void ceiling() #CEILING : { }
+{
+	<CEILING> "(" arithmetic_expression() ")"
+
+}
+
+void exp() #EXP : { }
+{
+	<EXP> "(" arithmetic_expression() ")"
+
+}
+
+void floor() #FLOOR : { } 
+{
+	<FLOOR> "(" arithmetic_expression() ")"
+
+}
+
+void ln() #LN : { }
+{
+	<LN> "(" arithmetic_expression() ")"
+
+}
+
+void sign() #SIGN : { }
+{
+	<SIGN> "(" arithmetic_expression() ")"
+
+}
+
+void power() #POWER : { }
+{
+	<POWER> "(" arithmetic_expression() <COMMA> arithmetic_expression() ")"
+
+}
+
+void round() #ROUND : { }
+{
+	<ROUND> "(" arithmetic_expression() <COMMA> arithmetic_expression() ")"
+
+}
 
 void sqrt() #SQRT : { }
 {
@@ -1376,6 +1424,13 @@ void path_component() #IDENTIFICATIONVARIABLE :
 	| t = <LENGTH>
 	| t = <LOCATE>
 	| t = <ABS>
+	| t = <CEILING>
+	| t = <EXP>
+	| t = <FLOOR>
+	| t = <LN>
+	| t = <SIGN>
+	| t = <POWER>
+	| t = <ROUND>
 	| t = <SQRT>
 	| t = <MOD>
 	| t = <SIZE>

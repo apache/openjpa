@@ -571,9 +571,68 @@ SELECT x FROM Magazine x WHERE ABS(x.price) &gt;= 5.00
                     <para>
                     <indexterm>
                         <primary>
+                            CEILING function
+                        </primary>
+                    </indexterm>
+
+<literal>CEILING(number)</literal>: Returns the smallest (closest to negative infinity)
+ value that is greater than or equal to the argument and is equal to a mathematical integer.
+                    </para>
+<programlisting>
+SELECT x FROM Magazine x WHERE CEILING(x.price) &gt;= 10
+</programlisting>
+                </listitem>
+                <listitem>
+                    <para>
+                    <indexterm>
+                        <primary>
+                            EXP function
+                        </primary>
+                    </indexterm>
+
+<literal>EXP(number)</literal>: Returns the Euler's number <literal>e</literal> raised to the power of a value.
+                    </para>
+<programlisting>
+SELECT x FROM Magazine x WHERE EXP(x.price) &gt;= 10
+</programlisting>
+                </listitem>
+                <listitem>
+                    <para>
+                    <indexterm>
+                        <primary>
+                            FLOOR function
+                        </primary>
+                    </indexterm>
+
+<literal>FLOOR(number)</literal>: Returns the largest (closest to positive infinity)
+ value that is less than or equal to the argument and is equal to a mathematical integer.
+                    </para>
+<programlisting>
+SELECT x FROM Magazine x WHERE FLOOR(x.price) &gt;= 10
+</programlisting>
+                </listitem>
+                <listitem>
+                    <para>
+                    <indexterm>
+                        <primary>
+                            LN function
+                        </primary>
+                    </indexterm>
+
+<literal>LN(number)</literal>: Returns the natural logarithm (base <litera>e</literal>) of a value.
+                    </para>
+<programlisting>
+SELECT x FROM Magazine x WHERE LN(x.price) &gt;= 10
+</programlisting>
+                </listitem>
+                <listitem>
+                    <para>
+                    <indexterm>
+                        <primary>
                             SQRT function
                         </primary>
                     </indexterm>
+
 <literal>SQRT(number)</literal>: Returns the square root of the argument.
                     </para>
 <programlisting>
@@ -592,6 +651,48 @@ SELECT x FROM Magazine x WHERE SQRT(x.price) &gt;= 1.00
                     </para>
 <programlisting>
 SELECT x FROM Magazine x WHERE MOD(x.price, 10) = 0
+</programlisting>
+                </listitem>
+                <listitem>
+                    <para>
+                    <indexterm>
+                        <primary>
+                            POWER function
+                        </primary>
+                    </indexterm>
+
+<literal>POWER(base, exponent)</literal>: Returns the value of the first argument raised to the power of the second argument.
+                    </para>
+<programlisting>
+SELECT x FROM Magazine x WHERE POWER(x.price, 2) &gt;= 10
+</programlisting>
+                </listitem>
+                <listitem>
+                    <para>
+                    <indexterm>
+                        <primary>
+                            ROUND function
+                        </primary>
+                    </indexterm>
+
+<literal>ROUND(number, precision)</literal>: Rounds the number to given precision.
+                    </para>
+<programlisting>
+SELECT x FROM Magazine x WHERE ROUND(x.price, 2) &gt;= 10
+</programlisting>
+                </listitem>
+                <listitem>
+                    <para>
+                    <indexterm>
+                        <primary>
+                            SIGN function
+                        </primary>
+                    </indexterm>
+
+<literal>SIGN(number)</literal>: Returns the sign (-1, 0, 1) of a number
+                    </para>
+<programlisting>
+SELECT x FROM Magazine x WHERE SIGN(x.price) &gt;= 0
 </programlisting>
                 </listitem>
                 <listitem>
@@ -3365,6 +3466,13 @@ that represents the string position at which the search is started (by default,
 the beginning of the string to be searched). The first position in a string is
 denoted by 1. If the string is not found, 0 is returned.
                      </para>
+                    <para>
+Note that not all databases support the use of a trim character other than the
+space character; use of this argument may result in queries that are not
+portable. Note that not all databases support the use of the third argument to
+<literal>LOCATE</literal>; use of this argument may result in queries that are
+not portable.
+                    </para>
                      <para>
 The <literal>LENGTH
 </literal> function returns the length of the string in characters as an
@@ -3378,33 +3486,48 @@ integer.
                     <para>
 <itemizedlist><listitem><para>functions_returning_numerics ::=
 ABS(simple_arithmetic_expression) |
+CEILING(arithmetic_expression) |
+EXP(arithmetic_expression) |
+FLOOR(arithmetic_expression) |
+LN(arithmetic_expression) |
+POWER(arithmetic_expression, arithmetic_expression) |
+ROUND(arithmetic_expression, arithmetic_expression) |
+SIGN(arithmetic_expression) |
 SQRT(simple_arithmetic_expression) |
 MOD(simple_arithmetic_expression, simple_arithmetic_expression) |
 SIZE(collection_valued_path_expression) |
-INDEX(identification_variable)
+INDEX(identification_variable) |
+extract_datetime_field
                                 </para>
                             </listitem>
                         </itemizedlist>
                     </para>
                     <para>
-The <literal>ABS</literal> function takes a numeric argument and returns a
-number (integer, float, or double) of the same type as the argument to the
-function.
+The <literal>ABS</literal>, <literal>CEILING</literal> and <literal>FLOOR</literal> functions 
+accept a numeric argument and return a number (integer, float, or double) of the same type as 
+the argument.
                     </para>
                     <para>
-The <literal>SQRT</literal> function takes a numeric argument and
-returns a double.
+The <literal>SIGN</literal> function accepts a numeric argument and
+returns an integer.
                     </para>
                     <para>
-Note that not all databases support the use of a trim character other than the
-space character; use of this argument may result in queries that are not
-portable. Note that not all databases support the use of the third argument to
-<literal>LOCATE</literal>; use of this argument may result in queries that are
-not portable.
+The <literal>SQRT</literal>, <literal>EXP</literal> and <literal>LN</literal> functions accept 
+a numeric argument and return a double.
                     </para>
                     <para>
-The <literal>MOD</literal> function takes two integer arguments and returns an
-integer.
+The <literal>MOD</literal> function takes two integer arguments and returns an integer.
+                    </para>
+                    <para>
+The <literal>ROUND</literal> function accepts a numeric argument and an integer argument and 
+returns a number of the same type as the first argument.
+                    </para>
+                    <para>
+The <literal>POWER<literal> function accepts two numeric arguments and returns a double.
+                    </para>
+                    <para>
+Numeric arguments to these functions may correspond to the numeric Java object types as well
+as the primitive numeric types.
                     </para>
                     <para>
 The <literal>SIZE</literal> function returns an integer value, the

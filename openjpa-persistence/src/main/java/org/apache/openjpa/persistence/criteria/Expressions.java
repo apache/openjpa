@@ -298,6 +298,139 @@ class Expressions {
         }
     }
 
+    public static class Ceiling<X> extends UnaryFunctionalExpression<X> {
+        public  Ceiling(Expression<X> x) {
+            super(x);
+        }
+
+        @Override
+        public Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
+            Value value = factory.ceiling(Expressions.toValue(e, factory, q));
+            value.setImplicitType(getJavaType());
+            return value;
+        }
+
+        @Override
+        public StringBuilder asValue(AliasContext q) {
+            return Expressions.asValue(q, "CEILING", OPEN_BRACE, e, CLOSE_BRACE);
+        }
+    }
+
+    public static class Exponential extends UnaryFunctionalExpression<Double> {
+        public  Exponential(Expression<? extends Number> x) {
+            super(Double.class, x);
+        }
+
+        @Override
+        public Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
+            Value value = factory.exp(Expressions.toValue(e, factory, q));
+            value.setImplicitType(getJavaType());
+            return value;
+        }
+
+        @Override
+        public StringBuilder asValue(AliasContext q) {
+            return Expressions.asValue(q, "EXP", OPEN_BRACE, e, CLOSE_BRACE);
+        }
+    }
+
+    public static class Floor<X> extends UnaryFunctionalExpression<X> {
+        public  Floor(Expression<X> x) {
+            super(x);
+        }
+
+        @Override
+        public Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
+            Value value = factory.floor(Expressions.toValue(e, factory, q));
+            value.setImplicitType(getJavaType());
+            return value;
+        }
+
+        @Override
+        public StringBuilder asValue(AliasContext q) {
+            return Expressions.asValue(q, "FLOOR", OPEN_BRACE, e, CLOSE_BRACE);
+        }
+    }
+
+    public static class NaturalLogarithm extends UnaryFunctionalExpression<Double> {
+        public  NaturalLogarithm(Expression<? extends Number> x) {
+            super(Double.class, x);
+        }
+
+        @Override
+        public Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
+            Value value = factory.ln(Expressions.toValue(e, factory, q));
+            value.setImplicitType(getJavaType());
+            return value;
+        }
+
+        @Override
+        public StringBuilder asValue(AliasContext q) {
+            return Expressions.asValue(q, "LN", OPEN_BRACE, e, CLOSE_BRACE);
+        }
+    }
+
+    public static class Sign extends UnaryFunctionalExpression<Integer> {
+        public  Sign(Expression<? extends Number> x) {
+            super(Integer.class, x);
+        }
+
+        @Override
+        public Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
+            Value value = factory.sign(Expressions.toValue(e, factory, q));
+            value.setImplicitType(getJavaType());
+            return value;
+        }
+
+        @Override
+        public StringBuilder asValue(AliasContext q) {
+            return Expressions.asValue(q, "SIGN", OPEN_BRACE, e, CLOSE_BRACE);
+        }
+    }
+
+    public static class Power<X, Y extends Number> extends BinarayFunctionalExpression<Double> {
+        public Power(Expression<X> x, Expression<Y> y) {
+            super(double.class, x, y);
+        }
+        public Power(Expression<X> x, Y y) {
+            this(x,new Constant<>(y));
+        }
+
+        @Override
+        public Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
+            Value value = factory.power(
+                Expressions.toValue(e1, factory, q),
+                Expressions.toValue(e2, factory, q));
+            value.setImplicitType(getJavaType());
+            return value;
+        }
+
+        @Override
+        public StringBuilder asValue(AliasContext q) {
+            return Expressions.asValue(q, "POWER", OPEN_BRACE, e1, COMMA, e2, CLOSE_BRACE);
+        }
+    }
+
+    public static class Round<X> extends BinarayFunctionalExpression<X> {
+        public Round(Expression<?> x, Expression<?> y) {
+            super(((Class<X>) x.getJavaType()), x, y);
+        }
+
+        @Override
+        public Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
+            Value value = factory.round(
+                Expressions.toValue(e1, factory, q), 
+                Expressions.toValue(e2, factory, q));
+            value.setImplicitType(getJavaType());
+            return value;
+        }
+
+        @Override
+        public StringBuilder asValue(AliasContext q) {
+            return Expressions.asValue(q, "ROUND", OPEN_BRACE, e1, COMMA, e2, CLOSE_BRACE);
+        }
+    }
+
     public static class Count extends UnaryFunctionalExpression<Long> {
         private boolean _distinct;
         public  Count(Expression<?> x) {
