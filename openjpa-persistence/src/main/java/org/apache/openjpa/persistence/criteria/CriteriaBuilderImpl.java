@@ -153,6 +153,46 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
     public <N extends Number> Expression<N> abs(Expression<N> x) {
         return new Expressions.Abs<>(x);
     }
+    
+    @Override
+    public <N extends Number> Expression<N> ceiling(Expression<N> x) {
+    	return new Expressions.Ceiling<>(x);
+    }
+
+    @Override
+    public Expression<Double> exp(Expression<? extends Number> x) {
+        return new Expressions.Exponential(x);
+    }
+
+    @Override
+    public <N extends Number> Expression<N> floor(Expression<N> x) {
+        return new Expressions.Floor<>(x);
+    }
+
+    @Override
+    public Expression<Double> ln(Expression<? extends Number> x) {
+        return new Expressions.NaturalLogarithm(x);
+    }
+
+    @Override
+    public Expression<Integer> sign(Expression<? extends Number> x) {
+        return new Expressions.Sign(x);
+    }
+
+    @Override
+    public Expression<Double> power(Expression<? extends Number> x, Number y) {
+        return new Expressions.Power<>(x, y);
+    }
+
+    @Override
+    public Expression<Double> power(Expression<? extends Number> x, Expression<? extends Number> y) {
+        return new Expressions.Power<>(x, y);
+    }
+
+    @Override
+    public <T extends Number> Expression<T> round(Expression<T> x, Integer n) {
+        return new Expressions.Round<>(x, new Expressions.Constant<>(n));
+    }
 
     @Override
     public <Y> Expression<Y> all(Subquery<Y> subquery) {
@@ -989,30 +1029,6 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
     }
 
     @Override
-    public <N extends Number> Expression<N> ceiling(Expression<N> x) {
-        // TODO Implement ceiling op
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Expression<Double> exp(Expression<? extends Number> x) {
-        // TODO Implement exp op
-        throw new UnsupportedAddressTypeException();
-    }
-
-    @Override
-    public <N extends Number> Expression<N> floor(Expression<N> x) {
-        // TODO Implement floor op
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Expression<Double> ln(Expression<? extends Number> x) {
-        // TODO Implement ln op
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public Expression<LocalDate> localDate() {
         return new Expressions.CurrentLocalDate();
     }
@@ -1027,27 +1043,4 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
         return new Expressions.CurrentLocalTime();
     }
 
-    @Override
-    public Expression<Double> power(Expression<? extends Number> x, Number y) {
-        // TODO Implement power op
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Expression<Double> power(Expression<? extends Number> x, Expression<? extends Number> y) {
-        // TODO Implement power op
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public <T extends Number> Expression<T> round(Expression<T> x, Integer n) {
-        // TODO Implement round op
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Expression<Integer> sign(Expression<? extends Number> x) {
-        // TODO Implement sign op
-        throw new UnsupportedOperationException();
-    }
 }

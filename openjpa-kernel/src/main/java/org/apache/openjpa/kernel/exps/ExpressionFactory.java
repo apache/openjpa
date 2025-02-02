@@ -344,6 +344,41 @@ public interface ExpressionFactory {
      * Return a value representing the absolute value of the given one.
      */
     Value abs(Value num);
+    
+    /**
+     * Returns a value representing the ceiling value of the given one.
+     */
+    Value ceiling(Value num);
+
+    /**
+     * Returns a value representing the Euler's e constant powered to the given value.
+     */
+    Value exp(Value num);
+
+    /**
+     * Returns a value representing the floor of the given value.
+     */
+    Value floor(Value num);
+
+    /**
+     * Returns the natural logarithm of the given value
+     */
+    Value ln(Value num);
+
+    /**
+     * Returns the sign of the given value as a number (-1 for negative, 0 for zeroes and 1 for positive)
+     */
+    Value sign(Value num);
+
+    /**
+     * Returns a value representing base powered by the exponent
+     */
+    Value power(Value base, Value exponent);
+
+    /*
+     * Returns the number rounded to the given precision.
+     */
+    Value round(Value num, Value precision);
 
     /**
      * Return a value representing the indexOf (LOCATE in JPQL) function on

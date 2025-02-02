@@ -1279,6 +1279,27 @@ public class JPQLExpressionBuilder
 
             case JJTABS:
                 return factory.abs(getNumberValue(onlyChild(node)));
+                
+            case JJTCEILING:
+            	return factory.ceiling(getNumberValue(onlyChild(node)));
+
+            case JJTEXP:
+                return factory.exp(getNumberValue(onlyChild(node)));
+
+            case JJTFLOOR:
+                return factory.floor(getNumberValue(onlyChild(node)));
+
+            case JJTLN:
+                return factory.ln(getNumberValue(onlyChild(node)));
+            
+            case JJTSIGN:
+                return factory.sign(getNumberValue(onlyChild(node)));
+
+            case JJTPOWER:
+                return factory.power(getNumberValue(firstChild(node)), getNumberValue(secondChild(node)));
+            
+            case JJTROUND:
+                return factory.round(getNumberValue(firstChild(node)), getNumberValue(secondChild(node)));
 
             case JJTSQRT:
                 return factory.sqrt(getNumberValue(onlyChild(node)));

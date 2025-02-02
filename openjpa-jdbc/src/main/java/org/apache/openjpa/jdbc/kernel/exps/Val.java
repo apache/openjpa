@@ -75,6 +75,11 @@ public interface Val
     int WHENSCALAR_VAL = 16;
     int COALESCE_VAL = 17;
     int NULLIF_VAL = 18;
+    int CEILING_VAL = 19;
+    int EXP_VAL = 20;
+    int FLOOR_VAL = 21;
+    int LN_VAL = 22;
+    int SIGN_VAL = 23;
     int EXTRACTDTF_VAL = 24;
     int EXTRACTDTP_VAL = 25;
 

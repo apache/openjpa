@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.jpql.functions;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoField;
@@ -36,6 +37,7 @@ import org.apache.openjpa.persistence.common.apps.CompUser;
 import org.apache.openjpa.persistence.common.apps.FemaleUser;
 import org.apache.openjpa.persistence.common.apps.MaleUser;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.common.utils.DatabaseHelper;
 
 public class TestEJBQLFunction extends AbstractTestCase {
 
@@ -89,9 +91,23 @@ public class TestEJBQLFunction extends AbstractTestCase {
         if(dict instanceof SybaseDictionary) {
             expectedShannonName="Shannon";
         }
+        DatabaseHelper.createPowerFunctionIfNecessary(em, dict);
+        DatabaseHelper.createRoundFunctionIfNecessary(em, dict);
 
         endTx(em);
         endEm(em);
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        OpenJPAEntityManagerSPI em = (OpenJPAEntityManagerSPI) currentEntityManager();
+
+        DBDictionary dict = ((JDBCConfiguration) em.getConfiguration()).getDBDictionaryInstance();
+        DatabaseHelper.dropPowerFunction(em, dict);
+        DatabaseHelper.dropRoundFunction(em, dict);
+
+        endEm(em);
+        super.tearDown();
     }
 
     public void testConcatSubStringFunc() {
@@ -492,6 +508,132 @@ public class TestEJBQLFunction extends AbstractTestCase {
         assertNotNull(result);
         assertEquals(1, result.size());
         assertTrue(result.contains(153L));
+
+        endEm(em);
+    }
+    
+    public void testCEILINGFunc() {
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT CEILING(SUM(c.age) + 0.4) FROM CompUser c";
+
+        List result = em.createQuery(query).getResultList();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(154L, ((BigDecimal) result.get(0)).longValue());
+
+        endEm(em);
+    }
+
+    public void testCEILINGFuncNegative() {
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT CEILING(0.4 - SUM(c.age)) FROM CompUser c";
+
+        List result = em.createQuery(query).getResultList();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(-152L, ((BigDecimal) result.get(0)).longValue());
+
+        endEm(em);
+    }
+
+    public void testEXPFunc() {
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT EXP(MIN(c.age)) FROM CompUser c";
+
+        List result = em.createQuery(query).getResultList();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(Math.exp(10), (double) result.get(0));
+
+        endEm(em);
+    }
+
+    public void testFLOORFunc() {
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT FLOOR(SUM(c.age) - 0.4) FROM CompUser c";
+
+        List result = em.createQuery(query).getResultList();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(152L, ((BigDecimal) result.get(0)).longValue());
+
+        endEm(em);
+    }
+
+    public void testFLOORFuncNegative() {
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT FLOOR(10.4 - SUM(c.age)) FROM CompUser c";
+
+        List result = em.createQuery(query).getResultList();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(-143L, ((BigDecimal) result.get(0)).longValue());
+
+        endEm(em);
+    }
+
+    public void testPOWERFunc() {
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT POWER(MIN(c.age), 3) FROM CompUser c";
+
+        List result = em.createQuery(query).getResultList();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(1000L, result.get(0));
+
+        endEm(em);
+    }
+
+    public void testROUNDFunc() {
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT ROUND(SQRT(MIN(c.age)), 3) FROM CompUser c";
+
+        List result = em.createQuery(query).getResultList();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(3.162, (double) result.get(0));
+
+        endEm(em);
+    }
+
+    public void testSIGNFunc() {
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT SIGN(1 - SUM(c.age)) FROM CompUser c";
+
+        List result = em.createQuery(query).getResultList();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(-1, ((Integer) result.get(0)).intValue());
+
+        endEm(em);
+    }
+
+    public void testLNFunc() {
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT LN(MIN(c.age)) FROM CompUser c";
+
+        List result = em.createQuery(query).getResultList();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(Math.log(10), (double) result.get(0));
 
         endEm(em);
     }
