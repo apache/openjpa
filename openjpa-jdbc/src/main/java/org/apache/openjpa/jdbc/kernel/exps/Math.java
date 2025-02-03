@@ -59,6 +59,10 @@ public class Math
         _val1 = val1;
         _val2 = val2;
         _op = op;
+        if (op == ROUND) {
+            _val1.setImplicitType(Double.class);
+            _val2.setImplicitType(Integer.class);
+        }
     }
 
     public Val getVal1() {

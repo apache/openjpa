@@ -19,7 +19,7 @@
 package org.apache.openjpa.persistence.jpql.functions;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.sql.Time;
 import java.time.LocalTime;
 import java.time.temporal.ChronoField;
 import java.util.List;
@@ -599,13 +599,13 @@ public class TestEJBQLFunction extends AbstractTestCase {
     public void testROUNDFunc() {
         EntityManager em = currentEntityManager();
 
-        String query = "SELECT ROUND(SQRT(MIN(c.age)), 3) FROM CompUser c";
+        String query = "SELECT ROUND(SUM(c.age)/7.0, 3) FROM CompUser c";
 
         List result = em.createQuery(query).getResultList();
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals(3.162, (double) result.get(0));
+        assertEquals(21.857, (double) result.get(0));
 
         endEm(em);
     }
@@ -827,18 +827,18 @@ public class TestEJBQLFunction extends AbstractTestCase {
         }
         EntityManager em = currentEntityManager();
 
-        String query = "SELECT EXTRACT(SECOND FROM {ts '2006-03-21 18:19:23'})- c.age FROM CompUser AS c";
+        String query = "SELECT EXTRACT(SECOND FROM {ts '2006-03-21 18:19:23'}) - c.age FROM CompUser AS c ORDER BY c.age";
 
         List result = em.createQuery(query).getResultList();
 
         assertNotNull(result);
         assertEquals(6, result.size());
-        assertEquals(-13f, (float) result.get(0));
-        assertEquals(-13f, (float) result.get(1));
-        assertEquals(4f, (float) result.get(2));
-        assertEquals(13f, (float) result.get(3));
-        assertEquals(-6f, (float) result.get(4));
-        assertEquals(0f, (float) result.get(5));
+        assertEquals(13f, (float) result.get(0));
+        assertEquals(4f, (float) result.get(1));
+        assertEquals(0f, (float) result.get(2));
+        assertEquals(-6f, (float) result.get(3));
+        assertEquals(-13f, (float) result.get(4));
+        assertEquals(-13f, (float) result.get(5));
         endEm(em);
     }
 
@@ -848,13 +848,18 @@ public class TestEJBQLFunction extends AbstractTestCase {
             return;
         }
         EntityManager em = currentEntityManager();
-        String query = "SELECT (EXTRACT(HOUR FROM LOCAL TIME) - c.age) FROM CompUser as c WHERE c.age = 23";
-        Integer expected = LocalTime.now().get(ChronoField.HOUR_OF_DAY) - 23;
+        String query = "SELECT CURRENT_TIME, (EXTRACT(HOUR FROM LOCAL TIME) - c.age) FROM CompUser as c WHERE c.age = 23";
         
-        List<Integer> result = em.createQuery(query, Integer.class).getResultList();
+        List result = em.createQuery(query).getResultList();
 
         assertEquals(1, result.size());
-        assertEquals(expected, result.get(0));
+        Object[] ret = (Object[]) result.get(0);
+        assertEquals(2, ret.length);
+        Time time = (Time) ret[0];
+        LocalTime serverTime = time.toLocalTime();
+        int expected = serverTime.get(ChronoField.HOUR_OF_DAY) - 23;
+        
+        assertEquals(expected, (int) ret[1]);
 
         endEm(em);
     }

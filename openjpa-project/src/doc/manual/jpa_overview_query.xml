@@ -747,7 +747,65 @@ SELECT w.name FROM Course c JOIN c.studentWaitlist w WHERE c.name = â€˜Calculusâ
 <literal>CURRENT_TIMESTAMP</literal>: Returns the current timestamp.
                     </para>
                 </listitem>
-            </itemizedlist>
+                <listitem>
+                    <para>
+                    <indexterm>
+                        <primary>
+                            LOCAL DATE function
+                        </primary>
+                    </indexterm>
+<literal>LOCAL DATE</literal>: returns the value of current date on the database server.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <indexterm>
+                        <primary>
+                            LOCAL TIME function
+                        </primary>
+                    </indexterm>
+<literal>LOCAL TIME</literal>: returns the value of current time on the database server.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <indexterm>
+                        <primary>
+                            LOCAL DATETIME function
+                        </primary>
+                    </indexterm>
+<literal>LOCAL DATETIME</literal>: returns the value of current timestamp on the database server.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <indexterm>
+                        <primary>
+                            EXTRACT date field function
+                        </primary>
+                    </indexterm>
+<literal>EXTRACT</literal>(date_field <literal>FROM</literal> date_expression) : extracts a given field 
+(year, quarter, month, week, day, hour, minute or second) from a datetime.
+                    </para>
+<programlisting>
+SELECT c FROM Customer AS c WHERE EXTRACT(YEAR FROM c.birthDate) < (EXTRACT(YEAR FROM CURRENT_DATE) - 13)
+</programlisting>
+                </listitem>
+                <listitem>
+                    <para>
+                    <indexterm>
+                        <primary>
+                            EXTRACT date part function
+                        </primary>
+                    </indexterm>
+<literal>EXTRACT</literal>(date_part <literal>FROM</literal> date_expression) : extracts a date part 
+(date or time) from a datetime.
+                    </para>
+<programlisting>
+SELECT c FROM Customer AS c WHERE EXTRACT(DATE FROM c.createdTimestamp) < { d '1969-07-20' }
+</programlisting>
+                </listitem>
+                </itemizedlist>
         </section>
         <section id="jpa_overview_query_inheritance">
             <title>
@@ -1638,6 +1696,11 @@ query language. The following are reserved identifiers:
 <literal>BETWEEN</literal>
                         </para>
                     </listitem>
+                        <listitem>
+                            <para>
+<literal>BIT_LENGTH</literal>
+                        </para>
+                    </listitem>
                     <listitem>
                         <para>
 <literal>BOTH</literal>
@@ -1651,6 +1714,21 @@ query language. The following are reserved identifiers:
                     <listitem>
                         <para>
 <literal>CASE</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>CEILING</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>CHAR_LENGTH</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>CHARACTER_LENGTH</literal>
                         </para>
                     </listitem>
                     <listitem>
@@ -1731,16 +1809,31 @@ query language. The following are reserved identifiers:
                     <listitem>
                         <para>
 <literal>EXISTS</literal>
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>EXP</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>EXTRACT</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
 <literal>FALSE</literal>
                         </para>
                     </listitem>
                     <listitem>
                         <para>
 <literal>FETCH</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>FLOOR</literal>
                         </para>
                     </listitem>
                     <listitem>
@@ -1810,21 +1903,31 @@ query language. The following are reserved identifiers:
                     </listitem>
                     <listitem>
                         <para>
+<literal>LOCAL</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>LN</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
 <literal>LOCATE</literal>
                         </para>
                     </listitem>
                     <listitem>
                         <para>
 <literal>LOWER</literal>
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
 <literal>MAX</literal>
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
 <literal>MEMBER</literal>
                         </para>
                     </listitem>
@@ -1870,6 +1973,11 @@ query language. The following are reserved identifiers:
                     </listitem>
                     <listitem>
                         <para>
+<literal>ON</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
 <literal>OR</literal>
                         </para>
                     </listitem>
@@ -1885,12 +1993,32 @@ query language. The following are reserved identifiers:
                     </listitem>
                     <listitem>
                         <para>
+<literal>POSITION</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>POWER</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>ROUND</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
 <literal>SELECT</literal>
                         </para>
                     </listitem>
                     <listitem>
                         <para>
 <literal>SET</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>SIGN</literal>
                         </para>
                     </listitem>
                     <listitem>
@@ -1930,6 +2058,11 @@ query language. The following are reserved identifiers:
                     </listitem>
                     <listitem>
                         <para>
+<literal>TREAT</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
 <literal>TRIM</literal>
                         </para>
                     </listitem>
@@ -1941,6 +2074,11 @@ query language. The following are reserved identifiers:
                     <listitem>
                         <para>
 <literal>TYPE</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>UNKNOWN</literal>
                         </para>
                     </listitem>
                     <listitem>
@@ -1966,31 +2104,6 @@ query language. The following are reserved identifiers:
                     <listitem>
                         <para>
 <literal>WHERE</literal>
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-<literal>CHARACTER_LENGTH</literal>
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
-<literal>CHAR_LENGTH</literal>
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
-<literal>BIT_LENGTH</literal>
-                            </para>
-                        </listitem>
-                    <listitem>
-                        <para>
-<literal>POSITION</literal>
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
-<literal>UNKNOWN</literal>
                         </para>
                     </listitem>
                 </itemizedlist>
@@ -3547,12 +3660,98 @@ which an order column has been specified.
                         JPQL Datetime Functions
                     </title>
                     <para>
-functions_returning_datetime:= CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP
+functions_returning_datetime:= CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP | LOCAL DATE 
+| LOCAL TIME | LOCAL DATETIME | extract_datetime_part
                     </para>
                     <para>
-The datetime functions return the value of current date, time, and timestamp on
-the database server.
+The functions LOCAL DATE, LOCAL TIME, and LOCAL DATETIME return the value of the current date, time, 
+or timestamp on the database server, respectively. Their types are java.time.LocalDate, 
+java.time.LocalTime, and java.time.LocalDateTime respectively.
                     </para>
+                    <para>
+The functions CURRENT_DATE, CURRENT_TIME, and CURRENT_TIMESTAMP return the value of the current date, 
+time, or timestamp on the database server, respectively. Their types are java.sql.Date, java.sql.Time, 
+and java.sql.Timestamp respectively.
+                    </para>
+                    <para>
+The EXTRACT function takes a datetime argument and one of the following field type identifiers: YEAR, 
+QUARTER, MONTH, WEEK, DAY, HOUR, MINUTE, SECOND, DATE, TIME.
+                    </para>
+                    <para>
+EXTRACT returns the value of the corresponding field or part of the datetime.
+                    </para>
+                    <para>
+For the following field type identifiers, EXTRACT returns an integer value:
+                    </para>
+                <itemizedlist>
+                    <listitem>
+                        <para>
+<literal>YEAR</literal> means the calendar year.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>QUARTER</literal> means the calendar quarter, numbered from 1 to 4.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>MONTH</literal> means the calendar month of the year, numbered from 1.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>WEEK</literal> means the ISO-8601 week number.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>DAY</literal> means the calendar day of the month, numbered from 1.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>HOUR</literal> means the hour of the day in 24-hour time, numbered from 0 to 23.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>MINUTE</literal> means the minute of the hour, numbered from 0 to 59.
+                        </para>
+                    </listitem>
+                </itemizedlist>
+                <para>
+For the SECOND field type identifier, EXTRACT returns a floating point value:
+                </para>
+                <itemizedlist>
+                    <listitem>
+                        <para>
+<literal>SECOND</literal> means the second of the minute, numbered from 0 to 59, including a
+ fractional part representing fractions of a second.
+                        </para>
+                    </listitem>
+                </itemizedlist>
+                <para>
+It is illegal to pass a datetime argument which does not have the given field type to EXTRACT.
+                </para>
+                <para>
+For the following field type identifiers, EXTRACT returns a part of the datetime value:
+                </para>
+                <itemizedlist>
+                    <listitem>
+                        <para>
+<literal>DATE</literal> means the date part of a datetime.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>TIME</literal> means the time part of a datetime.
+                        </para>
+                    </listitem>
+                </itemizedlist>
+                <para>
+It is illegal to pass a datetime argument which does not have the given part to EXTRACT.
+                </para>
                 </section>
             </section>
             <section id="jpa_langref_case_expressions">
@@ -4540,8 +4739,28 @@ Comparisons over instances of embeddable class or map entry types are not suppor
                 JPQL BNF
             </title>
             <para>
-The following is the BNF for the Java Persistence query language, from section
-4.14 of the JSR 317 specification.
+BNF notation summary:
+            </para>
+            <itemizedlist>
+                <listitem>
+{ ... } grouping
+                </listitem>
+                <listitem>
+[ ... ] optional constructs
+                </listitem>
+                <listitem>
+* zero or more
+                </listitem>
+                <listitem>
++ one or more
+                </listitem>
+                <listitem>
+| alternates
+                </listitem>
+            </itemizedlist>
+            <para>
+The following is the BNF for the Jakarta Persistence query language, from section
+4.14 of the Jarkata Persistence 3.1 specification.
             </para>
             <itemizedlist>
                 <listitem>
@@ -4586,7 +4805,7 @@ identification_variable
                 <listitem>
                     <para>
 join ::= join_spec join_association_path_expression [ <literal>AS</literal> ]
-identification_variable
+identification_variable [join_conition]
                     </para>
                 </listitem>
                 <listitem>
@@ -4601,22 +4820,27 @@ join_spec ::= [ <literal>LEFT</literal> [ <literal>OUTER</literal> ]| <literal>
 INNER</literal> ] <literal>JOIN</literal>
                     </para>
                 </listitem>
+                <listitem>
+                    <para>
+join_condition ::= ON conditional_expression
+                    </para>
+                </listitem>
                  <listitem>
                     <para>
 join_association_path_expression ::= join_collection_valued_path_expression |
-join_single_valued_path_expression
+join_single_valued_path_expression | <literal>TREAT</literal>(join_collection_valued_path_expression AS subtype) | <literal>TREAT</literal>(join_single_valued_path_expression AS subtype)
                     </para>
                 </listitem>
                 <listitem>
                     <para>
 join_collection_valued_path_expression ::=
-identification_variable.{single_valued_embeddable_object_field.}*collection_valued_field
+identification_variable.{single_valued_embeddable_object_field.}* collection_valued_field
                     </para>
                 </listitem>
                 <listitem>
                     <para>
 join_single_valued_path_expression ::=
-identification_variable.{single_valued_embeddable_object_field.}*single_valued_object_field
+identification_variable.{single_valued_embeddable_object_field.}* single_valued_object_field
                     </para>
                 </listitem>
                 <listitem>
@@ -4629,15 +4853,21 @@ identification_variable
                 <listitem>
                     <para>
 qualified_identification_variable ::=
-KEY(identification_variable) |
-VALUE(identification_variable) |
-ENTRY(identification_variable)
+map_field_identification_variable | <literal>ENTRY</literal>(identification_variable)
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+map_field_identification_variable ::= 
+<literal>KEY</literal>(identification_variable) | 
+<literal>VALUE</literal>(identification_variable)
                     </para>
                 </listitem>
                 <listitem>
                     <para>
 single_valued_path_expression ::=
 qualified_identification_variable |
+<literal>TREAT</literal>(qualified_identification_variable <literal>AS</literal> subtype) |
 state_field_path_expression |
 single_valued_object_path_expression
                     </para>
@@ -4646,27 +4876,46 @@ single_valued_object_path_expression
                     <para>
 general_identification_variable ::=
 identification_variable |
-KEY(identification_variable) |
-VALUE(identification_variable)
+map_field_identification_variable
                     </para>
                 </listitem>
                 <listitem>
                     <para>
-state_field_path_expression ::=
-general_identification_variable.{single_valued_object_field.}*state_field
+general_subpath ::= simple_subpath | treated_subpath{.single_valued_object_field}*
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+simple_subpath ::= 
+    general_identification_variable |
+    general_identification_variable{.single_valued_object_field}*
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+treated_subpath ::= <literal>TREAT</literal>(general_subpath AS subtype)
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+state_field_path_expression ::= general_subpath.state_field
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+state_valued_path_expression ::=
+    state_field_path_expression | general_identification_variable
                     </para>
                 </listitem>
                 <listitem>
                     <para>
 single_valued_object_path_expression ::=
-general_identification_variable.{single_valued_object_field.}*
-single_valued_object_field
+    general_subpath.single_valued_object_field
                     </para>
                 </listitem>
                 <listitem>
                     <para>
-collection_valued_path_expression ::=
-general_identification_variable.{single_valued_object_field.}*collection_valued_field
+collection_valued_path_expression ::= general_subpath.{collection_valued_field}
                     </para>
                 </listitem>
                 <listitem>
@@ -4678,15 +4927,14 @@ update_item}*
                 </listitem>
                 <listitem>
                     <para>
-update_item ::= [identification_variable.]{state_field |
-single_valued_object_field}= new_value
+update_item ::= [identification_variable.]{single_valued_embeddable_object_field.}*
+    {state_field | single_valued_object_field} = new_value
                     </para>
                 </listitem>
                 <listitem>
                     <para>
 new_value ::= scalar_expression |
-simple_entity_expression | <literal>NULL
-</literal>
+simple_entity_expression | <literal>NULL</literal>
                     </para>
                 </listitem>
                 <listitem>
@@ -4708,11 +4956,13 @@ select_item ::= select_expression [[AS] result_variable]
                 </listitem>
                 <listitem>
                     <para>
-select_expression ::= single_valued_path_expression |
-scalar_expression |
-aggregate_expression |
-identification_variable | <literal>OBJECT</literal> (identification_variable)|
-constructor_expression
+select_expression ::= 
+    single_valued_path_expression |
+    scalar_expression |
+    aggregate_expression |
+    identification_variable | 
+    <literal>OBJECT</literal> (identification_variable) |
+    constructor_expression
                     </para>
                 </listitem>
                 <listitem>
@@ -4735,7 +4985,7 @@ aggregate_expression ::= { <literal>AVG</literal> | <literal>MAX</literal> |
 <literal>MIN</literal> | <literal>SUM</literal> }([ <literal>DISTINCT</literal>
 ] state_field_path_expression) | <literal>COUNT</literal> ([ <literal>DISTINCT
 </literal> ] identification_variable | state_field_path_expression |
-single_valued_object_path_expression)
+single_valued_object_path_expression) | function_invocation
                     </para>
                 </listitem>
                 <listitem>
@@ -4767,7 +5017,9 @@ orderby_item}*
                 </listitem>
                 <listitem>
                     <para>
-orderby_item ::= state_field_path_expression | result_variable [ <literal>ASC</literal> |
+orderby_item ::= state_field_path_expression |
+    general_identification_variable | 
+    result_variable [ <literal>ASC</literal> |
 <literal>DESC</literal> ]
                     </para>
                 </listitem>
@@ -4795,14 +5047,31 @@ identification_variable_declaration | derived_path_expression [ <literal>AS
                 <listitem>
                     <para>
 derived_path_expression ::=
-superquery_identification_variable.{single_valued_object_field.}*collection_valued_field |
-superquery_identification_variable.{single_valued_object_field.}*single_valued_object_field
+    general_derived_path.single_valued_object_field |
+    general_derived_path.collection_valued_field
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+general_derived_path ::=
+    simple_derived_path |
+    treated_derived_path{.single_valued_object_field}*
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+simple_derived_path ::= superquery_identification_variable{.single_valued_object_field}*
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+treated_derived_path ::= <literal>TREAT</literal>(general_derived_path AS subtype)
                     </para>
                 </listitem>
                 <listitem>
                     <para>
 derived_collection_member_declaration ::=
-IN superquery_identification_variable.{single_valued_object_field.}*collection_valued_field
+<literal>IN</literal> superquery_identification_variable.{single_valued_object_field.}*collection_valued_field
                     </para>
                 </listitem>
                 <listitem>
@@ -4820,11 +5089,11 @@ scalar_expression | aggregate_expression | identification_variable
                 <listitem>
                     <para>
 scalar_expression ::=
-simple_arithmetic_expression |
-string_primary |
-enum_primary |
-datetime_primary |
-boolean_primary |
+arithmetic_expression |
+string_expression |
+enum_expression |
+datetime_expression |
+boolean_expression |
 case_expression |
 entity_type_expression
                     </para>
@@ -4848,13 +5117,13 @@ conditional_factor ::= [ <literal>NOT</literal> ] conditional_primary
                 </listitem>
                 <listitem>
                     <para>
-conditional_primary ::= simple_cond_expression |(conditional_expression)
+conditional_primary ::= simple_cond_expression | (conditional_expression)
                     </para>
                 </listitem>
                 <listitem>
                     <para>
 simple_cond_expression ::= comparison_expression | between_expression |
-like_expression | in_expression | null_comparison_expression |
+in_expression | like_expression | null_comparison_expression |
 empty_collection_comparison_expression | collection_member_expression |
 exists_expression
                     </para>
@@ -4936,97 +5205,94 @@ all_or_any_expression ::= { <literal>ALL</literal> | <literal>ANY</literal> |
                 <listitem>
                     <para>
 comparison_expression ::=
-string_expressioncomparison_operator{string_expression|all_or_any_expression}|
-boolean_expression {=|&lt;&gt;} {boolean_expression | all_or_any_expression} |
-enum_expression {=|&lt;&gt;} {enum_expression | all_or_any_expression} |
+string_expression comparison_operator {string_expression | all_or_any_expression} | 
+boolean_expression {= | &lt;&gt;} {boolean_expression | all_or_any_expression} |
+enum_expression {= |&lt;&gt;} {enum_expression | all_or_any_expression} |
 datetime_expression comparison_operator {datetime_expression |
-all_or_any_expression} | entity_expression {= |&lt;&gt; } {entity_expression |
+all_or_any_expression} | entity_expression {= | &lt;&gt;} {entity_expression |
 all_or_any_expression} | arithmetic_expression comparison_operator
 {arithmetic_expression | all_or_any_expression} |
-entity_type_expression { =|&lt;&gt;>} entity_type_expression}
+entity_type_expression {= |&lt;&gt;} entity_type_expression}
                     </para>
                 </listitem>
                 <listitem>
                     <para>
-comparison_operator ::== |&gt; |&gt;= |&lt; |&lt;= |&lt;&gt;
+comparison_operator ::= = | &gt; | &gt;= | &lt; | &lt;= | &lt;&gt;
                     </para>
                 </listitem>
                 <listitem>
                     <para>
-arithmetic_expression ::= simple_arithmetic_expression |(subquery)
+arithmetic_expression ::= arithmetic_term | arithmetic_expression {+ | -} arithmetic_term
                     </para>
                 </listitem>
                 <listitem>
                     <para>
-simple_arithmetic_expression ::= arithmetic_term | simple_arithmetic_expression
-{+ |- } arithmetic_term
+arithmetic_term ::= arithmetic_factor | arithmetic_term {* | /} arithmetic_factor
                     </para>
                 </listitem>
                 <listitem>
                     <para>
-arithmetic_term ::= arithmetic_factor | arithmetic_term {* |/ }
-arithmetic_factor
+arithmetic_factor ::= [{+ | -}] arithmetic_primary
                     </para>
                 </listitem>
                 <listitem>
                     <para>
-arithmetic_factor ::= [{+ |-}] arithmetic_primary
+arithmetic_primary ::=
+    state_valued_path_expression | numeric_literal |
+    (arithmetic_expression) |
+    input_parameter |
+    functions_returning_numerics |
+    aggregate_expression |
+    case_expression |
+    function_invocation |
+    (subquery)
                     </para>
                 </listitem>
                 <listitem>
                     <para>
-arithmetic_primary ::= state_field_path_expression | numeric_literal |
-(simple_arithmetic_expression) | input_parameter | functions_returning_numerics
-| aggregate_expression |
-case_expression
+string_expression ::=
+    state_valued_path_expression |
+    string_literal |
+    input_parameter |
+    functions_returning_strings |
+    aggregate_expression |
+    case_expression |
+    function_invocation |
+    (subquery)
                     </para>
                 </listitem>
                 <listitem>
                     <para>
-string_expression ::= string_primary |(subquery)
+datetime_expression ::=
+    state_valued_path_expression |
+    input_parameter |
+    functions_returning_datetime |
+    aggregate_expression |
+    case_expression |
+    function_invocation |
+    date_time_timestamp_literal |
+    (subquery)
                     </para>
                 </listitem>
                 <listitem>
                     <para>
-string_primary ::= state_field_path_expression | string_literal |
-input_parameter | functions_returning_strings | aggregate_expression |
-case_expression
+boolean_expression ::=
+    state_valued_path_expression |
+    boolean_literal |
+    input_parameter |
+    case_expression |
+    function_invocation |
+    (subquery)
                     </para>
                 </listitem>
                 <listitem>
                     <para>
-datetime_expression ::= datetime_primary |(subquery)
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-datetime_primary ::= state_field_path_expression | input_parameter |
-functions_returning_datetime | aggregate_expression |
-case_expression |
-date_time_timestamp_literal
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-boolean_expression ::= boolean_primary |(subquery)
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-boolean_primary ::= state_field_path_expression | boolean_literal |
-input_parameter |
-case_expression
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-enum_expression ::= enum_primary |(subquery)
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-enum_primary ::= state_field_path_expression | enum_literal | input_parameter |
-case_expression
+enum_expression ::=
+    state_valued_path_expression |
+    enum_literal |
+    input_parameter |
+    case_expression |
+    (subquery)
                     </para>
                 </listitem>
                 <listitem>
@@ -5060,34 +5326,82 @@ input_parameter)
                     <para>
 functions_returning_numerics ::= <literal>LENGTH</literal> (string_primary)|
 <literal>LOCATE</literal> (string_primary,string_primary [,
-simple_arithmetic_expression]) | <literal>ABS</literal>
-(simple_arithmetic_expression) | <literal>SQRT</literal>
-(simple_arithmetic_expression) | <literal>MOD</literal>
-(simple_arithmetic_expression, simple_arithmetic_expression) | <literal>SIZE
+arithmetic_expression]) | <literal>ABS</literal>
+(arithmetic_expression) | <literal>CEILING</literal>
+(arithmetic_expression) | <literal>EXP</literal>
+(arithmetic_expression) | <literal>FLOOR</literal>
+(arithmetic_expression) | <literal>LN</literal>
+(arithmetic_expression) | <literal>SIGN</literal>
+(arithmetic_expression) | <literal>SQRT</literal>
+(arithmetic_expression) | <literal>MOD</literal>
+(arithmetic_expression, arithmetic_expression) | <literal>POWER</literal>
+(arithmetic_expression) | <literal>ROUND</literal>
+(arithmetic_expression, arithmetic_expression) | <literal>SIZE
 </literal> (collection_valued_path_expression) |
-<literal>INDEX</literal>(identification_variable)
+<literal>INDEX</literal>(identification_variable) |
+extract_datetime_field
                     </para>
                 </listitem>
                 <listitem>
                     <para>
 functions_returning_datetime ::= <literal>CURRENT_DATE</literal> | <literal>
-CURRENT_TIME</literal> | <literal>CURRENT_TIMESTAMP</literal>
+CURRENT_TIME</literal> | <literal>CURRENT_TIMESTAMP</literal> |
+<literal>LOCAL DATE</literal> |
+<literal>LOCAL TIME</literal> |
+<literal>LOCAL DATETIME</literal> |
+extract_datetime_part
                     </para>
                 </listitem>
                 <listitem>
                     <para>
-functions_returning_strings ::= <literal>CONCAT</literal> (string_primary,
-string_primary) | <literal>SUBSTRING</literal> (string_primary,
-simple_arithmetic_expression[,simple_arithmetic_expression])| <literal>TRIM
+functions_returning_strings ::= <literal>CONCAT</literal> (string_expression,
+string_expression) | <literal>SUBSTRING</literal> (string_expression,
+arithmetic_expression[,arithmetic_expression])| <literal>TRIM
 </literal> ([[trim_specification] [trim_character] <literal>FROM</literal> ]
-string_primary) | <literal>LOWER</literal> (string_primary) | <literal>UPPER
-</literal> (string_primary)
+string_expression) | <literal>LOWER</literal> (string_expression) | <literal>UPPER
+</literal> (string_expression)
                     </para>
                 </listitem>
                 <listitem>
                     <para>
 trim_specification ::= <literal>LEADING</literal> | <literal>TRAILING</literal>
 | <literal>BOTH</literal>
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+function_invocation ::= <literal>FUNCTION</literal>(function_name{, function_arg}*)
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+extract_datetime_field :=
+    <literal>EXTRACT</literal>(datetime_field FROM datetime_expression)
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+datetime_field := identification_variable
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+extract_datetime_part :=
+    <literal>EXTRACT</literal>(datetime_part FROM datetime_expression)
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+datetime_part := identification_variable
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+function_arg ::=
+    literal |
+    state_valued_path_expression |
+    input_parameter |
+    scalar_expression
                     </para>
                 </listitem>
                 <listitem>
