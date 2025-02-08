@@ -80,6 +80,8 @@ public interface Val
     int FLOOR_VAL = 21;
     int LN_VAL = 22;
     int SIGN_VAL = 23;
+    int EXTRACTDTF_VAL = 24;
+    int EXTRACTDTP_VAL = 25;
 
     /**
      * Initialize the value. This method should recursively initialize any

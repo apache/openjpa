@@ -1030,20 +1030,17 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 
     @Override
     public Expression<LocalDate> localDate() {
-        // TODO Implement localDate
-        throw new UnsupportedOperationException();
+        return new Expressions.CurrentLocalDate();
     }
 
     @Override
     public Expression<LocalDateTime> localDateTime() {
-        // TODO Implement ceiling op
-        throw new UnsupportedOperationException();
+        return new Expressions.CurrentLocalDateTime();
     }
 
     @Override
     public Expression<LocalTime> localTime() {
-        // TODO Implement localTime op
-        throw new UnsupportedOperationException();
+        return new Expressions.CurrentLocalTime();
     }
 
 }

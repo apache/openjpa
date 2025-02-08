@@ -22,6 +22,9 @@ import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -1656,7 +1659,65 @@ public class TestTypesafeCriteria extends CriteriaTest {
 
     }
 
-//    public void testInMemoryAccessPath() {
+    public void testBasicLocalDateTime() {
+        em.getTransaction().begin();
+        Order pc = new Order();
+        em.persist(pc);
+        em.getTransaction().commit();
+
+        int oid = pc.getId();
+
+        CriteriaQuery<LocalDateTime> cquery = cb.createQuery(LocalDateTime.class);
+        Root<Order> order = cquery.from(Order.class);
+        cquery.select(cb.localDateTime());
+        cquery.where(cb.equal(order.get(Order_.id), oid));
+
+        TypedQuery<LocalDateTime> tq = em.createQuery(cquery);
+        Object result = tq.getSingleResult();
+        assertTrue(result.getClass() + " not instance of LocalDateTime", result instanceof LocalDateTime);
+
+    }
+
+    public void testBasicLocalTime() {
+        em.getTransaction().begin();
+        Order pc = new Order();
+        em.persist(pc);
+        em.getTransaction().commit();
+
+        int oid = pc.getId();
+
+        CriteriaQuery<LocalTime> cquery = cb.createQuery(LocalTime.class);
+        Root<Order> order = cquery.from(Order.class);
+        cquery.select(cb.localTime());
+        cquery.where(cb.equal(order.get(Order_.id), oid));
+
+        TypedQuery<LocalTime> tq = em.createQuery(cquery);
+        Object result = tq.getSingleResult();
+        assertTrue(result.getClass() + " not instance of LocalTime", result instanceof LocalTime);
+
+    }
+
+    public void testBasicLocalDate() {
+        em.getTransaction().begin();
+        Order pc = new Order();
+        em.persist(pc);
+        em.getTransaction().commit();
+
+        int oid = pc.getId();
+
+        CriteriaQuery<LocalDate> cquery = cb.createQuery(LocalDate.class);
+        Root<Order> order = cquery.from(Order.class);
+        cquery.select(cb.localDate());
+        cquery.where(cb.equal(order.get(Order_.id), oid));
+
+        TypedQuery<LocalDate> tq = em.createQuery(cquery);
+        Object result = tq.getSingleResult();
+        assertTrue(result.getClass() + " not instance of LocalDate", result instanceof LocalDate);
+
+    }
+
+
+    //    public void testInMemoryAccessPath() {
 //        em.getTransaction().begin();
 //        // must have new/dirty managed instances to exercise the code path
 //        em.persist(new Customer());

@@ -358,7 +358,7 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
         }
     }
 
-    protected DBDictionary getDbDictioary(EntityManagerFactory emf) {
+    protected DBDictionary getDbDictionary(EntityManagerFactory emf) {
         return ((JDBCConfiguration)((OpenJPAEntityManagerFactory) emf).getConfiguration()).getDBDictionaryInstance();
     }
 

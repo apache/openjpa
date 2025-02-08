@@ -18,63 +18,42 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
+import java.lang.Math;
 import java.sql.SQLException;
 
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 import org.apache.openjpa.meta.ClassMetaData;
 
 /**
- * Value produced by a mathematical operation on two values.
+ * Returns the temporal field of a given date or time.
  *
- * @author Abe White
  */
-public class Math
+public class ExtractDateTimeField
     extends AbstractVal {
 
-    
     private static final long serialVersionUID = 1L;
-    public static final String ADD = "+";
-    public static final String SUBTRACT = "-";
-    public static final String MULTIPLY = "*";
-    public static final String DIVIDE = "/";
-    public static final String MOD = "MOD";
-    public static final String POWER = "POWER";
-    public static final String ROUND = "ROUND";
-
-    private final Val _val1;
-    private final Val _val2;
-    private final String _op;
+    private final Val _val;
+    private final DateTimeExtractField _field;
     private ClassMetaData _meta = null;
-    private Class _cast = null;
 
     /**
-     * Constructor. Provide the values to operate on, and the operator.
+     * Constructor. Provide the date and the field to operate on.
      */
-    public Math(Val val1, Val val2, String op) {
-        _val1 = val1;
-        _val2 = val2;
-        _op = op;
-        if (op == ROUND) {
-            _val1.setImplicitType(Double.class);
-            _val2.setImplicitType(Integer.class);
-        }
+    public ExtractDateTimeField(Val val, DateTimeExtractField field) {
+        _val = val;
+        _field = field;
     }
 
-    public Val getVal1() {
-        return _val1;
-    }
-
-    public Val getVal2() {
-        return _val2;
-    }
-
-    public String getOperation() {
-        return _op;
+    public Val getVal() {
+        return _val;
     }
 
     @Override
@@ -89,23 +68,31 @@ public class Math
 
     @Override
     public Class getType() {
-        if (_cast != null)
-            return _cast;
-        Class c1 = _val1.getType();
-        Class c2 = _val2.getType();
-        return Filters.promote(c1, c2);
+        return _field == DateTimeExtractField.SECOND ? float.class : int.class;
     }
 
     @Override
     public void setImplicitType(Class type) {
-        _cast = type;
     }
 
     @Override
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
-        ExpState s1 = _val1.initialize(sel, ctx, 0);
-        ExpState s2 = _val2.initialize(sel, ctx, 0);
-        return new BinaryOpExpState(sel.and(s1.joins, s2.joins), s1, s2);
+        ExpState valueState =  _val.initialize(sel, ctx, 0);
+        return new ExtractDateTimeFieldExpState(valueState.joins, valueState);
+    }
+
+    /**
+     * Expression state.
+     */
+    private static class ExtractDateTimeFieldExpState
+        extends ExpState {
+
+        public final ExpState valueState;
+
+        public ExtractDateTimeFieldExpState(Joins joins, ExpState valueState) {
+            super(joins);
+            this.valueState = valueState;
+        }
     }
 
     @Override
@@ -115,11 +102,9 @@ public class Math
     }
 
     @Override
-    public void selectColumns(Select sel, ExpContext ctx, ExpState state,
-        boolean pks) {
-        BinaryOpExpState bstate = (BinaryOpExpState) state;
-        _val1.selectColumns(sel, ctx, bstate.state1, true);
-        _val2.selectColumns(sel, ctx, bstate.state2, true);
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state, boolean pks) {
+        ExtractDateTimeFieldExpState edtstate = (ExtractDateTimeFieldExpState) state;
+        _val.selectColumns(sel, ctx, edtstate.valueState, true);
     }
 
     @Override
@@ -143,16 +128,15 @@ public class Math
     @Override
     public Object load(ExpContext ctx, ExpState state, Result res)
         throws SQLException {
-        return Filters.convert(res.getObject(this, JavaSQLTypes.JDBC_DEFAULT,
-            null), getType());
+        return Filters.convert(res.getObject(this,
+            JavaSQLTypes.JDBC_DEFAULT, null), getType());
     }
 
     @Override
     public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
-        BinaryOpExpState bstate = (BinaryOpExpState) state;
-        _val1.calculateValue(sel, ctx, bstate.state1, _val2, bstate.state2);
-        _val2.calculateValue(sel, ctx, bstate.state2, _val1, bstate.state1);
+        ExtractDateTimeFieldExpState edtstate = (ExtractDateTimeFieldExpState) state;
+        _val.calculateValue(sel, ctx, edtstate.valueState, null, null);
     }
 
     @Override
@@ -163,23 +147,33 @@ public class Math
     @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
-        BinaryOpExpState bstate = (BinaryOpExpState) state;
-        ctx.store.getDBDictionary().mathFunction(sql, _op,
-            new FilterValueImpl(sel, ctx, bstate.state1, _val1),
-            new FilterValueImpl(sel, ctx, bstate.state2, _val2));
+        DBDictionary dict = ctx.store.getDBDictionary();
+        String func = dict.extractDateTimeFieldFunction;
+
+        int fieldPart = func.indexOf("{0}");
+        int fromPart = func.indexOf("{1}");
+        String part1 = func.substring(0, fieldPart);
+        String part2 = func.substring(fieldPart + 3, fromPart);
+        String part3 = func.substring(fromPart + 3);
+
+        ExtractDateTimeFieldExpState edtstate = (ExtractDateTimeFieldExpState) state;
+        sql.append(part1);
+        sql.append(_field.name());
+        sql.append(part2);
+        _val.appendTo(sel, ctx, edtstate.valueState, sql, 0);
+        sql.append(part3);
     }
 
     @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
-        _val1.acceptVisit(visitor);
-        _val2.acceptVisit(visitor);
+        _val.acceptVisit(visitor);
         visitor.exit(this);
     }
 
     @Override
     public int getId() {
-        return Val.MATH_VAL;
+        return Val.EXTRACTDTF_VAL;
     }
 }
 

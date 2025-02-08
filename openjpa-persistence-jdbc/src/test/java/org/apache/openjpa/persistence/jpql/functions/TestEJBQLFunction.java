@@ -19,6 +19,9 @@
 package org.apache.openjpa.persistence.jpql.functions;
 
 import java.math.BigDecimal;
+import java.sql.Time;
+import java.time.LocalTime;
+import java.time.temporal.ChronoField;
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -596,13 +599,13 @@ public class TestEJBQLFunction extends AbstractTestCase {
     public void testROUNDFunc() {
         EntityManager em = currentEntityManager();
 
-        String query = "SELECT ROUND(SQRT(MIN(c.age)), 3) FROM CompUser c";
+        String query = "SELECT ROUND(SUM(c.age)/7.0, 3) FROM CompUser c";
 
         List result = em.createQuery(query).getResultList();
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals(3.162, (double) result.get(0));
+        assertEquals(21.857, (double) result.get(0));
 
         endEm(em);
     }
@@ -631,6 +634,232 @@ public class TestEJBQLFunction extends AbstractTestCase {
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(Math.log(10), (double) result.get(0));
+
+        endEm(em);
+    }
+
+    public void testExtractDateFromInstant() {
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT c FROM CompUser AS c WHERE EXTRACT(DATE FROM {ts '2005-03-21 01:32:20'}) > {d '2005-02-10'}";
+
+        List<CompUser> result = em.createQuery(query, CompUser.class).getResultList();
+
+        assertNotNull(result);
+        assertEquals(6, result.size());
+        endEm(em);
+    }
+
+    public void testExtractTimeFromInstant() {
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT c FROM CompUser AS c WHERE EXTRACT(TIME FROM {ts '2005-03-21 01:32:20'}) = {t '01:32:20'}";
+
+        List<CompUser> result = em.createQuery(query, CompUser.class).getResultList();
+
+        assertNotNull(result);
+        assertEquals(6, result.size());
+        endEm(em);
+    }
+
+    public void testExtractDateFromLocalDateTime() {
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT c FROM CompUser AS c WHERE EXTRACT(DATE FROM LOCAL DATETIME) > {d '2025-01-10'}";
+
+        List<CompUser> result = em.createQuery(query, CompUser.class).getResultList();
+
+        assertNotNull(result);
+        assertEquals(6, result.size());
+        endEm(em);
+    }
+
+    public void testExtractTimeFromLocalTime() {
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT c FROM CompUser AS c WHERE EXTRACT(TIME FROM LOCAL TIME) = {t '01:32:20'}";
+
+        List<CompUser> result = em.createQuery(query, CompUser.class).getResultList();
+
+        assertNotNull(result);
+        assertEquals(0, result.size());
+        endEm(em);
+    }
+
+    public void testExtractYear() {
+        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
+            // Derby does not support EXTRACT
+            return;
+        }
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT c FROM CompUser AS c WHERE EXTRACT (YEAR FROM {d '2006-03-21'}) > 2005";
+
+        List<CompUser> result = em.createQuery(query, CompUser.class).getResultList();
+
+        assertNotNull(result);
+        assertEquals(6, result.size());
+        endEm(em);
+    }
+
+    public void testExtractBirthYear() {
+        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
+            // Derby does not support EXTRACT
+            return;
+        }
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT EXTRACT(YEAR FROM {d '2025-01-23'}) - c.age FROM CompUser AS c";
+
+        List result = em.createQuery(query).getResultList();
+
+        assertNotNull(result);
+        assertEquals(6, result.size());
+        assertEquals(1989, (int) result.get(0));
+        assertEquals(1989, (int) result.get(1));
+        assertEquals(2006, (int) result.get(2));
+        assertEquals(2015, (int) result.get(3));
+        assertEquals(1996, (int) result.get(4));
+        assertEquals(2002, (int) result.get(5));
+        endEm(em);
+    }
+
+    public void testExtractQUARTER() {
+        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
+            // Derby does not support EXTRACT
+            return;
+        }
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT c FROM CompUser AS c WHERE EXTRACT (QUARTER FROM {d '2006-03-21'}) = 2";
+
+        List<CompUser> result = em.createQuery(query, CompUser.class).getResultList();
+
+        assertNotNull(result);
+        assertEquals(0, result.size());
+        endEm(em);
+    }
+
+    public void testExtractMONTH() {
+        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
+            // Derby does not support EXTRACT
+            return;
+        }
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT c FROM CompUser AS c WHERE EXTRACT (MONTH FROM {d '2006-03-21'}) <= 3";
+
+        List<CompUser> result = em.createQuery(query, CompUser.class).getResultList();
+
+        assertNotNull(result);
+        assertEquals(6, result.size());
+        endEm(em);
+    }
+
+    public void testExtractWEEK() {
+        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
+            // Derby does not support EXTRACT
+            return;
+        }
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT c FROM CompUser AS c WHERE EXTRACT (WEEK FROM {d '2006-03-21'}) <= 12";
+
+        List<CompUser> result = em.createQuery(query, CompUser.class).getResultList();
+
+        assertNotNull(result);
+        assertEquals(6, result.size());
+        endEm(em);
+    }
+
+    public void testExtractDAY() {
+        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
+            // Derby does not support EXTRACT
+            return;
+        }
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT c FROM CompUser AS c WHERE EXTRACT (DAY FROM {ts '2006-03-21 18:19:23'}) = 21";
+
+        List<CompUser> result = em.createQuery(query, CompUser.class).getResultList();
+
+        assertNotNull(result);
+        assertEquals(6, result.size());
+        endEm(em);
+    }
+
+    public void testExtractHOUR() {
+        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
+            // Derby does not support EXTRACT
+            return;
+        }
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT c FROM CompUser AS c WHERE EXTRACT (HOUR FROM {ts '2006-03-21 18:19:23'}) <> 18";
+
+        List<CompUser> result = em.createQuery(query, CompUser.class).getResultList();
+
+        assertNotNull(result);
+        assertEquals(0, result.size());
+        endEm(em);
+    }
+
+    public void testExtractMINUTE() {
+        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
+            // Derby does not support EXTRACT
+            return;
+        }
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT c FROM CompUser AS c WHERE EXTRACT(MINUTE FROM {ts '2006-03-21 18:19:23'}) = 19";
+
+        List<CompUser> result = em.createQuery(query, CompUser.class).getResultList();
+
+        assertNotNull(result);
+        assertEquals(6, result.size());
+        endEm(em);
+    }
+
+    public void testExtractSECOND() {
+        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
+            // Derby does not support EXTRACT
+            return;
+        }
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT EXTRACT(SECOND FROM {ts '2006-03-21 18:19:23'}) - c.age FROM CompUser AS c ORDER BY c.age";
+
+        List result = em.createQuery(query).getResultList();
+
+        assertNotNull(result);
+        assertEquals(6, result.size());
+        assertEquals(13f, (float) result.get(0));
+        assertEquals(4f, (float) result.get(1));
+        assertEquals(0f, (float) result.get(2));
+        assertEquals(-6f, (float) result.get(3));
+        assertEquals(-13f, (float) result.get(4));
+        assertEquals(-13f, (float) result.get(5));
+        endEm(em);
+    }
+
+    public void testExtractHourFromLocalTime() {
+        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
+            // Derby does not support EXTRACT
+            return;
+        }
+        EntityManager em = currentEntityManager();
+        String query = "SELECT CURRENT_TIME, (EXTRACT(HOUR FROM LOCAL TIME) - c.age) FROM CompUser as c WHERE c.age = 23";
+        
+        List result = em.createQuery(query).getResultList();
+
+        assertEquals(1, result.size());
+        Object[] ret = (Object[]) result.get(0);
+        assertEquals(2, ret.length);
+        Time time = (Time) ret[0];
+        LocalTime serverTime = time.toLocalTime();
+        int expected = serverTime.get(ChronoField.HOUR_OF_DAY) - 23;
+        
+        assertEquals(expected, (int) ret[1]);
 
         endEm(em);
     }

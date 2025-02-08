@@ -21,6 +21,9 @@ package org.apache.openjpa.persistence.criteria;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.ParameterizedType;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -976,6 +979,54 @@ class Expressions {
         @Override
         public StringBuilder asValue(AliasContext q) {
             return new StringBuilder("CURRENT_TIMESTAMP");
+        }
+    }
+
+    public static class CurrentLocalDateTime extends ExpressionImpl<java.time.LocalDateTime> {
+        public CurrentLocalDateTime() {
+            super(java.time.LocalDateTime.class);
+        }
+
+        @Override
+        public Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
+            return factory.getCurrentLocalDateTime(LocalDateTime.class);
+        }
+
+        @Override
+        public StringBuilder asValue(AliasContext q) {
+            return new StringBuilder("LOCAL DATETIME");
+        }
+    }
+
+    public static class CurrentLocalDate extends ExpressionImpl<java.time.LocalDate> {
+        public CurrentLocalDate() {
+            super(java.time.LocalDate.class);
+        }
+
+        @Override
+        public Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
+            return factory.getCurrentLocalDateTime(LocalDate.class);
+        }
+
+        @Override
+        public StringBuilder asValue(AliasContext q) {
+            return new StringBuilder("LOCAL DATE");
+        }
+    }
+
+    public static class CurrentLocalTime extends ExpressionImpl<java.time.LocalTime> {
+        public CurrentLocalTime() {
+            super(java.time.LocalTime.class);
+        }
+
+        @Override
+        public Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
+            return factory.getCurrentLocalDateTime(LocalTime.class);
+        }
+
+        @Override
+        public StringBuilder asValue(AliasContext q) {
+            return new StringBuilder("LOCAL TIME");
         }
     }
 
