@@ -77,6 +77,11 @@ public class ValueStrategies {
      */
     public static final int UUID_TYPE4_HEX = 8;
 
+    /**
+     * JPA 3.1 native UUID strategy
+     */
+    public static final int UUID_JPA = 9;
+
     private static final Localizer _loc = Localizer.forPackage
         (ValueStrategies.class);
 

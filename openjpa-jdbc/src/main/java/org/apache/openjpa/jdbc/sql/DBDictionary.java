@@ -67,6 +67,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.UUID;
 
 import javax.sql.DataSource;
 
@@ -397,6 +398,7 @@ public class DBDictionary
     public String varcharTypeName = "VARCHAR";
     public String xmlTypeName = "XML";
     public String xmlTypeEncoding = "UTF-8";
+    public String uuidTypeName = "UUID";
     public String getStringVal = "";
 
     // schema metadata
@@ -492,6 +494,8 @@ public class DBDictionary
     public String catalogSeparator = ".";
     protected String defaultSchemaName = null;
     private String conversionKey = null;
+
+    public boolean supportsUuidType = false;
 
     // Naming utility and naming rules
     private DBIdentifierUtil namingUtil = null;
@@ -1628,6 +1632,9 @@ public class DBDictionary
                 } else
                     setTimestamp(stmnt, idx, (Timestamp) val, null, col);
                 break;
+            case JavaTypes.UUID_OBJ:
+                setObject(stmnt, idx, val, Types.OTHER, col);
+                break;
             default:
                 if (col != null && (col.getType() == Types.BLOB
                     || col.getType() == Types.VARBINARY))
@@ -1733,6 +1740,10 @@ public class DBDictionary
         else if (val instanceof Reader)
             setCharacterStream(stmnt, idx, (Reader) val,
                 (sized == null) ? 0 : sized.size, col);
+        else if (val instanceof UUID && supportsUuidType)
+            setObject(stmnt, idx, (UUID) val, Types.OTHER, col);
+        else if (val instanceof UUID && !supportsUuidType) 
+            setString(stmnt, idx, ((UUID) val).toString(), col);
         else
             throw new UserException(_loc.get("bad-param", val.getClass()));
     }
@@ -1955,6 +1966,15 @@ public class DBDictionary
 
         if (col.isAutoAssigned() && autoAssignTypeName != null)
             return appendSize(col, autoAssignTypeName);
+
+        if (col.getJavaType() == JavaTypes.UUID_OBJ) {
+            if (supportsUuidType) 
+                return appendSize(col, uuidTypeName);
+            else {
+                col.setSize(16);
+                return appendSize(col, getTypeName(Types.VARCHAR));
+            }
+        }
 
         return appendSize(col, getTypeName(col.getType()));
     }

@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.lib.meta.CFMetaDataParser;
@@ -96,6 +97,9 @@ public class JavaTypes {
     public static final int OFFSET_TIME = 36;
     public static final int OFFSET_DATETIME = 37;
 
+    public static final int UUID_OBJ = 38;
+    public static final int UUID_STR = 39;
+
 
 
     private static final Localizer _loc = Localizer.forPackage(JavaTypes.class);
@@ -131,6 +135,8 @@ public class JavaTypes {
         _typeCodes.put(LocalDateTime.class, LOCAL_DATETIME);
         _typeCodes.put(OffsetTime.class, OFFSET_TIME);
         _typeCodes.put(OffsetDateTime.class, OFFSET_DATETIME);
+
+        _typeCodes.put(UUID.class, UUID_OBJ);
     }
 
     /**
@@ -417,6 +423,11 @@ public class JavaTypes {
                 if (val instanceof String)
                     return Short.valueOf(val.toString());
                 return val;
+            case UUID_OBJ:
+                if (val instanceof String) {
+                    return UUID.fromString(val.toString());
+                }
+                return (UUID) val;
             case STRING:
                 return val.toString();
             default:

@@ -82,6 +82,7 @@ import org.apache.openjpa.util.InvalidStateException;
 import org.apache.openjpa.util.OpenJPAId;
 import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UserException;
+import org.apache.openjpa.util.UuidId;
 
 /**
  * StoreManager plugin that uses JDBC to store persistent data in a

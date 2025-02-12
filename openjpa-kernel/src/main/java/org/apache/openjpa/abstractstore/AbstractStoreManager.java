@@ -42,6 +42,7 @@ import org.apache.openjpa.meta.ValueStrategies;
 import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.Id;
 import org.apache.openjpa.util.ImplHelper;
+import org.apache.openjpa.util.UuidId;
 
 /**
  * Abstract store manager implementation to ease development of custom

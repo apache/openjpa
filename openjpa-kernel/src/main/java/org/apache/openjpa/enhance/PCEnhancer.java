@@ -4927,6 +4927,7 @@ public class PCEnhancer {
                 case JavaTypes.MAP:
                 case JavaTypes.OBJECT:
                 case JavaTypes.CALENDAR:
+                case JavaTypes.UUID_OBJ:
                     // if (sm != null)
                     //   sm.proxyDetachedDeserialized (<index>);
                     instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
