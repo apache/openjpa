@@ -98,8 +98,6 @@ public class JavaTypes {
     public static final int OFFSET_DATETIME = 37;
 
     public static final int UUID_OBJ = 38;
-    public static final int UUID_STR = 39;
-
 
 
     private static final Localizer _loc = Localizer.forPackage(JavaTypes.class);

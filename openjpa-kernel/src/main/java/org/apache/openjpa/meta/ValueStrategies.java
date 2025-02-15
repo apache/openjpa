@@ -82,6 +82,8 @@ public class ValueStrategies {
      */
     public static final int UUID_JPA = 9;
 
+    public static final int UUID_TYPE4_CANON = 10;
+
     private static final Localizer _loc = Localizer.forPackage
         (ValueStrategies.class);
 
@@ -98,6 +100,8 @@ public class ValueStrategies {
         _map.put("uuid-hex", UUID_HEX);
         _map.put("uuid-type4-string", UUID_TYPE4_STRING);
         _map.put("uuid-type4-hex", UUID_TYPE4_HEX);
+        _map.put("uuid-jpa", UUID_JPA);
+        _map.put("uuid-type4-canon", UUID_TYPE4_CANON);
     }
 
     /**

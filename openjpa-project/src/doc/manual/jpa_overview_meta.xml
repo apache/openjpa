@@ -886,7 +886,8 @@ has the following values:
                         <listitem>
                             <para>
 <literal>GeneratorType.AUTO</literal>: The default. Assign the field a
-generated value, leaving the details to the JPA vendor.
+generated value, leaving the details to the JPA vendor. If the field type
+is UUID, it will be given an generated UUID.
                             </para>
                         </listitem>
                         <listitem>
@@ -905,6 +906,13 @@ generate a field value.
                             <para>
 <literal>GenerationType.TABLE</literal>: Use a sequence table to generate a
 field value.
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+<literal>GenerationType.UUID</literal>: Assign the field a type 4 UUID
+generated value. In this case, the field must be either <classname>String</classname>
+ or <classname>UUID<classname>.
                             </para>
                         </listitem>
                     </itemizedlist>
@@ -1189,6 +1197,9 @@ Since JPA 2.2 the following <classname>java.time</classname> Types are also supp
 <classname>java.time.LocalDate</classname>, <classname>java.time.LocalDateTime</classname>,
 <classname>java.time.LocalTime</classname>, <classname>java.time.LocalOffsetTime</classname>
 and <classname>java.time.OffsetDateTime</classname>.
+            </para>
+            <para>
+Since JPA 3.1, <classname>java.util.UUID</classname> is also supported.
             </para>
             <para>
 <classname>Basic</classname> declares these properties:

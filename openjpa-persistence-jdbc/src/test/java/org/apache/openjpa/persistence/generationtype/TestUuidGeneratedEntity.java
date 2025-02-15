@@ -73,8 +73,8 @@ public class TestUuidGeneratedEntity extends SingleEMFTestCase {
         assertNotNull(gv1.getNativeUuid());
         assertNotNull(gv2.getNativeUuid());
         assertFalse(gv1.getNativeUuid().compareTo(gv2.getNativeUuid()) == 0);
-        assertTrue(isHexUUID(gv1.getStringUUID(), 4));
-        assertTrue(isHexUUID(gv2.getStringUUID(), 4));
+        assertTrue(isCanonicalHexUUID(gv1.getStringUUID(), 4));
+        assertTrue(isCanonicalHexUUID(gv2.getStringUUID(), 4));
         closeEM(em);
     }
 
@@ -265,25 +265,58 @@ public class TestUuidGeneratedEntity extends SingleEMFTestCase {
         closeEM(em);
     }
 
+    public void testSetPreviouslyNullProperty() {
+        EntityManager em = emf.createEntityManager();
+
+        UuidGeneratedEntity parent = new UuidGeneratedEntity();
+        UuidGeneratedEntity child = new UuidGeneratedEntity();
+
+        em.getTransaction().begin();
+        em.persist(parent);
+        child.setParent(parent);
+        em.persist(child);        
+        em.getTransaction().commit();
+
+        em.getTransaction().begin();
+        child.setBasicUuid(new UUID(0, 0));
+        child = em.merge(child);
+        em.getTransaction().commit();
+
+        String query = "SELECT u FROM UuidGeneratedEntity AS u WHERE u.parent = :parent";
+        
+        List<UuidGeneratedEntity> list = em
+            .createQuery(query, UuidGeneratedEntity.class)
+            .setParameter("parent", parent)
+            .getResultList();
+        assertNotNull(child.getBasicUuid());
+
+
+        closeEM(em);
+    }
+
     /*
      * Verify a uuid hex string value is 32 characters long, consists entirely
      * of hex digits and is the correct version.
      */
-    private boolean isHexUUID(String value, int type) {
-        if (value.length() != 32)
+    private boolean isCanonicalHexUUID(String value, int type) {
+        if (value.length() != 36)
             return false;
         char[] chArr = value.toCharArray();
-        for (int i = 0; i < 32; i++)
+        for (int i = 0; i < 36; i++)
         {
             char ch = chArr[i];
+            if ((i == 8 || i == 13 || i == 18|| i == 23) && ch == '-')
+                continue;
             if (!(Character.isDigit(ch) ||
                 (ch >= 'a' && ch <= 'f') ||
                 (ch >= 'A' && ch <= 'F')))
                 return false;
-            if (i == 12) {
+            if (i == 14) {
                 if (type == 1 && ch != '1')
                     return false;
                 if (type == 4 && ch != '4')
+                    return false;
+                if (type == 7 && ch != '7')
                     return false;
             }
         }

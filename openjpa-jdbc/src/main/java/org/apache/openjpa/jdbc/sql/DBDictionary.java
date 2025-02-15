@@ -1971,7 +1971,7 @@ public class DBDictionary
             if (supportsUuidType) 
                 return appendSize(col, uuidTypeName);
             else {
-                col.setSize(16);
+                //col.setSize(36);
                 return appendSize(col, getTypeName(Types.VARCHAR));
             }
         }

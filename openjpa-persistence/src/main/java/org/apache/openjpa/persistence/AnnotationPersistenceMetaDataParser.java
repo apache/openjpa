@@ -1424,7 +1424,7 @@ public class AnnotationPersistenceMetaDataParser
                         fmd.setValueStrategy(ValueStrategies.UUID_JPA);
                         return;
                     } else if (fmd.getType() == String.class) {
-                        fmd.setValueStrategy(ValueStrategies.UUID_TYPE4_HEX);
+                        fmd.setValueStrategy(ValueStrategies.UUID_TYPE4_CANON);
                         return;
                     }
                 default:

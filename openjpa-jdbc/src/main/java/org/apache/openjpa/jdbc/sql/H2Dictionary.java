@@ -240,7 +240,6 @@ public class H2Dictionary extends DBDictionary {
             "SELECT", "SYSDATE", "TRUE", "UNION", "UNIQUE", "WHERE", "WITH",
         }));
         supportsUuidType = true;
-        uuidTypeName = "UUID";
     }
 
     @Override

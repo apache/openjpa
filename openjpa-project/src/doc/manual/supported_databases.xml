@@ -827,9 +827,13 @@ openjpa.ConnectionURL: jdbc:h2:DB_NAME
             <itemizedlist>
                 <listitem>
                     <para>
-None
+<classname>UUID</classname> support allows usage of binary data on entities. 
+If the user wants to exchange <classname>String</classname> for 
+<classname>UUID</classname>, it is necessary to previously convert the 
+<classname>String</classname> to UUID type in database.
                     </para>
                 </listitem>
+
             </itemizedlist>
         </section>
     </section>
@@ -1258,7 +1262,13 @@ The number of fractions can be explicitly set via scale:
                         A value of <code>@Column(scale=-1)</code> will explicitly turn off all fractions.
                     </para>
                 </listitem>
-
+                <listitem>
+                    <para>
+                        As of MariaDB 10.7 the <code>UUID</code> data type is supported,
+                        but the JDBC driver does not writes the object directly, so 
+                        UUID field support is made through UUID to String conversion.
+                    </para>
+                </listitem>
             </itemizedlist>
         </section>
     </section>
@@ -1465,6 +1475,14 @@ Empty string/char values are stored as NULL.
 Persistent fields of type <classname>java.io.Reader</classname> are not
 supported when using
 <link linkend="ref_guide_streamsupport">LOB streaming</link>.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+<classname>UUID</classname> support allows usage of binary data on entities. 
+If the user wants to exchange <classname>String</classname> for 
+<classname>UUID</classname>, it is necessary to previously convert the 
+<classname>String</classname> to UUID type in database.
                     </para>
                 </listitem>
             </itemizedlist>

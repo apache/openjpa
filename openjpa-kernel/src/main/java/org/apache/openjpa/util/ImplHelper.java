@@ -170,6 +170,8 @@ public class ImplHelper {
                 return UUIDGenerator.nextString(UUIDGenerator.TYPE4);
             case ValueStrategies.UUID_TYPE4_HEX:
                 return UUIDGenerator.nextHex(UUIDGenerator.TYPE4);
+            case ValueStrategies.UUID_TYPE4_CANON:
+                return UUID.randomUUID().toString();
             case ValueStrategies.UUID_JPA:
                 return UUID.randomUUID();
             default:
