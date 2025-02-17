@@ -46,11 +46,7 @@ public class TestUuidGeneratedEntity extends SingleEMFTestCase {
         assertEquals(1, cols.length);
 
         Column col = cols[0];
-        if (_dict.supportsUuidType) {
-            assertEquals(JavaTypes.UUID_OBJ, col.getJavaType());
-        } else {
-            assertEquals(JavaTypes.STRING, col.getJavaType());
-        }
+        assertEquals(_dict.supportsUuidType ? JavaTypes.UUID_OBJ : JavaTypes.STRING, col.getJavaType());
     }
 
     public void testDefaultValues() {

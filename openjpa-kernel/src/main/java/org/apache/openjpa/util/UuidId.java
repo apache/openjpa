@@ -25,6 +25,8 @@ import java.util.UUID;
  * id classes.
  *
  * @author Abe White
+ * @author Paulo Cristovão Filho
+ * @author Max Solodovnik
  */
 public final class UuidId
     extends OpenJPAId {
@@ -66,6 +68,9 @@ public final class UuidId
 
     @Override
     protected boolean idEquals(OpenJPAId o) {
+        if (!(o instanceof UuidId)) {
+            return false;
+        }
         Object key = ((UuidId) o)._key;
         return (_key == null) ? key == null : _key.equals(key);
     }

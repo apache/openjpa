@@ -423,7 +423,7 @@ public class JavaTypes {
                 return val;
             case UUID_OBJ:
                 if (val instanceof String) {
-                    return UUID.fromString(val.toString());
+                    return UUID.fromString((String) val);
                 }
                 return (UUID) val;
             case STRING:
