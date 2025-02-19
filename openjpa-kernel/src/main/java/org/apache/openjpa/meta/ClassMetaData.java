@@ -71,6 +71,7 @@ import org.apache.openjpa.util.OpenJPAId;
 import org.apache.openjpa.util.ShortId;
 import org.apache.openjpa.util.StringId;
 import org.apache.openjpa.util.UnsupportedException;
+import org.apache.openjpa.util.UuidId;
 
 
 /**
@@ -558,6 +559,9 @@ public class ClassMetaData
             case JavaTypes.BOOLEAN:
             case JavaTypes.BOOLEAN_OBJ:
                 _objectId = BooleanId.class;
+                break;
+            case JavaTypes.UUID_OBJ:
+                _objectId = UuidId.class;
                 break;
         }
         return _objectId;

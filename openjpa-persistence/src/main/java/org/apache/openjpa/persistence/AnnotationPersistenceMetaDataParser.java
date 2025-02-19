@@ -90,6 +90,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
+import java.util.UUID;
 
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
@@ -1410,12 +1411,22 @@ public class AnnotationPersistenceMetaDataParser
                     else
                         fmd.setValueSequenceName(generator);
                     break;
-                case AUTO:
-                    fmd.setValueSequenceName(SequenceMetaData.NAME_SYSTEM);
-                    break;
                 case IDENTITY:
                     fmd.setValueStrategy(ValueStrategies.AUTOASSIGN);
                     break;
+                case AUTO:
+                    if (fmd.getType() != UUID.class) {
+                        fmd.setValueSequenceName(SequenceMetaData.NAME_SYSTEM);
+                        return;
+                    }
+                case UUID:
+                    if (fmd.getType() == UUID.class) {
+                        fmd.setValueStrategy(ValueStrategies.UUID_JPA);
+                        return;
+                    } else if (fmd.getType() == String.class) {
+                        fmd.setValueStrategy(ValueStrategies.UUID_TYPE4_CANON);
+                        return;
+                    }
                 default:
                     throw new UnsupportedException(strategy.toString());
             }

@@ -216,6 +216,8 @@ public class PostgresDictionary extends DBDictionary {
 
         // PostgreSQL requires to escape search strings
         requiresSearchStringEscapeForLike = true;
+        supportsUuidType = true;
+        uuidTypeName = "UUID";
     }
 
 
@@ -305,7 +307,7 @@ public class PostgresDictionary extends DBDictionary {
     public void setNull(PreparedStatement stmnt, int idx, int colType,
         Column col)
         throws SQLException {
-        if (col != null && col.isXML()) {
+        if (col != null && (col.isXML() || col.getJavaType() == JavaTypes.UUID_OBJ)) {
             stmnt.setNull(idx, Types.OTHER);
             return;
         }

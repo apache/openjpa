@@ -144,6 +144,7 @@ public class H2Dictionary extends DBDictionary {
             "UNKNOWN",
             "USER",
             "USING",
+            "UUID",
             "VALUE",
             "VALUES",
             "WHEN",
@@ -238,6 +239,7 @@ public class H2Dictionary extends DBDictionary {
             "IS", "JOIN", "LIKE", "LIMIT", "MINUS", "NATURAL", "NOT", "NULL", "OFFSET", "ON", "ORDER", "PRIMARY", "ROWNUM",
             "SELECT", "SYSDATE", "TRUE", "UNION", "UNIQUE", "WHERE", "WITH",
         }));
+        supportsUuidType = true;
     }
 
     @Override

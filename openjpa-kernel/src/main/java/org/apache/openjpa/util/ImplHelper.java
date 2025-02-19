@@ -23,6 +23,7 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.ManagedInstanceProvider;
@@ -169,6 +170,10 @@ public class ImplHelper {
                 return UUIDGenerator.nextString(UUIDGenerator.TYPE4);
             case ValueStrategies.UUID_TYPE4_HEX:
                 return UUIDGenerator.nextHex(UUIDGenerator.TYPE4);
+            case ValueStrategies.UUID_TYPE4_CANON:
+                return UUID.randomUUID().toString();
+            case ValueStrategies.UUID_JPA:
+                return UUID.randomUUID();
             default:
                 return null;
         }

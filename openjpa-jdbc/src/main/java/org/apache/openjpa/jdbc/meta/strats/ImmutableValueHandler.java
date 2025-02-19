@@ -65,6 +65,8 @@ public class ImmutableValueHandler extends AbstractValueHandler {
         col.setIdentifier(name);
         if (vm.getTypeCode() == JavaTypes.DATE)
             col.setJavaType(JavaSQLTypes.getDateTypeCode(vm.getType()));
+        else if (vm.getTypeCode() == JavaTypes.UUID_OBJ) 
+            updateUUIDColumn(vm, col);
         else
             col.setJavaType(vm.getTypeCode());
         return new Column[]{ col };
@@ -94,6 +96,7 @@ public class ImmutableValueHandler extends AbstractValueHandler {
             case JavaTypes.OFFSET_DATETIME:
             case JavaTypes.BIGINTEGER:
             case JavaTypes.LOCALE:
+            case JavaTypes.UUID_OBJ:
                 return true;
             default:
                 return false;
@@ -116,5 +119,16 @@ public class ImmutableValueHandler extends AbstractValueHandler {
 
         // honor the user's null-value=default
         return JavaSQLTypes.getEmptyValue(vm.getTypeCode());
+    }
+
+    private void updateUUIDColumn(ValueMapping vm, Column col) {
+        DBDictionary dict = vm.getMappingRepository().getDBDictionary();
+        if (dict.supportsUuidType) {
+            col.setJavaType(vm.getTypeCode());
+            col.setSize(-1);
+        } else {
+            col.setJavaType(JavaTypes.STRING);
+            col.setSize(36);
+        }
     }
 }

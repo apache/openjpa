@@ -460,6 +460,11 @@ java.lang.Byte</classname>, etc)
 <classname>java.time.OffsetTime</classname>
                     </para>
                 </listitem>
+                <listitem>
+                    <para>
+<classname>java.util.UUID</classname>
+                    </para>
+                </listitem>
             </itemizedlist>
             <para>
 JPA also supports <classname>byte[]</classname>, <classname>Byte[]</classname>,
@@ -739,7 +744,7 @@ other entities of the same type.
         <para>
 Identity fields must be primitives, primitive wrappers, <classname>
 String</classname>s, <classname>Date</classname>s, <classname>
-Timestamp</classname>s, or embeddable types.
+Timestamp</classname>s, <classname>UUID</classname>s or embeddable types.
         </para>
         <note>
             <para>
@@ -749,6 +754,14 @@ primary key columns, OpenJPA also supports using identity fields of type
 <classname>byte[]</classname>. When you use a <classname>byte[]</classname>
 identity field, you must create an identity class.  Identity classes are
 covered below.
+            </para>
+        </note>
+        <note>
+            <para>
+OpenJPA supports <classname>UUID</classname>s identity fields using the
+binary representation of UUID on the database if the database and its 
+JDBC driver supports it. When this conditions are not met, it uses the
+canonical string representation of the UUID.
             </para>
         </note>
         <warning>

@@ -145,6 +145,9 @@ public class HSQLDictionary extends DBDictionary {
             packageName = "org.hsqldb.Trace";
             fieldName = "VIOLATION_OF_UNIQUE_INDEX";
         }
+        if (dbMajorVersion > 2 || (dbMajorVersion == 2 && dbMinorVersion >= 4)) {
+            supportsUuidType = true;
+        }
         try {
             Class<?> cls = Class.forName(packageName);
             Field fld = cls.getField(fieldName);

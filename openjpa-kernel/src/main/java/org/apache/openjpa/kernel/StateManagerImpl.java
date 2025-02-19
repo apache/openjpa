@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.TimeZone;
+import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -2904,6 +2905,13 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
                 break;
             case JavaTypes.STRING:
                 fm.storeStringField(field, (String) val);
+                break;
+            case JavaTypes.UUID_OBJ:
+                if (val instanceof String) {
+                    fm.storeObjectField(field, (UUID) UUID.fromString((String) val));
+                } else if (val instanceof UUID) {
+                    fm.storeObjectField(field, (UUID) val);
+                }
                 break;
             default:
                 fm.storeObjectField(field, val);

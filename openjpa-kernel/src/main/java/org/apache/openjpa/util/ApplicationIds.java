@@ -25,6 +25,7 @@ import java.math.BigInteger;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.Date;
+import java.util.UUID;
 
 import org.apache.openjpa.enhance.FieldManager;
 import org.apache.openjpa.enhance.PCRegistry;
@@ -208,6 +209,12 @@ public class ApplicationIds {
                         throw new ClassCastException("!(x instanceof Boolean)");
                     return new BooleanId(meta.getDescribedType(),
                         val == null ? false : (Boolean)val);
+                case JavaTypes.UUID_OBJ:
+                    if (convert && (val instanceof String))
+                        return new UuidId(meta.getDescribedType(), UUID.fromString((String) val));
+                    else if (val instanceof UUID)
+                        return new UuidId(meta.getDescribedType(), (UUID) val);
+                    throw new ClassCastException(String.format("Could not convert [%s] to UUID", val.getClass().getCanonicalName()));
                 default:
                     throw new InternalException();
             }
