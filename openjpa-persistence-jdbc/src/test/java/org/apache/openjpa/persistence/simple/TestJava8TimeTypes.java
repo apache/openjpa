@@ -138,8 +138,17 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<OffsetTime> qry = em.createQuery("select max(t.offsetTimeField) from Java8TimeTypes AS t", OffsetTime.class);
         final OffsetTime max = qry.getSingleResult();
-        assertEquals(entity1.getOffsetTimeField().withOffsetSameInstant(entity1.getOffsetTimeField().getOffset()),
-                max.withOffsetSameInstant(entity1.getOffsetTimeField().getOffset()));
+
+        //  ---from DBDictionary
+        // adjust to the default timezone right now.
+        // This is an ugly hack and cries for troubles in case the daylight saving changes...
+        // Which is also the reason why we cannot cache the offset.
+        // According to the Oracle docs the JDBC driver always assumes 'local time' ...
+        final ZoneOffset zoneOffset = OffsetDateTime.now().getOffset();
+        final OffsetTime offset1 = entity1.getOffsetTimeField().withOffsetSameInstant(zoneOffset);
+        final OffsetTime offset2 = entity2.getOffsetTimeField().withOffsetSameInstant(zoneOffset);
+        final OffsetTime etalon = (offset1.compareTo(offset2) > 0) ? offset1 : offset2;
+        assertEquals(etalon.withNano(0), max);
         em.close();
     }
 
