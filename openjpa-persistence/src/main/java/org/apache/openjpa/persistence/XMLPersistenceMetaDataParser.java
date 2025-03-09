@@ -594,6 +594,11 @@ public class XMLPersistenceMetaDataParser
         } else if (XMLVersionParser.VERSION_3_0.equals(_ormVersion)
                 || (_schemaLocation != null && _schemaLocation.indexOf(ORM_XSD_3_0) > -1)) {
             ormxsd = "orm_3_0-xsd.rsrc";
+            useExtendedSchema = false;
+        } else if (XMLVersionParser.VERSION_3_1.equals(_ormVersion)
+                || (_schemaLocation != null && _schemaLocation.indexOf(ORM_XSD_3_0) > -1)) {
+            ormxsd = "orm_3_1-xsd.rsrc";
+            useExtendedSchema = false;
         }
 
         List<InputStream> schema = new ArrayList<>();
