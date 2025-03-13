@@ -41,7 +41,8 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     private static String VAL_LOCAL_TIME = "04:57:15";
     private static String VAL_LOCAL_DATETIME = "2019-01-01T01:00:00";
 
-    private Java8TimeTypes insertedEntity = new Java8TimeTypes();
+    private Java8TimeTypes entity1 = new Java8TimeTypes();
+    private Java8TimeTypes entity2 = new Java8TimeTypes();
 
     @Override
     public void setUp() {
@@ -49,16 +50,28 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        
-        insertedEntity.setId(1);
-        insertedEntity.setOldDateField(new Date());
-        insertedEntity.setLocalTimeField(LocalTime.parse(VAL_LOCAL_TIME));
-        insertedEntity.setLocalDateField(LocalDate.parse(VAL_LOCAL_DATE));
-        insertedEntity.setLocalDateTimeField(LocalDateTime.parse(VAL_LOCAL_DATETIME));
-        insertedEntity.setOffsetTimeField(insertedEntity.getLocalTimeField().atOffset(ZoneOffset.ofHours(-9)));
-        insertedEntity.setOffsetDateTimeField(insertedEntity.getLocalDateTimeField().atOffset(ZoneOffset.ofHours(-9)));
 
-        em.persist(insertedEntity);
+        entity1.setId(1);
+        entity1.setOldDateField(new Date());
+        entity1.setLocalTimeField(LocalTime.parse(VAL_LOCAL_TIME));
+        entity1.setLocalDateField(LocalDate.parse(VAL_LOCAL_DATE));
+        entity1.setLocalDateTimeField(LocalDateTime.parse(VAL_LOCAL_DATETIME));
+        entity1.setOffsetTimeField(entity1.getLocalTimeField().atOffset(ZoneOffset.ofHours(-9)));
+        entity1.setOffsetDateTimeField(entity1.getLocalDateTimeField().atOffset(ZoneOffset.ofHours(-9)));
+
+        em.persist(entity1);
+
+        // Second entity is created to pass testGetCurrentLocalTime test
+        // it still can fail in case will be started exactly at midnight
+        entity2.setId(2);
+        entity2.setOldDateField(new Date());
+        entity2.setLocalTimeField(LocalTime.now().minusNanos(1));
+        entity2.setLocalDateField(LocalDate.parse(VAL_LOCAL_DATE));
+        entity2.setLocalDateTimeField(LocalDateTime.parse(VAL_LOCAL_DATETIME));
+        entity2.setOffsetTimeField(entity2.getLocalTimeField().atOffset(ZoneOffset.ofHours(-9)));
+        entity2.setOffsetDateTimeField(entity2.getLocalDateTimeField().atOffset(ZoneOffset.ofHours(-9)));
+
+        em.persist(entity2);
         em.getTransaction().commit();
         em.close();
 
@@ -77,20 +90,20 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
 
         // Many databases do not support WITH TIMEZONE syntax.
         // Thus we can only portably ensure tha the same instant is used at least.
-        assertEquals(Instant.from(insertedEntity.getOffsetDateTimeField()),
+        assertEquals(Instant.from(entity1.getOffsetDateTimeField()),
                 Instant.from(eRead.getOffsetDateTimeField()));
 
-        assertEquals(insertedEntity.getOffsetTimeField().withOffsetSameInstant(eRead.getOffsetTimeField().getOffset()),
+        assertEquals(entity1.getOffsetTimeField().withOffsetSameInstant(eRead.getOffsetTimeField().getOffset()),
                 eRead.getOffsetTimeField());
         em.close();
     }
-    
-        // we've got reports from various functions not properly working with Java8 Dates.
+
+    // we've got reports from various functions not properly working with Java8 Dates.
     public void testReadLocalDate() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<LocalDate> qry = em.createQuery("select t.localDateField from Java8TimeTypes AS t", LocalDate.class);
-        final LocalDate date = qry.getSingleResult();
-        assertNotNull(date);
+        final List<LocalDate> date = qry.getResultList();
+        assertEquals(2, date.size());
         em.close();
     }
 
@@ -115,7 +128,9 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<LocalTime> qry = em.createQuery("select max(t.localTimeField) from Java8TimeTypes AS t", LocalTime.class);
         final LocalTime max = qry.getSingleResult();
-        assertEquals(LocalTime.parse(VAL_LOCAL_TIME), max);
+        final LocalTime etalon = (entity1.getLocalTimeField().compareTo(entity2.getLocalTimeField()) > 0
+                ? entity1.getLocalTimeField() : entity2.getLocalTimeField()).withNano(0);
+        assertEquals(etalon, max);
         em.close();
     }
 
@@ -123,8 +138,17 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<OffsetTime> qry = em.createQuery("select max(t.offsetTimeField) from Java8TimeTypes AS t", OffsetTime.class);
         final OffsetTime max = qry.getSingleResult();
-        assertEquals(insertedEntity.getOffsetTimeField().withOffsetSameInstant(insertedEntity.getOffsetTimeField().getOffset()),
-                max.withOffsetSameInstant(insertedEntity.getOffsetTimeField().getOffset()));
+
+        //  ---from DBDictionary
+        // adjust to the default timezone right now.
+        // This is an ugly hack and cries for troubles in case the daylight saving changes...
+        // Which is also the reason why we cannot cache the offset.
+        // According to the Oracle docs the JDBC driver always assumes 'local time' ...
+        final ZoneOffset zoneOffset = OffsetDateTime.now().getOffset();
+        final OffsetTime offset1 = entity1.getOffsetTimeField().withOffsetSameInstant(zoneOffset);
+        final OffsetTime offset2 = entity2.getOffsetTimeField().withOffsetSameInstant(zoneOffset);
+        final OffsetTime etalon = (offset1.compareTo(offset2) > 0) ? offset1 : offset2;
+        assertEquals(etalon.withNano(0), max);
         em.close();
     }
 
@@ -132,7 +156,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<OffsetDateTime> qry = em.createQuery("select max(t.offsetDateTimeField) from Java8TimeTypes AS t", OffsetDateTime.class);
         final OffsetDateTime max = qry.getSingleResult();
-        assertEquals(Instant.from(insertedEntity.getOffsetDateTimeField()),
+        assertEquals(Instant.from(entity1.getOffsetDateTimeField()),
                 Instant.from(max));
         em.close();
     }
@@ -157,7 +181,9 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<LocalTime> qry = em.createQuery("select min(t.localTimeField) from Java8TimeTypes AS t", LocalTime.class);
         final LocalTime min = qry.getSingleResult();
-        assertEquals(LocalTime.parse(VAL_LOCAL_TIME), min);
+        final LocalTime etalon = (entity1.getLocalTimeField().compareTo(entity2.getLocalTimeField()) < 0
+                ? entity1.getLocalTimeField() : entity2.getLocalTimeField()).withNano(0);
+        assertEquals(etalon, min);
         em.close();
     }
 
@@ -165,8 +191,17 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<OffsetTime> qry = em.createQuery("select min(t.offsetTimeField) from Java8TimeTypes AS t", OffsetTime.class);
         final OffsetTime min = qry.getSingleResult();
-        assertEquals(insertedEntity.getOffsetTimeField().withOffsetSameInstant(insertedEntity.getOffsetTimeField().getOffset()),
-                min.withOffsetSameInstant(insertedEntity.getOffsetTimeField().getOffset()));
+
+        //  ---from DBDictionary
+        // adjust to the default timezone right now.
+        // This is an ugly hack and cries for troubles in case the daylight saving changes...
+        // Which is also the reason why we cannot cache the offset.
+        // According to the Oracle docs the JDBC driver always assumes 'local time' ...
+        final ZoneOffset zoneOffset = OffsetDateTime.now().getOffset();
+        final OffsetTime offset1 = entity1.getOffsetTimeField().withOffsetSameInstant(zoneOffset);
+        final OffsetTime offset2 = entity2.getOffsetTimeField().withOffsetSameInstant(zoneOffset);
+        final OffsetTime etalon = (offset1.compareTo(offset2) < 0) ? offset1 : offset2;
+        assertEquals(etalon.withNano(0), min);
         em.close();
     }
 
@@ -175,7 +210,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         final TypedQuery<OffsetDateTime> qry
                 = em.createQuery("select min(t.offsetDateTimeField) from Java8TimeTypes AS t", OffsetDateTime.class);
         final OffsetDateTime min = qry.getSingleResult();
-        assertEquals(Instant.from(insertedEntity.getOffsetDateTimeField()),
+        assertEquals(Instant.from(entity1.getOffsetDateTimeField()),
                 Instant.from(min));
         em.close();
     }
@@ -186,16 +221,17 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
                 = em.createQuery("select j from Java8TimeTypes AS j where j.localDateField < CURRENT_DATE", Java8TimeTypes.class);
         final List<Java8TimeTypes> times = qry.getResultList();
         assertNotNull(times);
-        assertTrue(!times.isEmpty());
+        assertFalse(times.isEmpty());
         em.close();
     }
+
     public void testCurrentDateLocalDateTime() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<Java8TimeTypes> qry
                 = em.createQuery("select j from Java8TimeTypes AS j where j.localDateTimeField < CURRENT_TIMESTAMP", Java8TimeTypes.class);
         final List<Java8TimeTypes> times = qry.getResultList();
         assertNotNull(times);
-        assertTrue(!times.isEmpty());
+        assertFalse(times.isEmpty());
         em.close();
     }
 
@@ -205,17 +241,17 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
                 = em.createQuery("select j from Java8TimeTypes AS j where j.localDateField < LOCAL DATE", Java8TimeTypes.class);
         final List<Java8TimeTypes> times = qry.getResultList();
         assertNotNull(times);
-        assertTrue(!times.isEmpty());
+        assertFalse(times.isEmpty());
         em.close();
     }
 
     public void testGetCurrentLocalDateTime() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<Java8TimeTypes> qry
-                = em.createQuery("select j from Java8TimeTypes AS j where j.localDateTimeField < LOCAL  DATETIME", Java8TimeTypes.class);
+                = em.createQuery("select j from Java8TimeTypes AS j where j.localDateTimeField < LOCAL DATETIME", Java8TimeTypes.class);
         final List<Java8TimeTypes> times = qry.getResultList();
         assertNotNull(times);
-        assertTrue(!times.isEmpty());
+        assertFalse(times.isEmpty());
         em.close();
     }
 
@@ -225,7 +261,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
                 = em.createQuery("select j from Java8TimeTypes AS j where j.localTimeField < LOCAL TIME", Java8TimeTypes.class);
         final List<Java8TimeTypes> times = qry.getResultList();
         assertNotNull(times);
-        assertTrue(!times.isEmpty());
+        assertFalse(times.isEmpty());
         em.close();
     }
 
