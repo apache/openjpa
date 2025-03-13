@@ -253,6 +253,8 @@ openjpa-persistence -
     http://xmlns.jcp.org/xml/ns/persistence/orm_2_2.xsd)
   orm_3_0-xsd.rsrc - Eclipse Public License v2.0 - included in the openjpa jar, taken from:
     https://jakarta.ee/xml/ns/persistence/orm/orm_3_0.xsd
+  orm_3_1-xsd.rsrc - Eclipse Public License v2.0 - included in the openjpa jar, taken from:
+    https://jakarta.ee/xml/ns/persistence/orm/orm_3_1.xsd
   persistence-xsd.rsrc - CDDL 1.0 - included in the openjpa jar, taken from:
     http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd)
   persistence_2_0-xsd.rsrc - CDDL 1.0 - included in the openjpa jar, taken from:
