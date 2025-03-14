@@ -575,17 +575,17 @@ public class XMLPersistenceMetaDataParser
     protected Object getSchemaSource() {
         // use the latest schema by default.  'unknown' docs should parse
         // with the latest schema.
-        String ormxsd = "orm_2_0-xsd.rsrc";
+        String ormxsd = "orm_2_0.xsd.rsrc";
         boolean useExtendedSchema = true;
         // if the version and/or schema location is for 1.0, use the 1.0
         // schema
         if (XMLVersionParser.VERSION_1_0.equals(_ormVersion)
                 || (_schemaLocation != null && _schemaLocation.indexOf(ORM_XSD_1_0) > -1)) {
-            ormxsd = "orm-xsd.rsrc";
+            ormxsd = "orm.xsd.rsrc";
             useExtendedSchema = false;
         } else if (XMLVersionParser.VERSION_2_0.equals(_ormVersion)
                 || (_schemaLocation != null && _schemaLocation.indexOf(ORM_XSD_2_0) > -1)) {
-            ormxsd = "orm_2_0-xsd.rsrc";
+            ormxsd = "orm_2_0.xsd.rsrc";
         } else if (XMLVersionParser.VERSION_2_1.equals(_ormVersion)
                 || (_schemaLocation != null && _schemaLocation.indexOf(ORM_XSD_2_1) > -1)) {
             ormxsd = "orm_2_1.xsd.rsrc";
@@ -594,11 +594,11 @@ public class XMLPersistenceMetaDataParser
             ormxsd = "orm_2_2.xsd.rsrc";
         } else if (XMLVersionParser.VERSION_3_0.equals(_ormVersion)
                 || (_schemaLocation != null && _schemaLocation.indexOf(ORM_XSD_3_0) > -1)) {
-            ormxsd = "orm_3_0-xsd.rsrc";
+            ormxsd = "orm_3_0.xsd.rsrc";
             useExtendedSchema = false;
         } else if (XMLVersionParser.VERSION_3_1.equals(_ormVersion)
                 || (_schemaLocation != null && _schemaLocation.indexOf(ORM_XSD_3_1) > -1)) {
-            ormxsd = "orm_3_1-xsd.rsrc";
+            ormxsd = "orm_3_1.xsd.rsrc";
             useExtendedSchema = false;
         }
 
