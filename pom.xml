@@ -77,28 +77,28 @@
         <createSources>false</createSources>
         <!-- common JDBC driver versions -->
         <derby.version>10.15.2.0</derby.version>
-        <hsqldb.version>2.7.3</hsqldb.version>
+        <hsqldb.version>2.7.4</hsqldb.version>
         <mysql.connector.version>5.1.49</mysql.connector.version>
         <mariadb.connector.version>2.7.2</mariadb.connector.version>
-        <postgresql.connector.version>42.7.3</postgresql.connector.version>
-        <mssql.connector.version>11.2.1.jre8</mssql.connector.version>
+        <postgresql.connector.version>42.7.5</postgresql.connector.version>
+        <mssql.connector.version>12.8.1.jre11</mssql.connector.version>
 
         <!-- other common versions -->
         <kubernetes-client.version>6.13.3</kubernetes-client.version>
-        <slf4j.version>2.0.16</slf4j.version>
+        <slf4j.version>2.0.17</slf4j.version>
 
         <maven.javadoc.version>3.10.0</maven.javadoc.version>
         <javadoc.additionalparam />
-        <maven.surefire.version>3.5.0</maven.surefire.version>
+        <version.maven.surefire>3.5.2</version.maven.surefire>
 
-        <xbean.version>4.25</xbean.version>
-        <bval.version>3.0.1</bval.version>
+        <xbean.version>4.26</xbean.version>
+        <bval.version>3.0.2</bval.version>
         <log4j2.version>2.23.1</log4j2.version>
-        <ant.version>1.10.14</ant.version>
+        <ant.version>1.10.15</ant.version>
 
         <jmock.version>2.13.1</jmock.version>
-        <dbcp2.version>2.12.0</dbcp2.version>
-        <pool2.version>2.12.0</pool2.version>
+        <dbcp2.version>2.13.0</dbcp2.version>
+        <pool2.version>2.12.1</pool2.version>
 
         <jakarta.annotation-api.version>2.1.1</jakarta.annotation-api.version>
         <jakarta.persistence-api.version>3.1.0</jakarta.persistence-api.version>
@@ -267,7 +267,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.2.5</version>
                     </plugin>
                 </plugins>
             </build>
@@ -311,7 +310,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>${maven.javadoc.version}</version>
                         <configuration>
                             <encoding>${project.build.sourceEncoding}</encoding>
                             <release>${java.class.version}</release>
@@ -392,7 +390,6 @@
                    <plugin>
                        <groupId>org.apache.maven.plugins</groupId>
                        <artifactId>maven-surefire-plugin</artifactId>
-                       <version>${maven.surefire.version}</version>
                        <configuration>
                            <argLine>${surefire.jvm.args}</argLine>
                            <includes>
@@ -1947,7 +1944,6 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.13.0</version>
                     <configuration>
                         <release>${java.class.version}</release>
                         <encoding>${project.build.sourceEncoding}</encoding>
@@ -1955,13 +1951,7 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-assembly-plugin</artifactId>
-                    <version>3.3.0</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>${maven.javadoc.version}</version>
                     <configuration>
                         <release>${java.class.version}</release>
                         <encoding>${project.build.sourceEncoding}</encoding>
@@ -1974,7 +1964,6 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${maven.surefire.version}</version>
                     <configuration>
                         <argLine>${surefire.jvm.args}</argLine>
                         <redirectTestOutputToFile>true</redirectTestOutputToFile>
@@ -2044,12 +2033,12 @@
                 <plugin>
                     <groupId>io.fabric8</groupId>
                     <artifactId>docker-maven-plugin</artifactId>
-                    <version>0.45.0</version>
+                    <version>0.45.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-report-plugin</artifactId>
-                    <version>${maven.surefire.version}</version>
+                    <version>${version.maven.surefire}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -2059,7 +2048,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>buildnumber-maven-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.2.1</version>
                     <configuration>
                         <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
                         <revisionOnScmFailure>offline</revisionOnScmFailure>
@@ -2085,13 +2074,7 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-dependency-plugin</artifactId>
-                    <version>3.7.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>3.1.1</version>
                     <configuration>
                         <useReleaseProfile>false</useReleaseProfile>
                         <tagNameFormat>@{project.version}</tagNameFormat>
@@ -2116,26 +2099,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-antrun-plugin</artifactId>
-                    <version>1.8</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.apache.ant</groupId>
-                            <artifactId>ant-jsch</artifactId>
-                            <version>1.10.9</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>ant-contrib</groupId>
-                            <artifactId>ant-contrib</artifactId>
-                            <version>1.0b3</version>
-                            <!-- tries to pull in older ant-1.5.jar -->
-                            <exclusions>
-                                <exclusion>
-                                    <groupId>ant</groupId>
-                                    <artifactId>ant</artifactId>
-                                </exclusion>
-                            </exclusions>
-                        </dependency>
-                    </dependencies>
+                    <version>3.1.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -2149,13 +2113,7 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>3.4.0</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.4.2</version>
                     <executions>
                         <execution>
                             <id>default-jar</id>
@@ -2289,7 +2247,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.5.0</version>
                 <executions>
                     <execution>
                         <phase>validate</phase>
@@ -2357,7 +2314,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>${maven.javadoc.version}</version>
                 <configuration>
                     <show>package</show>
                     <quiet>true</quiet>
