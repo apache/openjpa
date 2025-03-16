@@ -843,24 +843,24 @@ public class PersistenceProductDerivation
             // persistence-unit.  that is currently the only significant change
             // to the schema.  if more significant changes are made in the
             // future, the 2.0 schema may be preferable.
-            String persistencexsd = "persistence-xsd.rsrc";
+            String persistencexsd = "persistence.xsd.rsrc";
             // if the version and/or schema location is for 1.0, use the 1.0
             // schema
             if (XMLVersionParser.VERSION_2_0.equals(_persistenceVersion)
                     || (_schemaLocation != null && _schemaLocation.indexOf(PERSISTENCE_XSD_2_0) != -1)) {
-                persistencexsd = "persistence_2_0-xsd.rsrc";
+                persistencexsd = "persistence_2_0.xsd.rsrc";
             }
             else if (XMLVersionParser.VERSION_2_1.equals(_persistenceVersion)
                     || (_schemaLocation != null && _schemaLocation.indexOf(PERSISTENCE_XSD_2_1) != -1)) {
-                persistencexsd = "persistence_2_1-xsd.rsrc";
+                persistencexsd = "persistence_2_1.xsd.rsrc";
             }
             else if (XMLVersionParser.VERSION_2_2.equals(_persistenceVersion)
                     || (_schemaLocation != null && _schemaLocation.indexOf(PERSISTENCE_XSD_2_2) != -1)) {
-                persistencexsd = "persistence_2_2-xsd.rsrc";
+                persistencexsd = "persistence_2_2.xsd.rsrc";
             }
             else if (XMLVersionParser.VERSION_3_0.equals(_persistenceVersion)
                     || (_schemaLocation != null && _schemaLocation.indexOf(PERSISTENCE_XSD_3_0) != -1)) {
-                persistencexsd = "persistence_3_0-xsd.rsrc";
+                persistencexsd = "persistence_3_0.xsd.rsrc";
             }
 
             return getClass().getResourceAsStream(persistencexsd);

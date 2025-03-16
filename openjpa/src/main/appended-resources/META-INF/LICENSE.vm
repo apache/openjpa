@@ -32,27 +32,27 @@ The exceptions are as follows:
 
 ===========================
 openjpa-persistence -
-  orm-xsd.rsrc - CDDL 1.0 - included in the openjpa jar, taken from:
+  orm.xsd.rsrc - CDDL 1.0 - included in the openjpa jar, taken from:
     http://java.sun.com/xml/ns/persistence/orm_1_0.xsd)
-  orm_2_0-xsd.rsrc - CDDL 1.0 - included in the openjpa jar, taken from:
+  orm_2_0.xsd.rsrc - CDDL 1.0 - included in the openjpa jar, taken from:
     http://java.sun.com/xml/ns/persistence/orm_2_0.xsd)
-  orm_2_1-xsd.rsrc - Eclipse Public License v1.0 - included in the openjpa jar, taken from:
+  orm_2_1.xsd.rsrc - Eclipse Public License v1.0 - included in the openjpa jar, taken from:
     http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd)
-  orm_2_2-xsd.rsrc - Eclipse Public License v1.0 - included in the openjpa jar, taken from:
+  orm_2_2.xsd.rsrc - Eclipse Public License v1.0 - included in the openjpa jar, taken from:
     http://xmlns.jcp.org/xml/ns/persistence/orm_2_2.xsd)
-  orm_3_0-xsd.rsrc - Eclipse Public License v2.0 - included in the openjpa jar, taken from:
+  orm_3_0.xsd.rsrc - Eclipse Public License v2.0 - included in the openjpa jar, taken from:
     https://jakarta.ee/xml/ns/persistence/orm/orm_3_0.xsd
-  orm_3_1-xsd.rsrc - Eclipse Public License v2.0 - included in the openjpa jar, taken from:
+  orm_3_1.xsd.rsrc - Eclipse Public License v2.0 - included in the openjpa jar, taken from:
     https://jakarta.ee/xml/ns/persistence/orm/orm_3_1.xsd
-  persistence-xsd.rsrc - CDDL 1.0 - included in the openjpa jar, taken from:
+  persistence.xsd.rsrc - CDDL 1.0 - included in the openjpa jar, taken from:
     http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd)
-  persistence_2_0-xsd.rsrc - CDDL 1.0 - included in the openjpa jar, taken from:
+  persistence_2_0.xsd.rsrc - CDDL 1.0 - included in the openjpa jar, taken from:
     http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd).
-  persistence_2_1-xsd.rsrc - Eclipse Public License v1.0 - included in the openjpa jar, taken from:
+  persistence_2_1.xsd.rsrc - Eclipse Public License v1.0 - included in the openjpa jar, taken from:
     http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd).
-  persistence_2_2-xsd.rsrc - Eclipse Public License v1.0 - included in the openjpa jar, taken from:
+  persistence_2_2.xsd.rsrc - Eclipse Public License v1.0 - included in the openjpa jar, taken from:
     http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd).
-  persistence_3_0-xsd.rsrc - Eclipse Public License v2.0 - included in the openjpa jar, taken from:
+  persistence_3_0.xsd.rsrc - Eclipse Public License v2.0 - included in the openjpa jar, taken from:
     https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd
 ===========================
 
