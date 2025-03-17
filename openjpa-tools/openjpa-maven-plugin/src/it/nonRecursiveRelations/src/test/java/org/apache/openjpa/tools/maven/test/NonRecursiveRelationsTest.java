@@ -67,7 +67,6 @@ public class NonRecursiveRelationsTest {
         em.close();
         em = emf.createEntityManager();
 
-        Cat cat1 = em.find(Cat.class, catId); //comment this line to get an error
         Cat jpqlKitten_1 = em.createQuery("SELECT c FROM Cat c WHERE c.id = :id", Cat.class)
                 .setParameter("id", kitten1Id)
                 .getSingleResult();
