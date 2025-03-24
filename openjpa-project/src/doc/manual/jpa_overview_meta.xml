@@ -912,7 +912,7 @@ field value.
                             <para>
 <literal>GenerationType.UUID</literal>: Assign the field a type 4 UUID
 generated value. In this case, the field must be either <classname>String</classname>
- or <classname>UUID<classname>.
+ or <classname>UUID</classname>.
                             </para>
                         </listitem>
                     </itemizedlist>

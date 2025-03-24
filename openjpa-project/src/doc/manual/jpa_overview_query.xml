@@ -619,7 +619,7 @@ SELECT x FROM Magazine x WHERE FLOOR(x.price) &gt;= 10
                         </primary>
                     </indexterm>
 
-<literal>LN(number)</literal>: Returns the natural logarithm (base <litera>e</literal>) of a value.
+<literal>LN(number)</literal>: Returns the natural logarithm (base <literal>e</literal>) of a value.
                     </para>
 <programlisting>
 SELECT x FROM Magazine x WHERE LN(x.price) &gt;= 10
@@ -788,7 +788,7 @@ SELECT w.name FROM Course c JOIN c.studentWaitlist w WHERE c.name = â€˜Calculusâ
 (year, quarter, month, week, day, hour, minute or second) from a datetime.
                     </para>
 <programlisting>
-SELECT c FROM Customer AS c WHERE EXTRACT(YEAR FROM c.birthDate) < (EXTRACT(YEAR FROM CURRENT_DATE) - 13)
+SELECT c FROM Customer AS c WHERE EXTRACT(YEAR FROM c.birthDate) &lte; (EXTRACT(YEAR FROM CURRENT_DATE) - 13)
 </programlisting>
                 </listitem>
                 <listitem>
@@ -802,7 +802,7 @@ SELECT c FROM Customer AS c WHERE EXTRACT(YEAR FROM c.birthDate) < (EXTRACT(YEAR
 (date or time) from a datetime.
                     </para>
 <programlisting>
-SELECT c FROM Customer AS c WHERE EXTRACT(DATE FROM c.createdTimestamp) < { d '1969-07-20' }
+SELECT c FROM Customer AS c WHERE EXTRACT(DATE FROM c.createdTimestamp) &lte; { d '1969-07-20' }
 </programlisting>
                 </listitem>
                 </itemizedlist>
@@ -3636,7 +3636,7 @@ The <literal>ROUND</literal> function accepts a numeric argument and an integer 
 returns a number of the same type as the first argument.
                     </para>
                     <para>
-The <literal>POWER<literal> function accepts two numeric arguments and returns a double.
+The <literal>POWER</literal> function accepts two numeric arguments and returns a double.
                     </para>
                     <para>
 Numeric arguments to these functions may correspond to the numeric Java object types as well
