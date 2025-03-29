@@ -1144,9 +1144,12 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
                 if (eres == res) {
                     if (eagerToMany == null && fm.isEagerSelectToMany())
                         eagerToMany = fm;
-                    else
+                    else {
+                        res.setMappedByFieldMapping(null);
+                        res.setMappedByValue(null);
                         fm.loadEagerJoin(sm, this,
                                 fetch.traverseJDBC(fm), res);
+                    }
                 }
                 else if (eres != null) {
                     processed = fm.loadEagerParallel(sm, this,
