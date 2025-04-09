@@ -29,7 +29,8 @@ import jakarta.persistence.Table;
     , indexes = {@Index(name = "idx_index1", columnList = "INDEX1")
         , @Index(name = "idx_long", columnList = "LONG_NAME", unique = true)
         , @Index(name = "idx_wo_spaces", columnList = "INDEX1,COL2,COL3")
-        , @Index(name = "idx_with_spaces", columnList = " LONG_NAME , COL2, COL3 ")})
+        , @Index(name = "idx_with_spaces", columnList = " LONG_NAME , COL2, COL3 ")
+        , @Index(columnList = "LONG_NAME, COL2")})
 public class EntityWithIndices {
     @Id
     @Column(name = "PK")

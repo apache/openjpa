@@ -69,12 +69,15 @@ public class TestIndices extends SingleEMFTestCase {
 
         // test multi column index without spaces
         assertIndexColumns(table, "idx_with_spaces", "LONG_NAME", "COL2", "COL3");
+        
+        // test indexes without defined name
+        assertHasIndexWithColumns(table, "LONG_NAME", "COL2");
     }
 
     private void assertIndexColumns(Table table, String indexName, String... assertedColumnNames) {
         Index idx = table.getIndex(DBIdentifier.newIndex(indexName));
         assertNotNull("Defined index should exist", idx);
-
+        
         final List<String> indexColumnNames = Arrays.stream(idx.getColumns())
                 .map(c -> c.getIdentifier().getName())
                 .collect(Collectors.toList());
@@ -83,4 +86,23 @@ public class TestIndices extends SingleEMFTestCase {
             assertTrue("Column " + assertedColumnName + " does not exist in index " + indexName, indexColumnNames.contains(assertedColumnName));
         }
     }
+
+    private void assertHasIndexWithColumns(Table table, String...assertedColumnNames) {
+    	for (Index idx: table.getIndexes()) {
+    		Column[] cols = idx.getColumns();
+    		if (cols.length != assertedColumnNames.length)
+    			continue;
+    		else {
+    			String[] colNames = Arrays.stream(cols)
+    				.map(Column::getIdentifier)
+    				.map(DBIdentifier::getName)
+    				.collect(Collectors.toList())
+    				.toArray(String[]::new);
+    			if (Arrays.equals(colNames, assertedColumnNames))
+    				return;
+    		}
+    	}
+    	fail("Could not find an unnamed index with the given columns.");
+    }
+    
 }
