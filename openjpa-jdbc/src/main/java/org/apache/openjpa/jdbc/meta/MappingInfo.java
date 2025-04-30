@@ -950,11 +950,11 @@ public abstract class MappingInfo implements Serializable {
 
         // if no name provided by user info, make one
         if (DBIdentifier.isNull(name)) {
-            if (tmplate != null && !DBIdentifier.isNull(tmplate.getIdentifier()))
+            if (tmplate != null && !DBIdentifier.isNull(tmplate.getIdentifier())) {
                 name = tmplate.getIdentifier();
-            else {
-            	name = DBIdentifier.newIndex(Arrays.stream(cols)
-            			.map(c -> c.getIdentifier().getName()).collect(Collectors.joining("_")));
+            } else {
+                name = DBIdentifier.newIndex(Arrays.stream(cols)
+                        .map(c -> c.getIdentifier().getName()).collect(Collectors.joining("_")));
                 name = repos.getDBDictionary().getValidIndexName(name, table);
             }
         }
