@@ -21,8 +21,10 @@ package org.apache.openjpa.jdbc.meta;
 import java.io.Serializable;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
@@ -948,10 +950,11 @@ public abstract class MappingInfo implements Serializable {
 
         // if no name provided by user info, make one
         if (DBIdentifier.isNull(name)) {
-            if (tmplate != null)
+            if (tmplate != null && !DBIdentifier.isNull(tmplate.getIdentifier())) {
                 name = tmplate.getIdentifier();
-            else {
-                name = cols[0].getIdentifier();
+            } else {
+                name = DBIdentifier.newIndex(Arrays.stream(cols)
+                        .map(c -> c.getIdentifier().getName()).collect(Collectors.joining("_")));
                 name = repos.getDBDictionary().getValidIndexName(name, table);
             }
         }
