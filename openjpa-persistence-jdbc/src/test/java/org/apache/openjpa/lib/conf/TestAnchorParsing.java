@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.MissingResourceException;
 
@@ -142,7 +143,7 @@ public class TestAnchorParsing extends TestCase {
 
     private File resourceToTemporaryFile(String s) throws IOException {
         InputStream in = getClass().getClassLoader().getResourceAsStream(s);
-        File f = File.createTempFile("TestAnchorParsing", ".xml");
+        File f = Files.createTempFile("TestAnchorParsing", ".xml").toFile();
         OutputStream out = new FileOutputStream(f);
         byte[] bytes = new byte[1024];
         while (true) {
