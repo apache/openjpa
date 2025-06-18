@@ -187,12 +187,14 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
         }
 
         // set some default properties for DBCP
+        String maxActiveKey = hasKey(dbcpProps, "maxActive");
         if (hasKey(dbcpProps, "maxActive") == null) {
             dbcpProps.setProperty("maxActive", "10");
+            maxActiveKey = "maxActive";
         }
         if (hasKey(dbcpProps, "maxIdle") == null) {
             // by default we set maxIdle to the same value as maxActive.
-            dbcpProps.setProperty("maxIdle", dbcpProps.getProperty("maxActive"));
+            dbcpProps.setProperty("maxIdle", dbcpProps.getProperty(maxActiveKey));
         }
         if (hasKey(dbcpProps, "minIdle") == null) {
             dbcpProps.setProperty("minIdle", "0");
