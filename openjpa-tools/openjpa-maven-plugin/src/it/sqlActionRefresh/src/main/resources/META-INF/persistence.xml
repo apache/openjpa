@@ -20,16 +20,5 @@
     <!-- simply all annotated persistent entities will be part of this unit-->
     <persistence-unit name="TestUnit">
         <class>org.apache.openjpa.tools.maven.testentity.TestEntity</class>
-<!-- TODO REMOVE
-        <properties>
-            <property name="openjpa.ConnectionDriverName" value="org.hsqldb.jdbcDriver" />
-            <property name="openjpa.ConnectionURL" value="jdbc:hsqldb:file:openjpa-hsqldb" />
-            <property name="openjpa.ConnectionUserName" value="SA" />
-            <property name="openjpa.ConnectionPassword" value="" />
-        </properties>
--->
-
     </persistence-unit>
-
 </persistence>
-
