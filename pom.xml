@@ -35,7 +35,7 @@
     <name>OpenJPA Parent POM</name>
     <description>Apache OpenJPA implementation of Jakarta JPA 3.1</description>
 
-    <version>4.1.1-SNAPSHOT</version>
+    <version>4.1.2-SNAPSHOT</version>
 
     <properties>
         <java.class.version>11</java.class.version>
