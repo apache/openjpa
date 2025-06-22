@@ -27,6 +27,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Version;
 
 @Entity
 public class UuidGeneratedEntity {
@@ -45,6 +46,10 @@ public class UuidGeneratedEntity {
     private String stringUUID;
 
     private UUID basicUuid;
+
+    @Version
+    @Column(name = "version_")
+    private Long version;
 
     @ManyToOne
     private UuidGeneratedEntity parent;
@@ -91,6 +96,14 @@ public class UuidGeneratedEntity {
 
     public void setParent(UuidGeneratedEntity parent) {
         this.parent = parent;
+    }
+    
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
     
 }

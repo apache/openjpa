@@ -74,6 +74,69 @@ public class TestUuidGeneratedEntity extends SingleEMFTestCase {
         closeEM(em);
     }
 
+    public void testMergeBeforePersist() {
+        EntityManager em = emf.createEntityManager();
+
+        UuidGeneratedEntity gv1 = new UuidGeneratedEntity();
+
+        em.getTransaction().begin();
+        gv1 = em.merge(gv1);
+        em.getTransaction().commit();
+
+        em.refresh(gv1);
+
+        assertNotNull(gv1.getId());
+        assertNotNull(gv1.getNativeUuid());
+        closeEM(em);
+    }
+
+    public void testDetachAndMerge() {
+        EntityManager em = emf.createEntityManager();
+        UuidGeneratedEntity gv = new UuidGeneratedEntity();
+        gv.setBasicUuid(UUID.randomUUID());
+
+        em.getTransaction().begin();
+        em.persist(gv);
+        em.getTransaction().commit();
+
+        assertTrue(em.contains(gv));
+        em.detach(gv);
+        em.clear();
+        assertFalse(em.contains(gv));
+
+        Long v = gv.getVersion();
+        gv.setBasicUuid(UUID.randomUUID());
+
+        em.getTransaction().begin();
+        gv = em.merge(gv);
+        em.getTransaction().commit();
+
+        assertTrue((v + 1) == gv.getVersion());
+
+        closeEM(em);
+    }
+
+    public void testGetByReference() {
+        EntityManager em = emf.createEntityManager();
+        UuidGeneratedEntity gv = new UuidGeneratedEntity();
+
+        em.getTransaction().begin();
+        em.persist(gv);
+        em.getTransaction().commit();
+
+        assertTrue(em.contains(gv));
+        em.detach(gv);
+        UUID id = gv.getId();
+        UUID nid = gv.getNativeUuid();
+
+        em.getTransaction().begin();
+        UuidGeneratedEntity rgv = em.getReference(UuidGeneratedEntity.class, id);
+        assertEquals(nid, rgv.getNativeUuid());
+        em.getTransaction().commit();
+
+        closeEM(em);
+    }
+
     public void testFindByUUIDProperty() {
         EntityManager em = emf.createEntityManager();
 

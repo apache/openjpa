@@ -201,6 +201,7 @@ abstract class AttachStrategy
             case JavaTypes.OBJECT:
             case JavaTypes.OID:
             case JavaTypes.ENUM:
+            case JavaTypes.UUID_OBJ:
                 val = fetchObjectField(i);
                 if (val == null && !nullLoaded)
                     return false;

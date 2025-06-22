@@ -1048,6 +1048,7 @@ public class JDBCStoreQuery
         case JavaTypes.BIGINTEGER:
         case JavaTypes.LOCALE:
         case JavaTypes.OBJECT:
+        case JavaTypes.UUID_OBJ:
         case JavaTypes.OID:
             return sm.fetchObjectField(i);
         default:
