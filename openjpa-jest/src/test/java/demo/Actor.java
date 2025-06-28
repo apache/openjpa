@@ -22,6 +22,7 @@ package demo;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -58,6 +59,7 @@ public class Actor {
     private Actor partner;
     @OneToMany
     private Set<Movie> movies;
+    private UUID randomId;
 
     protected Actor() {
 
@@ -70,6 +72,7 @@ public class Actor {
         this.lastName = lastName;
         this.gender = gender;
         this.dob = dob;
+        this.randomId = java.util.UUID.randomUUID();
     }
 
     public String getId() {
@@ -101,6 +104,13 @@ public class Actor {
 
     public Set<Movie> getMovies() {
         return movies;
+    }
+    public void setRandomId(UUID uuid) {
+        this.randomId = uuid;
+    }
+
+    public UUID getRandomId() {
+        return randomId;
     }
 
     public void addMovie(Movie movie) {

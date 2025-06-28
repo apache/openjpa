@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.TreeSet;
+import java.util.UUID;
 
 import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.CollectionAttribute;
@@ -168,6 +169,9 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
                 break;
             case JavaTypes.LOCALE:
                 attrs.add(new Members.SingularAttributeImpl<X, Locale>(this, f));
+                break;
+            case JavaTypes.UUID_OBJ:
+                attrs.add(new Members.SingularAttributeImpl<X, UUID>(this, f));
                 break;
             case JavaTypes.OBJECT:
             case JavaTypes.OID:
