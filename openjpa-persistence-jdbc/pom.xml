@@ -27,7 +27,7 @@
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>
-        <version>4.1.2-SNAPSHOT</version>
+        <version>4.2.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>openjpa-persistence-jdbc</artifactId>
@@ -116,6 +116,7 @@
                     <execution>
                         <id>enhance</id>
                         <phase>process-test-classes</phase>
+                        <?m2e execute onConfiguration,onIncremental?>
                         <configuration>
                             <target>
                                 <ant antfile="src/main/ant/enhancer.xml" target="enhance" inheritRefs="true">

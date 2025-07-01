@@ -26,20 +26,20 @@
     <parent>
       <groupId>org.apache</groupId>
       <artifactId>apache</artifactId>
-      <version>34</version>
+      <version>35</version>
     </parent>
 
     <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-parent</artifactId>
     <packaging>pom</packaging>
     <name>OpenJPA Parent POM</name>
-    <description>Apache OpenJPA implementation of Jakarta JPA 3.1</description>
+    <description>Apache OpenJPA implementation of Jakarta JPA 3.2</description>
 
-    <version>4.1.2-SNAPSHOT</version>
+    <version>4.2.0-SNAPSHOT</version>
 
     <properties>
-        <java.class.version>11</java.class.version>
-        <java.testclass.version>11</java.testclass.version>
+        <java.class.version>17</java.class.version>
+        <java.testclass.version>17</java.testclass.version>
 
         <doclint>none</doclint>
 
