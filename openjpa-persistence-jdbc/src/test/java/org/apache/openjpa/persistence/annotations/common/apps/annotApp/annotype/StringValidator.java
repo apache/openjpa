@@ -16,25 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package
-    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
+package org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
+
+import java.util.logging.Logger;
 
 import jakarta.persistence.PostPersist;
 import jakarta.persistence.PrePersist;
 
-public class StringValidator
-{
+public class StringValidator {
+	
+	private static final Logger logger = Logger.getLogger(StringValidator.class.getCanonicalName());
+	
 	@PrePersist
-	public void prePersist(FlightSchedule sched)
-	{
+	public void prePersist(FlightSchedule sched) {
 		if(sched.getName().length() == 0 || sched.getName().equals(""))
             throw new IllegalArgumentException("Needs a valid name");
 	}
 
 	@PostPersist
-	public void postPersist(FlightSchedule sched)
-	{
-        System.out.println("Schedule " + sched
-                + " is successfully persisted: StringValidator.class");
+	public void postPersist(FlightSchedule sched) {
+		logger.finest(String.format("Schedure %s is successfully persisted.", sched));
 	}
 }

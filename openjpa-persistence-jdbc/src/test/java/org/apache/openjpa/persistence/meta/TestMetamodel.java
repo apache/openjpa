@@ -147,7 +147,6 @@ public class TestMetamodel extends SingleEMFTestCase {
         ManagedType<ImplicitFieldAccessSubclass> e1 = model.entity(ImplicitFieldAccessSubclass.class);
         assertNotNull(e0.getAttribute("f0"));
         assertNotNull(e1.getAttribute("f0"));
-        System.err.println(e0.getAttribute("f0"));
         assertNotNull(e0.getSingularAttribute("f0", String.class));
         assertNotNull(e1.getSingularAttribute("f0", String.class));
         assertSame(e0.getAttribute("f0"), e0.getSingularAttribute("f0", String.class));
@@ -281,9 +280,6 @@ public class TestMetamodel extends SingleEMFTestCase {
 
     public void testSimpleIdAttributes() {
         IdentifiableType<OneOneParent> entity = model.entity(OneOneParent.class);
-        for (Attribute<? super OneOneParent,?> a : entity.getAttributes()) {
-            System.err.println(a.getName());
-        }
         assertNotNull(entity.getId(long.class));
         assertNotNull(entity.getDeclaredId(long.class));
         assertTrue(entity.hasSingleIdAttribute());
@@ -292,9 +288,6 @@ public class TestMetamodel extends SingleEMFTestCase {
 
     public void testVersionAttributes() {
         IdentifiableType<OneOneParent> entity = model.entity(OneOneParent.class);
-        for (Attribute<? super OneOneParent,?> a : entity.getAttributes()) {
-            System.err.println(a.getName());
-        }
         assertNotNull(entity.getVersion(Integer.class));
         assertNotNull(entity.getDeclaredVersion(Integer.class));
         assertTrue(entity.hasVersionAttribute());
@@ -373,9 +366,9 @@ public class TestMetamodel extends SingleEMFTestCase {
             }
             try {
                 getters[i].invoke(e0, args);
-                fail();
+                fail("Should have thrown an InvocationTargetException here.");
             }  catch (InvocationTargetException e) {
-               System.err.println("Expeceted:" + e.getTargetException());
+               // System.err.println("Expeceted:" + e.getTargetException());
             }
         }
         } catch (Exception e) {
@@ -390,7 +383,7 @@ public class TestMetamodel extends SingleEMFTestCase {
                 : type.getAttribute(name);
             fail("Expected to fail " + name + " on " + type);
         } catch (IllegalArgumentException e) {
-            System.err.println("Expeceted:" + e);
+            // System.err.println("Expeceted:" + e);
         }
     }
 

@@ -387,14 +387,14 @@ public class TestMultiselect extends CriteriaTest {
             fail("Expected IllegalArgumentException becuase Foo(long) is not a valid constructor");
         } catch (IllegalArgumentException e) {
             // good -- but print the error message to check it is informative enough
-            System.err.println(e);
+            e.printStackTrace();
         }
         try {
             q.multiselect(cb.construct(Foo.class));
             fail("Expected IllegalArgumentException becuase Foo() is not a valid constructor");
         } catch (IllegalArgumentException e) {
             // good -- but print the error message to check it is informative enough
-            System.err.println(e);
+            e.printStackTrace();
         }
 
     }

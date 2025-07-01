@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import jakarta.persistence.EntityManager;
 
@@ -31,6 +32,8 @@ import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestXMLPersistenceMetaDataParser extends SQLListenerTestCase {
+	
+	private static final Logger logger = Logger.getLogger(TestXMLPersistenceMetaDataParser.class.getCanonicalName());
 
     @Override
     public void setUp() {
@@ -179,7 +182,7 @@ public class TestXMLPersistenceMetaDataParser extends SQLListenerTestCase {
     private void printArrayList(ArrayList aList) {
         Iterator itr = aList.iterator();
         while (itr.hasNext()) {
-            System.out.println(itr.next());
+            logger.fine(itr.next().toString());
         }
     }
 

@@ -20,6 +20,8 @@ package org.apache.openjpa.persistence.datacache;
 
 import jakarta.persistence.EntityManager;
 
+import java.util.logging.Logger;
+
 import org.apache.openjpa.datacache.CacheStatistics;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.StoreCache;
@@ -36,6 +38,7 @@ public class TestStatistics extends SingleEMFTestCase {
     private static final boolean L2Cached = true;
     private static final boolean L1Cached = true;
     private static final String cls = CachedEntityStatistics.class.getName();
+    private static final Logger logger = Logger.getLogger(TestSJVMCache.class.getCanonicalName());
 
     Object[] p =
         new Object[] { CLEAR_TABLES, CachedEntityStatistics.class
@@ -284,7 +287,7 @@ public class TestStatistics extends SingleEMFTestCase {
                 assertEquals("Read count doesn't match", read, stats.getReadCount(cls));
                 assertEquals("Write count doesn't match", write, stats.getWriteCount(cls));
             } catch (AssertionFailedError t) {
-                System.out.println("hit : " + stats.getHitCount(cls) + " read: " + stats.getReadCount(cls) + " write: "
+                logger.fine("hit : " + stats.getHitCount(cls) + " read: " + stats.getReadCount(cls) + " write: "
                     + stats.getWriteCount(cls));
                 throw t;
             }
@@ -312,7 +315,7 @@ public class TestStatistics extends SingleEMFTestCase {
     }
 
     void print(String msg, CacheStatistics stats) {
-        System.err.println(msg + stats + " H:" + stats.getHitCount() + " R:" + stats.getReadCount() + " W:"
+        logger.fine(msg + stats + " H:" + stats.getHitCount() + " R:" + stats.getReadCount() + " W:"
             + stats.getWriteCount());
     }
 }

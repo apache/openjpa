@@ -135,7 +135,6 @@ public class SQLMapItem
 
 	public void setId(int id)
 	{
-		System.out.println("setId " + id);
 		this.id = id;
 	}
 
@@ -148,7 +147,6 @@ public class SQLMapItem
 
 	public void setName(String name)
 	{
-		System.out.println("setName " + name);
 		this.name = name;
 	}
 

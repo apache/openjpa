@@ -17,12 +17,15 @@
 package org.apache.openjpa.lib.util;
 
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
 public class StringUtilTest {
+	
+	private static final Logger logger = Logger.getLogger(StringUtilTest.class.getCanonicalName());
 
     @Test
     public void testStringSplit() {
@@ -196,7 +199,7 @@ public class StringUtilTest {
         }
 
         long stop = System.nanoTime();
-        System.out.println("took: " + TimeUnit.NANOSECONDS.toMillis(stop - start));
+        logger.fine("took: " + TimeUnit.NANOSECONDS.toMillis(stop - start));
     }
 
     @Test
@@ -212,7 +215,7 @@ public class StringUtilTest {
         }
 
         long stop = System.nanoTime();
-        System.out.println("took: " + TimeUnit.NANOSECONDS.toMillis(stop - start));
+        logger.fine("took: " + TimeUnit.NANOSECONDS.toMillis(stop - start));
     }
 
     @Test
@@ -226,6 +229,6 @@ public class StringUtilTest {
         }
 
         long stop = System.nanoTime();
-        System.out.println("took: " + TimeUnit.NANOSECONDS.toMillis(stop - start));
+        logger.fine("took: " + TimeUnit.NANOSECONDS.toMillis(stop - start));
     }
 }

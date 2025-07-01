@@ -76,13 +76,11 @@ public class TestJoinFetchWithQueryDataCache extends SQLListenerTestCase {
     public void testJPQLNoFetch() {
         EntityManager em = emf.createEntityManager();
         List<Department> ds = em.createQuery("SELECT DISTINCT d FROM Department d WHERE d.deptno = 10").getResultList();
-        System.out.println("-- testJPQLNoFetch -----");
         em.clear();
         Assert.assertEquals(1, ds.size());
         for (Department x : ds) {
             Assert.assertNull(x.getEmployees());
             Assert.assertNull(x.getEmployee2s());
-            System.out.println(x);
         }
 
         em.close();
@@ -93,14 +91,12 @@ public class TestJoinFetchWithQueryDataCache extends SQLListenerTestCase {
         List<Department> ds =
             em.createQuery("SELECT DISTINCT d FROM Department d LEFT JOIN FETCH d.employee2s " + "WHERE d.deptno = 10")
                 .getResultList();
-        System.out.println("-- testJPQLOneFetch -----");
         em.clear();
         Assert.assertEquals(1, ds.size());
         for (Department x : ds) {
             Assert.assertNull(x.getEmployees());
             Assert.assertNotNull(x.getEmployee2s());
             Assert.assertEquals(2, x.getEmployee2s().size());
-            System.out.println(x);
         }
 
         em.close();
@@ -112,7 +108,6 @@ public class TestJoinFetchWithQueryDataCache extends SQLListenerTestCase {
             em.createQuery(
                 "SELECT DISTINCT d FROM Department d LEFT JOIN FETCH d.employees " + "LEFT JOIN FETCH d.employee2s "
                     + "WHERE d.deptno = 10").getResultList();
-        System.out.println("-- testJPQLTwoFetch -----");
         em.clear();
         Assert.assertEquals(1, ds.size());
         for (Department x : ds) {
@@ -120,7 +115,6 @@ public class TestJoinFetchWithQueryDataCache extends SQLListenerTestCase {
             Assert.assertEquals(2, x.getEmployees().size());
             Assert.assertNotNull(x.getEmployee2s());
             Assert.assertEquals(2, x.getEmployee2s().size());
-            System.out.println(x);
         }
 
         em.close();
@@ -141,13 +135,11 @@ public class TestJoinFetchWithQueryDataCache extends SQLListenerTestCase {
         q.where(cb.equal(d.get(Department_.deptno), 20)).select(d);
 
         List<Department> ds = em.createQuery(q).getResultList();
-        System.out.println("-- testCriteriaAPINoFetch -----");
         em.clear();
         Assert.assertEquals(1, ds.size());
         for (Department x : ds) {
             Assert.assertNull(x.getEmployees());
             Assert.assertNull(x.getEmployee2s());
-            System.out.println(x);
         }
 
         em.close();
@@ -176,14 +168,12 @@ public class TestJoinFetchWithQueryDataCache extends SQLListenerTestCase {
         q.where(cb.equal(d.get(Department_.deptno), 20)).select(d).distinct(true);
 
         List<Department> ds = em.createQuery(q).getResultList();
-        System.out.println("-- testCriteriaAPIOneFetch -----");
         em.clear();
         Assert.assertEquals(1, ds.size());
         for (Department x : ds) {
             Assert.assertNotNull(x.getEmployees());
             Assert.assertEquals(2, x.getEmployees().size());
             Assert.assertNull(x.getEmployee2s());
-            System.out.println(x);
         }
 
         em.close();
@@ -205,7 +195,6 @@ public class TestJoinFetchWithQueryDataCache extends SQLListenerTestCase {
         q.where(cb.equal(d.get(Department_.deptno), 20)).select(d).distinct(true);
 
         List<Department> ds = em.createQuery(q).getResultList();
-        System.out.println("-- testCriteriaAPITwoFetch -----");
         em.clear();
         Assert.assertEquals(1, ds.size());
         for (Department x : ds) {
@@ -213,7 +202,6 @@ public class TestJoinFetchWithQueryDataCache extends SQLListenerTestCase {
             Assert.assertEquals(2, x.getEmployees().size());
             Assert.assertNotNull(x.getEmployee2s());
             Assert.assertEquals(2, x.getEmployee2s().size());
-            System.out.println(x);
         }
 
         em.close();

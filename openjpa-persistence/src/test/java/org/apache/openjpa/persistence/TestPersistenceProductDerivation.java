@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
+import java.util.logging.Logger;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
@@ -49,6 +50,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class TestPersistenceProductDerivation {
+	private static final Logger logger = Logger.getLogger(TestPersistenceProductDerivation.class.getCanonicalName());
     private File sourceFile;
     private File targetFile;
 
@@ -97,7 +99,7 @@ public class TestPersistenceProductDerivation {
         boolean deleted = AccessController.doPrivileged(J2DoPrivHelper
             .deleteAction(targetFile));
         if(!deleted){
-            System.out.println("The file " + targetFile + " wasn't deleted.");
+            logger.warning("The file " + targetFile + " wasn't deleted.");
         }
     }
     /**

@@ -362,8 +362,8 @@ public class TestQueryParameters extends SingleEMFTestCase {
             fail("Expected " + IllegalArgumentException.class.getName());
         } catch (IllegalArgumentException e) {
             // good
-            System.err.println("Following is expeceted exception, printing to verify error message");
-            System.err.println(e);
+            // Following is expected exception, uncomment to verify error message
+            // System.err.println(e);
         }
     }
 
@@ -373,8 +373,8 @@ public class TestQueryParameters extends SingleEMFTestCase {
             fail("Expected " + IllegalArgumentException.class.getName());
         } catch (IllegalArgumentException e) {
             // good
-            System.err.println("Following is expeceted exception, printing to verify error message");
-            System.err.println(e);
+            // Following is expected exception, uncomment to verify error message
+            // System.err.println(e);
         }
     }
 }

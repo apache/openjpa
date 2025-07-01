@@ -19,11 +19,14 @@
 package org.apache.openjpa.jdbc.persistence.classcriteria;
 
 import java.util.Collection;
+import java.util.logging.Logger;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestQuerySubclass extends SingleEMFTestCase {
+	
+	private static final Logger logger = Logger.getLogger(TestQuerySubclass.class.getCanonicalName());
 
     private OpenJPAEntityManager em;
 
@@ -52,7 +55,7 @@ public class TestQuerySubclass extends SingleEMFTestCase {
         em = emf.createEntityManager();
         Artist artist = em.find(Artist.class, "Herman Hess");
         if (artist == null) {
-            System.out.println("No artist found with ID Herman Hess");
+            logger.warning("No artist found with ID Herman Hess");
         }
         else {
             books = artist.getBooks();

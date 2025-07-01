@@ -226,7 +226,7 @@ public class TestSubquery
         EntityManager em = emf.createEntityManager();
         for (int i = 0; i < querys2.length; i++) {
             String q = querys2[i];
-            System.err.println(">>> JPQL JPA2 :[ " + i + "]" +q);
+            // System.err.println(">>> JPQL JPA2 :[ " + i + "]" +q);
             List rs = em.createQuery(q).getResultList();
             assertEquals(0, rs.size());
         }
@@ -241,13 +241,13 @@ public class TestSubquery
         EntityManager em = emf.createEntityManager();
         for (int i = 0; i < querys_jpa20.length; i++) {
             String q = querys_jpa20[i];
-            System.err.println(">>> JPQL JPA2 :[ " + i + "]" +q);
+            // System.err.println(">>> JPQL JPA2 :[ " + i + "]" +q);
             List rs = em.createQuery(q).getResultList();
             assertEquals(0, rs.size());
         }
         for (int i = 0; i < querys.length; i++) {
             String q = querys[i];
-            System.err.println(">>> JPQL: [ " + i + "]"+q);
+            // System.err.println(">>> JPQL: [ " + i + "]"+q);
             List rs = em.createQuery(q).getResultList();
             assertEquals(0, rs.size());
         }

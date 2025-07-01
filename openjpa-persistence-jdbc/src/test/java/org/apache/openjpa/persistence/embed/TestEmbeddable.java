@@ -115,9 +115,9 @@ public class TestEmbeddable extends SQLListenerTestCase {
         for (String s : query) {
             try {
                 rs = em.createQuery(s).getResultList();
-            }
-            catch (ArgumentException e) {
-                System.out.println(e.getMessage()); // as expected : Group by embeddable field is not allowed
+                fail("Group by embeddable field should not be allowed");
+            } catch (ArgumentException e) {
+                // as expected : Group by embeddable field is not allowed System.out.println(e.getMessage()); 
             }
         }
         em.close();
@@ -143,9 +143,9 @@ public class TestEmbeddable extends SQLListenerTestCase {
             case 1:
                 try {
                     rs = em.createQuery(query[i]).setParameter(1, name).getResultList();
+                    fail("Comparing embeddables should not be allowed");
                 } catch(ArgumentException e) {
-                    // as expected : compare embeddable is not allowed
-                    System.out.println(e.getMessage());
+                    // as expected : compare embeddable is not allowed System.out.println(e.getMessage());
                 }
                 break;
             }

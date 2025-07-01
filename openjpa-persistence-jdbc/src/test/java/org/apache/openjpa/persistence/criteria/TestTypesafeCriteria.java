@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.logging.Logger;
 
 import jakarta.persistence.Parameter;
 import jakarta.persistence.Query;
@@ -66,6 +67,8 @@ import org.apache.openjpa.persistence.test.AllowFailure;
  *
  */
 public class TestTypesafeCriteria extends CriteriaTest {
+	
+	private static final Logger logger = Logger.getLogger(TestTypesafeCriteria.class.getCanonicalName());
     private static final String TRUE_JPQL = "SELECT p FROM Person p WHERE 1=1";
     private static final String FALSE_JPQL = "SELECT p FROM Person p WHERE 1<>1";
 
@@ -682,7 +685,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         query.setParameter(paramName, name);
         query.setParameter(paramLastName, lastName);
 
-        System.err.println("CQ: " + query.toString());
+        logger.fine("CQ: " + query.toString());
 
         final List<Customer> customers = query.getResultList();
         assertNotNull(customers);

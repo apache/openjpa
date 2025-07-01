@@ -933,9 +933,8 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
         try {
             List jList1 = jQ1.getResultList();
         } catch (Exception e) {
-            System.err.println(jQ1.getParameters());
             e.printStackTrace();
-            fail("Fail to execute again - Parameters are messed up:" + e.getMessage());
+            fail(String.format("Fail to execute again - Parameters are messed up: [%s]\n%s", jQ1.getParameters(), e.getMessage()));
         }
     }
 
@@ -1271,9 +1270,9 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
         long delta = (without == 0) ? 0 : (without - with) * 100 / without;
 
         String jpql = getJPQLString(query, isNamed);
-        System.err.println((delta < 0 ? "***WARN " : "") + Math.abs(delta) + "% " +
-                (delta < 0 ? "degradtion" : "improvement") + " for ["+ jpql + "]");
-        assertTrue(Math.abs(delta) + "% degradtion for ["+ jpql + "]", !FAIL_IF_PERF_DEGRADE || delta > 0);
+//        System.err.println((delta < 0 ? "***WARN " : "") + Math.abs(delta) + "% " +
+//                (delta < 0 ? "degradation" : "improvement") + " for ["+ jpql + "]");
+        assertTrue(Math.abs(delta) + "% degradation for ["+ jpql + "]", !FAIL_IF_PERF_DEGRADE || delta > 0);
     }
 
     void compareSQLs(List<String> a, List<String> b) {

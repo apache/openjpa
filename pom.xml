@@ -2212,6 +2212,7 @@
                             <failsOnError>true</failsOnError>
                             <consoleOutput>true</consoleOutput>
                             <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                            <excludeGeneratedSources>true</excludeGeneratedSources>
                             <excludes>**/*_.java</excludes>
                             <logViolationsToConsole>true</logViolationsToConsole>
                             <checkstyleRules>

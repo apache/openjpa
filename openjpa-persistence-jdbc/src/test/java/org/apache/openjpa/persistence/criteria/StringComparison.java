@@ -24,12 +24,16 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Compares a pair of String ignoring case-sensitivity of set of reserved words.
  *
  */
 public class StringComparison {
+	
+	private static final Logger logger = Logger.getLogger(StringComparison.class.getCanonicalName());
+	
 	private static List<String> _reserved = Arrays.asList(new String[] {
 			"ALL", "AND", "ANY", "AS", "ASC", "AVG",
 			"BETWEEN", "BIT_LENGTH", "BY",
@@ -84,8 +88,7 @@ public class StringComparison {
 			List<String> list1 = tokenize(s1);
 			List<String> list2 = tokenize(s2);
 			if (list1.size() != list2.size()) {
-                System.err.println("Unequal tokens " + list1.size() + "!="
-                        + list2.size());
+                logger.fine(String.format("Unequal tokens %d != %d", list1.size(), list2.size()));
 				return false;
 			}
 			for (int i = 0; i < list1.size(); i++) {
@@ -94,8 +97,7 @@ public class StringComparison {
                 boolean match =
                     isReservedWord(a) ? a.equalsIgnoreCase(b) : a.equals(b);
 				if (!match) {
-                    System.err.println("[" + a + "] does not match [" + b
-                            + "]");
+                    logger.fine(String.format("[%s] does not match [%s]", a, b));
 					return false;
 				}
 			}
@@ -114,10 +116,10 @@ public class StringComparison {
             + "WHERE l.shipped !=  FALSE and l.name like 'hello'";
 		boolean match = c.compare(s1, s2);
 		if (!match) {
-			System.err.println(s1);
-			System.err.println(c.tokenize(s1));
-			System.err.println(s2);
-			System.err.println(c.tokenize(s2));
+			logger.fine(s1);
+			logger.fine(c.tokenize(s1).toString());
+			logger.fine(s2);
+			logger.fine(c.tokenize(s2).toString());
 		}
 	}
 

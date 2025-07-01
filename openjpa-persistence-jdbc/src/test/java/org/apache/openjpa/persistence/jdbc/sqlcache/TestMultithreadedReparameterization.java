@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -41,6 +42,7 @@ import junit.framework.TestCase;
  *
  */
 public class TestMultithreadedReparameterization extends TestCase {
+	private static final Logger logger = Logger.getLogger(TestMultithreadedReparameterization.class.getCanonicalName());
     private static String RESOURCE = "META-INF/persistence.xml";
     private static String UNIT_NAME = "PreparedQuery";
     protected static OpenJPAEntityManagerFactory emf;
@@ -142,7 +144,7 @@ public class TestMultithreadedReparameterization extends TestCase {
                             }
                             em.close();
                         } catch (Throwable t) {
-                            System.err.println("\nThread (" + Thread.currentThread().getName()
+                            logger.warning("\nThread (" + Thread.currentThread().getName()
                                     + "): Caught the following exception: " + t
                                     + "\n  With cause: " + t.getCause());
                             //catch the AssertionError so that we can fail the main Thread

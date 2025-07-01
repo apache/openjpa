@@ -195,7 +195,7 @@ public class TestFieldRange2 extends BaseKernelTest {
         int i1 = (int) (testDate.getTime() / 1000);
         int i2 = (int) (retrievedObject.getTestDate().getTime() / 1000);
 
-        System.out.println("i1 : " + i1 + "\ni2 : " + i2);
+        //System.out.println("i1 : " + i1 + "\ni2 : " + i2);
         assertEquals("Field type Date: "
             + testDate.getTime() + "!="
             + retrievedObject.getTestDate().getTime()

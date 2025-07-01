@@ -182,7 +182,7 @@ public class TestOverrideNonJtaDataSource extends SingleEMFTestCase {
             fail("Expected an excepton when creating an EM with a bogus JNDI name");
         } catch (ArgumentException e) {
             assertTrue(e.isFatal());
-            System.out.println(e);
+            e.printStackTrace();
             assertTrue(e.getMessage().contains("jdbc/NotReal")); // ensure failing JNDI name is in the message
             assertTrue(e.getMessage().contains("EntityManager")); // ensure where the JNDI name came from is in message
         } finally {

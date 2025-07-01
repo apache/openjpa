@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype;
 
+import java.util.logging.Logger;
+
 import jakarta.persistence.Basic;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -34,8 +36,10 @@ import jakarta.persistence.Transient;
 @Entity
 @Inheritance(strategy=InheritanceType.JOINED)
 @EntityListeners({NameValidator.class, LongNameValidator.class})
-public class Employee implements NamedEntity
-{
+public class Employee implements NamedEntity {
+	
+	private static final Logger logger = Logger.getLogger(Employee.class.getCanonicalName());
+	
 	@Id
 	private int id;
 
@@ -48,41 +52,34 @@ public class Employee implements NamedEntity
 	@Transient
 	protected long syncTime;
 
-	public Employee()
-	{}
+	public Employee() {
+	}
 
-	public Employee(int id, String name)
-	{
+	public Employee(int id, String name) {
 		this.id = id;
 		this.name = name;
 	}
 
 	@Override
-    public String getName()
-	{
+    public String getName() {
 		return name;
 	}
 
-	public void setName(String name)
-	{
+	public void setName(String name) {
 		this.name = name;
 	}
 
-	public void setId(int id)
-	{
+	public void setId(int id) {
 		this.id = id;
 	}
 
-	public int getId()
-	{
+	public int getId() {
 		return id;
 	}
 
 	@PostPersist
-	private void resetSyncTime()
-	{
-        System.out.println("resetSyncTime is running on " + this + "GEN #: "
-		        + lifecheck);
+	private void resetSyncTime() {
+        logger.finest(String.format("resetSyncTime is running on %s GEN #: %s", this, lifecheck));
 		syncTime = System.currentTimeMillis();
 
 		CallbackStorage store = CallbackStorage.getInstance();
@@ -91,22 +88,19 @@ public class Employee implements NamedEntity
 	}
 
 	@PostLoad
-	public void pload()
-	{
+	public void pload() {
 		CallbackStorage store = CallbackStorage.getInstance();
 		store.getClist().add("employeepol");
 	}
 
 	@PostUpdate
-	public void pupdate()
-	{
+	public void pupdate() {
 		CallbackStorage store = CallbackStorage.getInstance();
 		store.getClist().add("employeepou");
 	}
 
 	@Override
-    public String toString()
-	{
+    public String toString() {
         return "Name: " + name + " of " + this.getClass().getName()
             + " Id: " + id + " Synctime: " + syncTime;
 	}

@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.compat;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -43,6 +44,8 @@ import junit.framework.TestCase;
  * valid in JPA 1.2 but may not be valid in JPA 2.0
  */
 public class TestQuerySQLCache extends SingleEMFTestCase {
+	
+	private static final Logger logger = Logger.getLogger(TestQuerySQLCache.class.getCanonicalName());
 
     final int nThreads = 5;
     final int nPeople = 100;
@@ -268,7 +271,7 @@ public class TestQuerySQLCache extends SingleEMFTestCase {
                     for (int i = startId; i < endId; i++) {
                         Person p1 = em.find(Person.class, i);
                         if (p1.getId() != i) {
-                            System.out.println("Finder failed: " + i);
+                            logger.fine("Finder failed: " + i);
                             failures = true;
                             break;
                         }
@@ -276,10 +279,9 @@ public class TestQuerySQLCache extends SingleEMFTestCase {
                     em.clear();
                 }
                 em.close();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 failures = true;
-                System.out.println("Thread " + thread + " exception :" + e );
+                logger.warning("Thread " + thread + " exception :" + e );
             }
         }
     }

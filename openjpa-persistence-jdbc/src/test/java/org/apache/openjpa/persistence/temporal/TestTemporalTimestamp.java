@@ -114,8 +114,7 @@ public class TestTemporalTimestamp extends SQLListenerTestCase {
             assertEquals(testDate.getSeconds(), 59);
             assertEquals(testDate.getYear(), 8099);
             assertTrue(sdf.format(testDate).toString().endsWith(".999"));
-            System.out.println("sdf.format(testDate).toString() = " +
-                sdf.format(testDate).toString());
+            // System.out.println("sdf.format(testDate).toString() = " + sdf.format(testDate).toString());
         }
         em.close();
     }

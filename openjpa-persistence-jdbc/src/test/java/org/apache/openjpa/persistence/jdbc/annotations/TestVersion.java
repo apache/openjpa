@@ -220,7 +220,7 @@ public class TestVersion extends SingleEMFTestCase {
 
             e2 = em2.find(AnnoTest1.class, e.getPk());
             em2.refresh(e2);
-            System.out.println(e2.getBasic());
+            // System.out.println(e2.getBasic());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();

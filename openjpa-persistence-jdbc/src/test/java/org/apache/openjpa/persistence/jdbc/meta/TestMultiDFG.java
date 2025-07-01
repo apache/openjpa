@@ -77,10 +77,10 @@ public class TestMultiDFG
         assertTrue("bInt should not be loaded",
                 !sm.getLoaded().get(fmd.getIndex()));
 
-        System.out.println("### getting values");
+        // Getting values
         b.getBString();
 
-        System.out.println("### getting values again");
+        // getting values again
         b.getString0();
         b.getBString();
 

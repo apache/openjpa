@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.logging.Logger;
 
 import jakarta.persistence.EntityManagerFactory;
 
@@ -37,6 +38,8 @@ import org.apache.openjpa.lib.log.Log;
  *
  */
 public class TradeAction extends TradeJPADirect {
+	
+	private static final Logger logger = Logger.getLogger(TradeAction.class.getCanonicalName());
 
     public TradeAction(Log log, EntityManagerFactory emf, boolean poolEm) {
         super(log, emf, poolEm);
@@ -382,7 +385,7 @@ public class TradeAction extends TradeJPADirect {
             } else {
                 // Password validation failed
                 results = "Registration operation failed, your passwords did not match";
-                System.out.println(results);
+                logger.warning(results);
                 setAttribute(sb, "results", results);
                 // requestDispatch(ctx, req, resp, userID, TradeConfig.getPage(TradeConfig.REGISTER_PAGE));
             }

@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Persistence;
@@ -52,6 +53,8 @@ import junit.framework.TestCase;
  * @version $Rev$ $Date$
  */
 public abstract class AbstractCriteriaTestCase extends TestCase {
+	
+	private static final Logger logger = Logger.getLogger(AbstractCriteriaTestCase.class.getCanonicalName());
 
     protected abstract SQLAuditor getAuditor();
 
@@ -142,8 +145,8 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
      * supplied parameters, if any.
      */
     void assertEquivalence(QueryDecorator decorator, CriteriaQuery<?> c, String jpql, String expectedSQL) {
-        System.err.println("JPQL:[" + jpql + "]");
-        System.err.println("CQL :[" + ((OpenJPACriteriaQuery<?>)c).toCQL());
+        logger.fine("JPQL:[" + jpql + "]");
+        logger.fine("CQL :[" + ((OpenJPACriteriaQuery<?>)c).toCQL());
         Query cQ = getEntityManager().createQuery(c);
         Query jQ = getEntityManager().createQuery(jpql);
         if (decorator != null) {
@@ -302,14 +305,14 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
     }
 
     void printSQL(String header, String sql) {
-        System.err.println(header);
-        System.err.println(sql);
+        logger.fine(header);
+        logger.fine(sql);
     }
 
     void printSQL(String header, List<String> sqls) {
-        System.err.println(header);
+        logger.fine(header);
         for (int i = 0; sqls != null && i < sqls.size(); i++) {
-            System.err.println(i + ":" + sqls.get(i));
+            logger.fine(i + ":" + sqls.get(i));
         }
     }
 
@@ -348,9 +351,9 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
         } catch (Throwable t) {
             AllowFailure allowFailure = getAllowFailure();
             if (allowFailure != null && allowFailure.value()) {
-                System.err.println("*** FAILED (but ignored): " + this);
-                System.err.println("***              Reason : " + allowFailure.message());
-                System.err.println("Stacktrace of failure");
+                logger.fine("*** FAILED (but ignored): " + this);
+                logger.fine("***              Reason : " + allowFailure.message());
+                logger.fine("Stacktrace of failure");
                 t.printStackTrace();
             } else {
                 throw t;
