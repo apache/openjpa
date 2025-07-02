@@ -22,7 +22,6 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -911,8 +910,7 @@ public class Filters {
         Exception cause = null;
         if (hint instanceof String) {
             try {
-                return (AggregateListener) AccessController.doPrivileged(
-                    J2DoPrivHelper.newInstanceAction(Class.forName((String) hint, true, loader)));
+                return (AggregateListener) J2DoPrivHelper.newInstance(Class.forName((String) hint, true, loader));
             } catch (Exception e) {
                 if (e instanceof PrivilegedActionException)
                     e = ((PrivilegedActionException) e).getException();
@@ -946,9 +944,7 @@ public class Filters {
             AggregateListener[] aggs = new AggregateListener[clss.length];
             try {
                 for (int i = 0; i < clss.length; i++)
-                    aggs[i] = (AggregateListener) AccessController.doPrivileged(
-                        J2DoPrivHelper.newInstanceAction(
-                            Class.forName(clss[i], true, loader)));
+                    aggs[i] = (AggregateListener) J2DoPrivHelper.newInstance(Class.forName(clss[i], true, loader));
                 return aggs;
             } catch (Exception e) {
                 if (e instanceof PrivilegedActionException)
@@ -973,9 +969,7 @@ public class Filters {
         Exception cause = null;
         if (hint instanceof String) {
             try {
-                return (FilterListener) AccessController.doPrivileged(
-                    J2DoPrivHelper.newInstanceAction(
-                        Class.forName((String) hint, true, loader)));
+                return (FilterListener) J2DoPrivHelper.newInstance(Class.forName((String) hint, true, loader));
             } catch (Exception e) {
                 if (e instanceof PrivilegedActionException)
                     e = ((PrivilegedActionException) e).getException();
@@ -1009,9 +1003,7 @@ public class Filters {
             FilterListener[] filts = new FilterListener[clss.length];
             try {
                 for (int i = 0; i < clss.length; i++)
-                    filts[i] = (FilterListener) AccessController.doPrivileged(
-                        J2DoPrivHelper.newInstanceAction(
-                            Class.forName(clss[i], true, loader)));
+                    filts[i] = (FilterListener) J2DoPrivHelper.newInstance(Class.forName(clss[i], true, loader));
                 return filts;
             } catch (Exception e) {
                 if (e instanceof PrivilegedActionException)

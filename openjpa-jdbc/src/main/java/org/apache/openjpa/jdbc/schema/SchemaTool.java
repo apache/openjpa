@@ -25,7 +25,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.net.URL;
-import java.security.AccessController;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -52,7 +51,6 @@ import org.apache.openjpa.lib.jdbc.DelegatingDataSource;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.MetaDataSerializer;
 import org.apache.openjpa.lib.util.Files;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.StringUtil;
@@ -502,9 +500,7 @@ public class SchemaTool {
             return;
         }
 
-        URL url = AccessController.doPrivileged(
-                J2DoPrivHelper.getResourceAction(_conf.getClassResolverInstance().
-                        getClassLoader(SchemaTool.class, null), _scriptToExecute));
+        URL url = _conf.getClassResolverInstance().getClassLoader(SchemaTool.class, null).getResource(_scriptToExecute);
 
         if (url == null) {
             _log.error(_loc.get("generating-execute-script-not-found", _scriptToExecute));

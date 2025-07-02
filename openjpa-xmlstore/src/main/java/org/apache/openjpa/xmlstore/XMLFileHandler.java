@@ -30,7 +30,6 @@ import java.io.Writer;
 import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,7 +42,6 @@ import javax.xml.parsers.SAXParser;
 
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.lib.util.Base16Encoder;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.xml.XMLFactory;
 import org.apache.openjpa.lib.xml.XMLWriter;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -80,10 +78,7 @@ public class XMLFileHandler {
      */
     public Collection load(ClassMetaData meta) {
         File f = getFile(meta);
-        if (!AccessController.doPrivileged(
-                J2DoPrivHelper.existsAction(f)) ||
-                AccessController.doPrivileged(
-                        J2DoPrivHelper.lengthAction(f)) == 0)
+        if (!f.exists() || f.length() == 0L)
             return Collections.EMPTY_SET;
         try {
             return read(f);
@@ -136,10 +131,8 @@ public class XMLFileHandler {
             throw new InternalException();
 
         File f = getFile(meta);
-        if (!AccessController.doPrivileged(
-                J2DoPrivHelper.existsAction(f.getParentFile())))
-            AccessController.doPrivileged(
-                J2DoPrivHelper.mkdirsAction(f.getParentFile()));
+        if (!f.getParentFile().exists())
+        	f.getParentFile().mkdirs();
 
         FileWriter fw = null;
         try {

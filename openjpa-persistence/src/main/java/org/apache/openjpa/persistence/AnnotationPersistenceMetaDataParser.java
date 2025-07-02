@@ -78,7 +78,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -152,7 +151,6 @@ import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.SourceTracker;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.AccessCode;
@@ -552,10 +550,9 @@ public class AnnotationPersistenceMetaDataParser
         // setup defaults (ie: Basic fields).
         ClassMetaData m = getRepository().getCachedMetaData(_cls);
         if (m == null) {
-            if (!AccessController.doPrivileged(J2DoPrivHelper.isAnnotationPresentAction(_cls, Entity.class))
-                && !AccessController.doPrivileged(J2DoPrivHelper.isAnnotationPresentAction(_cls, Embeddable.class))
-                && !AccessController.doPrivileged(J2DoPrivHelper.isAnnotationPresentAction(_cls,
-                    MappedSuperclass.class)))
+            if (!_cls.isAnnotationPresent(Entity.class)
+                && !_cls.isAnnotationPresent(Embeddable.class)
+                && !_cls.isAnnotationPresent(MappedSuperclass.class))
                 return null;
         }
         // find / create metadata
@@ -795,8 +792,7 @@ public class AnnotationPersistenceMetaDataParser
      */
     private int getAccessCode(Class<?> cls) {
         int accessCode = AccessCode.UNKNOWN;
-        Access access = AccessController.doPrivileged(
-            J2DoPrivHelper.getAnnotationAction(cls, Access.class));
+        Access access = cls.getAnnotation(Access.class);
         if (access != null) {
             accessCode |=  AccessCode.EXPLICIT |
                 (access.value() == AccessType.FIELD ?
@@ -817,18 +813,14 @@ public class AnnotationPersistenceMetaDataParser
             cls = cls.getEnclosingClass();
 
         String rsrc = StringUtil.replace(cls.getName(), ".", "/");
-        ClassLoader loader = AccessController.doPrivileged(
-            J2DoPrivHelper.getClassLoaderAction(cls));
+        ClassLoader loader = cls.getClassLoader();
         if (loader == null)
-            loader = AccessController.doPrivileged(
-                J2DoPrivHelper.getSystemClassLoaderAction());
+            loader = ClassLoader.getSystemClassLoader();
         if (loader == null)
             return null;
-        URL url = AccessController.doPrivileged(
-            J2DoPrivHelper.getResourceAction(loader, rsrc + ".java"));
+        URL url = loader.getResource(rsrc + ".java");
         if (url == null) {
-            url = AccessController.doPrivileged(
-                J2DoPrivHelper.getResourceAction(loader, rsrc + ".class"));
+            url = loader.getResource(rsrc + ".class");
             if (url == null)
                 return null;
         }
@@ -929,12 +921,9 @@ public class AnnotationPersistenceMetaDataParser
             else
                 meta.setDetachedState(detached.fieldName());
         } else {
-            Field[] fields = (Field[]) AccessController.doPrivileged(
-                J2DoPrivHelper.getDeclaredFieldsAction(
-                    meta.getDescribedType()));
+            Field[] fields = (Field[]) meta.getDescribedType().getDeclaredFields();
             for (Field field : fields)
-                if (AccessController.doPrivileged(J2DoPrivHelper
-                        .isAnnotationPresentAction(field, DetachedState.class)))
+                if (field.isAnnotationPresent(DetachedState.class))
                     meta.setDetachedState(field.getName());
         }
     }
@@ -986,7 +975,7 @@ public class AnnotationPersistenceMetaDataParser
         MethodKey key;
         Set<MethodKey> seen = new HashSet<>();
         do {
-            for (Method m : (Method[]) AccessController.doPrivileged(J2DoPrivHelper.getDeclaredMethodsAction(sup))) {
+            for (Method m : (Method[]) sup.getDeclaredMethods()) {
                 mods = m.getModifiers();
                 if (Modifier.isStatic(mods) || Modifier.isFinal(mods) ||
                     Object.class.equals(m.getDeclaringClass()))
@@ -1003,9 +992,7 @@ public class AnnotationPersistenceMetaDataParser
 
         OpenJPAConfiguration conf = repos.getConfiguration();
         for (Method m : methods) {
-            for (Annotation anno : (Annotation[]) AccessController
-                .doPrivileged(J2DoPrivHelper
-                    .getDeclaredAnnotationsAction(m))) {
+            for (Annotation anno : m.getDeclaredAnnotations()) {
                 MetaDataTag tag = _tags.get(anno.annotationType());
                 if (tag == null)
                     continue;
@@ -1173,8 +1160,7 @@ public class AnnotationPersistenceMetaDataParser
         fmd.setExplicit(true);
 
         AnnotatedElement el = (AnnotatedElement) member;
-        boolean lob = AccessController.doPrivileged(J2DoPrivHelper
-                .isAnnotationPresentAction(el, Lob.class));
+        boolean lob = el.isAnnotationPresent(Lob.class);
         if (isMetaDataMode()) {
             switch (pstrat) {
                 case BASIC:

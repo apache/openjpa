@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.jdbc.ant;
 
-import java.security.AccessController;
-
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.meta.MappingTool;
@@ -29,6 +27,7 @@ import org.apache.openjpa.lib.conf.ConfigurationImpl;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.TemporaryClassLoader;
 import org.apache.openjpa.util.MultiLoaderClassResolver;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.EnumeratedAttribute;
@@ -205,15 +204,12 @@ public class MappingToolTask
         if (MappingTool.ACTION_IMPORT.equals(flags.action))
             assertFiles(files);
 
-        ClassLoader toolLoader = AccessController
-                .doPrivileged(J2DoPrivHelper
-                        .getClassLoaderAction(MappingTool.class));
+        ClassLoader toolLoader = MappingTool.class.getClassLoader();
         ClassLoader loader = toolLoader;
         MultiLoaderClassResolver resolver = new MultiLoaderClassResolver();
 
         if (tmpClassLoader) {
-            loader = AccessController.doPrivileged(J2DoPrivHelper
-                    .newTemporaryClassLoaderAction(getClassLoader()));
+            loader = new TemporaryClassLoader(getClassLoader());
             resolver.addClassLoader(loader);
         }
         resolver.addClassLoader(toolLoader);

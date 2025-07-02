@@ -20,8 +20,6 @@ package org.apache.openjpa.lib.util;
 
 import java.io.IOException;
 import java.net.URL;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -47,9 +45,7 @@ public class MultiClassLoader extends ClassLoader {
     /**
      * The standard system class loader.
      */
-    public static final ClassLoader SYSTEM_LOADER =
-        AccessController.doPrivileged(
-            J2DoPrivHelper.getSystemClassLoaderAction());
+    public static final ClassLoader SYSTEM_LOADER = ClassLoader.getSystemClassLoader();
 
     private List<ClassLoader> _loaders = new ArrayList<>(5);
 
@@ -91,8 +87,7 @@ public class MultiClassLoader extends ClassLoader {
         for (int i = 0; i < loaders.length; i++) {
             loader = itr.next();
             if (loader == THREAD_LOADER)
-                loader = AccessController.doPrivileged(
-                    J2DoPrivHelper.getContextClassLoaderAction());
+                loader = Thread.currentThread().getContextClassLoader();
             loaders[i] = loader;
         }
         return loaders;
@@ -104,8 +99,7 @@ public class MultiClassLoader extends ClassLoader {
     public ClassLoader getClassLoader(int index) {
         ClassLoader loader = (ClassLoader) _loaders.get(index);
         if (loader == THREAD_LOADER)
-            loader = AccessController.doPrivileged(
-                J2DoPrivHelper.getContextClassLoaderAction());
+            loader = Thread.currentThread().getContextClassLoader();
         return loader;
     }
 
@@ -214,8 +208,7 @@ public class MultiClassLoader extends ClassLoader {
         for (ClassLoader classLoader : _loaders) {
             loader = classLoader;
             if (loader == THREAD_LOADER)
-                loader = AccessController.doPrivileged(
-                        J2DoPrivHelper.getContextClassLoaderAction());
+                loader = Thread.currentThread().getContextClassLoader();
             try {
                 return Class.forName(name, false, loader);
             }
@@ -232,14 +225,12 @@ public class MultiClassLoader extends ClassLoader {
         for (ClassLoader classLoader : _loaders) {
             loader = classLoader;
             if (loader == THREAD_LOADER)
-                loader = AccessController.doPrivileged(
-                        J2DoPrivHelper.getContextClassLoaderAction());
+                loader = Thread.currentThread().getContextClassLoader();
 
             if (loader == null) // skip
                 continue;
 
-            rsrc = AccessController.doPrivileged(
-                    J2DoPrivHelper.getResourceAction(loader, name));
+            rsrc = loader.getResource(name);
             if (rsrc != null)
                 return rsrc;
         }
@@ -255,23 +246,16 @@ public class MultiClassLoader extends ClassLoader {
         for (ClassLoader classLoader : _loaders) {
             loader = classLoader;
             if (loader == THREAD_LOADER)
-                loader = AccessController.doPrivileged(
-                        J2DoPrivHelper.getContextClassLoaderAction());
+                loader = Thread.currentThread().getContextClassLoader();
 
             if (loader == null) // skip
                 continue;
 
-            try {
-                rsrcs = AccessController.doPrivileged(
-                        J2DoPrivHelper.getResourcesAction(loader, name));
-                while (rsrcs.hasMoreElements()) {
-                    rsrc = rsrcs.nextElement();
-                    if (!all.contains(rsrc))
-                        all.addElement(rsrc);
-                }
-            }
-            catch (PrivilegedActionException pae) {
-                throw (IOException) pae.getException();
+            rsrcs = loader.getResources(name);
+            while (rsrcs.hasMoreElements()) {
+                rsrc = rsrcs.nextElement();
+                if (!all.contains(rsrc))
+                    all.addElement(rsrc);
             }
         }
         return all.elements();

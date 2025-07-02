@@ -28,9 +28,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.security.AccessController;
 import java.security.CodeSource;
-import java.security.PrivilegedAction;
 import java.util.Locale;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
@@ -88,44 +86,35 @@ public class InstrumentationFactory {
         if ( _inst != null || !_dynamicallyInstall)
             return _inst;
 
-        AccessController.doPrivileged(new PrivilegedAction<Object>() {
-            @Override
-            public Object run() {
-                // Dynamic agent enhancement should only occur when the OpenJPA library is
-                // loaded using the system class loader.  Otherwise, the OpenJPA
-                // library may get loaded by separate, disjunct loaders, leading to linkage issues.
-                try {
-                    if (!InstrumentationFactory.class.getClassLoader().equals(
-                        ClassLoader.getSystemClassLoader())) {
-                        return null;
-                    }
-                } catch (Throwable t) {
-                    return null;
-                }
-                JavaVendors vendor = JavaVendors.getCurrentVendor();
-                File toolsJar = null;
-                // When running on IBM, the attach api classes are packaged in vm.jar which is a part
-                // of the default vm classpath.
-                if (!vendor.isIBM()) {
-                    // If we can't find the tools.jar and we're not on IBM we can't load the agent.
-                    toolsJar = findToolsJar(log);
-                    if (toolsJar == null) {
-                        return null;
-                    }
-                }
-
-                Class<?> vmClass = loadVMClass(toolsJar, log, vendor);
-                if (vmClass == null) {
-                    return null;
-                }
-                String agentPath = getAgentJar(log);
-                if (agentPath == null) {
-                    return null;
-                }
-                loadAgent(log, agentPath, vmClass);
+        // Dynamic agent enhancement should only occur when the OpenJPA library is
+        // loaded using the system class loader.  Otherwise, the OpenJPA
+        // library may get loaded by separate, disjunct loaders, leading to linkage issues.
+        if (!InstrumentationFactory.class.getClassLoader().equals(ClassLoader.getSystemClassLoader())) {
+        	return null;
+        }
+        JavaVendors vendor = JavaVendors.getCurrentVendor();
+        File toolsJar = null;
+        
+        // When running on IBM, the attach api classes are packaged in vm.jar which is a part
+        // of the default vm classpath.
+        if (!vendor.isIBM()) {
+            // If we can't find the tools.jar and we're not on IBM we can't load the agent.
+            toolsJar = findToolsJar(log);
+            if (toolsJar == null) {
                 return null;
-            }// end run()
-        });
+            }
+        }
+
+        Class<?> vmClass = loadVMClass(toolsJar, log, vendor);
+        if (vmClass == null) {
+            return null;
+        }
+        String agentPath = getAgentJar(log);
+        if (agentPath == null) {
+            return null;
+        }
+        loadAgent(log, agentPath, vmClass);
+
         // If the load(...) agent call was successful, this variable will no
         // longer be null.
         return _inst;
@@ -333,8 +322,8 @@ public class InstrumentationFactory {
      *         or null if something unexpected happened.
      */
     private static Class<?> loadVMClass(File toolsJar, Log log, JavaVendors vendor) {
+    	ClassLoader loader = Thread.currentThread().getContextClassLoader();
         try {
-            ClassLoader loader = Thread.currentThread().getContextClassLoader();
             String cls = vendor.getVirtualMachineClassName();
             if (!vendor.isIBM()) {
                 loader = new URLClassLoader(new URL[] { toolsJar.toURI().toURL() }, loader);
@@ -342,8 +331,7 @@ public class InstrumentationFactory {
             return loader.loadClass(cls);
         } catch (Exception e) {
             if (log.isTraceEnabled()) {
-                log.trace(_name
-                    + ".loadVMClass() failed to load the VirtualMachine class");
+                log.trace(_name + ".loadVMClass() failed to load the VirtualMachine class");
             }
         }
         return null;

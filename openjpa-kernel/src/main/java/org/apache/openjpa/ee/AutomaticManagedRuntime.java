@@ -127,12 +127,9 @@ public class AutomaticManagedRuntime extends AbstractManagedRuntime
             // Should not need a doPriv getting this class' classloader
             ClassLoader cl = AutomaticManagedRuntime.class.getClassLoader();
 
-            Class<WASRegistryManagedRuntime> mrClass =
-                (Class<WASRegistryManagedRuntime>) J2DoPrivHelper
-                        .getForNameAction(
-                                WASRegistryManagedRuntime.class.getName(),
-                                true, cl).run();
-            mr = J2DoPrivHelper.newInstanceAction(mrClass).run();
+            Class<WASRegistryManagedRuntime> mrClass = 
+            		(Class<WASRegistryManagedRuntime>) Class.forName(WASRegistryManagedRuntime.class.getName(), true, cl);
+            mr = J2DoPrivHelper.newInstance(mrClass);
         } catch (Throwable t) {
             // safe to ignore
         }

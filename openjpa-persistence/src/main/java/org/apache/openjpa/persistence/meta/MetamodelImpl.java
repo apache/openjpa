@@ -26,7 +26,6 @@ import static jakarta.persistence.metamodel.Type.PersistenceType.MAPPED_SUPERCLA
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
-import java.security.AccessController;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -339,7 +338,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
 
         ParameterizedType mfType = null;
         Attribute<? super X, ?> f = null;
-        Field[] mfields = AccessController.doPrivileged(J2DoPrivHelper.getDeclaredFieldsAction(mcls));
+        Field[] mfields = mcls.getDeclaredFields();
         for (Field mf : mfields) {
             try {
                 mfType = getParameterizedType(mf); // metamodel type

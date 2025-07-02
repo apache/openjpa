@@ -24,8 +24,6 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -49,6 +47,7 @@ import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.MultiClassLoader;
+import org.apache.openjpa.lib.util.TemporaryClassLoader;
 import org.apache.openjpa.util.ClassResolver;
 
 /**
@@ -105,9 +104,7 @@ public class PersistenceUnitInfoImpl
 
     @Override
     public ClassLoader getNewTempClassLoader() {
-        return AccessController.doPrivileged(J2DoPrivHelper
-            .newTemporaryClassLoaderAction(AccessController
-                .doPrivileged(J2DoPrivHelper.getContextClassLoaderAction())));
+    	return new TemporaryClassLoader(Thread.currentThread().getContextClassLoader());
     }
 
     @Override
@@ -248,14 +245,12 @@ public class PersistenceUnitInfoImpl
     }
 
     public void validateJarFileName(String name) {
-        ClassLoader contextClassLoader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
-        MultiClassLoader loader = AccessController
-            .doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
+        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+        MultiClassLoader loader = new MultiClassLoader();
         loader.addClassLoader(contextClassLoader);
         loader.addClassLoader(getClass().getClassLoader());
         loader.addClassLoader(MultiClassLoader.THREAD_LOADER);
-        URL url = AccessController.doPrivileged(
-            J2DoPrivHelper.getResourceAction(loader, name));
+        URL url = loader.getResource(name);
         if (url != null) {
             addJarFile(url);
             return;
@@ -279,8 +274,7 @@ public class PersistenceUnitInfoImpl
         }
 
         if (classPath == null) {
-            classPath = AccessController.doPrivileged(
-                    J2DoPrivHelper.getPropertyAction("java.class.path"));
+            classPath = System.getProperty("java.class.path");
         }
         String[] cp = classPath.split(J2DoPrivHelper.getPathSeparator());
 
@@ -288,12 +282,9 @@ public class PersistenceUnitInfoImpl
             if (s.equals(name)
                     || s.endsWith(File.separatorChar + name)) {
                 try {
-                    addJarFile(AccessController
-                            .doPrivileged(J2DoPrivHelper
-                                    .toURLAction(new File(s))));
+                    addJarFile(new File(s).toURI().toURL());
                     return;
-                }
-                catch (PrivilegedActionException | MalformedURLException pae) {
+                } catch (MalformedURLException pae) {
                     break;
                 }
             }

@@ -29,7 +29,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -1390,8 +1389,7 @@ public class FieldMetaData
         if (factory != null) {
             try {
                 if (val == null && getNullValue() == NULL_DEFAULT)
-                    return AccessController.doPrivileged(
-                        J2DoPrivHelper.newInstanceAction(getDeclaredType()));
+                    return J2DoPrivHelper.newInstance(getDeclaredType());
 
                 // invoke either the constructor for the field type,
                 // or the static type.toField(val[, ctx]) method
@@ -2410,21 +2408,16 @@ public class FieldMetaData
             String memberName = (String) in.readObject();
             try {
                 if (isField)
-                    _member = AccessController.doPrivileged(
-                        J2DoPrivHelper.getDeclaredFieldAction(
-                            cls, memberName));
+                    _member = cls.getDeclaredField(memberName);
                 else {
                     Class<?>[] parameterTypes = (Class[]) in.readObject();
-                    _member = AccessController.doPrivileged(
-                        J2DoPrivHelper.getDeclaredMethodAction(
-                            cls, memberName, parameterTypes));
+                    _member = cls.getDeclaredMethod(memberName, parameterTypes);
                 }
             } catch (SecurityException e) {
                 IOException ioe = new IOException(e.getMessage(), e);
                 throw ioe;
-            } catch (PrivilegedActionException pae) {
-                IOException ioe = new IOException(
-                    pae.getException().getMessage(), pae);
+            } catch (NoSuchFieldException | NoSuchMethodException e) {
+                IOException ioe = new IOException(e.getMessage(), e);
                 throw ioe;
             }
         }

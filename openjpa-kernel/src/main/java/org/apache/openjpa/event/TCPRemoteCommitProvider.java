@@ -31,7 +31,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,7 +51,6 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.util.GeneralException;
@@ -252,7 +250,7 @@ public class TCPRemoteCommitProvider
                     hostname = host;
                     tmpPort = DEFAULT_PORT;
                 }
-                InetAddress tmpAddress = AccessController.doPrivileged(J2DoPrivHelper.getByNameAction(hostname));
+                InetAddress tmpAddress = InetAddress.getByName(hostname);
                 
                 // bleair: For each address we would rather make use of
                 // the jdk1.4 isLinkLocalAddress () || isLoopbackAddress ().
@@ -275,8 +273,6 @@ public class TCPRemoteCommitProvider
                     }
                 }
             }
-        } catch (PrivilegedActionException pae) {
-            throw (UnknownHostException) pae.getException();
         } finally {
             _addressesLock.unlock();
         }
@@ -512,11 +508,7 @@ public class TCPRemoteCommitProvider
         private TCPPortListener(final int port, final Log log) throws IOException {
             _port = port;
             _log = log;
-            try {
-                _receiveSocket = AccessController.doPrivileged(J2DoPrivHelper.newServerSocketAction(_port));
-            } catch (PrivilegedActionException pae) {
-                throw (IOException) pae.getException();
-            }
+            _receiveSocket = new ServerSocket(_port);
             _localhost = InetAddress.getLocalHost().getAddress();
 
             if (_log.isTraceEnabled()) {
@@ -581,7 +573,7 @@ public class TCPRemoteCommitProvider
                 try {
                     s = null;
                     // Block, waiting to accept new connection from a peer
-                    s = AccessController.doPrivileged(J2DoPrivHelper.acceptAction(_receiveSocket));
+                    s = _receiveSocket.accept();
                     if (_log.isTraceEnabled()) {
                         _log.trace(s_loc.get("tcp-received-connection",
                             s.getInetAddress().getHostAddress() + ":" + s.getPort()));
@@ -762,17 +754,12 @@ public class TCPRemoteCommitProvider
          */
         public HostAddress(final String host) throws UnknownHostException {
             int colon = host.indexOf(':');
-            try {
-                if (colon != -1) {
-                    _address = AccessController
-                        .doPrivileged(J2DoPrivHelper.getByNameAction(host.substring(0, colon)));
-                    _port = Integer.parseInt(host.substring(colon + 1));
-                } else {
-                    _address = AccessController.doPrivileged(J2DoPrivHelper.getByNameAction(host));
-                    _port = DEFAULT_PORT;
-                }
-            } catch (PrivilegedActionException pae) {
-                throw (UnknownHostException) pae.getException();
+            if (colon != -1) {
+            	_address = InetAddress.getByName(host.substring(0, colon));
+                _port = Integer.parseInt(host.substring(colon + 1));
+            } else {
+            	_address = InetAddress.getByName(host);
+                _port = DEFAULT_PORT;
             }
             GenericObjectPoolConfig<Socket> cfg = new GenericObjectPoolConfig<>();
             cfg.setMaxTotal(_maxTotal);
@@ -900,15 +887,11 @@ public class TCPRemoteCommitProvider
         protected class SocketPoolableObjectFactory extends BasePooledObjectFactory<Socket> {
             @Override
             public Socket create() throws Exception {
-                try {
-                    Socket s = AccessController.doPrivileged(J2DoPrivHelper.newSocketAction(_address, _port));
-                    if (log.isTraceEnabled()) {
-                        log.trace(s_loc.get("tcp-open-connection", _address + ":" + _port, "" + s.getLocalPort()));
-                    }
-                    return s;
-                } catch (PrivilegedActionException pae) {
-                    throw (IOException) pae.getException();
+                Socket s = new Socket(_address, _port); 
+                if (log.isTraceEnabled()) {
+                    log.trace(s_loc.get("tcp-open-connection", _address + ":" + _port, "" + s.getLocalPort()));
                 }
+                return s;
             }
 
             @Override

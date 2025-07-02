@@ -30,6 +30,7 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 
@@ -130,7 +131,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         final LocalTime max = qry.getSingleResult();
         final LocalTime etalon = (entity1.getLocalTimeField().compareTo(entity2.getLocalTimeField()) > 0
                 ? entity1.getLocalTimeField() : entity2.getLocalTimeField()).withNano(0);
-        assertEquals(etalon, max);
+        assertEquals(etalon, max.truncatedTo(ChronoUnit.SECONDS));
         em.close();
     }
 

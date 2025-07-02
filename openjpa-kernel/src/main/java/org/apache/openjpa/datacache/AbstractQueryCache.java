@@ -19,7 +19,6 @@
 package org.apache.openjpa.datacache;
 
 import java.io.PrintStream;
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -37,7 +36,6 @@ import org.apache.openjpa.kernel.QueryStatistics;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.collections.AbstractReferenceMap.ReferenceStrength;
 import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
@@ -109,9 +107,7 @@ public abstract class AbstractQueryCache
             // Get all persistence types to pre-load the entityTimestamp Map
             Collection perTypes =
                 conf.getMetaDataRepositoryInstance().getPersistentTypeNames(
-                    false,
-                    AccessController.doPrivileged(J2DoPrivHelper
-                        .getContextClassLoaderAction()));
+                    false, Thread.currentThread().getContextClassLoader());
 
             if(perTypes == null)
                 return;

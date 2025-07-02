@@ -230,26 +230,23 @@ public class TestTraversableResolver extends TestCase {
     private Path.Node getLeafNodeFromString(String s) {
         Class<?> PathImpl = null;
         Path.Node node = null;
-
+        ClassLoader currentCtxCL = Thread.currentThread().getContextClassLoader();
         // dynamically load PathImpl depending on the Bean Validation provider
         try {
-            PathImpl = Class.forName("org.hibernate.validator.engine.PathImpl",
-                true, AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction()));
+            PathImpl = Class.forName("org.hibernate.validator.engine.PathImpl", true, currentCtxCL);
         } catch (ClassNotFoundException e) {
             log.trace("getLeafNodeFromPath: Did not find org.hibernate.validator.engine.PathImpl");
         }
         if (PathImpl == null) {
             try {
-                PathImpl = Class.forName("org.apache.bval.jsr303.util.PathImpl",
-                    true, AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction()));
+                PathImpl = Class.forName("org.apache.bval.jsr303.util.PathImpl", true, currentCtxCL);
             } catch (ClassNotFoundException e) {
                 log.trace("getLeafNodeFromPath: Did not find org.apache.bval.jsr303.util.PathImpl");
             }
         }
         if (PathImpl == null) {
             try {
-                PathImpl = Class.forName("com.agimatec.validation.jsr303.util.PathImpl",
-                    true, AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction()));
+                PathImpl = Class.forName("com.agimatec.validation.jsr303.util.PathImpl", true, currentCtxCL);
             } catch (ClassNotFoundException e) {
                 log.trace("getLeafNodeFromPath: Did not find com.agimatec.validation.jsr303.util.PathImpl");
             }

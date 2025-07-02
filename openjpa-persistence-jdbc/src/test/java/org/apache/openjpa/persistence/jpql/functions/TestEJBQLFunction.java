@@ -709,7 +709,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         }
         EntityManager em = currentEntityManager();
 
-        String query = "SELECT EXTRACT(YEAR FROM {d '2025-01-23'}) - c.age FROM CompUser AS c";
+        String query = "SELECT EXTRACT(YEAR FROM {d '2025-01-23'}) - c.age FROM CompUser AS c ORDER BY c.userid";
 
         List result = em.createQuery(query).getResultList();
 

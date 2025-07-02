@@ -19,7 +19,6 @@
 package org.apache.openjpa.lib.conf;
 
 import java.io.File;
-import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,10 +52,9 @@ public class ProductDerivations {
     private static final Throwable[] _derivationErrors;
     private static String[] _prefixes;
     static {
-        MultiClassLoader l = AccessController.doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
-        l.addClassLoader(0, AccessController
-            .doPrivileged(J2DoPrivHelper.getClassLoaderAction(ProductDerivations.class)));
-        l.addClassLoader(1, AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction()));
+        MultiClassLoader l = new MultiClassLoader();
+        l.addClassLoader(0, ProductDerivations.class.getClassLoader());
+        l.addClassLoader(1, Thread.currentThread().getContextClassLoader());
         _derivationNames = Services.getImplementors(ProductDerivation.class, l);
         _derivationErrors = new Throwable[_derivationNames.length];
         List<ProductDerivation> derivations =
@@ -64,10 +62,7 @@ public class ProductDerivations {
         boolean errors = false;
         for (int i = 0; i < _derivationNames.length; i++) {
             try {
-                ProductDerivation d = (ProductDerivation)
-                    AccessController.doPrivileged(
-                        J2DoPrivHelper.newInstanceAction(
-                            Class.forName(_derivationNames[i], true, l)));
+                ProductDerivation d = (ProductDerivation) J2DoPrivHelper.newInstance(Class.forName(_derivationNames[i], true, l));
                 d.validate();
                 derivations.add(d);
             } catch (Throwable t) {
@@ -269,8 +264,7 @@ public class ProductDerivations {
         if (StringUtil.isEmpty(resource))
             return null;
         if (loader == null)
-            loader = AccessController.doPrivileged(
-                J2DoPrivHelper.getContextClassLoaderAction());
+            loader = Thread.currentThread().getContextClassLoader();
         ConfigurationProvider provider = null;
         StringBuilder errs = null;
         // most specific to least
@@ -305,8 +299,7 @@ public class ProductDerivations {
         if (file == null)
             return null;
         if (loader == null)
-            loader = AccessController.doPrivileged(
-                J2DoPrivHelper.getContextClassLoaderAction());
+            loader = Thread.currentThread().getContextClassLoader();
         ConfigurationProvider provider = null;
         StringBuilder errs = null;
         Throwable err = null;
@@ -322,8 +315,7 @@ public class ProductDerivations {
                 errs.append(_derivations[i].getClass().getName() + ":" + t);
             }
         }
-        String aPath = AccessController.doPrivileged(
-            J2DoPrivHelper.getAbsolutePathAction(file));
+        String aPath = file.getAbsolutePath();
         reportErrors(errs, aPath, err);
         String rsrc = aPath + "#" + anchor;
         MissingResourceException ex = new MissingResourceException(rsrc,
@@ -352,8 +344,7 @@ public class ProductDerivations {
     private static ConfigurationProvider load(ClassLoader loader,
        boolean globals) {
         if (loader == null)
-            loader = AccessController.doPrivileged(
-                J2DoPrivHelper.getContextClassLoaderAction());
+            loader = Thread.currentThread().getContextClassLoader();
 
         ConfigurationProvider provider = null;
         StringBuilder errs = null;
@@ -413,13 +404,13 @@ public class ProductDerivations {
                 }
 
                 File f = new File(propertiesLocation);
-                if ((Boolean) J2DoPrivHelper.isFileAction(f).run()) {
+                if (f.isFile()) {
                     addAll(fqAnchors, propertiesLocation,
                         _derivations[i].getAnchorsInFile(f));
                 } else {
                     f = new File("META-INF" + File.separatorChar
                         + propertiesLocation);
-                    if ((Boolean) J2DoPrivHelper.isFileAction(f).run()) {
+                    if (f.isFile()) {
                         addAll(fqAnchors, propertiesLocation,
                             _derivations[i].getAnchorsInFile(f));
                     } else {

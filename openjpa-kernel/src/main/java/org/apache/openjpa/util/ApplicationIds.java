@@ -22,7 +22,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.Date;
 import java.util.UUID;
@@ -238,8 +237,7 @@ public class ApplicationIds {
             throw new UserException(_loc.get("objectid-abstract", meta));
         Object copy = null;
         try {
-            copy = AccessController.doPrivileged(
-                J2DoPrivHelper.newInstanceAction(oidType));
+            copy = J2DoPrivHelper.newInstance(oidType);
         } catch (Throwable t) {
             if (t instanceof PrivilegedActionException)
                 t = ((PrivilegedActionException) t).getException();
@@ -376,8 +374,7 @@ public class ApplicationIds {
         Class<?> oidType = oid.getClass();
         Object copy = null;
         try {
-            copy = AccessController.doPrivileged(
-                J2DoPrivHelper.newInstanceAction(oidType));
+            copy = J2DoPrivHelper.newInstance(oidType);
         } catch (Throwable t) {
             if (t instanceof PrivilegedActionException)
                 t = ((PrivilegedActionException) t).getException();

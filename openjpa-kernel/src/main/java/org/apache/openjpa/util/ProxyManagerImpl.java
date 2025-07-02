@@ -25,8 +25,6 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -561,18 +559,10 @@ public class ProxyManagerImpl
             if (cons != null)
                 return (Proxy) cls.getConstructor(cons.getParameterTypes()).
                     newInstance(args);
-            return (Proxy) AccessController.doPrivileged(
-                J2DoPrivHelper.newInstanceAction(cls));
+            return (Proxy) J2DoPrivHelper.newInstance(cls);
         } catch (InstantiationException ie) {
             throw new UnsupportedException(_loc.get("cant-newinstance",
                 cls.getSuperclass().getName()));
-        } catch (PrivilegedActionException pae) {
-            Exception e = pae.getException();
-            if (e instanceof InstantiationException)
-                throw new UnsupportedException(_loc.get("cant-newinstance",
-                    cls.getSuperclass().getName()));
-            else
-                throw new GeneralException(cls.getName()).setCause(e);
         } catch (Throwable t) {
             throw new GeneralException(cls.getName()).setCause(t);
         }
@@ -1963,9 +1953,7 @@ public class ProxyManagerImpl
     public static void main(String[] args)
         throws ClassNotFoundException, IOException {
         File dir = Files.getClassFile(ProxyManagerImpl.class);
-        dir = (dir == null) ? new File(AccessController.doPrivileged(
-            J2DoPrivHelper.getPropertyAction("user.dir")))
-            : dir.getParentFile();
+        dir = (dir == null) ? new File(System.getProperty("user.dir")) : dir.getParentFile();
 
         Options opts = new Options();
         args = opts.setFromCmdLine(args);

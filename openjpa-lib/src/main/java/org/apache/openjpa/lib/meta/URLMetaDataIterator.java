@@ -23,10 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 
 /**
  * Iterator over the metadata resource represented by a URL.
@@ -65,12 +61,7 @@ public class URLMetaDataIterator implements MetaDataIterator {
             throw new IllegalStateException();
         if (_url == null)
             return null;
-        try {
-            return AccessController.doPrivileged(
-                J2DoPrivHelper.openStreamAction(_url));
-        } catch (PrivilegedActionException pae) {
-            throw (IOException) pae.getException();
-        }
+        return _url.openStream();
     }
 
     @Override
@@ -80,8 +71,7 @@ public class URLMetaDataIterator implements MetaDataIterator {
         if (_url == null)
             return null;
         File file = new File(URLDecoder.decode(_url.getPath()));
-        return (AccessController.doPrivileged(
-                J2DoPrivHelper.existsAction(file))) ? file:null;
+        return file.exists() ? file : null;
     }
 
     @Override

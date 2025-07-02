@@ -19,7 +19,6 @@
 package org.apache.openjpa.kernel;
 
 import java.io.Serializable;
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -50,7 +49,6 @@ import org.apache.openjpa.lib.rop.RangeResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.lib.util.ClassUtil;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.OrderedMap;
 import org.apache.openjpa.lib.util.ReferenceHashSet;
@@ -1716,9 +1714,7 @@ public class QueryImpl implements Query {
             return type;
 
         // first check the aliases map in the MetaDataRepository
-        ClassLoader loader = (_class == null) ? _loader
-            : AccessController.doPrivileged(
-                J2DoPrivHelper.getClassLoaderAction(_class));
+        ClassLoader loader = (_class == null) ? _loader : _class.getClassLoader();
         ClassMetaData meta = _broker.getConfiguration().
             getMetaDataRepositoryInstance().getMetaData(name, loader, false);
         if (meta != null)

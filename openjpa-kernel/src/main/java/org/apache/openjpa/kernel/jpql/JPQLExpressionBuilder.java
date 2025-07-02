@@ -22,13 +22,11 @@ import java.io.PrintStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
-import java.security.AccessController;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -63,7 +61,6 @@ import org.apache.openjpa.kernel.exps.Resolver;
 import org.apache.openjpa.kernel.exps.Subquery;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.lib.util.OrderedMap;
@@ -424,14 +421,7 @@ public class JPQLExpressionBuilder
 
                 if (constructor == null && resolver.getConfiguration().getUseTCCLinSelectNew()) {
                     try {
-                        if (System.getSecurityManager() != null) {
-                            constructor = AccessController.doPrivileged(
-                                    J2DoPrivHelper.getForNameAction(resultClassName, false,
-                                        AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction())));
-                        }
-                        else {
-                            constructor = Thread.currentThread().getContextClassLoader().loadClass(resultClassName);
-                        }
+                        constructor = Thread.currentThread().getContextClassLoader().loadClass(resultClassName);
                     } catch (Exception e) {
                         // ignore
                     }

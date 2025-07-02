@@ -19,7 +19,6 @@
 package org.apache.openjpa.kernel;
 
 import java.io.ObjectStreamException;
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -902,8 +901,7 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
             mdr.setResolve(MetaDataModes.MODE_MAPPING_INIT, true);
 
             // Load persistent classes and hook in subclasser
-            loadPersistentTypes(AccessController.doPrivileged(J2DoPrivHelper
-                .getContextClassLoaderAction()));
+            loadPersistentTypes(Thread.currentThread().getContextClassLoader());
             mdr.preload();
         }
 

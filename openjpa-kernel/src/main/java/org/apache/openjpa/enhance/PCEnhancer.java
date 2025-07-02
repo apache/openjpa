@@ -38,8 +38,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -72,6 +70,7 @@ import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.Services;
 import org.apache.openjpa.lib.util.StringUtil;
+import org.apache.openjpa.lib.util.TemporaryClassLoader;
 import org.apache.openjpa.lib.util.git.GitUtils;
 import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -156,21 +155,16 @@ public class PCEnhancer {
 
     static {
         Class[] classes = Services.getImplementorClasses(
-                AuxiliaryEnhancer.class,
-                AccessController.doPrivileged(
-                        J2DoPrivHelper.getClassLoaderAction(AuxiliaryEnhancer.class)));
+                AuxiliaryEnhancer.class, AuxiliaryEnhancer.class.getClassLoader());
         List auxEnhancers = new ArrayList(classes.length);
         for (Class aClass : classes) {
             try {
-                auxEnhancers.add(AccessController.doPrivileged(
-                        J2DoPrivHelper.newInstanceAction(aClass)));
-            }
-            catch (Throwable t) {
+                auxEnhancers.add(J2DoPrivHelper.newInstance(aClass));
+            } catch (Throwable t) {
                 // aux enhancer may rely on non-existant spec classes, etc
             }
         }
-        _auxEnhancers = (AuxiliaryEnhancer[]) auxEnhancers.toArray
-                (new AuxiliaryEnhancer[0]);
+        _auxEnhancers = (AuxiliaryEnhancer[]) auxEnhancers.toArray(new AuxiliaryEnhancer[0]);
 
         int rev = 0;
         Properties revisionProps = new Properties();
@@ -3250,13 +3244,7 @@ public class PCEnhancer {
         String name = prefix + typeName + "Field";
         Class[] params = (Class[]) plist.toArray(new Class[0]);
 
-        try {
-            return AccessController.doPrivileged(
-                    J2DoPrivHelper.getDeclaredMethodAction(owner, name, params));
-        }
-        catch (PrivilegedActionException pae) {
-            throw (NoSuchMethodException) pae.getException();
-        }
+    	return owner.getDeclaredMethod(name, params);
     }
 
     /**
@@ -5546,8 +5534,7 @@ public class PCEnhancer {
                     getClassLoader(PCEnhancer.class, null);
         }
         if (flags.tmpClassLoader) {
-            loader = AccessController.doPrivileged(J2DoPrivHelper
-                                                           .newTemporaryClassLoaderAction(loader));
+        	loader = new TemporaryClassLoader(loader);
         }
 
         if (repos == null) {

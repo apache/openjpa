@@ -22,7 +22,6 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,7 +47,6 @@ import org.apache.openjpa.lib.conf.ValueListener;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.util.ClassUtil;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.xml.Commentable;
@@ -992,8 +990,7 @@ public class ClassMetaData
         if (getDeclaredField(field) != null)
             return true;
         if (_staticFields == null) {
-            Field[] fields = AccessController.doPrivileged(
-                J2DoPrivHelper.getDeclaredFieldsAction(_type));
+            Field[] fields = _type.getDeclaredFields();
             Set<String> names = new HashSet<>();
             for (Field value : fields)
                 if (Modifier.isStatic(value.getModifiers()))

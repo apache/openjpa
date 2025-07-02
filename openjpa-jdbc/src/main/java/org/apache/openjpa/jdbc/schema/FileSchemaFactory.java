@@ -21,14 +21,12 @@ package org.apache.openjpa.jdbc.schema;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.security.AccessController;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.meta.MetaDataSerializer;
 import org.apache.openjpa.lib.util.Files;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.util.GeneralException;
 
 /**
@@ -85,8 +83,7 @@ public class FileSchemaFactory
 
     @Override
     public SchemaGroup readSchema() {
-        URL url = AccessController.doPrivileged(
-            J2DoPrivHelper.getResourceAction(_loader, _fileName));
+        URL url = _loader.getResource(_fileName);
         if (url == null)
             return new SchemaGroup();
 

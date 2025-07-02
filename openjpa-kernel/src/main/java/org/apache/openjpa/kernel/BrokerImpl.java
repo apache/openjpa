@@ -23,7 +23,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Modifier;
-import java.security.AccessController;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -331,8 +330,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         boolean fromDeserialization, boolean fromWriteBehindCallback) {
         _fromWriteBehindCallback = fromWriteBehindCallback;
         _initializeWasInvoked = true;
-        _loader = AccessController.doPrivileged(
-            J2DoPrivHelper.getContextClassLoaderAction());
+        _loader = Thread.currentThread().getContextClassLoader();
         if (!fromDeserialization){
             _conf = factory.getConfiguration();
             _repo = _conf.getMetaDataRepositoryInstance();
@@ -4676,9 +4674,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         // 1.5 doesn't initialize classes without a true Class.forName
         if (!PCRegistry.isRegistered(cls)) {
             try {
-                Class.forName(cls.getName(), true,
-                    AccessController.doPrivileged(
-                        J2DoPrivHelper.getClassLoaderAction(cls)));
+                Class.forName(cls.getName(), true, cls.getClassLoader());
             } catch (Throwable t) {
             }
         }
@@ -4867,14 +4863,10 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         Class<?>[] intfs = obj.getClass().getInterfaces();
         for (int i = 0; intfs != null && i < intfs.length; i++) {
             if (intfs[i].getName().equals(PersistenceCapable.class.getName())) {
-                throw new UserException(_loc.get("pc-loader-different",
-                    Exceptions.toString(obj),
-                    AccessController.doPrivileged(
-                        J2DoPrivHelper.getClassLoaderAction(
-                            PersistenceCapable.class)),
-                    AccessController.doPrivileged(
-                        J2DoPrivHelper.getClassLoaderAction(intfs[i]))))
-                    .setFailedObject(obj);
+            	throw new UserException(_loc.get("pc-loader-different",
+            		Exceptions.toString(obj),
+            		PersistenceCapable.class.getClassLoader(),
+            		intfs[i].getClassLoader())).setFailedObject(obj);
             }
         }
 

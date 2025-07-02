@@ -100,7 +100,6 @@ import static org.apache.openjpa.persistence.jdbc.MappingTag.X_TABLE;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Modifier;
-import java.security.AccessController;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -168,7 +167,6 @@ import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.SourceTracker;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -1699,9 +1697,7 @@ public class AnnotationPersistenceMappingParser
             }
             if (xmlRootElementClass != null
                 && StringUtil.isEmpty(pcols[i].columnDefinition())
-                && AccessController.doPrivileged(J2DoPrivHelper
-                    .isAnnotationPresentAction(fm.getDeclaredType(),
-                            (Class<? extends Annotation>) xmlRootElementClass))) {
+                && fm.getDeclaredType().isAnnotationPresent((Class<? extends Annotation>) xmlRootElementClass)) {
                 DBDictionary dict = ((MappingRepository) getRepository())
                     .getDBDictionary();
                 if (dict.supportsXMLColumn)

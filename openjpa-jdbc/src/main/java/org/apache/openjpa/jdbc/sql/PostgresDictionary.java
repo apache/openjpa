@@ -24,7 +24,6 @@ import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.security.AccessController;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -57,7 +56,6 @@ import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.lib.jdbc.DelegatingConnection;
 import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
 import org.apache.openjpa.lib.jdbc.ReportingSQLException;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.InternalException;
@@ -1003,13 +1001,10 @@ public class PostgresDictionary extends DBDictionary {
         Connection delegate = null;
         try {
             if (dbcpGetDelegate == null) {
+            	ClassLoader currentThreadCL = Thread.currentThread().getContextClassLoader();
                 Class<?> dbcpConnectionClass =
-                    Class.forName("org.apache.commons.dbcp2.DelegatingConnection", true, AccessController
-                        .doPrivileged(J2DoPrivHelper.getContextClassLoaderAction()));
-                Class<?> poolingDataSource = Class.forName(
-                        "org.apache.commons.dbcp2.PoolingDataSource", true,
-                        AccessController.doPrivileged(J2DoPrivHelper
-                                .getContextClassLoaderAction()));
+                    Class.forName("org.apache.commons.dbcp2.DelegatingConnection", true, currentThreadCL);
+                Class<?> poolingDataSource = Class.forName("org.apache.commons.dbcp2.PoolingDataSource", true, currentThreadCL);
                 Method setAccessToUnderlyingConnectionAllowed = poolingDataSource
                         .getMethod("setAccessToUnderlyingConnectionAllowed",
                                 boolean.class);

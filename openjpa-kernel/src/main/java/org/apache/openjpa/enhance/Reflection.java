@@ -23,13 +23,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.security.AccessController;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.lib.util.Reflectable;
@@ -197,10 +195,8 @@ public class Reflection {
      *
      * @since 0.9.8
      */
-    static Method getDeclaredMethod(Class cls, String name,
-        Class param) {
-        Method[] methods = (Method[]) AccessController.doPrivileged(
-            J2DoPrivHelper.getDeclaredMethodsAction(cls));
+    static Method getDeclaredMethod(Class cls, String name, Class param) {
+        Method[] methods = (Method[]) cls.getDeclaredMethods();
         Method candidate = null;
         for (Method method : methods) {
             if (name.equals(method.getName())) {
@@ -277,8 +273,7 @@ public class Reflection {
      * @since 0.9.8
      */
     private static Field getDeclaredField(Class cls, String name) {
-        Field[] fields = AccessController.doPrivileged(
-            J2DoPrivHelper.getDeclaredFieldsAction(cls));
+        Field[] fields = cls.getDeclaredFields();
         for (Field field : fields) {
             if (name.equals(field.getName()))
                 return field;
@@ -330,11 +325,9 @@ public class Reflection {
     private static void makeAccessible(AccessibleObject ao, int mods) {
         try {
             if (!Modifier.isPublic(mods) && !ao.isAccessible())
-                AccessController.doPrivileged(J2DoPrivHelper
-                    .setAccessibleAction(ao, true));
+            	ao.setAccessible(true);
         } catch (SecurityException se) {
-            throw new UserException(_loc.get("reflect-security", ao)).
-                setFatal(true);
+            throw new UserException(_loc.get("reflect-security", ao)).setFatal(true);
         }
     }
 

@@ -18,13 +18,9 @@
  */
 package org.apache.openjpa.lib.conf;
 
-import static java.util.Optional.ofNullable;
-
-import java.security.AccessController;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.StringUtil;
 
 public class ClassListValue extends Value {
@@ -60,7 +56,7 @@ public class ClassListValue extends Value {
             set(null);
             return;
         }
-        final ClassLoader loader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
+        final ClassLoader loader = Thread.currentThread().getContextClassLoader();
         set(Stream.of(vals).map(v -> {
             try {
                 return loader.loadClass(v.trim());

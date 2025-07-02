@@ -19,7 +19,6 @@
 package org.apache.openjpa.lib.conf;
 
 import java.io.File;
-import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -237,7 +236,7 @@ public class Configurations {
        }
 
         try {
-            return AccessController.doPrivileged(J2DoPrivHelper.newInstanceAction(cls));
+            return J2DoPrivHelper.newInstance(cls);
         } catch (Exception e) {
             if (e instanceof PrivilegedActionException) {
                 e = ((PrivilegedActionException) e).getException();
@@ -261,7 +260,7 @@ public class Configurations {
         // we always prefer the thread loader, because it's the only thing we
         // can access that isn't bound to the OpenJPA classloader, unless
         // the conf object is of a custom class
-        ClassLoader ctxLoader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
+        ClassLoader ctxLoader = Thread.currentThread().getContextClassLoader();
         if (loader == null) {
             if (ctxLoader != null) {
                 return ctxLoader;
@@ -287,11 +286,11 @@ public class Configurations {
     }
 
     static ClassLoader classLoaderOf(Class<?> cls) {
-    	return AccessController.doPrivileged(J2DoPrivHelper.getClassLoaderAction(cls));
+    	return cls.getClassLoader();
     }
 
     static ClassLoader parentClassLoaderOf(ClassLoader loader) {
-    	return AccessController.doPrivileged(J2DoPrivHelper.getParentAction(loader));
+    	return loader.getParent();
     }
 
     /**
@@ -340,13 +339,11 @@ public class Configurations {
             String anchor = result.get(CONFIG_RESOURCE_ANCHOR);
 
             File file = new File(path);
-            if (AccessController.doPrivileged(J2DoPrivHelper
-                    .isFileAction(file)))
+            if (file.isFile())
                 provider = ProductDerivations.load(file, anchor, null);
             else {
                 file = new File("META-INF" + File.separatorChar + path);
-                if (AccessController.doPrivileged(J2DoPrivHelper
-                        .isFileAction(file)))
+                if (file.isFile())
                     provider = ProductDerivations.load(file, anchor, null);
                 else
                     provider = ProductDerivations.load(path, anchor, null);

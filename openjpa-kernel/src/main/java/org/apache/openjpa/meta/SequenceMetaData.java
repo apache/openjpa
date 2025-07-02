@@ -20,7 +20,6 @@ package org.apache.openjpa.meta;
 
 import java.io.File;
 import java.io.Serializable;
-import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
 import org.apache.openjpa.conf.SeqValue;
@@ -288,8 +287,7 @@ public class SequenceMetaData
 
             Class cls = null;
             try {
-                cls = Class.forName(clsName, true,
-                    AccessController.doPrivileged(J2DoPrivHelper.getClassLoaderAction(Seq.class)));
+                cls = Class.forName(clsName, true, Seq.class.getClassLoader());
             } catch (ClassNotFoundException cnfe) {
                 // Target sequence type is loaded by the ClassLoader responsible for OpenJPA classes.
                 // This can happen if the custom sequence implementation is a class that belongs to
@@ -307,8 +305,7 @@ public class SequenceMetaData
             // interface or a factory class
             Seq seq;
             if (Seq.class.isAssignableFrom(cls)) {
-                seq = (Seq) AccessController.doPrivileged(
-                    J2DoPrivHelper.newInstanceAction(cls));
+                seq = (Seq) J2DoPrivHelper.newInstance(cls);
                 Configurations.configureInstance(seq,
                     _repos.getConfiguration(), props.toString());
                 if(_type != Seq.TYPE_DEFAULT)

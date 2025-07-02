@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -155,27 +153,18 @@ public class DBDictionaryFactory {
         String dclass, String props, Connection conn) {
         DBDictionary dict = null;
         try {
-            Class<?> c = Class.forName(dclass, true,
-                AccessController.doPrivileged(
-                    J2DoPrivHelper.getClassLoaderAction(
-                        DBDictionary.class)));
-            dict = (DBDictionary) AccessController.doPrivileged(
-                J2DoPrivHelper.newInstanceAction(c));
+            Class<?> c = Class.forName(dclass, true, DBDictionary.class.getClassLoader());
+            dict = (DBDictionary) J2DoPrivHelper.newInstance(c);
         } catch (ClassNotFoundException cnfe) {
             // if the dictionary was not found, make another attempt
             // at loading the dictionary using the current thread.
             try {
                 Class<?> c = Thread.currentThread().getContextClassLoader().loadClass(dclass);
-                dict = (DBDictionary) AccessController.doPrivileged(
-                        J2DoPrivHelper.newInstanceAction(c));
+                dict = (DBDictionary) J2DoPrivHelper.newInstance(c);
             } catch (Exception e) {
-                if (e instanceof PrivilegedActionException)
-                    e = ((PrivilegedActionException) e).getException();
                 throw new UserException(e).setFatal(true);
             }
         } catch (Exception e) {
-            if (e instanceof PrivilegedActionException)
-                e = ((PrivilegedActionException) e).getException();
             throw new UserException(e).setFatal(true);
         }
 

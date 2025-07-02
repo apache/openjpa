@@ -26,8 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -80,7 +78,6 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.CodeFormat;
 import org.apache.openjpa.lib.util.Files;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.StringUtil;
@@ -1976,15 +1973,8 @@ public class ReverseMappingTool implements MetaDataModes, Cloneable {
         File customFile = Files.getFile
             (opts.removeProperty("customizerProperties", "cp", null), null);
         Properties customProps = new Properties();
-        if (customFile != null && AccessController.doPrivileged(
-                J2DoPrivHelper.existsAction(customFile))) {
-            FileInputStream fis = null;
-            try {
-                fis = AccessController.doPrivileged(
-                    J2DoPrivHelper.newFileInputStreamAction(customFile));
-            } catch (PrivilegedActionException pae) {
-                 throw (FileNotFoundException) pae.getException();
-            }
+        if (customFile != null && customFile.exists()) {
+            FileInputStream fis = new FileInputStream(customFile);
             customProps.load(fis);
         }
 

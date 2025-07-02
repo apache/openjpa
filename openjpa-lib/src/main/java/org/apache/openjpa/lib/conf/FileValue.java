@@ -19,10 +19,7 @@
 package org.apache.openjpa.lib.conf;
 
 import java.io.File;
-import java.security.AccessController;
 import java.util.Objects;
-
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 
 /**
  * A {@link File} {@link Value}.
@@ -63,8 +60,7 @@ public class FileValue extends Value {
 
     @Override
     protected String getInternalString() {
-        return (value == null) ? null : AccessController.doPrivileged(
-            J2DoPrivHelper.getAbsolutePathAction(value));
+        return (value == null) ? null : value.getAbsolutePath();
     }
 
     @Override

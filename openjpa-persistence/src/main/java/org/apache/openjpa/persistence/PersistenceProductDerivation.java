@@ -21,10 +21,7 @@ package org.apache.openjpa.persistence;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -59,7 +56,6 @@ import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.XMLMetaDataParser;
 import org.apache.openjpa.lib.meta.XMLVersionParser;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.MultiClassLoader;
 import org.apache.openjpa.lib.util.StringUtil;
@@ -176,11 +172,9 @@ public class PersistenceProductDerivation
     }
 
     @Override
-    public void validate()
-        throws Exception {
+    public void validate() throws Exception {
         // make sure JPA is available
-        AccessController.doPrivileged(J2DoPrivHelper.getClassLoaderAction(
-            jakarta.persistence.EntityManagerFactory.class));
+    	jakarta.persistence.EntityManagerFactory.class.getClassLoader();
     }
 
     @Override
@@ -417,8 +411,7 @@ public class PersistenceProductDerivation
         ConfigurationParser parser = new ConfigurationParser(null);
         try {
         	List results = new ArrayList();
-            ClassLoader loader = AccessController.doPrivileged(
-                J2DoPrivHelper.getContextClassLoaderAction());
+            ClassLoader loader = Thread.currentThread().getContextClassLoader();
             List<URL> urls = getResourceURLs(resource, loader);
             if (urls != null) {
                 for (URL url : urls) {
@@ -439,8 +432,7 @@ public class PersistenceProductDerivation
         String[] prefixes = ProductDerivations.getConfigurationPrefixes();
         String rsrc = null;
         for (int i = 0; i < prefixes.length && StringUtil.isEmpty(rsrc); i++)
-           rsrc = AccessController.doPrivileged(J2DoPrivHelper
-                .getPropertyAction(prefixes[i] + ".properties"));
+           rsrc = System.getProperty(prefixes[i] + ".properties");
         boolean explicit = !StringUtil.isEmpty(rsrc);
         String anchor = null;
         int idx = (!explicit) ? -1 : rsrc.lastIndexOf('#');
@@ -488,16 +480,12 @@ public class PersistenceProductDerivation
     private static List<URL> getResourceURLs(String rsrc, ClassLoader loader)
         throws IOException {
         Enumeration<URL> urls = null;
-        try {
-            urls = AccessController.doPrivileged(J2DoPrivHelper.getResourcesAction(loader, rsrc));
-            if (!urls.hasMoreElements()) {
-                if (!rsrc.startsWith("META-INF"))
-                  urls = AccessController.doPrivileged(J2DoPrivHelper.getResourcesAction(loader, "META-INF/" + rsrc));
-                if (!urls.hasMoreElements())
-                    return null;
-            }
-        } catch (PrivilegedActionException pae) {
-            throw (IOException) pae.getException();
+        urls = loader.getResources(rsrc);
+        if (!urls.hasMoreElements()) {
+            if (!rsrc.startsWith("META-INF"))
+              urls = loader.getResources("META-INF/" + rsrc);
+            if (!urls.hasMoreElements())
+                return null;
         }
 
         return Collections.list(urls);
@@ -518,7 +506,7 @@ public class PersistenceProductDerivation
         throws IOException {
         ClassLoader contextLoader = null;
         if (loader == null) {
-            contextLoader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
+            contextLoader = Thread.currentThread().getContextClassLoader();
             loader = contextLoader;
         }
 
@@ -547,17 +535,16 @@ public class PersistenceProductDerivation
         if ( loader != contextLoader && loader instanceof MultiClassLoader) {
             // combine the MultiClassLoader and set to the context
             // so that it could be used in the jar validation
-            MultiClassLoader mutliClassLoader = (MultiClassLoader) loader;
-            contextLoader = (contextLoader != null) ? contextLoader
-                    : AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
-            mutliClassLoader.addClassLoader(contextLoader);
-            AccessController.doPrivileged(J2DoPrivHelper.setContextClassLoaderAction(mutliClassLoader));
+            MultiClassLoader multiClassLoader = (MultiClassLoader) loader;
+            contextLoader = (contextLoader != null) ? contextLoader : Thread.currentThread().getContextClassLoader();
+            multiClassLoader.addClassLoader(contextLoader);
+            Thread.currentThread().setContextClassLoader(multiClassLoader);
         }
         pinfo.processJarFileNames();
 
         if (contextLoader != null) {
             //restore the context loader
-            AccessController.doPrivileged(J2DoPrivHelper.setContextClassLoaderAction(contextLoader));
+        	Thread.currentThread().setContextClassLoader(contextLoader);
         }
 
         cp.addProperties(pinfo.toOpenJPAProperties());
@@ -630,7 +617,7 @@ public class PersistenceProductDerivation
             return true;
 
         if (loader == null)
-            loader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
+            loader = Thread.currentThread().getContextClassLoader();
         try {
             if (PersistenceProviderImpl.class.isAssignableFrom(Class.forName(provider, false, loader)))
                 return true;
@@ -816,14 +803,8 @@ public class PersistenceProductDerivation
         }
 
         @Override
-        public void parse(File file)
-            throws IOException {
-            try {
-                _source = AccessController.doPrivileged(J2DoPrivHelper
-                    .toURLAction(file));
-            } catch (PrivilegedActionException pae) {
-                throw (MalformedURLException) pae.getException();
-            }
+        public void parse(File file) throws IOException {
+            _source = file.toURI().toURL();
             // peek at the doc to determine the version
             XMLVersionParser vp = new XMLVersionParser("persistence");
             try {

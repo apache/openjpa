@@ -76,12 +76,12 @@
         <createSource>none</createSource>
         <createSources>false</createSources>
         <!-- common JDBC driver versions -->
-        <derby.version>10.15.2.0</derby.version>
+        <derby.version>10.16.1.1</derby.version>
         <hsqldb.version>2.7.4</hsqldb.version>
-        <mysql.connector.version>5.1.49</mysql.connector.version>
-        <mariadb.connector.version>2.7.2</mariadb.connector.version>
+        <mysql.connector.version>8.0.33</mysql.connector.version>
+        <mariadb.connector.version>3.5.3</mariadb.connector.version>
         <postgresql.connector.version>42.7.7</postgresql.connector.version>
-        <mssql.connector.version>12.8.1.jre11</mssql.connector.version>
+        <mssql.connector.version>12.10.0.jre11</mssql.connector.version>
 
         <!-- other common versions -->
         <kubernetes-client.version>6.13.3</kubernetes-client.version>
@@ -478,7 +478,7 @@
                 </property>
             </activation>
             <properties>
-                <h2.version>2.1.214</h2.version>
+                <h2.version>2.3.232</h2.version>
                 <connection.driver.name>org.h2.Driver</connection.driver.name>
                 <connection.url>jdbc:h2:./target/database/openjpa-h2-database;MODE=STRICT</connection.url>
                 <connection.username />

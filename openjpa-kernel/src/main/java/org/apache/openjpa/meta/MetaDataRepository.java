@@ -19,8 +19,6 @@
 package org.apache.openjpa.meta;
 
 import java.io.Serializable;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,7 +46,6 @@ import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.Closeable;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.MultiClassLoader;
 import org.apache.openjpa.lib.util.Options;
@@ -323,10 +320,9 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         }
 
 
-        MultiClassLoader multi = AccessController.doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
-        multi.addClassLoader(AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction()));
-        multi.addClassLoader(AccessController.doPrivileged(J2DoPrivHelper
-            .getClassLoaderAction(MetaDataRepository.class)));
+        MultiClassLoader multi = new MultiClassLoader();
+        multi.addClassLoader(Thread.currentThread().getContextClassLoader());
+        multi.addClassLoader(MetaDataRepository.class.getClassLoader());
         // If a ClassLoader was passed into Persistence.createContainerEntityManagerFactory on the PersistenceUnitInfo
         // we need to add that loader to the chain of classloaders
         ClassResolver resolver = _conf.getClassResolverInstance();
@@ -348,12 +344,12 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         List<Class<?>> loaded = new ArrayList<>();
         for (String c : classes) {
             try {
-                Class<?> cls = AccessController.doPrivileged((J2DoPrivHelper.getForNameAction(c, true, multi)));
+            	Class<?> cls = Class.forName(c, true, multi);
                 loaded.add(cls);
                 // This call may be unnecessary?
                 _factory.load(cls, MODE_ALL, multi);
-            } catch (PrivilegedActionException pae) {
-                throw new MetaDataException(_loc.get("repos-initializeEager-error"), pae);
+            } catch (ClassNotFoundException e) {
+                throw new MetaDataException(_loc.get("repos-initializeEager-error"), e);
             }
         }
         resolveAll(multi);
@@ -572,8 +568,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             // class never registers itself with the system
             if ((_validate & VALIDATE_RUNTIME) != 0) {
                 try {
-                    Class.forName(cls.getName(), true, AccessController.doPrivileged(J2DoPrivHelper
-                        .getClassLoaderAction(cls)));
+                    Class.forName(cls.getName(), true, cls.getClassLoader());
                 } catch (Throwable t) {
                 }
             }
@@ -1217,7 +1212,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         if (_log.isTraceEnabled())
             _log.trace(_loc.get("resolve-identity", oidClass));
 
-        ClassLoader cl = AccessController.doPrivileged(J2DoPrivHelper.getClassLoaderAction(oidClass));
+        ClassLoader cl = oidClass.getClassLoader();
         String className;
         while (oidClass != null && oidClass != Object.class) {
             className = oidClass.getName();
@@ -1685,8 +1680,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             if (_filterRegisteredClasses) {
                 Log log = (_conf == null) ? null : _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
                 ClassLoader loadCL = (envLoader != null) ?
-                        envLoader :
-                        AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
+                        envLoader : Thread.currentThread().getContextClassLoader();
 
                 try {
                     Class<?> classFromAppClassLoader = Class.forName(aClass.getName(), true, loadCL);
@@ -1935,8 +1929,8 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             return _metamodel.get(entity);
         String m2 = _factory.getMetaModelClassName(entity.getName());
         try {
-            ClassLoader loader = AccessController.doPrivileged(J2DoPrivHelper.getClassLoaderAction(entity));
-            Class<?> m2cls = AccessController.doPrivileged(J2DoPrivHelper.getForNameAction(m2, true, loader));
+            ClassLoader loader = entity.getClassLoader();
+            Class<?> m2cls = Class.forName(m2, true, loader);
             _metamodel.put(entity, m2cls);
             return m2cls;
         } catch (Throwable t) {

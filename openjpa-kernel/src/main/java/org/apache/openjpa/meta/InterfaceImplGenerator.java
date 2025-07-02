@@ -19,15 +19,12 @@
 package org.apache.openjpa.meta;
 
 import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
 import org.apache.openjpa.enhance.PCEnhancer;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.util.InternalException;
@@ -81,7 +78,7 @@ class InterfaceImplGenerator {
         // distinct temp project / loader for enhancing
         EnhancementProject _enhProject = new EnhancementProject();
 
-        ClassLoader parentLoader = AccessController.doPrivileged(J2DoPrivHelper.getClassLoaderAction(iface));
+        ClassLoader parentLoader = iface.getClassLoader();
         EnhancementClassLoader loader = new EnhancementClassLoader(_project, parentLoader);
         ClassNodeTracker bc = _project.loadClass(getClassName(meta), loader);
         bc.declareInterface(iface);
@@ -177,7 +174,7 @@ class InterfaceImplGenerator {
      * Invalidate methods on the interface which are not managed.
      */
     private void invalidateNonBeanMethods(ClassNodeTracker cnt, Class<?> iface, Set<Method> methods) {
-        Method[] meths = AccessController.doPrivileged(J2DoPrivHelper.getDeclaredMethodsAction(iface));
+        Method[] meths = iface.getDeclaredMethods();
 
 
         Class<?> unimplementedExceptionType = _repos.getMetaDataFactory().getDefaults().getUnimplementedExceptionType();
@@ -208,10 +205,8 @@ class InterfaceImplGenerator {
      */
     private static Method getMethodSafe(Class<?> iface, String name, Class<?> arg) {
         try {
-            return AccessController.doPrivileged(
-                J2DoPrivHelper.getDeclaredMethodAction(
-                    iface, name, arg == null ? null : new Class[]{arg}));
-        } catch (PrivilegedActionException pae) {
+        	return iface.getDeclaredMethod(name, arg == null ? null : new Class[] {arg});
+        } catch (NoSuchMethodException e) {
             throw new InternalException (_loc.get ("interface-mismatch", name));
         }
     }
@@ -220,11 +215,9 @@ class InterfaceImplGenerator {
         if (fmd.getType() != boolean.class && fmd.getType() != Boolean.class)
             return true;
         try {
-            Method meth = AccessController.doPrivileged(
-                J2DoPrivHelper.getDeclaredMethodAction(iface, "is" +
-                    StringUtil.capitalize(fmd.getName()), (Class[]) null));
+        	Method meth = iface.getDeclaredMethod("is" + StringUtil.capitalize(fmd.getName()), (Class[]) null);
             return meth == null;
-        } catch (PrivilegedActionException pae) {}
+        } catch (NoSuchMethodException e) {}
         return true;
     }
 

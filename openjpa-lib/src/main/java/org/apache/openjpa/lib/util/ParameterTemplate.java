@@ -29,7 +29,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
-import java.security.AccessController;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -211,8 +210,7 @@ public class ParameterTemplate {
                 if (_params.containsKey(param.toString()))
                     copy.append(_params.get(param.toString()));
                 else
-                    copy.append(AccessController.doPrivileged(
-                        J2DoPrivHelper.getPropertyAction(param.toString())));
+                    copy.append(System.getProperty(param.toString()));
                 param = null;
             } else if (param != null)
                 param.append(ch);

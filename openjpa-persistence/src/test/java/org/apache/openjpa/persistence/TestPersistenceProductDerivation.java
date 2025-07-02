@@ -26,8 +26,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -41,7 +39,6 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.encryption.EncryptionProvider;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 
 import org.junit.After;
 import org.junit.Before;
@@ -74,8 +71,7 @@ public class TestPersistenceProductDerivation {
             "TestPersistenceProductDerivation_generated_" +
             System.currentTimeMillis() + ".jar");
 
-        AccessController.doPrivileged(J2DoPrivHelper
-            .deleteOnExitAction(targetFile));
+        targetFile.deleteOnExit();
         buildJar(sourceFile,targetFile);
 
         // Hold a reference to the current classloader so we can cleanup
@@ -83,8 +79,8 @@ public class TestPersistenceProductDerivation {
         originalLoader = Thread.currentThread().getContextClassLoader();
         tempLoader = new TempUrlLoader(new URL[]{targetFile.toURI().toURL()}
             ,originalLoader);
-        AccessController.doPrivileged(J2DoPrivHelper
-            .setContextClassLoaderAction(tempLoader));
+        
+        Thread.currentThread().setContextClassLoader(tempLoader);
     }
 
     @After
@@ -96,8 +92,8 @@ public class TestPersistenceProductDerivation {
         // and found numerous documented problems with deleting files. Perhaps
         // sometime in the future this problem will be fixed. For now it doesn't
         // really matter since we generate a new file every time.
-        boolean deleted = AccessController.doPrivileged(J2DoPrivHelper
-            .deleteAction(targetFile));
+        boolean deleted = targetFile.delete();
+        
         if(!deleted){
             logger.warning("The file " + targetFile + " wasn't deleted.");
         }
@@ -257,24 +253,17 @@ public class TestPersistenceProductDerivation {
 
     private static List<URL> getResourceURL(String rsrc)
         throws IOException {
-    Enumeration<URL> urls = null;
-    try {
-        ClassLoader cl = TestPersistenceProductDerivation.class.getClassLoader();
-        urls = AccessController.doPrivileged(
-            J2DoPrivHelper.getResourcesAction(cl, rsrc));
-        if (!urls.hasMoreElements()) {
-            if (!rsrc.startsWith("META-INF"))
-              urls = AccessController.doPrivileged(
-                  J2DoPrivHelper.getResourcesAction(cl, "META-INF/" + rsrc));
-            if (!urls.hasMoreElements())
-                return null;
-        }
-    } catch (PrivilegedActionException pae) {
-        throw (IOException) pae.getException();
-    }
-
-    return Collections.list(urls);
-}
+	    Enumeration<URL> urls = null;
+	    ClassLoader cl = TestPersistenceProductDerivation.class.getClassLoader();
+	    urls = cl.getResources(rsrc);
+	    if (!urls.hasMoreElements()) {
+	        if (!rsrc.startsWith("META-INF"))
+	          urls = cl.getResources("META-INF/" + rsrc);
+	        if (!urls.hasMoreElements())
+	            return null;
+	    }
+    	return Collections.list(urls);
+	}
 
     private void buildJar(File sourceFile, File targetFile) throws Exception {
 

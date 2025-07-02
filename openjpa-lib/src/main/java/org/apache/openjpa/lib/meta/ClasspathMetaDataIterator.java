@@ -20,12 +20,9 @@ package org.apache.openjpa.lib.meta;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.Properties;
 import java.util.zip.ZipFile;
 
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.StringUtil;
 
 /**
@@ -49,8 +46,7 @@ public class ClasspathMetaDataIterator extends MetaDataIteratorChain {
      */
     public ClasspathMetaDataIterator(String[] dirs, MetaDataFilter filter)
         throws IOException {
-        Properties props = AccessController.doPrivileged(
-            J2DoPrivHelper.getPropertiesAction());
+        Properties props = System.getProperties();
         String path = props.getProperty("java.class.path");
         String[] tokens = StringUtil.split(path,
             props.getProperty("path.separator"), 0);
@@ -60,21 +56,13 @@ public class ClasspathMetaDataIterator extends MetaDataIteratorChain {
                 continue;
 
             File file = new File(token);
-            if (!AccessController.doPrivileged(
-                    J2DoPrivHelper.existsAction(file)))
+            if (!file.exists())
                 continue;
-            if (AccessController.doPrivileged(J2DoPrivHelper
-                    .isDirectoryAction(file)))
+            if (file.isDirectory())
                 addIterator(new FileMetaDataIterator(file, filter));
             else if (token.endsWith(".jar")) {
-                try {
-                    ZipFile zFile = AccessController
-                            .doPrivileged(J2DoPrivHelper.newZipFileAction(file));
-                    addIterator(new ZipFileMetaDataIterator(zFile, filter));
-                }
-                catch (PrivilegedActionException pae) {
-                    throw (IOException) pae.getException();
-                }
+                ZipFile zFile = new ZipFile(file);
+                addIterator(new ZipFileMetaDataIterator(zFile, filter));
             }
         }
     }

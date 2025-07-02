@@ -39,7 +39,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -73,7 +72,6 @@ import jakarta.persistence.Transient;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.AbstractMetaDataDefaults;
 import org.apache.openjpa.meta.AccessCode;
@@ -168,8 +166,7 @@ public class PersistenceMetaDataDefaults
         if (member == null)
             return null;
         AnnotatedElement el = (AnnotatedElement) member;
-        if (!ignoreTransient && AccessController.doPrivileged(J2DoPrivHelper
-                .isAnnotationPresentAction(el, Transient.class)))
+        if (!ignoreTransient && el.isAnnotationPresent(Transient.class))
             return TRANSIENT;
         if (fmd != null
             && fmd.getManagement() != FieldMetaData.MANAGE_PERSISTENT)
@@ -240,8 +237,7 @@ public class PersistenceMetaDataDefaults
         }
 
         //### EJB3: what if defined in XML?
-        if (AccessController.doPrivileged(J2DoPrivHelper
-                .isAnnotationPresentAction(type, Embeddable.class)))
+        if (type.isAnnotationPresent(Embeddable.class))
             return EMBEDDED;
         if (Serializable.class.isAssignableFrom(type))
             return BASIC;
@@ -376,10 +372,8 @@ public class PersistenceMetaDataDefaults
         conf) {
     	if (cls.isInterface()) // Managed interfaces
     		return AccessCode.PROPERTY;
-        Field[] allFields = AccessController.doPrivileged(J2DoPrivHelper.
-                getDeclaredFieldsAction(cls));
-		Method[] methods = AccessController.doPrivileged(
-				J2DoPrivHelper.getDeclaredMethodsAction(cls));
+        Field[] allFields = cls.getDeclaredFields();
+		Method[] methods = cls.getDeclaredMethods();
         List<Field> fields = filter(allFields, new TransientFilter(true));
         /*
          * OpenJPA 1.x permitted private properties to be persistent.  This is
@@ -468,8 +462,7 @@ public class PersistenceMetaDataDefaults
     	boolean isField  = AccessCode.isField(meta);
 
     	if (explicit || unknown || isField) {
-    		Field[] fields = AccessController.doPrivileged(J2DoPrivHelper.
-                getDeclaredFieldsAction(meta.getDescribedType()));
+    		Field[] fields = meta.getDescribedType().getDeclaredFields();
 
         	return filter(fields, fieldFilter,
         	    ignoreTransient ? null : nonTransientFilter,
@@ -489,8 +482,7 @@ public class PersistenceMetaDataDefaults
     	boolean isProperty  = AccessCode.isProperty(meta.getAccessType());
 
     	if (explicit || unknown || isProperty) {
-    		Method[] publicMethods = AccessController.doPrivileged(
-              J2DoPrivHelper.getDeclaredMethodsAction(meta.getDescribedType()));
+    		Method[] publicMethods = meta.getDescribedType().getDeclaredMethods();
 
             /*
              * OpenJPA 1.x permitted private accessor properties to be persistent.  This is
@@ -632,9 +624,7 @@ public class PersistenceMetaDataDefaults
                     setterName = "set" + member.getName().substring(3);
                 }
                 // check for setters for methods
-                Method setter =
-                    (Method) AccessController.doPrivileged(J2DoPrivHelper.getDeclaredMethodAction(
-                        meta.getDescribedType(), setterName, new Class[] { ((Method) member).getReturnType() }));
+                Method setter = (Method) meta.getDescribedType().getDeclaredMethod(setterName, new Class[] {((Method) member).getReturnType()});
                 if (setter == null && !isAnnotatedTransient(member)) {
                     logNoSetter(meta, name, null);
                     return false;
@@ -660,9 +650,7 @@ public class PersistenceMetaDataDefaults
 
     private boolean isAnnotatedTransient(Member member) {
         return member instanceof AnnotatedElement
-            && AccessController.doPrivileged(J2DoPrivHelper
-                .isAnnotationPresentAction(((AnnotatedElement) member),
-                        Transient.class));
+            && ((AnnotatedElement) member).isAnnotationPresent(Transient.class);
     }
 
     /**
@@ -676,10 +664,7 @@ public class PersistenceMetaDataDefaults
     private boolean isAnnotatedAccess(Member member, AccessType type) {
     	if (member == null)
     		return false;
-        Access anno =
-            AccessController.doPrivileged(J2DoPrivHelper
-                .getAnnotationAction((AnnotatedElement)member,
-                Access.class));
+        Access anno = ((AnnotatedElement) member).getAnnotation(Access.class);
         return anno != null && anno.value() == type;
     }
 
@@ -914,8 +899,7 @@ public class PersistenceMetaDataDefaults
     static class AnnotatedFilter implements InclusiveFilter<AnnotatedElement> {
         @Override
         public boolean includes(AnnotatedElement obj) {
-            Annotation[] annos = AccessController.doPrivileged(J2DoPrivHelper
-                    .getAnnotationsAction(obj));
+            Annotation[] annos = obj.getAnnotations();
         	for (Annotation anno : annos) {
         		String name = anno.annotationType().getName();
                 if ((name.startsWith("jakarta.persistence.")
