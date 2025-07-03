@@ -72,24 +72,18 @@ public class AnnotationPersistenceXMLMetaDataParser {
         _conf = conf;
         _log = conf.getLog(OpenJPAConfiguration.LOG_METADATA);
         try {
-            xmlTypeClass = Class.forName(
-                "javax.xml.bind.annotation.XmlType");
+            xmlTypeClass = Class.forName("jakarta.xml.bind.annotation.XmlType");
             xmlTypeName = xmlTypeClass.getMethod("name", null);
             xmlTypeNamespace = xmlTypeClass.getMethod("namespace", null);
-            xmlRootElementClass = Class.forName(
-                "javax.xml.bind.annotation.XmlRootElement");
+            xmlRootElementClass = Class.forName("jakarta.xml.bind.annotation.XmlRootElement");
             xmlRootName = xmlRootElementClass.getMethod("name", null);
             xmlRootNamespace = xmlRootElementClass.getMethod("namespace", null);
-            xmlAccessorTypeClass = Class.forName(
-                "javax.xml.bind.annotation.XmlAccessorType");
+            xmlAccessorTypeClass = Class.forName("jakarta.xml.bind.annotation.XmlAccessorType");
             xmlAccessorValue = xmlAccessorTypeClass.getMethod("value", null);
-            xmlAttributeClass = Class.forName(
-                "javax.xml.bind.annotation.XmlAttribute");
+            xmlAttributeClass = Class.forName("jakarta.xml.bind.annotation.XmlAttribute");
             xmlAttributeName = xmlAttributeClass.getMethod("name", null);
-            xmlAttributeNamespace = xmlAttributeClass.getMethod("namespace"
-                , null);
-            xmlElementClass = Class.forName(
-                "javax.xml.bind.annotation.XmlElement");
+            xmlAttributeNamespace = xmlAttributeClass.getMethod("namespace", null);
+            xmlElementClass = Class.forName("jakarta.xml.bind.annotation.XmlElement");
             xmlElementName = xmlElementClass.getMethod("name", null);
             xmlElementNamespace = xmlElementClass.getMethod("namespace", null);
         } catch (Exception e) {

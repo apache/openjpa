@@ -84,6 +84,7 @@
                 <executions>
                     <execution>
                         <phase>process-test-classes</phase>
+                        <?m2e ignore?>
                         <configuration>
                             <target>
                                 <ant antfile="src/main/ant/enhancer.xml" target="enhance" inheritRefs="true">

@@ -107,39 +107,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.persistence.AssociationOverride;
-import jakarta.persistence.AssociationOverrides;
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.ColumnResult;
-import jakarta.persistence.ConstructorResult;
-import jakarta.persistence.DiscriminatorColumn;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.EntityResult;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FieldResult;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinColumns;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.MapKeyColumn;
-import jakarta.persistence.MapKeyEnumerated;
-import jakarta.persistence.MapKeyJoinColumn;
-import jakarta.persistence.MapKeyJoinColumns;
-import jakarta.persistence.MapKeyTemporal;
-import jakarta.persistence.PrimaryKeyJoinColumn;
-import jakarta.persistence.PrimaryKeyJoinColumns;
-import jakarta.persistence.SecondaryTable;
-import jakarta.persistence.SecondaryTables;
-import jakarta.persistence.SqlResultSetMapping;
-import jakarta.persistence.SqlResultSetMappings;
-import jakarta.persistence.Table;
-import jakarta.persistence.TableGenerator;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.UniqueConstraint;
-
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
@@ -178,6 +145,39 @@ import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
+
+import jakarta.persistence.AssociationOverride;
+import jakarta.persistence.AssociationOverrides;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.ColumnResult;
+import jakarta.persistence.ConstructorResult;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.EntityResult;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FieldResult;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.MapKeyColumn;
+import jakarta.persistence.MapKeyEnumerated;
+import jakarta.persistence.MapKeyJoinColumn;
+import jakarta.persistence.MapKeyJoinColumns;
+import jakarta.persistence.MapKeyTemporal;
+import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.PrimaryKeyJoinColumns;
+import jakarta.persistence.SecondaryTable;
+import jakarta.persistence.SecondaryTables;
+import jakarta.persistence.SqlResultSetMapping;
+import jakarta.persistence.SqlResultSetMappings;
+import jakarta.persistence.Table;
+import jakarta.persistence.TableGenerator;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.UniqueConstraint;
 
 /**
  * Persistence annotation mapping parser.
@@ -1346,8 +1346,7 @@ public class AnnotationPersistenceMappingParser
                         (((Nonpolymorphic) anno).value()));
                     break;
                 case ORDER_COLUMN:
-                    parseJavaxOrderColumn(fm,
-                        (jakarta.persistence.OrderColumn)anno);
+                    parseJakartaOrderColumn(fm, (jakarta.persistence.OrderColumn)anno);
                     break;
                 case ORDER_COL:
                     parseOrderColumn(fm, (OrderColumn) anno);
@@ -1681,7 +1680,7 @@ public class AnnotationPersistenceMappingParser
         // have a hard-wired dependency on JAXB here
         Class<?> xmlRootElementClass = null;
         try {
-            xmlRootElementClass = Class.forName("javax.xml.bind.annotation.XmlRootElement");
+            xmlRootElementClass = Class.forName("jakarta.xml.bind.annotation.XmlRootElement");
         } catch (Exception e) {
         }
 
@@ -2093,8 +2092,7 @@ public class AnnotationPersistenceMappingParser
     /**
      * Parse @jakarta.persistence.OrderColumn
      */
-    private void parseJavaxOrderColumn(FieldMapping fm,
-        jakarta.persistence.OrderColumn order) {
+    private void parseJakartaOrderColumn(FieldMapping fm, jakarta.persistence.OrderColumn order) {
 
         Column col = new Column();
         if (!StringUtil.isEmpty(order.name()))
