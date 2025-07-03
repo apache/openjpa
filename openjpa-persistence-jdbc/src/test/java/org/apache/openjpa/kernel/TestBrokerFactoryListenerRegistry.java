@@ -47,7 +47,7 @@ public class TestBrokerFactoryListenerRegistry
             public void beforePersist(LifecycleEvent event) {
                 persistCount++;
             }
-        });
+        }, null);
         emf.addTransactionListener(new AbstractTransactionListener() {
             @Override
             public void afterBegin(TransactionEvent event) {

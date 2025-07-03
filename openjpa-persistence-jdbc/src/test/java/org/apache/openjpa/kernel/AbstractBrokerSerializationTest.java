@@ -309,7 +309,7 @@ public abstract class AbstractBrokerSerializationTest<T>
         TxListener txListener = new TxListener();
         emf.addTransactionListener(txListener);
         LifeListener lifeListener = new LifeListener();
-        emf.addLifecycleListener(lifeListener);
+        emf.addLifecycleListener(lifeListener, null);
 
         OpenJPAEntityManager em = emf.createEntityManager();
         T t = em.find(getManagedType(), id);
