@@ -39,7 +39,7 @@ import org.apache.openjpa.meta.XMLMetaData;
  * @author Catalina Wei
  * @since 1.0.0
  */
-public class AnnotationPersistenceXMLMetaDataParser {
+public class AnnotationPersistenceXMLMetaDataParser <T extends Annotation> {
 
     private static final Localizer _loc = Localizer.forPackage
         (AnnotationPersistenceXMLMetaDataParser.class);
@@ -50,11 +50,11 @@ public class AnnotationPersistenceXMLMetaDataParser {
 
     // cache the JAXB Xml... classes if they are present so we do not
     // have a hard-wired dependency on JAXB here
-    private Class xmlTypeClass = null;
-    private Class xmlRootElementClass = null;
-    private Class xmlAccessorTypeClass = null;
-    private Class xmlAttributeClass = null;
-    private Class xmlElementClass = null;
+    private Class<T> xmlTypeClass = null;
+    private Class<T> xmlRootElementClass = null;
+    private Class<T> xmlAccessorTypeClass = null;
+    private Class<T> xmlAttributeClass = null;
+    private Class<T> xmlElementClass = null;
     private Method xmlTypeName = null;
     private Method xmlTypeNamespace = null;
     private Method xmlRootName = null;
@@ -68,24 +68,25 @@ public class AnnotationPersistenceXMLMetaDataParser {
     /**
      * Constructor; supply configuration.
      */
-    public AnnotationPersistenceXMLMetaDataParser(OpenJPAConfiguration conf) {
+    @SuppressWarnings("unchecked")
+	public AnnotationPersistenceXMLMetaDataParser(OpenJPAConfiguration conf) {
         _conf = conf;
         _log = conf.getLog(OpenJPAConfiguration.LOG_METADATA);
         try {
-            xmlTypeClass = Class.forName("jakarta.xml.bind.annotation.XmlType");
-            xmlTypeName = xmlTypeClass.getMethod("name", null);
-            xmlTypeNamespace = xmlTypeClass.getMethod("namespace", null);
-            xmlRootElementClass = Class.forName("jakarta.xml.bind.annotation.XmlRootElement");
-            xmlRootName = xmlRootElementClass.getMethod("name", null);
-            xmlRootNamespace = xmlRootElementClass.getMethod("namespace", null);
-            xmlAccessorTypeClass = Class.forName("jakarta.xml.bind.annotation.XmlAccessorType");
-            xmlAccessorValue = xmlAccessorTypeClass.getMethod("value", null);
-            xmlAttributeClass = Class.forName("jakarta.xml.bind.annotation.XmlAttribute");
-            xmlAttributeName = xmlAttributeClass.getMethod("name", null);
-            xmlAttributeNamespace = xmlAttributeClass.getMethod("namespace", null);
-            xmlElementClass = Class.forName("jakarta.xml.bind.annotation.XmlElement");
-            xmlElementName = xmlElementClass.getMethod("name", null);
-            xmlElementNamespace = xmlElementClass.getMethod("namespace", null);
+            xmlTypeClass = (Class<T>) Class.forName("jakarta.xml.bind.annotation.XmlType");
+            xmlTypeName = xmlTypeClass.getMethod("name");
+            xmlTypeNamespace = xmlTypeClass.getMethod("namespace");
+            xmlRootElementClass = (Class<T>) Class.forName("jakarta.xml.bind.annotation.XmlRootElement");
+            xmlRootName = xmlRootElementClass.getMethod("name");
+            xmlRootNamespace = xmlRootElementClass.getMethod("namespace");
+            xmlAccessorTypeClass = (Class<T>) Class.forName("jakarta.xml.bind.annotation.XmlAccessorType");
+            xmlAccessorValue = xmlAccessorTypeClass.getMethod("value");
+            xmlAttributeClass = (Class<T>) Class.forName("jakarta.xml.bind.annotation.XmlAttribute");
+            xmlAttributeName = xmlAttributeClass.getMethod("name");
+            xmlAttributeNamespace = xmlAttributeClass.getMethod("namespace");
+            xmlElementClass = (Class<T>) Class.forName("jakarta.xml.bind.annotation.XmlElement");
+            xmlElementName = xmlElementClass.getMethod("name");
+            xmlElementNamespace = xmlElementClass.getMethod("namespace");
         } catch (Exception e) {
         }
     }
@@ -174,37 +175,32 @@ public class AnnotationPersistenceXMLMetaDataParser {
         return meta;
     }
 
-    private void parseXmlRootElement(Class type, XMLMetaData meta) {
+    private void parseXmlRootElement(Class<?> type, XMLMetaData meta) {
         try {
             if (type.getAnnotation(xmlRootElementClass) != null) {
                 meta.setXmlRootElement(true);
-                meta.setXmlname((String) xmlRootName.invoke(type.getAnnotation
-                    (xmlRootElementClass), new Object[]{}));
-                meta.setXmlnamespace((String) xmlRootNamespace.invoke(type
-                    .getAnnotation(xmlRootElementClass), new Object[]{}));
+                meta.setXmlname((String) xmlRootName.invoke(type.getAnnotation(xmlRootElementClass), new Object[]{}));
+                meta.setXmlnamespace((String) xmlRootNamespace.invoke(type.getAnnotation(xmlRootElementClass), new Object[]{}));
             }
             else {
-                meta.setXmlname((String) xmlTypeName.invoke(type.getAnnotation
-                    (xmlTypeClass), new Object[]{}));
-                meta.setXmlnamespace((String) xmlTypeNamespace.invoke(type
-                    .getAnnotation(xmlTypeClass), new Object[]{}));
+                meta.setXmlname((String) xmlTypeName.invoke(type.getAnnotation(xmlTypeClass), new Object[]{}));
+                meta.setXmlnamespace((String) xmlTypeNamespace.invoke(type.getAnnotation(xmlTypeClass), new Object[]{}));
             }
         } catch (Exception e) {
         }
     }
 
-    private void populateFromReflection(Class cls, XMLMetaData meta) {
+    private void populateFromReflection(Class<?> cls, XMLMetaData meta) {
         Member[] members;
 
-        Class superclass = cls.getSuperclass();
+        Class<?> superclass = cls.getSuperclass();
 
         // handle inheritance at sub-element level
-        if (superclass.isAnnotationPresent((Class<? extends Annotation>) xmlTypeClass))
+        if (superclass.isAnnotationPresent(xmlTypeClass))
             populateFromReflection(superclass, meta);
 
         try {
-            if (Objects.equals(xmlAccessorValue.invoke(cls.getAnnotation(
-                xmlAccessorTypeClass), new Object[]{}).toString(), "FIELD"))
+            if (Objects.equals(xmlAccessorValue.invoke(cls.getAnnotation(xmlAccessorTypeClass), new Object[]{}).toString(), "FIELD"))
                 members = cls.getDeclaredFields();
             else
                 members = cls.getDeclaredMethods();
@@ -213,8 +209,7 @@ public class AnnotationPersistenceXMLMetaDataParser {
                 AnnotatedElement el = (AnnotatedElement) member;
                 XMLMetaData field = null;
                 if (el.getAnnotation(xmlElementClass) != null) {
-                    String xmlname = (String) xmlElementName.invoke(el
-                            .getAnnotation(xmlElementClass), new Object[]{});
+                    String xmlname = (String) xmlElementName.invoke(el.getAnnotation(xmlElementClass), new Object[]{});
                     // avoid JAXB XML bind default name
                     if (Objects.equals(XMLMetaData.defaultName, xmlname))
                         xmlname = member.getName();
@@ -231,8 +226,7 @@ public class AnnotationPersistenceXMLMetaDataParser {
                                 .getType(), member.getName());
                         field.setXmltype(XMLMetaData.ELEMENT);
                         field.setXmlname(xmlname);
-                        field.setXmlnamespace((String) xmlElementNamespace
-                                .invoke(el.getAnnotation(xmlElementClass)
+                        field.setXmlnamespace((String) xmlElementNamespace.invoke(el.getAnnotation(xmlElementClass)
                                         , new Object[]{}));
                     }
                 }

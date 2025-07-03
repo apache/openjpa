@@ -447,7 +447,7 @@ public class Column extends ReferenceCounter {
                 break;
             case JavaTypes.BYTE:
             case JavaTypes.BYTE_OBJ:
-                _default = new Byte(_defaultStr);
+                _default = Byte.parseByte(_defaultStr);
                 break;
             case JavaTypes.CHAR:
             case JavaTypes.CHAR_OBJ:
@@ -455,11 +455,11 @@ public class Column extends ReferenceCounter {
                 break;
             case JavaTypes.DOUBLE:
             case JavaTypes.DOUBLE_OBJ:
-                _default = new Double(_defaultStr);
+                _default = Double.valueOf(_defaultStr);
                 break;
             case JavaTypes.FLOAT:
             case JavaTypes.FLOAT_OBJ:
-                _default = new Float(_defaultStr);
+                _default = Float.valueOf(_defaultStr);
                 break;
             case JavaTypes.INT:
             case JavaTypes.INT_OBJ:
@@ -475,7 +475,7 @@ public class Column extends ReferenceCounter {
                 break;
             case JavaTypes.SHORT:
             case JavaTypes.SHORT_OBJ:
-                _default = new Short(_defaultStr);
+                _default = Short.valueOf(_defaultStr);
                 break;
             case JavaTypes.DATE:
                 _default = new java.util.Date(_defaultStr);

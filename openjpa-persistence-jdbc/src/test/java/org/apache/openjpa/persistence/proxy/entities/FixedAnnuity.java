@@ -43,7 +43,7 @@ public class FixedAnnuity extends Annuity implements IFixedAnnuity {
 		this.rate = rate;
 		if (this.rate != null) {
 			DecimalFormat df = new DecimalFormat("#.##");
-			this.rate= new Double(df.format(rate));
+			this.rate= Double.valueOf(df.format(rate));
 		}
 	}
 }

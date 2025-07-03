@@ -533,7 +533,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
 
     public void verifyResults(Topic topic, Subject s) {
         Assert.assertNotNull(topic);
-        Assert.assertEquals(new Integer(5), topic.getId());
+        Assert.assertEquals(Integer.valueOf(5), topic.getId());
         Subject s2 = topic.getSubject();
         verifySubject(s, s2);
     }

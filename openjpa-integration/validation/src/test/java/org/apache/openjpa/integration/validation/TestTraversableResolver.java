@@ -21,7 +21,6 @@ package org.apache.openjpa.integration.validation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.security.AccessController;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,7 +29,6 @@ import jakarta.validation.Path;
 import jakarta.validation.TraversableResolver;
 
 import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
@@ -258,7 +256,7 @@ public class TestTraversableResolver extends TestCase {
             Method getLeafNode = PathImpl.getMethod("getLeafNode");
             assertNotNull(getLeafNode);
             Object path = createPathFromString.invoke(null, s);
-            node = (Path.Node) getLeafNode.invoke(path, null);
+            node = (Path.Node) getLeafNode.invoke(path);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
         }
         return node;

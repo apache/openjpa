@@ -172,9 +172,8 @@ public class TestStatistics extends SingleEMFTestCase {
     }
 
     public void testMultipleUnits() {
-        String[] props = { "openjpa.DataCache", "true", "openjpa.RemoteCommitProvider", "sjvm" };
-        OpenJPAEntityManagerFactory emf1 = createNamedEMF("test", props);
-        OpenJPAEntityManagerFactory emf2 = createNamedEMF("empty-pu", props);
+        OpenJPAEntityManagerFactory emf1 = createNamedEMF("test", "openjpa.DataCache", "true", "openjpa.RemoteCommitProvider", "sjvm");
+        OpenJPAEntityManagerFactory emf2 = createNamedEMF("empty-pu", "openjpa.DataCache", "true", "openjpa.RemoteCommitProvider", "sjvm");
         assertNotSame(emf1, emf2);
         assertNotSame(emf1.getStoreCache(), emf2.getStoreCache());
         assertNotSame(emf1.getStoreCache().getStatistics(), emf2.getStoreCache().getStatistics());

@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -175,7 +176,7 @@ public class ClassMetaDataIterator implements MetaDataIterator {
     public File getFile() throws IOException {
         if (_url == -1 || _url >= _urls.size())
             throw new IllegalStateException();
-        File file = new File(URLDecoder.decode((_urls.get(_url)).getFile()));
+        File file = new File(URLDecoder.decode((_urls.get(_url)).getFile(), Charset.forName("UTF-8")));
         return file.exists() ? file : null;
     }
 

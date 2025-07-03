@@ -100,7 +100,7 @@ public class TestSequenceAssigned
         pc = (SequenceAssigned) pm.find(SequenceAssigned.class, oid);
         pc2 = (SequenceAssigned3) pm.find(SequenceAssigned3.class, oid2);
         assertEquals(-100, pc.getPK());
-        assertEquals(new Long(-100), pc2.getPK());
+        assertEquals(Long.valueOf(-100), pc2.getPK());
         endEm(pm);
     }
 

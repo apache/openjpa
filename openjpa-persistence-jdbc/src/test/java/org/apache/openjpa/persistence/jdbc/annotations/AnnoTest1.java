@@ -164,7 +164,7 @@ public class AnnoTest1 {
     }
 
     public AnnoTest1(long pk) {
-        this(new Long(pk));
+        this(Long.valueOf(pk));
     }
 
     public AnnoTest1(Long pk) {

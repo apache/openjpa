@@ -1450,9 +1450,9 @@ public abstract class MappingInfo implements Serializable {
                 constant = true;
                 try {
                     if (targetNameStr.indexOf('.') == -1)
-                        target = new Integer(targetNameStr);
+                        target = Integer.valueOf(targetNameStr);
                     else
-                        target = new Double(targetNameStr);
+                        target = Double.valueOf(targetNameStr);
                 } catch (RuntimeException re) {
                     throw new MetaDataException(_loc.get(prefix
                         + "-bad-fkconst", context, targetName, name));

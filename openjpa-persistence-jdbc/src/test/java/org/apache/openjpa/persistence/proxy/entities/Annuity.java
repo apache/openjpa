@@ -74,7 +74,7 @@ public class Annuity extends AnnuityPersistebleObject implements IAnnuity {
         this.lastPaidAmt = lastPaidAmt;
         if (this.lastPaidAmt != null) {
             DecimalFormat df = new DecimalFormat("#.##");
-            this.lastPaidAmt= new Double(df.format(lastPaidAmt));
+            this.lastPaidAmt= Double.valueOf(df.format(lastPaidAmt));
         }
     }
 
@@ -98,7 +98,7 @@ public class Annuity extends AnnuityPersistebleObject implements IAnnuity {
         this.amount = amount;
         if (this.amount != null) {
             DecimalFormat df = new DecimalFormat("#.##");
-            this.amount = new Double(df.format(amount));
+            this.amount = Double.valueOf(df.format(amount));
         }
     }
 

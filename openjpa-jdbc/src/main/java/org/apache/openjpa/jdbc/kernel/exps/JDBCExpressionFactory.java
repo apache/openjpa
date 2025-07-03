@@ -412,7 +412,7 @@ public class JDBCExpressionFactory
     @Override
     public Arguments newArgumentList(Value... vs) {
         if (vs == null)
-           return new Args(null);
+           return new Args();
         Val[] vals = new Val[vs.length];
         int i = 0;
         for (Value v : vs) {

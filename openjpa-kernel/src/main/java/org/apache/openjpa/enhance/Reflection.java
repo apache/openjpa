@@ -799,14 +799,14 @@ public class Reflection {
      * Invoke the given setter on the given object.
      */
     public static void set(Object target, Method setter, double value) {
-        set(target, setter, new Double(value));
+        set(target, setter, Double.valueOf(value));
     }
 
     /**
      * Invoke the given setter on the given object.
      */
     public static void set(Object target, Method setter, float value) {
-        set(target, setter, new Float(value));
+        set(target, setter, Float.valueOf(value));
     }
 
     /**

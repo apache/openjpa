@@ -314,11 +314,10 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             // verify jakarta.persistence.query.timeout is supplied
             Map<String, Object> hints = q.getHints();
             assertTrue(hints.containsKey("jakarta.persistence.query.timeout"));
-            Integer timeout = new Integer(
-                (String) hints.get("jakarta.persistence.query.timeout"));
+            Integer timeout = Integer.valueOf((String) hints.get("jakarta.persistence.query.timeout"));
             getLog().trace("testQueryTimeout22a() - Retrieved hint " +
                 "jakarta.persistence.query.timeout=" + timeout);
-            assertEquals(timeout, new Integer(0));
+            assertEquals(timeout, Integer.valueOf(0));
 
             try {
                 long startTime = System.currentTimeMillis();
@@ -519,8 +518,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             // verify jakarta.persistence.query.timeout hint via annotation set
             Map<String, Object> hints = q.getHints();
             assertTrue(hints.containsKey("jakarta.persistence.query.timeout"));
-            Integer timeout = new Integer((String) hints.get(
-                "jakarta.persistence.query.timeout"));
+            Integer timeout = Integer.valueOf((String) hints.get("jakarta.persistence.query.timeout"));
             getLog().trace(
                 "testQueryTimeout32a() - Found jakarta.persistence.query.timeout="
                 + timeout);

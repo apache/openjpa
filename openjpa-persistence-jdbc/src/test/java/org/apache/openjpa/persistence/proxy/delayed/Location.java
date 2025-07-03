@@ -78,6 +78,6 @@ public class Location implements Serializable, Comparable<Location> {
 
     @Override
     public int compareTo(Location l) {
-        return new Integer(getId()).compareTo(l.getId());
+        return Integer.valueOf(getId()).compareTo(l.getId());
     }
 }

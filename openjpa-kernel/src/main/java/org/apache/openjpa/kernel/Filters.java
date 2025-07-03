@@ -302,7 +302,7 @@ public class Filters {
             }
             else if (type == Integer.class && o instanceof String) {
                 try {
-                    return new Integer(o.toString());
+                    return Integer.valueOf(o.toString());
                 }
                 catch (NumberFormatException e) {
                     throw new ClassCastException(_loc.get("cant-convert", o, o.getClass(), type).getMessage());

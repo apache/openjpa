@@ -85,6 +85,6 @@ public class Account implements IAccount, Comparable<Account> {
 
     @Override
     public int compareTo(Account o) {
-        return new Integer(getId()).compareTo(o.getId());
+        return Integer.valueOf(getId()).compareTo(o.getId());
     }
 }

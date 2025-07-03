@@ -575,8 +575,8 @@ public class XMLSchemaParser
         if (val.startsWith("'"))
             return val.substring(1, val.length() - 1);
         if (val.indexOf('.') == -1)
-            return new Long(val);
-        return new Double(val);
+            return Long.valueOf(val);
+        return Double.valueOf(val);
     }
 
     private void throwUserException(Message msg) {
