@@ -172,6 +172,7 @@ public class JSONObjectFormatter implements ObjectFormatter<JSON> {
                 case JavaTypes.LOCALE:
                 case JavaTypes.STRING:
                 case JavaTypes.ENUM:
+                case JavaTypes.UUID_OBJ:
                     root.set(fmd.getName(), value);
                     break;
 

@@ -287,6 +287,7 @@ public class XMLFormatter implements ObjectFormatter<Document> {
                 case JavaTypes.DATE:
                 case JavaTypes.NUMBER:
                 case JavaTypes.CALENDAR:
+                case JavaTypes.UUID_OBJ:
                 case JavaTypes.LOCALE:
                 case JavaTypes.STRING:
                 case JavaTypes.ENUM:
