@@ -105,6 +105,7 @@ public class Actor {
     public Set<Movie> getMovies() {
         return movies;
     }
+    
     public void setRandomId(UUID uuid) {
         this.randomId = uuid;
     }
