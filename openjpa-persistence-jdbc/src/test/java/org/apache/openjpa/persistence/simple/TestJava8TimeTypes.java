@@ -74,7 +74,6 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         em.persist(entity2);
         em.getTransaction().commit();
         em.close();
-
     }
 
     public void testReadJava8Types() {
@@ -127,7 +126,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     public void testMaxLocalTime() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<LocalTime> qry = em.createQuery("select max(t.localTimeField) from Java8TimeTypes AS t", LocalTime.class);
-        final LocalTime max = qry.getSingleResult();
+        final LocalTime max = qry.getSingleResult().withNano(0);
         final LocalTime etalon = (entity1.getLocalTimeField().compareTo(entity2.getLocalTimeField()) > 0
                 ? entity1.getLocalTimeField() : entity2.getLocalTimeField()).withNano(0);
         assertEquals(etalon, max);
