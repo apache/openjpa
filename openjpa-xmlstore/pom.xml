@@ -119,20 +119,11 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <argLine>${test.jvm.arguments}</argLine>
-                    <systemProperties>
-                        <property>
-                            <name>openjpa.Log</name>
-                            <value>${openjpa.Log}</value>
-                        </property>
-                        <property>
-                            <name>openjpa.DynamicEnhancementAgent</name>
-                            <value>false</value>
-                        </property>
-                        <property>
-                            <name>tests.openjpa.allowfailure</name>
-                            <value>${tests.openjpa.allowfailure}</value>
-                        </property>
-                    </systemProperties>
+                    <systemPropertyVariables>
+                    	<openjpa.Log>${openjpa.Log}</openjpa.Log>
+                    	<openjpa.DynamicEnhancementAgent>false</openjpa.DynamicEnhancementAgent>
+                    	<tests.openjpa.allowfailure>${tests.openjpa.allowfailure}</tests.openjpa.allowfailure>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
         </plugins>

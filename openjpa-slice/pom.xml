@@ -139,16 +139,10 @@
                         <exclude>org/apache/openjpa/**/*.*.class</exclude>
 
                     </excludes>
-                    <systemProperties>
-                        <property>
-                            <name>openjpa.Log</name>
-                            <value>${openjpa.Log}</value>
-                        </property>
-                        <property>
-                            <name>derby.stream.error.file</name>
-                            <value>target/derby.log</value>
-                        </property>
-                    </systemProperties>
+                    <systemPropertyVariables>
+                    	<openjpa.Log>${openjpa.Log}</openjpa.Log>
+                    	<derby.stream.error.file>target/derby.log</derby.stream.error.file>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
         </plugins>

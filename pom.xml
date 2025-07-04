@@ -480,7 +480,7 @@
             <properties>
                 <h2.version>2.3.232</h2.version>
                 <connection.driver.name>org.h2.Driver</connection.driver.name>
-                <connection.url>jdbc:h2:./target/database/openjpa-h2-database;MODE=STRICT</connection.url>
+                <connection.url>jdbc:h2:./target/database/openjpa-h2-database</connection.url>
                 <connection.username />
                 <connection.password />
                 <!-- TCK specific properties -->
