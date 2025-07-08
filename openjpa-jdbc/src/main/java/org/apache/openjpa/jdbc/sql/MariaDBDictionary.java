@@ -428,11 +428,6 @@ public class MariaDBDictionary extends DBDictionary {
         buf.append("')");
     }
 
-    @Override
-    public int getBatchFetchSize(int batchFetchSize) {
-        return Integer.MIN_VALUE;
-    }
-
     /**
      * Check to see if we have set the {@link #SELECT_HINT} in the
      * fetch configuration, and if so, append the MySQL hint after the

@@ -155,7 +155,7 @@ public class MySQLDictionary
             "SQLEXCEPTION", "SQLSTATE", "SQLWARNING", "SSL", "STARTING", "STRAIGHT_JOIN", "TABLE", "TERMINATED", "THEN", "TINYBLOB",
             "TINYINT", "TINYTEXT", "TO", "TRAILING", "TRIGGER", "TRUE", "UNDO", "UNION", "UNIQUE", "UNLOCK", "UNSIGNED", "UPDATE",
             "USAGE", "USE", "USING", "UTC_DATE", "UTC_TIME", "UTC_TIMESTAMP", "VALUES", "VARBINARY", "VARCHAR", "VARCHARACTER",
-            "VARYING", "WHEN", "WHERE", "WHILE", "WITH", "WRITE", "XOR", "YEAR_MONTH", "ZEROFILL",
+            "VARYING", "WHEN", "WHERE", "WHILE", "WITH", "WRITE", "XOR", "YEAR_MONTH", "ZEROFILL", "NTILE",
             // end generated.
             // the following keywords used to be defined as reserved words in the past, but now seem to work
             // we still add them for compat reasons
@@ -466,7 +466,9 @@ public class MySQLDictionary
         if (state == ExceptionInfo.GENERAL && ex.getErrorCode() == 0 && ex.getSQLState() == null) {
             // look at the nested MySQL exception for more details
             SQLException sqle = ex.getNextException();
-            if (sqle != null && sqle.toString().startsWith("com.mysql.jdbc.exceptions.MySQLTimeoutException")) {
+            if (sqle != null 
+            		&& (sqle.toString().startsWith("com.mysql.jdbc.exceptions.MySQLTimeoutException") || 
+            				sqle.toString().startsWith("com.mysql.cj.jdbc.exceptions.MySQLTimeoutException"))) {
                 if (conf != null && conf.getLockTimeout() != -1) {
                     state = StoreException.LOCK;
                 } else {
