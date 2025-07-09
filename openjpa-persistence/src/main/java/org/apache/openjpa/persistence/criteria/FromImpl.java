@@ -22,15 +22,18 @@ package org.apache.openjpa.persistence.criteria;
 import java.util.HashSet;
 
 import jakarta.persistence.criteria.CollectionJoin;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Fetch;
 import jakarta.persistence.criteria.From;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.ListJoin;
 import jakarta.persistence.criteria.MapJoin;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.SetJoin;
 import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.CollectionAttribute;
+import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.ListAttribute;
 import jakarta.persistence.metamodel.ManagedType;
 import jakarta.persistence.metamodel.MapAttribute;
@@ -333,4 +336,59 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     public From<Z,X> getCorrelationParent() {
         return (From<Z,X>)getCorrelatedPath();
     }
+
+	@Override
+	public Predicate equalTo(Expression<?> value) {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public Predicate equalTo(Object value) {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public Predicate notEqualTo(Expression<?> value) {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public Predicate notEqualTo(Object value) {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public <X> Expression<X> cast(Class<X> type) {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public <Y> Join<X, Y> join(Class<Y> entityClass) {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public <Y> Join<X, Y> join(Class<Y> entityClass, JoinType joinType) {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public <Y> Join<X, Y> join(EntityType<Y> entity) {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public <Y> Join<X, Y> join(EntityType<Y> entity, JoinType joinType) {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+	
 }

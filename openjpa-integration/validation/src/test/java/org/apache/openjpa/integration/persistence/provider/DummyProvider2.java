@@ -21,6 +21,7 @@ package org.apache.openjpa.integration.persistence.provider;
 import java.util.Map;
 
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceConfiguration;
 import jakarta.persistence.spi.PersistenceProvider;
 import jakarta.persistence.spi.PersistenceUnitInfo;
 import jakarta.persistence.spi.ProviderUtil;
@@ -52,5 +53,11 @@ public class DummyProvider2 implements PersistenceProvider {
     public ProviderUtil getProviderUtil() {
         return null;
     }
+
+	@Override
+	public EntityManagerFactory createEntityManagerFactory(PersistenceConfiguration configuration) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

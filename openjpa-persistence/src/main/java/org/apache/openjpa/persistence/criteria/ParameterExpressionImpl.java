@@ -20,7 +20,9 @@ package org.apache.openjpa.persistence.criteria;
 
 import java.util.Collection;
 
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.ParameterExpression;
+import jakarta.persistence.criteria.Predicate;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Value;
@@ -166,5 +168,35 @@ class ParameterExpressionImpl<T> extends ExpressionImpl<T>
 
         return value != null ? value.equals(that.value) : that.value == null;
     }
+
+	@Override
+	public Predicate equalTo(Expression<?> value) {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public Predicate equalTo(Object value) {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public Predicate notEqualTo(Expression<?> value) {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public Predicate notEqualTo(Object value) {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public <X> Expression<X> cast(Class<X> type) {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
 
 }

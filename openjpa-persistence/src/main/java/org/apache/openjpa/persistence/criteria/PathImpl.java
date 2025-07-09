@@ -23,6 +23,7 @@ import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.metamodel.Bindable;
 import jakarta.persistence.metamodel.ManagedType;
 import jakarta.persistence.metamodel.MapAttribute;
@@ -255,7 +256,7 @@ class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
      *  Gets a new path that represents the given multi-valued attribute from this path.
      */
     @Override
-    public <E, C extends java.util.Collection<E>> Expression<C>  get(PluralAttribute<X, C, E> coll) {
+    public <E, C extends java.util.Collection<E>> Expression<C>  get(PluralAttribute<? super X, C, E> coll) {
     	if (getType() != coll.getDeclaringType()) {
     		coll = (PluralAttribute)((ManagedType)getType()).getAttribute(coll.getName());
     	}
@@ -266,7 +267,7 @@ class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
      *  Gets a new path that represents the given map-valued attribute from this path.
      */
     @Override
-    public <K, V, M extends java.util.Map<K, V>> Expression<M> get(MapAttribute<X, K, V> map) {
+    public <K, V, M extends java.util.Map<K, V>> Expression<M> get(MapAttribute<? super X, K, V> map) {
     	if (getType() != map.getDeclaringType()) {
     		map = (MapAttribute)((ManagedType)getType()).getAttribute(map.getName());
     	}
@@ -326,4 +327,34 @@ class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
         Value var = q.getRegisteredVariable(this);
         return asValue(q).append(" ").append(var == null ? "?" : var.getName());
     }
+
+	@Override
+	public Predicate equalTo(Expression<?> value) {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public Predicate equalTo(Object value) {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public Predicate notEqualTo(Expression<?> value) {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public Predicate notEqualTo(Object value) {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public <X> Expression<X> cast(Class<X> type) {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
 }

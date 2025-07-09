@@ -117,7 +117,7 @@ public class TestEagerOuterToManyJoins
         FetchPlan fetch = (FetchPlan) pm.getFetchPlan();
         fetch.addField(EagerOuterJoinPC.class, "stringCollection");
         fetch.setFetchBatchSize(-1);
-        OpenJPAQuery q = pm.createNativeQuery("",EagerOuterJoinPC.class);
+        OpenJPAQuery q = (OpenJPAQuery) pm.createNativeQuery("",EagerOuterJoinPC.class);
 
         //FIXME jthomas
         //q.setOrdering("name ascending");
@@ -199,7 +199,7 @@ public class TestEagerOuterToManyJoins
         FetchPlan fetch = (FetchPlan) pm.getFetchPlan();
         fetch.addField(EagerOuterJoinPC.class, "stringList");
         fetch.setFetchBatchSize(-1);
-        OpenJPAQuery q = pm.createNativeQuery("",EagerOuterJoinPC.class);
+        OpenJPAQuery q = (OpenJPAQuery) pm.createNativeQuery("",EagerOuterJoinPC.class);
         //FIXME jthomas
         //q.setOrdering("name ascending");
         Collection results = (Collection) q.getResultList();
@@ -287,7 +287,7 @@ public class TestEagerOuterToManyJoins
         FetchPlan fetch = (FetchPlan) pm.getFetchPlan();
         fetch.addField(EagerOuterJoinPC.class, "oneManyCollection");
         fetch.setFetchBatchSize(-1);
-        OpenJPAQuery q = pm.createNativeQuery("",EagerOuterJoinPC.class);
+        OpenJPAQuery q = (OpenJPAQuery) pm.createNativeQuery("",EagerOuterJoinPC.class);
         //FIXME jthomas
         //q.setOrdering("name ascending");
         Collection results = (Collection) q.getResultList();
@@ -369,7 +369,7 @@ public class TestEagerOuterToManyJoins
         FetchPlan fetch = (FetchPlan) pm.getFetchPlan();
         fetch.addField(EagerOuterJoinPC.class, "manyManyCollection");
         fetch.setFetchBatchSize(-1);
-        OpenJPAQuery q = pm.createNativeQuery("",EagerOuterJoinPC.class);
+        OpenJPAQuery q = (OpenJPAQuery) pm.createNativeQuery("",EagerOuterJoinPC.class);
         //FIXME jthomas
         //q.setOrdering("name ascending");
         Collection results = (Collection) q.getResultList();
@@ -467,7 +467,7 @@ public class TestEagerOuterToManyJoins
         FetchPlan fetch = (FetchPlan) pm.getFetchPlan();
         fetch.addField(EagerOuterJoinPC.class, "manyManyList");
         fetch.setFetchBatchSize(-1);
-        OpenJPAQuery q = pm.createNativeQuery("",EagerOuterJoinPC.class);
+        OpenJPAQuery q = (OpenJPAQuery) pm.createNativeQuery("",EagerOuterJoinPC.class);
         //FIXME jthomas
         //q.setOrdering("name ascending");
         Collection results = (Collection) q.getResultList();
@@ -567,7 +567,7 @@ public class TestEagerOuterToManyJoins
         fetch.addField(EagerOuterJoinPC.class, "manyManyList");
         fetch.setFetchBatchSize(-1);
 
-        OpenJPAQuery q = pm.createNativeQuery("",EagerOuterJoinPC.class);
+        OpenJPAQuery q = (OpenJPAQuery) pm.createNativeQuery("",EagerOuterJoinPC.class);
         //FIXME jthomas
         //q.setOrdering("name ascending");
         Collection results = (Collection) q.getResultList();
@@ -641,7 +641,7 @@ public class TestEagerOuterToManyJoins
         FetchPlan fetch = (FetchPlan) pm.getFetchPlan();
         fetch.addField(EagerOuterJoinPC.class, "stringList");
         fetch.setFetchBatchSize(3);
-        OpenJPAQuery q = pm.createNativeQuery("",EagerOuterJoinPC.class);
+        OpenJPAQuery q = (OpenJPAQuery) pm.createNativeQuery("",EagerOuterJoinPC.class);
         //FIXME jthomas
         //q.setOrdering("name ascending");
         List results = (List) q.getResultList();
@@ -665,7 +665,7 @@ public class TestEagerOuterToManyJoins
         FetchPlan fetch = (FetchPlan) pm.getFetchPlan();
         fetch.addField(EagerOuterJoinPC.class, "stringList");
         fetch.setFetchBatchSize(3);
-        OpenJPAQuery q = pm.createNativeQuery("",EagerOuterJoinPC.class);
+        OpenJPAQuery q = (OpenJPAQuery) pm.createNativeQuery("",EagerOuterJoinPC.class);
         //FIXME jthomas
         //q.setOrdering("name ascending");
         //q.setRange(5, 20);
@@ -705,7 +705,7 @@ public class TestEagerOuterToManyJoins
         FetchPlan fetch = (FetchPlan) pm.getFetchPlan();
         fetch.addField(EagerOuterJoinPC2.class, "ref");
         fetch.addField(EagerOuterJoinPC.class, "stringCollection");
-        OpenJPAQuery q = pm.createNativeQuery("",EagerOuterJoinPC2.class);
+        OpenJPAQuery q = (OpenJPAQuery) pm.createNativeQuery("",EagerOuterJoinPC2.class);
         //FIXME jthomas
         //q.setOrdering("name ascending");
         Collection results = (Collection) q.getResultList();
@@ -735,7 +735,7 @@ public class TestEagerOuterToManyJoins
         FetchPlan fetch = (FetchPlan) pm.getFetchPlan();
         fetch.addField(EagerOuterJoinPC.class, "manyManyList");
         fetch.addField(EagerOuterJoinPC2.class, "helper");
-        OpenJPAQuery q = pm.createNativeQuery("",EagerOuterJoinPC.class);
+        OpenJPAQuery q = (OpenJPAQuery) pm.createNativeQuery("",EagerOuterJoinPC.class);
         //FIXME jthomas
         //q.setOrdering("name ascending");
         Collection results = (Collection) q.getResultList();
@@ -762,7 +762,7 @@ public class TestEagerOuterToManyJoins
         FetchPlan fetch = (FetchPlan) pm.getFetchPlan();
         fetch.addField(EagerOuterJoinPC.class, "manyManyList");
         fetch.addField(EagerOuterJoinPC2.class, "stringCollection");
-        OpenJPAQuery q = pm.createNativeQuery("",EagerOuterJoinPC.class);
+        OpenJPAQuery q = (OpenJPAQuery) pm.createNativeQuery("",EagerOuterJoinPC.class);
         //FIXME jthomas
         //q.setOrdering("name ascending");
         Collection results = (Collection) q.getResultList();
@@ -795,7 +795,7 @@ public class TestEagerOuterToManyJoins
         fetch.addField(EagerOuterJoinPC.class, "oneManyCollection");
         fetch.addField(EagerOuterJoinPC.class, "helper");
         fetch.addField(EagerOuterJoinPC2.class, "helper");
-        OpenJPAQuery q = pm.createNativeQuery("",EagerOuterJoinPC.class);
+        OpenJPAQuery q = (OpenJPAQuery) pm.createNativeQuery("",EagerOuterJoinPC.class);
         //FIXME jthomas
         //q.setOrdering("name ascending");
         Collection results = (Collection) q.getResultList();

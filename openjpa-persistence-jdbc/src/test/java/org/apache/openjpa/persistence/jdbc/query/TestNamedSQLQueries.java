@@ -66,7 +66,7 @@ public class TestNamedSQLQueries
 
     public void testNamedQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
-        OpenJPAQuery q = pm.createNativeQuery("cls",NamedSQL.class);
+        OpenJPAQuery q = (OpenJPAQuery) pm.createNativeQuery("cls",NamedSQL.class);
 
         assertEquals("javax.jdo.query.SQL", ((OpenJPAQuery) q).getLanguage());
         Collection results = (Collection) q.getCandidateCollection();

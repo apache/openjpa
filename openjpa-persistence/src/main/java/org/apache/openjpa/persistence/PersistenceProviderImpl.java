@@ -41,6 +41,8 @@ import org.apache.openjpa.persistence.validation.ValidationUtils;
 import org.apache.openjpa.util.ClassResolver;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceConfiguration;
 import jakarta.persistence.spi.ClassTransformer;
 import jakarta.persistence.spi.LoadState;
 import jakarta.persistence.spi.PersistenceProvider;
@@ -484,4 +486,9 @@ public class PersistenceProviderImpl
 
         return OpenJPAPersistenceUtil.isLoaded(obj, attr);
     }
+
+	@Override
+	public EntityManagerFactory createEntityManagerFactory(PersistenceConfiguration configuration) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
 }

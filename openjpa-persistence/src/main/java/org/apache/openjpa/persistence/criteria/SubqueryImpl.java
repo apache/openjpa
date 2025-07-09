@@ -32,6 +32,7 @@ import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.ListJoin;
 import jakarta.persistence.criteria.MapJoin;
+import jakarta.persistence.criteria.ParameterExpression;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.SetJoin;
@@ -404,4 +405,59 @@ class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
     public StringBuilder asVariable(AliasContext q) {
         return asValue(q);
     }
+
+	@Override
+	public <U> Subquery<U> subquery(EntityType<U> type) {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public Set<ParameterExpression<?>> getParameters() {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public Predicate equalTo(Expression<?> value) {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public Predicate equalTo(Object value) {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public Predicate notEqualTo(Expression<?> value) {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public Predicate notEqualTo(Object value) {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public <X> Expression<X> cast(Class<X> type) {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public Subquery<T> where(List<Predicate> restrictions) {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public Subquery<T> having(List<Predicate> restrictions) {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
 }

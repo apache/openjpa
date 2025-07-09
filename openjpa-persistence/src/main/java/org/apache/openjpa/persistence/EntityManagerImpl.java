@@ -37,22 +37,30 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import jakarta.persistence.CacheRetrieveMode;
 import jakarta.persistence.CacheStoreMode;
+import jakarta.persistence.ConnectionConsumer;
+import jakarta.persistence.ConnectionFunction;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.FindOption;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.LockModeType;
+import jakarta.persistence.LockOption;
 import jakarta.persistence.PessimisticLockScope;
 import jakarta.persistence.Query;
+import jakarta.persistence.RefreshOption;
 import jakarta.persistence.StoredProcedureQuery;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.TypedQuery;
+import jakarta.persistence.TypedQueryReference;
 import jakarta.persistence.criteria.CriteriaDelete;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaSelect;
 import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.criteria.ParameterExpression;
 import jakarta.persistence.metamodel.Metamodel;
@@ -2093,15 +2101,13 @@ public class EntityManagerImpl
         CacheRetrieveMode rMode = JPAProperties.getEnumValue(CacheRetrieveMode.class,
                 JPAProperties.CACHE_RETRIEVE_MODE, properties);
         if (rMode != null) {
-            fetch.setCacheRetrieveMode(JPAProperties.convertToKernelValue(DataCacheRetrieveMode.class,
-                    JPAProperties.CACHE_RETRIEVE_MODE, rMode));
+        	fetch.setCacheRetrieveMode(DataCacheRetrieveMode.valueOf(rMode.toString().trim().toUpperCase(Locale.ENGLISH)));
             properties.remove(JPAProperties.CACHE_RETRIEVE_MODE);
         }
         CacheStoreMode sMode = JPAProperties.getEnumValue(CacheStoreMode.class,
                 JPAProperties.CACHE_STORE_MODE, properties);
         if (sMode != null) {
-            fetch.setCacheStoreMode(JPAProperties.convertToKernelValue(DataCacheStoreMode.class,
-                    JPAProperties.CACHE_STORE_MODE, sMode));
+            fetch.setCacheStoreMode(DataCacheStoreMode.valueOf(sMode.toString().trim().toUpperCase(Locale.ENGLISH)));
             properties.remove(JPAProperties.CACHE_STORE_MODE);
         }
     }
@@ -2246,4 +2252,90 @@ public class EntityManagerImpl
         }
         return meta;
     }
+
+	@Override
+	public <T> T find(Class<T> entityClass, Object primaryKey, FindOption... options) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public <T> T find(EntityGraph<T> entityGraph, Object primaryKey, FindOption... options) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public <T> T getReference(T entity) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public void lock(Object entity, LockModeType lockMode, LockOption... options) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public void refresh(Object entity, RefreshOption... options) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public CacheRetrieveMode getCacheRetrieveMode() {
+    	return getFetchPlan().getCacheRetrieveMode() == DataCacheRetrieveMode.USE ? CacheRetrieveMode.USE : CacheRetrieveMode.BYPASS;
+	}
+
+	@Override
+	public void setCacheRetrieveMode(CacheRetrieveMode cacheRetrieveMode) {
+    	getFetchPlan().setCacheRetrieveMode(cacheRetrieveMode == CacheRetrieveMode.USE
+    			? DataCacheRetrieveMode.USE : DataCacheRetrieveMode.BYPASS);
+	}
+
+	@Override
+	public void setCacheStoreMode(CacheStoreMode cacheStoreMode) {
+		DataCacheStoreMode storeMode = switch (cacheStoreMode) {
+			case USE: yield DataCacheStoreMode.USE;
+			case REFRESH: yield DataCacheStoreMode.REFRESH;
+			default: yield DataCacheStoreMode.BYPASS;
+		};
+		getFetchPlan().setCacheStoreMode(storeMode);
+	}
+
+	@Override
+	public CacheStoreMode getCacheStoreMode() {
+    	return switch (getFetchPlan().getCacheStoreMode()) {
+	    	case USE: yield CacheStoreMode.USE;
+	    	case REFRESH: yield CacheStoreMode.REFRESH;
+	    	default: yield CacheStoreMode.BYPASS;
+    	};
+	}
+
+	@Override
+	public <T> TypedQuery<T> createQuery(CriteriaSelect<T> selectQuery) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public <T> TypedQuery<T> createQuery(TypedQueryReference<T> reference) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public <C> void runWithConnection(ConnectionConsumer<C> action) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public <C, T> T callWithConnection(ConnectionFunction<C, T> function) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public void setTimeout(Integer timeout) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public Integer getTimeout() {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+	
 }

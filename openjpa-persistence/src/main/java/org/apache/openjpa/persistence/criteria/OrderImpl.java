@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.criteria;
 
 import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Nulls;
 import jakarta.persistence.criteria.Order;
 
 /**
@@ -79,4 +80,10 @@ class OrderImpl implements Order, CriteriaExpression {
     public StringBuilder asVariable(AliasContext q) {
         throw new IllegalStateException(this + " can not be rendered as variable");
     }
+
+	@Override
+	public Nulls getNullPrecedence() {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
 }

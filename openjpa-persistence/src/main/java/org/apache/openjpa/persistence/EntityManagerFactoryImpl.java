@@ -24,13 +24,20 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import jakarta.persistence.Cache;
 import jakarta.persistence.EntityGraph;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceUnitTransactionType;
 import jakarta.persistence.PersistenceUnitUtil;
 import jakarta.persistence.Query;
+import jakarta.persistence.SchemaManager;
 import jakarta.persistence.SynchronizationType;
+import jakarta.persistence.TypedQueryReference;
+import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.spi.LoadState;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -67,8 +74,7 @@ public class EntityManagerFactoryImpl
 
     private static final long serialVersionUID = 1L;
 
-    private static final Localizer _loc = Localizer.forPackage
-        (EntityManagerFactoryImpl.class);
+    private static final Localizer _loc = Localizer.forPackage(EntityManagerFactoryImpl.class);
 
     private DelegatingBrokerFactory _factory = null;
     private transient Constructor<FetchPlan> _plan = null;
@@ -427,6 +433,11 @@ public class EntityManagerFactoryImpl
         }
         return _metaModel;
     }
+    
+    @Override
+    public String getName() {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    }
 
     @Override
     public PersistenceUnitUtil getPersistenceUnitUtil() {
@@ -454,7 +465,12 @@ public class EntityManagerFactoryImpl
     public <T> void addNamedEntityGraph(String graphName, EntityGraph<T> entityGraph) {
         throw new UnsupportedOperationException("JPA 2.1");
     }
-
+    
+    @Override
+    public <E> Map<String, EntityGraph<? extends E>> getNamedEntityGraphs(Class<E> entityType) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    }
+    
     /**
      * Get the identifier for the specified entity.  If not managed by any
      * of the em's in this PU or not persistence capable, return null.
@@ -466,7 +482,7 @@ public class EntityManagerFactoryImpl
 
     @Override
     public boolean isLoaded(Object entity) {
-        return isLoaded(entity, null);
+        return isLoaded(entity, (String) null);
     }
 
     @Override
@@ -477,7 +493,67 @@ public class EntityManagerFactoryImpl
         return (OpenJPAPersistenceUtil.isManagedBy(this, entity) &&
                 (OpenJPAPersistenceUtil.isLoaded(entity, attribute) == LoadState.LOADED));
     }
-
+    
+    @Override
+    public <E> boolean isLoaded(E entity, Attribute<? super E, ?> attribute) {
+    	return isLoaded(entity, attribute.getName());
+    }
+    
+    @Override
+    public SchemaManager getSchemaManager() {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    }
+    
+    @Override
+    public <R> R callInTransaction(Function<EntityManager, R> work) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    }
+    
+    @Override
+    public void runInTransaction(Consumer<EntityManager> work) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    }
+    
+    @Override
+    public <T> Class<? extends T> getClass(T entity) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    }
+    
+    @Override
+    public <R> Map<String, TypedQueryReference<R>> getNamedQueries(Class<R> resultType) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    }
+    
+    @Override
+    public PersistenceUnitTransactionType getTransactionType() {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    }
+    
+    @Override
+    public Object getVersion(Object entity) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    }
+    
+    @Override
+    public boolean isInstance(Object entity, Class<?> entityClass) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    }
+    
+    @Override
+    public void load(Object entity) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    }
+    
+    @Override
+    public void load(Object entity, String attributeName) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    }
+    
+    @Override
+    public <E> void load(E entity, Attribute<? super E, ?> attribute) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    }
+    
     private void validateCfNameProps(OpenJPAConfiguration conf, String cfName, String cf2Name) {
         if (StringUtil.isNotEmpty(cfName) || StringUtil.isNotEmpty(cf2Name)) {
             if (conf.getDataCache() != "false" && conf.getDataCache() != null) {

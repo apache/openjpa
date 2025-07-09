@@ -754,6 +754,36 @@ abstract class Joins {
            buffer.append(var != null ? var.getName() : map.asValue(q)).append(")");
            return buffer;
        }
+
+		@Override
+		public Predicate equalTo(Expression<?> value) {
+			// TODO Auto-generated method stub
+			throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		}
+
+		@Override
+		public Predicate equalTo(Object value) {
+			// TODO Auto-generated method stub
+			throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		}
+
+		@Override
+		public Predicate notEqualTo(Expression<?> value) {
+			// TODO Auto-generated method stub
+			throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		}
+
+		@Override
+		public Predicate notEqualTo(Object value) {
+			// TODO Auto-generated method stub
+			throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		}
+
+		@Override
+		public <X> Expression<X> cast(Class<X> type) {
+			// TODO Auto-generated method stub
+			throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		}
    }
 
    /**

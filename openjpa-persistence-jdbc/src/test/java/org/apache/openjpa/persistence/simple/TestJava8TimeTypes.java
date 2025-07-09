@@ -261,7 +261,6 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         final TypedQuery<Java8TimeTypes> qry
                 = em.createQuery("select j from Java8TimeTypes AS j where j.localTimeField < LOCAL TIME", Java8TimeTypes.class);
         final List<Java8TimeTypes> times = qry.getResultList();
-System.err.println(times);
         assertNotNull(times);
         assertFalse(times.isEmpty());
         em.close();

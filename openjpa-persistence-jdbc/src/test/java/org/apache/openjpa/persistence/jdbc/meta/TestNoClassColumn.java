@@ -48,7 +48,7 @@ public class TestNoClassColumn
 
     public void testQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
-        OpenJPAQuery q = pm.createNativeQuery("",NoClassColumn.class);
+        OpenJPAQuery q = (OpenJPAQuery) pm.createNativeQuery("",NoClassColumn.class);
         //FIXME jthomas
         //q.declareParameters("java.lang.String input");
         //q.setFilter("test==input");

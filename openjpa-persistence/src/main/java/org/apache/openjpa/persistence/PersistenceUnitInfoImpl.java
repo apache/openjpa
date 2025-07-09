@@ -605,4 +605,15 @@ public class PersistenceUnitInfoImpl
     public void setSharedCacheMode(SharedCacheMode mode) {
         _sharedCacheMode = mode;
     }
+
+	@Override
+	public String getScopeAnnotationName() {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public List<String> getQualifierAnnotationNames() {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+	
 }

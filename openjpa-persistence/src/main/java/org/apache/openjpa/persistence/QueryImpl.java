@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
+import jakarta.persistence.CacheRetrieveMode;
+import jakarta.persistence.CacheStoreMode;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.NoResultException;
@@ -688,4 +690,40 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
         String result = _query.getQueryString();
         return result != null ? result : _id;
     }
+
+	@Override
+	public X getSingleResultOrNull() {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public TypedQuery<X> setCacheRetrieveMode(CacheRetrieveMode cacheRetrieveMode) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public CacheRetrieveMode getCacheRetrieveMode() {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public CacheStoreMode getCacheStoreMode() {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public TypedQuery<X> setCacheStoreMode(CacheStoreMode cacheStoreMode) {
+		throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+	
+	@Override
+	public Integer getTimeout() {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+	
+	@Override
+	public TypedQuery<X> setTimeout(Integer timeout) {
+		throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+	
 }

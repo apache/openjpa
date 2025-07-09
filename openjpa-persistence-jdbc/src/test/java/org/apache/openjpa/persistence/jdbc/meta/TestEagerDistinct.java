@@ -104,8 +104,7 @@ public class TestEagerDistinct
     private void eagerParallelWithNonDistinctQuery(int fetchSize)
     throws Exception {
         OpenJPAEntityManager pm = getPM();
-        OpenJPAQuery q = pm.createNativeQuery(
-                "stringField.startsWith ('pc')", HelperPC2.class);
+        OpenJPAQuery q = (OpenJPAQuery) pm.createNativeQuery("stringField.startsWith ('pc')", HelperPC2.class);
         //FIXME jthomas
         //q.setOrdering("stringField ascending");
         q.getFetchPlan().setFetchBatchSize(fetchSize);
@@ -144,7 +143,7 @@ public class TestEagerDistinct
     private void eagerParallelWithDistinctQuery(int fetchSize)
     throws Exception {
         OpenJPAEntityManager pm = getPM();
-        OpenJPAQuery q = pm.createNativeQuery(
+        OpenJPAQuery q = (OpenJPAQuery) pm.createNativeQuery(
                 "helperCollection.contains (h) && h.stringField == 'shared'",
                 HelperPC2.class);
         //FIXME  jthomas
@@ -176,7 +175,7 @@ public class TestEagerDistinct
     private void nestedEagerParallel(int fetchSize)
     throws Exception {
         OpenJPAEntityManager pm = getPM();
-        OpenJPAQuery q = pm.createNativeQuery("",HelperPC2.class);
+        OpenJPAQuery q = (OpenJPAQuery) pm.createNativeQuery("",HelperPC2.class);
         //FIXME jthomas
         //q.setOrdering("stringField ascending");
         List helpers = (List) q.getResultList();
@@ -206,8 +205,7 @@ public class TestEagerDistinct
         sql.clear();
 
         pm = getPM();
-        q = pm.createNativeQuery("stringField.startsWith ('eager')",
-                EagerPC.class);
+        q = (OpenJPAQuery) pm.createNativeQuery("stringField.startsWith ('eager')", EagerPC.class);
         //FIXME jthomas
         //q.setOrdering("stringField ascending");
         q.getFetchPlan().setFetchBatchSize(fetchSize);

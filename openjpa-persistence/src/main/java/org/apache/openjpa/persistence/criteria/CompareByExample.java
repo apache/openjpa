@@ -125,4 +125,29 @@ class CompareByExample<T> extends PredicateImpl {
     static <T> BooleanOperator extractOperator(ComparisonStyle style) {
         return style == null ? BooleanOperator.AND : style.isDisjunction() ? BooleanOperator.OR : BooleanOperator.AND;
     }
+
+	@Override
+	public Predicate equalTo(Expression<?> value) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public Predicate equalTo(Object value) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public Predicate notEqualTo(Expression<?> value) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public Predicate notEqualTo(Object value) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public <X> Expression<X> cast(Class<X> type) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
 }

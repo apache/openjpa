@@ -454,4 +454,10 @@ public class MetamodelImpl implements Metamodel, Resolver {
     public QueryContext getQueryContext() {
         throw new UnsupportedOperationException();
     }
+
+	@Override
+	public EntityType<?> entity(String entityName) {
+		// TODO Auto-generated method stub
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
 }

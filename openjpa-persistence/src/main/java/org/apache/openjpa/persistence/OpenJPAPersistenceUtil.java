@@ -57,8 +57,7 @@ public class OpenJPAPersistenceUtil {
     public static Object getIdentifier(OpenJPAEntityManagerFactory emf,
         Object entity) {
 
-        if (entity instanceof PersistenceCapable) {
-            PersistenceCapable pc = (PersistenceCapable)entity;
+        if (entity instanceof PersistenceCapable pc) {
             // Per contract, if not managed by the owning emf, return null.
             if (emf != null) {
                 if (!isManagedBy(emf, pc)) {

@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jakarta.persistence.CacheRetrieveMode;
+import jakarta.persistence.CacheStoreMode;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.NoResultException;
@@ -419,4 +421,40 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
     public String toString() {
         return _name;
     }
+
+	@Override
+	public CacheRetrieveMode getCacheRetrieveMode() {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public CacheStoreMode getCacheStoreMode() {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public StoredProcedureQuery setCacheRetrieveMode(CacheRetrieveMode cacheRetrieveMode) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public StoredProcedureQuery setCacheStoreMode(CacheStoreMode cacheStoreMode) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public StoredProcedureQuery setTimeout(Integer timeout) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	public Integer getTimeout() {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+	
+	@Override
+	public Object getSingleResultOrNull() {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+	
 }
