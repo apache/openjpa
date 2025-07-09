@@ -34,6 +34,6 @@ jobs:
           key: 'cache'
           restore-keys: 'cache'
       - name: 'Build with Maven'
-        run: mvn clean install -Ptest-h2
+        run: mvn -B install --file pom.xml
       - name: 'Remove Snapshots Before Caching'
         run: find ~/.m2 -name '*SNAPSHOT' | xargs rm -Rf
