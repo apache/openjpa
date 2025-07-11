@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 
 ///////////////////////////////////////////////////////////////
@@ -259,4 +260,41 @@ public class DelegatingBrokerFactory
             throw translate(re);
         }
     }
+    
+    @Override
+    public void createPersistenceStructure(boolean createSchemas) {
+		try {
+			_factory.createPersistenceStructure(createSchemas);
+		} catch (RuntimeException re) {
+			throw translate(re);
+		}
+    }
+
+	@Override
+	public void dropPersistenceStrucuture(boolean dropSchemas) {
+		try {
+			_factory.dropPersistenceStrucuture(dropSchemas);
+		} catch (RuntimeException re) {
+			throw translate(re);
+		}
+	}
+	
+	@Override
+	public void validatePersistenceStruture() throws OpenJPAException {
+		try {
+			_factory.validatePersistenceStruture();
+		} catch (RuntimeException re) {
+			throw translate(re);
+		}
+	}
+	
+	@Override
+	public void truncateData() {
+		try {
+			_factory.truncateData();
+		} catch (RuntimeException re) {
+			throw translate(re);
+		}
+	}
+	
 }

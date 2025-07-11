@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.util.Closeable;
+import org.apache.openjpa.util.OpenJPAException;
 
 /**
  * Factory for {@link Broker} instances.
@@ -161,4 +162,13 @@ public interface BrokerFactory
      * This method is invoked AFTER a BrokerFactory has been instantiated.
      */
     void postCreationCallback();
+    
+    void createPersistenceStructure(boolean createSchemas);
+    
+    void dropPersistenceStrucuture(boolean dropSchemas);
+
+	void validatePersistenceStruture() throws OpenJPAException;
+
+	void truncateData();
+    
 }

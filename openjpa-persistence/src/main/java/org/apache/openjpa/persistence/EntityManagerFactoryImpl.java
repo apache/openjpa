@@ -436,7 +436,7 @@ public class EntityManagerFactoryImpl
     
     @Override
     public String getName() {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    	return (String) _factory.getProperties().get("openjpa.Id");
     }
 
     @Override
@@ -501,7 +501,10 @@ public class EntityManagerFactoryImpl
     
     @Override
     public SchemaManager getSchemaManager() {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    	if (!this.isOpen()) {
+    		throw new IllegalStateException("EntityManagerFactory is closed.");
+    	}
+    	return new SchemaManagerImpl(_factory);
     }
     
     @Override

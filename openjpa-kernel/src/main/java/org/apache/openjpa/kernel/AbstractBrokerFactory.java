@@ -469,6 +469,26 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
     public void unlock() {
         _lock.unlock();
     }
+    
+    @Override
+    public void createPersistenceStructure(boolean createSchemas) {
+    	throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public void dropPersistenceStrucuture(boolean dropSchemas) {
+    	throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public void validatePersistenceStruture() throws OpenJPAException {
+    	throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public void truncateData() {
+    	throw new UnsupportedOperationException();
+    }
 
     /**
      * Replaces the factory with this JVMs pooled version if it exists. Also
@@ -786,7 +806,7 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
     public Collection<Broker> getOpenBrokers() {
         return Collections.unmodifiableCollection(_brokers);
     }
-
+    
     /**
      * Release <code>broker</code> from any internal data structures. This
      * is invoked by <code>broker</code> after the broker is fully closed.
