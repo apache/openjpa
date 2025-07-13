@@ -166,9 +166,9 @@ public interface BrokerFactory
     void createPersistenceStructure(boolean createSchemas);
     
     void dropPersistenceStrucuture(boolean dropSchemas);
-
-	void validatePersistenceStruture() throws OpenJPAException;
-
-	void truncateData();
+    
+    void validatePersistenceStruture() throws OpenJPAException;
+    
+    void truncateData();
     
 }

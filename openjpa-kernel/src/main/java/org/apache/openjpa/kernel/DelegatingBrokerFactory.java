@@ -261,14 +261,14 @@ public class DelegatingBrokerFactory
         }
     }
     
-    @Override
-    public void createPersistenceStructure(boolean createSchemas) {
+	@Override
+	public void createPersistenceStructure(boolean createSchemas) {
 		try {
 			_factory.createPersistenceStructure(createSchemas);
 		} catch (RuntimeException re) {
 			throw translate(re);
 		}
-    }
+	}
 
 	@Override
 	public void dropPersistenceStrucuture(boolean dropSchemas) {
@@ -278,7 +278,7 @@ public class DelegatingBrokerFactory
 			throw translate(re);
 		}
 	}
-	
+
 	@Override
 	public void validatePersistenceStruture() throws OpenJPAException {
 		try {
@@ -287,7 +287,7 @@ public class DelegatingBrokerFactory
 			throw translate(re);
 		}
 	}
-	
+
 	@Override
 	public void truncateData() {
 		try {

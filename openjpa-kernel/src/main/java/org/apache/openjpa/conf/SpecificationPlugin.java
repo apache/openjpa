@@ -54,7 +54,7 @@ public class SpecificationPlugin extends ObjectValue implements ValueListener {
      *
      * @param str can be null to set the Specification to null.
      * If non-null, then the String must be in Specification format
-     * @see Specification#createPersistenceStructure(String)
+     * @see Specification#create(String)
      */
     @Override
     public void setString(String str) {

@@ -162,7 +162,7 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
     public void validatePersistenceStruture() throws OpenJPAException {
     	JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
     	Broker broker = super.newBrokerImpl(conf.getConnectionUserName(), conf.getConnectionPassword());
-    	synchronizeMappings(broker.getClassLoader(), conf, "buildSchema(ForeignKeys=true,SchemaAction='retain')");
+    	synchronizeMappings(broker.getClassLoader(), conf, "validate(ForeignKeys=true,SchemaAction='retain')");
     }
     
     @Override
@@ -174,14 +174,18 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
     }
     
     protected boolean synchronizeMappings(ClassLoader loader, JDBCConfiguration conf) {
-    	return synchronizeMappings(loader, conf, conf.getSynchronizeMappings());
+    	mapSchemaGenerationToSynchronizeMappings(conf);
+    	String action = conf.getSynchronizeMappings();
+    	return synchronizeMappings(loader, conf, action);
     }
-
+    	
     /**
      * Synchronize the mappings of the classes listed in the configuration.
      */
     protected boolean synchronizeMappings(ClassLoader loader, JDBCConfiguration conf, String action) {
+    	
         mapSchemaGenerationToSynchronizeMappings(conf);
+        
         if (StringUtil.isEmpty(action))
             return false;
 

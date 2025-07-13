@@ -138,22 +138,23 @@ public class PersistenceProviderImpl
         }
     }
 
-    private BrokerFactory getBrokerFactory(ConfigurationProvider cp, Object poolValue, ClassLoader loader) {
+    private BrokerFactory getBrokerFactory(ConfigurationProvider cp,
+        Object poolValue, ClassLoader loader) {
         // handle "true" and "false"
-        if (poolValue instanceof String pv && ("true".equalsIgnoreCase(pv) || "false".equalsIgnoreCase(pv))) {
-            poolValue = Boolean.valueOf(pv);
-        }
+        if (poolValue instanceof String
+            && ("true".equalsIgnoreCase((String) poolValue)
+                || "false".equalsIgnoreCase((String) poolValue)))
+            poolValue = Boolean.valueOf((String) poolValue);
 
         if (poolValue != null && !(poolValue instanceof Boolean)) {
             // we only support boolean settings for this option currently.
             throw new IllegalArgumentException(poolValue.toString());
         }
-        
-        if (poolValue == null || !((Boolean) poolValue)) {
+
+        if (poolValue == null || !(Boolean) poolValue)
             return Bootstrap.newBrokerFactory(cp, loader);
-        } else {
+        else
             return Bootstrap.getBrokerFactory(cp, loader);
-        }
     }
 
     @Override
