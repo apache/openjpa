@@ -56,7 +56,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.ProtectionDomain;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -162,7 +164,20 @@ public class PersistenceProviderImpl
         return createEntityManagerFactory(name, null, m);
     }
 
-    @Override
+	@Override
+	public EntityManagerFactory createEntityManagerFactory(PersistenceConfiguration config) {
+		List<Class<?>> managedClasses = config.managedClasses();
+		if (managedClasses != null && !managedClasses.isEmpty()) {
+			String managedClassesList = managedClasses.stream().map(Class::getName).collect(Collectors.joining(";"));
+			String old = config.properties().containsKey("openjpa.MetaDataFactory")
+					? "," + config.properties().get("openjpa.MetaDataFactory").toString()
+					: "";
+			config.property("openjpa.MetaDataFactory", "jpa(Types=" + managedClassesList + old + ")");
+		}
+    	return createEntityManagerFactory(config.name(), config.properties());
+	}
+
+	@Override
     public OpenJPAEntityManagerFactory createContainerEntityManagerFactory(PersistenceUnitInfo pui, Map m) {
         PersistenceProductDerivation pd = new PersistenceProductDerivation();
         try {
@@ -487,8 +502,4 @@ public class PersistenceProviderImpl
         return OpenJPAPersistenceUtil.isLoaded(obj, attr);
     }
 
-	@Override
-	public EntityManagerFactory createEntityManagerFactory(PersistenceConfiguration configuration) {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
-	}
 }

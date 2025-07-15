@@ -18,9 +18,10 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-
+import jakarta.persistence.PersistenceConfiguration;
 import junit.framework.TestCase;
 
 public class TestEntityManagerFactory extends TestCase {
@@ -34,4 +35,27 @@ public class TestEntityManagerFactory extends TestCase {
                 Persistence.createEntityManagerFactory("invalid");
         emf.close();
     }
+	
+	public void testEMFCreation() {
+		PersistenceConfiguration conf = new PersistenceConfiguration("test");
+		conf.managedClass(AllFieldTypes.class);
+//		conf.property(PersistenceConfiguration.SCHEMAGEN_DATABASE_ACTION, "drop-and-create");
+		conf.property("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true,SchemaAction='drop,add')");
+		
+		EntityManagerFactory emf = Persistence.createEntityManagerFactory(conf);
+		assertNotNull(emf);
+		EntityManager em = emf.createEntityManager();
+		assertNotNull(em);
+		
+		AllFieldTypes aft = new AllFieldTypes();
+		em.getTransaction().begin();
+		em.persist(aft);
+		em.getTransaction().commit();
+		
+		assertNotNull(aft.getUniqueId());
+		
+		em.close();
+		emf.close();
+	}
+
 }
