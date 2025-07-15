@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 
@@ -280,11 +281,11 @@ public class DelegatingBrokerFactory
 	}
 
 	@Override
-	public void validatePersistenceStruture() throws OpenJPAException {
+	public void validatePersistenceStruture() throws Exception {
 		try {
 			_factory.validatePersistenceStruture();
-		} catch (RuntimeException re) {
-			throw translate(re);
+		} catch (MetaDataException mde) {
+			throw new IllegalStateException(mde.getLocalizedMessage(), (OpenJPAException) mde);
 		}
 	}
 

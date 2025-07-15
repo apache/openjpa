@@ -16,26 +16,19 @@
  */
 package org.apache.openjpa.jdbc.meta;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.UUID;
 
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.schema.SchemaTool;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
-import org.apache.openjpa.persistence.common.apps.CompUser;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
-import org.apache.openjpa.persistence.jdbc.common.apps.BuildSchemaPC;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 import org.junit.Test;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.SchemaValidationException;
 
 /**
  * Test that a {@link MappingTool#ACTION_REFRESH} uses the right
@@ -110,5 +103,37 @@ public class TestJDBCSchemaManager extends AbstractPersistenceTestCase {
         assertNull(em.find(UUIDEntity.class, ue1.getId()));
         closeEM(em);
     }
+    
+	@Test
+	public void testValidate() {
+		EntityManagerFactory emf = createEMF(UUIDEntity.class, EntityBoolChar.class, DROP_TABLES);
+		EntityManager em = emf.createEntityManager();
+
+		em.getTransaction().begin();
+		UUIDEntity ue1 = new UUIDEntity();
+		ue1.setValue("Something");
+		em.persist(ue1);
+		em.getTransaction().commit();
+
+		Connection conn = (Connection) ((OpenJPAEntityManagerSPI) em.getDelegate()).getConnection();
+
+		try (Statement stmt = conn.createStatement()) {
+			stmt.executeUpdate("ALTER TABLE UUIDEntity DROP COLUMN value_");
+			stmt.executeUpdate("ALTER TABLE UUIDEntity ADD COLUMN value_ BOOLEAN DEFAULT FALSE");
+			Long n = (Long) em.createNativeQuery("SELECT COUNT(1) FROM UUIDEntity WHERE id_ = ? AND value_ = false", Long.class)
+					.setParameter(1, ue1.getId())
+					.getSingleResult();
+			assertTrue(n > 0L);
+
+			emf.getSchemaManager().validate();
+			fail("Should have thrown a SchemaValidationException");
+		} catch (SQLException sex) {
+			fail("Could not change database for test.");
+		} catch (SchemaValidationException ex) {
+			assertTrue(ex.getMessage().startsWith("Schema could not be validated"));
+		} finally {
+			closeEM(em);
+		}
+	}
 
 }

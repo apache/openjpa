@@ -19,7 +19,6 @@
 package org.apache.openjpa.persistence;
 
 import org.apache.openjpa.kernel.BrokerFactory;
-import org.apache.openjpa.util.OpenJPAException;
 
 import jakarta.persistence.SchemaManager;
 import jakarta.persistence.SchemaValidationException;
@@ -53,8 +52,10 @@ public class SchemaManagerImpl implements SchemaManager {
 	public void validate() throws SchemaValidationException {
 		try {
 			_factory.validatePersistenceStruture();
-		} catch (OpenJPAException ex) {
-			throw new SchemaValidationException("Schema could not be validated", ex);
+		} catch (Exception ex) {
+			throw new SchemaValidationException(
+					String.format("Schema could not be validated: %s", ex.getLocalizedMessage()), 
+					(Exception) ex);
 		}
 	}
 

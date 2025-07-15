@@ -481,7 +481,7 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
     }
     
     @Override
-    public void validatePersistenceStruture() throws OpenJPAException {
+    public void validatePersistenceStruture() throws Exception {
     	throw new UnsupportedOperationException();
     }
     

@@ -45,7 +45,6 @@ import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.StringUtil;
-import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UserException;
 
 /**
@@ -159,10 +158,10 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
     }
     
     @Override
-    public void validatePersistenceStruture() throws OpenJPAException {
+    public void validatePersistenceStruture() throws Exception {
     	JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
     	Broker broker = super.newBrokerImpl(conf.getConnectionUserName(), conf.getConnectionPassword());
-    	synchronizeMappings(broker.getClassLoader(), conf, "validate(ForeignKeys=true,SchemaAction='retain')");
+    	synchronizeMappings(broker.getClassLoader(), conf, "validate(ForeignKeys=true)");
     }
     
     @Override
