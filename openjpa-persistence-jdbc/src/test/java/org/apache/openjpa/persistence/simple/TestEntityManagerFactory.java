@@ -39,13 +39,16 @@ public class TestEntityManagerFactory extends TestCase {
 	public void testEMFCreation() {
 		PersistenceConfiguration conf = new PersistenceConfiguration("test");
 		conf.managedClass(AllFieldTypes.class);
-//		conf.property(PersistenceConfiguration.SCHEMAGEN_DATABASE_ACTION, "drop-and-create");
-		conf.property("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true,SchemaAction='drop,add')");
+		conf.property(PersistenceConfiguration.SCHEMAGEN_DATABASE_ACTION, "drop-and-create");
 		
 		EntityManagerFactory emf = Persistence.createEntityManagerFactory(conf);
 		assertNotNull(emf);
 		EntityManager em = emf.createEntityManager();
 		assertNotNull(em);
+		
+		String countJPQL = "SELECT COUNT(DISTINCT a) FROM AllFieldTypes AS a";
+		long count = em.createQuery(countJPQL, Long.class).getSingleResult();
+		assertEquals(0L, count);
 		
 		AllFieldTypes aft = new AllFieldTypes();
 		em.getTransaction().begin();
@@ -53,6 +56,8 @@ public class TestEntityManagerFactory extends TestCase {
 		em.getTransaction().commit();
 		
 		assertNotNull(aft.getUniqueId());
+		count = em.createQuery(countJPQL, Long.class).getSingleResult();
+		assertEquals(1l, count);
 		
 		em.close();
 		emf.close();
