@@ -61,6 +61,8 @@ import org.apache.openjpa.persistence.criteria.OpenJPACriteriaBuilder;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.query.OpenJPAQueryBuilder;
 import org.apache.openjpa.persistence.query.QueryBuilderImpl;
+import org.apache.openjpa.util.OpenJPAException;
+import org.apache.openjpa.util.UserException;
 
 /**
  * Implementation of {@link EntityManagerFactory} that acts as a
@@ -509,12 +511,47 @@ public class EntityManagerFactoryImpl
     
     @Override
     public <R> R callInTransaction(Function<EntityManager, R> work) {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    	EntityManager em = createEntityManager();
+    	boolean startedTransaction = false;
+    	boolean jtaTransaction = getTransactionType() == PersistenceUnitTransactionType.JTA;
+    	Broker broker = em.unwrap(Broker.class);
+    	try {
+    		if (jtaTransaction) {
+    			if (!broker.syncWithManagedTransaction()) {
+    				broker.begin();
+    				startedTransaction = true;
+    			}
+    		} else {
+    			em.getTransaction().begin();
+    			startedTransaction = true;
+    		}
+    		R result = work.apply(em);
+    		if (startedTransaction) {
+    			if (jtaTransaction) {
+    				broker.commit();
+    			} else {
+    				em.getTransaction().commit();
+    			}
+    		}
+    		return result;
+    	} catch (Exception ex) {
+    		if (jtaTransaction) {
+    			broker.rollback();
+    		} else {
+    			em.getTransaction().rollback();
+    		}
+    		throw new UserException(ex.getMessage(), ex);
+    	} finally {
+    		em.close();
+    	}
     }
     
     @Override
     public void runInTransaction(Consumer<EntityManager> work) {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    	callInTransaction(em -> {
+    		work.accept(em);
+    		return null;
+    	});
     }
     
     @Override
@@ -529,7 +566,9 @@ public class EntityManagerFactoryImpl
     
     @Override
     public PersistenceUnitTransactionType getTransactionType() {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    	return "managed".equalsIgnoreCase(_factory.getConfiguration().getTransactionMode())
+    			? PersistenceUnitTransactionType.JTA
+    			: PersistenceUnitTransactionType.RESOURCE_LOCAL;
     }
     
     @Override
@@ -581,4 +620,5 @@ public class EntityManagerFactoryImpl
             }
         }
     }
+    
 }
