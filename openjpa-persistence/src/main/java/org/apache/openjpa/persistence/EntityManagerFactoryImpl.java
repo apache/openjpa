@@ -61,6 +61,7 @@ import org.apache.openjpa.persistence.criteria.OpenJPACriteriaBuilder;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.query.OpenJPAQueryBuilder;
 import org.apache.openjpa.persistence.query.QueryBuilderImpl;
+import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UserException;
 
@@ -583,17 +584,25 @@ public class EntityManagerFactoryImpl
     
     @Override
     public void load(Object entity) {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    	if (!OpenJPAPersistenceUtil.isManagedBy(this, entity)) {
+    		throw new IllegalArgumentException(_loc.get("invalid_entity_argument",
+                    "load", entity == null ? "null" : Exceptions.toString(entity)).getMessage());
+    	}
+    	OpenJPAPersistenceUtil.load(this, entity);
     }
     
     @Override
     public void load(Object entity, String attributeName) {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    	if (!OpenJPAPersistenceUtil.isManagedBy(this, entity)) {
+    		throw new IllegalArgumentException(_loc.get("invalid_entity_argument",
+                    "load", entity == null ? "null" : Exceptions.toString(entity)).getMessage());
+    	}
+    	OpenJPAPersistenceUtil.load(this, entity, attributeName);
     }
     
     @Override
     public <E> void load(E entity, Attribute<? super E, ?> attribute) {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    	load(entity, attribute.getName());
     }
     
     private void validateCfNameProps(OpenJPAConfiguration conf, String cfName, String cf2Name) {

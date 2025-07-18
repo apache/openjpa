@@ -62,7 +62,6 @@ import org.apache.openjpa.kernel.exps.ExpressionParser;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.instrumentation.InstrumentationLevel;
 import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ReferenceHashMap;
 import org.apache.openjpa.lib.util.ReferenceHashSet;

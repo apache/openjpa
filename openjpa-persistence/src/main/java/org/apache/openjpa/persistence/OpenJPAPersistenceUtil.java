@@ -28,6 +28,7 @@ import jakarta.persistence.spi.LoadState;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.kernel.Broker;
+import org.apache.openjpa.kernel.OpCallbacks;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -103,6 +104,30 @@ public class OpenJPAPersistenceUtil {
             return true;
         }
         return false;
+    }
+    
+    public static void load(OpenJPAEntityManagerFactory emf, Object entity) {
+    	if (isManagedBy(emf, entity)) {
+    		PersistenceCapable pc = (PersistenceCapable) entity;
+    		if (pc.pcGetGenericContext() instanceof Broker broker && !broker.isClosed()) {
+    			JPAFacadeHelper.toEntityManager(broker).refresh(entity);
+    		}
+    	}
+    }
+    
+    public static void load(OpenJPAEntityManagerFactory emf, Object entity, String attributeName) {
+    	if (entity == null || !isManagedBy(emf, entity)) {
+    		return;
+    	}
+    	if (entity instanceof PersistenceCapable pc) {
+    		StateManager sm = pc.pcGetStateManager();
+    		FieldMetaData field = null;
+    		if (sm != null 
+    				&& sm instanceof OpenJPAStateManager osm 
+    				&& (field = osm.getMetaData().getField(attributeName)) != null) {
+    			sm.accessingField(field.getIndex());
+    		}
+    	}
     }
 
     /**
