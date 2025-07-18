@@ -19,7 +19,7 @@ env:
   MAVEN_OPTS: -Dmaven.artifact.threads=256 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 jobs:
   build:
-    runs-on: [self-hosted, ubuntu-latest]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Setup Java JDK
@@ -34,6 +34,6 @@ jobs:
           key: 'cache'
           restore-keys: 'cache'
       - name: 'Build with Maven'
-        run: mvn -Ptest-h2-2 -B clean install --file pom.xml
+        run: mvn -B clean install --file pom.xml
       - name: 'Remove snapshots before caching'
         run: find ~/.m2 -name '*SNAPSHOT' | xargs rm -Rf
