@@ -180,9 +180,9 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<LocalTime> qry = em.createQuery("select min(t.localTimeField) from Java8TimeTypes AS t", LocalTime.class);
         final LocalTime min = qry.getSingleResult();
-        final LocalTime etalon = (entity1.getLocalTimeField().compareTo(entity2.getLocalTimeField()) < 0
-                ? entity1.getLocalTimeField() : entity2.getLocalTimeField()).withNano(0);
-        assertEquals(etalon, min);
+        final LocalTime etalon = entity1.getLocalTimeField().compareTo(entity2.getLocalTimeField()) < 0
+                ? entity1.getLocalTimeField() : entity2.getLocalTimeField();
+        assertEquals(etalon.withNano(0), min.withNano(0));
         em.close();
     }
 
@@ -259,10 +259,8 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         final TypedQuery<Java8TimeTypes> qry
                 = em.createQuery("select j from Java8TimeTypes AS j where j.localTimeField < LOCAL TIME", Java8TimeTypes.class);
         final List<Java8TimeTypes> times = qry.getResultList();
-System.err.println(times);
         assertNotNull(times);
         assertFalse(times.isEmpty());
         em.close();
     }
-
 }
