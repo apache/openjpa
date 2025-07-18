@@ -49,7 +49,7 @@ import org.apache.openjpa.persistence.relations.OneOneParent;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
- * Tests JPA 2.0 Metamodel.
+ * Tests JPA 3.2 Metamodel.
  *
  * @author Pinaki Poddar
  *
@@ -315,6 +315,19 @@ public class TestMetamodel extends SingleEMFTestCase {
         ManagedType<Address> type = model.entity(Address.class);
         Attribute.PersistentAttributeType attr = type.getAttribute("geocode").getPersistentAttributeType();
         assertEquals(PersistentAttributeType.EMBEDDED, attr);
+    }
+    
+    public void testEntityByString() {
+    	assertNotNull(model.entity("ImplicitFieldAccessBase"));
+    }
+    
+    public void testEntityByStringException() {
+    	try {
+    		model.entity("InexistentEntityToSearch");
+    		fail("Should have thrown an exception");
+    	} catch (Exception ex) {
+    		assertTrue(ex instanceof IllegalArgumentException);
+    	}
     }
 
     public void testNotFoundErrorMessage() {

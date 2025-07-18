@@ -55,6 +55,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.meta.Members.Member;
+import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.InternalException;
 
 /**
@@ -121,7 +122,17 @@ public class MetamodelImpl implements Metamodel, Resolver {
         return (EmbeddableType<X>)find(clazz, _embeddables, EMBEDDABLE, false);
     }
 
-    /**
+	@Override
+	public EntityType<?> entity(String entityName) {
+		return getEntityValuesOnly()
+				.parallelStream()
+				.filter(et -> et.getName().contentEquals(entityName))
+				.findFirst()
+				.orElseThrow(() -> new IllegalArgumentException(_loc.get("invalid_entity_argument",
+	                    "load", entityName == null ? "null" : Exceptions.toString(entityName)).getMessage()));
+	}
+
+	/**
      *  Return the metamodel entity type representing the entity.
      *  @param cls  the type of the represented entity
      *  @return the metamodel entity type
@@ -455,9 +466,4 @@ public class MetamodelImpl implements Metamodel, Resolver {
         throw new UnsupportedOperationException();
     }
 
-	@Override
-	public EntityType<?> entity(String entityName) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
-	}
 }
