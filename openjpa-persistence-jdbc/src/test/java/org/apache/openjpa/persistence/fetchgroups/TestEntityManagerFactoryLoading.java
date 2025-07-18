@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

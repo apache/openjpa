@@ -28,7 +28,6 @@ import jakarta.persistence.spi.LoadState;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.kernel.Broker;
-import org.apache.openjpa.kernel.OpCallbacks;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -36,6 +35,9 @@ import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.ImplHelper;
 
+/**
+ * 
+ */
 public class OpenJPAPersistenceUtil {
 
     /**
@@ -106,6 +108,12 @@ public class OpenJPAPersistenceUtil {
         return false;
     }
     
+    /**
+     * Loads the given entity from it's entity manager if it is managed.
+     * 
+     * @param emf the entity manager factory that contains the manager of the entity
+     * @param entity the entity that must be loaded
+     */
     public static void load(OpenJPAEntityManagerFactory emf, Object entity) {
     	if (isManagedBy(emf, entity)) {
     		PersistenceCapable pc = (PersistenceCapable) entity;
@@ -115,6 +123,13 @@ public class OpenJPAPersistenceUtil {
     	}
     }
     
+    /**
+     * Loads the given entity attribute from it's entity manager if it is managed.
+     * 
+     * @param emf the entity manager factory that contains the manager of the entity
+     * @param entity the entity whose attribute has to be loaded
+     * @param attributeName the attribute to be loaded
+     */
     public static void load(OpenJPAEntityManagerFactory emf, Object entity, String attributeName) {
     	if (entity == null || !isManagedBy(emf, entity)) {
     		return;
