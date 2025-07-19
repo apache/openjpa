@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.util;
 import java.util.List;
 
 import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -28,6 +29,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Transient;
+import jakarta.persistence.Version;
 
 @Entity
 public class EagerEntity {
@@ -49,6 +51,10 @@ public class EagerEntity {
 
     @OneToMany(fetch=FetchType.EAGER)
     private List<EagerEntity> eagerSelf;
+    
+    @Version
+    @Column(name = "version_")
+    private Integer version;
 
     @Transient
     private String transField;
@@ -100,4 +106,12 @@ public class EagerEntity {
     public EagerEmbedRel getEagerEmbedRel() {
         return eagerEmbedRel;
     }
+
+	public Integer getVersion() {
+		return version;
+	}
+
+	public void setVersion(Integer version) {
+		this.version = version;
+	}
 }

@@ -76,6 +76,26 @@ public class OpenJPAPersistenceUtil {
         }
         return null;
     }
+    
+    /**
+     * Get version of a persistent entity managed by one of the
+     * entity managers of the specified entity manager factory.
+     * 
+     * @param emf the entity manager factory presumed to contain the given entity
+     * @param entity the entity whose version is desired
+     * @return the version of the entity, or null if it does not have a version field
+     * or if it was not persisted yet.
+     * 
+     */
+    public static Object getVersion(OpenJPAEntityManagerFactory emf, Object entity) {
+    	if (entity instanceof PersistenceCapable pc) {
+    		StateManager sm = pc.pcGetStateManager();
+    		if (sm != null && sm instanceof OpenJPAStateManager osm) {
+    			return osm.getVersion();
+    		}
+    	}
+    	return null;
+    }
 
     /**
      * Determines whether the specified state manager is managed by an open

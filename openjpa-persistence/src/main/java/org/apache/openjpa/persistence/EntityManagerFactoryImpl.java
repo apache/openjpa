@@ -573,12 +573,18 @@ public class EntityManagerFactoryImpl
     
     @Override
     public Object getVersion(Object entity) {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    	if (!OpenJPAPersistenceUtil.isManagedBy(this, entity)) {
+    		throw new IllegalArgumentException(_loc.get("invalid_entity_argument",
+                    "load", entity == null ? "null" : Exceptions.toString(entity)).getMessage());
+    	}
+    	return OpenJPAPersistenceUtil.getVersion(this, entity);
     }
     
     @Override
     public boolean isInstance(Object entity, Class<?> entityClass) {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    	return entity != null && entityClass != null
+    			&& OpenJPAPersistenceUtil.isManagedBy(this, entity)
+    			&& entityClass.isAssignableFrom(entity.getClass());
     }
     
     @Override
