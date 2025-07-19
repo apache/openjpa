@@ -32,7 +32,7 @@ import jakarta.persistence.Transient;
 import jakarta.persistence.Version;
 
 @Entity
-public class EagerEntity {
+public class EagerEntity implements Eager {
 
     @Id
     private int id;
@@ -59,58 +59,72 @@ public class EagerEntity {
     @Transient
     private String transField;
 
-    public void setId(int id) {
+    @Override
+	public void setId(int id) {
         this.id = id;
     }
 
-    public int getId() {
+    @Override
+	public int getId() {
         return id;
     }
 
-    public void setName(String name) {
+    @Override
+	public void setName(String name) {
         this.name = name;
     }
 
-    public String getName() {
+    @Override
+	public String getName() {
         return name;
     }
 
-    public void setEagerEmbed(EagerEmbed eagerEmbed) {
+    @Override
+	public void setEagerEmbed(EagerEmbed eagerEmbed) {
         this.eagerEmbed = eagerEmbed;
     }
 
-    public EagerEmbed getEagerEmbed() {
+    @Override
+	public EagerEmbed getEagerEmbed() {
         return eagerEmbed;
     }
 
-    public void setTransField(String transField) {
+    @Override
+	public void setTransField(String transField) {
         this.transField = transField;
     }
 
-    public String getTransField() {
+    @Override
+	public String getTransField() {
         return transField;
     }
 
-    public void setEagerEmbedColl(List<EagerEmbed> eagerEmbedColl) {
+    @Override
+	public void setEagerEmbedColl(List<EagerEmbed> eagerEmbedColl) {
         this.eagerEmbedColl = eagerEmbedColl;
     }
 
-    public List<EagerEmbed> getEagerEmbedColl() {
+    @Override
+	public List<EagerEmbed> getEagerEmbedColl() {
         return eagerEmbedColl;
     }
 
-    public void setEagerEmbedRel(EagerEmbedRel eagerEmbedRel) {
+    @Override
+	public void setEagerEmbedRel(EagerEmbedRel eagerEmbedRel) {
         this.eagerEmbedRel = eagerEmbedRel;
     }
 
-    public EagerEmbedRel getEagerEmbedRel() {
+    @Override
+	public EagerEmbedRel getEagerEmbedRel() {
         return eagerEmbedRel;
     }
 
+	@Override
 	public Integer getVersion() {
 		return version;
 	}
 
+	@Override
 	public void setVersion(Integer version) {
 		this.version = version;
 	}

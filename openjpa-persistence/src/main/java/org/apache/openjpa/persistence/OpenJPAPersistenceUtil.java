@@ -194,7 +194,20 @@ public class OpenJPAPersistenceUtil {
         }
         return LoadState.UNKNOWN;
     }
-
+    
+    @SuppressWarnings("unchecked")
+	public static <T> Class<T> getClass(OpenJPAEntityManagerFactory emf, Object entity) {
+    	if (entity != null) {
+	    	if (entity instanceof PersistenceCapable pc) {
+	    		StateManager sm = pc.pcGetStateManager();
+	    		if (sm != null && sm instanceof OpenJPAStateManager osm) {
+	    			return (Class<T>) osm.getMetaData().getDescribedType();
+	    		}
+	    	}
+    	}
+		return null;
+    }
+    
     private static LoadState isLoaded(OpenJPAStateManager sm, String attr,
         HashSet<OpenJPAStateManager> pcs) {
         boolean isLoaded = true;

@@ -38,6 +38,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.PersistenceConfiguration;
+import jakarta.persistence.PersistenceException;
 import jakarta.persistence.PersistenceUnitUtil;
 import jakarta.persistence.metamodel.Attribute;
 
@@ -161,7 +162,7 @@ public class TestPersistenceUnitUtil {
         PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
         assertSame(emf, puu);
 
-        EagerEntity ee = createEagerEntity();
+        Eager ee = createEagerEntity();
 
         em.getTransaction().begin();
         em.persist(ee);
@@ -347,7 +348,7 @@ public class TestPersistenceUnitUtil {
     public void testBasicTypeNotLoaded() {
         PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
         EntityManager em = emf.createEntityManager();
-        EagerEntity ee = createEagerEntity();
+        Eager ee = createEagerEntity();
         int id = ee.getId();
 
         em.getTransaction().begin();
@@ -451,7 +452,7 @@ public class TestPersistenceUnitUtil {
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void testUnmanagedEntity() {
-		EagerEntity ee = createEagerEntity();
+		Eager ee = createEagerEntity();
 		emf.getPersistenceUnitUtil().getVersion(ee);
 	}
 
@@ -488,11 +489,39 @@ public class TestPersistenceUnitUtil {
 		assertNull(puu.getVersion(e));
 	}
 	
+	@Test
+	public void testGetNonManagedEntityClass() {
+		PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
+		EagerEntity ee = createEagerEntity();
+		try {
+			puu.getClass(ee);
+			fail("Should have thrown PersistenceException");
+		} catch (PersistenceException ex) {
+			assertTrue(ex.getMessage().contains("not persistent"));
+			return;
+		}
+	}
+	
+	@Test
+	public void testGetManagedEntityClass() {
+		PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
+		Eager e = emf.callInTransaction(em -> {
+			Eager e_ = createEagerEntity();
+			em.persist(e_);
+			return e_;
+		});
+		
+		e = (Eager) em.createQuery("SELECT a FROM EagerEntity AS a WHERE a.id = :id").setParameter("id", e.getId()).getSingleResult();
+		
+		Class<?> clazz = puu.getClass(e);
+		assertEquals(EagerEntity.class, clazz);
+	}
+	
 	private void verifyIsLoadedEagerState(boolean loaded) {
 		PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
 		assertSame(emf,  puu);
 		
-		EagerEntity ee = createEagerEntity();
+		Eager ee = createEagerEntity();
 		
 		assertFalse(puu.isLoaded(ee));
 		assertFalse(puu.isLoaded(ee, "id"));
@@ -547,7 +576,7 @@ public class TestPersistenceUnitUtil {
     }
 
 	private void verifyPULoadState(EntityManager em, PersistenceUnitUtil... puu) {
-		EagerEntity ee = createEagerEntity();
+		Eager ee = createEagerEntity();
 		assertEquals(false, puu[0].isLoaded(ee));
 		assertEquals(false, puu[0].isLoaded(ee, "id"));
 		assertEquals(false, puu[1].isLoaded(ee));

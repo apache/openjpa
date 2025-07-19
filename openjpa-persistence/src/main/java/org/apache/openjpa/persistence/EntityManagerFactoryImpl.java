@@ -556,7 +556,11 @@ public class EntityManagerFactoryImpl
     
     @Override
     public <T> Class<? extends T> getClass(T entity) {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    	if (!OpenJPAPersistenceUtil.isManagedBy(this, entity)) {
+    		throw new jakarta.persistence.PersistenceException(_loc.get("invalid_entity_argument",
+                    "getClass", entity == null ? "null" : Exceptions.toString(entity)).getMessage());
+    	}
+    	return OpenJPAPersistenceUtil.getClass(this, entity);
     }
     
     @Override

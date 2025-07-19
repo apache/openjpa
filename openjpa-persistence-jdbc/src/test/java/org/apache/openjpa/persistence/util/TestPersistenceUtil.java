@@ -80,7 +80,7 @@ public class TestPersistenceUtil extends SingleEMFTestCase{
     public void testIsApplicationLoaded() {
         PersistenceUtil putil = Persistence.getPersistenceUtil();
         EntityManager em = emf.createEntityManager();
-        EagerEntity ee = createEagerEntity();
+        Eager ee = createEagerEntity();
 
         em.getTransaction().begin();
         em.persist(ee);
@@ -110,7 +110,7 @@ public class TestPersistenceUtil extends SingleEMFTestCase{
     public void testIsDetachLoaded() {
         PersistenceUtil putil = Persistence.getPersistenceUtil();
         EntityManager em = emf.createEntityManager();
-        EagerEntity ee = createEagerEntity();
+        Eager ee = createEagerEntity();
 
         em.getTransaction().begin();
         em.persist(ee);
@@ -126,7 +126,7 @@ public class TestPersistenceUtil extends SingleEMFTestCase{
     private void verifyIsLoadedEagerState(boolean loaded) {
         PersistenceUtil putil = Persistence.getPersistenceUtil();
         EntityManager em = emf.createEntityManager();
-        EagerEntity ee = createEagerEntity();
+        Eager ee = createEagerEntity();
 
         // Vfy state is true for the unmanaged entity via
         // PeristenceUtil
@@ -185,8 +185,8 @@ public class TestPersistenceUtil extends SingleEMFTestCase{
         em.close();
     }
 
-    private EagerEntity createEagerEntity() {
-        EagerEntity ee = new EagerEntity();
+    private Eager createEagerEntity() {
+        Eager ee = new EagerEntity();
         ee.setId(new Random().nextInt());
         ee.setName("EagerEntity");
         EagerEmbed emb = createEagerEmbed();
