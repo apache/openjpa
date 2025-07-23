@@ -174,7 +174,8 @@ public class PersistenceProviderImpl
 					: "";
 			config.property("openjpa.MetaDataFactory", "jpa(Types=" + managedClassesList + old + ")");
 		}
-    	return createEntityManagerFactory(config.name(), config.properties());
+		config.property("openjpa.Id", config.name());
+		return createEntityManagerFactory(null, config.properties());
 	}
 
 	@Override
