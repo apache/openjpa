@@ -32,7 +32,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import jakarta.persistence.PersistenceConfiguration;
 import jakarta.persistence.SharedCacheMode;
 import jakarta.persistence.ValidationMode;
 import jakarta.persistence.spi.ClassTransformer;
@@ -614,6 +616,29 @@ public class PersistenceUnitInfoImpl
 	@Override
 	public List<String> getQualifierAnnotationNames() {
     	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+	
+	public static PersistenceUnitInfoImpl convert(PersistenceConfiguration config) {
+		PersistenceUnitInfoImpl pinfo = new PersistenceUnitInfoImpl();
+		pinfo.setJtaDataSourceName(config.jtaDataSource());
+		pinfo.setNonJtaDataSourceName(config.nonJtaDataSource());
+		pinfo.setPersistenceProviderClassName(config.provider());
+		pinfo.setPersistenceUnitName(config.name());
+		pinfo.setSharedCacheMode(config.sharedCacheMode());
+		pinfo.setTransactionType(config.transactionType() == jakarta.persistence.PersistenceUnitTransactionType.JTA ? 
+				PersistenceUnitTransactionType.JTA : PersistenceUnitTransactionType.RESOURCE_LOCAL);
+		pinfo.setValidationMode(config.validationMode());
+		List<Class<?>> managedClasses = config.managedClasses();
+		if (managedClasses != null && !managedClasses.isEmpty()) {
+			String managedClassesList = managedClasses.stream().map(Class::getName).collect(Collectors.joining(";"));
+			String old = config.properties().containsKey("openjpa.MetaDataFactory")
+					? "," + config.properties().get("openjpa.MetaDataFactory").toString()
+					: "";
+			config.property("openjpa.MetaDataFactory", "jpa(Types=" + managedClassesList + old + ")");
+		}
+		config.property("openjpa.noPersistenceXMLResource", true);
+		pinfo.setPersistenceUnitName(config.name());
+		return pinfo;
 	}
 	
 }

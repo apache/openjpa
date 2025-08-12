@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Set;
 
+import jakarta.persistence.PersistenceConfiguration;
 import jakarta.persistence.SharedCacheMode;
 import jakarta.persistence.ValidationMode;
 import jakarta.persistence.spi.PersistenceUnitInfo;
@@ -296,7 +297,7 @@ public class PersistenceProductDerivation
         }
         return true;
     }
-
+    
     /**
      * Load configuration from the given persistence unit with the specified
      * user properties.
@@ -321,6 +322,13 @@ public class PersistenceProductDerivation
         return cp;
     }
 
+    public ConfigurationProvider load(PersistenceConfiguration config, Map props) throws IOException {
+    	ConfigurationProviderImpl cp = new ConfigurationProviderImpl();
+    	// convert config into pinfo
+    	PersistenceUnitInfoImpl pinfo = PersistenceUnitInfoImpl.convert(config);
+    	return load((PersistenceUnitInfo) pinfo, props);
+    }
+    
     /**
      * Load configuration from the given resource and unit names, which may
      * be null.
@@ -654,7 +662,7 @@ public class PersistenceProductDerivation
             _puNameCollisions.put(puName, new PUNameCollision(puName, file1, file2));
         }
     }
-
+    
     /**
      * Custom configuration provider.
      */

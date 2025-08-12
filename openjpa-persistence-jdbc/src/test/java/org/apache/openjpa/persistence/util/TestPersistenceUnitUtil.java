@@ -59,7 +59,7 @@ public class TestPersistenceUnitUtil {
 	
 	@BeforeClass
 	public static void beforeAll() {
-		PersistenceConfiguration conf = new PersistenceConfiguration("test");
+		PersistenceConfiguration conf = new PersistenceConfiguration("dynamicaly-created-pu");
 		conf.property(PersistenceConfiguration.SCHEMAGEN_DATABASE_ACTION, "drop-and-create");
 		Stream.of(EagerEntity.class, LazyEmbed.class,
 				LazyEntity.class, EagerEmbed.class, RelEntity.class, EagerEmbedRel.class,

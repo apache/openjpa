@@ -37,7 +37,7 @@ public class TestEntityManagerFactory extends TestCase {
     }
 	
 	public void testEMFCreation() {
-		PersistenceConfiguration conf = new PersistenceConfiguration("non-existent-PU");
+		PersistenceConfiguration conf = new PersistenceConfiguration("dynamicaly-created-pu");
 		conf.managedClass(AllFieldTypes.class);
 		conf.property(PersistenceConfiguration.SCHEMAGEN_DATABASE_ACTION, "drop-and-create");
 		

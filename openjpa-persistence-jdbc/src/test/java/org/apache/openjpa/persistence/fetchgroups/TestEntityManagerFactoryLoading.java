@@ -51,7 +51,7 @@ public class TestEntityManagerFactoryLoading {
 	
 	@Before
 	public void beforeEach() {
-		PersistenceConfiguration conf = new PersistenceConfiguration("test");
+		PersistenceConfiguration conf = new PersistenceConfiguration("dynamicaly-created-pu");
 		conf.property(PersistenceConfiguration.SCHEMAGEN_DATABASE_ACTION, "drop-and-create");
 		conf.managedClass(FGManager.class);
 		conf.managedClass(FGDepartment.class);

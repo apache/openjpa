@@ -166,16 +166,7 @@ public class PersistenceProviderImpl
 
 	@Override
 	public EntityManagerFactory createEntityManagerFactory(PersistenceConfiguration config) {
-		List<Class<?>> managedClasses = config.managedClasses();
-		if (managedClasses != null && !managedClasses.isEmpty()) {
-			String managedClassesList = managedClasses.stream().map(Class::getName).collect(Collectors.joining(";"));
-			String old = config.properties().containsKey("openjpa.MetaDataFactory")
-					? "," + config.properties().get("openjpa.MetaDataFactory").toString()
-					: "";
-			config.property("openjpa.MetaDataFactory", "jpa(Types=" + managedClassesList + old + ")");
-		}
-		config.property("openjpa.Id", config.name());
-		return createEntityManagerFactory(null, config.properties());
+		return createContainerEntityManagerFactory((PersistenceUnitInfo) PersistenceUnitInfoImpl.convert(config), config.properties());
 	}
 
 	@Override
