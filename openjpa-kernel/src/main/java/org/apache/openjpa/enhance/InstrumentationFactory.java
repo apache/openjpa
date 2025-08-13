@@ -28,6 +28,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
 import java.security.CodeSource;
 import java.util.Locale;
 import java.util.jar.Attributes;
@@ -137,7 +138,7 @@ public class InstrumentationFactory {
      */
     private static String createAgentJar() throws IOException {
         File file =
-            File.createTempFile(InstrumentationFactory.class.getName(), ".jar");
+            Files.createTempFile(InstrumentationFactory.class.getName(), ".jar").toFile();
         file.deleteOnExit();
 
         ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(file));
@@ -322,8 +323,8 @@ public class InstrumentationFactory {
      *         or null if something unexpected happened.
      */
     private static Class<?> loadVMClass(File toolsJar, Log log, JavaVendors vendor) {
-    	ClassLoader loader = Thread.currentThread().getContextClassLoader();
         try {
+            ClassLoader loader = Thread.currentThread().getContextClassLoader();
             String cls = vendor.getVirtualMachineClassName();
             if (!vendor.isIBM()) {
                 loader = new URLClassLoader(new URL[] { toolsJar.toURI().toURL() }, loader);
@@ -331,7 +332,8 @@ public class InstrumentationFactory {
             return loader.loadClass(cls);
         } catch (Exception e) {
             if (log.isTraceEnabled()) {
-                log.trace(_name + ".loadVMClass() failed to load the VirtualMachine class");
+                log.trace(_name
+                    + ".loadVMClass() failed to load the VirtualMachine class");
             }
         }
         return null;
