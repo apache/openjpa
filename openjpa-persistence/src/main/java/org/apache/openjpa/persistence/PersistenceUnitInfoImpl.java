@@ -85,6 +85,8 @@ public class PersistenceUnitInfoImpl
     private String _schemaVersion = "1.0";
     private ValidationMode _validationMode;
     private SharedCacheMode _sharedCacheMode;
+    private List<String> _qualifierAnnotationNames;
+    private String _scopeAnnotationName;
 
     // A persistence unit is defined by a persistence.xml file. The jar
     // file or directory whose META-INF directory contains the
@@ -607,15 +609,29 @@ public class PersistenceUnitInfoImpl
     public void setSharedCacheMode(SharedCacheMode mode) {
         _sharedCacheMode = mode;
     }
+    
+    public void setScopeAnnotationName(String scopeAnnotationName) {
+    	_scopeAnnotationName = scopeAnnotationName;
+    }
 
 	@Override
 	public String getScopeAnnotationName() {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    	return _scopeAnnotationName;
+	}
+	
+	public void addQualifierAnnotationNames(String qualifierAnnotationName) {
+		if (_qualifierAnnotationNames == null) {
+			_qualifierAnnotationNames = new ArrayList<String>();
+		}
+		_qualifierAnnotationNames.add(qualifierAnnotationName);
 	}
 
 	@Override
 	public List<String> getQualifierAnnotationNames() {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		if (_qualifierAnnotationNames == null) {
+			return List.of();
+		}
+    	return _qualifierAnnotationNames;
 	}
 	
 	public static PersistenceUnitInfoImpl convert(PersistenceConfiguration config) {

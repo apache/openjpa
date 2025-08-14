@@ -415,10 +415,10 @@ public class PersistenceProductDerivation
     }
 
     @Override
-    public List getAnchorsInResource(String resource) throws Exception {
+    public List<String> getAnchorsInResource(String resource) throws Exception {
         ConfigurationParser parser = new ConfigurationParser(null);
         try {
-        	List results = new ArrayList();
+        	List<String> results = new ArrayList<>();
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
             List<URL> urls = getResourceURLs(resource, loader);
             if (urls != null) {
@@ -924,8 +924,17 @@ public class PersistenceProductDerivation
                     if ("provider".equals(name))
                         _info.setPersistenceProviderClassName(currentText());
                     break;
-                case 's' : // shared-cache-mode
-                    _info.setSharedCacheMode(JPAProperties.getEnumValue(SharedCacheMode.class, currentText()));
+                case 'q':
+                	if (("qualifier").equals(name)) {
+                		_info.addQualifierAnnotationNames(currentText());
+                	}
+                	break;
+                case 's' : 
+                	if ("shared-cache-mode".equals(name)) {
+                		_info.setSharedCacheMode(JPAProperties.getEnumValue(SharedCacheMode.class, currentText()));
+                	} else if ("scope".equals(name)) {
+                		_info.setScopeAnnotationName(currentText());
+                	}
                     break;
                 case 'v': // validation-mode
                     _info.setValidationMode(JPAProperties.getEnumValue(ValidationMode.class, currentText()));
