@@ -55,6 +55,7 @@ import jakarta.persistence.PessimisticLockScope;
 import jakarta.persistence.Query;
 import jakarta.persistence.RefreshOption;
 import jakarta.persistence.StoredProcedureQuery;
+import jakarta.persistence.Timeout;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.TypedQueryReference;
@@ -600,6 +601,27 @@ public class EntityManagerImpl
         Map<String, Object> properties){
         return find(cls, oid, null, properties);
     }
+    
+	@Override
+	public <T> T find(Class<T> cls, Object oid, FindOption... options) {
+		Map<String, Object> props = new HashMap<>();
+		LockModeType mode = null;
+		for (FindOption opt: options) {
+			if (opt instanceof LockModeType lmt) {
+				mode = lmt;
+			} else if (opt instanceof CacheRetrieveMode crm) {
+				props.put(JPAProperties.CACHE_RETRIEVE_MODE, crm);
+			} else if (opt instanceof CacheStoreMode csm) {
+				props.put(JPAProperties.CACHE_STORE_MODE, csm);
+			} else if (opt instanceof PessimisticLockScope pls) {
+				props.put(JPAProperties.LOCK_SCOPE, pls);
+			} else if (opt instanceof Timeout timeout) {
+				props.put(JPAProperties.LOCK_TIMEOUT, timeout.milliseconds());
+			}
+			// open to custom options
+		}
+		return find(cls, oid, mode, props);
+	}
 
     @Override
     @SuppressWarnings("unchecked")
@@ -2067,7 +2089,7 @@ public class EntityManagerImpl
             for (Map.Entry<String, Object> entry : properties.entrySet()) {
                 String key = entry.getKey();
                 Object value = entry.getValue();
-                if (key.equals("jakarta.persistence.lock.scope")) {
+                if (key.equals(JPAProperties.LOCK_SCOPE)) {
                     fetch.setLockScope((PessimisticLockScope)value);
                 } else
                     fetch.setHint(key, value);
@@ -2252,11 +2274,6 @@ public class EntityManagerImpl
         }
         return meta;
     }
-
-	@Override
-	public <T> T find(Class<T> entityClass, Object primaryKey, FindOption... options) {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
-	}
 
 	@Override
 	public <T> T find(EntityGraph<T> entityGraph, Object primaryKey, FindOption... options) {

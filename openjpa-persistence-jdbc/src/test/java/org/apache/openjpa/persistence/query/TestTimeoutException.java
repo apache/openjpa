@@ -21,8 +21,10 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.LockTimeoutException;
 import jakarta.persistence.PessimisticLockException;
+import jakarta.persistence.PessimisticLockScope;
 import jakarta.persistence.Query;
 import jakarta.persistence.QueryTimeoutException;
+import jakarta.persistence.Timeout;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
@@ -87,6 +89,37 @@ public class TestTimeoutException extends SingleEMFTestCase {
             fail("Expected " + QueryTimeoutException.class.getName());
         } catch (Throwable t) {
             assertError(t, QueryTimeoutException.class);
+            assertTrue(em2.getTransaction().isActive());
+        }
+        finally {
+            em1.getTransaction().rollback();
+            em1.close();
+            em2.getTransaction().rollback();
+            em2.close();
+        }
+    }
+
+    public void testLockTimeOutExceptionWhileQueryingWithLocksOnAlreadyLockedEntitiesOption() {
+        if (getLog().isTraceEnabled())
+            getLog().trace("***** Entered TestTimeoutException." +
+                "testLockTimeOutExceptionWhileQueryingWithLocksOnAlreadyLockedEntitiesOption()");
+        EntityManager em1 = emf.createEntityManager();
+        EntityManager em2 = emf.createEntityManager();
+        assertNotSame(em1, em2);
+        Object oid = createEntity(em1);
+
+        em1.getTransaction().begin();
+        Object entity = em1.find(entityClass, oid);
+        assertNotNull(entity);
+        em1.lock(entity, LockModeType.PESSIMISTIC_WRITE);
+
+        em2.getTransaction().begin();
+        Timeout timeout = Timeout.milliseconds(1000);
+        try {
+            em2.find(entityClass, emf.getPersistenceUnitUtil().getIdentifier(entity), LockModeType.PESSIMISTIC_WRITE, timeout);
+            fail("Expected " + LockTimeoutException.class.getName());
+        } catch (Throwable t) {
+            assertError(t, LockTimeoutException.class);
             assertTrue(em2.getTransaction().isActive());
         }
         finally {
