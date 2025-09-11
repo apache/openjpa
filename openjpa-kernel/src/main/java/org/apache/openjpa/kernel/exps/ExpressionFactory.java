@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.kernel.exps;
 
-import java.time.temporal.ChronoField;
 import java.time.temporal.Temporal;
 import java.util.Date;
 
@@ -258,6 +257,12 @@ public interface ExpressionFactory {
      * Return the Date or time part of the given temporal value
      */
     Value getDateTimePart(DateTimeExtractPart part, Value value);
+    
+    /**
+     * Returns the value typecasted as string
+     * 
+     */
+    Value newTypecastAsString(Value value);
 
     /**
      * Return a value representing a parameter for the given value. The

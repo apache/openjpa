@@ -863,6 +863,37 @@ public class TestEJBQLFunction extends AbstractTestCase {
 
         endEm(em);
     }
+    
+    public void testTypecastAsString() {
+    	if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
+    		// Derby does not support CAST from integer to VARCHAR
+    		return;
+    	}
+    	EntityManager em = currentEntityManager();
+    	String query = "SELECT u FROM CompUser AS u WHERE CAST(u.age AS STRING) = '23'";
+    	
+    	List result = em.createQuery(query).getResultList();
+    	
+    	assertEquals(1, result.size());
+    	
+    	endEm(em);
+    }
+
+    public void testTypecastAsStringOnSelect() {
+    	if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
+    		// Derby does not support CAST from integer to VARCHAR
+    		return;
+    	}
+    	EntityManager em = currentEntityManager();
+    	String query = "SELECT CAST(u.age AS STRING) FROM CompUser AS u WHERE u.age = 23";
+    	
+    	List result = em.createQuery(query).getResultList();
+    	
+    	assertEquals(1, result.size());
+    	assertEquals("23", result.get(0));
+    	
+    	endEm(em);
+    }
 
     public CompUser createUser(String name, String cName, Address add, int age,
         boolean isMale) {

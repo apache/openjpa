@@ -380,6 +380,11 @@ public class JDBCExpressionFactory
     public Value getDateTimePart(DateTimeExtractPart part, Value value) {
         return new ExtractDateTimePart((Val) value, part);
     }
+    
+    @Override
+    public Value newTypecastAsString(Value value) {
+    	return new TypecastAsString((Val) value);
+    }
 
     @Override
     public Parameter newParameter(Object name, Class type) {

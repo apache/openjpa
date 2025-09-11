@@ -315,7 +315,7 @@ public class DBDictionary
     public int maxEmbeddedBlobSize = -1;
     public int maxEmbeddedClobSize = -1;
     public int inClauseLimit = -1;
-
+    
     /**
      * Attention, while this is named datePrecision it actually only get used for Timestamp handling!
      * @see StateManagerImpl#roundTimestamp(Timestamp, int)

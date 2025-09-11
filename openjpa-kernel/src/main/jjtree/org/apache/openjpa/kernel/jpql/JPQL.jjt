@@ -170,6 +170,8 @@ TOKEN [ IGNORE_CASE ]: /* basics */
 	|	< ENTRY: "ENTRY" >
 	|   < LOCAL: "LOCAL" >
 	|   < EXTRACT: "EXTRACT" >
+	|   < CAST: "CAST" >
+	|   < STRING: "STRING" >
 }
 
 TOKEN [ IGNORE_CASE ]: /* aggregates */
@@ -1122,7 +1124,7 @@ void string_value() : { }
 
 void string_expression() : { }
 {
-	input_parameter() | string_primary()
+	input_parameter() | string_primary() 
 }
 
 
@@ -1133,8 +1135,9 @@ void string_primary() : { }
 	LOOKAHEAD(general_identification_variable()) general_identification_variable() |
 	LOOKAHEAD(identification_variable()) identification_variable() |
 	LOOKAHEAD("(" string_expression()) "(" string_expression() ")" |
-	functions_returning_strings() | LOOKAHEAD("(" subquery()) "(" subquery() ")"
-	| case_expression()
+	functions_returning_strings() | 
+	string_cast_function() |
+	LOOKAHEAD("(" subquery()) "(" subquery() ")" | case_expression()
 }
 
 
@@ -1222,6 +1225,10 @@ void functions_returning_strings() : { }
 	concat() | substring() | trim() | lower() | upper()
 }
 
+void string_cast_function() #STRINGCAST : { }
+{
+	<CAST> "(" scalar_expression() <AS> <STRING> ")"
+}
 
 void concat() #CONCAT : { }
 {

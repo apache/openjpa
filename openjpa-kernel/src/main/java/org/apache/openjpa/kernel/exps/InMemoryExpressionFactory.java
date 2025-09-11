@@ -554,6 +554,11 @@ public class InMemoryExpressionFactory
     public Value getDateTimePart(DateTimeExtractPart part, Value value) {
         return new ExtractDateTimePart(part, (Val) value);
     }
+    
+    @Override
+    public Value newTypecastAsString(Value value) {
+    	return new TypecastAsString((Val) value);
+    }
 
     @Override
     public Parameter newParameter(Object name, Class type) {

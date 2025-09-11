@@ -1521,6 +1521,9 @@ public class JPQLExpressionBuilder
 
             case JJTTIMESTAMPLITERAL:
                 return factory.newLiteral(node.text, Literal.TYPE_TIMESTAMP);
+                
+            case JJTSTRINGCAST:
+            	return factory.newTypecastAsString(getValue(onlyChild(node)));
 
             default:
                 throw parseException(EX_FATAL, "bad-tree",

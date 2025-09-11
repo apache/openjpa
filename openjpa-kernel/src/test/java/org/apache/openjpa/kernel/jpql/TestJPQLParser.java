@@ -70,5 +70,28 @@ public class TestJPQLParser {
             fail();
         }
     }
+    
+    @Test
+    public void testSimpleCastToString() {
+    	try {
+    		String query = "SELECT u FROM User AS u WHERE CAST((EXTRACT(year FROM u.dateOfBirth)) AS STRING) = '1983'";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    		fail();
+    	}
+    }
 
+    @Test
+    public void testSimpleCastToStringOnSelect() {
+    	try {
+    		String query = "SELECT CAST(u.birthYear AS string) FROM User AS u WHERE EXTRACT(year FROM u.dateOfBirth) = 1983";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    		fail();
+    	}
+    }
 }
