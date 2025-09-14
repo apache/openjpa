@@ -32,23 +32,23 @@ import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 import org.apache.openjpa.meta.ClassMetaData;
 
 /**
- * Returns the temporal field of a given date or time.
+ * Returns the given value as a number
  *
  */
-public class ExtractDateTimeField
+public class TypecastAsNumber
     extends AbstractVal {
 
     private static final long serialVersionUID = 1L;
     private final Val _val;
-    private final DateTimeExtractField _field;
+    private final Class<? extends Number> _targetType;
     private ClassMetaData _meta = null;
 
     /**
      * Constructor. Provide the date and the field to operate on.
      */
-    public ExtractDateTimeField(Val val, DateTimeExtractField field) {
+    public TypecastAsNumber(Val val, Class<? extends Number> target) {
         _val = val;
-        _field = field;
+        _targetType = target;
     }
 
     public Val getVal() {
@@ -67,7 +67,17 @@ public class ExtractDateTimeField
 
     @Override
     public Class getType() {
-        return _field == DateTimeExtractField.SECOND ? float.class : int.class;
+    	if (_targetType == Integer.class) {
+    		return int.class;
+    	} else if (_targetType == Long.class) {
+    		return long.class;
+    	} else if (_targetType == Float.class) {
+    		return float.class;
+    	} else if (_targetType == Double.class) {
+    		return double.class;
+    	} else {
+    		return _targetType;
+    	}
     }
 
     @Override
@@ -77,18 +87,18 @@ public class ExtractDateTimeField
     @Override
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
         ExpState valueState =  _val.initialize(sel, ctx, 0);
-        return new ExtractDateTimeFieldExpState(valueState.joins, valueState);
+        return new ExtractTypecastToNumberExpState(valueState.joins, valueState);
     }
 
     /**
      * Expression state.
      */
-    private static class ExtractDateTimeFieldExpState
+    private static class ExtractTypecastToNumberExpState
         extends ExpState {
 
         public final ExpState valueState;
 
-        public ExtractDateTimeFieldExpState(Joins joins, ExpState valueState) {
+        public ExtractTypecastToNumberExpState(Joins joins, ExpState valueState) {
             super(joins);
             this.valueState = valueState;
         }
@@ -102,8 +112,8 @@ public class ExtractDateTimeField
 
     @Override
     public void selectColumns(Select sel, ExpContext ctx, ExpState state, boolean pks) {
-        ExtractDateTimeFieldExpState edtstate = (ExtractDateTimeFieldExpState) state;
-        _val.selectColumns(sel, ctx, edtstate.valueState, true);
+        ExtractTypecastToNumberExpState etnstate = (ExtractTypecastToNumberExpState) state;
+        _val.selectColumns(sel, ctx, etnstate.valueState, true);
     }
 
     @Override
@@ -134,8 +144,8 @@ public class ExtractDateTimeField
     @Override
     public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
-        ExtractDateTimeFieldExpState edtstate = (ExtractDateTimeFieldExpState) state;
-        _val.calculateValue(sel, ctx, edtstate.valueState, null, null);
+        ExtractTypecastToNumberExpState etnstate = (ExtractTypecastToNumberExpState) state;
+        _val.calculateValue(sel, ctx, etnstate.valueState, null, null);
     }
 
     @Override
@@ -147,19 +157,19 @@ public class ExtractDateTimeField
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         DBDictionary dict = ctx.store.getDBDictionary();
-        String func = dict.extractDateTimeFieldFunction;
+        String func = dict.castFunction;
 
         int fieldPart = func.indexOf("{0}");
-        int fromPart = func.indexOf("{1}");
+        int targetPart = func.indexOf("{1}");
         String part1 = func.substring(0, fieldPart);
-        String part2 = func.substring(fieldPart + 3, fromPart);
-        String part3 = func.substring(fromPart + 3);
+        String part2 = func.substring(fieldPart + 3, targetPart);
+        String part3 = func.substring(targetPart + 3);
 
-        ExtractDateTimeFieldExpState edtstate = (ExtractDateTimeFieldExpState) state;
+        ExtractTypecastToNumberExpState etnstate = (ExtractTypecastToNumberExpState) state;
         sql.append(part1);
-        sql.append(_field.name());
+        _val.appendTo(sel, ctx, etnstate.valueState, sql, 0);
         sql.append(part2);
-        _val.appendTo(sel, ctx, edtstate.valueState, sql, 0);
+        sql.append(getDbNumberTargetTypeName(dict));
         sql.append(part3);
     }
 
@@ -173,6 +183,18 @@ public class ExtractDateTimeField
     @Override
     public int getId() {
         return Val.EXTRACTDTF_VAL;
+    }
+    
+    private String getDbNumberTargetTypeName(DBDictionary dict) {
+    	if (getType() == int.class) {
+    		return dict.integerTypeName;
+    	} else if (getType() == long.class) {
+    		return dict.decimalTypeName;
+    	} else if (getType() == float.class) {
+    		return dict.floatTypeName;
+    	} else {
+    		return dict.doubleTypeName;
+    	}
     }
 }
 

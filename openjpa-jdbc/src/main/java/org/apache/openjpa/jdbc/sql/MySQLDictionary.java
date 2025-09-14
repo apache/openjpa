@@ -175,6 +175,7 @@ public class MySQLDictionary
         fixedSizeTypeNameSet.remove("NUMERIC");
 
         dateFractionDigits = 0;
+        supportsUnsizedCharOnCast = false;
     }
 
     @Override

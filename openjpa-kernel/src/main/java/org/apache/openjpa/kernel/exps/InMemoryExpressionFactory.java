@@ -559,6 +559,11 @@ public class InMemoryExpressionFactory
     public Value newTypecastAsString(Value value) {
     	return new TypecastAsString((Val) value);
     }
+    
+    @Override
+    public Value newTypecastAsNumber(Value value, Class<? extends Number> numberType) {
+    	return new TypecastAsNumber((Val) value, numberType);
+    }
 
     @Override
     public Parameter newParameter(Object name, Class type) {

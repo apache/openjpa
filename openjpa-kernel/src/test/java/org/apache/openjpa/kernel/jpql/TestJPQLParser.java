@@ -94,4 +94,101 @@ public class TestJPQLParser {
     		fail();
     	}
     }
+    
+    @Test
+    public void testSimpleCastToInteger() {
+    	try {
+    		String query = "SELECT u FROM User AS u WHERE CAST('1983' AS INTEGER) = 1983";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    		fail();
+    	}
+    }
+
+    @Test
+    public void testSimpleCastToIntegerOnSelect() {
+    	try {
+    		String query = "SELECT CAST(u.birthYear as Integer) FROM User AS u WHERE extract(year from u.dateOfBirth) = 1983";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    		fail();
+    	}
+    }
+
+    @Test
+    public void testSimpleCastToLong() {
+    	try {
+    		String query = "SELECT u FROM User AS u WHERE CAST('1983' AS LONG) = 1983";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    		fail();
+    	}
+    }
+
+    @Test
+    public void testSimpleCastToLongOnSelect() {
+    	try {
+    		String query = "SELECT CAST(u.birthYear as long) FROM User AS u WHERE extract(year from u.dateOfBirth) = 1983";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    		fail();
+    	}
+    }
+
+    @Test
+    public void testSimpleCastToFloat() {
+    	try {
+    		String query = "SELECT u FROM User AS u WHERE CAST('1983' AS FLOAT) = 1983";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    		fail();
+    	}
+    }
+
+    @Test
+    public void testSimpleCastToFloatOnSelect() {
+    	try {
+    		String query = "SELECT CAST(u.birthYear as FLOAT) FROM User AS u WHERE extract(year from u.dateOfBirth) = 1983";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    		fail();
+    	}
+    }
+
+    @Test
+    public void testSimpleCastToDouble() {
+    	try {
+    		String query = "SELECT u FROM User AS u WHERE CAST(u.cast AS INTEGER) = 1983";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    		fail();
+    	}
+    }
+
+    @Test
+    public void testSimpleCastToDoubleOnSelect() {
+    	try {
+    		String query = "SELECT CAST(u.birthYear as double) FROM User AS u WHERE extract(year from u.dateOfBirth) = 1983";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    		fail();
+    	}
+    }
+
 }

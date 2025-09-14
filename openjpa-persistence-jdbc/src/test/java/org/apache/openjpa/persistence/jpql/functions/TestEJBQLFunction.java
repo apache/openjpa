@@ -894,6 +894,58 @@ public class TestEJBQLFunction extends AbstractTestCase {
     	
     	endEm(em);
     }
+    
+    public void testTypecastAsInteger() {
+    	EntityManager em = currentEntityManager();
+    	String query = "SELECT u FROM CompUser AS u WHERE CAST(u.address.zipcode as integer) = :value";
+    	
+    	List result = em.createQuery(query).setParameter("value", 94104).getResultList();
+    	
+    	assertEquals(1, result.size());
+    	assertEquals("Seetha", ((CompUser) result.get(0)).getName());
+    	
+    	endEm(em);
+    	
+    }
+
+    public void testTypecastAsLong() {
+    	EntityManager em = currentEntityManager();
+    	String query = "SELECT u FROM CompUser AS u WHERE CAST(u.address.zipcode as LONG) = :value";
+    	
+    	List result = em.createQuery(query).setParameter("value", 94104l).getResultList();
+    	
+    	assertEquals(1, result.size());
+    	assertEquals("Seetha", ((CompUser) result.get(0)).getName());
+    	
+    	endEm(em);
+    	
+    }
+
+    public void testTypecastAsFloat() {
+    	EntityManager em = currentEntityManager();
+    	String query = "SELECT u FROM CompUser AS u WHERE CAST(u.age as float) = :value";
+    	
+    	List result = em.createQuery(query).setParameter("value", 29f).getResultList();
+    	
+    	assertEquals(1, result.size());
+    	assertEquals("Famzy", ((CompUser) result.get(0)).getName());
+    	
+    	endEm(em);
+    	
+    }
+
+    public void testTypecastAsDouble() {
+    	EntityManager em = currentEntityManager();
+    	String query = "SELECT CAST(u.age as double) FROM CompUser AS u WHERE CAST(u.age as double) = :value";
+    	
+    	List result = em.createQuery(query).setParameter("value", 29.0d).getResultList();
+    	
+    	assertEquals(1, result.size());
+    	assertEquals(29d, ((double) result.get(0)));
+    	
+    	endEm(em);
+    	
+    }
 
     public CompUser createUser(String name, String cName, Address add, int age,
         boolean isMale) {

@@ -385,6 +385,18 @@ public class JDBCExpressionFactory
     public Value newTypecastAsString(Value value) {
     	return new TypecastAsString((Val) value);
     }
+    
+    @Override
+    public Value newTypecastAsNumber(Value value, Class<? extends Number> numberType) {
+    	if (numberType == null ||
+    			(numberType != Integer.class && 
+    			numberType != Long.class &&
+    			numberType != Float.class &&
+    			numberType != Double.class)) {
+    		throw new IllegalArgumentException("Unexpected target type class: " + numberType);
+		}
+    	return new TypecastAsNumber((Val) value, numberType);
+    }
 
     @Override
     public Parameter newParameter(Object name, Class type) {

@@ -172,6 +172,10 @@ TOKEN [ IGNORE_CASE ]: /* basics */
 	|   < EXTRACT: "EXTRACT" >
 	|   < CAST: "CAST" >
 	|   < STRING: "STRING" >
+	|   < INTEGER: "INTEGER" >
+	|   < LONG: "LONG" >
+	|   < FLOAT: "FLOAT" >
+	|   < DOUBLE: "DOUBLE" >
 }
 
 TOKEN [ IGNORE_CASE ]: /* aggregates */
@@ -997,6 +1001,7 @@ void arithmetic_factor() : { }
 	LOOKAHEAD(identification_variable()) identification_variable() |
 	LOOKAHEAD("("  arithmetic_expression()) "("  arithmetic_expression() ")" |
 	LOOKAHEAD(functions_returning_numerics()) functions_returning_numerics() |
+	LOOKAHEAD(arithmetic_cast_function()) arithmetic_cast_function() |
 	LOOKAHEAD(aggregate_select_expression()) aggregate_select_expression() |
 	LOOKAHEAD(case_expression()) case_expression() |
 	LOOKAHEAD("(" subquery()) "(" subquery() ")"
@@ -1058,6 +1063,11 @@ void scalar_expression() #SCALAREXPRESSION : { }
     LOOKAHEAD(enum_primary()) enum_primary() |
     LOOKAHEAD(boolean_primary()) boolean_primary() |
     LOOKAHEAD(entity_type_expression()) entity_type_expression()
+}
+
+void arithmetic_cast_function() #CASTTONUMBER : { }
+{
+	<CAST> "(" string_expression() <AS> ( <INTEGER> #INTEGER | <LONG> #LONG | <FLOAT> #FLOAT | <DOUBLE> #DOUBLE ) ")"
 }
 
 void case_expression() #CASE : { }
@@ -1539,6 +1549,8 @@ void path_component() #IDENTIFICATIONVARIABLE :
 	| t = <ENTRY>
 	| t = <INDEX>
 	| t = <TYPE>
+	| t = <CAST>
+	| t = <STRING>
 	| t = <CLASS>
     ) { jjtThis.setToken (t); }
 }

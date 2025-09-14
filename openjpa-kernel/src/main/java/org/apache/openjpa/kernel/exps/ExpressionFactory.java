@@ -263,6 +263,13 @@ public interface ExpressionFactory {
      * 
      */
     Value newTypecastAsString(Value value);
+    
+    /**
+     * Returns the value typecasted as the given Number type
+     * @param value
+     * @return
+     */
+    Value newTypecastAsNumber(Value value, Class<? extends Number> numberType);
 
     /**
      * Return a value representing a parameter for the given value. The

@@ -496,6 +496,8 @@ public class DBDictionary
     private String conversionKey = null;
 
     public boolean supportsUuidType = false;
+    
+    public boolean supportsUnsizedCharOnCast = true;
 
     // Naming utility and naming rules
     private DBIdentifierUtil namingUtil = null;

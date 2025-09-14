@@ -156,7 +156,11 @@ public class TypecastAsString
         sql.append(part1);
         _val.appendTo(sel, ctx, casstate.valueState, sql, 0);
         sql.append(part2);
-    	sql.append(dict.varcharTypeName);
+        if (dict.supportsUnsizedCharOnCast) {
+        	sql.append(dict.varcharTypeName);
+        } else {
+        	sql.append(dict.charTypeName + "(" + dict.characterColumnSize + ")");
+        }
         sql.append(part3);
     }
 

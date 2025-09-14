@@ -59,6 +59,7 @@ import org.apache.openjpa.kernel.exps.Path;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Resolver;
 import org.apache.openjpa.kernel.exps.Subquery;
+import org.apache.openjpa.kernel.exps.TypecastAsNumberPart;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
@@ -1524,6 +1525,22 @@ public class JPQLExpressionBuilder
                 
             case JJTSTRINGCAST:
             	return factory.newTypecastAsString(getValue(onlyChild(node)));
+            	
+            case JJTINTEGER:
+            	return TypecastAsNumberPart.INTEGER;
+            	
+            case JJTLONG:
+            	return TypecastAsNumberPart.LONG;
+
+            case JJTFLOAT:
+            	return TypecastAsNumberPart.FLOAT;
+            
+            case JJTDOUBLE:
+            	return TypecastAsNumberPart.DOUBLE;
+            	
+            case JJTCASTTONUMBER:
+            	return factory.newTypecastAsNumber(getValue(firstChild(node)), 
+            			resolveNumberTargetType((TypecastAsNumberPart) eval(secondChild(node))));
 
             default:
                 throw parseException(EX_FATAL, "bad-tree",
@@ -2578,6 +2595,22 @@ public class JPQLExpressionBuilder
         } catch (IllegalArgumentException ex) {
             return null;
         }
+    }
+    
+    private Class<? extends Number> resolveNumberTargetType(TypecastAsNumberPart part) {
+    	return switch (part) {
+		case INTEGER: {
+			yield Integer.class;
+		}
+		case LONG: {
+			yield Long.class;
+		}
+		case FLOAT: {
+			yield Float.class;
+		}
+		default:
+			yield Double.class;
+		};
     }
 }
 
