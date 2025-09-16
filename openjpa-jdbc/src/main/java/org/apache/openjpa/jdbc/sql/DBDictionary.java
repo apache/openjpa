@@ -498,6 +498,8 @@ public class DBDictionary
     public boolean supportsUuidType = false;
     
     public boolean supportsUnsizedCharOnCast = true;
+    
+    public String integerCastTypeName = integerTypeName; 
 
     // Naming utility and naming rules
     private DBIdentifierUtil namingUtil = null;

@@ -176,6 +176,7 @@ public class MySQLDictionary
 
         dateFractionDigits = 0;
         supportsUnsizedCharOnCast = false;
+        integerCastTypeName = "SIGNED";
     }
 
     @Override

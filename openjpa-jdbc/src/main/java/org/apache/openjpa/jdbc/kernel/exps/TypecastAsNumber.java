@@ -187,7 +187,7 @@ public class TypecastAsNumber
     
     private String getDbNumberTargetTypeName(DBDictionary dict) {
     	if (getType() == int.class) {
-    		return dict.integerTypeName;
+    		return dict.integerCastTypeName;
     	} else if (getType() == long.class) {
     		return dict.decimalTypeName;
     	} else if (getType() == float.class) {
