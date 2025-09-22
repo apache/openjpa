@@ -354,7 +354,17 @@ class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
 
 	@Override
 	public <X> Expression<X> cast(Class<X> type) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    	if (type == String.class) {
+    		return new Expressions.TypecastAs(this, "STRING");
+    	} else if (type == Integer.class) {
+    		return new Expressions.TypecastAs(this, "INTEGER");
+    	} else if (type == Long.class) {
+    		return new Expressions.TypecastAs(this, "LONG");
+    	} else if (type == Float.class) {
+    		return new Expressions.TypecastAs(this, "FLOAT");
+    	} else if (type == Double.class) {
+    		return new Expressions.TypecastAs(this, "DOUBLE");
+    	}
+		throw new IllegalArgumentException("Target cast not supported");
 	}
 }

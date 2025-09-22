@@ -613,6 +613,24 @@ class Expressions {
             return Expressions.asValue(q, OPEN_BRACE, getJavaType().getSimpleName(), CLOSE_BRACE, e);
         }
     }
+    
+    public static class TypecastAs<B> extends UnaryFunctionalExpression<B> {
+    	private String target;
+    	public TypecastAs(Expression<B> x, String target) {
+    		super(x);
+    		this.target = target;
+    	}
+    	
+    	@Override
+    	public Value toValue(ExpressionFactory factory, CriteriaQueryImpl q) {
+    		return factory.newTypecastAsString(Expressions.toValue(e, factory, q));
+    	}
+    	
+    	@Override
+    	public StringBuilder asValue(AliasContext q) {
+    		return Expressions.asValue(q, "CAST", OPEN_BRACE, e, "AS", target, CLOSE_BRACE);
+    	}
+    }
 
     public static class Concat extends BinarayFunctionalExpression<String> {
         public Concat(Expression<String> x, Expression<String> y) {
