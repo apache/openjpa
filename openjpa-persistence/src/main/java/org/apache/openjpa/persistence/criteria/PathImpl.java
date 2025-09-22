@@ -356,13 +356,13 @@ class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
 	public <X> Expression<X> cast(Class<X> type) {
     	if (type == String.class) {
     		return new Expressions.TypecastAs(this, "STRING");
-    	} else if (type == Integer.class) {
+    	} else if (type == Integer.class || type == int.class) {
     		return new Expressions.TypecastAs(this, "INTEGER");
-    	} else if (type == Long.class) {
+    	} else if (type == Long.class || type == long.class) {
     		return new Expressions.TypecastAs(this, "LONG");
-    	} else if (type == Float.class) {
+    	} else if (type == Float.class || type == float.class) {
     		return new Expressions.TypecastAs(this, "FLOAT");
-    	} else if (type == Double.class) {
+    	} else if (type == Double.class || type == double.class) {
     		return new Expressions.TypecastAs(this, "DOUBLE");
     	}
 		throw new IllegalArgumentException("Target cast not supported");

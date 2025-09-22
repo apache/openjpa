@@ -623,12 +623,30 @@ class Expressions {
     	
     	@Override
     	public Value toValue(ExpressionFactory factory, CriteriaQueryImpl q) {
-    		return factory.newTypecastAsString(Expressions.toValue(e, factory, q));
+    		return switch (target) {
+				case "STRING": {
+					yield factory.newTypecastAsString(Expressions.toValue(e, factory, q));
+				}
+				case "INTEGER":{
+					yield factory.newTypecastAsNumber(Expressions.toValue(e, factory, q), Integer.class);
+				}
+				case "LONG":{
+					yield factory.newTypecastAsNumber(Expressions.toValue(e, factory, q), Long.class);
+				}
+				case "FLOAT":{
+					yield factory.newTypecastAsNumber(Expressions.toValue(e, factory, q), Float.class);
+				}
+				case "DOUBLE":{
+					yield factory.newTypecastAsNumber(Expressions.toValue(e, factory, q), Double.class);
+				}
+				default:
+					throw new IllegalArgumentException("Unexpected value: " + target);
+			};
     	}
     	
     	@Override
     	public StringBuilder asValue(AliasContext q) {
-    		return Expressions.asValue(q, "CAST", OPEN_BRACE, e, "AS", target, CLOSE_BRACE);
+    		return Expressions.asValue(q, "CAST", OPEN_BRACE, e, " AS ", target, CLOSE_BRACE);
     	}
     }
 

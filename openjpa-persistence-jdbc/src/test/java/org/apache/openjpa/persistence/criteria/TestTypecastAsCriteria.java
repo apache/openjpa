@@ -52,11 +52,11 @@ public class TestTypecastAsCriteria extends CriteriaTest {
     }
 
     public void testTypecastAsInteger() {
-    	String jpql = "SELECT c FROM Customer c JOIN c.orders o WHERE CAST(o.quantity AS INTEGER) = 0";
+    	String jpql = "SELECT c FROM Customer c JOIN c.orders o WHERE CAST(CAST(o.quantity AS STRING) AS INTEGER) = 0";
     	CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
     	Root<Customer> c = q.from(Customer.class);
     	SetJoin<Customer, Order> o = c.joinSet("orders");
-    	q.where(cb.equal(o.get("quantity").cast(Integer.class), 0));
+    	q.where(cb.equal(o.get("quantity").cast(String.class).cast(Integer.class), 0));
     	q.select(c);
     	
     	assertEquivalence(q, jpql);
@@ -67,7 +67,7 @@ public class TestTypecastAsCriteria extends CriteriaTest {
     	CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
     	Root<Customer> c = q.from(Customer.class);
     	SetJoin<Customer, Order> o = c.joinSet("orders");
-    	q.where(cb.equal(o.get("quantity").cast(Long.class), 0l));
+    	q.where(cb.equal(o.get("quantity").cast(String.class).cast(Long.class), 0l));
     	q.select(c);
     	
     	assertEquivalence(q, jpql);
@@ -78,7 +78,7 @@ public class TestTypecastAsCriteria extends CriteriaTest {
     	CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
     	Root<Customer> c = q.from(Customer.class);
     	SetJoin<Customer, Order> o = c.joinSet("orders");
-    	q.where(cb.equal(o.get("quantity").cast(Float.class), 0f));
+    	q.where(cb.equal(o.get("quantity").cast(String.class).cast(Float.class), 0f));
     	q.select(c);
     	
     	assertEquivalence(q, jpql);
@@ -89,14 +89,13 @@ public class TestTypecastAsCriteria extends CriteriaTest {
     	CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
     	Root<Customer> c = q.from(Customer.class);
     	SetJoin<Customer, Order> o = c.joinSet("orders");
-    	q.where(cb.equal(o.get("quantity").cast(Float.class), 0d));
+    	q.where(cb.equal(o.get("quantity").cast(String.class).cast(Double.class), 0d));
     	q.select(c);
     	
     	assertEquivalence(q, jpql);
     }
     
     public void testTypecastAsInvalid() {
-    	String jpql = "SELECT c FROM Customer c JOIN c.orders o WHERE CAST(o.quantity AS double) = 0";
     	CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
     	Root<Customer> c = q.from(Customer.class);
     	SetJoin<Customer, Order> o = c.joinSet("orders");
