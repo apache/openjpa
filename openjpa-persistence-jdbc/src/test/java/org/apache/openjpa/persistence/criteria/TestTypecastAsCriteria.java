@@ -36,11 +36,16 @@ import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.SetJoin;
 import jakarta.persistence.criteria.Subquery;
 
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.test.AllowFailure;
 
 public class TestTypecastAsCriteria extends CriteriaTest {
 
     public void testTypecastAsString() {
+    	if (getDictionary() instanceof DerbyDictionary) {
+    		// Derby does not support these CASTs
+    		return;
+    	}
     	String jpql = "SELECT c FROM Customer c JOIN c.orders o WHERE CAST(o.quantity AS String) = '0'";
     	CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
     	Root<Customer> c = q.from(Customer.class);
@@ -52,6 +57,10 @@ public class TestTypecastAsCriteria extends CriteriaTest {
     }
 
     public void testTypecastAsInteger() {
+    	if (getDictionary() instanceof DerbyDictionary) {
+    		// Derby does not support these CASTs
+    		return;
+    	}
     	String jpql = "SELECT c FROM Customer c JOIN c.orders o WHERE CAST(CAST(o.quantity AS STRING) AS INTEGER) = 0";
     	CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
     	Root<Customer> c = q.from(Customer.class);
@@ -63,7 +72,11 @@ public class TestTypecastAsCriteria extends CriteriaTest {
     }
 
     public void testTypecastAsLong() {
-    	String jpql = "SELECT c FROM Customer c JOIN c.orders o WHERE CAST(o.quantity AS LONG) = 0";
+    	if (getDictionary() instanceof DerbyDictionary) {
+    		// Derby does not support these CASTs
+    		return;
+    	}
+    	String jpql = "SELECT c FROM Customer c JOIN c.orders o WHERE CAST(CAST(o.quantity AS STRING) AS LONG) = 0";
     	CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
     	Root<Customer> c = q.from(Customer.class);
     	SetJoin<Customer, Order> o = c.joinSet("orders");
@@ -74,7 +87,11 @@ public class TestTypecastAsCriteria extends CriteriaTest {
     }
 
     public void testTypecastAsFloat() {
-    	String jpql = "SELECT c FROM Customer c JOIN c.orders o WHERE CAST(o.quantity AS float) = 0";
+    	if (getDictionary() instanceof DerbyDictionary) {
+    		// Derby does not support these CASTs
+    		return;
+    	}
+    	String jpql = "SELECT c FROM Customer c JOIN c.orders o WHERE CAST(CAST(o.quantity AS STRING) AS float) = 0";
     	CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
     	Root<Customer> c = q.from(Customer.class);
     	SetJoin<Customer, Order> o = c.joinSet("orders");
@@ -85,7 +102,11 @@ public class TestTypecastAsCriteria extends CriteriaTest {
     }
 
     public void testTypecastAsDouble() {
-    	String jpql = "SELECT c FROM Customer c JOIN c.orders o WHERE CAST(o.quantity AS double) = 0";
+    	if (getDictionary() instanceof DerbyDictionary) {
+    		// Derby does not support these CASTs
+    		return;
+    	}
+    	String jpql = "SELECT c FROM Customer c JOIN c.orders o WHERE CAST(cast(o.quantity as string) AS double) = 0";
     	CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
     	Root<Customer> c = q.from(Customer.class);
     	SetJoin<Customer, Order> o = c.joinSet("orders");
@@ -96,6 +117,10 @@ public class TestTypecastAsCriteria extends CriteriaTest {
     }
     
     public void testTypecastAsInvalid() {
+    	if (getDictionary() instanceof DerbyDictionary) {
+    		// Derby does not support these CASTs
+    		return;
+    	}
     	CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
     	Root<Customer> c = q.from(Customer.class);
     	SetJoin<Customer, Order> o = c.joinSet("orders");
