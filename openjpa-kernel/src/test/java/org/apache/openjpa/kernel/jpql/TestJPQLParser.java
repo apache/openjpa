@@ -190,5 +190,31 @@ public class TestJPQLParser {
     		fail();
     	}
     }
+    
+    @Test
+    public void testStringLeftFunction() {
+    	try {
+    		String query = "SELECT LEFT(u.name, 3) FROM User AS u WHERE LEFT(u.lastName, 1) = 'D'";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    		fail();
+    	}
+    	
+    }
+
+    @Test
+    public void testStringRightFunction() {
+    	try {
+    		String query = "SELECT RIGHT(u.name, 3) FROM User AS u WHERE right(u.lastName, 1) = 'D'";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    		fail();
+    	}
+    	
+    }
 
 }

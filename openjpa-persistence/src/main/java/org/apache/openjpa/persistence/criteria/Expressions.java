@@ -47,12 +47,13 @@ import org.apache.openjpa.persistence.criteria.CriteriaExpressionVisitor.Travers
 import org.apache.openjpa.persistence.meta.Types;
 
 /**
- * Expressions according to JPA 2.0.
+ * Expressions according to JPA 3.2.
  *
  * A facade to OpenJPA kernel expressions to enforce stronger typing.
  *
  * @author Pinaki Poddar
  * @author Fay Wang
+ * @author Paulo Cristovão Filho
  *
  * @since 2.0.0
  *
@@ -216,14 +217,14 @@ class Expressions {
      *
      * @param <X> the type of the resultant expression
      */
-    public abstract static class BinarayFunctionalExpression<X> extends ExpressionImpl<X>{
+    public abstract static class BinaryFunctionalExpression<X> extends ExpressionImpl<X>{
         protected final ExpressionImpl<?> e1;
         protected final ExpressionImpl<?> e2;
 
         /**
          * Supply the resultant type and pair of input operand expressions.
          */
-        public BinarayFunctionalExpression(Class<X> t, Expression<?> x, Expression<?> y) {
+        public BinaryFunctionalExpression(Class<X> t, Expression<?> x, Expression<?> y) {
             super(t);
             e1 = (ExpressionImpl<?>)x;
             e2 = (ExpressionImpl<?>)y;
@@ -391,7 +392,7 @@ class Expressions {
         }
     }
 
-    public static class Power<X, Y extends Number> extends BinarayFunctionalExpression<Double> {
+    public static class Power<X, Y extends Number> extends BinaryFunctionalExpression<Double> {
         public Power(Expression<X> x, Expression<Y> y) {
             super(double.class, x, y);
         }
@@ -414,7 +415,7 @@ class Expressions {
         }
     }
 
-    public static class Round<X> extends BinarayFunctionalExpression<X> {
+    public static class Round<X> extends BinaryFunctionalExpression<X> {
         public Round(Expression<?> x, Expression<?> y) {
             super(((Class<X>) x.getJavaType()), x, y);
         }
@@ -558,6 +559,56 @@ class Expressions {
             return Expressions.asValue(q, "SIZE", OPEN_BRACE, e, CLOSE_BRACE);
         }
     }
+    
+    public static class Left extends BinaryFunctionalExpression<String> {
+    	
+    	public Left(Expression<String> x, Integer length) {
+    		this(x, new Constant<Integer>(length));
+    	}
+    	
+    	public Left(Expression<String> x, Expression<Integer> y) {
+    		super(String.class, x, y);
+    	}
+    	
+    	@Override
+    	public Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
+    		Value value = factory.left(
+    				Expressions.toValue(e1, factory, q),
+    				Expressions.toValue(e2, factory, q));
+    		value.setImplicitType(String.class);
+    		return value;
+    	}
+    	
+    	@Override
+    	public StringBuilder asValue(AliasContext q) {
+    		return Expressions.asValue(q, "LEFT", OPEN_BRACE, e1, COMMA, e2, CLOSE_BRACE);
+    	}
+    }
+
+    public static class Right extends BinaryFunctionalExpression<String> {
+    	
+    	public Right(Expression<String> x, int length) {
+    		this(x, new Expressions.Constant<Integer>(length));
+    	}
+    	
+    	public Right(Expression<String> x, Expression<Integer> y) {
+    		super(String.class, x, y);
+    	}
+    	
+    	@Override
+    	public Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
+    		Value value = factory.right(
+    				Expressions.toValue(e1, factory, q),
+    				Expressions.toValue(e2, factory, q));
+    		value.setImplicitType(String.class);
+    		return value;
+    	}
+    	
+    	@Override
+    	public StringBuilder asValue(AliasContext q) {
+    		return Expressions.asValue(q, "RIGHT", OPEN_BRACE, e1, COMMA, e2, CLOSE_BRACE);
+    	}
+    }
 
     public static class DatabaseFunction<T> extends FunctionalExpression<T> {
         private final String functionName;
@@ -650,7 +701,7 @@ class Expressions {
     	}
     }
 
-    public static class Concat extends BinarayFunctionalExpression<String> {
+    public static class Concat extends BinaryFunctionalExpression<String> {
         public Concat(Expression<String> x, Expression<String> y) {
             super(String.class, x, y);
         }
@@ -772,7 +823,7 @@ class Expressions {
         }
     }
 
-    public static class Trim extends BinarayFunctionalExpression<String> {
+    public static class Trim extends BinaryFunctionalExpression<String> {
         static Expression<Character> defaultTrim = new Constant<>(Character.class, ' ');
         static Trimspec defaultSpec = Trimspec.BOTH;
         private Trimspec ts;
@@ -825,7 +876,7 @@ class Expressions {
         }
     }
 
-    public static class Sum<N extends Number> extends BinarayFunctionalExpression<N> {
+    public static class Sum<N extends Number> extends BinaryFunctionalExpression<N> {
         public Sum(Expression<? extends Number> x, Expression<? extends Number> y) {
             super((Class<N>)x.getJavaType(), x, y);
         }
@@ -861,7 +912,7 @@ class Expressions {
         }
      }
 
-    public static class Product<N extends Number> extends BinarayFunctionalExpression<N> {
+    public static class Product<N extends Number> extends BinaryFunctionalExpression<N> {
         public Product(Expression<? extends Number> x, Expression<? extends Number> y) {
             super((Class<N>)x.getJavaType(), x, y);
         }
@@ -887,7 +938,7 @@ class Expressions {
         }
     }
 
-    public static class Diff<N extends Number> extends BinarayFunctionalExpression<N> {
+    public static class Diff<N extends Number> extends BinaryFunctionalExpression<N> {
         public Diff(Expression<? extends Number> x, Expression<? extends Number> y) {
             super((Class<N>)x.getJavaType(), x, y);
         }
@@ -916,7 +967,7 @@ class Expressions {
     }
 
 
-    public static class Quotient<N extends Number> extends BinarayFunctionalExpression<N> {
+    public static class Quotient<N extends Number> extends BinaryFunctionalExpression<N> {
         public Quotient(Expression<? extends Number> x, Expression<? extends Number> y) {
             super((Class<N>)x.getJavaType(), x, y);
         }
@@ -944,7 +995,7 @@ class Expressions {
         }
     }
 
-    public static class Mod extends BinarayFunctionalExpression<Integer> {
+    public static class Mod extends BinaryFunctionalExpression<Integer> {
         public  Mod(Expression<Integer> x, Expression<Integer> y) {
             super(Integer.class, x,y);
         }

@@ -1784,5 +1784,37 @@ public class TestTypesafeCriteria extends CriteriaTest {
 
         assertEquivalence(cq, jpql);
     }
+    
+    public void testLeft() {
+    	String jpql = "select p from Person p where left(p.name, 4) = 'John'";
+        em.getTransaction().begin();
+        Person p = new Person();
+        p.setName("John Fitzgerald Doe");
+        em.persist(p);
+        em.getTransaction().commit();
+    	
+    	CriteriaQuery<Person> cq = cb.createQuery(Person.class);
+    	Root<Person> c = cq.from(Person.class);
+    	cq.where(cb.equal(cb.left(c.get("name"), 4), "John"));
+    	em.createQuery(cq).getResultList();
+    	
+    	assertEquivalence(cq, jpql);
+    }
+
+    public void testRight() {
+    	String jpql = "select p from Person p where RIGHT(p.name, 3) = 'Doe'";
+        em.getTransaction().begin();
+        Person p = new Person();
+        p.setName("John Fitzgerald Doe");
+        em.persist(p);
+        em.getTransaction().commit();
+
+        CriteriaQuery<Person> cq = cb.createQuery(Person.class);
+    	Root<Person> c = cq.from(Person.class);
+    	cq.where(cb.equal(cb.left(c.get("name"), 3), "Doe"));
+    	em.createQuery(cq).getResultList();
+    	
+    	assertEquivalence(cq, jpql);
+    }
 
 }

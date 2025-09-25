@@ -1379,6 +1379,31 @@ public class JPQLExpressionBuilder
                     setImplicitType(val3, Integer.TYPE);
 
                 return convertSubstringArguments(factory, val1, val2, val3);
+            
+            case JJTLEFT:
+            	val1 = getValue(firstChild(node));
+            	child2 = secondChild(node);
+            	val2 = child2.id == JJTINTEGERLITERAL ? getIntegerValue(child2) : getValue(child2);
+            	setImplicitType(val1, TYPE_STRING);
+            	setImplicitType(val2, Integer.TYPE);
+            	return factory.left(val1, val2);
+            	
+            case JJTRIGHT:
+            	val1 = getValue(firstChild(node));
+            	child2 = secondChild(node);
+            	val2 = child2.id == JJTINTEGERLITERAL ? getIntegerValue(child2) : getValue(child2);
+            	setImplicitType(val1, TYPE_STRING);
+            	setImplicitType(val2, Integer.TYPE);
+            	return factory.right(val1, val2);
+            	
+            case JJTREPLACE:
+            	val1 = getValue(firstChild(node));
+            	val2 = getValue(secondChild(node));
+            	val3 = getValue(thirdChild(node));
+            	setImplicitType(val1, TYPE_STRING);
+            	setImplicitType(val2, TYPE_STRING);
+            	setImplicitType(val3, TYPE_STRING);
+            	return factory.replace(val1, val2, val3);
 
             case JJTLOCATE:
                 Value locatePath = getValue(firstChild(node));
@@ -1587,6 +1612,7 @@ public class JPQLExpressionBuilder
         else
             return factory.substring(val1, val2);
     }
+    
     private void assertQueryExtensions(String clause) {
         OpenJPAConfiguration conf = resolver.getConfiguration();
         switch(conf.getCompatibilityInstance().getJPQL()) {

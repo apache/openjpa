@@ -715,6 +715,21 @@ public class InMemoryExpressionFactory
     public Value substring(Value val1, Value val2) {
         return new Substring((Val) val1, (Val) val2);
     }
+    
+    @Override
+    public Value left(Value str, Value length) {
+    	return new Left((Val) str, (Val) length);
+    }
+    
+    @Override
+    public Value right(Value str, Value length) {
+    	return new Right((Val) str, (Val) length);
+    }
+    
+    @Override
+    public Value replace(Value orig, Value pattern, Value replacement) {
+        throw new UnsupportedException("not implemented yet");
+    }
 
     @Override
     public Value toUpperCase(Value val) {

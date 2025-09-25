@@ -416,6 +416,23 @@ public interface ExpressionFactory {
      * the start index is one-based, and the second argument is the length.
      */
     Value substring(Value str, Value args);
+    
+    /**
+     * Returns a value representing the left function on the given target
+     * with the given arguments. 
+     */
+    Value left(Value str, Value length);
+
+    /**
+     * Returns a value representing the right function on the given target
+     * with the given arguments. 
+     */
+    Value right(Value str, Value length);
+    
+    /**
+     * Returns the original string with the pattern replaced by the third argument
+     */
+    Value replace(Value orig, Value pattern, Value replacement);
 
     /**
      * Return the upper case of the given value.

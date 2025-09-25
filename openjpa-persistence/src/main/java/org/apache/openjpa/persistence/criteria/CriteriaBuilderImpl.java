@@ -1092,26 +1092,22 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 
 	@Override
 	public Expression<String> left(Expression<String> x, int len) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
-	}
-
-	@Override
-	public Expression<String> right(Expression<String> x, int len) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		return new Expressions.Left(x, len);
 	}
 
 	@Override
 	public Expression<String> left(Expression<String> x, Expression<Integer> len) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		return new Expressions.Left(x, len);
+	}
+	
+	@Override
+	public Expression<String> right(Expression<String> x, int len) {
+		return new Expressions.Right(x, len);
 	}
 
 	@Override
 	public Expression<String> right(Expression<String> x, Expression<Integer> len) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		return new Expressions.Right(x, len);
 	}
 
 	@Override

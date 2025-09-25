@@ -201,6 +201,8 @@ TOKEN [ IGNORE_CASE ]: /* functions returning strings */
 	|	< TRIM: "TRIM" >
 	|	< LOWER: "LOWER" >
 	|	< UPPER: "UPPER" >
+	|   < RIGHT: "RIGHT" >
+	|   < REPLACE: "REPLACE" >
 }
 
 TOKEN [ IGNORE_CASE ]: /* trim specification */
@@ -1232,7 +1234,7 @@ void entity_bean_expression() : { }
 
 void functions_returning_strings() : { }
 {
-	concat() | substring() | trim() | lower() | upper()
+	concat() | substring() | trim() | lower() | upper() | replace() | left() | right()
 }
 
 void string_cast_function() #STRINGCAST : { }
@@ -1251,6 +1253,20 @@ void substring() #SUBSTRING : { }
 	<SUBSTRING> "(" string_expression() <COMMA> arithmetic_expression() [ <COMMA> arithmetic_expression() ] ")"
 }
 
+void replace() #REPLACE : { }
+{
+	<REPLACE> "(" string_expression() <COMMA> string_expression() <COMMA> string_expression() ")"
+}
+
+void left() #LEFT : { }
+{
+	<LEFT> "(" string_expression() <COMMA> arithmetic_expression() ")"
+}
+
+void right() #RIGHT : { }
+{
+	<RIGHT> "(" string_expression() <COMMA> arithmetic_expression() ")"
+}
 
 void trim() #TRIM : { }
 {
@@ -1520,6 +1536,7 @@ void path_component() #IDENTIFICATIONVARIABLE :
 	| t = <SECOND>
 	| t = <SELECT>
 	| t = <DISTINCT>
+	| t = <RIGHT>
 	| t = <FROM>
 	| t = <UPDATE>
 	| t = <DELETE>

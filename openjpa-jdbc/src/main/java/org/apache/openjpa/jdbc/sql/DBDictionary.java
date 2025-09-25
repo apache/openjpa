@@ -295,6 +295,8 @@ public class DBDictionary
     public String concatenateFunction = "({0}||{1})";
     public String concatenateDelimiter = "'OPENJPATOKEN'";
     public String substringFunctionName = "SUBSTRING";
+    public String leftFunctionName = "LEFT";
+    public String rightFunctionName = "RIGHT";
     public String currentDateFunction = "CURRENT_DATE";
     public String currentTimeFunction = "CURRENT_TIME";
     public String currentTimestampFunction = "CURRENT_TIMESTAMP";
@@ -3147,6 +3149,30 @@ public class DBDictionary
             }
         }
         buf.append(")");
+    }
+    
+    public void left(SQLBuffer buf, FilterValue str, FilterValue length) {
+    	buf.append(leftFunctionName).append("(");
+    	str.appendTo(buf);
+    	buf.append(", ");
+    	if (length.getValue() instanceof Number) {
+    		buf.append(Long.toString(toLong(length)));
+    	} else {
+    		length.appendTo(buf);
+    	}
+    	buf.append(")");
+    }
+
+    public void right(SQLBuffer buf, FilterValue str, FilterValue length) {
+    	buf.append(rightFunctionName).append("(");
+    	str.appendTo(buf);
+    	buf.append(", ");
+    	if (length.getValue() instanceof Number) {
+    		buf.append(Long.toString(toLong(length)));
+    	} else {
+    		length.appendTo(buf);
+    	}
+    	buf.append(")");
     }
 
     long toLong(FilterValue litValue) {

@@ -339,6 +339,36 @@ public class TestEJBQLFunction extends AbstractTestCase {
 
         endEm(em);
     }
+    
+    public void testLeft() {
+    	if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
+    		// Derby does not support LEFT
+    		return;
+    	}
+    	EntityManager em = currentEntityManager();
+    	String query = "SELECT LEFT(u.name, 3) FROM CompUser AS u WHERE LEFT(u.address.streetAd, 2) = '43'";
+    	List result = em.createQuery(query).getResultList();
+    	
+    	assertNotNull(result);
+    	assertEquals(1, result.size());
+    	assertEquals("See", (String) result.get(0));
+    	endEm(em);
+    }
+
+    public void testRight() {
+    	if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
+    		// Derby does not support LEFT
+    		return;
+    	}
+    	EntityManager em = currentEntityManager();
+    	String query = "SELECT RIGHT(u.name, 3) FROM CompUser AS u WHERE right(u.address.streetAd, 4) = 'some'";
+    	List result = em.createQuery(query).getResultList();
+    	
+    	assertNotNull(result);
+    	assertEquals(1, result.size());
+    	assertEquals("tha", (String) result.get(0));
+    	endEm(em);
+    }
 
     public void testArithmFunc() {
         EntityManager em = currentEntityManager();

@@ -548,6 +548,22 @@ public class JDBCExpressionFactory
     public Value substring(Value v1, Value v2) {
         return new Substring((Val) v1, (Val) v2);
     }
+    
+    @Override
+    public Value replace(Value orig, Value pattern, Value replacement) {
+    	// TODO Auto-generated method stub
+    	return null;
+    }
+    
+    @Override
+    public Value left(Value str, Value length) {
+    	return new Left((Val) str, (Val) length);
+    }
+    
+    @Override
+    public Value right(Value str, Value length) {
+    	return new Right((Val) str, (Val) length);
+    }
 
     @Override
     public Value toUpperCase(Value val) {

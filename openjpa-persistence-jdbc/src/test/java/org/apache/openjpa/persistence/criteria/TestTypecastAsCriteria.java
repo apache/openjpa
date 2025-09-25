@@ -18,26 +18,13 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Collection;
 
-import jakarta.persistence.Query;
-import jakarta.persistence.Tuple;
 import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.ListJoin;
-import jakarta.persistence.criteria.MapJoin;
-import jakarta.persistence.criteria.ParameterExpression;
-import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.SetJoin;
-import jakarta.persistence.criteria.Subquery;
 
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
-import org.apache.openjpa.persistence.test.AllowFailure;
 
 public class TestTypecastAsCriteria extends CriteriaTest {
 
