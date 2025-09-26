@@ -52,6 +52,7 @@ import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.Metamodel;
 
 import org.apache.openjpa.jdbc.sql.AbstractSQLServerDictionary;
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.common.utils.DatabaseHelper;
 import org.apache.openjpa.persistence.test.AllowFailure;
@@ -1786,6 +1787,10 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
     
     public void testLeft() {
+    	if (getDictionary() instanceof DerbyDictionary) {
+    		// TODO Derby DB does not support LEFT, RIGHT or REPLACE functions
+    		return;
+    	}
     	String jpql = "select p from Person p where left(p.name, 4) = 'John'";
         em.getTransaction().begin();
         Person p = new Person();
@@ -1802,6 +1807,10 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     public void testRight() {
+    	if (getDictionary() instanceof DerbyDictionary) {
+    		// TODO Derby DB does not support LEFT, RIGHT or REPLACE functions
+    		return;
+    	}
     	String jpql = "select p from Person p where RIGHT(p.name, 3) = 'Doe'";
         em.getTransaction().begin();
         Person p = new Person();
