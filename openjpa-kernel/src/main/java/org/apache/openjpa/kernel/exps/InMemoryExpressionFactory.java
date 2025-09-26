@@ -728,7 +728,7 @@ public class InMemoryExpressionFactory
     
     @Override
     public Value replace(Value orig, Value pattern, Value replacement) {
-    	return new Replace((Val) orig, (Val) pattern, (Val) replacement);
+        throw new UnsupportedException("not implemented yet (JPA 3.2)");
     }
 
     @Override
