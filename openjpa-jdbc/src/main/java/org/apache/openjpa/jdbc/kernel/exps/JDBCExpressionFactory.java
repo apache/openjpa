@@ -551,8 +551,7 @@ public class JDBCExpressionFactory
     
     @Override
     public Value replace(Value orig, Value pattern, Value replacement) {
-    	// TODO Auto-generated method stub
-    	return null;
+    	return new Replace((Val) orig, (Val) pattern, (Val) replacement);
     }
     
     @Override

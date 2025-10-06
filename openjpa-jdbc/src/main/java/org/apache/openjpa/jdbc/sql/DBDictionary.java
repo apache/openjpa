@@ -295,6 +295,7 @@ public class DBDictionary
     public String concatenateFunction = "({0}||{1})";
     public String concatenateDelimiter = "'OPENJPATOKEN'";
     public String substringFunctionName = "SUBSTRING";
+    public String replaceFunctionName = "REPLACE";
     public String leftFunctionName = "LEFT";
     public String rightFunctionName = "RIGHT";
     public String currentDateFunction = "CURRENT_DATE";
@@ -3149,6 +3150,16 @@ public class DBDictionary
             }
         }
         buf.append(")");
+    }
+    
+    public void replace(SQLBuffer buf, FilterValue from, FilterValue subs, FilterValue replacement) {
+    	buf.append(replaceFunctionName).append("(");
+    	from.appendTo(buf);
+    	buf.append(", ");
+    	subs.appendTo(buf);
+    	buf.append(", ");
+    	replacement.appendTo(buf);
+    	buf.append(")");
     }
     
     public void left(SQLBuffer buf, FilterValue str, FilterValue length) {

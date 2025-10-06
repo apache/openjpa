@@ -976,6 +976,22 @@ public class TestEJBQLFunction extends AbstractTestCase {
     	endEm(em);
     	
     }
+    
+    public void testReplace() {
+    	if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
+    		// Derby does not support REPLACE function
+    		return;
+    	}
+    	EntityManager em = currentEntityManager();
+    	String query = "SELECT replace(u.name, '_J', 'J') FROM CompUser AS u WHERE REPLACE(u.address.city, 'cester', 'st') = :value";
+    	
+    	List result = em.createQuery(query).setParameter("value", "Worst").getResultList();
+    	
+    	assertEquals(1, result.size());
+    	assertEquals("Jacob", (String) result.get(0));
+    	
+    	endEm(em);
+    }
 
     public CompUser createUser(String name, String cName, Address add, int age,
         boolean isMale) {

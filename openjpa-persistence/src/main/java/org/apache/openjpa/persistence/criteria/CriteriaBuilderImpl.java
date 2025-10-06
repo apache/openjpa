@@ -1111,27 +1111,23 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 	}
 
 	@Override
-	public Expression<String> replace(Expression<String> x, Expression<String> substring, Expression<String> replacement) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	public Expression<String> replace(Expression<String> str, Expression<String> substring, Expression<String> replacement) {
+    	return new Expressions.Replace(str, substring, replacement);
 	}
 
 	@Override
-	public Expression<String> replace(Expression<String> x, String substring, Expression<String> replacement) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	public Expression<String> replace(Expression<String> str, String substring, Expression<String> replacement) {
+		return new Expressions.Replace(str, new Expressions.Constant<String>(substring), replacement);
 	}
 
 	@Override
-	public Expression<String> replace(Expression<String> x, Expression<String> substring, String replacement) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	public Expression<String> replace(Expression<String> str, Expression<String> substring, String replacement) {
+		return new Expressions.Replace(str, substring, new Expressions.Constant<String>(replacement));
 	}
 
 	@Override
-	public Expression<String> replace(Expression<String> x, String substring, String replacement) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	public Expression<String> replace(Expression<String> str, String substring, String replacement) {
+		return new Expressions.Replace(str, new Expressions.Constant<String>(substring), new Expressions.Constant<String>(replacement));
 	}
 
 	@Override

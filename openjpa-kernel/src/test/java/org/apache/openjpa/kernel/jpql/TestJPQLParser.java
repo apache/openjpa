@@ -185,10 +185,11 @@ public class TestJPQLParser {
     		String query = "SELECT CAST(u.birthYear as double) FROM User AS u WHERE extract(year from u.dateOfBirth) = 1983";
     		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
     		assertNotNull(node);
+    		return;
     	} catch (ParseException ex) {
     		ex.printStackTrace();
-    		fail();
     	}
+    	fail();
     }
     
     @Test
@@ -197,10 +198,11 @@ public class TestJPQLParser {
     		String query = "SELECT LEFT(u.name, 3) FROM User AS u WHERE LEFT(u.lastName, 1) = 'D'";
     		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
     		assertNotNull(node);
+    		return;
     	} catch (ParseException ex) {
     		ex.printStackTrace();
-    		fail();
     	}
+    	fail();
     	
     }
 
@@ -210,11 +212,25 @@ public class TestJPQLParser {
     		String query = "SELECT RIGHT(u.name, 3) FROM User AS u WHERE right(u.lastName, 1) = 'D'";
     		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
     		assertNotNull(node);
+    		return;
     	} catch (ParseException ex) {
     		ex.printStackTrace();
-    		fail();
     	}
+    	fail();
     	
+    }
+    
+    @Test
+    public void testReplaceStringFunction() {
+    	try {
+    		String query = "SELECT REPLACE(u.name, 'John', u.lastName) FROM User u WHERE REPLACE(u.name, 'ohn', 'ack') = 'Jack'";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    		return;
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    	}
+    	fail();
     }
 
 }

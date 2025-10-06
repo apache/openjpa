@@ -1820,7 +1820,27 @@ public class TestTypesafeCriteria extends CriteriaTest {
 
         CriteriaQuery<Person> cq = cb.createQuery(Person.class);
     	Root<Person> c = cq.from(Person.class);
-    	cq.where(cb.equal(cb.left(c.get("name"), 3), "Doe"));
+    	cq.where(cb.equal(cb.right(c.get("name"), 3), "Doe"));
+    	em.createQuery(cq).getResultList();
+    	
+    	assertEquivalence(cq, jpql);
+    }
+    
+    public void testReplace() {
+    	if (getDictionary() instanceof DerbyDictionary) {
+    		// TODO Derby DB does not support LEFT, RIGHT or REPLACE functions
+    		return;
+    	}
+        em.getTransaction().begin();
+        Person p = new Person();
+        p.setName("John Fitzgerald Doe");
+        em.persist(p);
+        em.getTransaction().commit();
+
+        String jpql = "select p from Person p where REPLACE(p.name, 'ohn', 'ack') = 'Jack Fitzgerald Doe'";
+        CriteriaQuery<Person> cq = cb.createQuery(Person.class);
+    	Root<Person> c = cq.from(Person.class);
+    	cq.where(cb.equal(cb.replace(c.get("name"), "ohn", "ack"), "Jack Fitzgerald Doe"));
     	em.createQuery(cq).getResultList();
     	
     	assertEquivalence(cq, jpql);

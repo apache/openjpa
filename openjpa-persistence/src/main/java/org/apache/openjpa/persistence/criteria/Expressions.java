@@ -772,6 +772,36 @@ class Expressions {
             return Expressions.asValue(q, "SUBSTRING", OPEN_BRACE, e, COMMA, from, COMMA, len, CLOSE_BRACE);
         }
     }
+    
+    public static class Replace extends UnaryFunctionalExpression<String> {
+    	private ExpressionImpl<String> patt;
+    	private ExpressionImpl<String> repl;
+    	
+    	public Replace(Expression<String> str, Expression<String> patt, Expression<String> repl) {
+    		super(String.class, str);
+    		this.patt = (ExpressionImpl<String>) patt;
+    		this.repl = (ExpressionImpl<String>) repl;
+    	}
+    	
+    	@Override
+    	public Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
+    		return factory.replace(
+    				Expressions.toValue(e, factory, q), 
+    				patt.toValue(factory, q), 
+    				repl.toValue(factory, q));
+    	}
+    	
+    	@Override
+    	public void acceptVisit(CriteriaExpressionVisitor visitor) {
+    		super.acceptVisit(visitor);
+    		Expressions.acceptVisit(visitor, patt, repl);
+    	}
+    	
+    	@Override
+    	public StringBuilder asValue(AliasContext q) {
+            return Expressions.asValue(q, "REPLACE", OPEN_BRACE, e, COMMA, patt, COMMA, repl, CLOSE_BRACE);
+    	}
+    }
 
     public static class Locate extends ExpressionImpl<Integer> {
         private ExpressionImpl<String> pattern;
