@@ -232,5 +232,56 @@ public class TestJPQLParser {
     	}
     	fail();
     }
+    
+    @Test
+    public void testIdFunctionSimple() {
+    	try {
+    		String query = "SELECT u FROM User AS u WHERE ID(u) = :id";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    		return;
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    	}
+    	fail();
+    }
 
+    @Test
+    public void testIdFunctionOnSelect() {
+    	try {
+    		String query = "SELECT ID(u) FROM User AS u WHERE u.name = :name";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    		return;
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    	}
+    	fail();
+    }
+    
+    @Test
+    public void testVersionFunctionSimple() {
+    	try {
+    		String query = "SELECT u FROM User AS u WHERE VERSION(u) <> :version";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    		return;
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    	}
+    	fail();
+    }
+    
+    @Test
+    public void testDeleteUsingIdAndVersion() {
+    	try {
+    		String query = "DELETE from Employee WHERE id(this) = :id AND version(this) = :version";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    		return;
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    	}
+    	fail();
+    }
 }

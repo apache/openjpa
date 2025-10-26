@@ -144,6 +144,9 @@ TOKEN [ IGNORE_CASE ]: /* basics */
 	|	< DIV: "/" >
 
 	|	< NEW: "NEW" >
+	
+	|   < ID: "ID" >
+	|   < VERSION: "VERSION" >
 
 	|	< ALL: "ALL" >
 	|	< ANY: "ANY" >
@@ -886,7 +889,7 @@ void all_expression() #ALL : { }
 
 void comparison_expression() : { }
 {
-	// comparison_expression ::= string_value comparison_operator {string_expression | all_or_any_expression} | boolean_value { =|<>} {boolean_expression | all_or_any_expression} | datetime_primary comparison_operator {datetime_expression | all_or_any_expression} | entity_bean_value { = | <> } {entity_bean_expression | all_or_any_expression} | arithmetic_value comparison_operator {arithmetic_expression | all_or_any_expression
+	// comparison_expression ::= string_value comparison_operator {string_expression | all_or_any_expression} | boolean_value { =|<>} {boolean_expression | all_or_any_expression} | datetime_primary comparison_operator {datetime_expression | all_or_any_expression} | entity_bean_value { = | <> } {entity_bean_expression | all_or_any_expression} | arithmetic_value comparison_operator {arithmetic_expression | all_or_any_expression | entity_id_or_version_function {= | <>} input_parameter | entity_type_expression {= | <>} entity_type_expression}
 
 	LOOKAHEAD(arithmetic_comp()) arithmetic_comp() |
 	LOOKAHEAD(string_comp()) string_comp() |
@@ -894,6 +897,7 @@ void comparison_expression() : { }
 	LOOKAHEAD(enum_comp()) enum_comp() |
 	LOOKAHEAD(datetime_comp()) datetime_comp() |
 	LOOKAHEAD(entity_comp()) entity_comp() |
+	LOOKAHEAD(entity_id_or_version_comp()) entity_id_or_version_comp() |
 	LOOKAHEAD(entity_type_comp()) entity_type_comp()
 }
 
@@ -1040,6 +1044,11 @@ void entity_type_comp() : { }
 	)
 }
 
+void entity_id_or_version_comp() : { } 
+{
+	entity_id_or_version_function() ( <EQ> input_parameter() #EQUALS(2) | <NE> input_parameter() #NOTEQUALS(2))
+}
+
 void type_discriminator() #TYPE : { }
 {
     <TYPE> "(" (LOOKAHEAD(path()) path()
@@ -1064,7 +1073,24 @@ void scalar_expression() #SCALAREXPRESSION : { }
     LOOKAHEAD(datetime_primary()) datetime_primary() |
     LOOKAHEAD(enum_primary()) enum_primary() |
     LOOKAHEAD(boolean_primary()) boolean_primary() |
-    LOOKAHEAD(entity_type_expression()) entity_type_expression()
+    LOOKAHEAD(entity_type_expression()) entity_type_expression() |
+    LOOKAHEAD(entity_id_or_version_function()) entity_id_or_version_function() 
+}
+
+void entity_id_or_version_function(): { }
+{
+    id_function() |
+    version_function()
+}
+
+void id_function() #IDFUNCTION : { }
+{
+	<ID> "(" ( general_identification_variable() | simple_entity_expression() ) ")"
+}
+
+void version_function() #VERSIONFUNCTION : { }
+{
+	<VERSION> "(" ( general_identification_variable() | simple_entity_expression() ) ")"
 }
 
 void arithmetic_cast_function() #CASTTONUMBER : { }
@@ -1567,6 +1593,8 @@ void path_component() #IDENTIFICATIONVARIABLE :
 	| t = <INDEX>
 	| t = <TYPE>
 	| t = <CAST>
+	| t = <ID>
+	| t = <VERSION>
 	| t = <STRING>
 	| t = <CLASS>
     ) { jjtThis.setToken (t); }
