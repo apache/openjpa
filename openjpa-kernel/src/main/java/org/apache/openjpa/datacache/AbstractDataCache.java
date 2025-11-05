@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.event.RemoteCommitEvent;
 import org.apache.openjpa.event.RemoteCommitListener;
@@ -530,7 +530,7 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
 
     public void setTypes(String types) {
         _includedTypes =
-            StringUtils.isEmpty(types) ? null : new HashSet<String>(Arrays.asList(Strings.split(types, ";", 0)));
+            StringUtils.isEmpty((CharSequence)types) ? null : new HashSet<String>(Arrays.asList(Strings.split(types, ";", 0)));
         if (log.isWarnEnabled())
             log.warn(s_loc.get("recommend_jpa2_caching", new Object[]{"Types", 
             		DataCacheMode.ENABLE_SELECTIVE.toString()}));
@@ -545,7 +545,7 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
 
     public void setExcludedTypes(String types) {
         _excludedTypes =
-            StringUtils.isEmpty(types) ? null : new HashSet<String>(Arrays.asList(Strings.split(types, ";", 0)));
+            StringUtils.isEmpty((CharSequence)types) ? null : new HashSet<String>(Arrays.asList(Strings.split(types, ";", 0)));
         if (log.isWarnEnabled())
             log.warn(s_loc.get("recommend_jpa2_caching", new Object[]{"ExcludeTypes", 
             		DataCacheMode.DISABLE_SELECTIVE.toString()}));

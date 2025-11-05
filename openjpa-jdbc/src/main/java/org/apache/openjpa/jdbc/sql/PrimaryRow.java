@@ -20,7 +20,7 @@ package org.apache.openjpa.jdbc.sql;
 
 import java.sql.SQLException;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.RelationId;
 import org.apache.openjpa.jdbc.schema.Column;

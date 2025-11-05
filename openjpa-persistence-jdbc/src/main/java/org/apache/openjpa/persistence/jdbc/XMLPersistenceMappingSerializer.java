@@ -28,7 +28,7 @@ import java.util.Map;
 import javax.persistence.EnumType;
 import javax.persistence.TemporalType;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.xml.sax.SAXException;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -691,11 +691,11 @@ public class XMLPersistenceMappingSerializer
                 addAttribute("schema", table.substring(0, dotIdx));
             }
         }
-        if (!StringUtils.isEmpty(seq.getPrimaryKeyColumn()))
+        if (!StringUtils.isEmpty((CharSequence)seq.getPrimaryKeyColumn()))
             addAttribute("pk-column-name", seq.getPrimaryKeyColumn());
-        if (!StringUtils.isEmpty(seq.getSequenceColumn()))
+        if (!StringUtils.isEmpty((CharSequence)seq.getSequenceColumn()))
             addAttribute("value-column-name", seq.getSequenceColumn());
-        if (!StringUtils.isEmpty(seq.getPrimaryKeyValue()))
+        if (!StringUtils.isEmpty((CharSequence)seq.getPrimaryKeyValue()))
             addAttribute("pk-column-value", seq.getPrimaryKeyValue());
         if (seq.getAllocate() != 50 && seq.getAllocate() != -1)
             addAttribute("allocation-size", seq.getAllocate() + "");

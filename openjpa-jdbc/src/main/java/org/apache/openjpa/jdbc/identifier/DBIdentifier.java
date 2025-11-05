@@ -20,7 +20,7 @@ package org.apache.openjpa.jdbc.identifier;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.lib.identifier.Identifier;
 import org.apache.openjpa.lib.identifier.IdentifierImpl;
 
@@ -304,7 +304,7 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
         if (isNull(name)) {
             return true;
         }
-        return StringUtils.isEmpty(name.getName());
+        return StringUtils.isEmpty((CharSequence)name.getName());
     }
 
     
@@ -674,7 +674,7 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
     public static DBIdentifier truncate(DBIdentifier name, int length) {
         DBIdentifier sName = name.clone();
         String strName = sName.getNameInternal();
-        if (StringUtils.isEmpty(strName)) {
+        if (StringUtils.isEmpty((CharSequence)strName)) {
             return sName;
         }
         strName = Normalizer.truncate(strName, length);

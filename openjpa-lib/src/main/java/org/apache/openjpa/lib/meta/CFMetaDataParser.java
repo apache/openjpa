@@ -20,7 +20,7 @@ package org.apache.openjpa.lib.meta;
 
 import java.security.AccessController;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.xml.sax.Attributes;
@@ -209,7 +209,7 @@ public class CFMetaDataParser extends XMLMetaDataParser {
         throws SAXException {
         if (getClassAttributeName() != null) {
             _class = attrs.getValue(getClassAttributeName());
-            if (!StringUtils.isEmpty(_package) && _class.indexOf('.') == -1)
+            if (!StringUtils.isEmpty((CharSequence)_package) && _class.indexOf('.') == -1)
                 _class = _package + "." + _class;
         }
         return true;
@@ -223,7 +223,7 @@ public class CFMetaDataParser extends XMLMetaDataParser {
             _class = null;
         else {
             _class = currentText();
-            if (!StringUtils.isEmpty(_package) && _class.indexOf('.') == -1)
+            if (!StringUtils.isEmpty((CharSequence)_package) && _class.indexOf('.') == -1)
                 _class = _package + "." + _class;
         }
     }
@@ -332,14 +332,14 @@ public class CFMetaDataParser extends XMLMetaDataParser {
      */
     public static Class<?> classForName(String name, String pkg,
         boolean resolve, ClassLoader loader) {
-        if (StringUtils.isEmpty(name))
+        if (StringUtils.isEmpty((CharSequence)name))
             return null;
 
         if (loader == null)
             loader = AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction());
         boolean fullName = name.indexOf('.') != -1;
-        boolean noPackage = StringUtils.isEmpty(pkg);
+        boolean noPackage = StringUtils.isEmpty((CharSequence)pkg);
         try {
             if (fullName || noPackage)
                 return Strings.toClass(name, resolve, loader);

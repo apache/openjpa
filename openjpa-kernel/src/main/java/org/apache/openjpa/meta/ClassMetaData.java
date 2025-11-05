@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.datacache.CacheDistributionPolicy;
 import org.apache.openjpa.datacache.DataCache;
@@ -2000,7 +2000,7 @@ public class ClassMetaData
 
         String superCache = getPCSuperclassMetaData().getDataCacheName();
         
-        if (!StringUtils.isEmpty(superCache)) {  
+        if (!StringUtils.isEmpty((CharSequence)superCache)) {  
             if (!StringUtils.equals(cache, superCache)) {
                 throw new MetaDataException(_loc.get("cache-names", new Object[] { _type, cache, _super, superCache }));
             }
@@ -2371,7 +2371,7 @@ public class ClassMetaData
      * the same name.
      */
     public FetchGroup addDeclaredFetchGroup(String name) {
-    	if (StringUtils.isEmpty(name))
+    	if (StringUtils.isEmpty((CharSequence)name))
     		throw new MetaDataException(_loc.get("empty-fg-name", this));
         if (_fgMap == null)
             _fgMap = new HashMap<String,FetchGroup>();

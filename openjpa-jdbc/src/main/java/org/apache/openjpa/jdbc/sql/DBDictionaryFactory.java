@@ -25,7 +25,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.lib.conf.Configurations;
@@ -119,7 +119,7 @@ public class DBDictionaryFactory {
      */
     static String getProtocol(String url) {
         String protocol = null;
-        if (!StringUtils.isEmpty(url)) {
+        if (!StringUtils.isEmpty((CharSequence)url)) {
             if (url.startsWith("jdbc:")) {
                 int colonCount = 1;
                 int next = "jdbc:".length();
@@ -212,7 +212,7 @@ public class DBDictionaryFactory {
      */
     private static String dictionaryClassForString(String prod
         , JDBCConfiguration conf) {
-        if (StringUtils.isEmpty(prod))
+        if (StringUtils.isEmpty((CharSequence)prod))
             return null;
         prod = prod.toLowerCase();
 

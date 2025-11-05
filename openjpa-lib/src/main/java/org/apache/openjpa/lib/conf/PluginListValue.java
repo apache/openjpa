@@ -22,7 +22,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * A list of plugins. Defaults and aliases on plugin lists apply only
@@ -123,9 +123,9 @@ public class PluginListValue extends ObjectValue {
      * properties string.
      */
     public void setString(String str) {
-        if (StringUtils.isEmpty(str))
+        if (StringUtils.isEmpty((CharSequence)str))
             str = getDefault();
-        if (StringUtils.isEmpty(str)) {
+        if (StringUtils.isEmpty((CharSequence)str)) {
             _names = EMPTY;
             _props = EMPTY;
             set(null, true);

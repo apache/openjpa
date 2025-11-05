@@ -25,7 +25,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.Properties;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.meta.PropertiesReverseCustomizer;
@@ -254,9 +254,9 @@ public class ReverseMappingToolTask
     protected void executeOn(String[] files)
         throws Exception {
         ClassLoader loader = getClassLoader();
-        if (!StringUtils.isEmpty(dirName))
+        if (!StringUtils.isEmpty((CharSequence)dirName))
             flags.directory = Files.getFile(dirName, loader);
-        if (!StringUtils.isEmpty(typeMap))
+        if (!StringUtils.isEmpty((CharSequence)typeMap))
             flags.typeMap = Configurations.parseProperties(typeMap);
 
         // load customizer properties

@@ -20,7 +20,7 @@ package org.apache.openjpa.meta;
 
 import java.util.HashMap;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class XMLClassMetaData implements XMLMetaData     
 {

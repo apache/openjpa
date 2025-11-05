@@ -44,7 +44,7 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.meta.MetaDataModes;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -713,11 +713,11 @@ public class AnnotationPersistenceMappingSerializer
                 abTblGen.add("schema", table.substring(0, dotIdx));
             }
         }
-        if (!StringUtils.isEmpty(seq.getPrimaryKeyColumn()))
+        if (!StringUtils.isEmpty((CharSequence)seq.getPrimaryKeyColumn()))
             abTblGen.add("pkColumnName", seq.getPrimaryKeyColumn());
-        if (!StringUtils.isEmpty(seq.getSequenceColumn()))
+        if (!StringUtils.isEmpty((CharSequence)seq.getSequenceColumn()))
             abTblGen.add("valueColumnName", seq.getSequenceColumn());
-        if (!StringUtils.isEmpty(seq.getPrimaryKeyValue()))
+        if (!StringUtils.isEmpty((CharSequence)seq.getPrimaryKeyValue()))
             abTblGen.add("pkColumnValue", seq.getPrimaryKeyValue());
         if (seq.getAllocate() != 50 && seq.getAllocate() != -1)
             abTblGen.add("allocationSize", seq.getAllocate() + "");

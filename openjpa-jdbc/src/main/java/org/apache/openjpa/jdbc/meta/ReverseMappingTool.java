@@ -42,7 +42,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.ApplicationIdTool;
 import org.apache.openjpa.enhance.CodeGenerator;
@@ -1568,7 +1568,7 @@ public class ReverseMappingTool
      * package-private for testing.
      */
     static String replaceInvalidCharacters(String str) {
-        if (StringUtils.isEmpty(str))
+        if (StringUtils.isEmpty((CharSequence)str))
             return str;
 
         StringBuilder buf = new StringBuilder(str);

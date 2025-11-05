@@ -20,7 +20,7 @@ package org.apache.openjpa.util;
 
 import java.util.BitSet;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 /**
  * Utilities for dealing with a simple state image consisting of an

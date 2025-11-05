@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.util;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * {@link OpenJPAId} subclass appropriate for String fields.

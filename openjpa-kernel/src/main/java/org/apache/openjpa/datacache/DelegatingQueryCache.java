@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.datacache;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.openjpa.kernel.QueryStatistics;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 

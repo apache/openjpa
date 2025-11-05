@@ -46,7 +46,7 @@ import java.util.Set;
 import java.util.TimeZone;
 
 import org.apache.commons.collections.comparators.ComparatorChain;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
@@ -768,7 +768,7 @@ public class FieldMetaData
      * class that declared this field or any of its persistent superclasses.
      */
     public void setInFetchGroup(String fg, boolean in) {
-        if (StringUtils.isEmpty(fg))
+        if (StringUtils.isEmpty((CharSequence)fg))
             throw new MetaDataException(_loc.get("empty-fg-name", this));
         if (fg.equals(FetchGroup.NAME_ALL))
             return;
@@ -1618,7 +1618,7 @@ public class FieldMetaData
      * @return the method for invocation
      */
     private Method findMethodByNameAndType(String method, Class<?> type) {
-        if (StringUtils.isEmpty(method))
+        if (StringUtils.isEmpty((CharSequence)method))
             return null;
 
         // get class name and get package name divide on the last '.', so the

@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.jdbc.identifier;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.identifier.IdentifierConfiguration;
 import org.apache.openjpa.lib.identifier.IdentifierRule;
@@ -48,7 +48,7 @@ public class Normalizer {
      * @return
      */
     public static String normalizeMulti(String name) {
-        if (StringUtils.isEmpty(name)) {
+        if (StringUtils.isEmpty((CharSequence)name)) {
             return name;
         }
         String[] names = normalizer.splitName(defaultRule, name);
@@ -61,7 +61,7 @@ public class Normalizer {
      * @return
      */
     public static String normalizeString(String name) {
-        if (StringUtils.isEmpty(name)) {
+        if (StringUtils.isEmpty((CharSequence)name)) {
             return name;
         }
         if (!normalizer.isDelimited(defaultRule, name)) {
@@ -77,7 +77,7 @@ public class Normalizer {
      * @return
      */
     public static boolean isDelimited(String name) {
-        if (StringUtils.isEmpty(name)) {
+        if (StringUtils.isEmpty((CharSequence)name)) {
             return false;
         }
         return normalizer.isDelimited(defaultRule, name);
@@ -91,7 +91,7 @@ public class Normalizer {
      * @return
      */
     public static boolean fullNamesEqual(String name1, String name2) {
-        if (StringUtils.isEmpty(name1) && StringUtils.isEmpty(name2)) {
+        if (StringUtils.isEmpty((CharSequence)name1) && StringUtils.isEmpty((CharSequence)name2)) {
             return true;
         }
         // Split multi-part names into individual components and compare
@@ -124,7 +124,7 @@ public class Normalizer {
      * @return
      */
     public static boolean namesEqual(String name1, String name2) {
-        if (StringUtils.isEmpty(name1) && StringUtils.isEmpty(name2)) {
+        if (StringUtils.isEmpty((CharSequence)name1) && StringUtils.isEmpty((CharSequence)name2)) {
             return true;
         }
         if (normalizer.isDelimited(defaultRule, name1)) {

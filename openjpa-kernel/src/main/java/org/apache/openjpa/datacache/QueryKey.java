@@ -36,8 +36,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.kernel.QueryContext;

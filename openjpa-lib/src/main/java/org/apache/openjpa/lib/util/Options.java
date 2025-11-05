@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TreeSet;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import serp.util.Strings;
 
@@ -112,7 +112,7 @@ public class Options extends TypedProperties {
             if (i == args.length || args[i].startsWith("-")) {
                 key = trimQuote(key);
                 if (key != null) {
-                    if (!StringUtils.isEmpty(value))
+                    if (!StringUtils.isEmpty((CharSequence)value))
                         setProperty(key, trimQuote(value));
                     else
                         setProperty(key, "true");
@@ -298,7 +298,7 @@ public class Options extends TypedProperties {
      */
     private static boolean matchOptionToMember(String key, Object[] match)
         throws Exception {
-        if (StringUtils.isEmpty(key))
+        if (StringUtils.isEmpty((CharSequence)key))
             return false;
 
         // unfortunately we can't use bean properties for setters; any
