@@ -1018,6 +1018,24 @@ public class TestEJBQLFunction extends AbstractTestCase {
     	
     	endEm(em);
     }
+    
+    public void testVersionFunction() {
+    	EntityManager em = currentEntityManager();
+    	
+    	String query = "SELECT VERSION(u) FROM CompUser AS u WHERE u.name = :name";
+    	List result = em.createQuery(query).setParameter("name", "Seetha").getResultList();
+    	
+    	assertEquals(1, result.size());
+    	int currentVersion = (int) result.get(0);
+    	
+    	query = "SELECT u FROM CompUser AS u WHERE u.name = :name AND version(u) = :version";
+    	result = em.createQuery(query).setParameter("name", "Seetha").setParameter("version", currentVersion).getResultList();
+    	
+    	assertEquals(1, result.size());
+    	assertEquals("Seetha", ((CompUser) result.get(0)).getName());
+    	
+    	endEm(em);
+    }
 
     public CompUser createUser(String name, String cName, Address add, int age,
         boolean isMale) {

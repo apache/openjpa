@@ -1570,6 +1570,9 @@ public class JPQLExpressionBuilder
             case JJTIDFUNCTION:
             	return factory.getNativeObjectId(getValue(firstChild(node)));
             	
+            case JJTVERSIONFUNCTION:
+            	return factory.version(getValue(firstChild(node)));
+            	
             default:
                 throw parseException(EX_FATAL, "bad-tree",
                     new Object[]{ node }, null);

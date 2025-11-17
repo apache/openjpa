@@ -538,6 +538,11 @@ public interface ExpressionFactory {
 	 * Returns the id of the given value
 	 */
 	Value getNativeObjectId(Value val);
+	
+	/**
+	 * Returns the version of the given value
+	 */
+	Value version(Value val);
 
 	/**
      * Return a simple case expression

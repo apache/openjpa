@@ -660,6 +660,11 @@ public class JDBCExpressionFactory
     	}
     	return new GetNativeObjectId((PCPath) val);
     }
+    
+    @Override
+    public Value version(Value val) {
+    	return new VersionVal((PCPath) val);
+    }
 
     @Override
     public Value getMapValue(Value map, Value arg) {

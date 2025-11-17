@@ -31,6 +31,7 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Version;
 
 import org.apache.openjpa.persistence.PersistentCollection;
 
@@ -66,6 +67,9 @@ public class CompUser {
     @Enumerated
     @Basic
     private CreditRating creditRating;
+    
+    @Version
+    private int version;
 
     public CompUser() {
     }
@@ -149,4 +153,12 @@ public class CompUser {
     public void setCreditRating(CreditRating creditRating) {
         this.creditRating = creditRating;
     }
+    
+    public int getVersion() {
+		return version;
+	}
+    
+    public void setVersion(int version) {
+		this.version = version;
+	}
 }

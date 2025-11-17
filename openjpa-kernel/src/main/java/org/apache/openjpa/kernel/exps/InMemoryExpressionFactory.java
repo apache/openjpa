@@ -820,6 +820,11 @@ public class InMemoryExpressionFactory
     public Value getNativeObjectId(Value val) {
     	return new GetObjectId((Val) val);
     }
+    
+    @Override
+    public Value version(Value val) {
+    	return new VersionVal((Val) val);
+    }
 
     /**
      * Key that implements hashCode and equals methods for object arrays.

@@ -258,7 +258,20 @@ public class TestJPQLParser {
     	}
     	fail();
     }
-    
+
+    @Test
+    public void testVersionFunctionEquals() {
+    	try {
+    		String query = "SELECT u FROM User AS u WHERE VERSION(u) = :version";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    		return;
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    	}
+    	fail();
+    }
+
     @Test
     public void testVersionFunctionSimple() {
     	try {
