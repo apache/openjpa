@@ -24,8 +24,6 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoField;
 import java.util.List;
 
-import jakarta.persistence.EntityManager;
-
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
@@ -38,6 +36,8 @@ import org.apache.openjpa.persistence.common.apps.FemaleUser;
 import org.apache.openjpa.persistence.common.apps.MaleUser;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.common.utils.DatabaseHelper;
+
+import jakarta.persistence.EntityManager;
 
 public class TestEJBQLFunction extends AbstractTestCase {
 
@@ -989,6 +989,32 @@ public class TestEJBQLFunction extends AbstractTestCase {
     	
     	assertEquals(1, result.size());
     	assertEquals("Jacob", (String) result.get(0));
+    	
+    	endEm(em);
+    }
+    
+    public void testIdFunction() {
+    	EntityManager em = currentEntityManager();
+    	
+    	String query = "SELECT ID(u) FROM CompUser AS u WHERE u.name = :name";
+    	
+    	List result = em.createQuery(query, Integer.class).setParameter("name", "Seetha").getResultList();
+    	
+    	assertEquals(1, result.size());
+    	assertEquals(userid1, result.get(0));
+    	
+    	endEm(em);
+    }
+
+    public void testIdFunctionOnWhere() {
+    	EntityManager em = currentEntityManager();
+    	
+    	String query = "SELECT u.name FROM CompUser AS u WHERE id(u)= :code";
+    	
+    	List result = em.createQuery(query).setParameter("code", userid1).getResultList();
+    	
+    	assertEquals(1, result.size());
+    	assertEquals("Seetha", (String) result.get(0));
     	
     	endEm(em);
     }

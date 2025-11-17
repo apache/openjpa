@@ -527,14 +527,19 @@ public interface ExpressionFactory {
 	 *
 	 * @since 0.4.0.0
 	 */
-	Value distinct (Value obj);
+	Value distinct(Value obj);
 
 	/**
 	 * Return the object id of the given value.
 	 */
-	Value getObjectId (Value val);
+	Value getObjectId(Value val);
 
-    /**
+	/**
+	 * Returns the id of the given value
+	 */
+	Value getNativeObjectId(Value val);
+
+	/**
      * Return a simple case expression
      */
     Value simpleCaseExpression(Value caseOperand,
@@ -580,4 +585,5 @@ public interface ExpressionFactory {
      * Return true if the Value is a Type expression and the Type uses joined table strategy.
      */
     boolean isVerticalType(Value val);
+
 }

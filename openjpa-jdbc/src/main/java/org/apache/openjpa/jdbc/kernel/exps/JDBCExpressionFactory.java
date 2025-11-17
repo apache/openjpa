@@ -652,6 +652,14 @@ public class JDBCExpressionFactory
             return new ConstGetObjectId((Const) val);
         return new GetObjectId((PCPath) val);
     }
+    
+    @Override
+    public Value getNativeObjectId(Value val) {
+    	if (val instanceof Const) {
+    		return new ConstGetObjectId((Const) val);
+    	}
+    	return new GetNativeObjectId((PCPath) val);
+    }
 
     @Override
     public Value getMapValue(Value map, Value arg) {

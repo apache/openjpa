@@ -1566,7 +1566,10 @@ public class JPQLExpressionBuilder
             case JJTCASTTONUMBER:
             	return factory.newTypecastAsNumber(getValue(firstChild(node)), 
             			resolveNumberTargetType((TypecastAsNumberPart) eval(secondChild(node))));
-
+            
+            case JJTIDFUNCTION:
+            	return factory.getNativeObjectId(getValue(firstChild(node)));
+            	
             default:
                 throw parseException(EX_FATAL, "bad-tree",
                     new Object[]{ node }, null);

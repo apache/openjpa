@@ -68,8 +68,13 @@ public class ApplicationIds {
         Object[] pks;
         if (meta.isOpenJPAIdentity()) {
             pks = new Object[1];
-            if (oid != null)
-                pks[0] = ((OpenJPAId) oid).getIdObject();
+            if (oid != null) {
+            	if (oid instanceof OpenJPAId ojid) {
+            		pks[0] = ojid.getIdObject();
+            	} else {
+            		pks[0]= wrap(meta, oid);
+            	}
+            }
             return pks;
         }
 
