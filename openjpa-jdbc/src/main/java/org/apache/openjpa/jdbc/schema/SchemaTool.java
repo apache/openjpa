@@ -35,7 +35,7 @@ import java.util.LinkedList;
 import java.util.Set;
 import javax.sql.DataSource;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
@@ -1462,7 +1462,7 @@ public class SchemaTool {
             gen.setOpenJPATables(flags.openjpaTables);
 
             String schemas = conf.getSchemas();
-            if (StringUtils.isEmpty(schemas))
+            if (StringUtils.isEmpty((CharSequence)schemas))
                 schemas = "all";
             log.info(_loc.get("sch-reflect", schemas));
             gen.generateSchemas();

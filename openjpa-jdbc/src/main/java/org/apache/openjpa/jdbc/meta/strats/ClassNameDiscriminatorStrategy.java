@@ -23,7 +23,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
@@ -95,7 +95,7 @@ public class ClassNameDiscriminatorStrategy
             String className;
             while (rs.next()) {
                 className = dict.getString(rs, 1);
-                if (StringUtils.isEmpty(className))
+                if (StringUtils.isEmpty((CharSequence)className))
                     throw new ClassNotFoundException(_loc.get("no-class-name",
                         disc.getClassMapping(), col).getMessage());
                 Class.forName(className, true, loader);

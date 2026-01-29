@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.MetaDataException;
 
@@ -142,7 +142,7 @@ public class FetchGroup
     public void addDeclaredInclude(String fgName) {
         if (_readOnly)
             throw new UnsupportedOperationException();
-        if (StringUtils.isEmpty(fgName))
+        if (StringUtils.isEmpty((CharSequence)fgName))
             throw new MetaDataException(_loc.get("null-include-fg", this));
         if (_includes == null)
             _includes = new ArrayList<String>();

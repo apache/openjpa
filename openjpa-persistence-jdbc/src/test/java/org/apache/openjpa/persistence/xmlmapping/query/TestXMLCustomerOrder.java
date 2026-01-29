@@ -26,7 +26,7 @@ import javax.persistence.Query;
 
 import junit.textui.TestRunner;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;

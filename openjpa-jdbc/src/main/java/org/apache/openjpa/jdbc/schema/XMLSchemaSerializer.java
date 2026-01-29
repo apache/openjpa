@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.lib.meta.XMLMetaDataSerializer;
 import org.apache.openjpa.lib.util.Localizer;
@@ -265,7 +265,7 @@ public class XMLSchemaSerializer
         throws SAXException {
         addAttribute("name", col.getName());
         addAttribute("type", Schemas.getJDBCName(col.getType()));
-        if (!StringUtils.isEmpty(col.getTypeName())
+        if (!StringUtils.isEmpty((CharSequence)col.getTypeName())
             && !col.getTypeName().equalsIgnoreCase
             (Schemas.getJDBCName(col.getType())))
             addAttribute("type-name", col.getTypeName());

@@ -39,7 +39,7 @@ import java.util.Set;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.lib.meta.ClassArgParser;
@@ -96,7 +96,7 @@ public abstract class AbstractCFMetaDataFactory
      * directories supplied by user via auto-configuration.
      */
     public void setFiles(String files) {
-        if (StringUtils.isEmpty(files))
+        if (StringUtils.isEmpty((CharSequence)files))
             this.files = null;
         else {
             String[] strs = Strings.split(files, ";", 0);
@@ -124,7 +124,7 @@ public abstract class AbstractCFMetaDataFactory
      * supplied by user via auto-configuration.
      */
     public void setURLs(String urls) {
-        if (StringUtils.isEmpty(urls))
+        if (StringUtils.isEmpty((CharSequence)urls))
             this.urls = null;
         else {
             String[] strs = Strings.split(urls, ";", 0);
@@ -151,7 +151,7 @@ public abstract class AbstractCFMetaDataFactory
      */
     public void setResources(String rsrcs) {
         // keep list mutable so subclasses can add implicit locations
-        this.rsrcs = (StringUtils.isEmpty(rsrcs)) ? null
+        this.rsrcs = (StringUtils.isEmpty((CharSequence)rsrcs)) ? null
           : new ArrayList<String>(Arrays.asList(Strings.split(rsrcs, ";", 0)));
     }
 
@@ -169,7 +169,7 @@ public abstract class AbstractCFMetaDataFactory
      */
     public void setClasspathScan(String cpath) {
         // keep list mutable so subclasses can add implicit locations
-        this.cpath = (StringUtils.isEmpty(cpath)) ? null
+        this.cpath = (StringUtils.isEmpty((CharSequence)cpath)) ? null
           : new ArrayList<String>(Arrays.asList(Strings.split(cpath, ";", 0)));
     }
 

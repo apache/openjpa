@@ -28,7 +28,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -302,7 +302,7 @@ public class SybaseDictionary
 
         // warn about jdbc compliant flag
         String url = conf.getConnectionURL();
-        if (!StringUtils.isEmpty(url)
+        if (!StringUtils.isEmpty((CharSequence)url)
             && url.toLowerCase().indexOf("jdbc:sybase:tds") != -1
             && url.toLowerCase().indexOf("be_as_jdbc_compliant_as_possible=")
             == -1) {

@@ -25,7 +25,7 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Locale;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -140,7 +140,7 @@ public class H2Dictionary extends DBDictionary {
         String pkStr;
         if (pk != null) {
             pkStr = getPrimaryKeyConstraintSQL(pk);
-            if (!StringUtils.isEmpty(pkStr))
+            if (!StringUtils.isEmpty((CharSequence)pkStr))
                 buf.append(", ").append(pkStr);
         }
 

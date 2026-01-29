@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.map.LinkedMap;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.lib.rop.ListResultObjectProvider;
 import org.apache.openjpa.lib.rop.RangeResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
@@ -226,7 +226,7 @@ public class MethodStoreQuery
                 return;
 
             String methName = q.getContext().getQueryString();
-            if (StringUtils.isEmpty(methName))
+            if (StringUtils.isEmpty((CharSequence)methName))
                 throw new UserException(_loc.get("no-method"));
 
             int dotIdx = methName.lastIndexOf('.');

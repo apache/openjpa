@@ -36,8 +36,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.NestableRuntimeException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
@@ -88,7 +87,7 @@ public class Configurations {
     private static String getPluginComponent(String plugin, boolean clsName) {
         if (plugin != null)
             plugin = plugin.trim();
-        if (StringUtils.isEmpty(plugin))
+        if (StringUtils.isEmpty((CharSequence)plugin))
             return null;
 
         int openParen = -1;
@@ -113,9 +112,9 @@ public class Configurations {
      * Combine the given class name and properties into a plugin string.
      */
     public static String getPlugin(String clsName, String props) {
-        if (StringUtils.isEmpty(clsName))
+        if (StringUtils.isEmpty((CharSequence)clsName))
             return props;
-        if (StringUtils.isEmpty(props))
+        if (StringUtils.isEmpty((CharSequence)props))
             return clsName;
         return clsName + "(" + props + ")";
     }
@@ -126,17 +125,17 @@ public class Configurations {
      * same properties of <code>orig</code>.
      */
     public static String combinePlugins(String orig, String override) {
-        if (StringUtils.isEmpty(orig))
+        if (StringUtils.isEmpty((CharSequence)orig))
             return override;
-        if (StringUtils.isEmpty(override))
+        if (StringUtils.isEmpty((CharSequence)override))
             return orig;
 
         String origCls = getClassName(orig);
         String overrideCls = getClassName(override);
         String cls;
-        if (StringUtils.isEmpty(origCls))
+        if (StringUtils.isEmpty((CharSequence)origCls))
             cls = overrideCls;
-        else if (StringUtils.isEmpty(overrideCls))
+        else if (StringUtils.isEmpty((CharSequence)overrideCls))
             cls = origCls;
         else if (!origCls.equals(overrideCls))
             return override; // completely different plugin
@@ -145,9 +144,9 @@ public class Configurations {
 
         String origProps = getProperties(orig);
         String overrideProps = getProperties(override);
-        if (StringUtils.isEmpty(origProps))
+        if (StringUtils.isEmpty((CharSequence)origProps))
             return getPlugin(cls, overrideProps);
-        if (StringUtils.isEmpty(overrideProps))
+        if (StringUtils.isEmpty((CharSequence)overrideProps))
             return getPlugin(cls, origProps);
 
         Properties props = parseProperties(origProps);
@@ -192,7 +191,7 @@ public class Configurations {
      */
     static Object newInstance(String clsName, Value val, Configuration conf,
         ClassLoader loader, boolean fatal) {
-        if (StringUtils.isEmpty(clsName))
+        if (StringUtils.isEmpty((CharSequence)clsName))
             return null;
 
         Class cls = null; 
@@ -242,7 +241,7 @@ public class Configurations {
             if (e instanceof PrivilegedActionException) {
                 e = ((PrivilegedActionException) e).getException();   
             }
-            RuntimeException re = new NestableRuntimeException(_loc.get
+            RuntimeException re = new RuntimeException(_loc.get
                 ("obj-create", cls).getMessage(), e);
             if (fatal)
                 throw re;
@@ -335,7 +334,7 @@ public class Configurations {
     public static void populateConfiguration(Configuration conf, Options opts) {
         String props = opts.removeProperty("properties", "p", null);
         ConfigurationProvider provider;
-        if (!StringUtils.isEmpty(props)) {
+        if (!StringUtils.isEmpty((CharSequence)props)) {
             Map<String, String> result = parseConfigResource(props);
             String path = result.get(CONFIG_RESOURCE_PATH);
             String anchor = result.get(CONFIG_RESOURCE_ANCHOR);
@@ -453,7 +452,7 @@ public class Configurations {
             return;
 
         Properties props = null;
-        if (!StringUtils.isEmpty(properties))
+        if (!StringUtils.isEmpty((CharSequence)properties))
             props = parseProperties(properties);
         configureInstance(obj, conf, props, configurationName);
     }
@@ -638,7 +637,7 @@ public class Configurations {
      * Looks up the given name in JNDI. If the name is null, null is returned.
      */
     public static Object lookup(String name, String userKey, Log log) {
-        if (StringUtils.isEmpty(name))
+        if (StringUtils.isEmpty((CharSequence)name))
             return null;
 
         Context ctx = null;
@@ -649,7 +648,7 @@ public class Configurations {
             	log.warn(_loc.get("jndi-lookup-failed", userKey, name));
             return result;
         } catch (NamingException ne) {
-            throw new NestableRuntimeException(
+            throw new RuntimeException(
                 _loc.get("naming-err", name).getMessage(), ne);
         } finally {
             if (ctx != null) {

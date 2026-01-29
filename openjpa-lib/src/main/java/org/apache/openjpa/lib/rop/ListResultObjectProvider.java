@@ -20,7 +20,6 @@ package org.apache.openjpa.lib.rop;
 
 import java.util.List;
 
-import org.apache.commons.lang.exception.NestableRuntimeException;
 import org.apache.openjpa.lib.util.Closeable;
 
 /**
@@ -85,6 +84,6 @@ public class ListResultObjectProvider implements ResultObjectProvider {
 
     public void handleCheckedException(Exception e) {
         // shouldn't ever happen
-        throw new NestableRuntimeException(e);
+        throw new RuntimeException(e);
     }
 }

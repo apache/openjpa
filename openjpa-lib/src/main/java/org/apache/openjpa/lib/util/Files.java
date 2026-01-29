@@ -37,8 +37,7 @@ import java.net.URLDecoder;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.NestableRuntimeException;
+import org.apache.commons.lang3.StringUtils;
 import serp.util.Strings;
 
 /**
@@ -70,7 +69,7 @@ public class Files {
             try {
                 copy(bk, file);
             } catch (IOException ioe) {
-                throw new NestableRuntimeException(ioe);
+                throw new RuntimeException(ioe);
             }
         }
         return bk;
@@ -102,7 +101,7 @@ public class Files {
             try {
                 copy(orig, backup);
             } catch (IOException ioe) {
-                throw new NestableRuntimeException(ioe);
+                throw new RuntimeException(ioe);
             }
         }
         return orig;
@@ -153,7 +152,7 @@ public class Files {
         if (base == null)
             base = new File(AccessController.doPrivileged(
                 J2DoPrivHelper.getPropertyAction("user.dir")));
-        if (StringUtils.isEmpty(pkg)) {
+        if (StringUtils.isEmpty((CharSequence)pkg)) {
             if (mkdirs && !(AccessController.doPrivileged(
                 J2DoPrivHelper.existsAction(base))).booleanValue())
                 AccessController.doPrivileged(
@@ -170,10 +169,10 @@ public class Files {
             else
                 file = new File(base, pkg);
         } catch (PrivilegedActionException pae) {
-            throw new NestableRuntimeException(
+            throw new RuntimeException(
                 (IOException) pae.getException());
         } catch (IOException ioe) {
-            throw new NestableRuntimeException(ioe);
+            throw new RuntimeException(ioe);
         }
 
         if (mkdirs && !(AccessController.doPrivileged(
@@ -238,7 +237,7 @@ public class Files {
         try {
             return new FileWriter(getFile(file, loader));
         } catch (IOException ioe) {
-            throw new NestableRuntimeException(ioe);
+            throw new RuntimeException(ioe);
         }
     }
 
@@ -265,7 +264,7 @@ public class Files {
             else
                 return new BufferedWriter(new OutputStreamWriter(getOutputStream(file, loader), enc));
         } catch (IOException ioe) {
-            throw new NestableRuntimeException(ioe);
+            throw new RuntimeException(ioe);
         }
     }
 
@@ -288,9 +287,9 @@ public class Files {
                 J2DoPrivHelper.newFileOutputStreamAction(
                     getFile(file, loader)));
         } catch (PrivilegedActionException pae) {
-            throw new NestableRuntimeException(pae.getException());
+            throw new RuntimeException(pae.getException());
         } catch (IOException ioe) {
-            throw new NestableRuntimeException(ioe);
+            throw new RuntimeException(ioe);
         }
     }
 

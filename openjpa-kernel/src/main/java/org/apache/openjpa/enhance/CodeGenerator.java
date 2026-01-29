@@ -26,8 +26,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.util.CodeFormat;
 import org.apache.openjpa.lib.util.Files;

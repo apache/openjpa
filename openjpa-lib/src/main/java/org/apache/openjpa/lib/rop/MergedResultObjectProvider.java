@@ -20,7 +20,6 @@ package org.apache.openjpa.lib.rop;
 
 import java.util.Comparator;
 
-import org.apache.commons.lang.exception.NestableRuntimeException;
 
 /**
  * A result object provider that merges multiple result object provider
@@ -144,7 +143,7 @@ public class MergedResultObjectProvider implements ResultObjectProvider {
 
     public void handleCheckedException(Exception e) {
         if (_rops.length == 0)
-            throw new NestableRuntimeException(e);
+            throw new RuntimeException(e);
         _rops[0].handleCheckedException(e);
     }
 

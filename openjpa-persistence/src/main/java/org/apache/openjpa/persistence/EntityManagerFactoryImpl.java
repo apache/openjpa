@@ -30,7 +30,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnitUtil;
 import javax.persistence.spi.LoadState;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.AutoDetach;
 import org.apache.openjpa.kernel.Broker;

@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.rop.EagerResultList;
 import org.apache.openjpa.lib.rop.ListResultObjectProvider;
@@ -348,7 +348,7 @@ public class FetchConfigurationImpl
     }
      
     private FetchConfiguration addFetchGroup(String name, boolean recomputeIsDefault) {
-        if (StringUtils.isEmpty(name))
+        if (StringUtils.isEmpty((CharSequence)name))
             throw new UserException(_loc.get("null-fg"));
 
         lock();
@@ -489,7 +489,7 @@ public class FetchConfigurationImpl
     }
 
     public FetchConfiguration addField(String field) {
-        if (StringUtils.isEmpty(field))
+        if (StringUtils.isEmpty((CharSequence)field))
             throw new UserException(_loc.get("null-field"));
 
         lock();

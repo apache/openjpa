@@ -33,7 +33,7 @@ import javax.persistence.EnumType;
 import javax.persistence.InheritanceType;
 import javax.persistence.TemporalType;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
@@ -569,7 +569,7 @@ public class XMLPersistenceMappingParser
      */
     private void endDiscriminatorValue() {
         String val = currentText();
-        if (StringUtils.isEmpty(val))
+        if (StringUtils.isEmpty((CharSequence)val))
             return;
 
         ClassMapping cm = (ClassMapping) currentElement();
@@ -588,7 +588,7 @@ public class XMLPersistenceMappingParser
      */
     private void endTemporal() {
         String temp = currentText();
-        if (!StringUtils.isEmpty(temp))
+        if (!StringUtils.isEmpty((CharSequence)temp))
             _temporal = Enum.valueOf(TemporalType.class, temp);
     }
 
@@ -598,7 +598,7 @@ public class XMLPersistenceMappingParser
     private void endMapKeyTemporal() {
         String temp = currentText();
         TemporalType _mapKeyTemporal = null;
-        if (!StringUtils.isEmpty(temp))
+        if (!StringUtils.isEmpty((CharSequence)temp))
             _mapKeyTemporal = Enum.valueOf(TemporalType.class, temp);
         FieldMapping fm = (FieldMapping) currentElement();
         List<Column> cols = fm.getKeyMapping().getValueInfo().getColumns();
@@ -626,7 +626,7 @@ public class XMLPersistenceMappingParser
      */
     private void endEnumerated() {
         String text = currentText();
-        if (StringUtils.isEmpty(text))
+        if (StringUtils.isEmpty((CharSequence)text))
             return;
         EnumType type = Enum.valueOf(EnumType.class, text);
 
@@ -644,7 +644,7 @@ public class XMLPersistenceMappingParser
      */
     private void endMapKeyEnumerated() {
         String text = currentText();
-        if (StringUtils.isEmpty(text))
+        if (StringUtils.isEmpty((CharSequence)text))
             return;
         EnumType type = Enum.valueOf(EnumType.class, text);
 
@@ -1195,7 +1195,7 @@ public class XMLPersistenceMappingParser
 
         QueryResultMapping parent = (QueryResultMapping) currentElement();
         QueryResultMapping.PCResult result = parent.addPCResult(entityClass);
-        if (!StringUtils.isEmpty(discriminator))
+        if (!StringUtils.isEmpty((CharSequence)discriminator))
             result.addMapping(PCResult.DISCRIMINATOR, discriminator);
         pushElement(result);
         return true;
@@ -1520,7 +1520,7 @@ public class XMLPersistenceMappingParser
     
     @Override
     protected String normalizeSequenceName(String seqName) {
-        if (StringUtils.isEmpty(seqName)) {
+        if (StringUtils.isEmpty((CharSequence)seqName)) {
             return seqName;
         }
         return DBIdentifier.newSequence(seqName, delimit()).getName();
@@ -1528,7 +1528,7 @@ public class XMLPersistenceMappingParser
     
     @Override
     protected String normalizeSchemaName(String schName) {
-        if (StringUtils.isEmpty(schName)) {
+        if (StringUtils.isEmpty((CharSequence)schName)) {
             return schName;
         }
         return DBIdentifier.newSchema(schName, delimit()).getName();
@@ -1536,7 +1536,7 @@ public class XMLPersistenceMappingParser
 
     @Override
     protected String normalizeCatalogName(String catName) {
-        if (StringUtils.isEmpty(catName)) {
+        if (StringUtils.isEmpty((CharSequence)catName)) {
             return catName;
         }
         return DBIdentifier.newCatalog(catName, delimit()).getName();
@@ -1567,10 +1567,10 @@ public class XMLPersistenceMappingParser
         
         Column col = new Column();
         String name = attrs.getValue("name");
-        if (!StringUtils.isEmpty(name));
+        if (!StringUtils.isEmpty((CharSequence)name));
             col.setIdentifier(DBIdentifier.newColumn(name, delimit()));
         String columnDefinition= attrs.getValue("column-definition");
-        if (!StringUtils.isEmpty(columnDefinition))
+        if (!StringUtils.isEmpty((CharSequence)columnDefinition))
             col.setTypeIdentifier(DBIdentifier.newColumnDefinition(columnDefinition));
         int precision = Integer.parseInt(attrs.getValue("precision"));
         if (precision != 0)
@@ -1604,7 +1604,7 @@ public class XMLPersistenceMappingParser
 
         org.apache.openjpa.jdbc.schema.Index idx =
             new org.apache.openjpa.jdbc.schema.Index();
-        if (!StringUtils.isEmpty(name))
+        if (!StringUtils.isEmpty((CharSequence)name))
             idx.setIdentifier(DBIdentifier.newConstraint(name, delimit()));
         idx.setUnique(unique);
         info.setIndex(idx);
@@ -1661,7 +1661,7 @@ public class XMLPersistenceMappingParser
 
         org.apache.openjpa.jdbc.schema.ForeignKey fk =
             new org.apache.openjpa.jdbc.schema.ForeignKey();
-        if (!StringUtils.isEmpty(name))
+        if (!StringUtils.isEmpty((CharSequence)name))
             fk.setIdentifier(DBIdentifier.newForeignKey(name, delimit()));
         fk.setDeferred(deferred);
         fk.setDeleteAction(deleteAction);
@@ -1693,7 +1693,7 @@ public class XMLPersistenceMappingParser
     
     private void assertDefault(String name, boolean enabled, boolean deferred, boolean specified,
         int updateAction, int deleteAction) {
-        boolean isDefault = StringUtils.isEmpty(name) 
+        boolean isDefault = StringUtils.isEmpty((CharSequence)name) 
             && enabled 
             && !deferred 
                 && deleteAction == org.apache.openjpa.jdbc.schema.ForeignKey.ACTION_RESTRICT
@@ -1767,7 +1767,7 @@ public class XMLPersistenceMappingParser
         
         FieldMapping fm = (FieldMapping) fmd;
         String eagerFetchMode = attrs.getValue("eager-fetch-mode");
-        if (!StringUtils.isEmpty(eagerFetchMode)) {
+        if (!StringUtils.isEmpty((CharSequence)eagerFetchMode)) {
             if (eagerFetchMode.equalsIgnoreCase("NONE")) {
                 fm.setEagerFetchMode(EagerFetchModes.EAGER_NONE);
             } else if (eagerFetchMode.equalsIgnoreCase("JOIN")) {
@@ -1783,7 +1783,7 @@ public class XMLPersistenceMappingParser
         throws SAXException {
         
         String elementClassCriteriaString = attrs.getValue("element-class-criteria");
-        if (!StringUtils.isEmpty(elementClassCriteriaString)) {
+        if (!StringUtils.isEmpty((CharSequence)elementClassCriteriaString)) {
             FieldMapping fm = (FieldMapping) fmd;
             boolean elementClassCriteria = Boolean.parseBoolean(elementClassCriteriaString);
             fm.getElementMapping().getValueInfo().setUseClassCriteria(elementClassCriteria);
@@ -1793,7 +1793,7 @@ public class XMLPersistenceMappingParser
     @Override
     protected void parseStrategy(FieldMetaData fmd, Attributes attrs) {
         String strategy = attrs.getValue("strategy");
-        if (!StringUtils.isEmpty(strategy)) {
+        if (!StringUtils.isEmpty((CharSequence)strategy)) {
             ((FieldMapping) fmd).getMappingInfo().setStrategy(strategy);
         }
     }
@@ -1804,19 +1804,19 @@ public class XMLPersistenceMappingParser
         ClassMapping mapping = (ClassMapping) currentElement();
         
         String strategy = attrs.getValue("strategy");
-        if (!StringUtils.isEmpty(strategy))
+        if (!StringUtils.isEmpty((CharSequence)strategy))
             mapping.getMappingInfo().setStrategy(strategy);
         
         String versionStrat = attrs.getValue("version-strategy");
-        if (!StringUtils.isEmpty(versionStrat))
+        if (!StringUtils.isEmpty((CharSequence)versionStrat))
             mapping.getVersion().getMappingInfo().setStrategy(versionStrat);
         
         String discrimStrat = attrs.getValue("discriminator-strategy");
-        if (!StringUtils.isEmpty(discrimStrat))
+        if (!StringUtils.isEmpty((CharSequence)discrimStrat))
             mapping.getDiscriminator().getMappingInfo().setStrategy(discrimStrat);
         
         String subclassFetchMode = attrs.getValue("subclass-fetch-mode");
-        if (!StringUtils.isEmpty(subclassFetchMode))
+        if (!StringUtils.isEmpty((CharSequence)subclassFetchMode))
             mapping.setSubclassFetchMode(toEagerFetchModeConstant(subclassFetchMode));
         
         return true;

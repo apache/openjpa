@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.audit.AuditLogger;
 import org.apache.openjpa.audit.Auditor;
 import org.apache.openjpa.datacache.CacheDistributionPolicy;
