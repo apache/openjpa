@@ -141,6 +141,7 @@ public class SelectImpl
 
     // query clauses
     private SQLBuffer _ordering = null;
+    private SQLBuffer _setOperatorBuf = null;
     private SQLBuffer _where = null;
     private SQLBuffer _grouping = null;
     private SQLBuffer _having = null;
@@ -1238,6 +1239,42 @@ public class SelectImpl
             _ordering.append(" NULLS FIRST");
         else if (nullPrecedence == QueryExpressions.NULLS_LAST)
             _ordering.append(" NULLS LAST");
+    }
+
+    @Override
+    public void addSetOperatorSQL(int setOpType, SQLBuffer sql) {
+        if (_setOperatorBuf == null)
+            _setOperatorBuf = new SQLBuffer(_dict);
+        String keyword;
+        switch (setOpType) {
+            case QueryExpressions.SET_OP_UNION:
+                keyword = " UNION ";
+                break;
+            case QueryExpressions.SET_OP_UNION_ALL:
+                keyword = " UNION ALL ";
+                break;
+            case QueryExpressions.SET_OP_INTERSECT:
+                keyword = " INTERSECT ";
+                break;
+            case QueryExpressions.SET_OP_INTERSECT_ALL:
+                keyword = " INTERSECT ALL ";
+                break;
+            case QueryExpressions.SET_OP_EXCEPT:
+                keyword = " EXCEPT ";
+                break;
+            case QueryExpressions.SET_OP_EXCEPT_ALL:
+                keyword = " EXCEPT ALL ";
+                break;
+            default:
+                return;
+        }
+        _setOperatorBuf.append(keyword);
+        _setOperatorBuf.append(sql);
+    }
+
+    @Override
+    public SQLBuffer getSetOperatorBuffer() {
+        return _setOperatorBuf;
     }
 
     @Override

@@ -226,6 +226,11 @@ public class JPQLExpressionBuilder
     }
 
     protected ClassMetaData getCandidateMetaData(JPQLNode node) {
+        // for set operator nodes, use the leftmost SELECT
+        while (isSetOperatorNode(node.id)) {
+            node = node.children[0];
+        }
+
         // examing the node to find the candidate query
         // ### this should actually be the primary SELECT instance
         // resolved against the from variable declarations
@@ -292,6 +297,10 @@ public class JPQLExpressionBuilder
     }
 
     QueryExpressions getQueryExpressions() {
+        if (isSetOperatorNode(root().id)) {
+            return evalSetOperatorExpressions();
+        }
+
         QueryExpressions exps = new QueryExpressions();
         exps.setContexts(contexts);
 
@@ -323,6 +332,57 @@ public class JPQLExpressionBuilder
         validateParameters();
 
         return exps;
+    }
+
+    private boolean isSetOperatorNode(int id) {
+        return id == JJTUNION || id == JJTUNIONALL
+            || id == JJTINTERSECT || id == JJTINTERSECTALL
+            || id == JJTEXCEPT || id == JJTEXCEPTALL;
+    }
+
+    private int mapSetOperationType(int nodeId) {
+        switch (nodeId) {
+            case JJTUNION: return QueryExpressions.SET_OP_UNION;
+            case JJTUNIONALL: return QueryExpressions.SET_OP_UNION_ALL;
+            case JJTINTERSECT: return QueryExpressions.SET_OP_INTERSECT;
+            case JJTINTERSECTALL:
+                return QueryExpressions.SET_OP_INTERSECT_ALL;
+            case JJTEXCEPT: return QueryExpressions.SET_OP_EXCEPT;
+            case JJTEXCEPTALL: return QueryExpressions.SET_OP_EXCEPT_ALL;
+            default: return QueryExpressions.SET_OP_NONE;
+        }
+    }
+
+    private QueryExpressions evalSetOperatorExpressions() {
+        QueryExpressions exps = new QueryExpressions();
+        exps.setContexts(contexts);
+        exps.operation = QueryOperations.OP_SELECT;
+        exps.setOperationType = mapSetOperationType(root().id);
+
+        JPQLNode left = root().children[0];
+        JPQLNode right = root().children[1];
+
+        exps.setOperands = new QueryExpressions[]{
+            evalOperand(left),
+            evalOperand(right)
+        };
+
+        if (parameterTypes != null)
+            exps.parameterTypes = parameterTypes;
+
+        exps.accessPath = getAccessPath();
+        return exps;
+    }
+
+    private QueryExpressions evalOperand(JPQLNode node) {
+        ParsedJPQL parsed = new ParsedJPQL(root().parser.jpql, node);
+        Context subContext = new Context(parsed, null, ctx());
+        contexts.push(subContext);
+        try {
+            return getQueryExpressions();
+        } finally {
+            contexts.pop();
+        }
     }
 
     private Expression and(Expression e1, Expression e2) {

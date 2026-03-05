@@ -868,6 +868,16 @@ public class LogicalUnion
         }
 
         @Override
+        public void addSetOperatorSQL(int setOpType, SQLBuffer sql) {
+            sel.addSetOperatorSQL(setOpType, sql);
+        }
+
+        @Override
+        public SQLBuffer getSetOperatorBuffer() {
+            return sel.getSetOperatorBuffer();
+        }
+
+        @Override
         public void wherePrimaryKey(Object oid, ClassMapping mapping,
             JDBCStore store) {
             sel.wherePrimaryKey(oid, mapping, store);

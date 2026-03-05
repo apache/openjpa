@@ -38,6 +38,10 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.common.utils.DatabaseHelper;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaSelect;
+import jakarta.persistence.criteria.Root;
 
 public class TestEJBQLFunction extends AbstractTestCase {
 
@@ -1118,6 +1122,208 @@ public class TestEJBQLFunction extends AbstractTestCase {
     	assertEquals(1, result.size());
     	assertEquals("Seetha", ((CompUser) result.get(0)).getName());
     	
+    	endEm(em);
+    }
+
+    public void testUnionProjection() {
+    	EntityManager em = currentEntityManager();
+
+    	String query =
+    		"SELECT u.name FROM CompUser u WHERE u.age > 30"
+    		+ " UNION"
+    		+ " SELECT u.name FROM CompUser u"
+    		+ " WHERE u.name = 'Ugo'";
+    	List result = em.createQuery(query).getResultList();
+
+    	assertNotNull(result);
+    	// Seetha(36), Shannon(36) from first, Ugo from second
+    	// UNION removes duplicates
+    	assertEquals(3, result.size());
+
+    	// Results may be scalar Strings or Object[] arrays
+    	java.util.Set<String> names = new java.util.HashSet<>();
+    	for (Object o : result) {
+    		if (o instanceof Object[]) {
+    			names.add(String.valueOf(((Object[]) o)[0]));
+    		} else {
+    			names.add(String.valueOf(o));
+    		}
+    	}
+    	assertTrue("Expected Seetha: " + names,
+    		names.contains("Seetha"));
+    	assertTrue("Expected Ugo: " + names,
+    		names.contains("Ugo"));
+
+    	endEm(em);
+    }
+
+    public void testUnionAllProjection() {
+    	EntityManager em = currentEntityManager();
+
+    	String query =
+    		"SELECT u.name FROM CompUser u WHERE u.age > 25"
+    		+ " UNION ALL"
+    		+ " SELECT u.name FROM CompUser u"
+    		+ " WHERE u.age > 30";
+    	List result = em.createQuery(query).getResultList();
+
+    	assertNotNull(result);
+    	// age>25: Seetha(36), Shannon(36), Famzy(29) = 3
+    	// age>30: Seetha(36), Shannon(36) = 2
+    	// UNION ALL keeps duplicates = 5 total
+    	assertEquals("UNION ALL result count", 5, result.size());
+
+    	endEm(em);
+    }
+
+    public void testExceptProjection() {
+    	EntityManager em = currentEntityManager();
+
+    	// age > 20: Seetha(36), Shannon(36), Famzy(29), Shade(23)
+    	// age > 30: Seetha(36), Shannon(36)
+    	// EXCEPT: Famzy(29), Shade(23)
+    	String query =
+    		"SELECT u.name FROM CompUser u WHERE u.age > 20"
+    		+ " EXCEPT"
+    		+ " SELECT u.name FROM CompUser u"
+    		+ " WHERE u.age > 30";
+    	List result = em.createQuery(query).getResultList();
+
+    	assertNotNull(result);
+    	assertEquals("EXCEPT result count", 2, result.size());
+
+    	java.util.Set<String> names = new java.util.HashSet<>();
+    	for (Object o : result) {
+    		if (o instanceof Object[]) {
+    			names.add(String.valueOf(((Object[]) o)[0]));
+    		} else {
+    			names.add(String.valueOf(o));
+    		}
+    	}
+    	assertTrue("Expected Famzy: " + names,
+    		names.contains("Famzy"));
+    	assertTrue("Expected Shade: " + names,
+    		names.contains("Shade"));
+
+    	endEm(em);
+    }
+
+    public void testIntersectProjection() {
+    	EntityManager em = currentEntityManager();
+
+    	// age > 20: Seetha(36), Shannon(36), Famzy(29), Shade(23)
+    	// age > 30: Seetha(36), Shannon(36)
+    	// INTERSECT: Seetha(36), Shannon(36)
+    	String query =
+    		"SELECT u.name FROM CompUser u WHERE u.age > 20"
+    		+ " INTERSECT"
+    		+ " SELECT u.name FROM CompUser u"
+    		+ " WHERE u.age > 30";
+    	List result = em.createQuery(query).getResultList();
+
+    	assertNotNull(result);
+    	assertEquals("INTERSECT result count", 2, result.size());
+
+    	endEm(em);
+    }
+
+    public void testCriteriaUnion() {
+    	EntityManager em = currentEntityManager();
+    	CriteriaBuilder cb = em.getCriteriaBuilder();
+
+    	CriteriaQuery<String> q1 = cb.createQuery(String.class);
+    	Root<CompUser> r1 = q1.from(CompUser.class);
+    	q1.select(r1.get("name"))
+    		.where(cb.gt(r1.get("age"), 30));
+
+    	CriteriaQuery<String> q2 = cb.createQuery(String.class);
+    	Root<CompUser> r2 = q2.from(CompUser.class);
+    	q2.select(r2.get("name"))
+    		.where(cb.equal(r2.get("name"), "Ugo"));
+
+    	CriteriaSelect<String> union = cb.union(q1, q2);
+    	List result = em.createQuery(union).getResultList();
+
+    	assertNotNull(result);
+    	// Seetha(36), Shannon(36) from first + Ugo from second
+    	assertEquals("Criteria UNION result count", 3,
+    		result.size());
+
+    	endEm(em);
+    }
+
+    public void testCriteriaUnionAll() {
+    	EntityManager em = currentEntityManager();
+    	CriteriaBuilder cb = em.getCriteriaBuilder();
+
+    	CriteriaQuery<String> q1 = cb.createQuery(String.class);
+    	Root<CompUser> r1 = q1.from(CompUser.class);
+    	q1.select(r1.get("name"))
+    		.where(cb.gt(r1.get("age"), 25));
+
+    	CriteriaQuery<String> q2 = cb.createQuery(String.class);
+    	Root<CompUser> r2 = q2.from(CompUser.class);
+    	q2.select(r2.get("name"))
+    		.where(cb.gt(r2.get("age"), 30));
+
+    	CriteriaSelect<String> unionAll = cb.unionAll(q1, q2);
+    	List result = em.createQuery(unionAll).getResultList();
+
+    	assertNotNull(result);
+    	// age>25: 3, age>30: 2, UNION ALL keeps dupes = 5
+    	assertEquals("Criteria UNION ALL result count", 5,
+    		result.size());
+
+    	endEm(em);
+    }
+
+    public void testCriteriaExcept() {
+    	EntityManager em = currentEntityManager();
+    	CriteriaBuilder cb = em.getCriteriaBuilder();
+
+    	CriteriaQuery<String> q1 = cb.createQuery(String.class);
+    	Root<CompUser> r1 = q1.from(CompUser.class);
+    	q1.select(r1.get("name"))
+    		.where(cb.gt(r1.get("age"), 20));
+
+    	CriteriaQuery<String> q2 = cb.createQuery(String.class);
+    	Root<CompUser> r2 = q2.from(CompUser.class);
+    	q2.select(r2.get("name"))
+    		.where(cb.gt(r2.get("age"), 30));
+
+    	CriteriaSelect<String> except = cb.except(q1, q2);
+    	List result = em.createQuery(except).getResultList();
+
+    	assertNotNull(result);
+    	// age>20 minus age>30 = Famzy(29), Shade(23)
+    	assertEquals("Criteria EXCEPT result count", 2,
+    		result.size());
+
+    	endEm(em);
+    }
+
+    public void testCriteriaIntersect() {
+    	EntityManager em = currentEntityManager();
+    	CriteriaBuilder cb = em.getCriteriaBuilder();
+
+    	CriteriaQuery<String> q1 = cb.createQuery(String.class);
+    	Root<CompUser> r1 = q1.from(CompUser.class);
+    	q1.select(r1.get("name"))
+    		.where(cb.gt(r1.get("age"), 20));
+
+    	CriteriaQuery<String> q2 = cb.createQuery(String.class);
+    	Root<CompUser> r2 = q2.from(CompUser.class);
+    	q2.select(r2.get("name"))
+    		.where(cb.gt(r2.get("age"), 30));
+
+    	CriteriaSelect<String> intersect = cb.intersect(q1, q2);
+    	List result = em.createQuery(intersect).getResultList();
+
+    	assertNotNull(result);
+    	// age>20 intersect age>30 = Seetha(36), Shannon(36)
+    	assertEquals("Criteria INTERSECT result count", 2,
+    		result.size());
+
     	endEm(em);
     }
 

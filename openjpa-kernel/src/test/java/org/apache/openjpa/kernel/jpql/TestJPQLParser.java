@@ -375,4 +375,112 @@ public class TestJPQLParser {
     	}
     	fail();
     }
+
+    @Test
+    public void testUnion() {
+    	try {
+    		String query = "SELECT u FROM User AS u WHERE u.age > 30 UNION SELECT u FROM User AS u WHERE u.name = 'Admin'";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    		return;
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    	}
+    	fail();
+    }
+
+    @Test
+    public void testUnionAll() {
+    	try {
+    		String query = "SELECT u FROM User AS u WHERE u.age > 30 UNION ALL SELECT u FROM User AS u WHERE u.name = 'Admin'";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    		return;
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    	}
+    	fail();
+    }
+
+    @Test
+    public void testIntersect() {
+    	try {
+    		String query = "SELECT u FROM User AS u WHERE u.age > 30 INTERSECT SELECT u FROM User AS u WHERE u.active = true";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    		return;
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    	}
+    	fail();
+    }
+
+    @Test
+    public void testIntersectAll() {
+    	try {
+    		String query = "SELECT u FROM User AS u WHERE u.age > 30 INTERSECT ALL SELECT u FROM User AS u WHERE u.active = true";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    		return;
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    	}
+    	fail();
+    }
+
+    @Test
+    public void testExcept() {
+    	try {
+    		String query = "SELECT u FROM User AS u WHERE u.age > 30 EXCEPT SELECT u FROM User AS u WHERE u.name = 'Admin'";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    		return;
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    	}
+    	fail();
+    }
+
+    @Test
+    public void testExceptAll() {
+    	try {
+    		String query = "SELECT u FROM User AS u WHERE u.age > 30 EXCEPT ALL SELECT u FROM User AS u WHERE u.name = 'Admin'";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    		return;
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    	}
+    	fail();
+    }
+
+    @Test
+    public void testUnionWithIntersect() {
+    	try {
+    		String query = "SELECT u FROM User AS u WHERE u.age > 30 "
+    			+ "UNION SELECT u FROM User AS u WHERE u.active = true "
+    			+ "INTERSECT SELECT u FROM User AS u WHERE u.name = 'Admin'";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    		return;
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    	}
+    	fail();
+    }
+
+    @Test
+    public void testParenthesizedUnion() {
+    	try {
+    		String query = "(SELECT u FROM User AS u WHERE u.age > 30 "
+    			+ "UNION SELECT u FROM User AS u WHERE u.name = 'Admin') "
+    			+ "INTERSECT SELECT u FROM User AS u WHERE u.active = true";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    		return;
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    	}
+    	fail();
+    }
 }

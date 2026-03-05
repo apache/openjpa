@@ -2602,9 +2602,16 @@ public class DBDictionary
         else
             from = getFrom(sel, update);
         SQLBuffer where = getWhere(sel, update);
-        return toSelect(select, fetch, from, where, sel.getGrouping(),
-            sel.getHaving(), ordering, sel.isDistinct(), forUpdate,
+        SQLBuffer buf = toSelect(select, fetch, from, where,
+            sel.getGrouping(), sel.getHaving(), ordering,
+            sel.isDistinct(), forUpdate,
             sel.getStartIndex(), sel.getEndIndex(), sel);
+
+        SQLBuffer setOpBuf = sel.getSetOperatorBuffer();
+        if (setOpBuf != null)
+            buf.append(setOpBuf);
+
+        return buf;
     }
 
     /**

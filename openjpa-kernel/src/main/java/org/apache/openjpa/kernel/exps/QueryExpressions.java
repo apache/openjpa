@@ -64,6 +64,14 @@ public class QueryExpressions implements Serializable {
     public static final int NULLS_FIRST = 1;
     public static final int NULLS_LAST = 2;
 
+    public static final int SET_OP_NONE = 0;
+    public static final int SET_OP_UNION = 1;
+    public static final int SET_OP_UNION_ALL = 2;
+    public static final int SET_OP_INTERSECT = 3;
+    public static final int SET_OP_INTERSECT_ALL = 4;
+    public static final int SET_OP_EXCEPT = 5;
+    public static final int SET_OP_EXCEPT_ALL = 6;
+
     public Value[] ordering = EMPTY_VALUES;
     public boolean[] ascending = StoreQuery.EMPTY_BOOLEANS;
     public int[] nullPrecedence = StoreQuery.EMPTY_INTS;
@@ -80,6 +88,8 @@ public class QueryExpressions implements Serializable {
     public Object state;
     public ResultShape<?> shape;
     public boolean hasInExpression;
+    public int setOperationType = SET_OP_NONE;
+    public QueryExpressions[] setOperands;
 
     /**
      * Set reference to the JPQL query contexts.

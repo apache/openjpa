@@ -96,6 +96,10 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
     @Override
     public QueryExpressions eval(Object parsed, ExpressionStoreQuery query,
         ExpressionFactory factory, ClassMetaData candidate) {
+        if (parsed instanceof CriteriaSelectImpl) {
+            return ((CriteriaSelectImpl<?>) parsed)
+                .getQueryExpressions(factory);
+        }
         CriteriaQueryImpl<?> c = (CriteriaQueryImpl<?>) parsed;
         return c.getQueryExpressions(factory);
     }
@@ -148,10 +152,19 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 
     @Override
     public void populate(Object parsed, ExpressionStoreQuery query) {
-        CriteriaQueryImpl<?> c = (CriteriaQueryImpl<?>) parsed;
         query.invalidateCompilation();
-        query.getContext().setCandidateType(c.getRoot().getJavaType(), true);
+        CriteriaQueryImpl<?> leaf = getLeftmostQuery(parsed);
+        query.getContext().setCandidateType(
+            leaf.getRoot().getJavaType(), true);
         query.setQuery(parsed);
+    }
+
+    private CriteriaQueryImpl<?> getLeftmostQuery(Object parsed) {
+        if (parsed instanceof CriteriaSelectImpl) {
+            return getLeftmostQuery(
+                ((CriteriaSelectImpl<?>) parsed).getLeft());
+        }
+        return (CriteriaQueryImpl<?>) parsed;
     }
 
     @Override
@@ -1137,39 +1150,54 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public <T> CriteriaSelect<T> union(CriteriaSelect<? extends T> left, CriteriaSelect<? extends T> right) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		return new CriteriaSelectImpl<>(QueryExpressions.SET_OP_UNION,
+			left, right, (Class<T>) getResultClass(left));
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public <T> CriteriaSelect<T> unionAll(CriteriaSelect<? extends T> left, CriteriaSelect<? extends T> right) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		return new CriteriaSelectImpl<>(QueryExpressions.SET_OP_UNION_ALL,
+			left, right, (Class<T>) getResultClass(left));
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public <T> CriteriaSelect<T> intersect(CriteriaSelect<? super T> left, CriteriaSelect<? super T> right) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		return new CriteriaSelectImpl<>(QueryExpressions.SET_OP_INTERSECT,
+			left, right, (Class<T>) getResultClass(left));
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public <T> CriteriaSelect<T> intersectAll(CriteriaSelect<? super T> left, CriteriaSelect<? super T> right) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		return new CriteriaSelectImpl<>(QueryExpressions.SET_OP_INTERSECT_ALL,
+			left, right, (Class<T>) getResultClass(left));
 	}
 
 	@Override
 	public <T> CriteriaSelect<T> except(CriteriaSelect<T> left, CriteriaSelect<?> right) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		return new CriteriaSelectImpl<>(QueryExpressions.SET_OP_EXCEPT,
+			left, right, getResultClass(left));
 	}
 
 	@Override
 	public <T> CriteriaSelect<T> exceptAll(CriteriaSelect<T> left, CriteriaSelect<?> right) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		return new CriteriaSelectImpl<>(QueryExpressions.SET_OP_EXCEPT_ALL,
+			left, right, getResultClass(left));
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> Class<T> getResultClass(CriteriaSelect<? extends T> select) {
+		if (select instanceof CriteriaQueryImpl) {
+			return ((CriteriaQueryImpl<T>) select).getResultType();
+		}
+		if (select instanceof CriteriaSelectImpl) {
+			return ((CriteriaSelectImpl<T>) select).getResultClass();
+		}
+		return (Class<T>) Object.class;
 	}
 
 }

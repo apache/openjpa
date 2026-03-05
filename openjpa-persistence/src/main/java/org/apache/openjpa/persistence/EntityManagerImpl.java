@@ -2327,7 +2327,24 @@ public class EntityManagerImpl
 
 	@Override
 	public <T> TypedQuery<T> createQuery(CriteriaSelect<T> selectQuery) {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		if (selectQuery instanceof CriteriaQuery) {
+			return createQuery((CriteriaQuery<T>) selectQuery);
+		}
+
+		org.apache.openjpa.persistence.criteria.CriteriaSelectImpl<T> setOp =
+			(org.apache.openjpa.persistence.criteria.CriteriaSelectImpl<T>) selectQuery;
+		setOp.compile();
+
+		org.apache.openjpa.kernel.Query kernelQuery =
+			_broker.newQuery(OpenJPACriteriaBuilder.LANG_CRITERIA, setOp);
+
+		QueryImpl<T> facadeQuery = newQueryImpl(kernelQuery, null)
+			.setId(selectQuery.toString());
+		Set<ParameterExpression<?>> params = setOp.getParameters();
+		for (ParameterExpression<?> param : params) {
+			facadeQuery.declareParameter(param, param);
+		}
+		return facadeQuery;
 	}
 
 	@Override

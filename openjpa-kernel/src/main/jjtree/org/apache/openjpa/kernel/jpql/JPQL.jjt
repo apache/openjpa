@@ -146,6 +146,10 @@ TOKEN [ IGNORE_CASE ]: /* basics */
 	|	< CONCAT_PIPE: "||" >
 
 	|	< NEW: "NEW" >
+
+	|	< UNION: "UNION" >
+	|	< INTERSECT: "INTERSECT" >
+	|	< EXCEPT: "EXCEPT" >
 	
 	|   < ID: "ID" >
 	|   < VERSION: "VERSION" >
@@ -409,7 +413,36 @@ Node parseQuery() : { }
 }
 
 
-void select_statement() #SELECT : { }
+void select_statement() : { }
+{
+	intersection()
+	(
+		LOOKAHEAD(<UNION> <ALL>) <UNION> <ALL> intersection() #UNIONALL(2)
+		| LOOKAHEAD(<UNION>) <UNION> intersection() #UNION(2)
+		| LOOKAHEAD(<EXCEPT> <ALL>) <EXCEPT> <ALL> intersection() #EXCEPTALL(2)
+		| LOOKAHEAD(<EXCEPT>) <EXCEPT> intersection() #EXCEPT(2)
+	)*
+}
+
+
+void intersection() : { }
+{
+	query_expression()
+	(
+		LOOKAHEAD(<INTERSECT> <ALL>) <INTERSECT> <ALL> query_expression() #INTERSECTALL(2)
+		| LOOKAHEAD(<INTERSECT>) <INTERSECT> query_expression() #INTERSECT(2)
+	)*
+}
+
+
+void query_expression() : { }
+{
+	LOOKAHEAD("(" <SELECT>) "(" select_statement() ")"
+	| select_query()
+}
+
+
+void select_query() #SELECT : { }
 {
 	select_clause()
 		from_clause()
@@ -1615,6 +1648,9 @@ void path_component() #IDENTIFICATIONVARIABLE :
 	| t = <NULLS>
 	| t = <FIRST>
 	| t = <LAST>
+	| t = <UNION>
+	| t = <INTERSECT>
+	| t = <EXCEPT>
     ) { jjtThis.setToken (t); }
 }
 
