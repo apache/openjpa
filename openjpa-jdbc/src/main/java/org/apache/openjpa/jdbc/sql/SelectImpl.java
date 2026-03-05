@@ -54,6 +54,7 @@ import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.kernel.exps.Context;
+import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
@@ -1228,6 +1229,15 @@ public class SelectImpl
             _ordering.append(" ASC");
         else
             _ordering.append(" DESC");
+    }
+
+    public void appendNullsPrecedence(int nullPrecedence) {
+        if (_ordering == null)
+            return;
+        if (nullPrecedence == QueryExpressions.NULLS_FIRST)
+            _ordering.append(" NULLS FIRST");
+        else if (nullPrecedence == QueryExpressions.NULLS_LAST)
+            _ordering.append(" NULLS LAST");
     }
 
     @Override

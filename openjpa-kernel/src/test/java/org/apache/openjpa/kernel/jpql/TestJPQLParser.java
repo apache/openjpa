@@ -312,6 +312,58 @@ public class TestJPQLParser {
     }
 
     @Test
+    public void testOrderByNullsFirst() {
+    	try {
+    		String query = "SELECT u FROM User AS u ORDER BY u.name ASC NULLS FIRST";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    		return;
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    	}
+    	fail();
+    }
+
+    @Test
+    public void testOrderByNullsLast() {
+    	try {
+    		String query = "SELECT u FROM User AS u ORDER BY u.name DESC NULLS LAST, u.age ASC NULLS FIRST";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    		return;
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    	}
+    	fail();
+    }
+
+    @Test
+    public void testOrderByNullsWithoutAscDesc() {
+    	try {
+    		String query = "SELECT u FROM User AS u ORDER BY u.name NULLS LAST";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    		return;
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    	}
+    	fail();
+    }
+
+    @Test
+    public void testOrderByScalarExpression() {
+    	try {
+    		String query = "SELECT u FROM User AS u ORDER BY UPPER(u.name) ASC";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    		return;
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    	}
+    	fail();
+    }
+
+    @Test
     public void testDeleteUsingIdAndVersion() {
     	try {
     		String query = "DELETE from Employee WHERE id(this) = :id AND version(this) = :version";

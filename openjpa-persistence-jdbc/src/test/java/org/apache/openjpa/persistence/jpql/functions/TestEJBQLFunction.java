@@ -1038,6 +1038,45 @@ public class TestEJBQLFunction extends AbstractTestCase {
     	endEm(em);
     }
 
+    public void testOrderByNullsFirst() {
+    	EntityManager em = currentEntityManager();
+
+    	// address.country is null for users 5 and 6 - NULLS FIRST should put them first
+    	String query = "SELECT u.name FROM CompUser AS u ORDER BY u.address.country ASC NULLS FIRST";
+    	List result = em.createQuery(query).getResultList();
+
+    	assertNotNull(result);
+    	assertEquals(6, result.size());
+    	// first two results should be users with null country (Famzy, Shade)
+    	// The exact order between the two nulls is undefined, but they should come first
+    	String first = (String) result.get(0);
+    	String second = (String) result.get(1);
+    	assertTrue("Expected null-country users first, got: " + first + ", " + second,
+    		(first.equals("Famzy") || first.equals("Shade")) &&
+    		(second.equals("Famzy") || second.equals("Shade")));
+
+    	endEm(em);
+    }
+
+    public void testOrderByNullsLast() {
+    	EntityManager em = currentEntityManager();
+
+    	// NULLS LAST should put null-country users at the end
+    	String query = "SELECT u.name FROM CompUser AS u ORDER BY u.address.country ASC NULLS LAST";
+    	List result = em.createQuery(query).getResultList();
+
+    	assertNotNull(result);
+    	assertEquals(6, result.size());
+    	// last two results should be users with null country
+    	String fifth = (String) result.get(4);
+    	String sixth = (String) result.get(5);
+    	assertTrue("Expected null-country users last, got: " + fifth + ", " + sixth,
+    		(fifth.equals("Famzy") || fifth.equals("Shade")) &&
+    		(sixth.equals("Famzy") || sixth.equals("Shade")));
+
+    	endEm(em);
+    }
+
     public void testIdFunction() {
     	EntityManager em = currentEntityManager();
     	

@@ -60,8 +60,13 @@ public class QueryExpressions implements Serializable {
     public Value[] grouping = EMPTY_VALUES;
     public String[] groupingClauses = StoreQuery.EMPTY_STRINGS;
     public Expression having = null;
+    public static final int NULLS_DEFAULT = 0;
+    public static final int NULLS_FIRST = 1;
+    public static final int NULLS_LAST = 2;
+
     public Value[] ordering = EMPTY_VALUES;
     public boolean[] ascending = StoreQuery.EMPTY_BOOLEANS;
+    public int[] nullPrecedence = StoreQuery.EMPTY_INTS;
     public String[] orderingClauses = StoreQuery.EMPTY_STRINGS;
     public String[] orderingAliases = StoreQuery.EMPTY_STRINGS;
     public OrderedMap<Object,Class<?>> parameterTypes = StoreQuery.EMPTY_ORDERED_PARAMS;

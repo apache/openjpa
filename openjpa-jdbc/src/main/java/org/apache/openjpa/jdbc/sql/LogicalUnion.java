@@ -863,6 +863,11 @@ public class LogicalUnion
         }
 
         @Override
+        public void appendNullsPrecedence(int nullPrecedence) {
+            sel.appendNullsPrecedence(nullPrecedence);
+        }
+
+        @Override
         public void wherePrimaryKey(Object oid, ClassMapping mapping,
             JDBCStore store) {
             sel.wherePrimaryKey(oid, mapping, store);

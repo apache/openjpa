@@ -160,6 +160,9 @@ TOKEN [ IGNORE_CASE ]: /* basics */
 	|	< DESC: "DESC" >
 	|	< ORDER: "ORDER" >
 	|	< BY: "BY" >
+	|	< NULLS: "NULLS" >
+	|	< FIRST: "FIRST" >
+	|	< LAST: "LAST" >
 
 	|	< IS: "IS" >
 	|	< MEMBER: "MEMBER" >
@@ -1469,9 +1472,11 @@ void orderby_item() #ORDERBYITEM : { }
 {
 	(LOOKAHEAD(path()) path() | LOOKAHEAD(qualified_path()) qualified_path()
 	 | LOOKAHEAD(general_identification_variable()) general_identification_variable()
+	 | LOOKAHEAD(scalar_expression()) scalar_expression()
 	 | orderby_extension() | identification_variable()
 	 )
 	    [ <ASC> #ASCENDING | <DESC> #DESCENDING ]
+	    [ LOOKAHEAD(<NULLS>) <NULLS> ( <FIRST> #NULLSFIRST | <LAST> #NULLSLAST ) ]
 }
 
 
@@ -1607,6 +1612,9 @@ void path_component() #IDENTIFICATIONVARIABLE :
 	| t = <VERSION>
 	| t = <STRING>
 	| t = <CLASS>
+	| t = <NULLS>
+	| t = <FIRST>
+	| t = <LAST>
     ) { jjtThis.setToken (t); }
 }
 

@@ -543,6 +543,7 @@ public class JPQLExpressionBuilder
             exps.orderingClauses = new String[ordercount];
             exps.orderingAliases = new String[ordercount];
             exps.ascending = new boolean[ordercount];
+            exps.nullPrecedence = new int[ordercount];
             for (int i = 0; i < ordercount; i++) {
                 JPQLNode node = orderby.getChild(i);
                 JPQLNode firstChild = firstChild(node);
@@ -551,8 +552,22 @@ public class JPQLExpressionBuilder
                 exps.orderingAliases[i] = firstChild.text;
 
                 // ommission of ASC/DESC token implies ascending
-                exps.ascending[i] = node.getChildCount() <= 1 ||
-                    lastChild(node).id == JJTASCENDING ? true : false;
+                boolean asc = true;
+                int nullPrec = QueryExpressions.NULLS_DEFAULT;
+                for (int c = 1; c < node.getChildCount(); c++) {
+                    int childId = node.children[c].id;
+                    if (childId == JJTDESCENDING) {
+                        asc = false;
+                    } else if (childId == JJTASCENDING) {
+                        asc = true;
+                    } else if (childId == JJTNULLSFIRST) {
+                        nullPrec = QueryExpressions.NULLS_FIRST;
+                    } else if (childId == JJTNULLSLAST) {
+                        nullPrec = QueryExpressions.NULLS_LAST;
+                    }
+                }
+                exps.ascending[i] = asc;
+                exps.nullPrecedence[i] = nullPrec;
             }
             // check if order by select item result alias
             for (int i = 0; i < ordercount; i++) {

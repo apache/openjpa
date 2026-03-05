@@ -511,6 +511,11 @@ public interface Select
     boolean orderBy(String sql, boolean asc, Joins joins, boolean sel);
 
     /**
+     * Append NULLS FIRST or NULLS LAST to the most recent ORDER BY entry.
+     */
+    void appendNullsPrecedence(int nullPrecedence);
+
+    /**
      * Add where conditions setting the mapping's primary key to the given
      * oid values. If the given mapping does not use oid values for its
      * primary key, we will recursively join to its superclass until we find
