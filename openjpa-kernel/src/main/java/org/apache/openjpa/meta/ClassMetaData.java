@@ -41,6 +41,7 @@ import org.apache.openjpa.datacache.CacheDistributionPolicy;
 import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.enhance.RecordPersistenceCapable;
 import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.lib.conf.Value;
 import org.apache.openjpa.lib.conf.ValueListener;
@@ -809,6 +810,14 @@ public class ClassMetaData
 
     public void setEmbeddable() {
         _embeddable = true;
+    }
+
+    /**
+     * Whether the described type is a Java record.
+     * JPA 3.2 allows records as embeddable classes.
+     */
+    public boolean isRecord() {
+        return _type != null && _type.isRecord();
     }
 
     /**
@@ -1899,6 +1908,13 @@ public class ClassMetaData
         // this ensures that all field indexes get set when fields are cached
         cacheFields();
 
+        // JPA 3.2: register record types with PCRegistry now that fields are known.
+        // This must run regardless of runtime flag since metadata may be resolved
+        // during enhancement and cached, never re-entering this method at runtime.
+        if (_type.isRecord() && !PCRegistry.isRegistered(_type)) {
+            RecordPersistenceCapable.registerRecordType(_type, this);
+        }
+
         // resolve lifecycle metadata now to prevent lazy threading problems
         _lifeMeta.resolve();
 
@@ -1924,7 +1940,10 @@ public class ClassMetaData
         }
 
         // if this is runtime, create a pc instance and scan it for comparators
-        if (runtime && !Modifier.isAbstract(_type.getModifiers())) {
+        // JPA 3.2: records are immutable and don't need proxy setup;
+        // they also need PCRegistry registration before newInstance can be called
+        if (runtime && !Modifier.isAbstract(_type.getModifiers())
+                && !_type.isRecord()) {
             ProxySetupStateManager sm = new ProxySetupStateManager();
             sm.setProxyData(PCRegistry.newInstance(_type, sm, false), this);
         }

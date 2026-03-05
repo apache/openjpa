@@ -227,6 +227,8 @@ public class ImplHelper {
      */
     public static boolean isManagedType(OpenJPAConfiguration conf, Class type) {
         return (PersistenceCapable.class.isAssignableFrom(type)
+            // JPA 3.2: records are embeddable without enhancement
+            || (type != null && type.isRecord())
             || (type != null
                 && (conf == null || conf.getRuntimeUnenhancedClassesConstant()
                     == RuntimeUnenhancedClassesModes.SUPPORTED)

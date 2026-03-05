@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.enhance.RecordPersistenceCapable;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
@@ -915,7 +916,16 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
     private Object embed(ValueMetaData vmd, Object obj) {
         if (obj == null)
             return null;
-        return _broker.embed(obj, null, _sm, vmd).getManagedInstance();
+        final OpenJPAStateManager sm = _broker.embed(obj, null, _sm, vmd);
+        final Object managed = sm.getManagedInstance();
+        // JPA 3.2: for record embeddables, the enhanced owner field expects
+        // the actual record type, not the RecordPersistenceCapable wrapper.
+        // Return the original object (which is the raw record) so the
+        // enhanced pcReplaceField can cast it to the declared record type.
+        if (managed instanceof RecordPersistenceCapable) {
+            return obj;
+        }
+        return managed;
     }
 
     /**

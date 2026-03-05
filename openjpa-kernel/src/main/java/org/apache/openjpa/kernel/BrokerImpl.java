@@ -51,6 +51,7 @@ import org.apache.openjpa.datacache.TypesChangedEvent;
 import org.apache.openjpa.ee.ManagedRuntime;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.enhance.RecordPersistenceCapable;
 import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.event.LifecycleEvent;
 import org.apache.openjpa.event.LifecycleEventManager;
@@ -3025,6 +3026,13 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             PersistenceCapable copy;
             PCState state;
             Class<?> type = meta.getDescribedType();
+
+            // JPA 3.2: register record types with PCRegistry on demand
+            if (meta.isRecord()
+                    && !PCRegistry.isRegistered(type)) {
+                RecordPersistenceCapable.registerRecordType(type, meta);
+            }
+
             if (obj != null) {
                 // give copy and the original instance the same state manager
                 // so that we can copy fields from one to the other
@@ -3032,8 +3040,15 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
                 PersistenceCapable pc;
                 if (orig == null) {
                     copySM = sm;
-                    pc = assertPersistenceCapable(obj);
-                    pc.pcReplaceStateManager(sm);
+                    if (meta.isRecord()) {
+                        // Wrap the record in a RecordPersistenceCapable
+                        pc = new RecordPersistenceCapable(
+                                type, meta, obj);
+                        pc.pcReplaceStateManager(sm);
+                    } else {
+                        pc = assertPersistenceCapable(obj);
+                        pc.pcReplaceStateManager(sm);
+                    }
                 } else {
                     copySM = orig;
                     pc = orig.getPersistenceCapable();
@@ -3065,6 +3080,14 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             }
 
             sm.initialize(copy, state);
+
+            // JPA 3.2: for records, register the raw record instance →
+            // embedded copy mapping so that getStateManagerImpl can find
+            // the SM when the owner's enhanced field provides the raw record
+            if (obj != null && meta.isRecord()) {
+                ImplHelper._unenhancedInstanceMap.put(obj, copy);
+            }
+
             return sm;
         } catch (OpenJPAException ke) {
             throw ke;

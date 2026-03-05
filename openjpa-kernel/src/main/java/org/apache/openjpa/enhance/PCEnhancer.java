@@ -546,6 +546,13 @@ public class PCEnhancer {
                 return ENHANCE_INTERFACE;
             }
 
+            // if record, skip - records are final and cannot be enhanced.
+            // JPA 3.2 allows records as embeddable classes; they are handled
+            // via RecordPersistenceCapable at runtime.
+            if ((managedType.getClassNode().access & Opcodes.ACC_RECORD) > 0) {
+                return ENHANCE_NONE;
+            }
+
             // check if already enhanced
             // we cannot simply use instanceof or isAssignableFrom as we have a temp ClassLoader inbetween
             ClassLoader loader = managedType.getClassLoader();

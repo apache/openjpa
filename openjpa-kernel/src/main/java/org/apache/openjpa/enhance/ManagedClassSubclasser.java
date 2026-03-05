@@ -92,7 +92,10 @@ public class ManagedClassSubclasser {
         if (conf.getRuntimeUnenhancedClassesConstant() != RuntimeUnenhancedClassesModes.SUPPORTED) {
             Collection<Class<?>> unenhanced = new ArrayList<>();
             for (Class<?> cls : classes)
-                if (!PersistenceCapable.class.isAssignableFrom(cls))
+                // JPA 3.2: records cannot be enhanced; they are handled
+                // via RecordPersistenceCapable at runtime
+                if (!PersistenceCapable.class.isAssignableFrom(cls)
+                        && !cls.isRecord())
                     unenhanced.add(cls);
             if (unenhanced.size() > 0) {
                 if (PCEnhancerAgent.getLoadSuccessful()) {

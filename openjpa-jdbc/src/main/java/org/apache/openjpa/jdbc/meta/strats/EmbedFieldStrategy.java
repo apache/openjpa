@@ -35,7 +35,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 
+import org.apache.openjpa.enhance.ManagedInstanceProvider;
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.enhance.RecordPersistenceCapable;
 import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
@@ -443,7 +445,12 @@ public class EmbedFieldStrategy
         //### was not selected after all
         StoreContext ctx = store.getContext();
         OpenJPAStateManager em = ctx.embed(null, null, sm, field);
-        sm.storeObject(field.getIndex(), em.getManagedInstance());
+        final boolean isRecord = em.getMetaData().isRecord();
+        // JPA 3.2: don't store a premature record instance; records are
+        // immutable and must be materialized after all fields are loaded
+        if (!isRecord) {
+            sm.storeObject(field.getIndex(), em.getManagedInstance());
+        }
         boolean needsLoad = loadFields(em, store, fetch, res);
 
         // After loading everything from result, load the rest of the
@@ -452,6 +459,17 @@ public class EmbedFieldStrategy
             fetch.requiresFetch(field.getFieldMetaData()) ==
                 FetchConfiguration.FETCH_LOAD) {
           em.load(fetch);
+        }
+
+        // JPA 3.2: for record embeddables, materialize the actual record
+        // instance now that all fields have been loaded
+        if (isRecord) {
+            final Object pc = em.getPersistenceCapable();
+            if (pc instanceof RecordPersistenceCapable) {
+                final Object record =
+                        ((RecordPersistenceCapable) pc).materialize();
+                sm.storeObject(field.getIndex(), record);
+            }
         }
     }
 

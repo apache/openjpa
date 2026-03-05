@@ -335,6 +335,9 @@ public class PersistenceMetaDataDefaults
     		return AccessCode.UNKNOWN;
         if (meta.getDescribedType().isInterface()) // managed interfaces
         	return AccessCode.PROPERTY;
+        // JPA 3.2: records use FIELD access - components map to fields
+        if (meta.getDescribedType().isRecord())
+            return AccessCode.FIELD;
     	if (!AccessCode.isUnknown(meta))
     		return meta.getAccessType();
     	int access = determineExplicitAccessType(meta.getDescribedType());
@@ -863,10 +866,18 @@ public class PersistenceMetaDataDefaults
         public boolean includes(AnnotatedElement obj) {
         	int mods = ((Member)obj).getModifiers();
 
-            return obj.getClass() == target &&
-                 !(Modifier.isStatic(mods) || Modifier.isFinal(mods)
-                || Modifier.isTransient(mods) || Modifier.isNative(mods));
-
+            if (obj.getClass() != target) {
+                return false;
+            }
+            if (Modifier.isStatic(mods) || Modifier.isTransient(mods)
+                    || Modifier.isNative(mods)) {
+                return false;
+            }
+            // JPA 3.2: record component fields are final but persistent
+            if (Modifier.isFinal(mods)) {
+                return ((Member) obj).getDeclaringClass().isRecord();
+            }
+            return true;
         }
     }
 
