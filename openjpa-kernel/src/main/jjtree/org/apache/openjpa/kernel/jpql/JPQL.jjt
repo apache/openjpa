@@ -1506,8 +1506,8 @@ void orderby_item() #ORDERBYITEM : { }
 {
 	(LOOKAHEAD(path()) path() | LOOKAHEAD(qualified_path()) qualified_path()
 	 | LOOKAHEAD(general_identification_variable()) general_identification_variable()
-	 | LOOKAHEAD(scalar_expression()) scalar_expression()
 	 | orderby_extension() | identification_variable()
+	 | LOOKAHEAD(scalar_expression()) scalar_expression()
 	 )
 	    [ <ASC> #ASCENDING | <DESC> #DESCENDING ]
 	    [ LOOKAHEAD(<NULLS>) <NULLS> ( <FIRST> #NULLSFIRST | <LAST> #NULLSLAST ) ]
