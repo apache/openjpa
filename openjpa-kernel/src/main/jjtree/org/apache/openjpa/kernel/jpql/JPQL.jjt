@@ -143,6 +143,8 @@ TOKEN [ IGNORE_CASE ]: /* basics */
 	|	< TIMES: "*" >
 	|	< DIV: "/" >
 
+	|	< CONCAT_PIPE: "||" >
+
 	|	< NEW: "NEW" >
 	
 	|   < ID: "ID" >
@@ -528,6 +530,12 @@ void update_item() #UPDATEITEM : { }
 
 
 void new_value() #UPDATEVALUE : { }
+{
+    new_value_primary()
+	(LOOKAHEAD(<CONCAT_PIPE>) <CONCAT_PIPE> new_value_primary() #CONCAT(2))*
+}
+
+void new_value_primary() : { }
 {
     LOOKAHEAD(case_expression()) case_expression() |
 	LOOKAHEAD(arithmetic_expression()) arithmetic_expression() |
@@ -1067,14 +1075,15 @@ void entity_type_expression(): { }
 
 void scalar_expression() #SCALAREXPRESSION : { }
 {
-    LOOKAHEAD(arithmetic_expression()) arithmetic_expression() |
+    (LOOKAHEAD(arithmetic_expression()) arithmetic_expression() |
     LOOKAHEAD(case_expression()) case_expression() |
     LOOKAHEAD(string_primary()) string_primary() |
     LOOKAHEAD(datetime_primary()) datetime_primary() |
     LOOKAHEAD(enum_primary()) enum_primary() |
     LOOKAHEAD(boolean_primary()) boolean_primary() |
     LOOKAHEAD(entity_type_expression()) entity_type_expression() |
-    LOOKAHEAD(entity_id_or_version_function()) entity_id_or_version_function() 
+    LOOKAHEAD(entity_id_or_version_function()) entity_id_or_version_function())
+    (LOOKAHEAD(<CONCAT_PIPE>) <CONCAT_PIPE> scalar_expression() #CONCAT(2))*
 }
 
 void entity_id_or_version_function(): { }
@@ -1162,7 +1171,8 @@ void string_value() : { }
 
 void string_expression() : { }
 {
-	input_parameter() | string_primary() 
+	(input_parameter() | string_primary())
+	(<CONCAT_PIPE> (input_parameter() | string_primary()) #CONCAT(2))*
 }
 
 

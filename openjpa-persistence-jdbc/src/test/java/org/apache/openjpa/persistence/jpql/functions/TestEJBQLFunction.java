@@ -993,6 +993,51 @@ public class TestEJBQLFunction extends AbstractTestCase {
     	endEm(em);
     }
     
+    public void testStringConcatOperator() {
+    	EntityManager em = currentEntityManager();
+
+    	// test || in SELECT - concatenate name and computerName
+    	String query = "SELECT u.name || ' uses ' || u.computerName FROM CompUser AS u WHERE u.name = 'Seetha'";
+    	List result = em.createQuery(query).getResultList();
+
+    	assertNotNull(result);
+    	assertEquals(1, result.size());
+    	assertEquals("Seetha uses MAC", (String) result.get(0));
+
+    	endEm(em);
+    }
+
+    public void testStringConcatOperatorInWhere() {
+    	EntityManager em = currentEntityManager();
+
+    	// test || in WHERE clause
+    	String query = "SELECT u.name FROM CompUser AS u WHERE u.name || u.computerName = :value";
+    	List result = em.createQuery(query).setParameter("value", "SeethaMAC").getResultList();
+
+    	assertNotNull(result);
+    	assertEquals(1, result.size());
+    	assertEquals("Seetha", (String) result.get(0));
+
+    	endEm(em);
+    }
+
+    public void testStringConcatOperatorInUpdate() {
+    	EntityManager em = currentEntityManager();
+    	startTx(em);
+
+    	// test || in UPDATE SET
+    	String query = "UPDATE CompUser e SET e.computerName = e.computerName || '_v2' WHERE e.name = 'Ugo'";
+    	int result = em.createQuery(query).executeUpdate();
+    	assertEquals(1, result);
+
+    	CompUser user = em.find(CompUser.class, userid3);
+    	em.refresh(user);
+    	assertEquals("PC_v2", user.getComputerName());
+
+    	endTx(em);
+    	endEm(em);
+    }
+
     public void testIdFunction() {
     	EntityManager em = currentEntityManager();
     	

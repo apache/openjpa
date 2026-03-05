@@ -286,6 +286,32 @@ public class TestJPQLParser {
     }
     
     @Test
+    public void testStringConcatOperator() {
+    	try {
+    		String query = "SELECT u.firstName || ' ' || u.lastName FROM User AS u";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    		return;
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    	}
+    	fail();
+    }
+
+    @Test
+    public void testStringConcatOperatorInWhere() {
+    	try {
+    		String query = "SELECT u FROM User AS u WHERE u.firstName || u.lastName = :fullName";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    		return;
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    	}
+    	fail();
+    }
+
+    @Test
     public void testDeleteUsingIdAndVersion() {
     	try {
     		String query = "DELETE from Employee WHERE id(this) = :id AND version(this) = :version";
