@@ -328,29 +328,6 @@ class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
         return asValue(q).append(" ").append(var == null ? "?" : var.getName());
     }
 
-	@Override
-	public Predicate equalTo(Expression<?> value) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
-	}
-
-	@Override
-	public Predicate equalTo(Object value) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
-	}
-
-	@Override
-	public Predicate notEqualTo(Expression<?> value) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
-	}
-
-	@Override
-	public Predicate notEqualTo(Object value) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
-	}
 
 	@Override
 	public <X> Expression<X> cast(Class<X> type) {

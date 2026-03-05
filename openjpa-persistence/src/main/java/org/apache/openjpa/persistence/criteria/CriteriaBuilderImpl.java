@@ -1063,44 +1063,44 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 
 	@Override
 	public CompoundSelection<Tuple> tuple(List<Selection<?>> selections) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		return tuple(selections.toArray(new Selection<?>[0]));
 	}
 
 	@Override
 	public CompoundSelection<Object[]> array(List<Selection<?>> selections) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		return array(selections.toArray(new Selection<?>[0]));
 	}
 
 	@Override
 	public Order asc(Expression<?> expression, Nulls nullPrecedence) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		return new OrderImpl(expression, true, nullPrecedence);
 	}
 
 	@Override
 	public Order desc(Expression<?> expression, Nulls nullPrecedence) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		return new OrderImpl(expression, false, nullPrecedence);
 	}
 
 	@Override
 	public Predicate and(List<Predicate> restrictions) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		return and(restrictions.toArray(new Predicate[0]));
 	}
 
 	@Override
 	public Predicate or(List<Predicate> restrictions) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		return or(restrictions.toArray(new Predicate[0]));
 	}
 
 	@Override
 	public Expression<String> concat(List<Expression<String>> expressions) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		if (expressions == null || expressions.isEmpty())
+			throw new IllegalArgumentException(
+				"concat requires at least one expression");
+		Expression<String> result = expressions.get(0);
+		for (int i = 1; i < expressions.size(); i++) {
+			result = new Expressions.Concat(result, expressions.get(i));
+		}
+		return result;
 	}
 
 	@Override

@@ -41,6 +41,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.CriteriaSelect;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Root;
 
 public class TestEJBQLFunction extends AbstractTestCase {
@@ -1323,6 +1324,98 @@ public class TestEJBQLFunction extends AbstractTestCase {
     	// age>20 intersect age>30 = Seetha(36), Shannon(36)
     	assertEquals("Criteria INTERSECT result count", 2,
     		result.size());
+
+    	endEm(em);
+    }
+
+    public void testScalarOrderBy() {
+    	EntityManager em = currentEntityManager();
+
+    	// JPA 3.2: scalar expressions in ORDER BY
+    	String query =
+    		"SELECT u.name FROM CompUser u"
+    		+ " ORDER BY LENGTH(u.name) DESC";
+    	List result = em.createQuery(query).getResultList();
+
+    	assertNotNull(result);
+    	assertEquals(6, result.size());
+
+    	// Verify ordering: longest names first
+    	int prevLen = Integer.MAX_VALUE;
+    	for (Object o : result) {
+    		String name;
+    		if (o instanceof Object[])
+    			name = String.valueOf(((Object[]) o)[0]);
+    		else
+    			name = String.valueOf(o);
+    		assertTrue(
+    			"Expected descending length order but '"
+    			+ name + "' (len=" + name.length()
+    			+ ") came after length " + prevLen,
+    			name.length() <= prevLen);
+    		prevLen = name.length();
+    	}
+
+    	endEm(em);
+    }
+
+    public void testCriteriaNullPrecedence() {
+    	EntityManager em = currentEntityManager();
+    	CriteriaBuilder cb = em.getCriteriaBuilder();
+
+    	CriteriaQuery<String> q = cb.createQuery(String.class);
+    	Root<CompUser> r = q.from(CompUser.class);
+    	q.select(r.get("name"))
+    		.orderBy(cb.asc(r.get("name"),
+    			jakarta.persistence.criteria.Nulls.FIRST));
+    	List result = em.createQuery(q).getResultList();
+
+    	assertNotNull(result);
+    	assertEquals(6, result.size());
+
+    	endEm(em);
+    }
+
+    public void testCriteriaListPredicates() {
+    	EntityManager em = currentEntityManager();
+    	CriteriaBuilder cb = em.getCriteriaBuilder();
+
+    	CriteriaQuery<CompUser> q = cb.createQuery(CompUser.class);
+    	Root<CompUser> r = q.from(CompUser.class);
+    	q.select(r);
+
+    	java.util.List<jakarta.persistence.criteria.Predicate> preds =
+    		new java.util.ArrayList<>();
+    	preds.add(cb.gt(r.get("age"), 20));
+    	preds.add(cb.like(r.get("name"), "S%"));
+    	q.where(preds);
+
+    	List result = em.createQuery(q).getResultList();
+    	assertNotNull(result);
+    	// Seetha(36), Shannon(36), Shade(23) match age>20 AND name S%
+    	assertEquals(3, result.size());
+
+    	endEm(em);
+    }
+
+    public void testCriteriaConcatList() {
+    	EntityManager em = currentEntityManager();
+    	CriteriaBuilder cb = em.getCriteriaBuilder();
+
+    	CriteriaQuery<String> q = cb.createQuery(String.class);
+    	Root<CompUser> r = q.from(CompUser.class);
+
+    	java.util.List<Expression<String>> parts =
+    		new java.util.ArrayList<>();
+    	parts.add(r.get("name"));
+    	parts.add(cb.literal("-"));
+    	parts.add(r.get("computerName"));
+    	q.select(cb.concat(parts))
+    		.where(cb.equal(r.get("name"), "Seetha"));
+    	List result = em.createQuery(q).getResultList();
+
+    	assertNotNull(result);
+    	assertEquals(1, result.size());
 
     	endEm(em);
     }

@@ -31,6 +31,7 @@ import jakarta.persistence.criteria.Order;
 class OrderImpl implements Order, CriteriaExpression {
 	private boolean _ascending;
 	private final ExpressionImpl<?> e;
+	private Nulls _nullPrecedence = Nulls.NONE;
 
 	public OrderImpl(Expression<?> e, boolean asc) {
 		this.e = (ExpressionImpl<?>) e;
@@ -39,6 +40,12 @@ class OrderImpl implements Order, CriteriaExpression {
 
 	public OrderImpl(Expression<?> e) {
 		this(e, true);
+	}
+
+	public OrderImpl(Expression<?> e, boolean asc, Nulls nullPrecedence) {
+		this.e = (ExpressionImpl<?>) e;
+		_ascending = asc;
+		_nullPrecedence = nullPrecedence;
 	}
 
 	@Override
@@ -83,7 +90,6 @@ class OrderImpl implements Order, CriteriaExpression {
 
 	@Override
 	public Nulls getNullPrecedence() {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		return _nullPrecedence;
 	}
 }

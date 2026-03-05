@@ -203,35 +203,6 @@ abstract class PredicateImpl extends ExpressionImpl<Boolean> implements Predicat
         return buffer;
     }
     
-    @Override
-    public <X> Expression<X> cast(Class<X> type) {
-    	// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
-    }
-    
-    @Override
-    public Predicate equalTo(Object value) {
-    	// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
-    }
-    
-    @Override
-    public Predicate equalTo(Expression<?> value) {
-    	// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
-    }
-    
-    @Override
-    public Predicate notEqualTo(Object value) {
-    	// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
-    }
-    
-    @Override
-    public Predicate notEqualTo(Expression<?> value) {
-    	// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
-    }
 
     /**
      * Concrete AND predicate.

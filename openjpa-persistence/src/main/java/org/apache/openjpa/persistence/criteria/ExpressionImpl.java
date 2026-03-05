@@ -115,14 +115,12 @@ public Predicate in(Object... values) {
     
     @Override
     public Predicate equalTo(Expression<?> value) {
-    	// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    	return new Expressions.Equal(this, value);
     }
-    
+
     @Override
     public Predicate equalTo(Object value) {
-    	// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    	return new Expressions.Equal(this, value);
     }
     
     @Override
@@ -143,14 +141,12 @@ public Predicate in(Object... values) {
     
     @Override
     public Predicate notEqualTo(Expression<?> value) {
-    	// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    	return new Expressions.NotEqual(this, value);
     }
-    
+
     @Override
     public Predicate notEqualTo(Object value) {
-    	// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+    	return new Expressions.NotEqual(this, value);
     }
 
     //  ------------------------------------------------------------------------------------

@@ -798,17 +798,23 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
 
 	@Override
 	public CriteriaQuery<T> where(List<Predicate> restrictions) {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		if (restrictions == null) {
+			return where((Predicate[]) null);
+		}
+		return where(restrictions.toArray(new Predicate[0]));
 	}
 
 	@Override
 	public CriteriaQuery<T> having(List<Predicate> restrictions) {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		if (restrictions == null) {
+			return having((Predicate[]) null);
+		}
+		return having(restrictions.toArray(new Predicate[0]));
 	}
 
 	@Override
 	public <U> Subquery<U> subquery(EntityType<U> type) {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		return subquery(type.getJavaType());
 	}
 	
 }

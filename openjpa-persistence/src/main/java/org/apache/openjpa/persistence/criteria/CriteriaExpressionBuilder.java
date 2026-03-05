@@ -33,6 +33,7 @@ import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Fetch;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Nulls;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Selection;
@@ -133,6 +134,7 @@ class CriteriaExpressionBuilder {
         exps.orderingClauses = new String[ordercount];
         exps.orderingAliases = new String[ordercount];
         exps.ascending = new boolean[ordercount];
+        exps.nullPrecedence = new int[ordercount];
         for (int i = 0; i < ordercount; i++) {
             OrderImpl order = (OrderImpl)orders.get(i);
             ExpressionImpl<?> expr = order.getExpression();
@@ -143,6 +145,13 @@ class CriteriaExpressionBuilder {
             exps.orderingClauses[i] = "";
             val.setAlias(alias);
             exps.ascending[i] = order.isAscending();
+            Nulls nulls = order.getNullPrecedence();
+            if (nulls == Nulls.FIRST)
+                exps.nullPrecedence[i] = QueryExpressions.NULLS_FIRST;
+            else if (nulls == Nulls.LAST)
+                exps.nullPrecedence[i] = QueryExpressions.NULLS_LAST;
+            else
+                exps.nullPrecedence[i] = QueryExpressions.NULLS_DEFAULT;
             exp2Vals.put(expr, val);
         }
         return exp2Vals;

@@ -338,57 +338,49 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     }
 
 	@Override
-	public Predicate equalTo(Expression<?> value) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
-	}
-
-	@Override
-	public Predicate equalTo(Object value) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
-	}
-
-	@Override
-	public Predicate notEqualTo(Expression<?> value) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
-	}
-
-	@Override
-	public Predicate notEqualTo(Object value) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
-	}
-
-	@Override
-	public <X> Expression<X> cast(Class<X> type) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
-	}
-
-	@Override
 	public <Y> Join<X, Y> join(Class<Y> entityClass) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		return join(entityClass, JoinType.INNER);
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public <Y> Join<X, Y> join(Class<Y> entityClass, JoinType joinType) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		jakarta.persistence.metamodel.Attribute<? super X, ?> attr =
+			findAttributeForType(entityClass);
+		if (attr instanceof jakarta.persistence.metamodel.SingularAttribute) {
+			return join(
+				(jakarta.persistence.metamodel.SingularAttribute<? super X, Y>)
+					attr, joinType);
+		}
+		throw new IllegalArgumentException(
+			"No joinable attribute found for entity class: "
+			+ entityClass.getName());
 	}
 
 	@Override
 	public <Y> Join<X, Y> join(EntityType<Y> entity) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		return join(entity.getJavaType(), JoinType.INNER);
 	}
 
 	@Override
 	public <Y> Join<X, Y> join(EntityType<Y> entity, JoinType joinType) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		return join(entity.getJavaType(), joinType);
+	}
+
+	@SuppressWarnings("unchecked")
+	private <Y> jakarta.persistence.metamodel.Attribute<? super X, ?>
+			findAttributeForType(Class<Y> entityClass) {
+		jakarta.persistence.metamodel.ManagedType<X> type =
+			(jakarta.persistence.metamodel.ManagedType<X>) getModel();
+		for (jakarta.persistence.metamodel.Attribute<? super X, ?> attr
+				: type.getAttributes()) {
+			if (entityClass.isAssignableFrom(attr.getJavaType())) {
+				return attr;
+			}
+		}
+		throw new IllegalArgumentException(
+			"No attribute of type " + entityClass.getName()
+			+ " found on " + type.getJavaType().getName());
 	}
 	
 }

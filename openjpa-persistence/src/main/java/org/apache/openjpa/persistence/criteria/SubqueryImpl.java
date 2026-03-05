@@ -408,56 +408,58 @@ class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
 
 	@Override
 	public <U> Subquery<U> subquery(EntityType<U> type) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		return subquery(type.getJavaType());
 	}
 
 	@Override
 	public Set<ParameterExpression<?>> getParameters() {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		return _delegate.getParameters();
 	}
 
 	@Override
 	public Predicate equalTo(Expression<?> value) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		return new Expressions.Equal(this, value);
 	}
 
 	@Override
 	public Predicate equalTo(Object value) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		return new Expressions.Equal(this, value);
 	}
 
 	@Override
 	public Predicate notEqualTo(Expression<?> value) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		return new Expressions.NotEqual(this, value);
 	}
 
 	@Override
 	public Predicate notEqualTo(Object value) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		return new Expressions.NotEqual(this, value);
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public <X> Expression<X> cast(Class<X> type) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		return ((ExpressionImpl<T>) this).cast(type);
 	}
 
 	@Override
 	public Subquery<T> where(List<Predicate> restrictions) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		if (restrictions == null) {
+			_delegate.where((Predicate[]) null);
+		} else {
+			_delegate.where(restrictions.toArray(new Predicate[0]));
+		}
+		return this;
 	}
 
 	@Override
 	public Subquery<T> having(List<Predicate> restrictions) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		if (restrictions == null) {
+			_delegate.having((Predicate[]) null);
+		} else {
+			_delegate.having(restrictions.toArray(new Predicate[0]));
+		}
+		return this;
 	}
 
 }
