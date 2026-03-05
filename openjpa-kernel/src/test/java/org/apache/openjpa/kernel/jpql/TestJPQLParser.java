@@ -483,4 +483,57 @@ public class TestJPQLParser {
     	}
     	fail();
     }
+
+    @Test
+    public void testOptionalSelectClause() {
+    	try {
+    		String query = "FROM User u WHERE u.age > 30";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    		return;
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    	}
+    	fail();
+    }
+
+    @Test
+    public void testOptionalIdentificationVariable() {
+    	try {
+    		String query = "SELECT this FROM User"
+    			+ " WHERE this.age > 30";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    		return;
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    	}
+    	fail();
+    }
+
+    @Test
+    public void testOptionalSelectAndIdentificationVariable() {
+    	try {
+    		String query = "FROM User WHERE this.age > 30";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    		return;
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    	}
+    	fail();
+    }
+
+    @Test
+    public void testOptionalSelectNoWhere() {
+    	try {
+    		String query = "FROM User";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    		return;
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    	}
+    	fail();
+    }
 }

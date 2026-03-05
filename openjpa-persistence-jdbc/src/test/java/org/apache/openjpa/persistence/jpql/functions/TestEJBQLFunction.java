@@ -1327,6 +1327,56 @@ public class TestEJBQLFunction extends AbstractTestCase {
     	endEm(em);
     }
 
+    public void testOptionalSelectClause() {
+    	EntityManager em = currentEntityManager();
+
+    	// JPA 3.2: SELECT clause is optional, defaults to SELECT this
+    	String query = "FROM CompUser u WHERE u.age > 30";
+    	List result = em.createQuery(query).getResultList();
+
+    	assertNotNull(result);
+    	// Seetha(36), Shannon(36)
+    	assertEquals(2, result.size());
+    	assertTrue(result.get(0) instanceof CompUser);
+
+    	endEm(em);
+    }
+
+    public void testOptionalIdentificationVariable() {
+    	EntityManager em = currentEntityManager();
+
+    	// JPA 3.2: identification variable is optional,
+    	// implicit "this" variable is available
+    	String query =
+    		"SELECT this FROM CompUser"
+    		+ " WHERE this.age > 30";
+    	List result = em.createQuery(query).getResultList();
+
+    	assertNotNull(result);
+    	// Seetha(36), Shannon(36)
+    	assertEquals(2, result.size());
+    	assertTrue(result.get(0) instanceof CompUser);
+
+    	endEm(em);
+    }
+
+    public void testOptionalSelectAndIdentificationVariable() {
+    	EntityManager em = currentEntityManager();
+
+    	// JPA 3.2: both SELECT clause and identification
+    	// variable are optional
+    	String query =
+    		"FROM CompUser WHERE this.age > 30";
+    	List result = em.createQuery(query).getResultList();
+
+    	assertNotNull(result);
+    	// Seetha(36), Shannon(36)
+    	assertEquals(2, result.size());
+    	assertTrue(result.get(0) instanceof CompUser);
+
+    	endEm(em);
+    }
+
     public CompUser createUser(String name, String cName, Address add, int age,
         boolean isMale) {
         CompUser user = null;

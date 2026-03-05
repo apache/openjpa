@@ -438,13 +438,14 @@ void intersection() : { }
 void query_expression() : { }
 {
 	LOOKAHEAD("(" <SELECT>) "(" select_statement() ")"
+	| LOOKAHEAD("(" <FROM>) "(" select_statement() ")"
 	| select_query()
 }
 
 
 void select_query() #SELECT : { }
 {
-	select_clause()
+	[LOOKAHEAD(<SELECT>) select_clause()]
 		from_clause()
 		[where_clause()]
 		[groupby_clause()]

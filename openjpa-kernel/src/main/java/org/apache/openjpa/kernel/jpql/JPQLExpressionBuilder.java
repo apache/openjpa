@@ -309,7 +309,7 @@ public class JPQLExpressionBuilder
         Expression filter = null;
         Expression from = ctx().from;
         if (from == null)
-            from = evalFromClause(root().id == JJTSELECT);
+            from = evalFromClause(false);
         filter = and(from, filter);
         filter = and(evalWhereClause(), filter);
         filter = and(evalSelectClause(exps), filter);
@@ -902,6 +902,12 @@ public class JPQLExpressionBuilder
             if (needsAlias)
                 throw parseException(EX_USER, "alias-required",
                     new Object[]{ cmd }, null);
+            // JPA 3.2: implicit identification variable "this"
+            alias = "this";
+            addSchemaToContext(alias, cmd);
+            Value var = getVariable(alias, true);
+            var.setMetaData(cmd);
+            bind(var);
         } else {
             alias = right(node).text;
             JPQLNode left = left(node);
