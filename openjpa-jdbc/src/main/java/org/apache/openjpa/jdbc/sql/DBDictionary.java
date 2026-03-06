@@ -45,11 +45,13 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.text.MessageFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
+import java.time.Year;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -879,6 +881,24 @@ public class DBDictionary
         return tst != null ? tst.toLocalDateTime().atZone(ZoneId.systemDefault()).toOffsetDateTime() : null;
     }
 
+    /**
+     * Retrieve the specified column of the SQL ResultSet to the proper
+     * {@link Instant} java type.
+     */
+    public Instant getInstant(ResultSet rs, int column) throws SQLException {
+        Timestamp tst = rs.getTimestamp(column);
+        return tst != null ? tst.toInstant() : null;
+    }
+
+    /**
+     * Retrieve the specified column of the SQL ResultSet to the proper
+     * {@link Year} java type.
+     */
+    public Year getYear(ResultSet rs, int column) throws SQLException {
+        int val = rs.getInt(column);
+        return rs.wasNull() ? null : Year.of(val);
+    }
+
     private ProxyManager getProxyManager() {
         if (_proxyManager == null) {
             _proxyManager = conf.getProxyManagerInstance();
@@ -1344,6 +1364,22 @@ public class DBDictionary
     }
 
     /**
+     * Set the given Instant value as a parameter to the statement.
+     */
+    public void setInstant(PreparedStatement stmnt, int idx, Instant val, Column col)
+            throws SQLException {
+        setTimestamp(stmnt, idx, Timestamp.from(val), null, col);
+    }
+
+    /**
+     * Set the given Year value as a parameter to the statement.
+     */
+    public void setYear(PreparedStatement stmnt, int idx, Year val, Column col)
+            throws SQLException {
+        setInt(stmnt, idx, val.getValue(), col);
+    }
+
+    /**
      * Set the given value as a parameter to the statement.
      */
     public void setDouble(PreparedStatement stmnt, int idx, double val, Column col)
@@ -1577,6 +1613,12 @@ public class DBDictionary
             case JavaTypes.OFFSET_DATETIME:
                 setOffsetDateTime(stmnt, idx, (OffsetDateTime) val, col);
                 break;
+            case JavaTypes.INSTANT:
+                setInstant(stmnt, idx, (Instant) val, col);
+                break;
+            case JavaTypes.YEAR:
+                setYear(stmnt, idx, (Year) val, col);
+                break;
             case JavaTypes.BIGDECIMAL:
                 setBigDecimal(stmnt, idx, (BigDecimal) val, col);
                 break;
@@ -1743,6 +1785,12 @@ public class DBDictionary
         }
         else if (val instanceof OffsetDateTime) {
             setOffsetDateTime(stmnt, idx, (OffsetDateTime) val, col);
+        }
+        else if (val instanceof Instant) {
+            setInstant(stmnt, idx, (Instant) val, col);
+        }
+        else if (val instanceof Year) {
+            setYear(stmnt, idx, (Year) val, col);
         }
         else if (val instanceof Reader)
             setCharacterStream(stmnt, idx, (Reader) val,
@@ -1936,6 +1984,10 @@ public class DBDictionary
                 return getPreferredType(Types.TIME_WITH_TIMEZONE);
             case JavaTypes.OFFSET_DATETIME:
                 return getPreferredType(Types.TIMESTAMP_WITH_TIMEZONE);
+            case JavaTypes.INSTANT:
+                return getPreferredType(Types.TIMESTAMP);
+            case JavaTypes.YEAR:
+                return getPreferredType(Types.INTEGER);
             case JavaSQLTypes.SQL_ARRAY:
                 return getPreferredType(Types.ARRAY);
             case JavaSQLTypes.BINARY_STREAM:

@@ -1055,6 +1055,8 @@ public class JDBCStoreQuery
         case JavaTypes.LOCALE:
         case JavaTypes.OBJECT:
         case JavaTypes.UUID_OBJ:
+        case JavaTypes.INSTANT:
+        case JavaTypes.YEAR:
         case JavaTypes.OID:
             return sm.fetchObjectField(i);
         default:

@@ -1318,6 +1318,8 @@ public class MappingRepository extends MetaDataRepository {
             case JavaTypes.LOCAL_DATETIME:
             case JavaTypes.OFFSET_TIME:
             case JavaTypes.OFFSET_DATETIME:
+            case JavaTypes.INSTANT:
+            case JavaTypes.YEAR:
             case JavaTypes.UUID_OBJ:
                 return ImmutableValueHandler.getInstance();
             case JavaTypes.STRING:

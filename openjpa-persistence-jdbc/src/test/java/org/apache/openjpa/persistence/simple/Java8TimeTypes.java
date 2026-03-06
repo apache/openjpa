@@ -20,15 +20,17 @@ package org.apache.openjpa.persistence.simple;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
+import java.time.Year;
 import java.util.Date;
 
 /**
- * Java8 DateTime types which are required by the JPA-2.2 spec
+ * Java8 DateTime types which are required by the JPA-3.2 spec
  */
 @Entity
 public class Java8TimeTypes {
@@ -43,6 +45,8 @@ public class Java8TimeTypes {
     private LocalDateTime localDateTimeField;
     private OffsetTime offsetTimeField;
     private OffsetDateTime offsetDateTimeField;
+    private Instant instantField;
+    private Year yearField;
 
     public int getId() {
         return id;
@@ -98,5 +102,21 @@ public class Java8TimeTypes {
 
     public void setOffsetDateTimeField(OffsetDateTime offsetDateTimeField) {
         this.offsetDateTimeField = offsetDateTimeField;
+    }
+
+    public Instant getInstantField() {
+        return instantField;
+    }
+
+    public void setInstantField(Instant instantField) {
+        this.instantField = instantField;
+    }
+
+    public Year getYearField() {
+        return yearField;
+    }
+
+    public void setYearField(Year yearField) {
+        this.yearField = yearField;
     }
 }

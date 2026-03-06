@@ -186,6 +186,8 @@ abstract class AttachStrategy
             case JavaTypes.LOCAL_DATETIME:
             case JavaTypes.OFFSET_TIME:
             case JavaTypes.OFFSET_DATETIME:
+            case JavaTypes.INSTANT:
+            case JavaTypes.YEAR:
             case JavaTypes.NUMBER:
             case JavaTypes.BOOLEAN_OBJ:
             case JavaTypes.BYTE_OBJ:
