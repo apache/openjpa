@@ -724,6 +724,7 @@ public abstract class MappingInfo implements Serializable {
             notNull = (tmplate.isNotNull()) ? Boolean.TRUE : Boolean.FALSE;
         int decimals = tmplate.getDecimalDigits();
         int secondPrecision = tmplate.getSecondPrecision();
+        String options = tmplate.getOptions();
         String defStr = tmplate.getDefaultString();
         boolean autoAssign = tmplate.isAutoAssigned();
         boolean relationId = tmplate.isRelationId();
@@ -750,6 +751,8 @@ public abstract class MappingInfo implements Serializable {
             decimals = given.getDecimalDigits();
             if (given.getSecondPrecision() >= 0)
                 secondPrecision = given.getSecondPrecision();
+            if (given.getOptions() != null)
+                options = given.getOptions();
 
             // leave this info as the template defaults unless the user
             // explicitly turns it on in the given column
@@ -817,10 +820,12 @@ public abstract class MappingInfo implements Serializable {
         if (notNull != null)
             col.setNotNull(notNull);
 
-        // secondPrecision is always set regardless of adapt mode,
-        // as it's needed at runtime for SQL generation
+        // secondPrecision and options are always set regardless of adapt mode,
+        // as they're needed at runtime for SQL generation
         if (secondPrecision >= 0)
             col.setSecondPrecision(secondPrecision);
+        if (options != null)
+            col.setOptions(options);
 
         // add other details if adapting
         if (adapt) {

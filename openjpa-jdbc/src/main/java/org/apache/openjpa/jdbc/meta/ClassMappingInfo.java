@@ -65,6 +65,7 @@ public class ClassMappingInfo
     private String _className = Object.class.getName();
     private DBIdentifier _tableName = DBIdentifier.NULL;
     private DBIdentifier _schemaName = DBIdentifier.NULL;
+    private String _tableOptions = null;
     private boolean _joined = false;
     private Map<DBIdentifier, List<Column>> _seconds = null;
     private String _subStrat = null;
@@ -130,6 +131,14 @@ public class ClassMappingInfo
 
     public void setTableIdentifier(DBIdentifier table) {
         _tableName = table;
+    }
+
+    public String getTableOptions() {
+        return _tableOptions;
+    }
+
+    public void setTableOptions(String options) {
+        _tableOptions = options;
     }
 
     /**
@@ -338,6 +347,8 @@ public class ClassMappingInfo
         t.setComment(cls.getTypeAlias() == null
             ? cls.getDescribedType().getName()
             : cls.getTypeAlias());
+        if (_tableOptions != null)
+            t.setOptions(_tableOptions);
         return t;
     }
 

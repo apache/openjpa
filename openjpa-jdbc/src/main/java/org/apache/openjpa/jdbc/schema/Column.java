@@ -81,6 +81,7 @@ public class Column extends ReferenceCounter {
     private boolean _pk = false;
     private VersionStrategy _versionStrategy = null;
     private String _comment = null;
+    private String _options = null;
     private boolean _XML = false;
     private boolean _isUni1MFK = false;
     private Set<Constraint> _constraints = new HashSet<>();
@@ -937,6 +938,14 @@ public class Column extends ReferenceCounter {
 
     public void setComment(String comment) {
         _comment = comment;
+    }
+
+    public String getOptions() {
+        return _options;
+    }
+
+    public void setOptions(String options) {
+        _options = options;
     }
 
     /**

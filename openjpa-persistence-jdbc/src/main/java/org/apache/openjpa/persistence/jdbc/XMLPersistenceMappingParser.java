@@ -888,6 +888,9 @@ public class XMLPersistenceMappingParser
             attrs.getValue("name"));
         if (!DBIdentifier.isNull(table))
             mapping.getMappingInfo().setTableIdentifier(table);
+        String options = attrs.getValue("options");
+        if (options != null && !options.isEmpty())
+            mapping.getMappingInfo().setTableOptions(options);
         return true;
     }
 
@@ -1110,6 +1113,9 @@ public class XMLPersistenceMappingParser
         val = attrs.getValue("second-precision");
         if (val != null)
             col.setSecondPrecision(Integer.parseInt(val));
+        val = attrs.getValue("options");
+        if (val != null)
+            col.setOptions(val);
         val = attrs.getValue("nullable");
         if (val != null)
             col.setNotNull("false".equals(val));
@@ -1460,6 +1466,9 @@ public class XMLPersistenceMappingParser
         val = attrs.getValue("second-precision");
         if (val != null)
             col.setSecondPrecision(Integer.parseInt(val));
+        val = attrs.getValue("options");
+        if (val != null)
+            col.setOptions(val);
         val = attrs.getValue("nullable");
         if (val != null)
             col.setNotNull("false".equals(val));

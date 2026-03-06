@@ -3877,6 +3877,8 @@ public class DBDictionary
 
         buf.append(endBuf.toString());
         buf.append(")");
+        if (table.getOptions() != null && !table.getOptions().isEmpty())
+            buf.append(" ").append(table.getOptions());
         return new String[]{ buf.toString() };
     }
 
@@ -4108,6 +4110,8 @@ public class DBDictionary
             else if (autoAssignClause != null)
                 buf.append(" ").append(autoAssignClause);
         }
+        if (col.getOptions() != null && !col.getOptions().isEmpty())
+            buf.append(" ").append(col.getOptions());
         return buf.toString();
     }
 

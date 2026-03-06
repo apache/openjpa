@@ -613,6 +613,8 @@ public class AnnotationPersistenceMappingParser
         if (!DBIdentifier.isNull(tName)) {
             cm.getMappingInfo().setTableIdentifier(tName);
         }
+        if (!StringUtil.isEmpty(table.options()))
+            cm.getMappingInfo().setTableOptions(table.options());
         addUniqueConstraints(tName.getName(), cm, cm.getMappingInfo(),
             table.uniqueConstraints());
         addIndices(tName.getName(), cm, cm.getMappingInfo(), table.indexes());
@@ -1807,6 +1809,8 @@ public class AnnotationPersistenceMappingParser
         col.setDecimalDigits(anno.scale());
         if (anno.secondPrecision() != -1)
             col.setSecondPrecision(anno.secondPrecision());
+        if (!StringUtil.isEmpty(anno.options()))
+            col.setOptions(anno.options());
         col.setFlag(Column.FLAG_UNINSERTABLE, !anno.insertable());
         col.setFlag(Column.FLAG_UNUPDATABLE, !anno.updatable());
     }
