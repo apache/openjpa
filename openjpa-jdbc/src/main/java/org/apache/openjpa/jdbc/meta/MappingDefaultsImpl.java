@@ -549,7 +549,11 @@ public class MappingDefaultsImpl
 
         if (type.isEnum() && !vm.isSerialized()) {
             EnumValueHandler enumHandler = new EnumValueHandler();
-            enumHandler.setStoreOrdinal(_ordinalEnum);
+            if (EnumValueHandler.hasEnumeratedValue(type)) {
+                enumHandler.setUseEnumeratedValue(true);
+            } else {
+                enumHandler.setStoreOrdinal(_ordinalEnum);
+            }
             return enumHandler;
         }
 

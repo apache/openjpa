@@ -1647,11 +1647,21 @@ public class AnnotationPersistenceMappingParser
     }
 
     /**
-     * Parse @Enumerated.
+     * Parse @Enumerated. If the enum type has @EnumeratedValue, that takes
+     * precedence over the @Enumerated strategy.
      */
     private void parseEnumerated(FieldMapping fm, Enumerated anno) {
-        String strat = EnumValueHandler.class.getName() + "(StoreOrdinal="
-            + (anno.value() == EnumType.ORDINAL) + ")";
+        Class<?> enumType = fm.isElementCollection()
+            ? fm.getElement().getDeclaredType()
+            : fm.getDeclaredType();
+        String strat;
+        if (enumType != null && EnumValueHandler.hasEnumeratedValue(enumType)) {
+            strat = EnumValueHandler.class.getName()
+                + "(UseEnumeratedValue=true)";
+        } else {
+            strat = EnumValueHandler.class.getName() + "(StoreOrdinal="
+                + (anno.value() == EnumType.ORDINAL) + ")";
+        }
         if (fm.isElementCollection())
             fm.getElementMapping().getValueInfo().setStrategy(strat);
         else

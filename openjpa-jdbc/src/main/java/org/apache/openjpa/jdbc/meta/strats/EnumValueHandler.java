@@ -18,7 +18,11 @@
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
@@ -39,7 +43,22 @@ public class EnumValueHandler extends AbstractValueHandler {
     private static final long serialVersionUID = 1L;
     private Enum<?>[] _vals = null;
     private boolean _ordinal = false;
+    private boolean _useEnumeratedValue = false;
+    private transient Field _enumeratedValueField = null;
+    private transient Map<Object, Enum<?>> _dbToEnum = null;
     private static final Localizer _loc = Localizer.forPackage(EnumValueHandler.class);
+    @SuppressWarnings("unchecked")
+    private static final Class<? extends Annotation> ENUMERATED_VALUE_CLASS = loadEnumeratedValueClass();
+
+    @SuppressWarnings("unchecked")
+    private static Class<? extends Annotation> loadEnumeratedValueClass() {
+        try {
+            return (Class<? extends Annotation>)
+                Class.forName("jakarta.persistence.EnumeratedValue");
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
+    }
 
     /**
      * Whether to store the enum value as its ordinal.
@@ -53,6 +72,20 @@ public class EnumValueHandler extends AbstractValueHandler {
      */
     public void setStoreOrdinal(boolean ordinal) {
         _ordinal = ordinal;
+    }
+
+    /**
+     * Whether to use the @EnumeratedValue annotated field for DB mapping.
+     */
+    public boolean getUseEnumeratedValue() {
+        return _useEnumeratedValue;
+    }
+
+    /**
+     * Whether to use the @EnumeratedValue annotated field for DB mapping.
+     */
+    public void setUseEnumeratedValue(boolean useEnumeratedValue) {
+        _useEnumeratedValue = useEnumeratedValue;
     }
 
     /**
@@ -82,9 +115,27 @@ public class EnumValueHandler extends AbstractValueHandler {
 
         Column col = new Column();
         col.setIdentifier(name);
-        if (_ordinal)
+
+        if (_useEnumeratedValue) {
+            initEnumeratedValueField(vm.getType());
+            Class<?> fieldType = _enumeratedValueField.getType();
+            if (fieldType == int.class || fieldType == Integer.class
+                || fieldType == short.class || fieldType == Short.class) {
+                col.setJavaType(JavaTypes.INT);
+            } else {
+                col.setJavaType(JavaTypes.STRING);
+                int len = 20;
+                for (Enum<?> val : _vals) {
+                    Object dbVal = getEnumeratedFieldValue(val);
+                    if (dbVal != null) {
+                        len = Math.max(dbVal.toString().length(), len);
+                    }
+                }
+                col.setSize(len);
+            }
+        } else if (_ordinal) {
             col.setJavaType(JavaTypes.SHORT);
-        else {
+        } else {
             // look for the longest enum value name; use 20 as min length to
             // leave room for future long names
             int len = 20;
@@ -98,6 +149,54 @@ public class EnumValueHandler extends AbstractValueHandler {
         return new Column[]{ col };
     }
 
+    private void initEnumeratedValueField(Class<?> enumType) {
+        if (_enumeratedValueField != null) {
+            return;
+        }
+        for (Field f : enumType.getDeclaredFields()) {
+            if (f.isAnnotationPresent(ENUMERATED_VALUE_CLASS)) {
+                f.setAccessible(true);
+                _enumeratedValueField = f;
+                break;
+            }
+        }
+        if (_enumeratedValueField == null) {
+            throw new MetaDataException(_loc.get("no-enumerated-value-field",
+                enumType.getName()));
+        }
+        // build reverse lookup map
+        _dbToEnum = new HashMap<>();
+        for (Enum<?> val : _vals) {
+            Object dbVal = getEnumeratedFieldValue(val);
+            _dbToEnum.put(dbVal, val);
+        }
+    }
+
+    /**
+     * Check if the given enum type has a field annotated with @EnumeratedValue.
+     */
+    public static boolean hasEnumeratedValue(Class<?> enumType) {
+        if (enumType == null || !enumType.isEnum() || ENUMERATED_VALUE_CLASS == null) {
+            return false;
+        }
+        for (Field f : enumType.getDeclaredFields()) {
+            if (f.isAnnotationPresent(ENUMERATED_VALUE_CLASS)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Object getEnumeratedFieldValue(Enum<?> val) {
+        try {
+            return _enumeratedValueField.get(val);
+        } catch (IllegalAccessException e) {
+            throw new MetaDataException(_loc.get("enum-value-access-error",
+                val.getClass().getName(), _enumeratedValueField.getName()))
+                .setCause(e);
+        }
+    }
+
     @Override
     public boolean isVersionable(ValueMapping vm) {
         return true;
@@ -107,6 +206,10 @@ public class EnumValueHandler extends AbstractValueHandler {
     public Object toDataStoreValue(ValueMapping vm, Object val, JDBCStore store) {
         if (val == null)
             return null;
+        if (_useEnumeratedValue) {
+            initEnumeratedValueField(vm.getType());
+            return getEnumeratedFieldValue((Enum<?>) val);
+        }
         if (_ordinal)
             return ((Enum) val).ordinal();
         return ((Enum) val).name();
@@ -116,6 +219,19 @@ public class EnumValueHandler extends AbstractValueHandler {
     public Object toObjectValue(ValueMapping vm, Object val) {
         if (val == null)
             return null;
+        if (_useEnumeratedValue) {
+            initEnumeratedValueField(vm.getType());
+            Enum<?> result = _dbToEnum.get(val);
+            if (result == null && val instanceof Number) {
+                // try numeric conversion (e.g. long to int)
+                result = _dbToEnum.get(((Number) val).intValue());
+            }
+            if (result == null) {
+                // try string conversion
+                result = _dbToEnum.get(val.toString());
+            }
+            return result;
+        }
         if (_ordinal)
             return _vals[((Number) val).intValue()];
         return Enum.valueOf(vm.getType(), (String) val);
