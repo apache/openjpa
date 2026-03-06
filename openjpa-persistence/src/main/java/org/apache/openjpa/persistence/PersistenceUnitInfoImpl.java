@@ -369,6 +369,12 @@ public class PersistenceUnitInfoImpl
                 } else {
                     setNonJtaDataSource((DataSource) val);
                 }
+            } else if (JPAProperties.DATASOURCE.equals(key)) {
+                if (val instanceof String) {
+                    setNonJtaDataSourceName((String) val);
+                } else {
+                    setNonJtaDataSource((DataSource) val);
+                }
             } else if (JPAProperties.VALIDATE_MODE.equals(key)) {
                 setValidationMode(JPAProperties.getEnumValue(ValidationMode.class, val));
             } else if (JPAProperties.CACHE_MODE.equals(key)) {
