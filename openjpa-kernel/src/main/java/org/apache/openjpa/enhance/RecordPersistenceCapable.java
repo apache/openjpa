@@ -141,8 +141,43 @@ public class RecordPersistenceCapable
         }
     }
 
+    /**
+     * Re-reads field values from the given StateManager and constructs
+     * a fresh record instance. Used after attach/merge where field values
+     * are stored in the SM rather than in this wrapper's fieldValues array.
+     */
+    public void rematerialize(
+            final org.apache.openjpa.kernel.OpenJPAStateManager stateMgr) {
+        try {
+            final RecordComponent[] components =
+                    recordClass.getRecordComponents();
+            final Object[] args = new Object[components.length];
+            final FieldMetaData[] fields = meta.getFields();
+            for (int c = 0; c < components.length; c++) {
+                final String compName = components[c].getName();
+                for (int f = 0; f < fields.length; f++) {
+                    if (fields[f].getName().equals(compName)) {
+                        args[c] = stateMgr.fetch(f);
+                        break;
+                    }
+                }
+                if (args[c] == null
+                        && components[c].getType().isPrimitive()) {
+                    args[c] = getDefaultPrimitiveValue(
+                            components[c].getType());
+                }
+            }
+            recordInstance = canonicalConstructor.newInstance(args);
+        } catch (final Exception e) {
+            throw new InternalException(
+                    "Failed to rematerialize record "
+                    + recordClass.getName(), e);
+        }
+    }
+
     private Object getFieldValue(final int i) {
-        if (recordInstance != null) {
+        if (recordInstance != null
+                && recordClass.isInstance(recordInstance)) {
             try {
                 final RecordComponent[] components =
                         recordClass.getRecordComponents();

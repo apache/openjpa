@@ -1805,7 +1805,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
                     throw new UserException(_loc.get
                         ("cant-update-embed-in-query-result")).setFailedObject
                         (getManagedInstance());
-                else
+                else if (!_owner.isDeleted())
                     // notify owner of change
                     _owner.dirty(_ownerIndex, Boolean.TRUE, loadFetchGroup);
             }

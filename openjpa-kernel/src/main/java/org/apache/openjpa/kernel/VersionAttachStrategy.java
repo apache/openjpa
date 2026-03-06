@@ -174,6 +174,13 @@ class VersionAttachStrategy
         }
         if (!embedded && !isNew)
             compareVersion(sm, pc);
+        // JPA 3.2: for record embeddables, materialize the record from the
+        // field values that were just attached so the return value is a
+        // raw record, not the RecordPersistenceCapable wrapper.
+        if (into instanceof org.apache.openjpa.enhance.RecordPersistenceCapable) {
+            ((org.apache.openjpa.enhance.RecordPersistenceCapable) into)
+                    .rematerialize(sm);
+        }
         return ImplHelper.getManagedInstance(into);
     }
 

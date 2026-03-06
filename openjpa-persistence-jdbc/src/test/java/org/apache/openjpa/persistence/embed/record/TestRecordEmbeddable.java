@@ -144,6 +144,69 @@ public class TestRecordEmbeddable extends SingleEMFTestCase {
         em3.close();
     }
 
+    public void testMergeRecordEmbeddable() {
+        final PersonWithRecordAddress person = new PersonWithRecordAddress(
+                "MergeTest", new AddressRecord("100 First Ave", "Seattle", "98101"));
+
+        final EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        em.persist(person);
+        em.getTransaction().commit();
+        final long id = person.getId();
+        em.close();
+
+        // Detach by closing the EM, modify, then merge
+        final EntityManager em2 = emf.createEntityManager();
+        PersonWithRecordAddress detached =
+                em2.find(PersonWithRecordAddress.class, id);
+        em2.close();
+
+        detached.setAddress(
+                new AddressRecord("200 Second Ave", "Portland", "97201"));
+
+        final EntityManager em3 = emf.createEntityManager();
+        em3.getTransaction().begin();
+        em3.merge(detached);
+        em3.getTransaction().commit();
+        em3.close();
+
+        // Verify merge
+        final EntityManager em4 = emf.createEntityManager();
+        final PersonWithRecordAddress merged =
+                em4.find(PersonWithRecordAddress.class, id);
+        assertNotNull(merged.getAddress());
+        assertEquals("200 Second Ave", merged.getAddress().street());
+        assertEquals("Portland", merged.getAddress().city());
+        assertEquals("97201", merged.getAddress().zip());
+        em4.close();
+    }
+
+    public void testRemoveRecordEmbeddable() {
+        final PersonWithRecordAddress person = new PersonWithRecordAddress(
+                "RemoveTest", new AddressRecord("Del St", "DelCity", "11111"));
+
+        final EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        em.persist(person);
+        em.getTransaction().commit();
+        final long id = person.getId();
+        em.close();
+
+        // Remove via em.remove()
+        final EntityManager em2 = emf.createEntityManager();
+        em2.getTransaction().begin();
+        final PersonWithRecordAddress toRemove =
+                em2.find(PersonWithRecordAddress.class, id);
+        em2.remove(toRemove);
+        em2.getTransaction().commit();
+        em2.close();
+
+        // Verify removal
+        final EntityManager em3 = emf.createEntityManager();
+        assertNull(em3.find(PersonWithRecordAddress.class, id));
+        em3.close();
+    }
+
     public void testRecordIsEmbeddableType() {
         assertTrue("AddressRecord should be recognized as a record",
                 AddressRecord.class.isRecord());

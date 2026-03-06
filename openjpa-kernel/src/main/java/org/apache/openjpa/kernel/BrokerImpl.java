@@ -3041,9 +3041,18 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
                 if (orig == null) {
                     copySM = sm;
                     if (meta.isRecord()) {
-                        // Wrap the record in a RecordPersistenceCapable
-                        pc = new RecordPersistenceCapable(
-                                type, meta, obj);
+                        // Wrap the record in a RecordPersistenceCapable.
+                        // obj might be a raw record, a RecordPC, or another
+                        // PC wrapper (e.g. ReflectingPC during attach/merge).
+                        // Extract the raw managed instance first.
+                        if (obj instanceof RecordPersistenceCapable) {
+                            pc = (PersistenceCapable) obj;
+                        } else {
+                            Object rawObj =
+                                    ImplHelper.getManagedInstance(obj);
+                            pc = new RecordPersistenceCapable(
+                                    type, meta, rawObj);
+                        }
                         pc.pcReplaceStateManager(sm);
                     } else {
                         pc = assertPersistenceCapable(obj);
