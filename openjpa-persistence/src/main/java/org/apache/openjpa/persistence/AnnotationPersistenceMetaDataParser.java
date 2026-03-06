@@ -1938,7 +1938,7 @@ public class AnnotationPersistenceMetaDataParser
     /**
      * Parse @NamedNativeQuery.
      */
-    private void parseNamedNativeQueries(AnnotatedElement el,
+    protected void parseNamedNativeQueries(AnnotatedElement el,
         NamedNativeQuery... queries) {
         QueryMetaData meta;
         for (NamedNativeQuery query : queries) {

@@ -99,6 +99,7 @@ import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.persistence.XMLPersistenceMetaDataParser;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
@@ -173,6 +174,7 @@ public class XMLPersistenceMappingParser
     private DiscriminatorType _discType;
     private Column _discCol;
     private int _resultIdx = 0;
+    private QueryResultMapping _nativeQueryResultMapping = null;
     private final DBDictionary _dict;
 
     // ForeignKey info
@@ -1220,6 +1222,56 @@ public class XMLPersistenceMappingParser
     }
 
     /**
+     * JPA 3.2: Override to create an implicit QueryResultMapping for
+     * inline entity-result/column-result children.
+     */
+    @Override
+    protected boolean startNamedNativeQuery(Attributes attrs)
+        throws SAXException {
+        boolean ret = super.startNamedNativeQuery(attrs);
+        if (ret) {
+            // create an implicit result mapping; will be registered only
+            // if entity-result or column-result children are encountered
+            String name = attrs.getValue("name");
+            MappingRepository repos = (MappingRepository) getRepository();
+            _nativeQueryResultMapping = repos.addQueryResultMapping(
+                null, name);
+            Object cur = currentElement();
+            Object scope = (cur instanceof ClassMetaData)
+                ? ((ClassMetaData) cur).getDescribedType() : null;
+            _nativeQueryResultMapping.setSource(getSourceFile(), scope,
+                SourceTracker.SRC_XML);
+        }
+        return ret;
+    }
+
+    @Override
+    protected void endNamedNativeQuery()
+        throws SAXException {
+        if (_nativeQueryResultMapping != null) {
+            // if no entity/column results were added, remove the mapping
+            if (_nativeQueryResultMapping.getPCResults().length == 0
+                && _nativeQueryResultMapping.getColumnResults().length == 0) {
+                MappingRepository repos =
+                    (MappingRepository) getRepository();
+                repos.removeQueryResultMapping(
+                    _nativeQueryResultMapping);
+            } else {
+                // wire up the result set mapping name on the query
+                QueryMetaData meta =
+                    (QueryMetaData) currentElement();
+                if (StringUtil.isEmpty(
+                    meta.getResultSetMappingName())) {
+                    meta.setResultSetMappingName(
+                        _nativeQueryResultMapping.getName());
+                }
+            }
+            _nativeQueryResultMapping = null;
+        }
+        super.endNamedNativeQuery();
+    }
+
+    /**
      * Start processing <code>entity-result</code> node.
      * Pushes the {@link QueryResultMapping.PCResult}
      * onto the stack as current element.
@@ -1229,7 +1281,13 @@ public class XMLPersistenceMappingParser
         Class<?> entityClass = classForName(attrs.getValue("entity-class"));
         String discriminator = DBIdentifier.newColumn(attrs.getValue("discriminator-column"), delimit()).getName();
 
-        QueryResultMapping parent = (QueryResultMapping) currentElement();
+        // JPA 3.2: entity-result may appear inside named-native-query
+        QueryResultMapping parent;
+        if (currentElement() instanceof QueryResultMapping) {
+            parent = (QueryResultMapping) currentElement();
+        } else {
+            parent = _nativeQueryResultMapping;
+        }
         QueryResultMapping.PCResult result = parent.addPCResult(entityClass);
         if (!StringUtil.isEmpty(discriminator))
             result.addMapping(PCResult.DISCRIMINATOR, discriminator);
@@ -1261,7 +1319,13 @@ public class XMLPersistenceMappingParser
      */
     private boolean startColumnResult(Attributes attrs)
         throws SAXException {
-        QueryResultMapping parent = (QueryResultMapping) currentElement();
+        // JPA 3.2: column-result may appear inside named-native-query
+        QueryResultMapping parent;
+        if (currentElement() instanceof QueryResultMapping) {
+            parent = (QueryResultMapping) currentElement();
+        } else {
+            parent = _nativeQueryResultMapping;
+        }
         parent.addColumnResult(attrs.getValue("name"));
         return true;
     }

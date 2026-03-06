@@ -125,6 +125,7 @@ import org.apache.openjpa.jdbc.meta.SequenceMapping;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.meta.ValueMappingInfo;
 import org.apache.openjpa.jdbc.meta.strats.EnumValueHandler;
+import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.jdbc.meta.strats.FlatClassStrategy;
 import org.apache.openjpa.jdbc.meta.strats.FullClassStrategy;
 import org.apache.openjpa.jdbc.meta.strats.VerticalClassStrategy;
@@ -159,6 +160,7 @@ import jakarta.persistence.EntityResult;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FieldResult;
+import jakarta.persistence.NamedNativeQuery;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinColumns;
@@ -743,6 +745,67 @@ public class AnnotationPersistenceMappingParser
             for (ColumnResult column : anno.columns()) {
                 DBIdentifier sName = DBIdentifier.newColumn(column.name(), delimit());
                 result.addColumnResult(sName.getName());
+            }
+        }
+    }
+
+    /**
+     * Override to handle JPA 3.2 inline result set mapping members
+     * (entities, classes, columns) on @NamedNativeQuery.
+     */
+    @Override
+    protected void parseNamedNativeQueries(java.lang.reflect.AnnotatedElement el,
+        NamedNativeQuery... queries) {
+        super.parseNamedNativeQueries(el, queries);
+
+        MappingRepository repos = (MappingRepository) getRepository();
+        for (NamedNativeQuery query : queries) {
+            EntityResult[] entities = query.entities();
+            ConstructorResult[] classes = query.classes();
+            ColumnResult[] columns = query.columns();
+
+            if (entities.length == 0 && classes.length == 0
+                && columns.length == 0)
+                continue;
+
+            // create an implicit result set mapping named after the query
+            String mappingName = query.name();
+            QueryResultMapping result = repos.getCachedQueryResultMapping(
+                null, mappingName);
+            if (result != null)
+                continue;
+
+            result = repos.addQueryResultMapping(null, mappingName);
+            result.setSource(getSourceFile(),
+                (el instanceof Class) ? (Class<?>) el : null,
+                SourceTracker.SRC_ANNOTATIONS);
+
+            for (EntityResult entity : entities) {
+                QueryResultMapping.PCResult entityResult =
+                    result.addPCResult(entity.entityClass());
+                if (!StringUtil.isEmpty(entity.discriminatorColumn()))
+                    entityResult.addMapping(
+                        QueryResultMapping.PCResult.DISCRIMINATOR,
+                        entity.discriminatorColumn());
+                for (FieldResult field : entity.fields()) {
+                    DBIdentifier sColName =
+                        DBIdentifier.newColumn(field.column(), delimit());
+                    entityResult.addMapping(field.name(),
+                        sColName.getName());
+                }
+            }
+            for (ColumnResult column : columns) {
+                DBIdentifier sName =
+                    DBIdentifier.newColumn(column.name(), delimit());
+                result.addColumnResult(sName.getName());
+            }
+
+            // set the mapping name on the query metadata
+            QueryMetaData meta = repos.searchQueryMetaDataByName(
+                query.name());
+            if (meta != null
+                && StringUtil.isEmpty(meta.getResultSetMappingName())) {
+                meta.setResultSetMappingName(mappingName);
             }
         }
     }

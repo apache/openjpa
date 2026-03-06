@@ -482,6 +482,14 @@
 		</properties>
 	</persistence-unit>
 
+	<persistence-unit name="native-query-inline-result">
+		<mapping-file>META-INF/native-query-inline-result-orm.xml</mapping-file>
+		<class>org.apache.openjpa.persistence.simple.NativeQueryResultEntity</class>
+		<properties>
+			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
+		</properties>
+	</persistence-unit>
+
 	<persistence-unit name="rev-mapping-pu">
 		<properties>
 			<property name="openjpa.jdbc.Schemas" value="USCHEMA.USCHANTBL"/>
