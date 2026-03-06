@@ -126,8 +126,6 @@ public class EntityManagerFactoryImpl
             // convert to user readable values
             if (emEmptyPropsProperties != null) {
                 props.putAll(emEmptyPropsProperties);
-            } else {
-                props.putAll(doCreateEM(SynchronizationType.SYNCHRONIZED, null, true).getProperties());
             }
             // no need to sync or volatile, worse case concurrent threads create 2 instances
             // we just want to avoid to do it after some "init" phase

@@ -461,6 +461,69 @@ databaseName=${db.name}
         <!-- ^^^^^^^^^^^^^^^^^^^^ -->
       </profile>
 
+      <profile>
+        <!-- vvvvvvvvvvvvvvvvvvvvv -->
+        <!-- JPA 3.2 TCK Profile  -->
+        <!-- vvvvvvvvvvvvvvvvvvvvv -->
+
+        <id>tck32-profile</id>
+        <properties>
+            <tck32.version>3.2.0</tck32.version>
+            <tck32.rdbms>derby</tck32.rdbms>
+        </properties>
+        <build>
+          <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireJavaVersion>
+                                    <version>[17,)</version>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-antrun-plugin</artifactId>
+              <executions>
+                <execution>
+                  <id>tck32-run</id>
+                  <phase>integration-test</phase>
+                  <configuration>
+                    <target>
+                        <echo>Running JPA 3.2 TCK with OpenJPA</echo>
+                        <exec executable="bash" dir="${basedir}" failonerror="true">
+                            <arg value="${basedir}/run-tck32.sh" />
+                            <arg value="${tck32.rdbms}" />
+                            <env key="OPENJPA_VERSION" value="${project.version}" />
+                            <env key="TCK_VERSION" value="${tck32.version}" />
+                        </exec>
+                    </target>
+                  </configuration>
+                  <goals>
+                    <goal>run</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </build>
+
+        <!-- ^^^^^^^^^^^^^^^^^^^^^ -->
+        <!-- JPA 3.2 TCK Profile  -->
+        <!-- ^^^^^^^^^^^^^^^^^^^^^ -->
+      </profile>
+
         <profile>
             <!--
                 Example db2 profile. You can use this profile if you:
