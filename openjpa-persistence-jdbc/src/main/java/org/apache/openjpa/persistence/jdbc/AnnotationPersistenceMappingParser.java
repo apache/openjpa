@@ -742,7 +742,11 @@ public class AnnotationPersistenceMappingParser
                 }
             }
             for (ConstructorResult constructorResult : anno.classes()) {
-                throw new UnsupportedOperationException("JPA 2.1, not yet impl");
+                QueryResultMapping.ConstructorResultInfo crInfo =
+                    result.addConstructorResult(constructorResult.targetClass());
+                for (ColumnResult col : constructorResult.columns()) {
+                    crInfo.addColumn(col.name(), col.type());
+                }
             }
             for (ColumnResult column : anno.columns()) {
                 DBIdentifier sName = DBIdentifier.newColumn(column.name(), delimit());
