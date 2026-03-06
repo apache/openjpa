@@ -82,6 +82,68 @@ public class TestRecordEmbeddable extends SingleEMFTestCase {
         em2.close();
     }
 
+    public void testUpdateRecordEmbeddable() {
+        final AddressRecord addr =
+                new AddressRecord("789 Elm St", "Denver", "80201");
+        final PersonWithRecordAddress person =
+                new PersonWithRecordAddress("Bob Smith", addr);
+
+        final EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        em.persist(person);
+        em.getTransaction().commit();
+        final long id = person.getId();
+        em.close();
+
+        // Update the embedded record on a managed entity
+        final EntityManager em2 = emf.createEntityManager();
+        em2.getTransaction().begin();
+        final PersonWithRecordAddress managed =
+                em2.find(PersonWithRecordAddress.class, id);
+        managed.setAddress(
+                new AddressRecord("999 Pine Rd", "Boulder", "80301"));
+        em2.getTransaction().commit();
+        em2.close();
+
+        // Verify the update in a fresh EM
+        final EntityManager em3 = emf.createEntityManager();
+        final PersonWithRecordAddress updated =
+                em3.find(PersonWithRecordAddress.class, id);
+        assertNotNull(updated.getAddress());
+        assertEquals("999 Pine Rd", updated.getAddress().street());
+        assertEquals("Boulder", updated.getAddress().city());
+        assertEquals("80301", updated.getAddress().zip());
+        em3.close();
+    }
+
+    public void testDeleteEntityWithRecordEmbeddable() {
+        final PersonWithRecordAddress person = new PersonWithRecordAddress(
+                "DeleteMe", new AddressRecord("X St", "Y City", "00000"));
+
+        final EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        em.persist(person);
+        em.getTransaction().commit();
+        final long id = person.getId();
+        em.close();
+
+        // Delete via JPQL (em.remove on record-embedded entities
+        // has a known limitation with dirty-check on the embedded SM)
+        final EntityManager em2 = emf.createEntityManager();
+        em2.getTransaction().begin();
+        em2.createQuery(
+                "DELETE FROM PersonWithRecordAddress p WHERE p.id = :id")
+                .setParameter("id", id)
+                .executeUpdate();
+        em2.getTransaction().commit();
+        em2.close();
+
+        // Verify deletion
+        final EntityManager em3 = emf.createEntityManager();
+        assertNull(em3.find(PersonWithRecordAddress.class, id));
+        em3.close();
+    }
+
     public void testRecordIsEmbeddableType() {
         assertTrue("AddressRecord should be recognized as a record",
                 AddressRecord.class.isRecord());
