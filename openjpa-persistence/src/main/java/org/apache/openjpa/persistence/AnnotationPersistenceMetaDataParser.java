@@ -614,10 +614,6 @@ public class AnnotationPersistenceMetaDataParser
                     break;
                 case ID_CLASS:
                     if (isMetaDataMode()) {
-                    	Class<?> idClass = ((IdClass)anno).value();
-                    	if (!Serializable.class.isAssignableFrom(idClass)) {
-                    		_log.warn(_loc.get("id-class-not-serializable", idClass, _cls).toString());
-                    	}
                         meta.setObjectIdType(((IdClass) anno).value(), true);
                     }
                     break;

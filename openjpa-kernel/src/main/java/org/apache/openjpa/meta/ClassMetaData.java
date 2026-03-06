@@ -2180,7 +2180,7 @@ public class ClassMetaData
      */
     private void validateAppIdClassMethods(Class<?> oid) {
         try {
-            oid.getConstructor((Class[]) null);
+            oid.getDeclaredConstructor((Class[]) null);
         } catch (Exception e) {
             throw new MetaDataException(_loc.get("null-cons", oid, _type)).
                 setCause(e);

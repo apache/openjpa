@@ -1343,9 +1343,6 @@ public class XMLPersistenceMetaDataParser
         } catch (Throwable t) {
             throw getException(_loc.get("invalid-id-class", meta, cls), t);
         }
-        if (!Serializable.class.isAssignableFrom(idCls)) {
-        	_conf.getConfigurationLog().warn(_loc.get("id-class-not-serializable", idCls, _cls));
-        }
         meta.setObjectIdType(idCls, true);
         return true;
     }

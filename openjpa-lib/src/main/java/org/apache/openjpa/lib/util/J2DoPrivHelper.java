@@ -156,7 +156,9 @@ public abstract class J2DoPrivHelper {
     public static <T> T newInstance(final Class<T> clazz) throws IllegalAccessException, InstantiationException {
     	try {
             if (!Modifier.isAbstract(clazz.getModifiers())) {
-        		return clazz.getDeclaredConstructor().newInstance();
+                java.lang.reflect.Constructor<T> ctor = clazz.getDeclaredConstructor();
+                ctor.setAccessible(true);
+        		return ctor.newInstance();
             } else {
                 return (T) clazz.getMethod("newInstance", new Class[]{}).invoke(null, new Object[]{});
             }
