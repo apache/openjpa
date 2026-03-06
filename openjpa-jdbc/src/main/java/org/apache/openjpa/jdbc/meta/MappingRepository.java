@@ -44,6 +44,8 @@ import org.apache.openjpa.jdbc.meta.strats.HandlerFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.HandlerHandlerMapTableFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.HandlerRelationMapTableFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.ImmutableValueHandler;
+import org.apache.openjpa.jdbc.meta.strats.InstantVersionStrategy;
+import org.apache.openjpa.jdbc.meta.strats.LocalDateTimeVersionStrategy;
 import org.apache.openjpa.jdbc.meta.strats.LobFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.MaxEmbeddedBlobFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.MaxEmbeddedByteArrayFieldStrategy;
@@ -702,6 +704,10 @@ public class MappingRepository extends MetaDataRepository {
             strat = NanoPrecisionTimestampVersionStrategy.class;
         else if (StateComparisonVersionStrategy.ALIAS.equals(name))
             strat = StateComparisonVersionStrategy.class;
+        else if (LocalDateTimeVersionStrategy.ALIAS.equals(name))
+            strat = LocalDateTimeVersionStrategy.class;
+        else if (InstantVersionStrategy.ALIAS.equals(name))
+            strat = InstantVersionStrategy.class;
 
         try {
             if (strat == null)
@@ -1478,6 +1484,10 @@ public class MappingRepository extends MetaDataRepository {
             case JavaTypes.DATE:
             case JavaTypes.CALENDAR:
                 return new NanoPrecisionTimestampVersionStrategy();
+            case JavaTypes.LOCAL_DATETIME:
+                return new LocalDateTimeVersionStrategy();
+            case JavaTypes.INSTANT:
+                return new InstantVersionStrategy();
             case JavaTypes.BYTE:
             case JavaTypes.INT:
             case JavaTypes.LONG:
