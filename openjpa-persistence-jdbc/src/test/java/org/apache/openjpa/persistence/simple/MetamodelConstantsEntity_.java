@@ -41,4 +41,8 @@ public class MetamodelConstantsEntity_ {
         "MetamodelConstantsEntity.findByName";
     public static final String QUERY_METAMODELCONSTANTSENTITY_FINDNATIVE =
         "MetamodelConstantsEntity.findNative";
+
+    // JPA 3.2: Result set mapping constants
+    public static final String MAPPING_METAMODELCONSTANTSENTITY_RESULTMAPPING =
+        "MetamodelConstantsEntity.resultMapping";
 }

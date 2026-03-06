@@ -41,11 +41,15 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
+import jakarta.persistence.Embeddable;
 import jakarta.persistence.Entity;
+import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.NamedNativeQueries;
 import jakarta.persistence.NamedNativeQuery;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.NamedQueries;
+import jakarta.persistence.SqlResultSetMapping;
+import jakarta.persistence.SqlResultSetMappings;
 import jakarta.persistence.metamodel.StaticMetamodel;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
@@ -308,16 +312,14 @@ public class AnnotationProcessor6 extends AbstractProcessor {
                 modelField.makePublic().makeStatic().makeVolatile();
             }
 
-            // JPA 3.2: EntityType constant for entity types
-            if (e.getAnnotation(Entity.class) != null) {
-                SourceCode.Field classField = modelClass.addField("class_",
-                    "jakarta.persistence.metamodel.EntityType");
-                classField.addParameter(originalSimpleClass);
-                classField.makePublic().makeStatic().makeVolatile();
-            }
+            // JPA 3.2: managed type constant
+            addManagedTypeConstant(e, modelClass, originalSimpleClass);
 
             // JPA 3.2: String constants for named queries
             addNamedQueryConstants(e, modelClass);
+
+            // JPA 3.2: String constants for result set mappings
+            addResultSetMappingConstants(e, modelClass);
 
             source.write(writer);
             writer.flush();
@@ -327,6 +329,23 @@ public class AnnotationProcessor6 extends AbstractProcessor {
             logger.error(_loc.get("mmg-process-error", e.getQualifiedName()), e1);
             return false;
         }
+    }
+
+    private void addManagedTypeConstant(TypeElement e, SourceCode.Class modelClass,
+            String originalSimpleClass) {
+        String typeClass;
+        if (e.getAnnotation(Entity.class) != null) {
+            typeClass = "jakarta.persistence.metamodel.EntityType";
+        } else if (e.getAnnotation(MappedSuperclass.class) != null) {
+            typeClass = "jakarta.persistence.metamodel.MappedSuperclassType";
+        } else if (e.getAnnotation(Embeddable.class) != null) {
+            typeClass = "jakarta.persistence.metamodel.EmbeddableType";
+        } else {
+            return;
+        }
+        SourceCode.Field classField = modelClass.addField("class_", typeClass);
+        classField.addParameter(originalSimpleClass);
+        classField.makePublic().makeStatic().makeVolatile();
     }
 
     private void addNamedQueryConstants(TypeElement e, SourceCode.Class modelClass) {
@@ -356,6 +375,26 @@ public class AnnotationProcessor6 extends AbstractProcessor {
         String constName = "QUERY_" + toConstantName(queryName);
         SourceCode.Field f = modelClass.addField(constName, "String");
         f.setInitialValue("\"" + queryName + "\"");
+        f.makePublic().makeStatic().makeFinal();
+    }
+
+    private void addResultSetMappingConstants(TypeElement e, SourceCode.Class modelClass) {
+        SqlResultSetMapping srm = e.getAnnotation(SqlResultSetMapping.class);
+        if (srm != null) {
+            addMappingConstant(modelClass, srm.name());
+        }
+        SqlResultSetMappings srms = e.getAnnotation(SqlResultSetMappings.class);
+        if (srms != null) {
+            for (SqlResultSetMapping m : srms.value()) {
+                addMappingConstant(modelClass, m.name());
+            }
+        }
+    }
+
+    private void addMappingConstant(SourceCode.Class modelClass, String mappingName) {
+        String constName = "MAPPING_" + toConstantName(mappingName);
+        SourceCode.Field f = modelClass.addField(constName, "String");
+        f.setInitialValue("\"" + mappingName + "\"");
         f.makePublic().makeStatic().makeFinal();
     }
 

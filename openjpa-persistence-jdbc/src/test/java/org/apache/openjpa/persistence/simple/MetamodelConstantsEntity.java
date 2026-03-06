@@ -18,13 +18,17 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import jakarta.persistence.ColumnResult;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.NamedNativeQuery;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
+import jakarta.persistence.SqlResultSetMapping;
 
 @Entity
+@SqlResultSetMapping(name = "MetamodelConstantsEntity.resultMapping",
+    columns = @ColumnResult(name = "name"))
 @NamedQueries({
     @NamedQuery(name = "MetamodelConstantsEntity.findAll",
         query = "SELECT e FROM MetamodelConstantsEntity e"),
