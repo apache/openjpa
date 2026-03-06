@@ -1105,6 +1105,9 @@ public class XMLPersistenceMappingParser
         val = attrs.getValue("scale");
         if (val != null)
             col.setDecimalDigits(Integer.parseInt(val));
+        val = attrs.getValue("second-precision");
+        if (val != null)
+            col.setSecondPrecision(Integer.parseInt(val));
         val = attrs.getValue("nullable");
         if (val != null)
             col.setNotNull("false".equals(val));
@@ -1390,6 +1393,9 @@ public class XMLPersistenceMappingParser
         val = attrs.getValue("scale");
         if (val != null)
             col.setDecimalDigits(Integer.parseInt(val));
+        val = attrs.getValue("second-precision");
+        if (val != null)
+            col.setSecondPrecision(Integer.parseInt(val));
         val = attrs.getValue("nullable");
         if (val != null)
             col.setNotNull("false".equals(val));

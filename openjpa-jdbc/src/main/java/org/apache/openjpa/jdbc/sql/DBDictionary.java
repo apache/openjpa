@@ -2145,9 +2145,12 @@ public class DBDictionary
 
         if (colSize<=0  && fractionalTypeNameSet.contains(upperCaseTypeName)){
             // special handling for types with fractions
-            // Attention! We abuse @Column(scale=n)
-            // One can disable all fractions with @Column(scale=-1)
-            if (col.getDecimalDigits() != 0) { // the default
+            // JPA 3.2 @Column(secondPrecision=n) is the standard way
+            // Legacy: @Column(scale=n) also works, scale=-1 disables fractions
+            if (col.getSecondPrecision() >= 0) {
+                colSize = col.getSecondPrecision();
+            }
+            else if (col.getDecimalDigits() != 0) { // the default
                 colSize = col.getDecimalDigits() == -1 ? 0 : col.getDecimalDigits();
             }
             else {

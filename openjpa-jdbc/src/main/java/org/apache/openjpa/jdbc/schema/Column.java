@@ -65,6 +65,7 @@ public class Column extends ReferenceCounter {
     private int _scale     = -1;
     private int _radix     = 10;
     private int _decimals = 0;
+    private int _secondPrecision = -1;
     private String _defaultStr = null;
     private Object _default = null;
     private Boolean _notNull = null;
@@ -388,6 +389,14 @@ public class Column extends ReferenceCounter {
      */
     public void setDecimalDigits(int digits) {
         _decimals = digits;
+    }
+
+    public int getSecondPrecision() {
+        return _secondPrecision;
+    }
+
+    public void setSecondPrecision(int secondPrecision) {
+        _secondPrecision = secondPrecision;
     }
 
     public int getPrecision() {

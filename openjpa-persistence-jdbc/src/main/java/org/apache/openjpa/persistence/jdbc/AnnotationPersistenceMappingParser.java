@@ -1742,6 +1742,8 @@ public class AnnotationPersistenceMappingParser
             col.setSize(anno.length());
         col.setNotNull(!anno.nullable());
         col.setDecimalDigits(anno.scale());
+        if (anno.secondPrecision() != -1)
+            col.setSecondPrecision(anno.secondPrecision());
         col.setFlag(Column.FLAG_UNINSERTABLE, !anno.insertable());
         col.setFlag(Column.FLAG_UNUPDATABLE, !anno.updatable());
     }

@@ -723,6 +723,7 @@ public abstract class MappingInfo implements Serializable {
         if (tmplate.isNotNullExplicit())
             notNull = (tmplate.isNotNull()) ? Boolean.TRUE : Boolean.FALSE;
         int decimals = tmplate.getDecimalDigits();
+        int secondPrecision = tmplate.getSecondPrecision();
         String defStr = tmplate.getDefaultString();
         boolean autoAssign = tmplate.isAutoAssigned();
         boolean relationId = tmplate.isRelationId();
@@ -747,6 +748,8 @@ public abstract class MappingInfo implements Serializable {
             if (given.getSize() > 0)
                 size = given.getSize();
             decimals = given.getDecimalDigits();
+            if (given.getSecondPrecision() >= 0)
+                secondPrecision = given.getSecondPrecision();
 
             // leave this info as the template defaults unless the user
             // explicitly turns it on in the given column
@@ -813,6 +816,11 @@ public abstract class MappingInfo implements Serializable {
             col.setDefaultString(defStr);
         if (notNull != null)
             col.setNotNull(notNull);
+
+        // secondPrecision is always set regardless of adapt mode,
+        // as it's needed at runtime for SQL generation
+        if (secondPrecision >= 0)
+            col.setSecondPrecision(secondPrecision);
 
         // add other details if adapting
         if (adapt) {
@@ -1791,6 +1799,8 @@ public abstract class MappingInfo implements Serializable {
             copy.setSize(col.getSize());
         if (col.getDecimalDigits() != 0)
             copy.setDecimalDigits(col.getDecimalDigits());
+        if (col.getSecondPrecision() >= 0)
+            copy.setSecondPrecision(col.getSecondPrecision());
         if (col.getDefaultString() != null)
             copy.setDefaultString(col.getDefaultString());
         if (col.isNotNull() && !col.isPrimaryKey()
