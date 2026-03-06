@@ -682,4 +682,42 @@ public class DelayedVectorProxy extends Vector implements ProxyCollection, Delay
         }
         super.removeRange(fromIndex, toIndex);
     }
+
+    // Java 21 SequencedCollection methods.
+    // Not declared as @Override since they don't exist in Java 17's Vector,
+    // but at runtime on Java 21+ the JVM matches these to
+    // SequencedCollection/List default methods.
+
+    public synchronized Object getFirst() {
+        return get(0);
+    }
+
+    public synchronized Object getLast() {
+        return get(size() - 1);
+    }
+
+    public synchronized void addFirst(Object e) {
+        add(e);
+    }
+
+    public synchronized void addLast(Object e) {
+        add(e);
+    }
+
+    public synchronized Object removeFirst() {
+        return remove(0);
+    }
+
+    public synchronized Object removeLast() {
+        return remove(size() - 1);
+    }
+
+    public synchronized List reversed() {
+        if (!_directAccess && isDelayLoad()) {
+            load();
+        }
+        List copy = new java.util.ArrayList(this);
+        java.util.Collections.reverse(copy);
+        return java.util.Collections.unmodifiableList(copy);
+    }
 }

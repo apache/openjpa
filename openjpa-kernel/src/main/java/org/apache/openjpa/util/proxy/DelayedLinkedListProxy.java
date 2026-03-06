@@ -371,11 +371,9 @@ public class DelayedLinkedListProxy extends LinkedList implements ProxyCollectio
             super.addFirst(paramObject);
             return;
         }
-        if (isDelayLoad()) {
-            load();
-        }
-        ProxyCollections.beforeAddFirst(this, paramObject);
-        super.addFirst(paramObject);
+        ProxyCollections.beforeAdd(this, paramObject);
+        boolean result = super.add(paramObject);
+        ProxyCollections.afterAdd(this, paramObject, result);
     }
 
     @Override
@@ -384,12 +382,9 @@ public class DelayedLinkedListProxy extends LinkedList implements ProxyCollectio
             super.addLast(paramObject);
             return;
         }
-        if (isDelayLoad()) {
-            load();
-        }
-        ProxyCollections.beforeAddLast(this, paramObject);
-        super.addLast(paramObject);
-        ProxyCollections.afterAddLast(this, paramObject);
+        ProxyCollections.beforeAdd(this, paramObject);
+        boolean result = super.add(paramObject);
+        ProxyCollections.afterAdd(this, paramObject, result);
     }
 
     @Override
@@ -719,5 +714,17 @@ public class DelayedLinkedListProxy extends LinkedList implements ProxyCollectio
         }
         Iterator localIterator = super.descendingIterator();
         return ProxyCollections.afterIterator(this, localIterator);
+    }
+
+    // Java 21 SequencedCollection method.
+    // Not declared as @Override since it doesn't exist in Java 17's LinkedList,
+    // but at runtime on Java 21+ the JVM matches this to the List default method.
+    public java.util.LinkedList reversed() {
+        if (!_directAccess && isDelayLoad()) {
+            load();
+        }
+        java.util.LinkedList copy = new java.util.LinkedList(this);
+        java.util.Collections.reverse(copy);
+        return copy;
     }
 }
