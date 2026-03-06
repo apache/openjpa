@@ -41,6 +41,11 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
+import jakarta.persistence.Entity;
+import jakarta.persistence.NamedNativeQueries;
+import jakarta.persistence.NamedNativeQuery;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.NamedQueries;
 import jakarta.persistence.metamodel.StaticMetamodel;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
@@ -302,6 +307,18 @@ public class AnnotationProcessor6 extends AbstractProcessor {
                 }
                 modelField.makePublic().makeStatic().makeVolatile();
             }
+
+            // JPA 3.2: EntityType constant for entity types
+            if (e.getAnnotation(Entity.class) != null) {
+                SourceCode.Field classField = modelClass.addField("class_",
+                    "jakarta.persistence.metamodel.EntityType");
+                classField.addParameter(originalSimpleClass);
+                classField.makePublic().makeStatic().makeVolatile();
+            }
+
+            // JPA 3.2: String constants for named queries
+            addNamedQueryConstants(e, modelClass);
+
             source.write(writer);
             writer.flush();
             writer.close();
@@ -310,6 +327,49 @@ public class AnnotationProcessor6 extends AbstractProcessor {
             logger.error(_loc.get("mmg-process-error", e.getQualifiedName()), e1);
             return false;
         }
+    }
+
+    private void addNamedQueryConstants(TypeElement e, SourceCode.Class modelClass) {
+        NamedQuery nq = e.getAnnotation(NamedQuery.class);
+        if (nq != null) {
+            addQueryConstant(modelClass, nq.name());
+        }
+        NamedQueries nqs = e.getAnnotation(NamedQueries.class);
+        if (nqs != null) {
+            for (NamedQuery q : nqs.value()) {
+                addQueryConstant(modelClass, q.name());
+            }
+        }
+        NamedNativeQuery nnq = e.getAnnotation(NamedNativeQuery.class);
+        if (nnq != null) {
+            addQueryConstant(modelClass, nnq.name());
+        }
+        NamedNativeQueries nnqs = e.getAnnotation(NamedNativeQueries.class);
+        if (nnqs != null) {
+            for (NamedNativeQuery q : nnqs.value()) {
+                addQueryConstant(modelClass, q.name());
+            }
+        }
+    }
+
+    private void addQueryConstant(SourceCode.Class modelClass, String queryName) {
+        String constName = "QUERY_" + toConstantName(queryName);
+        SourceCode.Field f = modelClass.addField(constName, "String");
+        f.setInitialValue("\"" + queryName + "\"");
+        f.makePublic().makeStatic().makeFinal();
+    }
+
+    private static String toConstantName(String name) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < name.length(); i++) {
+            char c = name.charAt(i);
+            if (Character.isLetterOrDigit(c)) {
+                sb.append(Character.toUpperCase(c));
+            } else {
+                sb.append('_');
+            }
+        }
+        return sb.toString();
     }
 
     private void annotate(SourceCode source, String originalClass) {
