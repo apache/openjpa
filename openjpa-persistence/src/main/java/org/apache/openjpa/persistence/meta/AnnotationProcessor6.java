@@ -421,7 +421,7 @@ public class AnnotationProcessor6 extends AbstractProcessor {
                 return;
 
             case "force":
-                cls.addAnnotation(jakarta.annotation.Generated.class.getName())
+                cls.addAnnotation(javax.annotation.processing.Generated.class.getName())
                         .addArgument("value", this.getClass().getName())
                         .addArgument("date", this.generationDate.toString());
                 break;
@@ -507,11 +507,16 @@ public class AnnotationProcessor6 extends AbstractProcessor {
             this.addGeneratedOption = "auto";
         }
 
-        // only add the annotation if it is on the classpath for Java 6+.
+        // JPA 3.2: prefer javax.annotation.processing.Generated (JDK 9+),
+        // fall back to jakarta.annotation.Generated
         try {
-            this.generatedAnnotation = Class.forName("jakarta.annotation.Generated", false, null);
-        } catch (ClassNotFoundException generatedNotFoundEx) {
-            logger.trace(_loc.get("mmg-annotation-not-found"));
+            this.generatedAnnotation = Class.forName("javax.annotation.processing.Generated", false, null);
+        } catch (ClassNotFoundException e) {
+            try {
+                this.generatedAnnotation = Class.forName("jakarta.annotation.Generated", false, null);
+            } catch (ClassNotFoundException generatedNotFoundEx) {
+                logger.trace(_loc.get("mmg-annotation-not-found"));
+            }
         }
     }
 
