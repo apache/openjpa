@@ -69,6 +69,11 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
                     <argLine>-javaagent:${glassfish.module.dir}/openjpa.jar</argLine>
+                    <excludes>
+                        <!-- We did not implement EntityGraph support yet, so exclude the related tests -->
+                        <exclude>ee/jakarta/tck/persistence/core/EntityGraph/**</exclude>
+                        <exclude>ee/jakarta/tck/persistence/jpa22/repeatable/namedentitygraph/**</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
         </plugins>

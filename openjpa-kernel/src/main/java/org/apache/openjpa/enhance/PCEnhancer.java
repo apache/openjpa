@@ -914,6 +914,9 @@ public class PCEnhancer {
         }
 
         final MethodNode methodNode = findMethodNode(classNode, meth);
+        if (methodNode == null) {
+            return null;
+        }
 
         Field field = null;
         Field cur;
@@ -979,7 +982,7 @@ public class PCEnhancer {
     }
 
     private static MethodNode findMethodNode(ClassNode classNode, Method meth) {
-        return AsmHelper.getMethodNode(classNode, meth).get();
+        return AsmHelper.getMethodNode(classNode, meth).orElse(null);
     }
 
 

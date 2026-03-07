@@ -160,7 +160,11 @@ public class ManagedClassSubclasser {
             // reconfiguration at the end of this method.
             ClassMetaData meta = enhancer.getMetaData();
             if (meta == null) {
-                throw new MetaDataException(_loc.get("no-meta", cls)).setFatal(true);
+                // non-entity classes (DTOs, listeners, ID classes) may be
+                // listed in persistence.xml <class> elements; skip them
+                if (log.isWarnEnabled())
+                    log.warn(_loc.get("no-meta", cls));
+                continue;
             }
             configureMetaData(meta, conf, redefine, false);
 

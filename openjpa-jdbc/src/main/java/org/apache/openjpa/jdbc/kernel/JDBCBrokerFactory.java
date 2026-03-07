@@ -45,6 +45,7 @@ import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.StringUtil;
+import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.UserException;
 
 /**
@@ -206,6 +207,13 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
             } catch (IllegalArgumentException iae) {
                 throw new UserException(_loc.get("bad-synch-mappings",
                     action, Arrays.asList(MappingTool.ACTIONS)));
+            } catch (MetaDataException mde) {
+                // non-entity classes (DTOs, listeners, ID classes) may be
+                // listed in persistence.xml <class> elements; skip them
+                // during schema synchronization
+                conf.getLog("openjpa.jdbc.Schema").warn(
+                    "Skipping schema synchronization for non-managed class: "
+                        + cls.getName());
             }
         }
         tool.record();
