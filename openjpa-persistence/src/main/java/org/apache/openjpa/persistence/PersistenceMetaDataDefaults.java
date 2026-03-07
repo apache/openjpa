@@ -828,6 +828,7 @@ public class PersistenceMetaDataDefaults
         public static boolean isSetter(Method method) {
         	String methodName = method.getName();
         	return startsWith(methodName, "set")
+        	    && Character.isUpperCase(methodName.charAt(3))
         	    && method.getParameterTypes().length == 1
         	    && method.getReturnType() == void.class;
         }

@@ -370,6 +370,7 @@ public abstract class AbstractMetaDataDefaults
     public static boolean isNormalGetter(Method method) {
         String methodName = method.getName();
         return startsWith(methodName, "get")
+            && Character.isUpperCase(methodName.charAt(3))
             && method.getParameterTypes().length == 0
             && method.getReturnType() != void.class;
     }
@@ -382,6 +383,7 @@ public abstract class AbstractMetaDataDefaults
     public static boolean isBooleanGetter(Method method) {
         String methodName = method.getName();
         return startsWith(methodName, "is")
+            && Character.isUpperCase(methodName.charAt(2))
             && method.getParameterTypes().length == 0
             && isBoolean(method.getReturnType());
     }
