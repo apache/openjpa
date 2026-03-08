@@ -87,7 +87,13 @@ public class MetamodelImpl implements Metamodel, Resolver {
                 continue;
             }
 
-        	ClassMetaData meta = repos.getMetaData(cls, null, true);
+        	ClassMetaData meta = repos.getMetaData(cls, null, false);
+            if (meta == null) {
+                // Skip non-entity classes (e.g. exceptions, ID classes,
+                // listeners) that are listed in persistence.xml <class>
+                // elements but have no JPA metadata.
+                continue;
+            }
             PersistenceType type = getPersistenceType(meta);
             switch (type) {
             case ENTITY:
