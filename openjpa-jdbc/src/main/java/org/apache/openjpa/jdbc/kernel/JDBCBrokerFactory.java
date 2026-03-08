@@ -210,7 +210,12 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
             } catch (MetaDataException mde) {
                 // non-entity classes (DTOs, listeners, ID classes) may be
                 // listed in persistence.xml <class> elements; skip them
-                // during schema synchronization
+                // during schema synchronization. Only skip if the class
+                // truly has no metadata — re-throw for managed types
+                // with invalid metadata (e.g. unsupported version type).
+                if (tool.getRepository().getMetaData(cls, null, false) != null) {
+                    throw mde;
+                }
                 conf.getLog("openjpa.jdbc.Schema").warn(
                     "Skipping schema synchronization for non-managed class: "
                         + cls.getName());

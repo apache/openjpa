@@ -42,11 +42,11 @@ public class PropertyAccessCapitalization {
     private boolean BOOLEAN;
     private boolean Bool;
 
-    public int getaCAPITAL() {
+    public int getACAPITAL() {
         return aCAPITAL;
     }
 
-    public void setaCAPITAL(int aCAPITAL) {
+    public void setACAPITAL(int aCAPITAL) {
         this.aCAPITAL = aCAPITAL;
     }
 
@@ -83,11 +83,11 @@ public class PropertyAccessCapitalization {
         this.word = word;
     }
 
-    public int getaWord() {
+    public int getAWord() {
         return aWord;
     }
 
-    public void setaWord(int aWord) {
+    public void setAWord(int aWord) {
         this.aWord = aWord;
     }
 
@@ -139,11 +139,11 @@ public class PropertyAccessCapitalization {
         Another = another;
     }
 
-    public boolean isaBoolean() {
+    public boolean isABoolean() {
         return aBoolean;
     }
 
-    public void setaBoolean(boolean aBoolean) {
+    public void setABoolean(boolean aBoolean) {
         this.aBoolean = aBoolean;
     }
 
@@ -198,11 +198,11 @@ public class PropertyAccessCapitalization {
             return false;
         if (getA1() != other.getA1())
             return false;
-        if (isaBoolean() != other.isaBoolean())
+        if (isABoolean() != other.isABoolean())
             return false;
-        if (getaCAPITAL() != other.getaCAPITAL())
+        if (getACAPITAL() != other.getACAPITAL())
             return false;
-        if (getaWord() != other.getaWord())
+        if (getAWord() != other.getAWord())
             return false;
         if (getAaWord() != other.getAaWord())
             return false;
