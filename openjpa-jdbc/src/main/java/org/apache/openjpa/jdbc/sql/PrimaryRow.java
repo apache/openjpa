@@ -204,7 +204,9 @@ public class PrimaryRow
     /**
      * If this is a delete, delay foreign keys to other deleted objects if the
      * key is restricted or cascade. If this is an update or insert, delay
-     * foreign keys to other inserts if the key is not logical. If the foreign
+     * foreign keys to other inserts so that insert ordering respects FK
+     * dependencies (including logical FKs, since the database may have real
+     * constraints not reflected in the mapping). If the foreign
      * key is to a new record and the columns are auto-inc, record it.
      */
     private boolean delayForeignKey(ForeignKey fk, OpenJPAStateManager sm,
@@ -219,7 +221,7 @@ public class PrimaryRow
 
         if (!sm.isNew() || sm.isFlushed())
             return false;
-        if (!fk.isDeferred() && !fk.isLogical())
+        if (!fk.isDeferred())
             return true;
         if (fk.isPrimaryKeyAutoAssigned())
             return true;
