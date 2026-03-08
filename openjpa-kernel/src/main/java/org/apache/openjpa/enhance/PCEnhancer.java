@@ -728,6 +728,14 @@ public class PCEnhancer {
             }
             returned = getReturnedField(classNode, getter);
 
+            // For inherited getters, the method bytecode is in the declaring
+            // (parent) class, not in this subclass. Try the parent ClassNode.
+            if (returned == null
+                && getter.getDeclaringClass() != managedType.getType()) {
+                ClassNode declaringNode = AsmHelper.readClassNode(
+                    getter.getDeclaringClass());
+                returned = getReturnedField(declaringNode, getter);
+            }
 
             if (returned != null) {
                 registerBackingFieldInfo(fmd, getter, returned);
@@ -761,7 +769,18 @@ public class PCEnhancer {
             }
 
             if (setter != null) {
-                assigned = getAssignedField(classNode, getMethod(fmd.getDeclaringType(), fmd.getSetterName(), new Class[]{fmd.getDeclaredType()}));
+                Method setterForAnalysis = getMethod(fmd.getDeclaringType(),
+                    fmd.getSetterName(), new Class[]{fmd.getDeclaredType()});
+                assigned = getAssignedField(classNode, setterForAnalysis);
+                // For inherited setters, try the declaring class's ClassNode
+                if (assigned == null && setterForAnalysis != null
+                    && setterForAnalysis.getDeclaringClass()
+                        != managedType.getType()) {
+                    ClassNode declaringNode = AsmHelper.readClassNode(
+                        setterForAnalysis.getDeclaringClass());
+                    assigned = getAssignedField(declaringNode,
+                        setterForAnalysis);
+                }
             }
 
             if (assigned != null) {
@@ -848,7 +867,13 @@ public class PCEnhancer {
                 LabelNode caseLabel = new LabelNode();
                 switchNd.labels.add(caseLabel);
                 instructions.add(caseLabel);
-                instructions.add(AsmHelper.getLoadConstantInsn(_attrsToFields.get(fmd.getName())));
+                String fieldName = _attrsToFields.get(fmd.getName());
+                if (fieldName == null) {
+                    // Fallback for inherited properties where bytecode analysis
+                    // couldn't determine the backing field
+                    fieldName = fmd.getName();
+                }
+                instructions.add(AsmHelper.getLoadConstantInsn(fieldName));
                 instructions.add(new InsnNode(Opcodes.ARETURN));
             }
 
@@ -867,7 +892,11 @@ public class PCEnhancer {
                 instructions.add(caseLabel);
                 switchNd.labels.add(caseLabel);
                 switchNd.keys.add(propFmds.get(i));
-                instructions.add(AsmHelper.getLoadConstantInsn(_attrsToFields.get(fmds[i].getName())));
+                String fieldName = _attrsToFields.get(fmds[i].getName());
+                if (fieldName == null) {
+                    fieldName = fmds[i].getName();
+                }
+                instructions.add(AsmHelper.getLoadConstantInsn(fieldName));
                 instructions.add(new InsnNode(Opcodes.ARETURN));
             }
         }
@@ -4235,11 +4264,21 @@ public class PCEnhancer {
     }
 
     private boolean setVisibilityToSuperMethod(MethodNode method) {
-        ClassNode classNode = managedType.getClassNode();
-        final List<MethodNode> methods = classNode.methods.stream()
-                .filter(m -> m.name.equals(method.name) && Objects.equals(m.parameters, method.parameters))
+        // Search the class hierarchy for the method, starting with the
+        // managed type and walking up to parent classes
+        List<MethodNode> methods = null;
+        for (Class<?> cls = managedType.getType(); cls != null
+            && cls != Object.class; cls = cls.getSuperclass()) {
+            ClassNode cn = AsmHelper.readClassNode(cls);
+            methods = cn.methods.stream()
+                .filter(m -> m.name.equals(method.name)
+                    && Objects.equals(m.parameters, method.parameters))
                 .collect(Collectors.toList());
-        if (methods.isEmpty()) {
+            if (!methods.isEmpty()) {
+                break;
+            }
+        }
+        if (methods == null || methods.isEmpty()) {
             throw new UserException(_loc.get("no-accessor", managedType.getClassNode().name, method.name));
         }
         MethodNode superMeth = methods.get(0);
