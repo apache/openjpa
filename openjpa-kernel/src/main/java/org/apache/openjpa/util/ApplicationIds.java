@@ -191,7 +191,14 @@ public class ApplicationIds {
                 case JavaTypes.STRING:
                     return new StringId(meta.getDescribedType(), (String) val);
                 case JavaTypes.DATE:
+                    if (val instanceof java.util.Calendar) {
+                        return new DateId(meta.getDescribedType(),
+                            ((java.util.Calendar) val).getTime());
+                    }
                     return new DateId(meta.getDescribedType(), (Date) val);
+                case JavaTypes.CALENDAR:
+                    return new DateId(meta.getDescribedType(),
+                        val == null ? null : ((java.util.Calendar) val).getTime());
                 case JavaTypes.OID:
                 case JavaTypes.OBJECT:
                     return new ObjectId(meta.getDescribedType(), val);
@@ -212,7 +219,7 @@ public class ApplicationIds {
                     if (!convert && !(val instanceof Boolean))
                         throw new ClassCastException("!(x instanceof Boolean)");
                     return new BooleanId(meta.getDescribedType(),
-                        val == null ? false : (Boolean)val);
+                            val != null && (Boolean) val);
                 case JavaTypes.UUID_OBJ:
                     if (convert && (val instanceof String))
                         return new UuidId(meta.getDescribedType(), UUID.fromString((String) val));
@@ -321,6 +328,7 @@ public class ApplicationIds {
                     return new ObjectId(cls, koid.getIdObject(),
                         koid.hasSubclasses());
                 case JavaTypes.DATE:
+                case JavaTypes.CALENDAR:
                     return new DateId(cls, ((DateId) oid).getId(),
                         koid.hasSubclasses());
                 case JavaTypes.BIGDECIMAL:
@@ -567,7 +575,18 @@ public class ApplicationIds {
                 case JavaTypes.STRING:
                     return ((StringId)id).getId();
                 case JavaTypes.DATE:
+                    if (meta.getPrimaryKeyFields()[0].getDeclaredType()
+                        == java.util.Calendar.class) {
+                        java.util.Calendar calFromDate =
+                            java.util.Calendar.getInstance();
+                        calFromDate.setTime(((DateId)id).getId());
+                        return calFromDate;
+                    }
                     return ((DateId)id).getId();
+                case JavaTypes.CALENDAR:
+                    java.util.Calendar cal = java.util.Calendar.getInstance();
+                    cal.setTime(((DateId)id).getId());
+                    return cal;
                 case JavaTypes.OID:
                 case JavaTypes.OBJECT:
                     return ((ObjectId)id).getId();
@@ -666,7 +685,7 @@ public class ApplicationIds {
 
         @Override
         public boolean fetchBooleanField(int field) {
-            return (retrieve(field) == Boolean.TRUE) ? true : false;
+            return retrieve(field) == Boolean.TRUE;
         }
 
         @Override

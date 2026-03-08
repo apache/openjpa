@@ -232,7 +232,7 @@ public class PCEnhancer {
      * repository.
      */
     public PCEnhancer(OpenJPAConfiguration conf, Class<?> type) {
-        this(conf, new EnhancementProject().loadClass(type), (MetaDataRepository) null);
+        this(conf, new EnhancementProject().loadClass(type), null);
     }
 
     /**
@@ -770,7 +770,7 @@ public class PCEnhancer {
 
             if (setter != null) {
                 Method setterForAnalysis = getMethod(fmd.getDeclaringType(),
-                    fmd.getSetterName(), new Class[]{fmd.getDeclaredType()});
+                    fmd.getSetterName(), fmd.getDeclaredType());
                 assigned = getAssignedField(classNode, setterForAnalysis);
                 // For inherited setters, try the declaring class's ClassNode
                 if (assigned == null && setterForAnalysis != null
@@ -2672,10 +2672,52 @@ public class PCEnhancer {
                                                         Type.getInternalName(DateId.class),
                                                         "getId",
                                                         Type.getMethodDescriptor(Type.getType(Date.class))));
-                    if (pktype != Date.class) {
+                    if (pktype == java.util.Calendar.class) {
+                        // Calendar field mapped via @Temporal — convert Date to Calendar
+                        int dateVarPosDate = nextFreeVarPos++;
+                        instructions.add(new VarInsnNode(Opcodes.ASTORE, dateVarPosDate));
+                        instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+                                                            Type.getInternalName(java.util.Calendar.class),
+                                                            "getInstance",
+                                                            Type.getMethodDescriptor(Type.getType(java.util.Calendar.class))));
+                        instructions.add(new InsnNode(Opcodes.DUP));
+                        instructions.add(new VarInsnNode(Opcodes.ALOAD, dateVarPosDate));
+                        instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                                            Type.getInternalName(java.util.Calendar.class),
+                                                            "setTime",
+                                                            Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(Date.class))));
+                    } else if (pktype != Date.class) {
                         // java.sql.Date.class
                         instructions.add(new TypeInsnNode(Opcodes.CHECKCAST, Type.getInternalName(pktype)));
                     }
+                    break;
+                case JavaTypes.CALENDAR:
+                    // DateId.getId() returns Date; convert to Calendar
+                    // 1. Get the Date from DateId
+                    instructions.add(new VarInsnNode(Opcodes.ALOAD, oidVarPos));
+                    instructions.add(new TypeInsnNode(Opcodes.CHECKCAST, Type.getInternalName(DateId.class)));
+                    instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                                        Type.getInternalName(DateId.class),
+                                                        "getId",
+                                                        Type.getMethodDescriptor(Type.getType(Date.class))));
+                    // 2. Store Date in temp var
+                    int dateVarPos2 = nextFreeVarPos++;
+                    instructions.add(new VarInsnNode(Opcodes.ASTORE, dateVarPos2));
+                    // 3. Calendar.getInstance()
+                    instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+                                                        Type.getInternalName(java.util.Calendar.class),
+                                                        "getInstance",
+                                                        Type.getMethodDescriptor(Type.getType(java.util.Calendar.class))));
+                    // 4. Dup Calendar (one for setTime call, one stays as result)
+                    instructions.add(new InsnNode(Opcodes.DUP));
+                    // 5. Load Date from temp var
+                    instructions.add(new VarInsnNode(Opcodes.ALOAD, dateVarPos2));
+                    // 6. cal.setTime(date)
+                    instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                                        Type.getInternalName(java.util.Calendar.class),
+                                                        "setTime",
+                                                        Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(Date.class))));
+                    // Calendar remains on stack
                     break;
                 case JavaTypes.STRING:
                     instructions.add(new VarInsnNode(Opcodes.ALOAD, oidVarPos));
@@ -2893,7 +2935,24 @@ public class PCEnhancer {
                                                             Type.getInternalName(oidType),
                                                             "getId",
                                                             Type.getMethodDescriptor(Type.getType(Date.class))));
-                        if (!fieldManager && type != Date.class) {
+                        if (!fieldManager && fmds[i].getDeclaredType() == java.util.Calendar.class) {
+                            // Convert Date to Calendar:
+                            // Calendar cal = Calendar.getInstance();
+                            // cal.setTime(date);
+                            int dateVarPos = nextFreeVarPos++;
+                            instructions.add(new VarInsnNode(Opcodes.ASTORE, dateVarPos));
+                            instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+                                                                Type.getInternalName(java.util.Calendar.class),
+                                                                "getInstance",
+                                                                Type.getMethodDescriptor(Type.getType(java.util.Calendar.class))));
+                            instructions.add(new InsnNode(Opcodes.DUP));
+                            instructions.add(new VarInsnNode(Opcodes.ALOAD, dateVarPos));
+                            instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                                                Type.getInternalName(java.util.Calendar.class),
+                                                                "setTime",
+                                                                Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(Date.class))));
+                        }
+                        else if (!fieldManager && type != Date.class) {
                             instructions.add(new TypeInsnNode(Opcodes.CHECKCAST, Type.getInternalName(fmds[i].getDeclaredType())));
                         }
                     }
@@ -3024,13 +3083,13 @@ public class PCEnhancer {
 
         Class oidType = _meta.getObjectIdType();
         try {
-            oidType.getConstructor(new Class[]{Class.class, String.class});
+            oidType.getConstructor(Class.class, String.class);
             return Boolean.TRUE;
         }
         catch (Throwable t) {
         }
         try {
-            oidType.getConstructor(new Class[]{String.class});
+            oidType.getConstructor(String.class);
             return Boolean.FALSE;
         }
         catch (Throwable t) {
@@ -3077,8 +3136,8 @@ public class PCEnhancer {
         if (type.isPrimitive()) {
             name += StringUtil.capitalize(type.getName());
         }
-        return Reflection.class.getMethod(name, new Class[]{Object.class,
-                argType});
+        return Reflection.class.getMethod(name, Object.class,
+                argType);
     }
 
     /**
@@ -3147,7 +3206,7 @@ public class PCEnhancer {
         // new <oid class> ();
         instructions.add(new TypeInsnNode(Opcodes.NEW, Type.getInternalName(oidType)));
         instructions.add(new InsnNode(Opcodes.DUP));
-        if (_meta.isOpenJPAIdentity() || (obj && usesClsString == Boolean.TRUE)) {
+        if (_meta.isOpenJPAIdentity() || (obj && usesClsString)) {
             if ((_meta.isEmbeddedOnly()
                     && !(_meta.isEmbeddable() && _meta.getIdentityType() == ClassMetaData.ID_APPLICATION))
                     || _meta.hasAbstractPKField()) {
@@ -3167,10 +3226,10 @@ public class PCEnhancer {
             instructions.add(new VarInsnNode(Opcodes.ALOAD, 1)); // 1st param
             instructions.add(new TypeInsnNode(Opcodes.CHECKCAST, Type.getInternalName(String.class)));
 
-            if (usesClsString == Boolean.TRUE) {
+            if (usesClsString) {
                 mDescInit = Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(Class.class), Type.getType(String.class));
             }
-            else if (usesClsString == Boolean.FALSE) {
+            else if (!usesClsString) {
                 mDescInit = Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(String.class));
             }
         }
@@ -4681,7 +4740,7 @@ public class PCEnhancer {
         FieldMetaData fmd = _meta == null ? null : _meta.getField(name);
         if (_meta != null && isPropertyAccess(fmd)
                 && _attrsToFields != null && _attrsToFields.containsKey(name)) {
-            name = (String) _attrsToFields.get(name);
+            name = _attrsToFields.get(name);
         }
         return name;
     }
@@ -4695,7 +4754,7 @@ public class PCEnhancer {
         FieldMetaData fmd = _meta == null ? null : _meta.getField(name);
         if (_meta != null && isPropertyAccess(fmd)
                 && _fieldsToAttrs != null && _fieldsToAttrs.containsKey(name)) {
-            return (String) _fieldsToAttrs.get(name);
+            return _fieldsToAttrs.get(name);
         }
         else {
             return name;

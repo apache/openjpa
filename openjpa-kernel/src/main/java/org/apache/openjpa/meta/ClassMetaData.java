@@ -141,7 +141,7 @@ public class ClassMetaData
         = new FetchGroup[0];
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
-    private MetaDataRepository _repos;
+    private final MetaDataRepository _repos;
     private transient ClassLoader _loader = null;
 
     private final ValueMetaData _owner;
@@ -543,6 +543,7 @@ public class ClassMetaData
                 _objectId = StringId.class;
                 break;
             case JavaTypes.DATE:
+            case JavaTypes.CALENDAR:
                 _objectId = DateId.class;
                 break;
             case JavaTypes.OID:
@@ -842,7 +843,7 @@ public class ClassMetaData
     public boolean isManagedInterface() {
         if (!_type.isInterface())
             return false;
-        return _interface == null ? false : _interface;
+        return _interface != null && _interface;
     }
 
     /**
@@ -2191,7 +2192,7 @@ public class ClassMetaData
         // declare primary key fields
         Method method;
         try {
-            method = oid.getMethod("equals", new Class[]{ Object.class });
+            method = oid.getMethod("equals", Object.class);
         } catch (Exception e) {
             throw new GeneralException(e).setFatal(true);
         }
@@ -2731,7 +2732,7 @@ public class ClassMetaData
 
         if (isAbstract()) {
             FieldMetaData[] declaredFields = getDeclaredFields();
-            if (declaredFields != null && declaredFields.length != 0) {
+            if (declaredFields != null) {
                 for (FieldMetaData fmd : declaredFields) {
                     if (fmd.isPrimaryKey()) {
                         temp = Boolean.TRUE;
