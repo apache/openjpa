@@ -391,9 +391,13 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         // sets and give it an opportunity to make a state snapshot.
         if (!isIntercepting()) {
             saveFields(true);
-            if (!isNew())
-                RedefinitionHelper.assignLazyLoadProxies(this);
         }
+        // Assign lazy-loading proxies for collection/map fields even when
+        // intercepting.  Direct field access in entity methods (e.g. toString)
+        // bypasses getter interception, so without a proxy the field stays
+        // null for unloaded lazy collections — causing NPE.
+        if (!isNew())
+            RedefinitionHelper.assignLazyLoadProxies(this);
     }
 
     /**
@@ -408,10 +412,8 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         if (getMetaData().isIntercepting())
             return true;
         // TODO:JRB Intercepting
-        if (AccessCode.isProperty(getMetaData().getAccessType())
-            && _pc instanceof DynamicPersistenceCapable)
-            return true;
-        return false;
+        return AccessCode.isProperty(getMetaData().getAccessType())
+                && _pc instanceof DynamicPersistenceCapable;
     }
 
     /**
@@ -985,9 +987,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             return false;
         if (isDeleted())
             return false;
-        if (isNew() && !isFlushed())
-            return false;
-        return true;
+        return !isNew() || isFlushed();
     }
 
     @Override
@@ -1425,7 +1425,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     }
 
     public boolean getDereferencedEmbedDependent() {
-        return ((_flags & FLAG_EMBED_DEREF) == 0 ? false : true);
+        return ((_flags & FLAG_EMBED_DEREF) != 0);
     }
 
     ///////////
@@ -2164,9 +2164,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
                             //    return;
                             //else {
                                 if (curVal != null && newVal != null &&
-                                    curVal instanceof PersistenceCapable && newVal instanceof PersistenceCapable) {
-                                    PersistenceCapable curPc = (PersistenceCapable) curVal;
-                                    PersistenceCapable newPc = (PersistenceCapable) newVal;
+                                        curVal instanceof PersistenceCapable curPc && newVal instanceof PersistenceCapable newPc) {
                                     if (curPc.pcFetchObjectId().equals(newPc.pcFetchObjectId()))
                                         return;
 
@@ -2908,9 +2906,9 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
                 break;
             case JavaTypes.UUID_OBJ:
                 if (val instanceof String) {
-                    fm.storeObjectField(field, (UUID) UUID.fromString((String) val));
+                    fm.storeObjectField(field, UUID.fromString((String) val));
                 } else if (val instanceof UUID) {
-                    fm.storeObjectField(field, (UUID) val);
+                    fm.storeObjectField(field, val);
                 }
                 break;
             default:

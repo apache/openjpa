@@ -210,9 +210,21 @@ public class RedefinitionHelper {
                 case JavaTypes.COLLECTION:
                 case JavaTypes.MAP:
                     PersistenceCapable pc = sm.getPersistenceCapable();
-                    Field field = (Field) fmds[i].getBackingMember();
-                    Reflection.set(pc, field,
-                        newLazyLoadingProxy(fmds[i].getDeclaredType(), i, sm));
+                    Object proxy = newLazyLoadingProxy(
+                        fmds[i].getDeclaredType(), i, sm);
+                    java.lang.reflect.Member member =
+                        fmds[i].getBackingMember();
+                    if (member instanceof Field) {
+                        Reflection.set(pc, (Field) member, proxy);
+                    } else if (member instanceof Method) {
+                        // property access — find the backing field
+                        Field field = Reflection.findField(
+                            fmds[i].getDeclaringType(),
+                            fmds[i].getName(), true);
+                        if (field != null) {
+                            Reflection.set(pc, field, proxy);
+                        }
+                    }
                     break;
             }
         }
