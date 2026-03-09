@@ -3686,14 +3686,32 @@ public class PCEnhancer {
         classNode.methods.add(writeReplaceMeth);
         InsnList instructions = writeReplaceMeth.instructions;
 
-        // Object o = new <managed-type>()
-        instructions.add(new TypeInsnNode(Opcodes.NEW, managedType.getClassNode().name));
-        instructions.add(new InsnNode(Opcodes.DUP)); // for post-<init> work
-        instructions.add(new InsnNode(Opcodes.DUP)); // for <init>
-        instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
-                                            managedType.getClassNode().name,
-                                            "<init>",
-                                            Type.getMethodDescriptor(Type.VOID_TYPE)));
+        // Object o = <managed-type>.class.getDeclaredConstructor().newInstance()
+        // Using reflection to handle protected/package-private constructors
+        // since the pcsubclass is in a different package.
+        instructions.add(AsmHelper.getLoadConstantInsn(_meta.getDescribedType()));
+        instructions.add(new InsnNode(Opcodes.ICONST_0));
+        instructions.add(new TypeInsnNode(Opcodes.ANEWARRAY, Type.getInternalName(Class.class)));
+        instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                            Type.getInternalName(Class.class),
+                                            "getDeclaredConstructor",
+                                            Type.getMethodDescriptor(
+                                                Type.getType(java.lang.reflect.Constructor.class),
+                                                Type.getType(Class[].class))));
+        instructions.add(new InsnNode(Opcodes.DUP));
+        instructions.add(new InsnNode(Opcodes.ICONST_1));
+        instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                            Type.getInternalName(java.lang.reflect.AccessibleObject.class),
+                                            "setAccessible",
+                                            Type.getMethodDescriptor(Type.VOID_TYPE, Type.BOOLEAN_TYPE)));
+        instructions.add(new InsnNode(Opcodes.ICONST_0));
+        instructions.add(new TypeInsnNode(Opcodes.ANEWARRAY, AsmHelper.TYPE_OBJECT.getInternalName()));
+        instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+                                            Type.getInternalName(java.lang.reflect.Constructor.class),
+                                            "newInstance",
+                                            Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT,
+                                                Type.getType(Object[].class))));
+        instructions.add(new TypeInsnNode(Opcodes.CHECKCAST, managedType.getClassNode().name));
 
         // copy all the fields.
         // ##### limiting to JPA @Transient limitations
