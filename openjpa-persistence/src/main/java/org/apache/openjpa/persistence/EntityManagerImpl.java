@@ -127,7 +127,7 @@ public class EntityManagerImpl
 
     private DelegatingBroker _broker;
     private EntityManagerFactoryImpl _emf;
-    private Map<FetchConfiguration,FetchPlan> _plans = new IdentityHashMap<>(1);
+    private final Map<FetchConfiguration,FetchPlan> _plans = new IdentityHashMap<>(1);
     protected RuntimeExceptionTranslator _ret = PersistenceExceptions.getRollbackTranslator(this);
     private boolean _convertPositionalParams = false;
     private boolean _isJoinedToTransaction;
@@ -162,6 +162,7 @@ public class EntityManagerImpl
 
     @Override
     public OpenJPAEntityManagerFactory getEntityManagerFactory() {
+        assertNotCloseInvoked();
         return _emf;
     }
 
@@ -706,6 +707,7 @@ public class EntityManagerImpl
 
     @Override
     public boolean isJoinedToTransaction() {
+        assertNotCloseInvoked();
         return isActive() && _isJoinedToTransaction;
     }
 
@@ -1299,7 +1301,7 @@ public class EntityManagerImpl
     @Override
     public StoredProcedureQuery createNamedStoredProcedureQuery(String name) {
         QueryMetaData meta = getQueryMetadata(name);
-        if (!MultiQueryMetaData.class.isInstance(meta)) {
+        if (!(meta instanceof MultiQueryMetaData)) {
             throw new RuntimeException(name + " is not an identifier for a Stored Procedure Query");
         }
         return newProcedure(((MultiQueryMetaData)meta).getProcedureName(), (MultiQueryMetaData)meta);
@@ -1701,7 +1703,7 @@ public class EntityManagerImpl
      * delegate the pending operation to it.
      */
     protected void assertNotCloseInvoked() {
-        if (!_broker.isClosed() && _broker.isCloseInvoked())
+        if (_broker.isClosed() || _broker.isCloseInvoked())
             throw new InvalidStateException(_loc.get("close-invoked"), null,
                 null, true);
     }
@@ -1849,7 +1851,7 @@ public class EntityManagerImpl
 
     private static class BrokerBytesInputStream extends ObjectInputStream {
 
-        private OpenJPAConfiguration conf;
+        private final OpenJPAConfiguration conf;
 
         BrokerBytesInputStream(byte[] bytes, OpenJPAConfiguration conf)
             throws IOException {
@@ -1896,7 +1898,7 @@ public class EntityManagerImpl
                     }
                     component = primitiveType(cname.charAt(dcount));
                 }
-                int dim[] = new int[dcount];
+                int[] dim = new int[dcount];
                 for (int i=0; i<dcount; i++) {
                     dim[i]=0;
                 }
@@ -2021,6 +2023,7 @@ public class EntityManagerImpl
 
     @Override
     public OpenJPACriteriaBuilder getCriteriaBuilder() {
+        assertNotCloseInvoked();
         return _emf.getCriteriaBuilder();
     }
 
@@ -2047,7 +2050,7 @@ public class EntityManagerImpl
             // Only call getConnection() once we are certain that is the type that we need to unwrap.
             if (cls.isAssignableFrom(Connection.class)) {
                 Object o = getConnection();
-                if(Connection.class.isInstance(o)){
+                if(o instanceof Connection){
                     return (T) o;
                 }else{
                     // Try and cleanup if  aren't going to return the connection back to the caller.
@@ -2136,6 +2139,7 @@ public class EntityManagerImpl
 
     @Override
     public Metamodel getMetamodel() {
+        assertNotCloseInvoked();
         return _emf.getMetamodel();
     }
 
@@ -2170,6 +2174,7 @@ public class EntityManagerImpl
      */
     @Override
     public void setProperty(String prop, Object value) {
+        assertNotCloseInvoked();
         properties = null;
         if (!setKernelProperty(this, prop, value)) {
             if (!setKernelProperty(this.getFetchPlan(), prop, value)) {
@@ -2236,11 +2241,10 @@ public class EntityManagerImpl
     Object convertUserValue(String key, Object value, Class<?> targetType) {
         if (JPAProperties.isValidKey(key))
             return JPAProperties.convertToKernelValue(targetType, key, value);
-        if (value instanceof String) {
+        if (value instanceof String val) {
             if ("null".equals(value)) {
                 return null;
             } else {
-                String val = (String) value;
                 int parenIndex = val.indexOf('(');
                 if (!String.class.equals(targetType) && (parenIndex > 0)) {
                     val = val.substring(0, parenIndex);

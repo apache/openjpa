@@ -314,9 +314,8 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 		boolean queryFetchPlanUsed = pushQueryFetchPlan();
 		try {
 		    Object ob = execute();
-		    if (ob instanceof List) {
-			    List ret = (List) ob;
-			    if (ret instanceof ResultList) {
+		    if (ob instanceof List ret) {
+                if (ret instanceof ResultList) {
 			        RuntimeExceptionTranslator trans = PersistenceExceptions.getRollbackTranslator(_em);
 			        if (_query.isDistinct()) {
 			            return new DistinctResultList((ResultList) ret, trans);
@@ -413,6 +412,7 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 
 	@Override
     public FlushModeType getFlushMode() {
+		_em.assertNotCloseInvoked();
 		return EntityManagerImpl.fromFlushBeforeQueries(_query
                 .getFetchConfiguration().getFlushBeforeQueries());
 	}
@@ -433,7 +433,6 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
         if (JPQLParser.LANG_JPQL.equals(language)
          || QueryLanguages.LANG_PREPARED_SQL.equals(language)
          || OpenJPACriteriaBuilder.LANG_CRITERIA.equals(language)) {
-            return;
         } else {
             throw new IllegalStateException(_loc.get("not-jpql-or-criteria-query").getMessage());
         }
@@ -452,6 +451,7 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 
     @Override
     public LockModeType getLockMode() {
+        _em.assertNotCloseInvoked();
         assertJPQLOrCriteriaQuery();
         return getFetchPlan().getReadLockMode();
     }
@@ -495,6 +495,7 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
     //TODO: JPA 2.0 Hints that are not set to FetchConfiguration
     @Override
     public Map<String, Object> getHints() {
+        _em.assertNotCloseInvoked();
         if (_hintHandler == null)
             return Collections.emptyMap();
         return _hintHandler.getHints();

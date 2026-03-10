@@ -346,6 +346,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      */
     @Override
     public <T> T getParameterValue(Parameter<T> p) {
+        _em.assertNotCloseInvoked();
         if (!isBound(p)) {
             throw new IllegalArgumentException(_loc.get("param-missing", p, getQueryString(), getBoundParameterKeys())
                 .getMessage());
@@ -358,26 +359,30 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      */
     @Override
     public Set<Parameter<?>> getParameters() {
+        _em.assertNotCloseInvoked();
         Set<Parameter<?>> result = new HashSet<>(getDeclaredParameters().values());
         return result;
     }
 
     @Override
     public <T> OpenJPAQuery<X> setParameter(Parameter<T> p, T arg1) {
+        _em.assertNotCloseInvoked();
         bindValue(p, arg1);
-        if (BindableParameter.class.isInstance(p)) {
-            BindableParameter.class.cast(p).setValue(arg1);
+        if (p instanceof BindableParameter) {
+            ((BindableParameter) p).setValue(arg1);
         }
         return this;
     }
 
     @Override
     public OpenJPAQuery<X> setParameter(Parameter<Date> p, Date date, TemporalType type) {
+        _em.assertNotCloseInvoked();
         return setParameter(p, (Date) convertTemporalType(date, type));
     }
 
     @Override
     public TypedQuery<X> setParameter(Parameter<Calendar> p, Calendar cal, TemporalType type) {
+        _em.assertNotCloseInvoked();
         return setParameter(p, (Calendar) convertTemporalType(cal, type));
     }
 
@@ -392,6 +397,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      */
     @Override
     public Parameter<?> getParameter(String name) {
+        _em.assertNotCloseInvoked();
         if (isNative()) {
             throw new IllegalStateException(_loc.get("param-named-non-native", name).getMessage());
         }
@@ -420,6 +426,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      */
     @Override
     public Parameter<?> getParameter(int pos) {
+        _em.assertNotCloseInvoked();
         if (_convertPositionalParams) {
             return getParameter("_" + pos);
         }
@@ -442,6 +449,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      */
     @Override
     public Object getParameterValue(String name) {
+        _em.assertNotCloseInvoked();
         return _boundParams.get(getParameter(name));
     }
 
@@ -457,6 +465,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      */
     @Override
     public Object getParameterValue(int pos) {
+        _em.assertNotCloseInvoked();
         Parameter<?> param = getParameter(pos);
         assertBound(param);
         return _boundParams.get(param);
@@ -570,6 +579,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      */
     @Override
     public boolean isBound(Parameter<?> param) {
+        _em.assertNotCloseInvoked();
         return _boundParams != null && _boundParams.containsKey(param);
     }
 
