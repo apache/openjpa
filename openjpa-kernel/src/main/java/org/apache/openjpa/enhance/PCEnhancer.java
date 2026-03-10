@@ -1092,6 +1092,24 @@ public class PCEnhancer {
                 replaceAndValidateFieldAccess(classNode, methodNode, (a) -> a.getOpcode() == Opcodes.PUTFIELD, false);
             }
         }
+
+        // When both redefine and createSubclass are active, pc points to
+        // the subclass while managedType is the original class.  The loop
+        // above only processes the (empty) subclass methods.  We must also
+        // inject PUTFIELD/GETFIELD interception into the original class
+        // methods so that the retransformed bytecode actually tracks dirty
+        // state.
+        if (getRedefine() && getCreateSubclass()) {
+            final ClassNode managedClassNode = managedType.getClassNode();
+            for (MethodNode methodNode : managedClassNode.methods) {
+                if (methodNode.instructions.size() > 0 && !skipEnhance(methodNode)) {
+                    replaceAndValidateFieldAccess(managedClassNode, methodNode,
+                        (a) -> a.getOpcode() == Opcodes.GETFIELD, true);
+                    replaceAndValidateFieldAccess(managedClassNode, methodNode,
+                        (a) -> a.getOpcode() == Opcodes.PUTFIELD, false);
+                }
+            }
+        }
     }
 
     /**
@@ -1173,13 +1191,27 @@ public class PCEnhancer {
                     // first load the old value for use in the
                     // StateManager.settingXXX method.
 
-                    InsnList insns = new InsnList();
-                    insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                    FieldMetaData fieldMd = owner.getField(name);
+                    Class fieldType = fieldMd.getDeclaredType();
+                    if (!fieldType.isPrimitive() && fieldType != String.class) {
+                        fieldType = Object.class;
+                    }
 
-                    int valVarPos = methodNode.maxLocals++;
-                    insns.add(new VarInsnNode(AsmHelper.getCorrespondingLoadInsn(fi.getOpcode()), valVarPos));
+                    int valVarPos = methodNode.maxLocals;
+                    // long and double occupy two local variable slots
+                    methodNode.maxLocals += (fieldType == Long.TYPE || fieldType == Double.TYPE) ? 2 : 1;
 
-                    currentInsn = addNotifyMutation(classNode, methodNode, currentInsn, owner.getField(name), valVarPos, -1);
+                    // Save the old field value BEFORE the PUTFIELD:
+                    //   ALOAD 0 (this)
+                    //   GETFIELD owner.field (current/old value)
+                    //   xSTORE valVarPos
+                    InsnList saveOld = new InsnList();
+                    saveOld.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                    saveOld.add(new FieldInsnNode(Opcodes.GETFIELD, fi.owner, fi.name, fi.desc));
+                    saveOld.add(new VarInsnNode(AsmHelper.getStoreInsn(fieldType), valVarPos));
+                    methodNode.instructions.insertBefore(currentInsn, saveOld);
+
+                    currentInsn = addNotifyMutation(classNode, methodNode, currentInsn, fieldMd, valVarPos, -1);
                 }
 
             }
@@ -1265,8 +1297,10 @@ public class PCEnhancer {
                                      Type.getMethodDescriptor(Type.VOID_TYPE,
                                                               AsmHelper.TYPE_OBJECT, Type.INT_TYPE, Type.getType(type), Type.getType(type))));
 
+        // Save reference before insert() which empties the source InsnList
+        AbstractInsnNode lastInsn = insns.getLast();
         methodNode.instructions.insert(currentInsn, insns);
-        return insns.getLast();
+        return lastInsn;
     }
 
 
