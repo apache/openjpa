@@ -18,12 +18,14 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -165,46 +167,40 @@ public class PostgresDictionary extends DBDictionary {
         longVarcharTypeName = "TEXT";
         doubleTypeName = "DOUBLE PRECISION";
         timestampTypeName = "TIMESTAMP";
-        fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
-            "BOOL", "BYTEA", "NAME", "INT8", "INT2", "INT2VECTOR", "INT4",
-            "REGPROC", "TEXT", "OID", "TID", "XID", "CID", "OIDVECTOR",
-            "SET", "FLOAT4", "FLOAT8", "ABSTIME", "RELTIME", "TINTERVAL",
-            "MONEY",
-        }));
+        fixedSizeTypeNameSet.addAll(Arrays.asList("BOOL", "BYTEA", "NAME", "INT8", "INT2", "INT2VECTOR", "INT4",
+                "REGPROC", "TEXT", "OID", "TID", "XID", "CID", "OIDVECTOR",
+                "SET", "FLOAT4", "FLOAT8", "ABSTIME", "RELTIME", "TINTERVAL",
+                "MONEY"));
         booleanRepresentation = BooleanRepresentationFactory.BOOLEAN;
 
         supportsLockingWithDistinctClause = false;
         supportsLockingWithOuterJoin = false;
 
-        reservedWordSet.addAll(Arrays.asList(new String[]{
-            "ABORT", "ACL", "AGGREGATE", "APPEND", "ARCHIVE", "ARCH_STORE",
-            "BACKWARD", "BINARY", "CHANGE", "CLUSTER", "COPY", "DATABASE",
-            "DELIMITER", "DELIMITERS", "DO", "EXPLAIN", "EXTEND",
-            "FORWARD", "HEAVY", "INDEX", "INHERITS", "ISNULL", "LIGHT",
-            "LISTEN", "LOAD", "MERGE", "NOTHING", "NOTIFY", "NOTNULL",
-            "OID", "OIDS", "PURGE", "RECIPE", "RENAME", "REPLACE",
-            "RETRIEVE", "RETURNS", "RULE", "SETOF", "STDIN", "STDOUT",
-            "STORE", "VACUUM", "VERBOSE", "VERSION",
-        }));
+        reservedWordSet.addAll(Arrays.asList("ABORT", "ACL", "AGGREGATE", "APPEND", "ARCHIVE", "ARCH_STORE",
+                "BACKWARD", "BINARY", "CHANGE", "CLUSTER", "COPY", "DATABASE",
+                "DELIMITER", "DELIMITERS", "DO", "EXPLAIN", "EXTEND",
+                "FORWARD", "HEAVY", "INDEX", "INHERITS", "ISNULL", "LIGHT",
+                "LISTEN", "LOAD", "MERGE", "NOTHING", "NOTIFY", "NOTNULL",
+                "OID", "OIDS", "PURGE", "RECIPE", "RENAME", "REPLACE",
+                "RETRIEVE", "RETURNS", "RULE", "SETOF", "STDIN", "STDOUT",
+                "STORE", "VACUUM", "VERBOSE", "VERSION"));
 
         // reservedWordSet subset that CANNOT be used as valid column names
         // (i.e., without surrounding them with double-quotes)
         // generated at 2021-05-03T10:44:58.562 via org.apache.openjpa.reservedwords.ReservedWordsIT
-        invalidColumnWordSet.addAll(Arrays.asList(new String[] {
-            "ALL", "ANALYSE", "ANALYZE", "AND", "ANY", "ARRAY", "AS", "ASC", "ASYMMETRIC", "AUTHORIZATION", "BINARY", "BOTH",
-            "CASE", "CAST", "CHECK", "COLLATE", "COLLATION", "COLUMN", "CONSTRAINT", "CREATE", "CROSS", "CURRENT_DATE", "CURRENT_ROLE",
-            "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER", "DEFAULT", "DEFERRABLE", "DESC", "DISTINCT", "DO", "ELSE",
-            "END", "END-EXEC", "EXCEPT", "FALSE", "FETCH", "FOR", "FOREIGN", "FREEZE", "FROM", "FULL", "GRANT", "GROUP", "HAVING",
-            "ILIKE", "IN", "INITIALLY", "INNER", "INTERSECT", "INTO", "IS", "ISNULL", "JOIN", "LATERAL", "LEADING", "LEFT",
-            "LIKE", "LIMIT", "LOCALTIME", "LOCALTIMESTAMP", "NATURAL", "NOT", "NOTNULL", "NULL", "OFFSET", "ON", "ONLY", "OR",
-            "ORDER", "OUTER", "OVERLAPS", "PLACING", "PRIMARY", "REFERENCES", "RIGHT", "SELECT", "SESSION_USER", "SIMILAR",
-            "SOME", "SYMMETRIC", "TABLE", "TABLESAMPLE", "THEN", "TO", "TRAILING", "TRUE", "UNION", "UNIQUE", "USER", "USING",
-            "VERBOSE", "WHEN", "WHERE", "WINDOW", "WITH",
-            // end generated.
-            // The following keywords used to be defined as reserved words in the past, but now seem to work
-            // we still add them for compat reasons
-            "BETWEEN",
-        }));
+        invalidColumnWordSet.addAll(Arrays.asList("ALL", "ANALYSE", "ANALYZE", "AND", "ANY", "ARRAY", "AS", "ASC", "ASYMMETRIC", "AUTHORIZATION", "BINARY", "BOTH",
+                "CASE", "CAST", "CHECK", "COLLATE", "COLLATION", "COLUMN", "CONSTRAINT", "CREATE", "CROSS", "CURRENT_DATE", "CURRENT_ROLE",
+                "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER", "DEFAULT", "DEFERRABLE", "DESC", "DISTINCT", "DO", "ELSE",
+                "END", "END-EXEC", "EXCEPT", "FALSE", "FETCH", "FOR", "FOREIGN", "FREEZE", "FROM", "FULL", "GRANT", "GROUP", "HAVING",
+                "ILIKE", "IN", "INITIALLY", "INNER", "INTERSECT", "INTO", "IS", "ISNULL", "JOIN", "LATERAL", "LEADING", "LEFT",
+                "LIKE", "LIMIT", "LOCALTIME", "LOCALTIMESTAMP", "NATURAL", "NOT", "NOTNULL", "NULL", "OFFSET", "ON", "ONLY", "OR",
+                "ORDER", "OUTER", "OVERLAPS", "PLACING", "PRIMARY", "REFERENCES", "RIGHT", "SELECT", "SESSION_USER", "SIMILAR",
+                "SOME", "SYMMETRIC", "TABLE", "TABLESAMPLE", "THEN", "TO", "TRAILING", "TRUE", "UNION", "UNIQUE", "USER", "USING",
+                "VERBOSE", "WHEN", "WHERE", "WINDOW", "WITH",
+                // end generated.
+                // The following keywords used to be defined as reserved words in the past, but now seem to work
+                // we still add them for compat reasons
+                "BETWEEN"));
 
         _timestampTypes.add("ABSTIME");
         _timestampTypes.add("TIMESTAMP");
@@ -316,6 +312,58 @@ public class PostgresDictionary extends DBDictionary {
         stmnt.setNull(idx, colType);
     }
 
+    /**
+     * Handle OID columns properly. PostgreSQL OID columns store Large Object
+     * references. The default setBytes() sends data in bytea format, which
+     * PostgreSQL rejects for OID columns with:
+     * "column X is of type oid but expression is of type bytea".
+     * Detect OID parameters via ParameterMetaData and use the Blob API
+     * (which the PG JDBC driver handles via the Large Object protocol).
+     */
+    @Override
+    public void setBytes(PreparedStatement stmnt, int idx, byte[] val,
+        Column col) throws SQLException {
+        if (val != null) {
+            try {
+                String paramTypeName = stmnt.getParameterMetaData()
+                    .getParameterTypeName(idx);
+                if ("oid".equalsIgnoreCase(paramTypeName)) {
+                    stmnt.setBlob(idx, new ByteArrayInputStream(val),
+                        (long) val.length);
+                    return;
+                }
+            } catch (SQLException e) {
+                // ParameterMetaData not available; fall through to default
+            }
+        }
+        super.setBytes(stmnt, idx, val, col);
+    }
+
+    /**
+     * Handle OID columns properly. PostgreSQL OID columns store Large Object
+     * references. The default getBytes() with useGetBytesForBlobs returns the
+     * raw OID integer bytes, not the Large Object content. Detect OID columns
+     * via ResultSetMetaData and use the Blob API to read the actual content.
+     */
+    @Override
+    public byte[] getBytes(ResultSet rs, int column) throws SQLException {
+        String typeName = rs.getMetaData().getColumnTypeName(column);
+        if ("oid".equalsIgnoreCase(typeName)) {
+            Blob blob = rs.getBlob(column);
+            if (blob == null) {
+                return null;
+            }
+            int length = (int) blob.length();
+            if (length == 0) {
+                return null;
+            }
+            byte[] bytes = blob.getBytes(1, length);
+            blob.free();
+            return bytes;
+        }
+        return super.getBytes(rs, column);
+    }
+
     @Override
     protected void appendSelectRange(SQLBuffer buf, long start, long end,
         boolean subselect) {
@@ -384,10 +432,7 @@ public class PostgresDictionary extends DBDictionary {
         if (super.isSystemSequence(name, schema, targetSchema))
             return true;
 
-        if (isOwnedSequence(name, schema, conn)) {
-            return true;
-        }
-        return false;
+        return isOwnedSequence(name, schema, conn);
     }
 
     /**
@@ -460,16 +505,12 @@ public class PostgresDictionary extends DBDictionary {
                 return false;
             }
             String val = getString(rs, 1);
-            if (val == null || val.length() == 0) {
-                return false;
-            }
-            return true;
+            return val != null && val.length() != 0;
         } catch (Throwable t) {
-            if (t instanceof ReportingSQLException) {
+            if (t instanceof ReportingSQLException rse) {
                 // Handle known/acceptable exceptions
                 // 42P01 - table does not exist
                 // 42703 - column does not exist within table
-                ReportingSQLException rse = (ReportingSQLException)t;
                 if ("42P01".equals(rse.getSQLState()) ||
                     "42703".equals(rse.getSQLState())) {
                     return false;
@@ -818,7 +859,7 @@ public class PostgresDictionary extends DBDictionary {
             try {
                 // The product version looks like "8.3.5".
                 String productVersion = metaData.getDatabaseProductVersion();
-                String majMin[] = productVersion.split("\\.");
+                String[] majMin = productVersion.split("\\.");
                 maj = Integer.parseInt(majMin[0]);
                 min = Integer.parseInt(majMin[1]);
             } catch (Exception e) {
@@ -943,8 +984,7 @@ public class PostgresDictionary extends DBDictionary {
     private void appendXmlValue(SQLBuffer buf, FilterValue val) {
         Class rc = Filters.wrap(val.getType());
         int type = getJDBCType(JavaTypes.getTypeCode(rc), false);
-        boolean isXmlAttribute = (val.getXmlMapping() == null) ? false
-                : val.getXmlMapping().isXmlAttribute();
+        boolean isXmlAttribute = val.getXmlMapping() != null && val.getXmlMapping().isXmlAttribute();
         SQLBuffer newBufer = new SQLBuffer(this);
         newBufer.append("(xpath('/*/");
         val.appendTo(newBufer);
