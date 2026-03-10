@@ -186,4 +186,27 @@ public class TestEntityManagerAfterClose extends SingleEMFTestCase {
             // expected
         }
     }
+
+    /**
+     * Test that getRollbackOnly() does not throw after close with active tx.
+     * Mimics TCK queryMethodsAfterClose5Test pattern: begin tx, close EM,
+     * call query method (throws ISE), then check getRollbackOnly() in catch.
+     */
+    public void testGetRollbackOnlyAfterCloseWithActiveTx() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        Query query = em.createQuery("SELECT a FROM AllFieldTypes a");
+        em.close();
+        try {
+            query.getLockMode();
+            fail("Expected IllegalStateException");
+        } catch (IllegalStateException e) {
+            // getRollbackOnly() should not throw when EM is closed
+            boolean rollbackOnly = em.getTransaction().getRollbackOnly();
+            assertFalse("Transaction should not be marked rollback-only", rollbackOnly);
+        }
+        // isActive() should return false (tx was rolled back by close)
+        assertFalse("Transaction should not be active after close",
+            em.getTransaction().isActive());
+    }
 }

@@ -772,6 +772,11 @@ public class EntityManagerImpl
 
     @Override
     public boolean getRollbackOnly() {
+        // If the EM is closed (e.g. close() rolled back the active tx),
+        // return false rather than throwing — the tx was rolled back,
+        // not marked rollback-only.
+        if (!isOpen())
+            return false;
         if (!isActive())
             throw new IllegalStateException(_loc.get("no-transaction")
                 .getMessage());
