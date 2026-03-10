@@ -223,9 +223,7 @@ public class PrimaryRow
             return false;
         if (!fk.isDeferred())
             return true;
-        if (fk.isPrimaryKeyAutoAssigned())
-            return true;
-        return false;
+        return fk.isPrimaryKeyAutoAssigned();
     }
 
     /**
@@ -239,9 +237,13 @@ public class PrimaryRow
                 + fk.getConstantColumns().length, false))
                 setValid(true);
 
-            if (_fkSet == null)
-                _fkSet = new OpenJPAStateManager[getTable().
-                    getForeignKeys().length];
+            int reqLen = fk.getIndex() + 1;
+            if (_fkSet == null) {
+                _fkSet = new OpenJPAStateManager[Math.max(
+                    getTable().getForeignKeys().length, reqLen)];
+            } else if (_fkSet.length < reqLen) {
+                _fkSet = java.util.Arrays.copyOf(_fkSet, reqLen);
+            }
             _fkSet[fk.getIndex()] = sm;
 
             if (_fkIO != null)
@@ -258,9 +260,13 @@ public class PrimaryRow
             if (getAction() == ACTION_DELETE)
                 setValid(true);
 
-            if (_fkWhere == null)
-                _fkWhere = new OpenJPAStateManager[getTable().
-                    getForeignKeys().length];
+            int reqLen2 = fk.getIndex() + 1;
+            if (_fkWhere == null) {
+                _fkWhere = new OpenJPAStateManager[Math.max(
+                    getTable().getForeignKeys().length, reqLen2)];
+            } else if (_fkWhere.length < reqLen2) {
+                _fkWhere = java.util.Arrays.copyOf(_fkWhere, reqLen2);
+            }
             _fkWhere[fk.getIndex()] = sm;
         }
     }
@@ -448,10 +454,9 @@ public class PrimaryRow
     @Override
     public void copyInto(RowImpl row, boolean whereOnly) {
         super.copyInto(row, whereOnly);
-        if (!(row instanceof PrimaryRow))
+        if (!(row instanceof PrimaryRow prow))
             return;
 
-        PrimaryRow prow = (PrimaryRow) row;
         prow._pk = _pk;
         prow._pkIO = _pkIO;
         if ((flags & PK_WHERE) > 0)

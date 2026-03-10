@@ -210,20 +210,36 @@ public class RedefinitionHelper {
                 case JavaTypes.COLLECTION:
                 case JavaTypes.MAP:
                     PersistenceCapable pc = sm.getPersistenceCapable();
-                    Object proxy = newLazyLoadingProxy(
-                        fmds[i].getDeclaredType(), i, sm);
                     java.lang.reflect.Member member =
                         fmds[i].getBackingMember();
+                    Field backingField = null;
                     if (member instanceof Field) {
-                        Reflection.set(pc, (Field) member, proxy);
+                        backingField = (Field) member;
                     } else if (member instanceof Method) {
-                        // property access — find the backing field
-                        Field field = Reflection.findField(
+                        backingField = Reflection.findField(
                             fmds[i].getDeclaringType(),
                             fmds[i].getName(), true);
-                        if (field != null) {
-                            Reflection.set(pc, field, proxy);
-                        }
+                    }
+                    if (backingField == null) {
+                        break;
+                    }
+                    // JDK dynamic proxies can only implement interfaces.
+                    // If the field is declared as a concrete class (e.g.
+                    // LinkedHashSet, ArrayList), a proxy can't be assigned
+                    // to it, so skip.
+                    Class<?> fieldType = backingField.getType();
+                    if (!fieldType.isInterface()) {
+                        break;
+                    }
+                    // Only assign a proxy if the field is currently null
+                    // (unloaded). Avoid overwriting already-loaded collections.
+                    Object current = Reflection.get(pc, backingField);
+                    if (current != null) {
+                        break;
+                    }
+                    Object proxy = newLazyLoadingProxy(fieldType, i, sm);
+                    if (proxy != null) {
+                        Reflection.set(pc, backingField, proxy);
                     }
                     break;
             }
@@ -232,6 +248,19 @@ public class RedefinitionHelper {
 
     private static Object newLazyLoadingProxy(Class type, final int idx,
         final StateManagerImpl sm) {
+        // JDK Proxy only works with interfaces.
+        // If the declared type is a concrete class, use its interfaces instead.
+        Class[] proxyInterfaces;
+        if (type.isInterface()) {
+            proxyInterfaces = new Class[] { type };
+        } else {
+            proxyInterfaces = type.getInterfaces();
+            if (proxyInterfaces.length == 0) {
+                // No interfaces to proxy — skip creating the proxy
+                return null;
+            }
+        }
+
         InvocationHandler handler = new InvocationHandler() {
 
             @Override
@@ -245,6 +274,6 @@ public class RedefinitionHelper {
             }
         };
         return Proxy.newProxyInstance(type.getClassLoader(),
-            new Class[] { type }, handler);
+            proxyInterfaces, handler);
     }
 }

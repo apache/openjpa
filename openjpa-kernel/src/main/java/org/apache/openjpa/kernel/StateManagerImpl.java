@@ -392,11 +392,13 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         if (!isIntercepting()) {
             saveFields(true);
         }
-        // Assign lazy-loading proxies for collection/map fields even when
-        // intercepting.  Direct field access in entity methods (e.g. toString)
-        // bypasses getter interception, so without a proxy the field stays
-        // null for unloaded lazy collections — causing NPE.
-        if (!isNew())
+        // Assign lazy-loading proxies for collection/map fields that are
+        // currently null.  Skip for truly enhanced entities (bytecode-level
+        // GETFIELD interception handles lazy loading).  For unenhanced
+        // pcsubclass entities, only getter/setter calls are intercepted by
+        // the subclass — direct field access (e.g. in toString()) bypasses
+        // that, so the proxy prevents NPE on unloaded collections.
+        if (!isNew() && !getMetaData().isIntercepting())
             RedefinitionHelper.assignLazyLoadProxies(this);
     }
 
