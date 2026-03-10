@@ -238,7 +238,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
     private boolean _detachedNew = true;
     private boolean _orderDirty = false;
     private boolean _cachePreparedQuery = true;
-    private boolean _cacheFinderQuery = true;
+    private final boolean _cacheFinderQuery = true;
     private boolean _suppressBatchOLELogging = false;
     private boolean _allowReferenceToSiblingContext = false;
     private boolean _postLoadOnMerge = false;
@@ -267,11 +267,10 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
 
     // Set of supported property keys. The keys in this set correspond to bean-style setter methods
     // that can be set by reflection. The keys are not qualified by any prefix.
-    private static Set<String> _supportedPropertyNames;
+    private static final Set<String> _supportedPropertyNames;
     static {
         _supportedPropertyNames = new HashSet<>();
-        _supportedPropertyNames.addAll(Arrays.asList(new String[] {
-                "AutoClear",
+        _supportedPropertyNames.addAll(Arrays.asList("AutoClear",
                 "AutoDetach",
                 "CacheFinderQuery",
                 "CachePreparedQuery",
@@ -286,8 +285,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
                 "Optimistic",
                 "PopulateDataCache",
                 "RestoreState",
-                "RetainState",
-                }));
+                "RetainState"));
     }
 
     private boolean _printParameters = false;
@@ -2551,7 +2549,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
                 }
                 else {
                     if (sm.getPCState() == PCState.PNEWDELETED || sm.getPCState() == PCState.PDELETED) {
-                        fireLifecycleEvent(sm.getPersistenceCapable(), null, sm.getMetaData(),
+                        fireLifecycleEvent(sm.getManagedInstance(), null, sm.getMetaData(),
                                 LifecycleEvent.AFTER_DELETE_PERFORMED);
                     }
                     sm.commit();
@@ -2668,8 +2666,10 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         Throwable[] t = exceps.toArray(new Throwable[exceps.size()]);
         for (Throwable throwable : t) {
             if (throwable instanceof OpenJPAException
-                    && ((OpenJPAException) throwable).isFatal())
+                    && ((OpenJPAException) throwable).isFatal()) {
                 fatal = true;
+                break;
+            }
         }
         OpenJPAException err;
         if (datastore)

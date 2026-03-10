@@ -87,7 +87,7 @@ public class MethodLifecycleCallbacks
         	_callback.setAccessible(true);
 
         if (_arg)
-            _callback.invoke(obj, new Object[]{ arg });
+            _callback.invoke(obj, arg);
         else
             _callback.invoke(obj, (Object[]) null);
     }
@@ -104,7 +104,7 @@ public class MethodLifecycleCallbacks
     protected static Method getMethod(Class cls, String method, Class[] args) {
         Class currentClass = cls;
         do {
-            Method[] methods = (Method[]) currentClass.getDeclaredMethods();
+            Method[] methods = currentClass.getDeclaredMethods();
             for (Method value : methods) {
                 if (!method.equals(value.getName()))
                     continue;
@@ -133,7 +133,9 @@ public class MethodLifecycleCallbacks
             return false;
 
         for (int i = 0; i < from.length; i++) {
-            if (from[i] != null && !from[i].isAssignableFrom(to[i]))
+            if (from[i] != null && to[i] != null
+                && !from[i].isAssignableFrom(to[i])
+                && !to[i].isAssignableFrom(from[i]))
                 return false;
         }
 
