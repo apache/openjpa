@@ -155,6 +155,7 @@ public class PostgresDictionary extends DBDictionary {
         useSetBytesForBlobs = true;
         useGetStringForClobs = true;
         useSetStringForClobs = true;
+        storeCharsAsNumbers = false;
         bitTypeName = "BOOL";
         smallintTypeName = "SMALLINT";
         realTypeName = "FLOAT4";
