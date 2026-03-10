@@ -891,7 +891,7 @@ public class PCEnhancer {
                 LabelNode caseLabel = new LabelNode();
                 instructions.add(caseLabel);
                 switchNd.labels.add(caseLabel);
-                switchNd.keys.add(propFmds.get(i));
+                switchNd.keys.add(i);
                 String fieldName = _attrsToFields.get(fmds[i].getName());
                 if (fieldName == null) {
                     fieldName = fmds[i].getName();
@@ -899,6 +899,9 @@ public class PCEnhancer {
                 instructions.add(AsmHelper.getLoadConstantInsn(fieldName));
                 instructions.add(new InsnNode(Opcodes.ARETURN));
             }
+            // default: throw new IllegalArgumentException()
+            instructions.add(defLbl);
+            instructions.add(AsmHelper.throwException(IllegalArgumentException.class));
         }
     }
 
