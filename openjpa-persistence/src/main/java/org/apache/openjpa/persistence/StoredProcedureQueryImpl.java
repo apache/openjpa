@@ -454,7 +454,22 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
 	
 	@Override
 	public Object getSingleResultOrNull() {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		execute();
+		try {
+			ResultList result = (ResultList) _callback.callback();
+			if (result == null || result.isEmpty())
+				return null;
+			if (result.size() > 1)
+				throw new NonUniqueResultException(_loc.get("non-unique-result",
+						_name, result.size()).getMessage());
+			RuntimeExceptionTranslator trans = PersistenceExceptions
+					.getRollbackTranslator(_delegate.getEntityManager());
+			return new DelegatingResultList(result, trans).iterator().next();
+		} catch (NonUniqueResultException nure) {
+			throw nure;
+		} catch (Exception ex) {
+			throw new jakarta.persistence.PersistenceException(ex);
+		}
 	}
 	
 }

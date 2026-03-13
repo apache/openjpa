@@ -694,7 +694,20 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 
 	@Override
 	public X getSingleResultOrNull() {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		_em.assertNotCloseInvoked();
+		setHint(QueryHints.HINT_RESULT_COUNT, 1);
+		boolean queryFetchPlanUsed = pushQueryFetchPlan();
+		try {
+			List result = getResultList();
+			if (result == null || result.isEmpty())
+				return null;
+			if (result.size() > 1)
+				throw new NonUniqueResultException(_loc.get("non-unique-result",
+						getQueryString(), result.size()).getMessage());
+			return (X) result.get(0);
+		} finally {
+			popQueryFetchPlan(queryFetchPlanUsed);
+		}
 	}
 
 	@Override
