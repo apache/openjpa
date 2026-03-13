@@ -422,6 +422,9 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
     public Map<String,Object> getProperties() {
         // required props are VendorName and VersionNumber
         Map<String,Object> props = _conf.toProperties(true);
+        // Remove null values — callers (including TCK's displayMap) may
+        // not expect them and the JPA spec does not require null entries.
+        props.values().removeIf(Objects::isNull);
         props.put("VendorName", OpenJPAVersion.VENDOR_NAME);
         props.put("VersionNumber", OpenJPAVersion.VERSION_NUMBER);
         props.put("VersionId", OpenJPAVersion.VERSION_ID);

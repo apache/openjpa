@@ -193,6 +193,7 @@ public class OpenJPAConfigurationImpl
     public StringValue createScriptTarget;
     public StringValue dropScriptTarget;
     public StringValue loadScriptSource;
+    public BooleanValue specCompliantSchemaGeneration;
 
     // custom values
     public BrokerFactoryValue brokerFactoryPlugin;
@@ -211,6 +212,7 @@ public class OpenJPAConfigurationImpl
     private transient java.io.Writer _dropScriptTargetWriter;
     private transient java.io.Reader _createScriptSourceReader;
     private transient java.io.Reader _dropScriptSourceReader;
+    private transient boolean _schemaGenerationExplicit;
     private boolean _allowSetLifeCycleEventManager = true;
     /**
      * Default constructor. Attempts to load global properties.
@@ -481,6 +483,8 @@ public class OpenJPAConfigurationImpl
         dropScriptTarget = addString("jakarta.persistence.schema-generation.scripts.drop-target");
         loadScriptSource = addString("jakarta.persistence.sql-load-script-source");
 
+        specCompliantSchemaGeneration = addBoolean("SpecCompliantSchemaGeneration");
+
         autoClear = addInt("AutoClear");
         aliases =
             new String[] { "datastore",
@@ -714,6 +718,17 @@ public class OpenJPAConfigurationImpl
     @Override
     public void fromProperties(Map map) {
         if (map != null) {
+            // Detect if any JPA schema generation property was explicitly
+            // provided. When set, JPA schema gen takes priority over
+            // OpenJPA's SynchronizeMappings.
+            for (Object key : map.keySet()) {
+                if (key instanceof String
+                        && ((String) key).startsWith(
+                            "jakarta.persistence.schema-generation.")) {
+                    _schemaGenerationExplicit = true;
+                    break;
+                }
+            }
             // Extract Writer/Reader objects before they hit StringValue
             // (which would just call toString() and lose them).
             extractSchemaGenObjects(map,
@@ -2341,6 +2356,17 @@ public class OpenJPAConfigurationImpl
     @Override
     public java.io.Reader getDropScriptSourceReader() {
         return _dropScriptSourceReader;
+    }
+
+    @Override
+    public boolean isSchemaGenerationExplicit() {
+        return _schemaGenerationExplicit;
+    }
+
+    @Override
+    public boolean isSpecCompliantSchemaGeneration() {
+        return specCompliantSchemaGeneration.get()
+            || getCompatibilityInstance().getSpecCompliantSchemaGeneration();
     }
 
     @Override

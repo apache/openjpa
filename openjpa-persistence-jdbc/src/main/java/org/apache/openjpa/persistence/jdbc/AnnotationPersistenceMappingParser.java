@@ -153,6 +153,7 @@ import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.ColumnResult;
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.ConstructorResult;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.DiscriminatorValue;
@@ -661,26 +662,32 @@ public class AnnotationPersistenceMappingParser
             throw new UserException(_loc.get("index-no-column", ctx));
         }
 
-        // Strip optional ASC/DESC sort direction from column names
+        // Parse optional ASC/DESC sort direction from column names
         // per JPA spec: columnList = "col1 ASC, col2 DESC"
         String[] rawCols = columnNames.split(",");
+        boolean[] descending = new boolean[rawCols.length];
         for (int i = 0; i < rawCols.length; i++) {
             String col = rawCols[i].trim();
             int space = col.indexOf(' ');
             if (space > 0) {
+                String dir = col.substring(space + 1).trim().toUpperCase();
+                descending[i] = "DESC".equals(dir);
                 col = col.substring(0, space);
             }
             rawCols[i] = col;
         }
         DBIdentifier[] sColNames = DBIdentifier.toArray(rawCols, DBIdentifierType.COLUMN, delimit());
         org.apache.openjpa.jdbc.schema.Index indx = new org.apache.openjpa.jdbc.schema.Index();
-        for (DBIdentifier sColName : sColNames) {
-            if (DBIdentifier.isEmpty(sColName))
+        for (int i = 0; i < sColNames.length; i++) {
+            if (DBIdentifier.isEmpty(sColNames[i]))
                 throw new UserException(_loc.get("index-empty-column",
                         Arrays.toString(sColNames), ctx));
             Column column = new Column();
-            column.setIdentifier(sColName);
+            column.setIdentifier(sColNames[i]);
             indx.addColumn(column);
+            if (descending[i]) {
+                indx.setColumnSortDirection(sColNames[i], true);
+            }
         }
         indx.setUnique(anno.unique());
         if (!StringUtil.isEmpty(anno.name())) {
@@ -857,7 +864,7 @@ public class AnnotationPersistenceMappingParser
                 discrim.setJavaType(JavaTypes.STRING);
         }
         cm.getDiscriminator().getMappingInfo().setColumns
-            (Arrays.asList(col));
+            (List.of(col));
     }
 
     /**
@@ -921,7 +928,7 @@ public class AnnotationPersistenceMappingParser
             col.setSize(id.precision());
         col.setFlag(Column.FLAG_UNINSERTABLE, !id.insertable());
         col.setFlag(Column.FLAG_UNUPDATABLE, !id.updatable());
-        cm.getMappingInfo().setColumns(Arrays.asList(col));
+        cm.getMappingInfo().setColumns(List.of(col));
     }
 
 
@@ -956,6 +963,30 @@ public class AnnotationPersistenceMappingParser
         fk.setDeferred(deferred);
         fk.setDeleteAction(toForeignKeyAction(deleteAction));
         fk.setUpdateAction(toForeignKeyAction(updateAction));
+        info.setForeignKey(fk);
+    }
+
+    /**
+     * Parse a JPA standard {@link jakarta.persistence.ForeignKey} annotation
+     * and apply it to the given mapping info.
+     */
+    private void parseJpaForeignKey(MappingInfo info,
+        jakarta.persistence.ForeignKey jpaFk) {
+        if (jpaFk == null)
+            return;
+        ConstraintMode mode = jpaFk.value();
+        if (mode == ConstraintMode.NO_CONSTRAINT) {
+            info.setCanForeignKey(false);
+            return;
+        }
+        if (mode == ConstraintMode.PROVIDER_DEFAULT)
+            return;
+        // ConstraintMode.CONSTRAINT — create a named physical FK
+        org.apache.openjpa.jdbc.schema.ForeignKey fk =
+            new org.apache.openjpa.jdbc.schema.ForeignKey();
+        if (!StringUtil.isEmpty(jpaFk.name()))
+            fk.setIdentifier(DBIdentifier.newForeignKey(jpaFk.name(),
+                delimit()));
         info.setForeignKey(fk);
     }
 
@@ -1230,9 +1261,9 @@ public class AnnotationPersistenceMappingParser
         else
             col.setType(Types.BLOB);
         if (fmd.isElementCollection())
-            ((FieldMapping) fmd).getElementMapping().getValueInfo().setColumns(Arrays.asList(col));
+            ((FieldMapping) fmd).getElementMapping().getValueInfo().setColumns(List.of(col));
         else
-            ((FieldMapping) fmd).getValueInfo().setColumns(Arrays.asList(col));
+            ((FieldMapping) fmd).getValueInfo().setColumns(List.of(col));
 
     }
 
@@ -1701,7 +1732,7 @@ public class AnnotationPersistenceMappingParser
             throw new MetaDataException(_loc.get("num-cols-mismatch", fm,
                 String.valueOf(cols.size()), "1"));
         if (cols.isEmpty()) {
-            cols = Arrays.asList(new Column());
+            cols = List.of(new Column());
             if (fm.isElementCollection()) {
                 if (!fm.getElementMapping().getValueInfo().getColumns().isEmpty())
                     cols = fm.getElementMapping().getValueInfo().getColumns();
@@ -1734,7 +1765,7 @@ public class AnnotationPersistenceMappingParser
             throw new MetaDataException(_loc.get("num-cols-mismatch", fm,
                 String.valueOf(cols.size()), "1"));
         if (cols.isEmpty()) {
-            cols = Arrays.asList(new Column());
+            cols = List.of(new Column());
             fm.getKeyMapping().getValueInfo().setColumns(cols);
         }
 
@@ -1888,6 +1919,12 @@ public class AnnotationPersistenceMappingParser
             join.inverseJoinColumns());
         addUniqueConstraints(info.getTableIdentifier().getName(), fm, info,
             join.uniqueConstraints());
+        // Parse JPA @ForeignKey annotations on join table
+        parseJpaForeignKey(info, join.foreignKey());
+        parseJpaForeignKey(fm.getElementMapping().getValueInfo(),
+            join.inverseForeignKey());
+        // Parse @Index annotations on join table
+        addIndices(joinTbl.getName(), fm, info, join.indexes());
     }
 
     /**
@@ -2132,7 +2169,7 @@ public class AnnotationPersistenceMappingParser
             Column col = new Column();
             if (!"true".equals(nullInd.getName()))
                 col.setIdentifier(nullInd);
-            info.setColumns(Arrays.asList(col));
+            info.setColumns(List.of(col));
         }
     }
 

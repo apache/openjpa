@@ -527,6 +527,12 @@ public class MappingTool
                                 schemaAction.equals(ACTION_SCRIPT_DROP) ||
                                 schemaAction.equals(ACTION_SCRIPT_LOAD)) {
                             tool = newSchemaTool(SchemaTool.ACTION_EXECUTE_SCRIPT);
+                            // Script execution should be resilient to errors
+                            // like "table already exists" or "table not found"
+                            // which can occur when SynchronizeMappings=buildSchema
+                            // has already created/dropped tables before the
+                            // explicit script execution.
+                            tool.setIgnoreErrors(true);
                         }
                         else {
                             tool = newSchemaTool(schemaAction);

@@ -2108,6 +2108,26 @@ public interface OpenJPAConfiguration
     java.io.Reader getDropScriptSourceReader();
 
     /**
+     * Returns true if any JPA schema generation property
+     * (database.action, scripts.action, etc.) was explicitly provided
+     * via the properties map. When true, JPA schema generation takes
+     * priority over OpenJPA's SynchronizeMappings property.
+     * @since 4.2.0
+     */
+    boolean isSchemaGenerationExplicit();
+
+    /**
+     * Returns true if spec-compliant schema generation is enabled.
+     * When true, OpenJPA tracks explicit JPA schema generation actions
+     * and suppresses SynchronizeMappings=buildSchema for JDBC URLs
+     * where schema generation has been explicitly managed.
+     * Can be set via openjpa.SpecCompliantSchemaGeneration=true or
+     * openjpa.Compatibility SpecCompliantSchemaGeneration property.
+     * @since 4.2.0
+     */
+    boolean isSpecCompliantSchemaGeneration();
+
+    /**
      * @return types which should not get enhanced although they are on the included directories.
      * @since 3.1.1
      */

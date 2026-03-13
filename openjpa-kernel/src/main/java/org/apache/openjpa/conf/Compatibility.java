@@ -78,6 +78,7 @@ public class Compatibility {
     private boolean _filterPCRegistryClasses = false; // OPENJPA-2288
     private boolean _returnNullOnEmptyAggregateResult = true;   // OPENJPA-1794
     private boolean _cacheNonDefaultFetchPlanQueries = false; // OPENJPA-2414
+    private boolean _specCompliantSchemaGeneration = false; // OPENJPA-2940
 
     /**
      * Whether to require exact identity value types when creating object
@@ -776,5 +777,27 @@ public class Compatibility {
      */
     public void setCacheNonDefaultFetchPlanQueries(boolean bool) {
         _cacheNonDefaultFetchPlanQueries = bool;
+    }
+
+    /**
+     * Whether to enable JPA spec-compliant schema generation behavior.
+     * When true, an explicit {@code database.action=drop} via
+     * {@code Persistence.generateSchema()} will suppress a subsequent
+     * {@code SynchronizeMappings=buildSchema} from re-creating tables
+     * for the same JDBC URL. Defaults to false.
+     *
+     * @since 4.2.0
+     */
+    public boolean getSpecCompliantSchemaGeneration() {
+        return _specCompliantSchemaGeneration;
+    }
+
+    /**
+     * Whether to enable JPA spec-compliant schema generation behavior.
+     *
+     * @since 4.2.0
+     */
+    public void setSpecCompliantSchemaGeneration(boolean b) {
+        _specCompliantSchemaGeneration = b;
     }
 }

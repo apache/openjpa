@@ -515,9 +515,26 @@ public class SchemaTool {
                     ? (BufferedReader) _scriptReader
                     : new BufferedReader(_scriptReader);
             } else {
-                URL url = _conf.getClassResolverInstance()
-                    .getClassLoader(SchemaTool.class, null)
-                    .getResource(_scriptToExecute);
+                URL url = null;
+                // Try file: URI or absolute path first
+                if (_scriptToExecute.startsWith("file:")) {
+                    try {
+                        url = new java.net.URI(_scriptToExecute).toURL();
+                    } catch (Exception e) {
+                        // fall through to classloader lookup
+                    }
+                } else {
+                    java.io.File f = new java.io.File(_scriptToExecute);
+                    if (f.isAbsolute() && f.exists()) {
+                        url = f.toURI().toURL();
+                    }
+                }
+                // Fall back to classloader resource lookup
+                if (url == null) {
+                    url = _conf.getClassResolverInstance()
+                        .getClassLoader(SchemaTool.class, null)
+                        .getResource(_scriptToExecute);
+                }
                 if (url == null) {
                     _log.error(_loc.get("generating-execute-script-not-found",
                         _scriptToExecute));
@@ -528,22 +545,41 @@ public class SchemaTool {
                 reader = new BufferedReader(
                     new InputStreamReader(url.openStream()));
             }
-            String sql;
+            String line;
             List<String> script = new ArrayList<>();
-            while ((sql = reader.readLine()) != null) {
-                sql = sql.trim();
-                if (sql.startsWith("--") || sql.startsWith("/*") || sql.startsWith("//")) {
+            StringBuilder stmt = new StringBuilder();
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                // Skip full-line comments
+                if (line.startsWith("--") || line.startsWith("/*")
+                        || line.startsWith("//") || line.isEmpty()) {
                     continue;
                 }
-
-                int semiColonPosition = sql.indexOf(";"); // ';' can be in string, don't blindly drop it
-                if (sql.endsWith(";")) {
-                    sql = sql.substring(0, sql.length() - 1);
+                // Strip inline -- comments
+                int dashIdx = line.indexOf("--");
+                if (dashIdx > 0) {
+                    line = line.substring(0, dashIdx).trim();
                 }
-                if (sql.isEmpty()) {
+                if (line.isEmpty()) {
                     continue;
                 }
-                script.add(sql);
+                // Accumulate lines into statements, split on ;
+                if (line.endsWith(";")) {
+                    stmt.append(' ')
+                        .append(line, 0, line.length() - 1);
+                    String sql = stmt.toString().trim();
+                    if (!sql.isEmpty()) {
+                        script.add(sql);
+                    }
+                    stmt.setLength(0);
+                } else {
+                    stmt.append(' ').append(line);
+                }
+            }
+            // Handle final statement without trailing ;
+            String last = stmt.toString().trim();
+            if (!last.isEmpty()) {
+                script.add(last);
             }
 
             executeSQL(script.toArray(new String[script.size()]));

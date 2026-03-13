@@ -115,8 +115,8 @@ public class ForeignKey extends Constraint {
             return ACTION_NULL;
 
         // not a recognized action; check for typo
-        List recognized = Arrays.asList(new String[]{ "none", "exception",
-            "restrict", "cascade", "null", "default", });
+        List recognized = Arrays.asList("none", "exception",
+                "restrict", "cascade", "null", "default");
         String closest = StringDistance.getClosestLevenshteinDistance(name,
             recognized, .5F);
 
@@ -173,6 +173,10 @@ public class ForeignKey extends Constraint {
 
     @Override
     public boolean isLogical() {
+        // A FK with an explicit name (from JPA @ForeignKey annotation) is
+        // always physical, even without a specified delete action.
+        if (!DBIdentifier.isNull(getIdentifier()))
+            return false;
         return _delAction == ACTION_NONE;
     }
 
@@ -742,9 +746,7 @@ public class ForeignKey extends Constraint {
         if (!match(getConstantPrimaryKeyColumns(),
             fk.getConstantPrimaryKeyColumns()))
             return false;
-        if (!match(getPrimaryKeyConstants(), fk.getPrimaryKeyConstants()))
-            return false;
-        return true;
+        return match(getPrimaryKeyConstants(), fk.getPrimaryKeyConstants());
     }
 
     /**
@@ -932,13 +934,13 @@ public class ForeignKey extends Constraint {
         if (_delAction != that._delAction) return false;
         if (_upAction != that._upAction) return false;
         if (_index != that._index) return false;
-        if (_pkTableName != null ? !_pkTableName.equals(that._pkTableName) : that._pkTableName != null) return false;
-        if (_pkSchemaName != null ? !_pkSchemaName.equals(that._pkSchemaName) : that._pkSchemaName != null) return false;
-        if (_pkColumnName != null ? !_pkColumnName.equals(that._pkColumnName) : that._pkColumnName != null) return false;
-        if (_joins != null ? !_joins.equals(that._joins) : that._joins != null) return false;
-        if (_joinsPK != null ? !_joinsPK.equals(that._joinsPK) : that._joinsPK != null) return false;
-        if (_consts != null ? !_consts.equals(that._consts) : that._consts != null) return false;
-        if (_constsPK != null ? !_constsPK.equals(that._constsPK) : that._constsPK != null) return false;
+        if (!Objects.equals(_pkTableName, that._pkTableName)) return false;
+        if (!Objects.equals(_pkSchemaName, that._pkSchemaName)) return false;
+        if (!Objects.equals(_pkColumnName, that._pkColumnName)) return false;
+        if (!Objects.equals(_joins, that._joins)) return false;
+        if (!Objects.equals(_joinsPK, that._joinsPK)) return false;
+        if (!Objects.equals(_consts, that._consts)) return false;
+        if (!Objects.equals(_constsPK, that._constsPK)) return false;
         // Probably incorrect - comparing Object[] arrays with Arrays.equals
         if (!Arrays.equals(_locals, that._locals)) return false;
         // Probably incorrect - comparing Object[] arrays with Arrays.equals
@@ -951,8 +953,8 @@ public class ForeignKey extends Constraint {
         if (!Arrays.equals(_constValsPK, that._constValsPK)) return false;
         // Probably incorrect - comparing Object[] arrays with Arrays.equals
         if (!Arrays.equals(_constColsPK, that._constColsPK)) return false;
-        if (_pkTable != null ? !_pkTable.equals(that._pkTable) : that._pkTable != null) return false;
-        return _autoAssign != null ? _autoAssign.equals(that._autoAssign) : that._autoAssign == null;
+        if (!Objects.equals(_pkTable, that._pkTable)) return false;
+        return Objects.equals(_autoAssign, that._autoAssign);
     }
 
     @Override
@@ -986,7 +988,7 @@ public class ForeignKey extends Constraint {
      */
     public static class FKMapKey {
 
-        private ForeignKey _fk;
+        private final ForeignKey _fk;
 
         public FKMapKey(ForeignKey fk) {
             _fk = fk;
@@ -1017,13 +1019,10 @@ public class ForeignKey extends Constraint {
                 return false;
             }
             // Assert PK table name and schema
-            if (!getFk().getPrimaryKeySchemaIdentifier().equals(fk.getPrimaryKeySchemaIdentifier()) ||
-                !getFk().getPrimaryKeyTableIdentifier().equals(fk.getPrimaryKeyTableIdentifier()) ||
-                !getFk().getSchemaIdentifier().equals(fk.getSchemaIdentifier()) ||
-                !getFk().getTableIdentifier().equals(fk.getTableIdentifier())) {
-                return false;
-            }
-            return true;
+            return getFk().getPrimaryKeySchemaIdentifier().equals(fk.getPrimaryKeySchemaIdentifier()) &&
+                    getFk().getPrimaryKeyTableIdentifier().equals(fk.getPrimaryKeyTableIdentifier()) &&
+                    getFk().getSchemaIdentifier().equals(fk.getSchemaIdentifier()) &&
+                    getFk().getTableIdentifier().equals(fk.getTableIdentifier());
         }
     }
 }

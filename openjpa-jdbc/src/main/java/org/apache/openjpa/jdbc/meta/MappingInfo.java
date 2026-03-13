@@ -601,7 +601,7 @@ public abstract class MappingInfo implements Serializable {
         _io = null;
         Column col;
         for (int i = 0; i < tmplates.length; i++) {
-            col = (given.isEmpty()) ? null : (Column) given.get(i);
+            col = (given.isEmpty()) ? null : given.get(i);
             cols[i] = mergeColumn(context, prefix, tmplates[i], true, col,
                 table, adapt, fill);
             setIOFromColumnFlags(col, i);
@@ -975,6 +975,13 @@ public abstract class MappingInfo implements Serializable {
         Index idx = table.addIndex(name);
         idx.setUnique(unq);
         idx.setColumns(cols);
+        // Copy per-column sort direction from template
+        if (tmplate != null) {
+            for (Column col : cols) {
+                if (tmplate.isColumnDescending(col))
+                    idx.setColumnSortDirection(col.getIdentifier(), true);
+            }
+        }
         return idx;
     }
 
@@ -1783,8 +1790,7 @@ public abstract class MappingInfo implements Serializable {
         if (target != null) {
             if (target == NULL)
                 copy.setTargetIdentifier(DBIdentifier.newColumn("null"));
-            else if (target instanceof Column) {
-                Column tcol = (Column) target;
+            else if (target instanceof Column tcol) {
                 if ((!inverse && tcol.getTable() != targetTable)
                     || (inverse && tcol.getTable() != colTable))
                     copy.setTargetIdentifier(

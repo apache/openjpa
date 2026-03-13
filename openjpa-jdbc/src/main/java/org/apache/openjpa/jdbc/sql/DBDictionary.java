@@ -508,7 +508,7 @@ public class DBDictionary
 
     // Naming utility and naming rules
     private DBIdentifierUtil namingUtil = null;
-    private Map<String, IdentifierRule> namingRules = new HashMap<>();
+    private final Map<String, IdentifierRule> namingRules = new HashMap<>();
     private IdentifierRule defaultNamingRule = null;  // cached for performance
 
     /**
@@ -533,12 +533,10 @@ public class DBDictionary
     protected ProxyManager _proxyManager;
 
     public DBDictionary() {
-        fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
-            "BIGINT", "BIT", "BLOB", "CLOB", "DATE", "DECIMAL", "DISTINCT",
-            "DOUBLE", "FLOAT", "INTEGER", "JAVA_OBJECT", "NULL", "NUMERIC",
-            "OTHER", "REAL", "REF", "SMALLINT", "STRUCT", "TIME", "TIMESTAMP",
-            "TINYINT",
-        }));
+        fixedSizeTypeNameSet.addAll(Arrays.asList("BIGINT", "BIT", "BLOB", "CLOB", "DATE", "DECIMAL", "DISTINCT",
+                "DOUBLE", "FLOAT", "INTEGER", "JAVA_OBJECT", "NULL", "NUMERIC",
+                "OTHER", "REAL", "REF", "SMALLINT", "STRUCT", "TIME", "TIMESTAMP",
+                "TINYINT"));
 
         // initialize the set of reserved SQL92 words from resource
         reservedWordSet.addAll(loadFromResource("sql-keywords.rsrc"));
@@ -606,7 +604,7 @@ public class DBDictionary
 
             // Auto-detect generated keys retrieval support unless user specified it.
             if (supportsGetGeneratedKeys == null) {
-                supportsGetGeneratedKeys =  (isJDBC3) ? metaData.supportsGetGeneratedKeys() : false;
+                supportsGetGeneratedKeys = isJDBC3 && metaData.supportsGetGeneratedKeys();
             }
             if (log.isInfoEnabled()) {
                 log.info(_loc.get("dict-info", new Object[] {
@@ -1697,8 +1695,7 @@ public class DBDictionary
      * Set a completely unknown parameter into a prepared statement.
      */
     public void setUnknown(PreparedStatement stmt, int idx, Object val, Column col) throws SQLException {
-        if (val instanceof Object[]) {
-            Object[] valArray = (Object[])val;
+        if (val instanceof Object[] valArray) {
             for (Object object : valArray) {
                 setUnknown(stmt, idx, col, object);
             }
@@ -1798,7 +1795,7 @@ public class DBDictionary
         else if (val instanceof UUID && supportsUuidType)
             setObject(stmnt, idx, (UUID) val, Types.OTHER, col);
         else if (val instanceof UUID && !supportsUuidType) 
-            setString(stmnt, idx, ((UUID) val).toString(), col);
+            setString(stmnt, idx, val.toString(), col);
         else
             throw new UserException(_loc.get("bad-param", val.getClass()));
     }
@@ -2636,7 +2633,7 @@ public class DBDictionary
             sql.addAll(Arrays.asList(constraintSQL));
         }
 
-        return (String[]) sql.toArray(new String[sql.size()]);
+        return sql.toArray(new String[sql.size()]);
     }
 
     /**
@@ -3834,13 +3831,7 @@ public class DBDictionary
             checkNameLength(getFullIdentifier(table, false), maxTableNameLength, "long-table-name",
                 tableLengthIncludesSchema);
         buf.append("CREATE TABLE ").append(tableName);
-        if (supportsComments && table.hasComment()) {
-            buf.append(" ");
-            comment(buf, table.getComment());
-            buf.append("\n    (");
-        } else {
-            buf.append(" (");
-        }
+        buf.append(" (");
 
         // do this before getting the columns so we know how to handle
         // the last comma
@@ -3875,7 +3866,7 @@ public class DBDictionary
             }
         }
 
-        buf.append(endBuf.toString());
+        buf.append(endBuf);
         buf.append(")");
         if (table.getOptions() != null && !table.getOptions().isEmpty())
             buf.append(" ").append(table.getOptions());
@@ -3896,8 +3887,7 @@ public class DBDictionary
      * <code>DROP TABLE &lt;table name&gt;</code> by default.
      */
     public String[] getDropTableSQL(Table table) {
-        String drop = MessageFormat.format(dropTableSQL, new Object[]{
-            getFullName(table, false) });
+        String drop = MessageFormat.format(dropTableSQL, getFullName(table, false));
         return new String[]{ drop };
     }
 
@@ -3976,8 +3966,16 @@ public class DBDictionary
 
         buf.append("INDEX ").append(indexName);
         buf.append(" ON ").append(getFullName(index.getTable(), false));
-        buf.append(" (").append(namingUtil.appendColumns(index.getColumns())).
-            append(")");
+        buf.append(" (");
+        Column[] cols = index.getColumns();
+        for (int i = 0; i < cols.length; i++) {
+            if (i > 0)
+                buf.append(", ");
+            buf.append(toDBName(cols[i].getIdentifier()));
+            if (index.isColumnDescending(cols[i]))
+                buf.append(" DESC");
+        }
+        buf.append(")");
 
         return new String[]{ buf.toString() };
     }
@@ -4157,7 +4155,10 @@ public class DBDictionary
             return null;
         if (fk.getColumns().length > 0 && !supportsForeignKeysComposite)
             return null;
-        if (fk.getDeleteAction() == ForeignKey.ACTION_NONE)
+        // Skip logical FKs (ACTION_NONE) unless they have an explicit name
+        // from a JPA @ForeignKey annotation, which signals a physical constraint.
+        if (fk.getDeleteAction() == ForeignKey.ACTION_NONE
+            && DBIdentifier.isNull(fk.getIdentifier()))
             return null;
         if (fk.isDeferred() && !supportsDeferredForeignKeyConstraints())
             return null;
@@ -4906,7 +4907,7 @@ public class DBDictionary
                 }
                 importedKeyList.add(nfk);
             }
-            return (ForeignKey[]) importedKeyList.toArray
+            return importedKeyList.toArray
                 (new ForeignKey[importedKeyList.size()]);
         }
     }
@@ -5111,10 +5112,8 @@ public class DBDictionary
     }
 
     protected String getGenKeySeqName(String query, Column col) {
-        return MessageFormat.format(query, new Object[]{
-                toDBName(col.getIdentifier()), getFullName(col.getTable(), false),
-                getGeneratedKeySequenceName(col),
-            });
+        return MessageFormat.format(query, toDBName(col.getIdentifier()), getFullName(col.getTable(), false),
+                getGeneratedKeySequenceName(col));
     }
 
     /**
@@ -5195,9 +5194,7 @@ public class DBDictionary
 
         // the generic dbdictionary is not considered a supported dict; all
         // other concrete dictionaries are
-        if (c == DBDictionary.class)
-            return false;
-        return true;
+        return c != DBDictionary.class;
     }
 
     @Override
@@ -5510,16 +5507,11 @@ public class DBDictionary
     }
 
     /**
-     * Used by some mappings to represent data that has already been
-     * serialized so that we don't have to serialize multiple times.
-     */
-    public static class SerializedData {
+         * Used by some mappings to represent data that has already been
+         * serialized so that we don't have to serialize multiple times.
+         */
+        public record SerializedData(byte[] bytes) {
 
-        public final byte[] bytes;
-
-        public SerializedData(byte[] bytes) {
-            this.bytes = bytes;
-        }
     }
 
     /**
@@ -5912,7 +5904,7 @@ public class DBDictionary
      */
     @Override
     public boolean getSupportsDelimitedIdentifiers() {
-        return (supportsDelimitedIdentifiers == null ? false : supportsDelimitedIdentifiers);
+        return (supportsDelimitedIdentifiers != null && supportsDelimitedIdentifiers);
     }
 
     /**
