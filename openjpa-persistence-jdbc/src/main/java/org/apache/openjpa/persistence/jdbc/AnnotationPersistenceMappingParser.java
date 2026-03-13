@@ -200,7 +200,7 @@ public class AnnotationPersistenceMappingParser
     private static final Map<Class<?>, MappingTag> _tags =
         new HashMap<>();
 
-    private DBDictionary _dict;
+    private final DBDictionary _dict;
 
     static {
         _tags.put(AssociationOverride.class, ASSOC_OVERRIDE);
@@ -661,7 +661,18 @@ public class AnnotationPersistenceMappingParser
             throw new UserException(_loc.get("index-no-column", ctx));
         }
 
-        DBIdentifier[] sColNames = DBIdentifier.toArray(columnNames.split(","), DBIdentifierType.COLUMN, delimit());
+        // Strip optional ASC/DESC sort direction from column names
+        // per JPA spec: columnList = "col1 ASC, col2 DESC"
+        String[] rawCols = columnNames.split(",");
+        for (int i = 0; i < rawCols.length; i++) {
+            String col = rawCols[i].trim();
+            int space = col.indexOf(' ');
+            if (space > 0) {
+                col = col.substring(0, space);
+            }
+            rawCols[i] = col;
+        }
+        DBIdentifier[] sColNames = DBIdentifier.toArray(rawCols, DBIdentifierType.COLUMN, delimit());
         org.apache.openjpa.jdbc.schema.Index indx = new org.apache.openjpa.jdbc.schema.Index();
         for (DBIdentifier sColName : sColNames) {
             if (DBIdentifier.isEmpty(sColName))
@@ -846,7 +857,7 @@ public class AnnotationPersistenceMappingParser
                 discrim.setJavaType(JavaTypes.STRING);
         }
         cm.getDiscriminator().getMappingInfo().setColumns
-            (Arrays.asList(new Column[]{ col }));
+            (Arrays.asList(col));
     }
 
     /**
@@ -910,7 +921,7 @@ public class AnnotationPersistenceMappingParser
             col.setSize(id.precision());
         col.setFlag(Column.FLAG_UNINSERTABLE, !id.insertable());
         col.setFlag(Column.FLAG_UNUPDATABLE, !id.updatable());
-        cm.getMappingInfo().setColumns(Arrays.asList(new Column[]{ col }));
+        cm.getMappingInfo().setColumns(Arrays.asList(col));
     }
 
 
@@ -1219,9 +1230,9 @@ public class AnnotationPersistenceMappingParser
         else
             col.setType(Types.BLOB);
         if (fmd.isElementCollection())
-            ((FieldMapping) fmd).getElementMapping().getValueInfo().setColumns(Arrays.asList(new Column[]{ col }));
+            ((FieldMapping) fmd).getElementMapping().getValueInfo().setColumns(Arrays.asList(col));
         else
-            ((FieldMapping) fmd).getValueInfo().setColumns(Arrays.asList(new Column[]{ col }));
+            ((FieldMapping) fmd).getValueInfo().setColumns(Arrays.asList(col));
 
     }
 
@@ -1659,7 +1670,7 @@ public class AnnotationPersistenceMappingParser
             ? fm.getElement().getDeclaredType()
             : fm.getDeclaredType();
         String strat;
-        if (enumType != null && EnumValueHandler.hasEnumeratedValue(enumType)) {
+        if (EnumValueHandler.hasEnumeratedValue(enumType)) {
             strat = EnumValueHandler.class.getName()
                 + "(UseEnumeratedValue=true)";
         } else {
@@ -1690,7 +1701,7 @@ public class AnnotationPersistenceMappingParser
             throw new MetaDataException(_loc.get("num-cols-mismatch", fm,
                 String.valueOf(cols.size()), "1"));
         if (cols.isEmpty()) {
-            cols = Arrays.asList(new Column[]{ new Column() });
+            cols = Arrays.asList(new Column());
             if (fm.isElementCollection()) {
                 if (!fm.getElementMapping().getValueInfo().getColumns().isEmpty())
                     cols = fm.getElementMapping().getValueInfo().getColumns();
@@ -1700,7 +1711,7 @@ public class AnnotationPersistenceMappingParser
                 fm.getValueInfo().setColumns(cols);
         }
 
-        Column col = (Column) cols.get(0);
+        Column col = cols.get(0);
         switch (anno.value()) {
             case DATE:
                 col.setType(Types.DATE);
@@ -1723,11 +1734,11 @@ public class AnnotationPersistenceMappingParser
             throw new MetaDataException(_loc.get("num-cols-mismatch", fm,
                 String.valueOf(cols.size()), "1"));
         if (cols.isEmpty()) {
-            cols = Arrays.asList(new Column[]{ new Column() });
+            cols = Arrays.asList(new Column());
             fm.getKeyMapping().getValueInfo().setColumns(cols);
         }
 
-        Column col = (Column) cols.get(0);
+        Column col = cols.get(0);
         switch (anno.value()) {
             case DATE:
                 col.setType(Types.DATE);
@@ -1767,7 +1778,7 @@ public class AnnotationPersistenceMappingParser
         DBIdentifier sSecondary = DBIdentifier.NULL;
         for (int i = 0; i < pcols.length; i++) {
             if (cols.size() > i)
-                setupColumn((Column) cols.get(i), pcols[i], delimit());
+                setupColumn(cols.get(i), pcols[i], delimit());
             else {
                 if (cols.isEmpty())
                     cols = new ArrayList<>(pcols.length);
@@ -1775,7 +1786,7 @@ public class AnnotationPersistenceMappingParser
             }
             if (xmlRootElementClass != null
                 && StringUtil.isEmpty(pcols[i].columnDefinition())
-                && fm.getDeclaredType().isAnnotationPresent((Class<? extends Annotation>) xmlRootElementClass)) {
+                && fm.getDeclaredType().isAnnotationPresent(xmlRootElementClass)) {
                 DBDictionary dict = ((MappingRepository) getRepository())
                     .getDBDictionary();
                 if (dict.supportsXMLColumn)
@@ -2121,7 +2132,7 @@ public class AnnotationPersistenceMappingParser
             Column col = new Column();
             if (!"true".equals(nullInd.getName()))
                 col.setIdentifier(nullInd);
-            info.setColumns(Arrays.asList(new Column[]{ col }));
+            info.setColumns(Arrays.asList(col));
         }
     }
 

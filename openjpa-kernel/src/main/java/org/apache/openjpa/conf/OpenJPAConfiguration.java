@@ -2076,6 +2076,38 @@ public interface OpenJPAConfiguration
     String getLoadScriptSource();
 
     /**
+     * Returns the Writer object for scripts.create-target, if one was
+     * provided as an object property (rather than a string URL/path).
+     * @return the Writer, or null if a string target was specified
+     * @since 4.2.0
+     */
+    java.io.Writer getCreateScriptTargetWriter();
+
+    /**
+     * Returns the Writer object for scripts.drop-target, if one was
+     * provided as an object property (rather than a string URL/path).
+     * @return the Writer, or null if a string target was specified
+     * @since 4.2.0
+     */
+    java.io.Writer getDropScriptTargetWriter();
+
+    /**
+     * Returns the Reader object for create-script-source, if one was
+     * provided as an object property (rather than a string URL/path).
+     * @return the Reader, or null if a string source was specified
+     * @since 4.2.0
+     */
+    java.io.Reader getCreateScriptSourceReader();
+
+    /**
+     * Returns the Reader object for drop-script-source, if one was
+     * provided as an object property (rather than a string URL/path).
+     * @return the Reader, or null if a string source was specified
+     * @since 4.2.0
+     */
+    java.io.Reader getDropScriptSourceReader();
+
+    /**
      * @return types which should not get enhanced although they are on the included directories.
      * @since 3.1.1
      */

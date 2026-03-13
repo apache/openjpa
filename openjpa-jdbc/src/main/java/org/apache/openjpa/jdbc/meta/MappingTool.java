@@ -494,10 +494,10 @@ public class MappingTool
         if (!ACTION_DROP.equals(_action))
             mappings = repos.getMappings();
         else if (_dropMap != null)
-            mappings = (ClassMapping[]) _dropMap.toArray
+            mappings = _dropMap.toArray
                 (new ClassMapping[_dropMap.size()]);
         else
-            mappings = new ClassMapping[0];
+            mappings = ClassMapping.EMPTY_MAPPINGS;
 
         try {
             if (_dropCls != null && !_dropCls.isEmpty()) {
@@ -532,15 +532,27 @@ public class MappingTool
                             tool = newSchemaTool(schemaAction);
                         }
 
-                        if (schemaAction.equals(SchemaTool.ACTION_BUILD) && _conf.getCreateScriptTarget() != null) {
-                            tool.setWriter(new PrintWriter(_conf.getCreateScriptTarget()));
-                            tool.setIndexes(true);
-                            tool.setForeignKeys(true);
-                            tool.setSequences(true);
+                        if (schemaAction.equals(SchemaTool.ACTION_BUILD)) {
+                            java.io.Writer w = _conf.getCreateScriptTargetWriter();
+                            if (w != null) {
+                                tool.setWriter(w);
+                            } else if (_conf.getCreateScriptTarget() != null) {
+                                tool.setWriter(new PrintWriter(toFilePath(_conf.getCreateScriptTarget())));
+                            }
+                            if (w != null || _conf.getCreateScriptTarget() != null) {
+                                tool.setIndexes(true);
+                                tool.setForeignKeys(true);
+                                tool.setSequences(true);
+                            }
                         }
 
-                        if (schemaAction.equals(SchemaTool.ACTION_DROP) && _conf.getDropScriptTarget() != null) {
-                            tool.setWriter(new PrintWriter(_conf.getDropScriptTarget()));
+                        if (schemaAction.equals(SchemaTool.ACTION_DROP)) {
+                            java.io.Writer w = _conf.getDropScriptTargetWriter();
+                            if (w != null) {
+                                tool.setWriter(w);
+                            } else if (_conf.getDropScriptTarget() != null) {
+                                tool.setWriter(new PrintWriter(toFilePath(_conf.getDropScriptTarget())));
+                            }
                         }
 
                         // configure the tool with additional settings
@@ -555,13 +567,28 @@ public class MappingTool
 
                         switch (schemaAction) {
                             case ACTION_SCRIPT_CREATE:
-                                tool.setScriptToExecute(_conf.getCreateScriptSource());
+                                java.io.Reader createReader =
+                                    _conf.getCreateScriptSourceReader();
+                                if (createReader != null) {
+                                    tool.setScriptReader(createReader);
+                                } else {
+                                    tool.setScriptToExecute(
+                                        _conf.getCreateScriptSource());
+                                }
                                 break;
                             case ACTION_SCRIPT_DROP:
-                                tool.setScriptToExecute(_conf.getDropScriptSource());
+                                java.io.Reader dropReader =
+                                    _conf.getDropScriptSourceReader();
+                                if (dropReader != null) {
+                                    tool.setScriptReader(dropReader);
+                                } else {
+                                    tool.setScriptToExecute(
+                                        _conf.getDropScriptSource());
+                                }
                                 break;
                             case ACTION_SCRIPT_LOAD:
-                                tool.setScriptToExecute(_conf.getLoadScriptSource());
+                                tool.setScriptToExecute(
+                                    _conf.getLoadScriptSource());
                                 break;
                         }
 
@@ -1176,7 +1203,29 @@ public class MappingTool
     }
 
     private static boolean contains(String list, String key) {
-    	return (list == null) ? false : list.indexOf(key) != -1;
+    	return list != null && list.indexOf(key) != -1;
+    }
+
+    /**
+     * Convert a script target path to a file path, handling file: URIs.
+     * Also ensures the parent directory exists.
+     */
+    private static String toFilePath(String target) {
+        java.io.File file;
+        if (target.startsWith("file:")) {
+            try {
+                file = new java.io.File(new java.net.URI(target));
+            } catch (java.net.URISyntaxException e) {
+                file = new java.io.File(target);
+            }
+        } else {
+            file = new java.io.File(target);
+        }
+        java.io.File parent = file.getParentFile();
+        if (parent != null && !parent.exists()) {
+            parent.mkdirs();
+        }
+        return file.getAbsolutePath();
     }
 
     /**

@@ -115,6 +115,18 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
     @Override
     public void postCreationCallback() {
         super.postCreationCallback();
+        // When scripts.action is set, generate scripts immediately during
+        // EMF creation (without waiting for the first broker/EM).
+        // The JPA spec requires that script generation happens at EMF
+        // creation time.
+        JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
+        int scriptsAction = conf.getScriptsActionConstant();
+        if (scriptsAction != 0
+                || conf.getCreateScriptTargetWriter() != null
+                || conf.getDropScriptTargetWriter() != null) {
+            synchronizeMappings(Thread.currentThread().getContextClassLoader(),
+                conf);
+        }
     }
 
     @Override
@@ -242,9 +254,24 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
             }
         }
 
+        // Handle scripts.action independently from database.action.
+        // When scripts.action is set, generate DDL scripts to files
+        // even if database.action is "none".
+        if (conf.getScriptsAction() != null) {
+            int scriptsAction = conf.getScriptsActionConstant();
+            if (scriptsAction == CREATE) {
+                actions = appendAction(actions, SchemaTool.ACTION_BUILD);
+            } else if (scriptsAction == DROP) {
+                actions = appendAction(actions, SchemaTool.ACTION_DROP);
+            } else if (scriptsAction == DROP_AND_CREATE) {
+                actions = appendAction(actions, SchemaTool.ACTION_DROP
+                    + "," + SchemaTool.ACTION_BUILD);
+            }
+        }
+
         String loadFile = conf.getLoadScriptSource();
         if (loadFile != null) {
-            actions += "," + MappingTool.ACTION_SCRIPT_LOAD;
+            actions = appendAction(actions, MappingTool.ACTION_SCRIPT_LOAD);
         }
 
         if (actions.length() > 0) {
@@ -252,8 +279,16 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
         }
     }
 
+    private String appendAction(String actions, String newAction) {
+        if (actions.isEmpty()) {
+            return newAction;
+        }
+        return actions + "," + newAction;
+    }
+
     private String generateSchemaCreation(JDBCConfiguration conf) {
-        if (conf.getCreateScriptTarget() != null) {
+        if (conf.getCreateScriptTarget() != null
+                || conf.getCreateScriptTargetWriter() != null) {
             return SchemaTool.ACTION_BUILD;
         } else {
             int createSource = conf.getCreateSourceConstant();
@@ -267,7 +302,8 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
     }
 
     private String generateSchemaDrop(JDBCConfiguration conf) {
-        if (conf.getDropScriptTarget() != null) {
+        if (conf.getDropScriptTarget() != null
+                || conf.getDropScriptTargetWriter() != null) {
             return SchemaTool.ACTION_DROP;
         } else {
             int dropSource = conf.getDropSourceConstant();
@@ -281,7 +317,11 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
     }
 
     private String generateSchemaDropCreate(JDBCConfiguration conf) {
-        if (conf.getCreateScriptTarget() != null && conf.getDropScriptTarget() != null) {
+        boolean hasCreateTarget = conf.getCreateScriptTarget() != null
+            || conf.getCreateScriptTargetWriter() != null;
+        boolean hasDropTarget = conf.getDropScriptTarget() != null
+            || conf.getDropScriptTargetWriter() != null;
+        if (hasCreateTarget && hasDropTarget) {
             return SchemaTool.ACTION_BUILD + "," + SchemaTool.ACTION_DROP;
         } else {
             return mapGenerationStrategyActions(conf.getDropSourceConstant(), SchemaTool.ACTION_DROP, MappingTool.ACTION_SCRIPT_DROP) + "," +

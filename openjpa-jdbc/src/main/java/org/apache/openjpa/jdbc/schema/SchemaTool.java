@@ -32,6 +32,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -119,6 +120,7 @@ public class SchemaTool {
     protected boolean _fullDB = false;
     protected String _sqlTerminator = ";";
     protected String _scriptToExecute = null;
+    protected java.io.Reader _scriptReader = null;
 
     /**
      * Default constructor. Tools constructed this way will not have an
@@ -341,6 +343,14 @@ public class SchemaTool {
     }
 
     /**
+     * Sets a Reader to use as the script source instead of a resource path.
+     * When set, this takes precedence over {@link #setScriptToExecute}.
+     */
+    public void setScriptReader(java.io.Reader scriptReader) {
+        _scriptReader = scriptReader;
+    }
+
+    /**
      * Return the schema group the tool will act on.
      */
     public SchemaGroup getSchemaGroup() {
@@ -477,9 +487,7 @@ public class SchemaTool {
         Collection<Table> tables = new LinkedHashSet<>();
         for (Schema schema : schemas) {
             Table[] ts = schema.getTables();
-            for (Table t : ts) {
-                tables.add(t);
-            }
+            Collections.addAll(tables, ts);
         }
         Table[] tableArray = tables.toArray(new Table[tables.size()]);
         Connection conn = _ds.getConnection();
@@ -495,22 +503,31 @@ public class SchemaTool {
     }
 
     protected void executeScript() throws SQLException {
-        if (_scriptToExecute == null) {
+        if (_scriptReader == null && _scriptToExecute == null) {
             _log.warn(_loc.get("generating-execute-script-not-defined"));
             return;
         }
 
-        URL url = _conf.getClassResolverInstance().getClassLoader(SchemaTool.class, null).getResource(_scriptToExecute);
-
-        if (url == null) {
-            _log.error(_loc.get("generating-execute-script-not-found", _scriptToExecute));
-            return;
-        }
-
-        _log.info(_loc.get("generating-execute-script", _scriptToExecute));
         BufferedReader reader = null;
         try {
-            reader = new BufferedReader(new InputStreamReader(url.openStream()));
+            if (_scriptReader != null) {
+                reader = (_scriptReader instanceof BufferedReader)
+                    ? (BufferedReader) _scriptReader
+                    : new BufferedReader(_scriptReader);
+            } else {
+                URL url = _conf.getClassResolverInstance()
+                    .getClassLoader(SchemaTool.class, null)
+                    .getResource(_scriptToExecute);
+                if (url == null) {
+                    _log.error(_loc.get("generating-execute-script-not-found",
+                        _scriptToExecute));
+                    return;
+                }
+                _log.info(_loc.get("generating-execute-script",
+                    _scriptToExecute));
+                reader = new BufferedReader(
+                    new InputStreamReader(url.openStream()));
+            }
             String sql;
             List<String> script = new ArrayList<>();
             while ((sql = reader.readLine()) != null) {

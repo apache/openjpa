@@ -166,7 +166,7 @@ public class PersistenceProviderImpl
 
 	@Override
 	public EntityManagerFactory createEntityManagerFactory(PersistenceConfiguration config) {
-		return createContainerEntityManagerFactory((PersistenceUnitInfo) PersistenceUnitInfoImpl.convert(config), config.properties());
+		return createContainerEntityManagerFactory(PersistenceUnitInfoImpl.convert(config), config.properties());
 	}
 
 	@Override
@@ -243,7 +243,7 @@ public class PersistenceProviderImpl
             return;
         }
 
-        runMap.put("jakarta.persistence.schema-generation.database.action", "create");
+        setDefaultDatabaseAction(runMap);
         final OpenJPAEntityManagerFactory factory = createContainerEntityManagerFactory(info, runMap);
         try {
             synchronizeMappings(factory);
@@ -260,13 +260,22 @@ public class PersistenceProviderImpl
             return false;
         }
 
-        runMap.put("jakarta.persistence.schema-generation.database.action", "create");
+        setDefaultDatabaseAction(runMap);
         final OpenJPAEntityManagerFactory factory = createEntityManagerFactory(persistenceUnitName, runMap);
         try {
             final Object obj = synchronizeMappings(factory);
-            return Boolean.class.cast(obj) ? Boolean.class.cast(obj) : true;
+            return (Boolean) obj ? (Boolean) obj : true;
         } finally {
             factory.close();
+        }
+    }
+
+    private void setDefaultDatabaseAction(Map map) {
+        // Only default database.action to "create" if neither database.action
+        // nor scripts.action is already specified by the caller.
+        if (!map.containsKey("jakarta.persistence.schema-generation.database.action")
+            && !map.containsKey("jakarta.persistence.schema-generation.scripts.action")) {
+            map.put("jakarta.persistence.schema-generation.database.action", "create");
         }
     }
 
@@ -281,7 +290,7 @@ public class PersistenceProviderImpl
                 provider = ((Class) provider).getName();
             }
             try {
-                if (!((String) provider).equals(org.apache.openjpa.persistence.PersistenceProviderImpl.class.getName())) {
+                if (!provider.equals(org.apache.openjpa.persistence.PersistenceProviderImpl.class.getName())) {
                     return false;
                 }
 
@@ -297,10 +306,10 @@ public class PersistenceProviderImpl
     }
 
     private Object synchronizeMappings(final OpenJPAEntityManagerFactory factory) {
-        if (EntityManagerFactoryImpl.class.isInstance(factory)) {
-            final EntityManagerFactoryImpl entityManagerFactory = EntityManagerFactoryImpl.class.cast(factory);
+        if (factory instanceof EntityManagerFactoryImpl) {
+            final EntityManagerFactoryImpl entityManagerFactory = (EntityManagerFactoryImpl) factory;
             final BrokerFactory brokerFactory = entityManagerFactory.getBrokerFactory();
-            if (!AbstractBrokerFactory.class.isInstance(brokerFactory)) {
+            if (!(brokerFactory instanceof AbstractBrokerFactory)) {
                 throw new IllegalArgumentException("expected AbstractBrokerFactory but got " + brokerFactory);
             }
             try {
@@ -314,8 +323,8 @@ public class PersistenceProviderImpl
                 throw new IllegalStateException(e);
             } catch (final InvocationTargetException e) {
                 final Throwable targetException = e.getTargetException();
-                if (RuntimeException.class.isInstance(targetException)) {
-                    throw RuntimeException.class.cast(targetException);
+                if (targetException instanceof RuntimeException) {
+                    throw (RuntimeException) targetException;
                 }
                 throw new IllegalStateException(targetException);
             }

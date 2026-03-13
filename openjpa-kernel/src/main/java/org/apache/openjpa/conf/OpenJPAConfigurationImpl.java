@@ -199,10 +199,18 @@ public class OpenJPAConfigurationImpl
     public RemoteCommitProviderValue remoteProviderPlugin;
     public AutoDetachValue autoDetach;
 
-    private Collection<String> supportedOptions = new HashSet<>(33);
+    private final Collection<String> supportedOptions = new HashSet<>(33);
     private final StoreFacadeTypeRegistry _storeFacadeRegistry = new StoreFacadeTypeRegistry();
-    private BrokerFactoryEventManager _brokerFactoryEventManager = new BrokerFactoryEventManager(this);
+    private final BrokerFactoryEventManager _brokerFactoryEventManager = new BrokerFactoryEventManager(this);
     private Map<String, Object> _peMap; //contains persistence environment-specific info
+
+    // JPA schema generation object-typed properties (Writer/Reader)
+    // These are stored separately because the StringValue config system
+    // would lose them by calling toString().
+    private transient java.io.Writer _createScriptTargetWriter;
+    private transient java.io.Writer _dropScriptTargetWriter;
+    private transient java.io.Reader _createScriptSourceReader;
+    private transient java.io.Reader _dropScriptSourceReader;
     private boolean _allowSetLifeCycleEventManager = true;
     /**
      * Default constructor. Attempts to load global properties.
@@ -363,7 +371,7 @@ public class OpenJPAConfigurationImpl
         mapping = addString("Mapping");
         metaFactoryPlugin = addPlugin("MetaDataFactory", false);
 
-        metaRepositoryPlugin = (MetaDataRepositoryValue) addValue(new MetaDataRepositoryValue());
+        metaRepositoryPlugin = addValue(new MetaDataRepositoryValue());
 
         connectionFactory = addObject("ConnectionFactory");
         connectionFactory.setInstantiatingGetter("getConnectionFactory");
@@ -628,7 +636,7 @@ public class OpenJPAConfigurationImpl
         runtimeUnenhancedClasses.setString("unsupported");
         runtimeUnenhancedClasses.setAliasListComprehensive(true);
 
-        cacheMarshallerPlugins = (CacheMarshallersValue) addValue(new CacheMarshallersValue(this));
+        cacheMarshallerPlugins = addValue(new CacheMarshallersValue(this));
 
         eagerInitialization = addBoolean("InitializeEagerly");
 
@@ -701,6 +709,50 @@ public class OpenJPAConfigurationImpl
             ProductDerivations.beforeConfigurationLoad(this);
         if (loadGlobals)
             loadGlobals();
+    }
+
+    @Override
+    public void fromProperties(Map map) {
+        if (map != null) {
+            // Extract Writer/Reader objects before they hit StringValue
+            // (which would just call toString() and lose them).
+            extractSchemaGenObjects(map,
+                "jakarta.persistence.schema-generation.scripts.create-target",
+                java.io.Writer.class, true);
+            extractSchemaGenObjects(map,
+                "jakarta.persistence.schema-generation.scripts.drop-target",
+                java.io.Writer.class, false);
+            extractSchemaGenObjects(map,
+                "jakarta.persistence.schema-generation.create-script-source",
+                java.io.Reader.class, true);
+            extractSchemaGenObjects(map,
+                "jakarta.persistence.schema-generation.drop-script-source",
+                java.io.Reader.class, false);
+        }
+        super.fromProperties(map);
+    }
+
+    private void extractSchemaGenObjects(Map map, String key,
+            Class<?> expectedType, boolean isCreate) {
+        Object val = map.get(key);
+        if (expectedType.isInstance(val)) {
+            // Store the object and remove from map so StringValue
+            // doesn't mangle it
+            map.remove(key);
+            if (expectedType == java.io.Writer.class) {
+                if (isCreate) {
+                    _createScriptTargetWriter = (java.io.Writer) val;
+                } else {
+                    _dropScriptTargetWriter = (java.io.Writer) val;
+                }
+            } else {
+                if (isCreate) {
+                    _createScriptSourceReader = (java.io.Reader) val;
+                } else {
+                    _dropScriptSourceReader = (java.io.Reader) val;
+                }
+            }
+        }
     }
 
     @Override
@@ -2269,6 +2321,26 @@ public class OpenJPAConfigurationImpl
     @Override
     public String getLoadScriptSource() {
         return loadScriptSource.getString();
+    }
+
+    @Override
+    public java.io.Writer getCreateScriptTargetWriter() {
+        return _createScriptTargetWriter;
+    }
+
+    @Override
+    public java.io.Writer getDropScriptTargetWriter() {
+        return _dropScriptTargetWriter;
+    }
+
+    @Override
+    public java.io.Reader getCreateScriptSourceReader() {
+        return _createScriptSourceReader;
+    }
+
+    @Override
+    public java.io.Reader getDropScriptSourceReader() {
+        return _dropScriptSourceReader;
     }
 
     @Override
