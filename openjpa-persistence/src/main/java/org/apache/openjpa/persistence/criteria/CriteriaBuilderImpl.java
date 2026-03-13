@@ -100,6 +100,14 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
             return ((CriteriaSelectImpl<?>) parsed)
                 .getQueryExpressions(factory);
         }
+        if (parsed instanceof CriteriaDeleteImpl) {
+            return ((CriteriaDeleteImpl<?>) parsed)
+                .getQueryExpressions(factory);
+        }
+        if (parsed instanceof CriteriaUpdateImpl) {
+            return ((CriteriaUpdateImpl<?>) parsed)
+                .getQueryExpressions(factory);
+        }
         CriteriaQueryImpl<?> c = (CriteriaQueryImpl<?>) parsed;
         return c.getQueryExpressions(factory);
     }
@@ -137,12 +145,12 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 
     @Override
     public <T> CriteriaUpdate<T> createCriteriaUpdate(Class<T> targetEntity) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        return new CriteriaUpdateImpl<>(_model, targetEntity);
     }
 
     @Override
     public <T> CriteriaDelete<T> createCriteriaDelete(Class<T> targetEntity) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        return new CriteriaDeleteImpl<>(_model, targetEntity);
     }
 
     @Override
@@ -153,6 +161,16 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
     @Override
     public void populate(Object parsed, ExpressionStoreQuery query) {
         query.invalidateCompilation();
+        if (parsed instanceof CriteriaDeleteImpl<?> cd) {
+            query.getContext().setCandidateType(cd.getRoot().getJavaType(), true);
+            query.setQuery(parsed);
+            return;
+        }
+        if (parsed instanceof CriteriaUpdateImpl<?> cu) {
+            query.getContext().setCandidateType(cu.getRoot().getJavaType(), true);
+            query.setQuery(parsed);
+            return;
+        }
         CriteriaQueryImpl<?> leaf = getLeftmostQuery(parsed);
         query.getContext().setCandidateType(
             leaf.getRoot().getJavaType(), true);
@@ -509,8 +527,7 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 
     @Override
     public Predicate isTrue(Expression<Boolean> x) {
-        if (x instanceof PredicateImpl) {
-            PredicateImpl predicate = (PredicateImpl)x;
+        if (x instanceof PredicateImpl predicate) {
             if (predicate.isEmpty()) {
                 return predicate.getOperator() == BooleanOperator.AND ? PredicateImpl.TRUE() : PredicateImpl.FALSE();
             }
@@ -598,6 +615,8 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 
     @Override
     public <T> Expression<T> literal(T value) {
+        if (value == null)
+            throw new IllegalArgumentException("CriteriaBuilder.literal() does not accept null");
         if (Boolean.TRUE.equals(value))
             return (Expression<T>)PredicateImpl.TRUE();
         if (Boolean.FALSE.equals(value))
@@ -958,6 +977,7 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 
     @Override
     public CompoundSelection<Object[]> array(Selection<?>... terms) {
+        assertNoCompoundSelections(terms);
         return new CompoundSelections.Array<>(Object[].class, terms);
     }
 
@@ -973,7 +993,7 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 
     @Override
     public <T> Expression<T> nullLiteral(Class<T> t) {
-        return new Expressions.Constant<>(t, (T)null);
+        return new Expressions.Constant<>(t, null);
     }
 
 
@@ -986,6 +1006,7 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
      */
     @Override
     public CompoundSelection<Tuple> tuple(Selection<?>... selections) {
+        assertNoCompoundSelections(selections);
         return new CompoundSelections.Tuple(selections);
     }
 
@@ -1153,14 +1174,14 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 	@SuppressWarnings("unchecked")
 	public <T> CriteriaSelect<T> union(CriteriaSelect<? extends T> left, CriteriaSelect<? extends T> right) {
 		return new CriteriaSelectImpl<>(QueryExpressions.SET_OP_UNION,
-			left, right, (Class<T>) getResultClass(left));
+			left, right, getResultClass(left));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> CriteriaSelect<T> unionAll(CriteriaSelect<? extends T> left, CriteriaSelect<? extends T> right) {
 		return new CriteriaSelectImpl<>(QueryExpressions.SET_OP_UNION_ALL,
-			left, right, (Class<T>) getResultClass(left));
+			left, right, getResultClass(left));
 	}
 
 	@Override
@@ -1199,5 +1220,18 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 		}
 		return (Class<T>) Object.class;
 	}
+
+    /**
+     * Validates that none of the given selections is a compound (tuple or array) selection.
+     * Per JPA spec, tuple() and array() must not accept compound selection arguments.
+     */
+    private void assertNoCompoundSelections(Selection<?>... selections) {
+        for (Selection<?> s : selections) {
+            if (s.isCompoundSelection()) {
+                throw new IllegalArgumentException(
+                    "A compound selection (tuple or array) must not contain another compound selection");
+            }
+        }
+    }
 
 }

@@ -1972,12 +1972,28 @@ public class EntityManagerImpl
 
     @Override
     public Query createQuery(CriteriaUpdate updateQuery) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        org.apache.openjpa.kernel.Query kernelQuery =
+            _broker.newQuery(OpenJPACriteriaBuilder.LANG_CRITERIA, updateQuery);
+
+        QueryImpl<?> facadeQuery = newQueryImpl(kernelQuery, null).setId(updateQuery.toString());
+        Set<ParameterExpression<?>> params = updateQuery.getParameters();
+        for (ParameterExpression<?> param : params) {
+            facadeQuery.declareParameter(param, param);
+        }
+        return facadeQuery;
     }
 
     @Override
     public Query createQuery(CriteriaDelete deleteQuery) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        org.apache.openjpa.kernel.Query kernelQuery =
+            _broker.newQuery(OpenJPACriteriaBuilder.LANG_CRITERIA, deleteQuery);
+
+        QueryImpl<?> facadeQuery = newQueryImpl(kernelQuery, null).setId(deleteQuery.toString());
+        Set<ParameterExpression<?>> params = deleteQuery.getParameters();
+        for (ParameterExpression<?> param : params) {
+            facadeQuery.declareParameter(param, param);
+        }
+        return facadeQuery;
     }
 
     @Override

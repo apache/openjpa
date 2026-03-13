@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.criteria;
 
 import java.util.Collection;
+import java.util.Objects;
 
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.ParameterExpression;
@@ -27,7 +28,7 @@ import jakarta.persistence.criteria.Predicate;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.lib.util.OrderedMap;
-import org.apache.openjpa.util.InternalException;
+
 
 /**
  * Parameter of a criteria query.
@@ -72,12 +73,11 @@ class ParameterExpressionImpl<T> extends ExpressionImpl<T>
     }
 
     /**
-     * Raises an internal exception because parameters of CriteriaQuery
-     * are not positional.
+     * Returns null because parameters of CriteriaQuery are named, not positional.
      */
     @Override
     public final Integer getPosition() {
-        throw new InternalException(this + " must not be asked for its position");
+        return null;
     }
 
     void setIndex(int index) {
@@ -166,7 +166,7 @@ class ParameterExpressionImpl<T> extends ExpressionImpl<T>
         if (getParameterType() != ((ParameterExpressionImpl<?>) o).getParameterType() )
             return false;
 
-        return value != null ? value.equals(that.value) : that.value == null;
+        return Objects.equals(value, that.value);
     }
 
 
