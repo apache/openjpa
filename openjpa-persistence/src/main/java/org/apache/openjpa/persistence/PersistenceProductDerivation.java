@@ -91,7 +91,7 @@ public class PersistenceProductDerivation
     private static final Localizer _loc = Localizer.forPackage
         (PersistenceProductDerivation.class);
 
-    private HashMap<String, PUNameCollision> _puNameCollisions
+    private final HashMap<String, PUNameCollision> _puNameCollisions
         = new HashMap<>();
 
     public static final String PREFIX = "jakarta.persistence";
@@ -180,10 +180,9 @@ public class PersistenceProductDerivation
 
     @Override
     public boolean beforeConfigurationLoad(Configuration c) {
-        if (!(c instanceof OpenJPAConfigurationImpl))
+        if (!(c instanceof OpenJPAConfigurationImpl conf))
             return false;
 
-        OpenJPAConfigurationImpl conf = (OpenJPAConfigurationImpl) c;
         conf.metaFactoryPlugin.setAlias(ALIAS_EJB.getName(), PersistenceMetaDataFactory.class.getName());
         conf.metaFactoryPlugin.setAlias(SPEC_JPA.getName(),  PersistenceMetaDataFactory.class.getName());
 
@@ -271,7 +270,7 @@ public class PersistenceProductDerivation
 
     @Override
     public boolean afterSpecificationSet(Configuration c) {
-        if (!OpenJPAConfigurationImpl.class.isInstance(c)
+        if (!(c instanceof OpenJPAConfigurationImpl)
          && !SPEC_JPA.isSame(((OpenJPAConfiguration) c).getSpecification()))
             return false;
 
@@ -314,8 +313,7 @@ public class PersistenceProductDerivation
         ConfigurationProviderImpl cp = new ConfigurationProviderImpl();
         cp.addProperties(PersistenceUnitInfoImpl.toOpenJPAProperties(pinfo));
         cp.addProperties(m);
-        if (pinfo instanceof PersistenceUnitInfoImpl) {
-            PersistenceUnitInfoImpl impl = (PersistenceUnitInfoImpl) pinfo;
+        if (pinfo instanceof PersistenceUnitInfoImpl impl) {
             if (impl.getPersistenceXmlFileUrl() != null)
                 cp.setSource(impl.getPersistenceXmlFileUrl().toString());
         }
@@ -326,7 +324,7 @@ public class PersistenceProductDerivation
     	ConfigurationProviderImpl cp = new ConfigurationProviderImpl();
     	// convert config into pinfo
     	PersistenceUnitInfoImpl pinfo = PersistenceUnitInfoImpl.convert(config);
-    	return load((PersistenceUnitInfo) pinfo, props);
+    	return load(pinfo, props);
     }
     
     /**
@@ -540,10 +538,9 @@ public class PersistenceProductDerivation
         }
 
         // Process jar-file references after confirming OpenJPA is the desired JPA provider.
-        if ( loader != contextLoader && loader instanceof MultiClassLoader) {
+        if ( loader != contextLoader && loader instanceof MultiClassLoader multiClassLoader) {
             // combine the MultiClassLoader and set to the context
             // so that it could be used in the jar validation
-            MultiClassLoader multiClassLoader = (MultiClassLoader) loader;
             contextLoader = (contextLoader != null) ? contextLoader : Thread.currentThread().getContextClassLoader();
             multiClassLoader.addClassLoader(contextLoader);
             Thread.currentThread().setContextClassLoader(multiClassLoader);
@@ -570,8 +567,12 @@ public class PersistenceProductDerivation
         throws IOException {
         List<PersistenceUnitInfoImpl> pinfos = new ArrayList<>();
         for (URL url : urls) {
-            parser.parse(url);
-            pinfos.addAll((List<PersistenceUnitInfoImpl>) parser.getResults());
+            try {
+                parser.parse(url);
+                pinfos.addAll((List<PersistenceUnitInfoImpl>) parser.getResults());
+            } catch (IOException ioe) {
+                log(_loc.get("unreadable-persistence-xml", url.toString(), ioe.toString()).getMessage());
+            }
         }
         return findUnit(pinfos, name, loader);
     }
@@ -687,14 +688,13 @@ public class PersistenceProductDerivation
 
         @Override
         public void setInto(Configuration conf) {
-            if (conf instanceof OpenJPAConfiguration) {
-                OpenJPAConfiguration oconf = (OpenJPAConfiguration) conf;
+            if (conf instanceof OpenJPAConfiguration oconf) {
                 Object persistenceVersion = getProperties().get(PersistenceUnitInfoImpl.PERSISTENCE_VERSION);
                 if (persistenceVersion == null) {
                     oconf.setSpecification(SPEC_JPA);
                 } else {
                     // Set the spec level based on the persistence version
-                    oconf.setSpecification("jpa " + persistenceVersion.toString());
+                    oconf.setSpecification("jpa " + persistenceVersion);
                 }
 
 
@@ -715,8 +715,7 @@ public class PersistenceProductDerivation
 
             // At this point user properties have been loaded into the configuration. Apply any modifications based off
             // those.
-            if (conf instanceof OpenJPAConfiguration) {
-                OpenJPAConfiguration oconf = (OpenJPAConfiguration) conf;
+            if (conf instanceof OpenJPAConfiguration oconf) {
                 String dataCache = oconf.getDataCache();
                 String sharedDataCacheMode = oconf.getDataCacheMode();
 
@@ -1013,8 +1012,8 @@ public class PersistenceProductDerivation
      * PersistentUnit name collisions.
      */
     private static class PUNameCollision{
-        private String _puName;
-        private Set<String> _resources;
+        private final String _puName;
+        private final Set<String> _resources;
 
         PUNameCollision(String puName, String file1, String file2) {
             _resources = new LinkedHashSet<>();

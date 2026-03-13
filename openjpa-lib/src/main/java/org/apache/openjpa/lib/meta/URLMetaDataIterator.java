@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLDecoder;
 
 /**
@@ -61,7 +62,9 @@ public class URLMetaDataIterator implements MetaDataIterator {
             throw new IllegalStateException();
         if (_url == null)
             return null;
-        return _url.openStream();
+        URLConnection conn = _url.openConnection();
+        conn.setUseCaches(false);
+        return conn.getInputStream();
     }
 
     @Override
