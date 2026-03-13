@@ -2306,18 +2306,49 @@ public class EntityManagerImpl
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public <T> T getReference(T entity) {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		assertNotCloseInvoked();
+		assertValidAttchedEntity("getReference", entity);
+		Object oid = _broker.getObjectId(entity);
+		return (T) _broker.find(oid, false, this);
 	}
 
 	@Override
 	public void lock(Object entity, LockModeType lockMode, LockOption... options) {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		Map<String, Object> properties = null;
+		if (options != null) {
+			properties = new HashMap<>();
+			for (LockOption option : options) {
+				if (option instanceof Timeout) {
+					properties.put("jakarta.persistence.lock.timeout", ((Timeout) option).milliseconds());
+				} else if (option instanceof PessimisticLockScope) {
+					properties.put("jakarta.persistence.lock.scope", option);
+				}
+			}
+		}
+		lock(entity, lockMode, properties);
 	}
 
 	@Override
 	public void refresh(Object entity, RefreshOption... options) {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		LockModeType lockMode = null;
+		Map<String, Object> properties = null;
+		if (options != null) {
+			properties = new HashMap<>();
+			for (RefreshOption option : options) {
+				if (option instanceof Timeout) {
+					properties.put("jakarta.persistence.lock.timeout", ((Timeout) option).milliseconds());
+				} else if (option instanceof PessimisticLockScope) {
+					properties.put("jakarta.persistence.lock.scope", option);
+				} else if (option instanceof LockModeType) {
+					lockMode = (LockModeType) option;
+				} else if (option instanceof CacheStoreMode) {
+					properties.put("jakarta.persistence.cache.storeMode", option);
+				}
+			}
+		}
+		refresh(entity, lockMode, properties);
 	}
 
 	@Override
@@ -2378,23 +2409,58 @@ public class EntityManagerImpl
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public <C> void runWithConnection(ConnectionConsumer<C> action) {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		assertNotCloseInvoked();
+		C connection = (C) getConnection();
+		try {
+			action.accept(connection);
+		} catch (Exception e) {
+			throw PersistenceExceptions.toPersistenceException(e);
+		} finally {
+			if (connection instanceof AutoCloseable) {
+				try {
+					((AutoCloseable) connection).close();
+				} catch (Exception e) {
+					// ignore close exceptions
+				}
+			}
+		}
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public <C, T> T callWithConnection(ConnectionFunction<C, T> function) {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		assertNotCloseInvoked();
+		C connection = (C) getConnection();
+		try {
+			return function.apply(connection);
+		} catch (Exception e) {
+			throw PersistenceExceptions.toPersistenceException(e);
+		} finally {
+			if (connection instanceof AutoCloseable) {
+				try {
+					((AutoCloseable) connection).close();
+				} catch (Exception e2) {
+					// ignore close exceptions
+				}
+			}
+		}
 	}
 
 	@Override
 	public void setTimeout(Integer timeout) {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		assertNotCloseInvoked();
+		if (timeout != null) {
+			getFetchPlan().setQueryTimeout(timeout);
+		}
 	}
 
 	@Override
 	public Integer getTimeout() {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		assertNotCloseInvoked();
+		int timeout = getFetchPlan().getQueryTimeout();
+		return timeout > 0 ? timeout : null;
 	}
 	
 }

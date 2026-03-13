@@ -61,6 +61,7 @@ import jakarta.persistence.metamodel.ManagedType;
 import jakarta.persistence.metamodel.Metamodel;
 
 import org.apache.openjpa.kernel.ExpressionStoreQuery;
+import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.ExpressionParser;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
@@ -1166,8 +1167,11 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 
 	@Override
 	public <N, T extends Temporal> Expression<N> extract(TemporalField<N, T> field, Expression<T> temporal) {
-		// TODO Auto-generated method stub
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		String fieldName = field.toString().toUpperCase();
+		DateTimeExtractField extractField = DateTimeExtractField.valueOf(fieldName);
+		@SuppressWarnings("unchecked")
+		Class<N> resultType = fieldName.equals("SECOND") ? (Class<N>) Double.class : (Class<N>) Integer.class;
+		return new Expressions.ExtractField<>(resultType, extractField, temporal);
 	}
 
 	@Override

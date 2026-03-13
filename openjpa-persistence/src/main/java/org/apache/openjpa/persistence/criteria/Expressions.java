@@ -38,6 +38,7 @@ import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Subquery;
 
+import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.kernel.exps.Value;
@@ -392,6 +393,27 @@ class Expressions {
         }
     }
 
+    public static class ExtractField<N> extends UnaryFunctionalExpression<N> {
+        private final DateTimeExtractField field;
+
+        public ExtractField(Class<N> resultType, DateTimeExtractField field, Expression<?> temporal) {
+            super(resultType, temporal);
+            this.field = field;
+        }
+
+        @Override
+        public Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
+            Value value = factory.getDateTimeField(field, Expressions.toValue(e, factory, q));
+            value.setImplicitType(getJavaType());
+            return value;
+        }
+
+        @Override
+        public StringBuilder asValue(AliasContext q) {
+            return Expressions.asValue(q, "EXTRACT(" + field.name() + " FROM ", e, CLOSE_BRACE);
+        }
+    }
+
     public static class Power<X, Y extends Number> extends BinaryFunctionalExpression<Double> {
         public Power(Expression<X> x, Expression<Y> y) {
             super(double.class, x, y);
@@ -436,7 +458,7 @@ class Expressions {
     }
 
     public static class Count extends UnaryFunctionalExpression<Long> {
-        private boolean _distinct;
+        private final boolean _distinct;
         public  Count(Expression<?> x) {
             this(x, false);
         }
@@ -666,7 +688,7 @@ class Expressions {
     }
     
     public static class TypecastAs<B> extends UnaryFunctionalExpression<B> {
-    	private String target;
+    	private final String target;
     	public TypecastAs(Expression<B> x, String target) {
     		super(x);
     		this.target = target;
@@ -728,8 +750,8 @@ class Expressions {
     }
 
     public static class Substring extends UnaryFunctionalExpression<String> {
-        private ExpressionImpl<Integer> from;
-        private ExpressionImpl<Integer> len;
+        private final ExpressionImpl<Integer> from;
+        private final ExpressionImpl<Integer> len;
 
         public Substring(Expression<String> s, Expression<Integer> from, Expression<Integer> len) {
             super(String.class, s);
@@ -738,11 +760,11 @@ class Expressions {
         }
 
         public Substring(Expression<String> s, Expression<Integer> from) {
-            this(s, (ExpressionImpl<Integer>)from, null);
+            this(s, from, null);
         }
 
         public Substring(Expression<String> s) {
-            this(s, (Expression<Integer>)null, (Expression<Integer>)null);
+            this(s, null, (Expression<Integer>)null);
         }
 
         public Substring(Expression<String> s, Integer from) {
@@ -774,8 +796,8 @@ class Expressions {
     }
     
     public static class Replace extends UnaryFunctionalExpression<String> {
-    	private ExpressionImpl<String> patt;
-    	private ExpressionImpl<String> repl;
+    	private final ExpressionImpl<String> patt;
+    	private final ExpressionImpl<String> repl;
     	
     	public Replace(Expression<String> str, Expression<String> patt, Expression<String> repl) {
     		super(String.class, str);
@@ -804,9 +826,9 @@ class Expressions {
     }
 
     public static class Locate extends ExpressionImpl<Integer> {
-        private ExpressionImpl<String> pattern;
-        private ExpressionImpl<Integer> from;
-        private ExpressionImpl<String> path;
+        private final ExpressionImpl<String> pattern;
+        private final ExpressionImpl<Integer> from;
+        private final ExpressionImpl<String> path;
 
         public Locate(Expression<String> path, Expression<String> pattern, Expression<Integer> from) {
             super(Integer.class);
@@ -856,7 +878,7 @@ class Expressions {
     public static class Trim extends BinaryFunctionalExpression<String> {
         static Expression<Character> defaultTrim = new Constant<>(Character.class, ' ');
         static Trimspec defaultSpec = Trimspec.BOTH;
-        private Trimspec ts;
+        private final Trimspec ts;
 
         public Trim(Expression<String> x, Expression<Character> y, Trimspec ts) {
             super(String.class, x, y);
@@ -1399,13 +1421,13 @@ class Expressions {
             } else if (Boolean.class.isAssignableFrom(literalClass)) {
                 return new StringBuilder(arg.toString());
             } else if (String.class.isAssignableFrom(literalClass)) {
-                return new StringBuilder("'").append(arg.toString()).append("'");
+                return new StringBuilder("'").append(arg).append("'");
             } else if (Enum.class.isAssignableFrom(literalClass)) {
                 return new StringBuilder(arg.toString());
             } else if (Class.class.isAssignableFrom(literalClass)) {
                 return new StringBuilder(((Class)arg).getSimpleName());
             } else if (Collection.class.isAssignableFrom(literalClass)) {
-                return new StringBuilder(((Collection)arg).toString());
+                return new StringBuilder(arg.toString());
             }
             return new StringBuilder(arg.toString());
         }
@@ -1638,8 +1660,8 @@ class Expressions {
     }
 
     public static class Nullif<T> extends ExpressionImpl<T> {
-        private Expression<T> val1;
-        private Expression<?> val2;
+        private final Expression<T> val1;
+        private final Expression<?> val2;
 
         public Nullif(Expression<T> x, Expression<?> y) {
             super((Class<T>)x.getJavaType());
@@ -1781,14 +1803,14 @@ class Expressions {
                 Class<?> e2JavaType = e2.getJavaType();
 
                 // array and Collection
-                if (BindableParameter.class.isInstance(e2) && BindableParameter.class.cast(e2).value() != null &&
+                if (e2 instanceof BindableParameter && ((BindableParameter) e2).value() != null &&
                     ((e2JavaType.isArray() && e2JavaType.getComponentType().equals(e1JavaType))
-                    || (Class.class.isInstance(e2JavaType) ||
+                    || (e2JavaType instanceof Class ||
                         (ParameterizedType.class.isInstance(e2JavaType)
                             && ParameterizedType.class.cast(e2JavaType).getActualTypeArguments().length > 0
                             && e1JavaType.equals(ParameterizedType.class.cast(e2JavaType).getActualTypeArguments()[0]))
                        ))) {
-                    final BindableParameter bp = BindableParameter.class.cast(e2);
+                    final BindableParameter bp = (BindableParameter) e2;
                     final Object value = bp.value();
 
                     _exps.clear();
@@ -1799,8 +1821,8 @@ class Expressions {
                         for (int i = 0; i < len; i++) {
                             add(new Expressions.Equal(e1, Array.get(value, i)));
                         }
-                    } else if (Collection.class.isInstance(value)) {
-                        for (final Object item : Collection.class.cast(value)) {
+                    } else if (value instanceof Collection) {
+                        for (final Object item : (Collection) value) {
                             add(new Expressions.Equal(e1, item));
                         }
                     }

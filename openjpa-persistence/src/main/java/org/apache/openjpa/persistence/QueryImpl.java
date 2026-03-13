@@ -712,32 +712,50 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 
 	@Override
 	public TypedQuery<X> setCacheRetrieveMode(CacheRetrieveMode cacheRetrieveMode) {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		setHint(JPAProperties.CACHE_RETRIEVE_MODE, cacheRetrieveMode);
+		return this;
 	}
 
 	@Override
 	public CacheRetrieveMode getCacheRetrieveMode() {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		Object val = getHints().get(JPAProperties.CACHE_RETRIEVE_MODE);
+		if (val instanceof CacheRetrieveMode) {
+			return (CacheRetrieveMode) val;
+		}
+		return CacheRetrieveMode.USE;
 	}
 
 	@Override
 	public CacheStoreMode getCacheStoreMode() {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		Object val = getHints().get(JPAProperties.CACHE_STORE_MODE);
+		if (val instanceof CacheStoreMode) {
+			return (CacheStoreMode) val;
+		}
+		return CacheStoreMode.USE;
 	}
 
 	@Override
 	public TypedQuery<X> setCacheStoreMode(CacheStoreMode cacheStoreMode) {
-		throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		setHint(JPAProperties.CACHE_STORE_MODE, cacheStoreMode);
+		return this;
 	}
-	
+
 	@Override
 	public Integer getTimeout() {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		Object val = getHints().get(JPAProperties.QUERY_TIMEOUT);
+		if (val instanceof Integer) {
+			return (Integer) val;
+		}
+		if (val instanceof Number) {
+			return ((Number) val).intValue();
+		}
+		return null;
 	}
-	
+
 	@Override
 	public TypedQuery<X> setTimeout(Integer timeout) {
-		throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		setHint(JPAProperties.QUERY_TIMEOUT, timeout);
+		return this;
 	}
 	
 }
