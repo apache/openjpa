@@ -350,17 +350,31 @@ public class PostgresDictionary extends DBDictionary {
     public byte[] getBytes(ResultSet rs, int column) throws SQLException {
         String typeName = rs.getMetaData().getColumnTypeName(column);
         if ("oid".equalsIgnoreCase(typeName)) {
-            Blob blob = rs.getBlob(column);
-            if (blob == null) {
-                return null;
+            // PostgreSQL Large Object API requires a transaction.
+            // If auto-commit is on, temporarily disable it.
+            Connection conn = rs.getStatement().getConnection();
+            boolean autoCommit = conn.getAutoCommit();
+            if (autoCommit) {
+                conn.setAutoCommit(false);
             }
-            int length = (int) blob.length();
-            if (length == 0) {
-                return null;
+            try {
+                Blob blob = rs.getBlob(column);
+                if (blob == null) {
+                    return null;
+                }
+                int length = (int) blob.length();
+                if (length == 0) {
+                    return null;
+                }
+                byte[] bytes = blob.getBytes(1, length);
+                blob.free();
+                return bytes;
+            } finally {
+                if (autoCommit) {
+                    conn.commit();
+                    conn.setAutoCommit(true);
+                }
             }
-            byte[] bytes = blob.getBytes(1, length);
-            blob.free();
-            return bytes;
         }
         return super.getBytes(rs, column);
     }
