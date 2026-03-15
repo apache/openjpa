@@ -154,6 +154,38 @@ public class EntityManagerImpl
     }
 
     /**
+     * Translate the given exception, marking the transaction for
+     * rollback if active per JPA spec section 3.3.7.1.
+     */
+    RuntimeException translateException(RuntimeException re) {
+        RuntimeException ex = PersistenceExceptions.toPersistenceException(re);
+        if (!(ex instanceof NonUniqueResultException)
+            && !(ex instanceof NoResultException)
+            && !(ex instanceof LockTimeoutException)
+            && !(ex instanceof QueryTimeoutException)) {
+            try {
+                if (isOpen() && _broker.isActive()) {
+                    _broker.setRollbackOnly(ex);
+                }
+            } catch (Exception ignore) {
+                // best effort
+            }
+        }
+        return ex;
+    }
+
+    /**
+     * Translate a checked exception via PersistenceExceptions, then
+     * mark the transaction for rollback per JPA spec section 3.3.7.1.
+     */
+    RuntimeException translateException(Exception e) {
+        if (e instanceof RuntimeException) {
+            return translateException((RuntimeException) e);
+        }
+        return translateException(PersistenceExceptions.toPersistenceException(e));
+    }
+
+    /**
      * Broker delegate.
      */
     public Broker getBroker() {
@@ -867,8 +899,8 @@ public class EntityManagerImpl
         OpenJPAStateManager sm = _broker.getStateManager(entity);
         if (sm == null
             && !ImplHelper.isManagedType(getConfiguration(), entity.getClass()))
-            throw new ArgumentException(_loc.get("not-entity",
-                entity.getClass()), null, null, true);
+            throw _ret.translate(new ArgumentException(_loc.get("not-entity",
+                entity.getClass()), null, null, true));
         return sm != null && !sm.isDeleted();
     }
 
@@ -1228,7 +1260,7 @@ public class EntityManagerImpl
             }
             return newQueryImpl(q, null).setId(qid);
         } catch (RuntimeException re) {
-            throw PersistenceExceptions.toPersistenceException(re);
+            throw translateException(re);
         }
     }
 
@@ -1277,7 +1309,7 @@ public class EntityManagerImpl
                 q.setHint(hints[i], values[i]);
             return q;
         } catch (RuntimeException re) {
-            throw PersistenceExceptions.toPersistenceException(re);
+            throw translateException(re);
         }
     }
 
@@ -1305,11 +1337,15 @@ public class EntityManagerImpl
 
     @Override
     public StoredProcedureQuery createNamedStoredProcedureQuery(String name) {
-        QueryMetaData meta = getQueryMetadata(name);
-        if (!(meta instanceof MultiQueryMetaData)) {
-            throw new RuntimeException(name + " is not an identifier for a Stored Procedure Query");
+        try {
+            QueryMetaData meta = getQueryMetadata(name);
+            if (!(meta instanceof MultiQueryMetaData)) {
+                throw new RuntimeException(name + " is not an identifier for a Stored Procedure Query");
+            }
+            return newProcedure(((MultiQueryMetaData) meta).getProcedureName(), (MultiQueryMetaData) meta);
+        } catch (RuntimeException re) {
+            throw translateException(re);
         }
-        return newProcedure(((MultiQueryMetaData)meta).getProcedureName(), (MultiQueryMetaData)meta);
     }
 
     @Override
@@ -1720,8 +1756,8 @@ public class EntityManagerImpl
     void assertValidAttchedEntity(String call, Object entity) {
         OpenJPAStateManager sm = _broker.getStateManager(entity);
         if (sm == null || !sm.isPersistent() || sm.isDetached() || (call.equals(REFRESH) && sm.isDeleted())) {
-            throw new IllegalArgumentException(_loc.get("invalid_entity_argument",
-                call, entity == null ? "null" : Exceptions.toString(entity)).getMessage());
+            throw translateException(new IllegalArgumentException(_loc.get("invalid_entity_argument",
+                call, entity == null ? "null" : Exceptions.toString(entity)).getMessage()));
         }
     }
 
@@ -1957,43 +1993,56 @@ public class EntityManagerImpl
      */
     @Override
     public <T> TypedQuery<T> createQuery(CriteriaQuery<T> criteriaQuery) {
-        ((OpenJPACriteriaQuery<T>)criteriaQuery).compile();
+        try {
+            ((OpenJPACriteriaQuery<T>) criteriaQuery).compile();
 
-        org.apache.openjpa.kernel.Query kernelQuery =_broker.newQuery(OpenJPACriteriaBuilder.LANG_CRITERIA, criteriaQuery);
+            org.apache.openjpa.kernel.Query kernelQuery = _broker.newQuery(OpenJPACriteriaBuilder.LANG_CRITERIA,
+                criteriaQuery);
 
-        QueryImpl<T> facadeQuery = newQueryImpl(kernelQuery, null).setId(criteriaQuery.toString());
-        Set<ParameterExpression<?>> params = criteriaQuery.getParameters();
+            QueryImpl<T> facadeQuery = newQueryImpl(kernelQuery, null).setId(criteriaQuery.toString());
+            Set<ParameterExpression<?>> params = criteriaQuery.getParameters();
 
-        for (ParameterExpression<?> param : params) {
-            facadeQuery.declareParameter(param, param);
+            for (ParameterExpression<?> param : params) {
+                facadeQuery.declareParameter(param, param);
+            }
+            return facadeQuery;
+        } catch (RuntimeException re) {
+            throw translateException(re);
         }
-        return facadeQuery;
     }
 
     @Override
     public Query createQuery(CriteriaUpdate updateQuery) {
-        org.apache.openjpa.kernel.Query kernelQuery =
-            _broker.newQuery(OpenJPACriteriaBuilder.LANG_CRITERIA, updateQuery);
+        try {
+            org.apache.openjpa.kernel.Query kernelQuery =
+                _broker.newQuery(OpenJPACriteriaBuilder.LANG_CRITERIA, updateQuery);
 
-        QueryImpl<?> facadeQuery = newQueryImpl(kernelQuery, null).setId(updateQuery.toString());
-        Set<ParameterExpression<?>> params = updateQuery.getParameters();
-        for (ParameterExpression<?> param : params) {
-            facadeQuery.declareParameter(param, param);
+            QueryImpl<?> facadeQuery = newQueryImpl(kernelQuery, null).setId(updateQuery.toString());
+            Set<ParameterExpression<?>> params = updateQuery.getParameters();
+            for (ParameterExpression<?> param : params) {
+                facadeQuery.declareParameter(param, param);
+            }
+            return facadeQuery;
+        } catch (RuntimeException re) {
+            throw translateException(re);
         }
-        return facadeQuery;
     }
 
     @Override
     public Query createQuery(CriteriaDelete deleteQuery) {
-        org.apache.openjpa.kernel.Query kernelQuery =
-            _broker.newQuery(OpenJPACriteriaBuilder.LANG_CRITERIA, deleteQuery);
+        try {
+            org.apache.openjpa.kernel.Query kernelQuery =
+                _broker.newQuery(OpenJPACriteriaBuilder.LANG_CRITERIA, deleteQuery);
 
-        QueryImpl<?> facadeQuery = newQueryImpl(kernelQuery, null).setId(deleteQuery.toString());
-        Set<ParameterExpression<?>> params = deleteQuery.getParameters();
-        for (ParameterExpression<?> param : params) {
-            facadeQuery.declareParameter(param, param);
+            QueryImpl<?> facadeQuery = newQueryImpl(kernelQuery, null).setId(deleteQuery.toString());
+            Set<ParameterExpression<?>> params = deleteQuery.getParameters();
+            for (ParameterExpression<?> param : params) {
+                facadeQuery.declareParameter(param, param);
+            }
+            return facadeQuery;
+        } catch (RuntimeException re) {
+            throw translateException(re);
         }
-        return facadeQuery;
     }
 
     @Override
