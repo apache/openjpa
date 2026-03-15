@@ -175,10 +175,21 @@ public class PersistenceMetaDataDefaults
         // look for persistence strategy in annotation table
         PersistenceStrategy pstrat = null;
         for (Annotation anno : el.getDeclaredAnnotations()) {
-            if (pstrat != null && _strats.containsKey(anno.annotationType()))
+            PersistenceStrategy newStrat = _strats.get(anno.annotationType());
+            if (newStrat == null)
+                continue;
+            if (pstrat != null) {
+                // @Basic can coexist with a more specific strategy — the specific one wins
+                if (pstrat == BASIC) {
+                    pstrat = newStrat;
+                    continue;
+                }
+                if (newStrat == BASIC) {
+                    continue;
+                }
                 throw new MetaDataException(_loc.get("already-pers", member));
-            if (pstrat == null)
-                pstrat = _strats.get(anno.annotationType());
+            }
+            pstrat = newStrat;
         }
         if (pstrat != null)
             return pstrat;
@@ -629,7 +640,7 @@ public class PersistenceMetaDataDefaults
                     setterName = "set" + member.getName().substring(3);
                 }
                 // check for setters for methods
-                Method setter = (Method) meta.getDescribedType().getDeclaredMethod(setterName, new Class[] {((Method) member).getReturnType()});
+                Method setter = meta.getDescribedType().getDeclaredMethod(setterName, new Class[] {((Method) member).getReturnType()});
                 if (setter == null && !isAnnotatedTransient(member)) {
                     logNoSetter(meta, name, null);
                     return false;
@@ -646,11 +657,7 @@ public class PersistenceMetaDataDefaults
         if (strat == null) {
             warn(meta, _loc.get("no-pers-strat", meta.getDescribedTypeString() + "." + name));
             return false;
-        } else if (strat == PersistenceStrategy.TRANSIENT) {
-            return false;
-        } else {
-            return true;
-        }
+        } else return strat != PersistenceStrategy.TRANSIENT;
     }
 
     private boolean isAnnotatedTransient(Member member) {
@@ -839,71 +846,56 @@ public class PersistenceMetaDataDefaults
      * annotation has the given AccessType value.
      *
      */
-    static class AccessFilter implements InclusiveFilter<AnnotatedElement> {
-        final AccessType target;
-
-        public AccessFilter(AccessType target) {
-            this.target = target;
-        }
+        record AccessFilter(AccessType target) implements InclusiveFilter<AnnotatedElement> {
 
         @Override
-        public boolean includes(AnnotatedElement obj) {
-        	Access access = obj.getAnnotation(Access.class);
-        	return access != null && access.value().equals(target);
+            public boolean includes(AnnotatedElement obj) {
+            Access access = obj.getAnnotation(Access.class);
+            return access != null && access.value().equals(target);
+            }
         }
-    }
 
     /**
      * Selects elements which is annotated with @Access annotation and that
      * annotation has the given AccessType value.
      *
      */
-    static class MemberFilter implements InclusiveFilter<AnnotatedElement> {
-        final Class<?> target;
-
-        public MemberFilter(Class<?> target) {
-            this.target = target;
-        }
+        record MemberFilter(Class<?> target) implements InclusiveFilter<AnnotatedElement> {
 
         @Override
-        public boolean includes(AnnotatedElement obj) {
-        	int mods = ((Member)obj).getModifiers();
+            public boolean includes(AnnotatedElement obj) {
+            int mods = ((Member) obj).getModifiers();
 
-            if (obj.getClass() != target) {
-                return false;
+                if (obj.getClass() != target) {
+                    return false;
+                }
+                if (Modifier.isStatic(mods) || Modifier.isTransient(mods)
+                        || Modifier.isNative(mods)) {
+                    return false;
+                }
+                // JPA 3.2: record component fields are final but persistent
+                if (Modifier.isFinal(mods)) {
+                    return ((Member) obj).getDeclaringClass().isRecord();
+                }
+                return true;
             }
-            if (Modifier.isStatic(mods) || Modifier.isTransient(mods)
-                    || Modifier.isNative(mods)) {
-                return false;
-            }
-            // JPA 3.2: record component fields are final but persistent
-            if (Modifier.isFinal(mods)) {
-                return ((Member) obj).getDeclaringClass().isRecord();
-            }
-            return true;
         }
-    }
 
     /**
-     * Selects non-transient elements.  Selectively will examine only the
-     * transient field modifier.
-     */
-    static class TransientFilter implements InclusiveFilter<AnnotatedElement> {
-        final boolean modifierOnly;
-
-        public TransientFilter(boolean modOnly) {
-            modifierOnly = modOnly;
-        }
+         * Selects non-transient elements.  Selectively will examine only the
+         * transient field modifier.
+         */
+        record TransientFilter(boolean modifierOnly) implements InclusiveFilter<AnnotatedElement> {
 
         @Override
-        public boolean includes(AnnotatedElement obj) {
-            if (modifierOnly) {
-                return !Modifier.isTransient(((Member)obj).getModifiers());
+            public boolean includes(AnnotatedElement obj) {
+                if (modifierOnly) {
+                    return !Modifier.isTransient(((Member) obj).getModifiers());
+                }
+            return !obj.isAnnotationPresent(Transient.class) &&
+                    !Modifier.isTransient(((Member) obj).getModifiers());
             }
-        	return !obj.isAnnotationPresent(Transient.class) &&
-        	       !Modifier.isTransient(((Member)obj).getModifiers());
         }
-    }
 
     /**
      * Selects all element annotated with <code>jakarta.persistence.*</code> or
