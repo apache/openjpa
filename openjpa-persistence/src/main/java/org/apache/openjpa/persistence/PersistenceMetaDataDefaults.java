@@ -56,6 +56,7 @@ import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -68,6 +69,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreRemove;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Transient;
+import jakarta.persistence.Version;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.Reflection;
@@ -135,6 +137,7 @@ public class PersistenceMetaDataDefaults
     protected MemberFilter methodFilter = new MemberFilter(Method.class);
     protected TransientFilter nonTransientFilter = new TransientFilter(false);
     protected AnnotatedFilter annotatedFilter = new AnnotatedFilter();
+    protected AccessTypeFilter accessTypeFilter = new AccessTypeFilter();
     protected GetterFilter getterFilter = new GetterFilter();
     protected SetterFilter setterFilter = new SetterFilter();
     private Boolean _isAbstractMappingUniDirectional = null;
@@ -358,8 +361,6 @@ public class PersistenceMetaDataDefaults
     		return access;
     	access = determineImplicitAccessType(meta.getDescribedType(),
     	            meta.getRepository().getConfiguration());
-    	if (!AccessCode.isUnknown(access))
-    		return access;
 
     	ClassMetaData sup = getCachedSuperclassMetaData(meta);
     	ClassMetaData tmpSup = sup;
@@ -369,6 +370,18 @@ public class PersistenceMetaDataDefaults
                 sup = tmpSup;
             }
     	}
+
+    	if (!AccessCode.isUnknown(access)) {
+    		// If implicit access conflicts with superclass, prefer the
+    		// superclass access type. Per JPA spec, a subclass without
+    		// explicit @Access inherits from its persistent superclass.
+    		if (sup != null && !AccessCode.isUnknown(sup)
+    			&& !AccessCode.isCompatibleSuper(access, sup.getAccessType())) {
+    			return sup.getAccessType();
+    		}
+    		return access;
+    	}
+
     	if (sup != null && !AccessCode.isUnknown(sup))
     		return sup.getAccessType();
 
@@ -411,9 +424,20 @@ public class PersistenceMetaDataDefaults
         getters =  matchGetterAndSetter(getters, setters);
 
         boolean mixed = !fields.isEmpty() && !getters.isEmpty();
-        if (mixed)
-        	throw new UserException(_loc.get("access-mixed",
-        		cls, toFieldNames(fields), toMethodNames(getters)));
+        if (mixed) {
+        	// Both fields and getters have JPA annotations (mixed placement).
+        	// Determine access from strategy annotations (@Id, @Basic, etc.)
+        	// Supplementary annotations like @Column don't determine access.
+        	List<Field> stratFields = filter(fields, accessTypeFilter);
+        	if (!stratFields.isEmpty()) {
+        		return AccessCode.FIELD;
+        	}
+        	List<Method> stratGetters = filter(getters, accessTypeFilter);
+        	if (!stratGetters.isEmpty()) {
+        		return AccessCode.PROPERTY;
+        	}
+        	return AccessCode.FIELD;
+        }
         if (!fields.isEmpty()) {
         	return AccessCode.FIELD;
         }
@@ -421,6 +445,42 @@ public class PersistenceMetaDataDefaults
         	return AccessCode.PROPERTY;
         }
         return AccessCode.UNKNOWN;
+    }
+
+    /**
+     * Checks whether the given class has JPA annotations on both fields AND
+     * getters, indicating mixed annotation placement.
+     */
+    private boolean hasMixedAnnotations(Class<?> cls, OpenJPAConfiguration conf) {
+        Field[] allFields = cls.getDeclaredFields();
+        Method[] methods = cls.getDeclaredMethods();
+        List<Field> fields = filter(allFields, new TransientFilter(true));
+        getterFilter.setIncludePrivate(
+            conf.getCompatibilityInstance().getPrivatePersistentProperties());
+        List<Method> getters = filter(methods, getterFilter);
+        fields = filter(fields, annotatedFilter);
+        getters = filter(getters, annotatedFilter);
+        List<Method> setters = filter(methods, setterFilter);
+        getters = matchGetterAndSetter(getters, setters);
+        return !fields.isEmpty() && !getters.isEmpty();
+    }
+
+    private boolean hasFieldStrategyAnnotations(Class<?> cls) {
+        for (Field f : cls.getDeclaredFields()) {
+            if (accessTypeFilter.includes(f)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean hasGetterStrategyAnnotations(Class<?> cls) {
+        for (Method m : cls.getDeclaredMethods()) {
+            if (accessTypeFilter.includes(m)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -496,7 +556,6 @@ public class PersistenceMetaDataDefaults
     	boolean explicit = meta.isExplicitAccess();
     	boolean unknown  = AccessCode.isUnknown(meta.getAccessType());
     	boolean isProperty  = AccessCode.isProperty(meta.getAccessType());
-
     	if (explicit || unknown || isProperty) {
     		Method[] publicMethods = meta.getDescribedType().getDeclaredMethods();
 
@@ -640,7 +699,7 @@ public class PersistenceMetaDataDefaults
                     setterName = "set" + member.getName().substring(3);
                 }
                 // check for setters for methods
-                Method setter = meta.getDescribedType().getDeclaredMethod(setterName, new Class[] {((Method) member).getReturnType()});
+                Method setter = meta.getDescribedType().getDeclaredMethod(setterName, ((Method) member).getReturnType());
                 if (setter == null && !isAnnotatedTransient(member)) {
                     logNoSetter(meta, name, null);
                     return false;
@@ -914,6 +973,27 @@ public class PersistenceMetaDataDefaults
                 	return true;
         	}
         	return false;
+        }
+    }
+
+    /**
+     * Filter that includes only members annotated with access-type-determining
+     * annotations: persistence strategy annotations (@Id, @Basic, @ManyToOne, etc.),
+     * @Version, and @EmbeddedId. Supplementary annotations like @Column,
+     * @JoinColumn, @Enumerated do NOT determine the access type per JPA spec.
+     */
+    static class AccessTypeFilter implements InclusiveFilter<AnnotatedElement> {
+        @Override
+        public boolean includes(AnnotatedElement obj) {
+            for (Annotation anno : obj.getAnnotations()) {
+                Class<?> type = anno.annotationType();
+                if (_strats.containsKey(type)
+                    || type == Id.class
+                    || type == Version.class) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
