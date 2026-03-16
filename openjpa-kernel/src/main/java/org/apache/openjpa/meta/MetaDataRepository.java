@@ -107,20 +107,20 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     private SequenceMetaData _sysSeq = null;
     // cache of parsed metadata, oid class to class, and interface class
     // to metadatas
-    private Map<Class<?>, ClassMetaData> _metas = new HashMap<>();
-    private Map<String, ClassMetaData> _metaStringMap = new ConcurrentHashMap<>();
+    private final Map<Class<?>, ClassMetaData> _metas = new HashMap<>();
+    private final Map<String, ClassMetaData> _metaStringMap = new ConcurrentHashMap<>();
     private Map<Class<?>, Class<?>> _oids = Collections.synchronizedMap(new HashMap<>());
     private Map<Class<?>, Collection<Class<?>>> _impls =
         Collections.synchronizedMap(new HashMap<>());
     private Map<Class<?>, Class<?>> _ifaces = Collections.synchronizedMap(new HashMap<>());
-    private Map<String, QueryMetaData> _queries = new HashMap<>();
-    private Map<String, SequenceMetaData> _seqs = new HashMap<>();
+    private final Map<String, QueryMetaData> _queries = new HashMap<>();
+    private final Map<String, SequenceMetaData> _seqs = new HashMap<>();
     private Map<String, List<Class<?>>> _aliases = Collections.synchronizedMap(new HashMap<>());
     private Map<Class<?>, NonPersistentMetaData> _pawares =
         Collections.synchronizedMap(new HashMap<>());
     private Map<Class<?>, NonPersistentMetaData> _nonMapped =
         Collections.synchronizedMap(new HashMap<>());
-    private Map<Class<?>, Class<?>> _metamodel = Collections.synchronizedMap(new HashMap<>());
+    private final Map<Class<?>, Class<?>> _metamodel = Collections.synchronizedMap(new HashMap<>());
 
     // map of classes to lists of their subclasses
     private Map<Class<?>, Collection<Class<?>>> _subs =
@@ -150,6 +150,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     // system listeners
     private LifecycleEventManager.ListenerList _listeners = new LifecycleEventManager.ListenerList(3);
+    private final Set<String> _systemListenerKeys = new HashSet<>();
     private boolean _systemListenersActivated = false;
 
     protected boolean _preload = false;
@@ -2359,10 +2360,20 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      * Add the given system lifecycle listener.
      */
     public void addSystemListener(Object listener) {
+        addSystemListener(listener, null);
+    }
+
+    /**
+     * Add a system lifecycle listener with an optional deduplication key.
+     * If a key is provided and a listener with the same key was already
+     * registered, the duplicate is silently skipped.
+     */
+    public void addSystemListener(Object listener, String key) {
+        if (key != null && !_systemListenerKeys.add(key)) {
+            return;
+        }
         if (_locking) {
             synchronized (this) {
-                // copy to avoid issues with ListenerList and avoid unncessary
-                // locking on the list during runtime
                 LifecycleEventManager.ListenerList listeners = new LifecycleEventManager.ListenerList(_listeners);
                 listeners.add(listener);
                 _listeners = listeners;
@@ -2451,10 +2462,9 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         public boolean equals(Object obj) {
             if (obj == this)
                 return true;
-            if (!(obj instanceof QueryKey))
+            if (!(obj instanceof QueryKey qk))
                 return false;
 
-            QueryKey qk = (QueryKey) obj;
             return Objects.equals(clsName, qk.clsName) && Objects.equals(name, qk.name);
         }
     }
@@ -2538,10 +2548,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         if (conf == null)
             return false;
         Options o = Configurations.parseProperties(Configurations.getProperties(conf.getMetaDataRepository()));
-        if (o.getBooleanProperty(PRELOAD_STR) || o.getBooleanProperty(PRELOAD_STR.toLowerCase())) {
-            return true;
-        }
-        return false;
+        return o.getBooleanProperty(PRELOAD_STR) || o.getBooleanProperty(PRELOAD_STR.toLowerCase());
     }
 
     /**
