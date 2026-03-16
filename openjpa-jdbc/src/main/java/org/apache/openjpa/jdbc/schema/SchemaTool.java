@@ -100,6 +100,11 @@ public class SchemaTool {
 
     protected static final Localizer _loc = Localizer.forPackage(SchemaTool.class);
 
+    // Tables recently dropped by JPA schema gen script execution.
+    // Prevents buildSchema/add from recreating them in subsequent EMFs.
+    private static final java.util.Set<String> _droppedTables =
+        java.util.Collections.synchronizedSet(new java.util.HashSet<>());
+
     protected final JDBCConfiguration _conf;
     protected final DataSource _ds;
     protected final Log _log;
@@ -1160,6 +1165,14 @@ public class SchemaTool {
      */
     public boolean createTable(Table table)
         throws SQLException {
+        // Skip tables that were recently dropped by JPA schema gen scripts
+        // when this is an implicit add (from buildSchema). Explicit schema
+        // gen actions (create via script/metadata) should still create.
+        String tableName = table.getFullIdentifier().getName().toUpperCase();
+        if (ACTION_ADD.equals(_action) && _droppedTables.contains(tableName)) {
+            return false;
+        }
+        _droppedTables.remove(tableName);
         return executeSQL(_dict.getCreateTableSQL(table, _db));
     }
 
@@ -1421,7 +1434,29 @@ public class SchemaTool {
                         }
 
                         statement = conn.createStatement();
+                        // Track DROP/CREATE TABLE statements from script execution
+                        if (ACTION_EXECUTE_SCRIPT.equals(_action)) {
+                            String upper = s.toUpperCase().trim();
+                            if (upper.startsWith("DROP TABLE")) {
+                                String tableName = s.trim().substring("DROP TABLE".length())
+                                    .trim().replaceAll("(?i)\\s*(IF EXISTS|CASCADE).*", "")
+                                    .trim().toUpperCase();
+                                _droppedTables.add(tableName);
+                            } else if (upper.startsWith("CREATE TABLE")) {
+                                String tableName = s.trim().substring("CREATE TABLE".length())
+                                    .trim().split("\\s*\\(")[0].trim().toUpperCase();
+                                _droppedTables.remove(tableName);
+                            }
+                        }
+                        if (_log.isTraceEnabled()) {
+                            _log.trace("Executing DDL: " + s
+                                + " [autoCommit=" + conn.getAutoCommit()
+                                + ", conn=" + conn.getClass().getName() + "]");
+                        }
                         statement.executeUpdate(s);
+                        if (_log.isTraceEnabled()) {
+                            _log.trace("DDL executed successfully: " + s);
+                        }
 
                         // some connections seem to require an explicit
                         // commit for DDL statements, even when autocommit
@@ -1431,10 +1466,16 @@ public class SchemaTool {
                             conn.commit();
                         }
                         catch (Exception e) {
+                            if (_log.isTraceEnabled()) {
+                                _log.trace("commit after DDL: " + e.getMessage());
+                            }
                         }
                     }
                     catch (SQLException se) {
                         err = true;
+                        if (_log.isTraceEnabled()) {
+                            _log.trace("DDL failed: " + se.getMessage());
+                        }
                         handleException(se);
                     }
                     finally {

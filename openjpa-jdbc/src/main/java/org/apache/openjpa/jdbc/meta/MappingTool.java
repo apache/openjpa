@@ -190,6 +190,23 @@ public class MappingTool
      * ACTION constants in {@link SchemaTool}. May be a comma-separated
      * list of values. Defaults to {@link SchemaTool#ACTION_ADD}.
      */
+    /**
+     * Returns true if the schema actions contain only drop/script-drop
+     * operations and no create/add operations.
+     */
+    private boolean isDropOnlySchemaAction() {
+        if (_schemaActions == null || _schemaActions.isEmpty()) {
+            return false;
+        }
+        for (String action : _schemaActions.split(",")) {
+            String a = action.trim();
+            if (!a.equals(ACTION_SCRIPT_DROP) && !a.equals(SchemaTool.ACTION_DROP)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public String getSchemaAction() {
         return _schemaActions;
     }
@@ -849,6 +866,14 @@ public class MappingTool
     private void buildSchema(Class<?> cls) {
         if (cls == null)
             return;
+
+        // For drop-only schema actions, skip entity mapping resolution
+        // which would add tables to the schema group and cause them to be
+        // re-created after being dropped.
+        if (isDropOnlySchemaAction()) {
+            _flushSchema = true;
+            return;
+        }
 
         MappingRepository repos = getRepository();
         repos.setStrategyInstaller(new RuntimeStrategyInstaller(repos));

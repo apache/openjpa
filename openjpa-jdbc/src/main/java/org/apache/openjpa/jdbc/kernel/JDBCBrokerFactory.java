@@ -163,7 +163,7 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
     	JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
     	Broker broker = super.newBrokerImpl(conf.getConnectionUserName(), conf.getConnectionPassword());
     	String baseAction = createSchemas ? "createDB, add": MappingTool.ACTION_ADD;
-    	synchronizeMappings(broker.getClassLoader(), conf, String.format("buildSchema(ForeignKeys=true,SchemaAction='%s')", baseAction));
+    	synchronizeMappings(broker.getClassLoader(), conf, String.format("buildSchema(ForeignKeys=true,schemaAction='%s')", baseAction));
     }
     
     @Override
@@ -171,7 +171,7 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
     	JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
     	Broker broker = super.newBrokerImpl(conf.getConnectionUserName(), conf.getConnectionPassword());
     	String baseAction = dropSchemas ? "drop, dropDB": MappingTool.ACTION_DROP;
-    	synchronizeMappings(broker.getClassLoader(), conf, String.format("buildSchema(ForeignKeys=true,SchemaAction='%s')", baseAction));
+    	synchronizeMappings(broker.getClassLoader(), conf, String.format("buildSchema(ForeignKeys=true,schemaAction='%s')", baseAction));
     }
     
     @Override
@@ -186,7 +186,7 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
     	JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
     	Broker broker = super.newBrokerImpl(conf.getConnectionUserName(), conf.getConnectionPassword());
     	String baseAction = "refresh,deleteTableContents";
-    	synchronizeMappings(broker.getClassLoader(), conf, String.format("buildSchema(ForeignKeys=true,SchemaAction='%s')", baseAction));
+    	synchronizeMappings(broker.getClassLoader(), conf, String.format("buildSchema(ForeignKeys=true,schemaAction='%s')", baseAction));
     }
     
     protected boolean synchronizeMappings(ClassLoader loader, JDBCConfiguration conf) {
@@ -199,9 +199,9 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
      * Synchronize the mappings of the classes listed in the configuration.
      */
     protected boolean synchronizeMappings(ClassLoader loader, JDBCConfiguration conf, String action) {
-    	
+
         mapSchemaGenerationToSynchronizeMappings(conf);
-        
+
         if (StringUtil.isEmpty(action))
             return false;
 
@@ -279,12 +279,15 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
         }
 
         if (actions.length() > 0) {
-            conf.setSynchronizeMappings("buildSchema(ForeignKeys=true,SchemaAction='" + actions + "')");
+            conf.setSynchronizeMappings("buildSchema(ForeignKeys=true,schemaAction='" + actions + "')");
+
         } else if (conf.isSchemaGenerationExplicit()) {
-            // JPA schema generation properties were explicitly provided
-            // but resolved to no actions (e.g. database.action=none).
-            // Clear SynchronizeMappings to prevent OpenJPA-specific
-            // auto-creation from interfering with JPA schema management.
+            // Clear SynchronizeMappings when:
+            // 1. JPA schema generation properties were explicitly provided
+            //    but resolved to no actions (e.g. database.action=none), OR
+            // 2. Spec-compliant mode with no JPA schema gen properties —
+            //    let JPA schema management control table lifecycle instead
+            //    of auto-creating via buildSchema.
             conf.setSynchronizeMappings(null);
         }
     }
