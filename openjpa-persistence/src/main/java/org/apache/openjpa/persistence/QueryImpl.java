@@ -250,6 +250,7 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 
 	@Override
     public int getFirstResult() {
+		_em.assertNotCloseInvoked();
 		return asInt(_query.getStartRange());
 	}
 
@@ -268,6 +269,7 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 
 	@Override
     public int getMaxResults() {
+		_em.assertNotCloseInvoked();
 		return asInt(_query.getEndRange() - _query.getStartRange());
 	}
 

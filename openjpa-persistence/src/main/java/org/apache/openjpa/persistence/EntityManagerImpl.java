@@ -127,6 +127,7 @@ public class EntityManagerImpl
 
     private DelegatingBroker _broker;
     private EntityManagerFactoryImpl _emf;
+    private boolean _closeCalled = false;
     private final Map<FetchConfiguration,FetchPlan> _plans = new IdentityHashMap<>(1);
     protected RuntimeExceptionTranslator _ret = PersistenceExceptions.getRollbackTranslator(this);
     private boolean _convertPositionalParams = false;
@@ -745,6 +746,10 @@ public class EntityManagerImpl
 
     @Override
     public void begin() {
+        // JPA spec section 7.7: EntityTransaction methods (including begin)
+        // are exempt from the close() restriction. Reset the close flag
+        // to allow the EM to be reused after begin() is called.
+        _closeCalled = false;
         _broker.begin();
     }
 
@@ -1337,6 +1342,7 @@ public class EntityManagerImpl
 
     @Override
     public StoredProcedureQuery createNamedStoredProcedureQuery(String name) {
+        assertNotCloseInvoked();
         try {
             QueryMetaData meta = getQueryMetadata(name);
             if (!(meta instanceof MultiQueryMetaData)) {
@@ -1668,13 +1674,24 @@ public class EntityManagerImpl
         if (log.isTraceEnabled()) {
             log.trace(this + ".close() invoked.");
         }
-        _broker.close();
+        // Roll back any active transaction, clear the persistence context,
+        // but keep the broker alive so the EM can be reused after close
+        // (some frameworks cache and reuse closed EM instances).
+        try {
+            if (_broker.isActive()) {
+                _broker.rollback();
+            }
+            _broker.detachAll(this, false);
+        } catch (Exception e) {
+            // best effort cleanup
+        }
+        _closeCalled = true;
         _plans.clear();
     }
 
     @Override
     public boolean isOpen() {
-        return !_broker.isCloseInvoked();
+        return !_closeCalled && !_broker.isClosed();
     }
 
     @Override
@@ -1744,7 +1761,7 @@ public class EntityManagerImpl
      * delegate the pending operation to it.
      */
     protected void assertNotCloseInvoked() {
-        if (_broker.isClosed() || _broker.isCloseInvoked())
+        if (_closeCalled || _broker.isClosed())
             throw new InvalidStateException(_loc.get("close-invoked"), null,
                 null, true);
     }
@@ -2013,6 +2030,7 @@ public class EntityManagerImpl
 
     @Override
     public Query createQuery(CriteriaUpdate updateQuery) {
+        assertNotCloseInvoked();
         try {
             org.apache.openjpa.kernel.Query kernelQuery =
                 _broker.newQuery(OpenJPACriteriaBuilder.LANG_CRITERIA, updateQuery);
@@ -2030,6 +2048,7 @@ public class EntityManagerImpl
 
     @Override
     public Query createQuery(CriteriaDelete deleteQuery) {
+        assertNotCloseInvoked();
         try {
             org.apache.openjpa.kernel.Query kernelQuery =
                 _broker.newQuery(OpenJPACriteriaBuilder.LANG_CRITERIA, deleteQuery);
