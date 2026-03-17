@@ -141,6 +141,10 @@ public class PostgresDictionary extends DBDictionary {
         maxConstraintNameLength = 63;
         maxAutoAssignNameLength = 63;
         schemaCase = SCHEMA_CASE_LOWER;
+        // PostgreSQL lowercases unquoted identifiers. Set delimitedCase
+        // to LOWER before annotation parsing so that identifiers from
+        // @Table(name="ITEM") are undelimited (matching DDL-created tables).
+        delimitedCase = SCHEMA_CASE_LOWER;
         rangePosition = RANGE_POST_LOCK;
         requiresAliasForSubselect = true;
         allowsAliasInBulkClause = false;
@@ -293,6 +297,41 @@ public class PostgresDictionary extends DBDictionary {
         } catch (SQLException sqle) {
             return super.getBigDecimal(rs, column).longValue();
         }
+    }
+
+    /**
+     * Prevent connectedConfiguration from resetting delimitedCase to
+     * PRESERVE. PostgreSQL lowercases unquoted identifiers; keeping
+     * delimitedCase=LOWER ensures identifiers are never quoted.
+     */
+    @Override
+    protected void setDelimitedCase(java.sql.DatabaseMetaData metaData) {
+        delimitedCase = SCHEMA_CASE_LOWER;
+    }
+
+    /**
+     * Return unquoted identifier names. PostgreSQL lowercases unquoted
+     * identifiers, so CREATE TABLE ITEM creates lowercase "item".
+     * Quoting would create case-sensitive "ITEM" that differs from
+     * DDL-created lowercase tables.
+     */
+    @Override
+    public String toDBName(DBIdentifier name) {
+        if (DBIdentifier.isNull(name)) {
+            return null;
+        }
+        String n = name.getName();
+        // Strip quote characters from delimited identifiers
+        if (n != null && n.length() > 2
+                && n.charAt(0) == '"' && n.charAt(n.length() - 1) == '"') {
+            n = n.substring(1, n.length() - 1);
+        }
+        return n;
+    }
+
+    @Override
+    public String toDBName(DBIdentifier name, boolean delimit) {
+        return toDBName(name);
     }
 
     /**
