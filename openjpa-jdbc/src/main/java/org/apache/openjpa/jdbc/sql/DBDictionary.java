@@ -1591,10 +1591,20 @@ public class DBDictionary
                 setBlobObject(stmnt, idx, val, col, store);
                 break;
             case JavaTypes.DATE:
-                setDate(stmnt, idx, (Date) val, col);
+                if (val instanceof Date) {
+                    setDate(stmnt, idx, (Date) val, col);
+                } else if (val instanceof Calendar) {
+                    setDate(stmnt, idx, ((Calendar) val).getTime(), col);
+                }
                 break;
             case JavaTypes.CALENDAR:
-                setCalendar(stmnt, idx, (Calendar) val, col);
+                if (val instanceof Calendar) {
+                    setCalendar(stmnt, idx, (Calendar) val, col);
+                } else if (val instanceof Date) {
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime((Date) val);
+                    setCalendar(stmnt, idx, cal, col);
+                }
                 break;
             case JavaTypes.LOCAL_DATE:
                 setLocalDate(stmnt, idx, (LocalDate) val, col);
