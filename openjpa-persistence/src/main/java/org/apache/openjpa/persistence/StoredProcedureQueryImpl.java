@@ -106,6 +106,10 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
 
     private void buildParametersIfNeeded() {
         if (!_declaredParams) {
+            if (_meta == null) {
+                _declaredParams = true;
+                return;
+            }
             for (MultiQueryMetaData.Parameter entry : _meta.getParameters()) {
                 final Object key;
                 final Parameter<?> param;
@@ -181,6 +185,11 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
 
     @Override
     public int executeUpdate() {
+        EntityManagerImpl em = (EntityManagerImpl) _delegate.getEntityManager();
+        if (!em.isActive()) {
+            throw new jakarta.persistence.TransactionRequiredException(
+                "executeUpdate requires an active transaction");
+        }
         execute();
         return _callback.getUpdateCount();
     }
@@ -319,7 +328,7 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
     @Override
     public Object getParameterValue(int position) {
         buildParametersIfNeeded();
-        return _delegate.getParameter(position);
+        return _delegate.getParameterValue(position);
     }
 
     @Override
@@ -330,14 +339,14 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
 
     @Override
     public jakarta.persistence.Query setLockMode(LockModeType lockMode) {
-        // TODO JPA 2.1 Method
-        return _delegate.setLockMode(lockMode);
+        throw new IllegalStateException(
+            "setLockMode is not supported for StoredProcedureQuery");
     }
 
     @Override
     public LockModeType getLockMode() {
-        // TODO JPA 2.1 Method
-        return _delegate.getLockMode();
+        throw new IllegalStateException(
+            "getLockMode is not supported for StoredProcedureQuery");
     }
 
     @Override

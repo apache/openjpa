@@ -94,11 +94,13 @@ public class StoredProcedureQuery extends AbstractStoreQuery {
                 classes = new ArrayList<>();
                 MappingRepository repos = _store.getConfiguration().getMappingRepositoryInstance();
                 for (QueryMetaData part : parts) {
-                    QueryResultMapping mapping = repos.getQueryResultMapping(ctx.getResultMappingScope(),
-                            part.getResultSetMappingName(),
-                            null, true);
-                    if (mapping != null) {
-                        mappings.add(mapping);
+                    String mappingName = part.getResultSetMappingName();
+                    if (mappingName != null) {
+                        QueryResultMapping mapping = repos.getQueryResultMapping(
+                            ctx.getResultMappingScope(), mappingName, null, true);
+                        if (mapping != null) {
+                            mappings.add(mapping);
+                        }
                     }
                     if (part.getResultType() != null) {
                         classes.add(part.getResultType());
@@ -172,7 +174,7 @@ public class StoredProcedureQuery extends AbstractStoreQuery {
                 Connection conn = _store.getConnection();
                 CallableStatement stmnt = conn.prepareCall(_proc.getCallSQL());
 
-                final StoredProcedureQuery spq = StoredProcedureQuery.class.cast(q);
+                final StoredProcedureQuery spq = (StoredProcedureQuery) q;
                 for (Column c : spq.getProcedure().getInColumns()) {
                     dict.setUnknown(stmnt, c.getIndex() + 1, params[c.getIndex()], c);
                 }
@@ -199,7 +201,7 @@ public class StoredProcedureQuery extends AbstractStoreQuery {
             if (userParams == null) return NO_PARAM;
             Object[] array = new Object[userParams.size()];
             int i = 0;
-            StoredProcedureQuery storedProcedureQuery = StoredProcedureQuery.class.cast(q);
+            StoredProcedureQuery storedProcedureQuery = (StoredProcedureQuery) q;
             for (final Column[] columns : asList(
                     storedProcedureQuery.getProcedure().getInColumns(),
                     storedProcedureQuery.getProcedure().getInOutColumns())) {

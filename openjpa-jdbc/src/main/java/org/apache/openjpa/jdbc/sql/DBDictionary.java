@@ -5152,6 +5152,18 @@ public class DBDictionary
         if (_procs.containsKey(procedure)) {
             return _procs.get(procedure);
         }
+        StoredProcedure sp = findStoredProcedure(meta, catalog, schema, procedure);
+        // If not found and name has uppercase chars, try lowercase
+        // (databases like PostgreSQL fold unquoted identifiers to lowercase)
+        if (sp == null && !procedure.equals(procedure.toLowerCase())) {
+            sp = findStoredProcedure(meta, catalog, schema, procedure.toLowerCase());
+        }
+        _procs.put(procedure, sp);
+        return sp;
+    }
+
+    private StoredProcedure findStoredProcedure(DatabaseMetaData meta, DBIdentifier catalog, DBIdentifier schema,
+                                                String procedure) throws SQLException {
         ResultSet rs = meta.getProcedureColumns(
                 getCatalogNameForMetadata(catalog),
                 getSchemaNameForMetadata(schema),
@@ -5172,7 +5184,6 @@ public class DBDictionary
                 sp.setName(procedure);
             }
         }
-        _procs.put(procedure, sp);
         return sp;
     }
 

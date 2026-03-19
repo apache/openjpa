@@ -1,0 +1,12 @@
+services:
+  postgres:
+    image: postgres:18
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: openjpa_tck
+      POSTGRES_USER: openjpa
+      POSTGRES_PASSWORD: openjpa
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - ./pgdata:/var/lib/postgresql

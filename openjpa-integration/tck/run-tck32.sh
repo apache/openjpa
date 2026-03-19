@@ -140,6 +140,16 @@ if [ "$RDBMS" == "derby" ] || [ -z "$RDBMS" ]; then
         "-Djakarta.persistence.jdbc.url=jdbc:derby://localhost:1527/derbyDB;create=true" \
         ${EXTRA_ARGS}
 elif [ "$RDBMS" == "postgresql" ]; then
+    # Execute stored procedure DDL if available
+    SP_DDL="${TCK_HOME}/sql/postgresql/postgresql.ddl.persistence.sprocs.sql"
+    if [ -f "$SP_DDL" ]; then
+        echo "Creating stored procedures on PostgreSQL..."
+        DB_HOST_ONLY="${DB_HOST%%:*}"
+        DB_PORT="${DB_HOST##*:}"
+        PGPASSWORD="${DB_PASSWORD:-openjpa}" psql -h "${DB_HOST_ONLY}" -p "${DB_PORT}" \
+            -U "${DB_USER:-openjpa}" -d openjpa_tck -f "$SP_DDL" 2>/dev/null || \
+            echo "Warning: Failed to create stored procedures (non-fatal)"
+    fi
     mvn -e -f "${TCK_POM}" -P "openjpa,postgresql" verify \
         "-Dopenjpa.version=${OPENJPA_VERSION}" \
         "-Dglassfish.container.version=${GF_VERSION}" \
@@ -147,16 +157,8 @@ elif [ "$RDBMS" == "postgresql" ]; then
         "-Djakarta.persistence.jdbc.password=${DB_PASSWORD:-openjpa}" \
         "-Djakarta.persistence.jdbc.url=jdbc:postgresql://${DB_HOST:-localhost}/openjpa_tck" \
         ${EXTRA_ARGS}
-elif [ "$RDBMS" == "mysql" ]; then
-    mvn -e -f "${TCK_POM}" -P "openjpa,mysql" verify \
-        "-Dopenjpa.version=${OPENJPA_VERSION}" \
-        "-Dglassfish.container.version=${GF_VERSION}" \
-        "-Djakarta.persistence.jdbc.user=${DB_USER:-openjpa}" \
-        "-Djakarta.persistence.jdbc.password=${DB_PASSWORD:-openjpa}" \
-        "-Djakarta.persistence.jdbc.url=jdbc:mysql://${DB_HOST:-localhost}/openjpa_tck?allowPublicKeyRetrieval=true" \
-        ${EXTRA_ARGS}
 else
     echo "Unsupported RDBMS: ${RDBMS}"
-    echo "Supported: derby, postgresql, mysql"
+    echo "Supported: derby, postgresql"
     exit 1
 fi
