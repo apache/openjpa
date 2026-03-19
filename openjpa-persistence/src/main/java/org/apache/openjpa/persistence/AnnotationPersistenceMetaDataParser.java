@@ -99,6 +99,7 @@ import jakarta.persistence.Basic;
 import jakarta.persistence.Cacheable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Convert;
+import jakarta.persistence.Converts;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
@@ -182,6 +183,7 @@ import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
 import static org.apache.openjpa.persistence.MetaDataTag.CONVERT;
+import static org.apache.openjpa.persistence.MetaDataTag.CONVERTS;
 
 
 /**
@@ -242,6 +244,7 @@ public class AnnotationPersistenceMetaDataParser
         _tags.put(ExternalValues.class, EXTERNAL_VALS);
         _tags.put(Externalizer.class, EXTERNALIZER);
         _tags.put(Convert.class, CONVERT);
+        _tags.put(Converts.class, CONVERTS);
         _tags.put(Factory.class, FACTORY);
         _tags.put(FetchGroup.class, FETCH_GROUP);
         _tags.put(FetchGroups.class, FETCH_GROUPS);
@@ -694,6 +697,15 @@ public class AnnotationPersistenceMetaDataParser
                     if (isMetaDataMode()) {
                         parseCache(meta, (Cacheable) anno);
                     }
+                    break;
+                case CONVERT:
+                    if (isMetaDataMode())
+                        parseClassLevelConvert(meta, (Convert) anno);
+                    break;
+                case CONVERTS:
+                    if (isMetaDataMode())
+                        for (Convert c : ((Converts) anno).value())
+                            parseClassLevelConvert(meta, c);
                     break;
                 default:
                     throw new UnsupportedException(_loc.get("unsupported", _cls,
@@ -1327,12 +1339,70 @@ public class AnnotationPersistenceMetaDataParser
                             value()));
                     break;
                 case CONVERT:
-                    if (isMetaDataMode() && !((Convert) anno).disableConversion())
-                        fmd.setConverter(((Convert) anno).converter());
+                    if (isMetaDataMode())
+                        applyFieldConvert(fmd, (Convert) anno);
+                    break;
+                case CONVERTS:
+                    if (isMetaDataMode())
+                        for (Convert c : ((Converts) anno).value())
+                            applyFieldConvert(fmd, c);
                     break;
                 default:
                     throw new UnsupportedException(_loc.get("unsupported", fmd,
                         anno.toString()));
+            }
+        }
+    }
+
+    /**
+     * Apply a field-level @Convert annotation. If attributeName is specified,
+     * the converter is stored as an embedded converter; otherwise it is the
+     * direct converter for this field.
+     */
+    private void applyFieldConvert(FieldMetaData fmd, Convert convert) {
+        if (convert.disableConversion())
+            return;
+        String attrName = convert.attributeName();
+        if (attrName != null && !attrName.isEmpty()) {
+            // Embedded converter: the converter applies to an attribute
+            // within the embedded object
+            fmd.addEmbeddedConverter(attrName, convert.converter());
+        } else {
+            fmd.setConverter(convert.converter());
+        }
+    }
+
+    /**
+     * Handle class-level @Convert. These specify converters for attributes
+     * of embedded fields or inherited fields. The attributeName is required
+     * for class-level @Convert.
+     */
+    private void parseClassLevelConvert(ClassMetaData meta, Convert convert) {
+        if (convert.disableConversion())
+            return;
+        String attrName = convert.attributeName();
+        if (attrName == null || attrName.isEmpty()) {
+            // Class-level @Convert without attributeName - ignore silently
+            // (spec says attributeName is required at class level)
+            return;
+        }
+        // attributeName may be "embeddedField.attribute" or just "attribute"
+        // For now, store as-is and let the mapping layer resolve
+        int dot = attrName.lastIndexOf('.');
+        if (dot > 0) {
+            String fieldName = attrName.substring(0, dot);
+            String embAttr = attrName.substring(dot + 1);
+            FieldMetaData fmd = meta.getDeclaredField(fieldName);
+            if (fmd != null) {
+                fmd.addEmbeddedConverter(embAttr, convert.converter());
+            }
+        } else {
+            // Simple attribute name - applies to all embedded fields
+            // that have this attribute
+            for (FieldMetaData fmd : meta.getDeclaredFields()) {
+                if (fmd.isEmbedded()) {
+                    fmd.addEmbeddedConverter(attrName, convert.converter());
+                }
             }
         }
     }

@@ -83,6 +83,7 @@ import static org.apache.openjpa.persistence.jdbc.MappingTag.STRAT;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.SUBCLASS_FETCH_MODE;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.TABLE;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.TABLE_GEN;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.TABLE_GENS;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.TEMPORAL;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.UNIQUE;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.VERSION_COL;
@@ -179,6 +180,7 @@ import jakarta.persistence.SqlResultSetMapping;
 import jakarta.persistence.SqlResultSetMappings;
 import jakarta.persistence.Table;
 import jakarta.persistence.TableGenerator;
+import jakarta.persistence.TableGenerators;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.UniqueConstraint;
 
@@ -247,6 +249,7 @@ public class AnnotationPersistenceMappingParser
         _tags.put(Table.class, TABLE);
         _tags.put(Temporal.class, TEMPORAL);
         _tags.put(TableGenerator.class, TABLE_GEN);
+        _tags.put(TableGenerators.class, TABLE_GENS);
         _tags.put(ClassCriteria.class, CLASS_CRIT);
         _tags.put(Columns.class, COLS);
         _tags.put(ContainerTable.class, CONTAINER_TABLE);
@@ -302,6 +305,11 @@ public class AnnotationPersistenceMappingParser
             switch (tag) {
                 case TABLE_GEN:
                     parseTableGenerator(pkg, (TableGenerator) anno);
+                    break;
+                case TABLE_GENS:
+                    for (TableGenerator tg :
+                        ((TableGenerators) anno).value())
+                        parseTableGenerator(pkg, tg);
                     break;
                 default:
                     throw new UnsupportedException(_loc.get("unsupported", pkg,
@@ -433,6 +441,11 @@ public class AnnotationPersistenceMappingParser
                     break;
                 case TABLE_GEN:
                     parseTableGenerator(cls, (TableGenerator) anno);
+                    break;
+                case TABLE_GENS:
+                    for (TableGenerator tg :
+                        ((TableGenerators) anno).value())
+                        parseTableGenerator(cls, tg);
                     break;
                 case DATASTORE_ID_COL:
                     parseDataStoreIdColumn(cm, (DataStoreIdColumn) anno);
@@ -1379,6 +1392,11 @@ public class AnnotationPersistenceMappingParser
                     break;
                 case TABLE_GEN:
                     parseTableGenerator(el, (TableGenerator) anno);
+                    break;
+                case TABLE_GENS:
+                    for (TableGenerator tg :
+                        ((TableGenerators) anno).value())
+                        parseTableGenerator(el, tg);
                     break;
                 case TEMPORAL:
                     parseTemporal(fm, (Temporal) anno);

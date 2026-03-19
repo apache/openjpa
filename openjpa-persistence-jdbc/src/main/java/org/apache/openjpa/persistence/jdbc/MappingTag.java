@@ -59,6 +59,7 @@ enum MappingTag {
     SQL_RESULT_SET_MAPPINGS,
     TABLE,
     TABLE_GEN,
+    TABLE_GENS,
     TEMPORAL,
     // openjpa extensions
     CLASS_CRIT,

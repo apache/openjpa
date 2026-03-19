@@ -169,6 +169,11 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     // we should skip these types for the enhancement
     private Collection<Class<?>> _typesWithoutEnhancement;
 
+    // Map of entity attribute type -> auto-apply converter class
+    // Populated by scanning @Converter(autoApply=true) classes
+    private final Map<Class<?>, Class<?>> _autoApplyConverters =
+        Collections.synchronizedMap(new HashMap<>());
+
     /**
      * Default constructor. Configure via {@link Configurable}.
      */
@@ -2616,5 +2621,32 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             }
         }
         return cmd;
+    }
+
+    /**
+     * Register an auto-apply converter. The converter will be automatically
+     * applied to fields whose type matches the converter's entity attribute type.
+     *
+     * @param entityAttributeType the Java type that the converter handles
+     * @param converterClass the converter class
+     */
+    public void addAutoApplyConverter(Class<?> entityAttributeType,
+        Class<?> converterClass) {
+        _autoApplyConverters.put(entityAttributeType, converterClass);
+    }
+
+    /**
+     * Return the auto-apply converter for the given entity attribute type,
+     * or null if none.
+     */
+    public Class<?> getAutoApplyConverter(Class<?> entityAttributeType) {
+        return _autoApplyConverters.get(entityAttributeType);
+    }
+
+    /**
+     * Return all registered auto-apply converters.
+     */
+    public Map<Class<?>, Class<?>> getAutoApplyConverters() {
+        return _autoApplyConverters;
     }
 }

@@ -188,6 +188,9 @@ public class FieldMetaData
     private boolean _generated = false;
     private boolean _useSchemaElement = true;
     private Class _converter;
+    // Map of attributeName -> converterClass for embedded converters
+    // e.g., from @Convert(converter=X.class, attributeName="foo") on an embedded field
+    private Map<String, Class> _embeddedConverters;
 
     // Members aren't serializable. Use a proxy that can provide a Member
     // to avoid writing the full Externalizable implementation.
@@ -264,8 +267,7 @@ public class FieldMetaData
 
         Class<?> type;
         Class<?>[] types;
-        if (member instanceof Field) {
-            Field f = (Field) member;
+        if (member instanceof Field f) {
             type = f.getType();
             types = JavaVersions.getParameterizedTypes(f);
             setAccessType(AccessCode.FIELD);
@@ -1334,14 +1336,14 @@ public class FieldMetaData
                 // non-static val.toExternal([ctx]) method
                 if (Modifier.isStatic(externalizer.getModifiers())) {
                     if (externalizer.getParameterTypes().length == 1)
-                        return externalizer.invoke(null, new Object[]{ val });
-                    return externalizer.invoke(null, new Object[]{ val, ctx });
+                        return externalizer.invoke(null, val);
+                    return externalizer.invoke(null, val, ctx);
                 }
                 if (val == null)
                     return null;
                 if (externalizer.getParameterTypes().length == 0)
                     return externalizer.invoke(val, (Object[]) null);
-                return externalizer.invoke(val, new Object[]{ ctx });
+                return externalizer.invoke(val, ctx);
             } catch (OpenJPAException ke) {
                 throw ke;
             } catch (Exception e) {
@@ -1397,13 +1399,13 @@ public class FieldMetaData
                     if (val == null)
                         return null;
                     return ((Constructor) factory).newInstance
-                        (new Object[]{ val });
+                        (val);
                 }
 
                 Method meth = (Method) factory;
                 if (meth.getParameterTypes().length == 1)
-                    return meth.invoke(null, new Object[]{ val });
-                return meth.invoke(null, new Object[]{ val, ctx });
+                    return meth.invoke(null, val);
+                return meth.invoke(null, val, ctx);
             } catch (Exception e) {
                 // unwrap cause
                 if (e instanceof InvocationTargetException) {
@@ -1546,7 +1548,7 @@ public class FieldMetaData
         Map.Entry entry;
         Object extValue, fieldValue;
         for (Map.Entry<Object, Object> objectObjectEntry : values.entrySet()) {
-            entry = (Map.Entry) objectObjectEntry;
+            entry = objectObjectEntry;
             fieldValue = transform((String) entry.getKey(),
                     getDeclaredTypeCode());
             extValue = transform((String) entry.getValue(), getTypeCode());
@@ -1631,7 +1633,7 @@ public class FieldMetaData
                 try {
                     if (_factName == null)
                         _factMethod = getDeclaredType().getConstructor
-                            (new Class[]{ getType() });
+                            (getType());
                     else
                     	_factMethod = findMethodByNameAndType(_factName, getType());
                 } catch (OpenJPAException ke) {
@@ -2577,5 +2579,23 @@ public class FieldMetaData
 
     public Class getConverter() {
         return _converter;
+    }
+
+    /**
+     * Add a converter for an attribute within an embedded object.
+     * Used when @Convert specifies an attributeName on an embedded field.
+     */
+    public void addEmbeddedConverter(String attributeName, Class converterClass) {
+        if (_embeddedConverters == null)
+            _embeddedConverters = new HashMap<>();
+        _embeddedConverters.put(attributeName, converterClass);
+    }
+
+    /**
+     * Return the map of embedded converters (attributeName -> converterClass),
+     * or null if none.
+     */
+    public Map<String, Class> getEmbeddedConverters() {
+        return _embeddedConverters;
     }
 }

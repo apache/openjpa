@@ -48,6 +48,7 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.InternalException;
@@ -649,8 +650,8 @@ public class FieldMapping
                 return;
             if (!isMappedById())
                 return;
-            PersistenceCapable pc = (PersistenceCapable)sm.
-                fetchObject(getIndex());
+            PersistenceCapable pc = ImplHelper.toPersistenceCapable(
+                sm.fetchObject(getIndex()), null);
             if (pc == null)
                 return;
             StateManagerImpl pkSm = (StateManagerImpl)pc.
@@ -1140,7 +1141,7 @@ public class FieldMapping
         // at the defining metadata to find the correct Version. Not sure why the version for the declaring metadata
         // is different than the defining metadata.
         if (isVersion()){
-            ClassMapping cm = (ClassMapping)((FieldMetaData)this).getDefiningMetaData();
+            ClassMapping cm = (ClassMapping) this.getDefiningMetaData();
             return cm.getVersion().getColumns();
         }else
             return _val.getColumns();
