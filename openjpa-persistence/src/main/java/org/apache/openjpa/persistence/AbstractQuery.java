@@ -137,7 +137,23 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
                 throw new IllegalArgumentException(_loc.get("illegal-index", pos).getMessage());
             }
             Parameter<?> param;
-            if (isNative() || isProcedure()) {
+            if (isProcedure()) {
+                // For stored procedure queries, parameters may be pre-declared via
+                // registerStoredProcedureParameter or metadata. If declared params
+                // exist, validate position; otherwise auto-declare for backward compat.
+                Map<Object, Parameter<?>> declared = getDeclaredParameters();
+                param = declared.get(pos);
+                if (param == null) {
+                    if (!declared.isEmpty()) {
+                        throw new IllegalArgumentException(
+                            _loc.get("param-missing-pos", pos, getQueryString(),
+                                getDeclaredParameterKeys()).getMessage());
+                    }
+                    // No params declared yet — auto-declare
+                    param = new ParameterImpl<>(pos, Object.class);
+                    declareParameter(pos, param);
+                }
+            } else if (isNative()) {
                 param = new ParameterImpl<>(pos, Object.class);
                 declareParameter(pos, param);
             } else {
@@ -387,7 +403,14 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
     public TypedQuery<X> setParameter(Parameter<Calendar> p, Calendar cal, TemporalType type) {
         _em.assertNotCloseInvoked();
         assertParameterBelongsToQuery(p);
-        return setParameter(p, (Calendar) convertTemporalType(cal, type));
+        // convertTemporalType returns a Date; wrap it back into a Calendar for binding
+        Object converted = convertTemporalType(cal, type);
+        if (converted instanceof Date && !(converted instanceof Calendar)) {
+            Calendar wrapped = Calendar.getInstance();
+            wrapped.setTime((Date) converted);
+            return setParameter(p, wrapped);
+        }
+        return setParameter(p, (Calendar) converted);
     }
 
     /**

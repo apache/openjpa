@@ -69,6 +69,7 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
     private final MultiQueryMetaData _meta;
     private QueryResultCallback _callback;
     private boolean _declaredParams; // mainly a flag for now (null or not)
+    private boolean _updateCountConsumed; // true after executeUpdate() returns
 
     /**
      * Construct a query for executing a Stored Procedure.
@@ -110,17 +111,23 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
                 _declaredParams = true;
                 return;
             }
+            int positionCounter = 1;
             for (MultiQueryMetaData.Parameter entry : _meta.getParameters()) {
                 final Object key;
                 final Parameter<?> param;
-                if (entry.getName() == null) {
-                    key = entry.getPosition();
-                    param = new ParameterImpl(entry.getPosition(), entry.getType());
+                String name = entry.getName();
+                if (name == null || name.isEmpty()) {
+                    // No name specified — use position (1-based).
+                    // If metadata has explicit position, use it; otherwise auto-assign.
+                    int pos = entry.getPosition() > 0 ? entry.getPosition() : positionCounter;
+                    key = pos;
+                    param = new ParameterImpl(pos, entry.getType());
                 } else {
-                    key = entry.getName();
-                    param = new ParameterImpl(entry.getName(), entry.getType());
+                    key = name;
+                    param = new ParameterImpl(name, entry.getType());
                 }
                 _delegate.declareParameter(key, param);
+                positionCounter++;
             }
             _declaredParams = true;
         }
@@ -180,6 +187,9 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
     @Override
     public int getUpdateCount() {
         assertExecuted();
+        if (_updateCountConsumed) {
+            return -1;
+        }
         return _callback.getUpdateCount();
     }
 
@@ -191,6 +201,7 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
                 "executeUpdate requires an active transaction");
         }
         execute();
+        _updateCountConsumed = true;
         return _callback.getUpdateCount();
     }
 

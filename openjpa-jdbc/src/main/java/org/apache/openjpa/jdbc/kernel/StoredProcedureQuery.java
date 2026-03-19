@@ -224,18 +224,25 @@ public class StoredProcedureQuery extends AbstractStoreQuery {
 
         @Override
         public Object[] toParameterArray(StoreQuery q, Map<?, ?> userParams) {
-            if (userParams == null) return NO_PARAM;
-            Object[] array = new Object[userParams.size()];
-            int i = 0;
+            if (userParams == null || userParams.isEmpty()) return NO_PARAM;
             StoredProcedureQuery storedProcedureQuery = (StoredProcedureQuery) q;
-            for (final Column[] columns : asList(
-                    storedProcedureQuery.getProcedure().getInColumns(),
-                    storedProcedureQuery.getProcedure().getInOutColumns())) {
+            Column[] inCols = storedProcedureQuery.getProcedure().getInColumns();
+            Column[] inOutCols = storedProcedureQuery.getProcedure().getInOutColumns();
+            int paramCount = inCols.length + inOutCols.length;
+            if (paramCount == 0) return NO_PARAM;
+            Object[] array = new Object[paramCount];
+            int i = 0;
+            for (final Column[] columns : asList(inCols, inOutCols)) {
                 for (Column c : columns) {
-                    array[i] = userParams.get(c.getIdentifier().getName());
-                    if (array[i++] == null) {
-                        userParams.get(c.getIndex());
+                    // Try by name first, then by 1-based position (matching user's declaration)
+                    Object val = userParams.get(c.getIdentifier().getName());
+                    if (val == null) {
+                        val = userParams.get(c.getIndex() + 1);
                     }
+                    if (val == null) {
+                        val = userParams.get(c.getIndex());
+                    }
+                    array[i++] = val;
                 }
             }
             return array;

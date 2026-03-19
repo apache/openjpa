@@ -52,11 +52,11 @@ public class StoredProcedure {
     private DBIdentifier _catalog;
     private DBIdentifier _schema;
     private DBIdentifier _name;
-    private List<Column> _cols = new ArrayList<>();
-    private List<String> _params = new ArrayList<>();
+    private final List<Column> _cols = new ArrayList<>();
+    private final List<String> _params = new ArrayList<>();
 
 
-    private List<String> _sql = new ArrayList<>();
+    private final List<String> _sql = new ArrayList<>();
     private final boolean _fromDatabase;
 
     /**
@@ -107,6 +107,7 @@ public class StoredProcedure {
     public StoredProcedure(ResultSet rs) throws SQLException {
         _fromDatabase = true;
         int i = 0;
+        int colIndex = 0;
         do {
             if (i == 0) {
                 // get stored procedure metadata
@@ -114,10 +115,19 @@ public class StoredProcedure {
                 _schema = DBIdentifier.newSchema(rs.getString(2));
                 _name = DBIdentifier.newIdentifier(rs.getString(3), DBIdentifier.DBIdentifierType.PROCEDURE, false);
             }
+            short columnType = rs.getShort(5);
+            i++;
+            // Skip RETURN (5), RESULT (3), and UNKNOWN (0) column types —
+            // these are not callable parameters. Only include IN (1), INOUT (2), OUT (4).
+            if (columnType != DatabaseMetaData.procedureColumnIn
+                && columnType != DatabaseMetaData.procedureColumnInOut
+                && columnType != DatabaseMetaData.procedureColumnOut) {
+                continue;
+            }
             Column col = new Column();
             _cols.add(col);
             col.setIdentifier(DBIdentifier.newColumn(rs.getString(4)));
-            col.setFlag(rs.getShort(5), true);
+            col.setFlag(columnType, true);
             col.setType(rs.getInt(6));
             col.setTypeIdentifier(DBIdentifier.newConstant(rs.getString(7)));
             col.setPrecision(rs.getInt(8));
@@ -126,9 +136,9 @@ public class StoredProcedure {
             col.setRadix(rs.getShort(11));
             col.setNullability(rs.getShort(12));
             col.setComment(rs.getString(13));
-            col.setIndex(i);
+            col.setIndex(colIndex);
             _params.add(col.getIdentifier().getName() + " " + col.getTypeIdentifier().getName());
-            i++;
+            colIndex++;
         } while (rs.next());
     }
 
