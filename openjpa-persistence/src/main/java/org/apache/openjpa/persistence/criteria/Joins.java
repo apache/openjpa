@@ -121,6 +121,7 @@ abstract class Joins {
     static class SingularJoin<Z,X> extends FromImpl<Z,X> implements Join<Z,X> {
         private final JoinType joinType;
         private boolean allowNull = false;
+        private Predicate _onPredicate;
 
         public SingularJoin(FromImpl<?,Z> from, Members.SingularAttributeImpl<? super Z, X> member, JoinType jt) {
             super(from, member, member.getJavaType());
@@ -145,17 +146,31 @@ abstract class Joins {
 
         @Override
         public Join<Z, X> on(Expression<Boolean> restriction) {
-            throw new UnsupportedOperationException("JPA 2.1");
+            if (restriction instanceof Predicate) {
+                _onPredicate = (Predicate) restriction;
+            } else {
+                PredicateImpl.And wrapper = new PredicateImpl.And();
+                wrapper.add(restriction);
+                _onPredicate = wrapper;
+            }
+            return this;
         }
 
         @Override
         public Join<Z, X> on(Predicate... restrictions) {
-            throw new UnsupportedOperationException("JPA 2.1");
+            if (restrictions == null || restrictions.length == 0) {
+                _onPredicate = null;
+            } else if (restrictions.length == 1) {
+                _onPredicate = restrictions[0];
+            } else {
+                _onPredicate = new PredicateImpl.And(restrictions);
+            }
+            return this;
         }
 
         @Override
         public Predicate getOn() {
-            throw new UnsupportedOperationException("JPA 2.1");
+            return _onPredicate;
         }
 
         /**
@@ -164,7 +179,7 @@ abstract class Joins {
          */
         @Override
         public Attribute<? super Z, ?> getAttribute() {
-            return  (Attribute<? super Z, ?> )_member;
+            return _member;
         }
 
         @Override
@@ -252,8 +267,9 @@ abstract class Joins {
             }
             org.apache.openjpa.kernel.exps.Expression expr = Expressions.and(factory, join, filter);
 
+            org.apache.openjpa.kernel.exps.Expression result;
             if (correlatedParentPath == null) {
-                return expr;
+                result = expr;
             } else {
                 org.apache.openjpa.kernel.exps.Path parentPath = null;
                 if (corrJoins != null && corrJoins.contains(_parent)) {
@@ -270,8 +286,15 @@ abstract class Joins {
                 path.setMetaData(meta);
                 //filter = bindVariableForKeyPath(path, alias, filter);
                 filter = factory.equal(parentPath, path);
-                return Expressions.and(factory, expr, filter);
+                result = Expressions.and(factory, expr, filter);
             }
+            // Apply ON clause predicate if set
+            if (_onPredicate != null) {
+                org.apache.openjpa.kernel.exps.Expression onExpr =
+                    ((PredicateImpl) _onPredicate).toKernelExpression(factory, c);
+                result = Expressions.and(factory, result, onExpr);
+            }
+            return result;
         }
 
         private Value getVariableForCorrPath(SubqueryImpl<?> subquery, PathImpl<?,?> path) {
@@ -336,12 +359,39 @@ abstract class Joins {
     static abstract class AbstractCollection<Z,C,E> extends FromImpl<Z,E> implements PluralJoin<Z, C, E> {
         private final JoinType joinType;
         private boolean allowNull = false;
+        protected Predicate _onPredicate;
 
         public AbstractCollection(FromImpl<?,Z> from, Members.PluralAttributeImpl<? super Z, C, E> member,
             JoinType jt) {
             super(from, member, member.getBindableJavaType());
             joinType = jt;
             allowNull = joinType != JoinType.INNER;
+        }
+
+        /**
+         * Store the given expression as the ON clause restriction.
+         */
+        protected void setOnPredicate(Expression<Boolean> restriction) {
+            if (restriction instanceof Predicate) {
+                _onPredicate = (Predicate) restriction;
+            } else {
+                PredicateImpl.And wrapper = new PredicateImpl.And();
+                wrapper.add(restriction);
+                _onPredicate = wrapper;
+            }
+        }
+
+        /**
+         * Store the given predicates as the ON clause restriction (ANDed together).
+         */
+        protected void setOnPredicates(Predicate... restrictions) {
+            if (restrictions == null || restrictions.length == 0) {
+                _onPredicate = null;
+            } else if (restrictions.length == 1) {
+                _onPredicate = restrictions[0];
+            } else {
+                _onPredicate = new PredicateImpl.And(restrictions);
+            }
         }
 
         @Override
@@ -458,8 +508,9 @@ abstract class Joins {
                 }
             }
             org.apache.openjpa.kernel.exps.Expression expr = Expressions.and(factory, join, filter);
+            org.apache.openjpa.kernel.exps.Expression result;
             if (correlatedParentPath == null) {
-                return expr;
+                result = expr;
             } else {
                 org.apache.openjpa.kernel.exps.Path parentPath = null;
                 if (!corrJoins.isEmpty() && corrJoins.contains(_parent)) {
@@ -487,8 +538,15 @@ abstract class Joins {
                 } else {
                     filter = factory.equal(parentPath, path);
                 }
-                return Expressions.and(factory, expr, filter);
+                result = Expressions.and(factory, expr, filter);
             }
+            // Apply ON clause predicate if set
+            if (_onPredicate != null) {
+                org.apache.openjpa.kernel.exps.Expression onExpr =
+                    ((PredicateImpl) _onPredicate).toKernelExpression(factory, c);
+                result = Expressions.and(factory, result, onExpr);
+            }
+            return result;
         }
 
         private Value getVariableForCorrPath(SubqueryImpl<?> subquery, PathImpl<?,?> path) {
@@ -522,17 +580,19 @@ abstract class Joins {
 
         @Override
         public CollectionJoin<Z, E> on(Expression<Boolean> restriction) {
-            throw new UnsupportedOperationException("JPA 2.1");
+            setOnPredicate(restriction);
+            return this;
         }
 
         @Override
         public CollectionJoin<Z, E> on(Predicate... restrictions) {
-            throw new UnsupportedOperationException("JPA 2.1");
+            setOnPredicates(restrictions);
+            return this;
         }
 
         @Override
         public Predicate getOn() {
-            throw new UnsupportedOperationException("JPA 2.1");
+            return _onPredicate;
         }
 
         @Override
@@ -555,17 +615,19 @@ abstract class Joins {
 
         @Override
         public SetJoin<Z, E> on(Expression<Boolean> restriction) {
-            throw new UnsupportedOperationException("JPA 2.1");
+            setOnPredicate(restriction);
+            return this;
         }
 
         @Override
         public SetJoin<Z, E> on(Predicate... restrictions) {
-            throw new UnsupportedOperationException("JPA 2.1");
+            setOnPredicates(restrictions);
+            return this;
         }
 
         @Override
         public Predicate getOn() {
-            throw new UnsupportedOperationException("JPA 2.1");
+            return _onPredicate;
         }
 
         @Override
@@ -590,17 +652,19 @@ abstract class Joins {
 
         @Override
         public ListJoin<Z, E> on(Expression<Boolean> restriction) {
-            throw new UnsupportedOperationException("JPA 2.1");
+            setOnPredicate(restriction);
+            return this;
         }
 
         @Override
         public ListJoin<Z, E> on(Predicate... restrictions) {
-            throw new UnsupportedOperationException("JPA 2.1");
+            setOnPredicates(restrictions);
+            return this;
         }
 
         @Override
         public Predicate getOn() {
-            throw new UnsupportedOperationException("JPA 2.1");
+            return _onPredicate;
         }
 
         @Override
@@ -632,17 +696,19 @@ abstract class Joins {
 
         @Override
         public MapJoin<Z, K, V> on(Expression<Boolean> restriction) {
-            throw new UnsupportedOperationException("JPA 2.1");
+            setOnPredicate(restriction);
+            return this;
         }
 
         @Override
         public MapJoin<Z, K, V> on(Predicate... restrictions) {
-            throw new UnsupportedOperationException("JPA 2.1");
+            setOnPredicates(restrictions);
+            return this;
         }
 
         @Override
         public Predicate getOn() {
-            throw new UnsupportedOperationException("JPA 2.1");
+            return _onPredicate;
         }
 
         @Override

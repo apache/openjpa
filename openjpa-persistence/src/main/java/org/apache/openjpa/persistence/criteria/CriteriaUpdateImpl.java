@@ -69,6 +69,32 @@ class CriteriaUpdateImpl<T> implements CriteriaUpdate<T> {
         _internalQuery = new CriteriaQueryImpl<>(model, targetClass);
     }
 
+    /**
+     * Creates a snapshot of this CriteriaUpdate that captures the current state.
+     * Per JPA spec, createQuery() should capture the query state at that point.
+     * Subsequent modifications to the original CriteriaUpdate should NOT affect
+     * the already-created Query.
+     */
+    CriteriaUpdateImpl<T> snapshot() {
+        CriteriaUpdateImpl<T> copy = new CriteriaUpdateImpl<>(_model, _targetClass);
+        // Share the same root
+        copy._root = this._root;
+        // Add the root to the copy's internal query (for alias context)
+        copy._internalQuery.addRoot((RootImpl<?>) this._root);
+        // Snapshot the current where clause
+        PredicateImpl where = this._internalQuery.getRestriction();
+        if (where != null) {
+            copy._internalQuery.where(where);
+        }
+        // Copy the SET assignments
+        copy._updates.addAll(this._updates);
+        // Share transient evaluation state so that subqueries (which reference
+        // the original _internalQuery via their _parent pointer) see the same
+        // context stack as the copy's _internalQuery during evaluation.
+        copy._internalQuery.shareEvalState(this._internalQuery);
+        return copy;
+    }
+
     @Override
     public Root<T> from(Class<T> entityClass) {
         _root = _internalQuery.from(entityClass);

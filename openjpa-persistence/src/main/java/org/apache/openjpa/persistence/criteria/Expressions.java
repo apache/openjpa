@@ -73,6 +73,19 @@ class Expressions {
         return (e == null) ? factory.getNull() : e.toValue(factory, q);
     }
 
+     /**
+      * Promotes Short and Byte to Integer per JPA spec numeric promotion rules.
+      * Arithmetic operations on sub-integer types produce Integer results.
+      */
+     @SuppressWarnings("unchecked")
+     static <N extends Number> Class<N> promoteNumeric(Class<N> type) {
+         if (type == Short.class || type == short.class
+             || type == Byte.class || type == byte.class) {
+             return (Class<N>) Integer.class;
+         }
+         return type;
+     }
+
      static void setImplicitTypes(Value v1, Value v2, Class<?> expected, CriteriaQueryImpl<?> q) {
          JPQLExpressionBuilder.setImplicitTypes(v1, v2, expected, q.getMetamodel(),
              q.getParameterTypes(), q.toString());
@@ -689,8 +702,8 @@ class Expressions {
     
     public static class TypecastAs<B> extends UnaryFunctionalExpression<B> {
     	private final String target;
-    	public TypecastAs(Expression<B> x, String target) {
-    		super(x);
+    	public TypecastAs(Expression<?> x, Class<B> targetType, String target) {
+    		super(targetType, x);
     		this.target = target;
     	}
     	
@@ -930,7 +943,7 @@ class Expressions {
 
     public static class Sum<N extends Number> extends BinaryFunctionalExpression<N> {
         public Sum(Expression<? extends Number> x, Expression<? extends Number> y) {
-            super((Class<N>)x.getJavaType(), x, y);
+            super(promoteNumeric((Class<N>)x.getJavaType()), x, y);
         }
 
         public Sum(Expression<? extends Number> x) {
@@ -966,7 +979,7 @@ class Expressions {
 
     public static class Product<N extends Number> extends BinaryFunctionalExpression<N> {
         public Product(Expression<? extends Number> x, Expression<? extends Number> y) {
-            super((Class<N>)x.getJavaType(), x, y);
+            super(promoteNumeric((Class<N>)x.getJavaType()), x, y);
         }
 
         public Product(Expression<? extends Number> x, Number y) {
@@ -992,7 +1005,7 @@ class Expressions {
 
     public static class Diff<N extends Number> extends BinaryFunctionalExpression<N> {
         public Diff(Expression<? extends Number> x, Expression<? extends Number> y) {
-            super((Class<N>)x.getJavaType(), x, y);
+            super(promoteNumeric((Class<N>)x.getJavaType()), x, y);
         }
 
         public Diff(Expression<? extends Number> x, Number y) {
@@ -1021,7 +1034,7 @@ class Expressions {
 
     public static class Quotient<N extends Number> extends BinaryFunctionalExpression<N> {
         public Quotient(Expression<? extends Number> x, Expression<? extends Number> y) {
-            super((Class<N>)x.getJavaType(), x, y);
+            super(promoteNumeric((Class<N>)x.getJavaType()), x, y);
         }
 
         public Quotient(Expression<? extends Number> x, Number y) {
@@ -1756,10 +1769,10 @@ class Expressions {
     }
 
 
-    public static class In<T> extends PredicateImpl.Or implements CriteriaBuilder.In<T> {
+    public static class In<T> extends PredicateImpl implements CriteriaBuilder.In<T> {
         final ExpressionImpl<T> e;
         public In(Expression<?> e) {
-            super();
+            super(BooleanOperator.AND);
             this.e = (ExpressionImpl<T>)e;
         }
 
@@ -1803,14 +1816,13 @@ class Expressions {
                 Class<?> e2JavaType = e2.getJavaType();
 
                 // array and Collection
-                if (e2 instanceof BindableParameter && ((BindableParameter) e2).value() != null &&
+                if (e2 instanceof BindableParameter bp && ((BindableParameter) e2).value() != null &&
                     ((e2JavaType.isArray() && e2JavaType.getComponentType().equals(e1JavaType))
                     || (e2JavaType instanceof Class ||
                         (ParameterizedType.class.isInstance(e2JavaType)
                             && ParameterizedType.class.cast(e2JavaType).getActualTypeArguments().length > 0
                             && e1JavaType.equals(ParameterizedType.class.cast(e2JavaType).getActualTypeArguments()[0]))
                        ))) {
-                    final BindableParameter bp = (BindableParameter) e2;
                     final Object value = bp.value();
 
                     _exps.clear();
@@ -1843,7 +1855,30 @@ class Expressions {
                     }
                 }
             }
-            inExpr = super.toKernelExpression(factory, q);
+            // Build OR of equalities: (e = v1) OR (e = v2) OR ...
+            // Note: In extends PredicateImpl with AND operator (per JPA spec for getOperator()),
+            // but the kernel expression must use OR semantics for IN.
+            if (_exps.isEmpty()) {
+                inExpr = ((PredicateImpl) FALSE()).toKernelExpression(factory, q);
+            } else if (_exps.size() == 1) {
+                Predicate e0 = _exps.get(0);
+                if (isNegated()) {
+                    e0 = e0.not();
+                }
+                inExpr = ((PredicateImpl) e0).toKernelExpression(factory, q);
+            } else {
+                ExpressionImpl<?> e1x = (ExpressionImpl<?>) _exps.get(0);
+                ExpressionImpl<?> e2x = (ExpressionImpl<?>) _exps.get(1);
+                inExpr = factory.or(e1x.toKernelExpression(factory, q),
+                    e2x.toKernelExpression(factory, q));
+                for (int i = 2; i < _exps.size(); i++) {
+                    PredicateImpl p = (PredicateImpl) _exps.get(i);
+                    inExpr = factory.or(inExpr, p.toKernelExpression(factory, q));
+                }
+                if (isNegated()) {
+                    inExpr = factory.not(inExpr);
+                }
+            }
             IsNotNull notNull = new Expressions.IsNotNull(e);
 
             return factory.and(inExpr, notNull.toKernelExpression(factory, q));

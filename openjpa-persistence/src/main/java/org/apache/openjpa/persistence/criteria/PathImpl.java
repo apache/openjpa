@@ -163,8 +163,8 @@ class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
             return q.getRegisteredValue(this);
         org.apache.openjpa.kernel.exps.Path path = null;
         SubqueryImpl<?> subquery = q.getDelegator();
-        boolean allowNull = _parent == null ? false : _parent instanceof Join
-            && ((Join<?,?>)_parent).getJoinType() != JoinType.INNER;
+        boolean allowNull = _parent != null && _parent instanceof Join
+                && ((Join<?, ?>) _parent).getJoinType() != JoinType.INNER;
         PathImpl<?,?> corrJoin = getCorrelatedJoin(this);
         PathImpl<?,?> corrRoot = getCorrelatedRoot(subquery);
         if (_parent != null && q.isRegistered(_parent)) {
@@ -223,12 +223,12 @@ class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
      * Affirms if this receiver occurs in the roots of the given subquery.
      */
     public boolean inSubquery(SubqueryImpl<?> subquery) {
-        return subquery != null && (subquery.getRoots() == null ? false : subquery.getRoots().contains(this));
+        return subquery != null && (subquery.getRoots() != null && subquery.getRoots().contains(this));
     }
 
     protected void traversePath(PathImpl<?,?> parent,  org.apache.openjpa.kernel.exps.Path path, FieldMetaData fmd) {
-        boolean allowNull = parent == null ? false : parent instanceof Join
-            && ((Join<?,?>)parent).getJoinType() != JoinType.INNER;
+        boolean allowNull = parent != null && parent instanceof Join
+                && ((Join<?, ?>) parent).getJoinType() != JoinType.INNER;
         FieldMetaData fmd1 = parent._member == null ? null : parent._member.fmd;
         PathImpl<?,?> parent1 = parent._parent;
         if (parent1 == null || parent1.getCorrelatedPath() != null) {
@@ -277,14 +277,13 @@ class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
     /**
      * Gets a new path that represents the attribute of the given name from this path.
      *
-     * @exception IllegalArgumentException if this path represents a basic attribute that is can not be traversed
-     * further.
+     * @exception IllegalStateException if this path represents a basic attribute that can not be traversed further.
      */
     @Override
     public <Y> Path<Y> get(String attName) {
         Type<?> type = this.getType();
         if (type.getPersistenceType() == PersistenceType.BASIC) {
-            throw new IllegalArgumentException(this + " is a basic path and can not be navigated to " + attName);
+            throw new IllegalStateException(this + " is a basic path and can not be navigated to " + attName);
         }
 
         Members.Member<? super X, Y> next = (Members.Member<? super X, Y>)
@@ -332,15 +331,15 @@ class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
 	@Override
 	public <X> Expression<X> cast(Class<X> type) {
     	if (type == String.class) {
-    		return new Expressions.TypecastAs(this, "STRING");
+    		return new Expressions.TypecastAs<>(this, type, "STRING");
     	} else if (type == Integer.class || type == int.class) {
-    		return new Expressions.TypecastAs(this, "INTEGER");
+    		return new Expressions.TypecastAs<>(this, type, "INTEGER");
     	} else if (type == Long.class || type == long.class) {
-    		return new Expressions.TypecastAs(this, "LONG");
+    		return new Expressions.TypecastAs<>(this, type, "LONG");
     	} else if (type == Float.class || type == float.class) {
-    		return new Expressions.TypecastAs(this, "FLOAT");
+    		return new Expressions.TypecastAs<>(this, type, "FLOAT");
     	} else if (type == Double.class || type == double.class) {
-    		return new Expressions.TypecastAs(this, "DOUBLE");
+    		return new Expressions.TypecastAs<>(this, type, "DOUBLE");
     	}
 		throw new IllegalArgumentException("Target cast not supported");
 	}

@@ -75,7 +75,7 @@ import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.JavaTypes;
-import org.apache.openjpa.meta.ValueMetaData;
+
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
 
@@ -108,7 +108,7 @@ public class JDBCStoreQuery
     }
 
     private final transient JDBCStore _store;
-    private static ThreadLocalContext localContext = new ThreadLocalContext();
+    private static final ThreadLocalContext localContext = new ThreadLocalContext();
 
     /**
      * Constructor. Supply store manager.
@@ -671,13 +671,14 @@ public class JDBCStoreQuery
     /**
      * Return the table for the field if the given table hasn't been set
      * yet, or if the tables match. If the field uses a different table,
-     * returns INVALID. Also returns INVALID if field is dependent.
+     * returns INVALID.
+     *
+     * Note: cascade delete fields are no longer treated as INVALID because
+     * JPA bulk delete operations do not cascade to related entities
+     * (JPA spec section 4.10). The remaining column/table checks are
+     * sufficient to detect multi-table mappings that prevent bulk SQL DELETE.
      */
     private Table getTable(FieldMapping fm, Table table) {
-        if (fm.getCascadeDelete() != ValueMetaData.CASCADE_NONE
-            && !fm.isEmbeddedPC())
-            return INVALID;
-
         Column[] columns = fm.getColumns();
         for (int i = 0; columns != null && i < columns.length; i++) {
             if (table == null)
@@ -862,7 +863,7 @@ public class JDBCStoreQuery
 
         Val value2 = concatVal.getVal2();
         Object val2 = getValue(value2, ob, params, sm);
-        return new StringBuilder(100).append(val1).append(val2).toString();
+        return String.valueOf(val1) + val2;
     }
 
     private Object handleSubstringVal(Object value, Object ob, Object[] params,

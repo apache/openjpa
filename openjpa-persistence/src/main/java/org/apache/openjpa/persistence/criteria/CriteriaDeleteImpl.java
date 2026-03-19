@@ -62,6 +62,34 @@ class CriteriaDeleteImpl<T> implements CriteriaDelete<T> {
         _internalQuery = new CriteriaQueryImpl<>(model, targetClass);
     }
 
+    /**
+     * Creates a snapshot of this CriteriaDelete that captures the current state.
+     * Per JPA spec, createQuery() should capture the query state at that point.
+     * Subsequent modifications to the original CriteriaDelete should NOT affect
+     * the already-created Query.
+     *
+     * The snapshot shares the same root, model, and internal query reference
+     * but captures a private copy of the where clause (restriction) at the
+     * time of the snapshot.
+     */
+    CriteriaDeleteImpl<T> snapshot() {
+        CriteriaDeleteImpl<T> copy = new CriteriaDeleteImpl<>(_model, _targetClass);
+        // Share the same root
+        copy._root = this._root;
+        // Add the root to the copy's internal query (for alias context)
+        copy._internalQuery.addRoot((RootImpl<?>) this._root);
+        // Snapshot the current where clause
+        PredicateImpl where = this._internalQuery.getRestriction();
+        if (where != null) {
+            copy._internalQuery.where(where);
+        }
+        // Share transient evaluation state so that subqueries (which reference
+        // the original _internalQuery via their _parent pointer) see the same
+        // context stack as the copy's _internalQuery during evaluation.
+        copy._internalQuery.shareEvalState(this._internalQuery);
+        return copy;
+    }
+
     @Override
     public Root<T> from(Class<T> entityClass) {
         _root = _internalQuery.from(entityClass);

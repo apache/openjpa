@@ -1085,9 +1085,21 @@ public class QueryImpl implements Query {
             if (!(o instanceof Collection))
                 o = Collections.singleton(o);
 
+            // Per JPA spec (section 4.10), bulk delete operations do NOT
+            // cascade to related entities. Use a no-cascade callback to
+            // prevent OpenJPA from cascading the delete to related entities,
+            // which avoids FK ordering issues during flush.
+            OpCallbacks noCascade = (op, arg, sm) -> OpCallbacks.ACT_RUN;
             int size = 0;
             for (Iterator i = ((Collection) o).iterator(); i.hasNext(); size++)
-                _broker.delete(i.next(), null);
+                _broker.delete(i.next(), noCascade);
+            // Flush the deletes to the database so that the bulk operation
+            // is visible immediately. Without this flush, em.clear() or
+            // subsequent find() calls in the same transaction would not
+            // see the deletes.
+            if (size > 0) {
+                _broker.flush();
+            }
             return size;
         } catch (OpenJPAException ke) {
             throw ke;
@@ -1120,6 +1132,13 @@ public class QueryImpl implements Query {
             int size = 0;
             for (Iterator i = ((Collection) o).iterator(); i.hasNext(); size++)
                 updateInMemory(i.next(), params, q);
+            // Flush the updates to the database so that the bulk operation
+            // is visible immediately. Without this flush, em.clear() or
+            // subsequent find() calls in the same transaction would not
+            // see the updates.
+            if (size > 0) {
+                _broker.flush();
+            }
             return size;
         } catch (OpenJPAException ke) {
             throw ke;
@@ -1952,208 +1971,202 @@ public class QueryImpl implements Query {
      * </ul>
      *
      * @author Marc Prud'hommeaux
-         */
-    private static class MergedExecutor
-        implements StoreQuery.Executor {
-
-        private final StoreQuery.Executor[] _executors;
-
-        public MergedExecutor(StoreQuery.Executor[] executors) {
-            _executors = executors;
-        }
+     */
+        private record MergedExecutor(StoreQuery.Executor[] _executors)
+            implements StoreQuery.Executor {
 
         @Override
-        public QueryExpressions[] getQueryExpressions() {
-            return _executors[0].getQueryExpressions();
-        }
-
-        @Override
-        public ResultObjectProvider executeQuery(StoreQuery q,
-            Object[] params, StoreQuery.Range range) {
-            if (_executors.length == 1)
-                return _executors[0].executeQuery(q, params, range);
-
-            // use lrs settings if we couldn't take advantage of the start index
-            // so that hopefully the skip to the start will be efficient
-            StoreQuery.Range ropRange = new StoreQuery.Range(0, range.end);
-            ropRange.lrs = range.lrs || (range.start > 0 && q.getContext().
-                getFetchConfiguration().getFetchBatchSize() >= 0);
-
-            // execute the query; we cannot use the lower bound of the result
-            // range, but we can take advantage of the upper bound
-            ResultObjectProvider[] rops =
-                new ResultObjectProvider[_executors.length];
-            for (int i = 0; i < _executors.length; i++)
-                rops[i] = _executors[i].executeQuery(q, params, ropRange);
-
-            boolean[] asc = _executors[0].getAscending(q);
-            ResultObjectProvider rop;
-            if (asc.length == 0)
-                rop = new MergedResultObjectProvider(rops);
-            else
-                rop = new OrderingMergedResultObjectProvider(rops, asc,
-                    _executors, q, params);
-
-            // if there is a lower bound, wrap in range rop
-            if (range.start != 0)
-                rop = new RangeResultObjectProvider(rop, range.start,
-                    range.end);
-            return rop;
-        }
-
-        @Override
-        public Number executeDelete(StoreQuery q, Object[] params) {
-            long num = 0;
-            for (StoreQuery.Executor executor : _executors) {
-                num += executor.executeDelete(q, params).longValue();
+            public QueryExpressions[] getQueryExpressions() {
+                return _executors[0].getQueryExpressions();
             }
-            return num;
-        }
 
-        @Override
-        public Number executeUpdate(StoreQuery q, Object[] params) {
-            long num = 0;
-            for (StoreQuery.Executor executor : _executors) {
-                num += executor.executeUpdate(q, params).longValue();
+            @Override
+            public ResultObjectProvider executeQuery(StoreQuery q,
+                                                     Object[] params, StoreQuery.Range range) {
+                if (_executors.length == 1)
+                    return _executors[0].executeQuery(q, params, range);
+
+                // use lrs settings if we couldn't take advantage of the start index
+                // so that hopefully the skip to the start will be efficient
+                StoreQuery.Range ropRange = new StoreQuery.Range(0, range.end);
+                ropRange.lrs = range.lrs || (range.start > 0 && q.getContext().
+                        getFetchConfiguration().getFetchBatchSize() >= 0);
+
+                // execute the query; we cannot use the lower bound of the result
+                // range, but we can take advantage of the upper bound
+                ResultObjectProvider[] rops =
+                        new ResultObjectProvider[_executors.length];
+                for (int i = 0; i < _executors.length; i++)
+                    rops[i] = _executors[i].executeQuery(q, params, ropRange);
+
+                boolean[] asc = _executors[0].getAscending(q);
+                ResultObjectProvider rop;
+                if (asc.length == 0)
+                    rop = new MergedResultObjectProvider(rops);
+                else
+                    rop = new OrderingMergedResultObjectProvider(rops, asc,
+                            _executors, q, params);
+
+                // if there is a lower bound, wrap in range rop
+                if (range.start != 0)
+                    rop = new RangeResultObjectProvider(rop, range.start,
+                            range.end);
+                return rop;
             }
-            return num;
-        }
 
-        @Override
-        public String[] getDataStoreActions(StoreQuery q, Object[] params,
-            StoreQuery.Range range) {
-            if (_executors.length == 1)
-                return _executors[0].getDataStoreActions(q, params, range);
-
-            List results = new ArrayList(_executors.length);
-            StoreQuery.Range ropRange = new StoreQuery.Range(0L, range.end);
-            String[] actions;
-            for (StoreQuery.Executor executor : _executors) {
-                actions = executor.getDataStoreActions(q, params, ropRange);
-                if (actions != null && actions.length > 0)
-                    results.addAll(Arrays.asList(actions));
+            @Override
+            public Number executeDelete(StoreQuery q, Object[] params) {
+                long num = 0;
+                for (StoreQuery.Executor executor : _executors) {
+                    num += executor.executeDelete(q, params).longValue();
+                }
+                return num;
             }
-            return (String[]) results.toArray(new String[results.size()]);
+
+            @Override
+            public Number executeUpdate(StoreQuery q, Object[] params) {
+                long num = 0;
+                for (StoreQuery.Executor executor : _executors) {
+                    num += executor.executeUpdate(q, params).longValue();
+                }
+                return num;
+            }
+
+            @Override
+            public String[] getDataStoreActions(StoreQuery q, Object[] params,
+                                                StoreQuery.Range range) {
+                if (_executors.length == 1)
+                    return _executors[0].getDataStoreActions(q, params, range);
+
+                List results = new ArrayList(_executors.length);
+                StoreQuery.Range ropRange = new StoreQuery.Range(0L, range.end);
+                String[] actions;
+                for (StoreQuery.Executor executor : _executors) {
+                    actions = executor.getDataStoreActions(q, params, ropRange);
+                    if (actions != null && actions.length > 0)
+                        results.addAll(Arrays.asList(actions));
+                }
+                return (String[]) results.toArray(new String[results.size()]);
+            }
+
+            @Override
+            public void validate(StoreQuery q) {
+                _executors[0].validate(q);
+            }
+
+            @Override
+            public void getRange(StoreQuery q, Object[] params,
+                                 StoreQuery.Range range) {
+                _executors[0].getRange(q, params, range);
+            }
+
+            @Override
+            public Object getOrderingValue(StoreQuery q, Object[] params,
+                                           Object resultObject, int idx) {
+                // unfortunately, at this point (must be a merged rop containing
+                // other merged rops) we have no idea which executor to extract
+                // the value from
+                return _executors[0].getOrderingValue(q, params, resultObject, idx);
+            }
+
+            @Override
+            public boolean[] getAscending(StoreQuery q) {
+                return _executors[0].getAscending(q);
+            }
+
+            @Override
+            public String getAlias(StoreQuery q) {
+                return _executors[0].getAlias(q);
+            }
+
+            @Override
+            public String[] getProjectionAliases(StoreQuery q) {
+                return _executors[0].getProjectionAliases(q);
+            }
+
+            @Override
+            public Class getResultClass(StoreQuery q) {
+                return _executors[0].getResultClass(q);
+            }
+
+            @Override
+            public ResultShape<?> getResultShape(StoreQuery q) {
+                return _executors[0].getResultShape(q);
+            }
+
+            @Override
+            public Class[] getProjectionTypes(StoreQuery q) {
+                return _executors[0].getProjectionTypes(q);
+            }
+
+            @Override
+            public boolean isPacking(StoreQuery q) {
+                return _executors[0].isPacking(q);
+            }
+
+            @Override
+            public ClassMetaData[] getAccessPathMetaDatas(StoreQuery q) {
+                if (_executors.length == 1)
+                    return _executors[0].getAccessPathMetaDatas(q);
+
+                // create set of base class metadatas in access path
+                List metas = null;
+                for (StoreQuery.Executor executor : _executors)
+                    metas = Filters.addAccessPathMetaDatas(metas, executor.
+                            getAccessPathMetaDatas(q));
+                if (metas == null)
+                    return StoreQuery.EMPTY_METAS;
+                return (ClassMetaData[]) metas.toArray
+                        (new ClassMetaData[metas.size()]);
+            }
+
+            @Override
+            public boolean isAggregate(StoreQuery q) {
+                if (!_executors[0].isAggregate(q))
+                    return false;
+
+                // we can't merge aggregates
+                throw new UnsupportedException(_loc.get("merged-aggregate",
+                        q.getContext().getCandidateType(),
+                        q.getContext().getQueryString()));
+            }
+
+            @Override
+            public boolean isDistinct(StoreQuery q) {
+                return _executors[0].isDistinct(q);
+            }
+
+            @Override
+            public int getOperation(StoreQuery q) {
+                return _executors[0].getOperation(q);
+            }
+
+            @Override
+            public boolean hasGrouping(StoreQuery q) {
+                return _executors[0].hasGrouping(q);
+            }
+
+            @Override
+            public OrderedMap<Object, Class<?>> getOrderedParameterTypes(StoreQuery q) {
+                return _executors[0].getOrderedParameterTypes(q);
+            }
+
+            @Override
+            public LinkedMap getParameterTypes(StoreQuery q) {
+                return _executors[0].getParameterTypes(q);
+            }
+
+            @Override
+            public Object[] toParameterArray(StoreQuery q, Map userParams) {
+                return _executors[0].toParameterArray(q, userParams);
+            }
+
+
+            @Override
+            public Map getUpdates(StoreQuery q) {
+                return _executors[0].getUpdates(q);
+            }
         }
-
-        @Override
-        public void validate(StoreQuery q) {
-            _executors[0].validate(q);
-        }
-
-        @Override
-        public void getRange(StoreQuery q, Object[] params,
-            StoreQuery.Range range) {
-            _executors[0].getRange(q, params, range);
-        }
-
-        @Override
-        public Object getOrderingValue(StoreQuery q, Object[] params,
-            Object resultObject, int idx) {
-            // unfortunately, at this point (must be a merged rop containing
-            // other merged rops) we have no idea which executor to extract
-            // the value from
-            return _executors[0].getOrderingValue(q, params, resultObject, idx);
-        }
-
-        @Override
-        public boolean[] getAscending(StoreQuery q) {
-            return _executors[0].getAscending(q);
-        }
-
-        @Override
-        public String getAlias(StoreQuery q) {
-            return _executors[0].getAlias(q);
-        }
-
-        @Override
-        public String[] getProjectionAliases(StoreQuery q) {
-            return _executors[0].getProjectionAliases(q);
-        }
-
-        @Override
-        public Class getResultClass(StoreQuery q) {
-            return _executors[0].getResultClass(q);
-        }
-
-        @Override
-        public ResultShape<?> getResultShape(StoreQuery q) {
-            return _executors[0].getResultShape(q);
-        }
-
-        @Override
-        public Class[] getProjectionTypes(StoreQuery q) {
-            return _executors[0].getProjectionTypes(q);
-        }
-
-        @Override
-        public boolean isPacking(StoreQuery q) {
-            return _executors[0].isPacking(q);
-        }
-
-        @Override
-        public ClassMetaData[] getAccessPathMetaDatas(StoreQuery q) {
-            if (_executors.length == 1)
-                return _executors[0].getAccessPathMetaDatas(q);
-
-            // create set of base class metadatas in access path
-            List metas = null;
-            for (StoreQuery.Executor executor : _executors)
-                metas = Filters.addAccessPathMetaDatas(metas, executor.
-                        getAccessPathMetaDatas(q));
-            if (metas == null)
-                return StoreQuery.EMPTY_METAS;
-            return (ClassMetaData[]) metas.toArray
-                (new ClassMetaData[metas.size()]);
-        }
-
-        @Override
-        public boolean isAggregate(StoreQuery q) {
-            if (!_executors[0].isAggregate(q))
-                return false;
-
-            // we can't merge aggregates
-            throw new UnsupportedException(_loc.get("merged-aggregate",
-                q.getContext().getCandidateType(),
-                q.getContext().getQueryString()));
-        }
-
-        @Override
-        public boolean isDistinct(StoreQuery q) {
-            return _executors[0].isDistinct(q);
-        }
-
-        @Override
-        public int getOperation(StoreQuery q) {
-            return _executors[0].getOperation(q);
-        }
-
-        @Override
-        public boolean hasGrouping(StoreQuery q) {
-            return _executors[0].hasGrouping(q);
-        }
-
-        @Override
-        public OrderedMap<Object,Class<?>> getOrderedParameterTypes(StoreQuery q) {
-            return _executors[0].getOrderedParameterTypes(q);
-        }
-
-        @Override
-        public LinkedMap getParameterTypes(StoreQuery q) {
-            return _executors[0].getParameterTypes(q);
-        }
-
-        @Override
-        public Object[] toParameterArray(StoreQuery q, Map userParams) {
-            return _executors[0].toParameterArray(q, userParams);
-        }
-
-
-        @Override
-        public Map getUpdates(StoreQuery q) {
-            return _executors[0].getUpdates(q);
-        }
-    }
 
     /**
      * Result object provider that packs results before returning them.

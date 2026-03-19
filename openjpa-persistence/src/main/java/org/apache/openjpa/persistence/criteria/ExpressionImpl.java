@@ -126,15 +126,15 @@ public Predicate in(Object... values) {
     @Override
     public <X> Expression<X> cast(Class<X> type) {
     	if (type == String.class) {
-    		return new Expressions.TypecastAs(this, "STRING");
+    		return new Expressions.TypecastAs<>(this, type, "STRING");
     	} else if (type == Integer.class || type == int.class) {
-    		return new Expressions.TypecastAs(this, "INTEGER");
+    		return new Expressions.TypecastAs<>(this, type, "INTEGER");
     	} else if (type == Long.class || type == long.class) {
-    		return new Expressions.TypecastAs(this, "LONG");
+    		return new Expressions.TypecastAs<>(this, type, "LONG");
     	} else if (type == Float.class || type == float.class) {
-    		return new Expressions.TypecastAs(this, "FLOAT");
+    		return new Expressions.TypecastAs<>(this, type, "FLOAT");
     	} else if (type == Double.class || type == double.class) {
-    		return new Expressions.TypecastAs(this, "DOUBLE");
+    		return new Expressions.TypecastAs<>(this, type, "DOUBLE");
     	}
 		throw new IllegalArgumentException("Target cast not supported");
     }

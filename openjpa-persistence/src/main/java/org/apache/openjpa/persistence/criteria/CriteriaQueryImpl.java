@@ -21,7 +21,9 @@ package org.apache.openjpa.persistence.criteria;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -83,9 +85,11 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
     private final Class<T>      _resultClass;
     private boolean             _compiled;
 
+    private Set<RootImpl.TreatedRoot<?>> _treatedRoots;
+
     // AliasContext
     private int aliasCount = 0;
-    private static String ALIAS_BASE = "autoAlias";
+    private static final String ALIAS_BASE = "autoAlias";
 
     private Map<Selection<?>,Value> _variables = new HashMap<>();
     private Map<Selection<?>,Value> _values    = new HashMap<>();
@@ -105,6 +109,42 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
         this._resultClass = resultClass;
         this._delegator = null;
         _aliases = new HashMap<>();
+    }
+
+    /**
+     * Creates a snapshot of this CriteriaQuery that captures the current state.
+     * Per JPA spec, createQuery() should capture the query state at that point.
+     * Subsequent modifications to the original CriteriaQuery should NOT affect
+     * the already-created Query.
+     *
+     * The snapshot shares the same roots but captures private copies of the
+     * where clause, selection, ordering, grouping, having, and distinct flag.
+     */
+    CriteriaQueryImpl<T> snapshot() {
+        CriteriaQueryImpl<T> copy = new CriteriaQueryImpl<>(_model, _resultClass);
+        // Share roots (immutable from the perspective of the snapshot)
+        if (_roots != null) {
+            for (Root<?> root : _roots) {
+                copy.addRoot((RootImpl<?>) root);
+            }
+        }
+        // Copy mutable query definition state
+        copy._where = this._where;
+        copy._selection = this._selection;
+        copy._selections = this._selections != null ? new ArrayList<>(this._selections) : null;
+        copy._orders = this._orders != null ? new ArrayList<>(this._orders) : null;
+        copy._groups = this._groups != null ? new ArrayList<>(this._groups) : null;
+        copy._having = this._having;
+        copy._distinct = this._distinct;
+        copy._subqueries = this._subqueries != null ? new ArrayList<>(this._subqueries) : null;
+        // Share transient evaluation state - subqueries reference the original
+        // query via _parent, so contexts/variables/aliases must be shared
+        copy._contexts = this._contexts;
+        copy._variables = this._variables;
+        copy._values = this._values;
+        copy._aliases = this._aliases;
+        copy._rootVariables = this._rootVariables;
+        return copy;
     }
 
     /**
@@ -215,6 +255,7 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
      */
     @Override
     public CriteriaQuery<T> multiselect(Selection<?>... selections) {
+        checkDuplicateAliases(Arrays.asList(selections));
         _selections = Arrays.asList(selections); // do not telescope
         _selection  = new CompoundSelections.MultiSelection(_resultClass, selections);
         return this;
@@ -259,9 +300,7 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
             return this;
         }
         _groups = new ArrayList<>();
-        for (Expression<?> e : grouping) {
-            _groups.add(e);
-        }
+        Collections.addAll(_groups, grouping);
         return this;
     }
 
@@ -306,9 +345,7 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
             return this;
         }
         _orders = new ArrayList<>();
-        for (Order o : orders) {
-            _orders.add(o);
-        }
+        Collections.addAll(_orders, orders);
         return this;
     }
 
@@ -334,6 +371,9 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
      */
     @Override
     public CriteriaQuery<T> select(Selection<? extends T> selection) {
+        if (selection != null && selection.isCompoundSelection()) {
+            checkDuplicateAliases(selection.getCompoundSelectionItems());
+        }
         _selection = selection;
         _selections = new ArrayList<>();
         _selections.add(selection);
@@ -418,6 +458,24 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
     }
 
     /**
+     * Registers a treated root so that a type-restriction predicate can be
+     * added during query compilation.
+     */
+    void addTreatedRoot(RootImpl.TreatedRoot<?> treatedRoot) {
+        if (_treatedRoots == null) {
+            _treatedRoots = new LinkedHashSet<>();
+        }
+        _treatedRoots.add(treatedRoot);
+    }
+
+    /**
+     * Returns the treated roots registered on this query, or null if none.
+     */
+    Set<RootImpl.TreatedRoot<?>> getTreatedRoots() {
+        return _treatedRoots;
+    }
+
+    /**
      * Affirms if selection of this query is distinct.
      */
     @Override
@@ -472,6 +530,23 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
     //
     void setContexts(Stack<Context> contexts) {
         _contexts.set(contexts);
+    }
+
+    /**
+     * Shares the transient evaluation state (contexts, variables, values,
+     * aliases, rootVariables) from the given source query into this query.
+     * This is needed when a snapshot copy of a CriteriaDelete/Update creates
+     * a new internal CriteriaQueryImpl, but subqueries still reference the
+     * original internal query's context stack via their _parent pointer.
+     * By sharing the same ThreadLocal and maps, both the original and copy
+     * see the same evaluation state.
+     */
+    void shareEvalState(CriteriaQueryImpl<?> source) {
+        this._contexts = source._contexts;
+        this._variables = source._variables;
+        this._values = source._values;
+        this._aliases = source._aliases;
+        this._rootVariables = source._rootVariables;
     }
 
     /**
@@ -572,7 +647,7 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
         if (_variables.containsKey(selection))
             return true;
         SubqueryImpl<?> delegator = getDelegator();
-        return (delegator == null) ? false : getDelegatorParent().isRegistered(selection);
+        return delegator != null && getDelegatorParent().isRegistered(selection);
     }
 
     @Override
@@ -638,6 +713,26 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
         return multiselect(list.toArray(new Selection<?>[list.size()]));
     }
 
+    /**
+     * Checks that no two selections in the given list share the same non-null alias.
+     * Per JPA spec, duplicate aliases among selection items are not allowed.
+     *
+     * @throws IllegalArgumentException if duplicate aliases are found
+     */
+    private void checkDuplicateAliases(List<? extends Selection<?>> items) {
+        if (items == null) {
+            return;
+        }
+        Set<String> aliases = new HashSet<>();
+        for (Selection<?> item : items) {
+            String alias = item.getAlias();
+            if (alias != null && !aliases.add(alias)) {
+                throw new IllegalArgumentException(
+                    "Selection items contain duplicate alias: " + alias);
+            }
+        }
+    }
+
     boolean isMultiselect() {
         return _selection instanceof CompoundSelections.MultiSelection;
     }
@@ -655,10 +750,7 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
         if (!getRoots().isEmpty() && sel == getRoot()) {
             return true;
         }
-        if ((sel instanceof From<?,?>) && ((From<?,?>)sel).isCorrelated()) {
-            return true;
-        }
-        return false;
+        return (sel instanceof From<?, ?>) && ((From<?, ?>) sel).isCorrelated();
     }
 
     void invalidateCompilation() {
@@ -791,9 +883,7 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
             return false;
         }
 
-        if (toString().equals(other.toString()))
-            return true;
-        return false;
+        return toString().equals(other.toString());
     }
 
 	@Override

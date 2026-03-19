@@ -98,6 +98,7 @@ import org.apache.openjpa.meta.MultiQueryMetaData;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
+import org.apache.openjpa.persistence.criteria.CriteriaBuilderImpl;
 import org.apache.openjpa.persistence.criteria.OpenJPACriteriaBuilder;
 import org.apache.openjpa.persistence.criteria.OpenJPACriteriaQuery;
 import org.apache.openjpa.persistence.validation.ValidationUtils;
@@ -1998,8 +1999,12 @@ public class EntityManagerImpl
         try {
             ((OpenJPACriteriaQuery<T>) criteriaQuery).compile();
 
+            // Snapshot the CriteriaQuery state so that subsequent modifications
+            // to the original CriteriaQuery do not affect this query (JPA spec).
+            Object snapshot = CriteriaBuilderImpl.snapshotQuery(criteriaQuery);
+
             org.apache.openjpa.kernel.Query kernelQuery = _broker.newQuery(OpenJPACriteriaBuilder.LANG_CRITERIA,
-                criteriaQuery);
+                snapshot);
 
             QueryImpl<T> facadeQuery = newQueryImpl(kernelQuery, null).setId(criteriaQuery.toString());
             Set<ParameterExpression<?>> params = criteriaQuery.getParameters();
@@ -2017,8 +2022,12 @@ public class EntityManagerImpl
     public Query createQuery(CriteriaUpdate updateQuery) {
         assertNotCloseInvoked();
         try {
+            // Snapshot the CriteriaUpdate state so that subsequent modifications
+            // to the original CriteriaUpdate do not affect this query (JPA spec).
+            Object snapshot = CriteriaBuilderImpl.snapshotQuery(updateQuery);
+
             org.apache.openjpa.kernel.Query kernelQuery =
-                _broker.newQuery(OpenJPACriteriaBuilder.LANG_CRITERIA, updateQuery);
+                _broker.newQuery(OpenJPACriteriaBuilder.LANG_CRITERIA, snapshot);
 
             QueryImpl<?> facadeQuery = newQueryImpl(kernelQuery, null).setId(updateQuery.toString());
             Set<ParameterExpression<?>> params = updateQuery.getParameters();
@@ -2035,8 +2044,12 @@ public class EntityManagerImpl
     public Query createQuery(CriteriaDelete deleteQuery) {
         assertNotCloseInvoked();
         try {
+            // Snapshot the CriteriaDelete state so that subsequent modifications
+            // to the original CriteriaDelete do not affect this query (JPA spec).
+            Object snapshot = CriteriaBuilderImpl.snapshotQuery(deleteQuery);
+
             org.apache.openjpa.kernel.Query kernelQuery =
-                _broker.newQuery(OpenJPACriteriaBuilder.LANG_CRITERIA, deleteQuery);
+                _broker.newQuery(OpenJPACriteriaBuilder.LANG_CRITERIA, snapshot);
 
             QueryImpl<?> facadeQuery = newQueryImpl(kernelQuery, null).setId(deleteQuery.toString());
             Set<ParameterExpression<?>> params = deleteQuery.getParameters();

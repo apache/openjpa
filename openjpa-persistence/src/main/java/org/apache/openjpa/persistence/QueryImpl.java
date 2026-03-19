@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence;
 import static org.apache.openjpa.kernel.QueryLanguages.LANG_PREPARED_SQL;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -319,11 +320,13 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 		    if (ob instanceof List ret) {
                 if (ret instanceof ResultList) {
 			        RuntimeExceptionTranslator trans = PersistenceExceptions.getRollbackTranslator(_em);
+			        List delegate;
 			        if (_query.isDistinct()) {
-			            return new DistinctResultList((ResultList) ret, trans);
+			            delegate = new DistinctResultList((ResultList) ret, trans);
 			        } else {
-			            return new DelegatingResultList((ResultList) ret, trans);
+			            delegate = new DelegatingResultList((ResultList) ret, trans);
 			        }
+			        return new ArrayList<>(delegate);
 			    } else {
 				    return ret;
 			    }

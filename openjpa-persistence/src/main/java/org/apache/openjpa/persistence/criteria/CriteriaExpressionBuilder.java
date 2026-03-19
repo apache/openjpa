@@ -44,6 +44,7 @@ import org.apache.openjpa.kernel.QueryOperations;
 import org.apache.openjpa.kernel.ResultShape;
 import org.apache.openjpa.kernel.exps.AbstractExpressionBuilder;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
+import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -223,6 +224,25 @@ class CriteriaExpressionBuilder {
         if (where != null) {
             filter = Expressions.and(factory, where.toKernelExpression(factory, q), filter);
         }
+
+        // Add type-restriction predicates for any treated roots used in the query.
+        // TREAT(root as SubType) implies that only instances of SubType should be included.
+        Set<RootImpl.TreatedRoot<?>> treatedRoots = q.getTreatedRoots();
+        if (treatedRoots != null) {
+            for (RootImpl.TreatedRoot<?> treated : treatedRoots) {
+                Value originalPath = treated.getOriginal().toValue(factory, q);
+                Value typeExpr = factory.type(originalPath);
+                Class<?> targetType = treated.getTreatedType();
+                Value typeLiteral = factory.newTypeLiteral(targetType, Literal.TYPE_CLASS);
+                ClassMetaData targetMeta = q.getMetamodel().getRepository()
+                    .getMetaData(targetType, null, true);
+                typeLiteral.setMetaData(targetMeta);
+                org.apache.openjpa.kernel.exps.Expression typeCheck =
+                    factory.equal(typeExpr, typeLiteral);
+                filter = Expressions.and(factory, typeCheck, filter);
+            }
+        }
+
         if (filter == null) {
             filter = factory.emptyExpression();
         }

@@ -454,6 +454,33 @@ public abstract class AbstractExpressionBuilder {
             return;
         }
 
+        // If a String literal is compared to a numeric Number type
+        // (not char), try to parse the String as a number first.
+        // This handles Criteria API patterns like cb.equal(path, "1")
+        // where path is an int/long field.
+        if (t1 == TYPE_STRING && val1 instanceof Literal
+            && Number.class.isAssignableFrom(Filters.wrap(t2))) {
+            try {
+                String s1 = (String) ((Literal) val1).getValue();
+                ((Literal) val1).setValue(StringUtil.parse(s1, Filters.wrap(t2)));
+                val1.setImplicitType(t2);
+                return;
+            } catch (Exception e) {
+                // fall through to character conversion below
+            }
+        }
+        if (t2 == TYPE_STRING && val2 instanceof Literal
+            && Number.class.isAssignableFrom(Filters.wrap(t1))) {
+            try {
+                String s2 = (String) ((Literal) val2).getValue();
+                ((Literal) val2).setValue(StringUtil.parse(s2, Filters.wrap(t1)));
+                val2.setImplicitType(t1);
+                return;
+            } catch (Exception e) {
+                // fall through to character conversion below
+            }
+        }
+
         // if the non-numeric side is a string of length 1, cast it
         // to a character
         if (t1 == TYPE_STRING && val1 instanceof Literal

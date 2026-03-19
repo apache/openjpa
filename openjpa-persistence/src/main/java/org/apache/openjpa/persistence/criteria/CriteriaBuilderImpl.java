@@ -68,6 +68,7 @@ import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
+import org.apache.openjpa.persistence.meta.Types;
 
 /**
  * Factory for Criteria query expressions.
@@ -87,6 +88,29 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
     public OpenJPACriteriaBuilder setMetaModel(MetamodelImpl model) {
         _model = model;
         return this;
+    }
+
+    /**
+     * Creates a snapshot of the given criteria query, delete, or update object.
+     * Per JPA spec, createQuery() should capture the query state at that point.
+     * Subsequent modifications to the original criteria object should NOT affect
+     * the already-created Query.
+     *
+     * @param criteria a CriteriaQuery, CriteriaDelete, or CriteriaUpdate
+     * @return a snapshot copy that is isolated from future changes to the original
+     */
+    @SuppressWarnings("unchecked")
+    public static Object snapshotQuery(Object criteria) {
+        if (criteria instanceof CriteriaQueryImpl<?>) {
+            return ((CriteriaQueryImpl<?>) criteria).snapshot();
+        }
+        if (criteria instanceof CriteriaDeleteImpl<?>) {
+            return ((CriteriaDeleteImpl<?>) criteria).snapshot();
+        }
+        if (criteria instanceof CriteriaUpdateImpl<?>) {
+            return ((CriteriaUpdateImpl<?>) criteria).snapshot();
+        }
+        return criteria;
     }
 
     @Override
@@ -164,12 +188,12 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
         query.invalidateCompilation();
         if (parsed instanceof CriteriaDeleteImpl<?> cd) {
             query.getContext().setCandidateType(cd.getRoot().getJavaType(), true);
-            query.setQuery(parsed);
+            query.setQuery(cd);
             return;
         }
         if (parsed instanceof CriteriaUpdateImpl<?> cu) {
             query.getContext().setCandidateType(cu.getRoot().getJavaType(), true);
-            query.setQuery(parsed);
+            query.setQuery(cu);
             return;
         }
         CriteriaQueryImpl<?> leaf = getLeftmostQuery(parsed);
@@ -401,38 +425,50 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <X, T, V extends T> Join<X, V> treat(Join<X, T> join, Class<V> type) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        return (Join<X, V>) join;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <X, T, E extends T> CollectionJoin<X, E> treat(CollectionJoin<X, T> join, Class<E> type) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        return (CollectionJoin<X, E>) join;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <X, T, E extends T> SetJoin<X, E> treat(SetJoin<X, T> join, Class<E> type) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        return (SetJoin<X, E>) join;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <X, T, E extends T> ListJoin<X, E> treat(ListJoin<X, T> join, Class<E> type) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        return (ListJoin<X, E>) join;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <X, K, T, V extends T> MapJoin<X, K, V> treat(MapJoin<X, K, T> join, Class<V> type) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        return (MapJoin<X, K, V>) join;
     }
 
     @Override
     public <X, T extends X> Path<T> treat(Path<X> path, Class<T> type) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        if (path instanceof Root) {
+            return (Path<T>) treat((Root<X>) path, type);
+        }
+        // For general paths, return the path cast to the subclass type.
+        // The path already carries the correct parent navigation; we just
+        // need the subclass type for subsequent attribute resolution.
+        return (Path<T>) path;
     }
 
     @Override
     public <X, T extends X> Root<T> treat(Root<X> root, Class<T> type) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        Types.Entity<T> targetEntity = (Types.Entity<T>) _model.entity(type);
+        return new RootImpl.TreatedRoot<>(targetEntity, (RootImpl<X>) root);
     }
 
     @Override

@@ -59,7 +59,7 @@ import org.apache.openjpa.persistence.meta.Members;
 class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     private java.util.Set<Join<X, ?>> _joins;
     private java.util.Set<Fetch<X, ?>> _fetches;
-    private Type<X> type;
+    private final Type<X> type;
 
     /**
      * Supply the non-null managed type.
@@ -245,7 +245,7 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     @Override
     public <W,K,V> MapJoin<W,K,V>  joinMap(String attr, JoinType jt) {
         assertJoinable(type);
-        return (MapJoin<W,K,V>)join(((ManagedType<X>)type).getMap(attr));
+        return (MapJoin<W,K,V>)join(((ManagedType<X>)type).getMap(attr), jt);
     }
 
     @Override
@@ -334,6 +334,10 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
 
     @Override
     public From<Z,X> getCorrelationParent() {
+        if (!isCorrelated()) {
+            throw new IllegalStateException(
+                "This From node is not a correlated reference. Cannot call getCorrelationParent().");
+        }
         return (From<Z,X>)getCorrelatedPath();
     }
 
