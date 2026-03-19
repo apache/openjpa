@@ -2534,21 +2534,14 @@ public class PCEnhancer {
         LabelNode lblAfterIfNull = new LabelNode();
         instructions.add(new JumpInsnNode(Opcodes.IFNULL, lblAfterIfNull));
         instructions.add(new VarInsnNode(Opcodes.ALOAD, pcVarPos));
-        instructions.add(new TypeInsnNode(Opcodes.CHECKCAST, Type.getInternalName(PersistenceCapable.class)));
 
-        //  val = ((PersistenceCapable) val).pcFetchObjectId(); or pcNewObjectIdInstance()
-        if (!pk.getTypeMetaData().isOpenJPAIdentity()) {
-            instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
-                                                Type.getInternalName(PersistenceCapable.class),
-                                                PRE + "FetchObjectId",
-                                                Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT)));
-        }
-        else {
-            instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
-                                                Type.getInternalName(PersistenceCapable.class),
-                                                PRE + "NewObjectIdInstance",
-                                                Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT)));
-        }
+        // Use ApplicationIds.getRelatedObjectId() instead of casting to PersistenceCapable directly.
+        // This handles both enhanced and unenhanced (runtime-reflected) entity instances,
+        // which is needed for derived identity (@MapsId) support.
+        instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+                                            Type.getInternalName(ApplicationIds.class),
+                                            "getRelatedObjectId",
+                                            Type.getMethodDescriptor(AsmHelper.TYPE_OBJECT, AsmHelper.TYPE_OBJECT)));
 
         int oidVarPos = nextFreeVarPos++;
         instructions.add(new VarInsnNode(Opcodes.ASTORE, oidVarPos));

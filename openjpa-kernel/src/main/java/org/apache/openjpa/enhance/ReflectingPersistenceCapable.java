@@ -49,7 +49,7 @@ public class ReflectingPersistenceCapable
 
     
     private static final long serialVersionUID = 1L;
-    private Object o;
+    private final Object o;
     private StateManager sm;
 
     // this will be reconstituted in readObject()
@@ -99,8 +99,7 @@ public class ReflectingPersistenceCapable
         Object value = getValue(i, o);
         switch (meta.getField(i).getDeclaredTypeCode()) {
             case JavaTypes.BOOLEAN:
-                sm.providedBooleanField(this, i, value == null ? false :
-                        (Boolean) value);
+                sm.providedBooleanField(this, i, value != null && (Boolean) value);
                 break;
             case JavaTypes.BYTE:
                 sm.providedByteField(this, i, value == null ? 0 :
@@ -297,8 +296,12 @@ public class ReflectingPersistenceCapable
     public Object pcNewObjectIdInstance() {
         FieldMetaData[] pkFields = meta.getPrimaryKeyFields();
         Object[] pks = new Object[pkFields.length];
-        for (int i = 0; i < pkFields.length; i++)
-            pks[i] = getValue(pkFields[i].getIndex(), o);
+        for (int i = 0; i < pkFields.length; i++) {
+            Object val = getValue(pkFields[i].getIndex(), o);
+            // For derived identity (@MapsId), a PK field value may be a related
+            // entity. The ObjectId needs the related entity's ID, not the entity itself.
+            pks[i] = getRelatedEntityId(pkFields[i], val);
+        }
         return ApplicationIds.fromPKValues(pks, meta);
     }
 
@@ -318,6 +321,9 @@ public class ReflectingPersistenceCapable
         FieldMetaData[] pks = meta.getPrimaryKeyFields();
         for (FieldMetaData pk : pks) {
             Object val = getValue(pk.getIndex(), o);
+            // For derived identity (@MapsId) with an IdClass, the IdClass field
+            // expects the related entity's ID, not the entity object itself.
+            val = getRelatedEntityIdForIdClass(pk, val);
             Field f = Reflection.findField(target.getClass(), pk.getName(),
                     true);
             Reflection.set(target, f, val);
@@ -418,5 +424,51 @@ public class ReflectingPersistenceCapable
         Class type = (Class) in.readObject();
         pcSubclassInstance = PCRegistry.newInstance(type, null, false);
         ImplHelper.registerPersistenceCapable(this);
+    }
+
+    /**
+     * For derived identity (@MapsId) with single-field identity: if the PK field
+     * is a relationship to another entity, extract that entity's object ID.
+     * For non-relationship PK fields, return the value unchanged.
+     */
+    private Object getRelatedEntityId(FieldMetaData pk, Object val) {
+        if (val == null) {
+            return null;
+        }
+        // Check if this PK field maps to another entity (derived identity)
+        if (pk.getDeclaredTypeMetaData() != null) {
+            // The PK field value is a related entity; extract its object ID
+            return ApplicationIds.getRelatedObjectId(val);
+        }
+        return val;
+    }
+
+    /**
+     * For derived identity (@MapsId) with an IdClass: if the PK field is a
+     * relationship to another entity, extract the related entity's ID value
+     * suitable for setting into the IdClass field.
+     * For non-relationship PK fields, return the value unchanged.
+     */
+    private Object getRelatedEntityIdForIdClass(FieldMetaData pk, Object val) {
+        if (val == null) {
+            return null;
+        }
+        // Check if this PK field maps to another entity (derived identity)
+        if (pk.getDeclaredTypeMetaData() != null) {
+            Object relatedOid = ApplicationIds.getRelatedObjectId(val);
+            if (relatedOid == null) {
+                return val;
+            }
+            // For OpenJPA identity types, unwrap to the raw id value
+            if (relatedOid instanceof org.apache.openjpa.util.OpenJPAId) {
+                return ((org.apache.openjpa.util.OpenJPAId) relatedOid).getIdObject();
+            }
+            // For IdClass-based identity wrapped in ObjectId, unwrap
+            if (relatedOid instanceof ObjectId) {
+                return ((ObjectId) relatedOid).getId();
+            }
+            return relatedOid;
+        }
+        return val;
     }
 }

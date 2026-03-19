@@ -30,6 +30,7 @@ import org.apache.openjpa.enhance.FieldManager;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.Reflection;
+import org.apache.openjpa.enhance.ReflectingPersistenceCapable;
 import org.apache.openjpa.kernel.ObjectIdStateManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StateManagerImpl;
@@ -609,6 +610,42 @@ public class ApplicationIds {
      */
     public static void setAppId(ObjectId id, Object newId) {
         id.setId(newId);
+    }
+
+    /**
+     * Extract the object id from a related entity, handling both enhanced
+     * and unenhanced (runtime-reflected) instances. This is used during
+     * derived identity (@MapsId) processing to avoid direct casts to
+     * PersistenceCapable which fail for unenhanced entities.
+     *
+     * @param relatedEntity the related entity instance (may or may not be enhanced)
+     * @return the object id of the related entity, or null if relatedEntity is null
+     */
+    public static Object getRelatedObjectId(Object relatedEntity) {
+        if (relatedEntity == null) {
+            return null;
+        }
+
+        PersistenceCapable pc;
+        if (relatedEntity instanceof PersistenceCapable) {
+            pc = (PersistenceCapable) relatedEntity;
+        } else {
+            // Unenhanced entity - look up or create a ReflectingPersistenceCapable wrapper
+            pc = ImplHelper.toPersistenceCapable(relatedEntity, null);
+            if (pc == null) {
+                return null;
+            }
+        }
+
+        // For types using OpenJPA single-field identity, pcNewObjectIdInstance()
+        // constructs the id from current field values.
+        // For types using IdClass/EmbeddedId, pcFetchObjectId() returns the
+        // already-assigned object id from the state manager.
+        Object oid = pc.pcFetchObjectId();
+        if (oid == null) {
+            oid = pc.pcNewObjectIdInstance();
+        }
+        return oid;
     }
 
     /**
