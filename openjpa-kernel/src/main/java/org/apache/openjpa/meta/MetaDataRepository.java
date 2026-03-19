@@ -114,6 +114,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         Collections.synchronizedMap(new HashMap<>());
     private Map<Class<?>, Class<?>> _ifaces = Collections.synchronizedMap(new HashMap<>());
     private final Map<String, QueryMetaData> _queries = new HashMap<>();
+    private final Map<String, EntityGraphMetaData> _entityGraphs = new HashMap<>();
     private final Map<String, SequenceMetaData> _seqs = new HashMap<>();
     private Map<String, List<Class<?>>> _aliases = Collections.synchronizedMap(new HashMap<>());
     private Map<Class<?>, NonPersistentMetaData> _pawares =
@@ -1462,6 +1463,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             _subs.clear();
             _impls.clear();
             _queries.clear();
+            _entityGraphs.clear();
             _seqs.clear();
             _registered.clear();
             _factory.clear();
@@ -2184,6 +2186,36 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         key.clsName = cls.getName();
         key.name = name;
         return key;
+    }
+
+    // /////////////////////////
+    // Entity graph metadata
+    // /////////////////////////
+
+    /**
+     * Add entity graph metadata parsed from annotations.
+     */
+    public void addEntityGraphMetaData(String name, EntityGraphMetaData meta) {
+        if (_locking) {
+            synchronized (this) {
+                _entityGraphs.put(name, meta);
+            }
+        } else {
+            _entityGraphs.put(name, meta);
+        }
+    }
+
+    /**
+     * Return all entity graph metadata.
+     */
+    public Collection<EntityGraphMetaData> getEntityGraphMetaDatas() {
+        if (_locking) {
+            synchronized (this) {
+                return new ArrayList<>(_entityGraphs.values());
+            }
+        } else {
+            return new ArrayList<>(_entityGraphs.values());
+        }
     }
 
     // ///////////////////

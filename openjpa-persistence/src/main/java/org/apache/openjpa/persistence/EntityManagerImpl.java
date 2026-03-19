@@ -97,6 +97,7 @@ import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.MultiQueryMetaData;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
+import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.criteria.OpenJPACriteriaBuilder;
 import org.apache.openjpa.persistence.criteria.OpenJPACriteriaQuery;
 import org.apache.openjpa.persistence.validation.ValidationUtils;
@@ -2218,22 +2219,45 @@ public class EntityManagerImpl
 
     @Override
     public <T> EntityGraph<T> createEntityGraph(Class<T> rootType) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        assertNotCloseInvoked();
+        MetamodelImpl mm = _emf.getMetamodel();
+        if (mm.entity(rootType) == null) {
+            throw new IllegalArgumentException(
+                rootType.getName() + " is not a managed entity type");
+        }
+        return new EntityGraphImpl<>(rootType, mm);
     }
 
     @Override
     public EntityGraph<?> createEntityGraph(String graphName) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        assertNotCloseInvoked();
+        EntityGraphImpl<?> named = _emf.getEntityGraphImpl(graphName);
+        if (named == null) {
+            return null;
+        }
+        return named.copy();
     }
 
     @Override
-    public EntityGraph<?>   getEntityGraph(String graphName) {
-        throw new UnsupportedOperationException("JPA 2.1");
+    public EntityGraph<?> getEntityGraph(String graphName) {
+        assertNotCloseInvoked();
+        EntityGraphImpl<?> eg = _emf.getEntityGraphImpl(graphName);
+        if (eg == null) {
+            throw new IllegalArgumentException(
+                "No EntityGraph found with name: " + graphName);
+        }
+        return eg;
     }
 
     @Override
     public <T> List<EntityGraph<? super T>> getEntityGraphs(Class<T> entityClass) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        assertNotCloseInvoked();
+        MetamodelImpl mm = _emf.getMetamodel();
+        if (mm.entity(entityClass) == null) {
+            throw new IllegalArgumentException(
+                entityClass.getName() + " is not a managed entity type");
+        }
+        return _emf.getEntityGraphsForType(entityClass);
     }
 
     /**

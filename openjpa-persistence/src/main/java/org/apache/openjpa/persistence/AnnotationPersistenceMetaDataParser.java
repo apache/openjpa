@@ -49,6 +49,8 @@ import static org.apache.openjpa.persistence.MetaDataTag.MANAGED_INTERFACE;
 import static org.apache.openjpa.persistence.MetaDataTag.MAPPED_BY_ID;
 import static org.apache.openjpa.persistence.MetaDataTag.MAP_KEY;
 import static org.apache.openjpa.persistence.MetaDataTag.MAP_KEY_CLASS;
+import static org.apache.openjpa.persistence.MetaDataTag.NAMED_ENTITY_GRAPH;
+import static org.apache.openjpa.persistence.MetaDataTag.NAMED_ENTITY_GRAPHS;
 import static org.apache.openjpa.persistence.MetaDataTag.NATIVE_QUERIES;
 import static org.apache.openjpa.persistence.MetaDataTag.NATIVE_QUERY;
 import static org.apache.openjpa.persistence.MetaDataTag.ORDER_BY;
@@ -119,10 +121,14 @@ import jakarta.persistence.MapKey;
 import jakarta.persistence.MapKeyClass;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.MapsId;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedEntityGraph;
+import jakarta.persistence.NamedEntityGraphs;
 import jakarta.persistence.NamedNativeQueries;
 import jakarta.persistence.NamedNativeQuery;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
+import jakarta.persistence.NamedSubgraph;
 import jakarta.persistence.NamedStoredProcedureQueries;
 import jakarta.persistence.NamedStoredProcedureQuery;
 import jakarta.persistence.OneToMany;
@@ -164,6 +170,7 @@ import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.MultiQueryMetaData;
 import org.apache.openjpa.meta.Order;
+import org.apache.openjpa.meta.EntityGraphMetaData;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.meta.UpdateStrategies;
@@ -214,6 +221,8 @@ public class AnnotationPersistenceMetaDataParser
         _tags.put(NamedStoredProcedureQuery.class, STOREDPROCEDURE_QUERY);
         _tags.put(NamedQueries.class, QUERIES);
         _tags.put(NamedQuery.class, QUERY);
+        _tags.put(NamedEntityGraphs.class, NAMED_ENTITY_GRAPHS);
+        _tags.put(NamedEntityGraph.class, NAMED_ENTITY_GRAPH);
         _tags.put(OrderBy.class, ORDER_BY);
         _tags.put(PostLoad.class, POST_LOAD);
         _tags.put(PostPersist.class, POST_PERSIST);
@@ -642,6 +651,14 @@ public class AnnotationPersistenceMetaDataParser
                     if (isQueryMode())
                         parseNamedStoredProcedureQueries(_cls, ((NamedStoredProcedureQuery) anno));
                     break;
+                case NAMED_ENTITY_GRAPHS:
+                    if (isMetaDataMode() || isQueryMode())
+                        parseNamedEntityGraphs(_cls, ((NamedEntityGraphs) anno).value());
+                    break;
+                case NAMED_ENTITY_GRAPH:
+                    if (isMetaDataMode() || isQueryMode())
+                        parseNamedEntityGraphs(_cls, (NamedEntityGraph) anno);
+                    break;
                 case SEQ_GENERATOR:
                     if (isMappingOverrideMode())
                         parseSequenceGenerator(_cls, (SequenceGenerator) anno);
@@ -917,7 +934,7 @@ public class AnnotationPersistenceMetaDataParser
             else
                 meta.setDetachedState(detached.fieldName());
         } else {
-            Field[] fields = (Field[]) meta.getDescribedType().getDeclaredFields();
+            Field[] fields = meta.getDescribedType().getDeclaredFields();
             for (Field field : fields)
                 if (field.isAnnotationPresent(DetachedState.class))
                     meta.setDetachedState(field.getName());
@@ -971,7 +988,7 @@ public class AnnotationPersistenceMetaDataParser
         MethodKey key;
         Set<MethodKey> seen = new HashSet<>();
         do {
-            for (Method m : (Method[]) sup.getDeclaredMethods()) {
+            for (Method m : sup.getDeclaredMethods()) {
                 mods = m.getModifiers();
                 if (Modifier.isStatic(mods) || Modifier.isFinal(mods) ||
                     Object.class.equals(m.getDeclaringClass()))
@@ -1160,43 +1177,40 @@ public class AnnotationPersistenceMetaDataParser
         if (isMetaDataMode()) {
             switch (pstrat) {
                 case BASIC:
-                    parseBasic(fmd, (Basic) el.getAnnotation(Basic.class), lob);
+                    parseBasic(fmd, el.getAnnotation(Basic.class), lob);
                     break;
                 case MANY_ONE:
-                    parseManyToOne(fmd, (ManyToOne) el.getAnnotation
+                    parseManyToOne(fmd, el.getAnnotation
                         (ManyToOne.class));
                     break;
                 case ONE_ONE:
-                    parseOneToOne(fmd, (OneToOne) el.getAnnotation
+                    parseOneToOne(fmd, el.getAnnotation
                         (OneToOne.class));
                     break;
                 case EMBEDDED:
-                    parseEmbedded(fmd, (Embedded) el.getAnnotation
+                    parseEmbedded(fmd, el.getAnnotation
                         (Embedded.class));
                     break;
                 case ONE_MANY:
-                    parseOneToMany(fmd, (OneToMany) el.getAnnotation
+                    parseOneToMany(fmd, el.getAnnotation
                         (OneToMany.class));
                     break;
                 case MANY_MANY:
-                    parseManyToMany(fmd, (ManyToMany) el.getAnnotation
+                    parseManyToMany(fmd, el.getAnnotation
                         (ManyToMany.class));
                     break;
                 case PERS:
-                    parsePersistent(fmd, (Persistent) el.getAnnotation
+                    parsePersistent(fmd, el.getAnnotation
                         (Persistent.class));
                     break;
                 case PERS_COLL:
-                    parsePersistentCollection(fmd, (PersistentCollection)
-                        el.getAnnotation(PersistentCollection.class));
+                    parsePersistentCollection(fmd, el.getAnnotation(PersistentCollection.class));
                     break;
                 case ELEM_COLL:
-                    parseElementCollection(fmd, (ElementCollection)
-                        el.getAnnotation(ElementCollection.class));
+                    parseElementCollection(fmd, el.getAnnotation(ElementCollection.class));
                     break;
                 case PERS_MAP:
-                    parsePersistentMap(fmd, (PersistentMap)
-                        el.getAnnotation(PersistentMap.class));
+                    parsePersistentMap(fmd, el.getAnnotation(PersistentMap.class));
                     break;
                 case TRANSIENT:
                     break;
@@ -1246,7 +1260,7 @@ public class AnnotationPersistenceMetaDataParser
                     break;
                 case ORDER_BY:
                     parseOrderBy(fmd,
-                        (OrderBy) el.getAnnotation(OrderBy.class));
+                            el.getAnnotation(OrderBy.class));
                     break;
                 case SEQ_GENERATOR:
                     if (isMappingOverrideMode())
@@ -1910,6 +1924,60 @@ public class AnnotationPersistenceMetaDataParser
     }
 
     /**
+     * Parse @NamedEntityGraph annotations.
+     */
+    private void parseNamedEntityGraphs(Class<?> cls, NamedEntityGraph... graphs) {
+        for (NamedEntityGraph graph : graphs) {
+            String graphName = graph.name();
+            if (graphName == null || graphName.isEmpty()) {
+                // default to entity name per JPA spec
+                jakarta.persistence.Entity entityAnno =
+                    cls.getAnnotation(jakarta.persistence.Entity.class);
+                if (entityAnno != null && entityAnno.name() != null
+                        && !entityAnno.name().isEmpty()) {
+                    graphName = entityAnno.name();
+                } else {
+                    graphName = cls.getSimpleName();
+                }
+            }
+
+            EntityGraphMetaData egm = new EntityGraphMetaData();
+            egm.setName(graphName);
+            egm.setEntityClass(cls);
+            egm.setIncludeAllAttributes(graph.includeAllAttributes());
+
+            for (NamedAttributeNode node : graph.attributeNodes()) {
+                egm.getAttributeNodes().add(new EntityGraphMetaData.AttributeNodeData(
+                    node.value(), node.subgraph(), node.keySubgraph()));
+            }
+
+            for (NamedSubgraph sg : graph.subgraphs()) {
+                EntityGraphMetaData.SubgraphData sgData =
+                    new EntityGraphMetaData.SubgraphData(sg.name(), sg.type());
+                for (NamedAttributeNode node : sg.attributeNodes()) {
+                    sgData.getAttributeNodes().add(
+                        new EntityGraphMetaData.AttributeNodeData(
+                            node.value(), node.subgraph(), node.keySubgraph()));
+                }
+                egm.getSubgraphs().add(sgData);
+            }
+
+            for (NamedSubgraph sg : graph.subclassSubgraphs()) {
+                EntityGraphMetaData.SubgraphData sgData =
+                    new EntityGraphMetaData.SubgraphData(sg.name(), sg.type());
+                for (NamedAttributeNode node : sg.attributeNodes()) {
+                    sgData.getAttributeNodes().add(
+                        new EntityGraphMetaData.AttributeNodeData(
+                            node.value(), node.subgraph(), node.keySubgraph()));
+                }
+                egm.getSubclassSubgraphs().add(sgData);
+            }
+
+            getRepository().addEntityGraphMetaData(graphName, egm);
+        }
+    }
+
+    /**
      * A private worker method that calculates the lock mode for an individual NamedQuery. If the NamedQuery is
      * configured to use the NONE lock mode(explicit or implicit), this method will promote the lock to a READ
      * level lock. This was done to allow for JPA1 apps to function properly under a 2.0 runtime.
@@ -1997,33 +2065,27 @@ public class AnnotationPersistenceMetaDataParser
     	}
     }
 
-    private static class MethodKey {
-
-        private final Method _method;
-
-        public MethodKey(Method m) {
-            _method = m;
-        }
+    private record MethodKey(Method _method) {
 
         @Override
-        public int hashCode() {
-            int code = 46 * 12 + _method.getName().hashCode();
-            for (Class<?> param : _method.getParameterTypes())
-                code = 46 * code + param.hashCode();
-            return code;
-        }
+            public int hashCode() {
+                int code = 46 * 12 + _method.getName().hashCode();
+                for (Class<?> param : _method.getParameterTypes())
+                    code = 46 * code + param.hashCode();
+                return code;
+            }
 
-        @Override
-        public boolean equals(Object o) {
-            if (!(o instanceof MethodKey))
-                return false;
-            Method other = ((MethodKey) o)._method;
-            if (!_method.getName().equals(other.getName()))
-                return false;
-            return Arrays.equals(_method.getParameterTypes(),
-                other.getParameterTypes());
+            @Override
+            public boolean equals(Object o) {
+                if (!(o instanceof MethodKey))
+                    return false;
+                Method other = ((MethodKey) o)._method;
+                if (!_method.getName().equals(other.getName()))
+                    return false;
+                return Arrays.equals(_method.getParameterTypes(),
+                        other.getParameterTypes());
+            }
         }
-    }
 
     private static class MethodComparator implements Comparator<Method> {
 

@@ -92,5 +92,8 @@ public enum MetaDataTag {
     // JPA 2.1
     STOREDPROCEDURE_QUERIES,
     STOREDPROCEDURE_QUERY,
-    CONVERT
+    CONVERT,
+    // JPA 2.1 entity graphs
+    NAMED_ENTITY_GRAPH,
+    NAMED_ENTITY_GRAPHS
 }

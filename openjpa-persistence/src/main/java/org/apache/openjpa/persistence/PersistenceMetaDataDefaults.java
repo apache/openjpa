@@ -429,11 +429,17 @@ public class PersistenceMetaDataDefaults
         	// Determine access from strategy annotations (@Id, @Basic, etc.)
         	// Supplementary annotations like @Column don't determine access.
         	List<Field> stratFields = filter(fields, accessTypeFilter);
-        	if (!stratFields.isEmpty()) {
+        	List<Method> stratGetters = filter(getters, accessTypeFilter);
+        	if (!stratFields.isEmpty() && stratGetters.isEmpty()) {
         		return AccessCode.FIELD;
         	}
-        	List<Method> stratGetters = filter(getters, accessTypeFilter);
-        	if (!stratGetters.isEmpty()) {
+        	if (!stratGetters.isEmpty() && stratFields.isEmpty()) {
+        		return AccessCode.PROPERTY;
+        	}
+        	if (!stratFields.isEmpty() && !stratGetters.isEmpty()) {
+        		// Strategy annotations on both fields AND getters (e.g. @Id
+        		// on field and getter). Prefer property access since getters
+        		// typically carry the complete mapping annotations.
         		return AccessCode.PROPERTY;
         	}
         	return AccessCode.FIELD;
@@ -765,9 +771,15 @@ public class PersistenceMetaDataDefaults
         if (field == null && getter == null)
         	error(meta, _loc.get("access-no-property", cls, property));
     	if ((isNotTransient(getter) && isAnnotated(getter)) &&
-    	     isNotTransient(field) && isAnnotated(field))
-    		throw new IllegalStateException(_loc.get("access-duplicate",
-    			field, getter).toString());
+    	     isNotTransient(field) && isAnnotated(field)) {
+    		// Both field and getter are annotated. If access type is
+    		// already determined, let the access code branch handle it.
+    		// Only throw if access type is unknown (truly ambiguous).
+    		if (AccessCode.isUnknown(accessCode)) {
+    			throw new IllegalStateException(_loc.get("access-duplicate",
+    				field, getter).toString());
+    		}
+    	}
 
         if (AccessCode.isField(accessCode)) {
            if (isAnnotatedAccess(getter, AccessType.PROPERTY)) {

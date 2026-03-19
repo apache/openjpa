@@ -20,8 +20,11 @@ package org.apache.openjpa.persistence;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -53,6 +56,7 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.StringUtil;
+import org.apache.openjpa.meta.EntityGraphMetaData;
 import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.QueryMetaData;
@@ -83,6 +87,9 @@ public class EntityManagerFactoryImpl
     private transient StoreCache _cache = null;
     private transient QueryResultCache _queryCache = null;
     private transient MetamodelImpl _metaModel;
+    private final java.util.concurrent.ConcurrentHashMap<String, EntityGraphImpl<?>>
+        _entityGraphs = new java.util.concurrent.ConcurrentHashMap<>();
+    private volatile boolean _entityGraphsInitialized;
     private transient Map<String, Object> properties;
     private transient Map<String, Object> emEmptyPropsProperties;
 
@@ -304,8 +311,8 @@ public class EntityManagerFactoryImpl
         if (canCacheGetProperties) {
             if (emEmptyPropsProperties == null) {
                 emEmptyPropsProperties = em.getProperties();
-            } else if (EntityManagerImpl.class.isInstance(em)) {
-                EntityManagerImpl.class.cast(em).setProperties(emEmptyPropsProperties);
+            } else if (em instanceof EntityManagerImpl) {
+                ((EntityManagerImpl) em).setProperties(emEmptyPropsProperties);
             }
         }
         if (log != null && log.isTraceEnabled()) {
@@ -462,13 +469,204 @@ public class EntityManagerFactoryImpl
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> void addNamedEntityGraph(String graphName, EntityGraph<T> entityGraph) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        initEntityGraphs();
+        if (entityGraph instanceof EntityGraphImpl) {
+            EntityGraphImpl<T> copy = ((EntityGraphImpl<T>) entityGraph).copyWithName(graphName);
+            _entityGraphs.put(graphName, copy);
+        } else {
+            throw new IllegalArgumentException("Unknown EntityGraph implementation: "
+                + entityGraph.getClass());
+        }
     }
-    
+
     @Override
+    @SuppressWarnings("unchecked")
     public <E> Map<String, EntityGraph<? extends E>> getNamedEntityGraphs(Class<E> entityType) {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+        initEntityGraphs();
+        Map<String, EntityGraph<? extends E>> result = new HashMap<>();
+        for (Map.Entry<String, EntityGraphImpl<?>> entry : _entityGraphs.entrySet()) {
+            if (entityType.isAssignableFrom(entry.getValue().getEntityType())) {
+                result.put(entry.getKey(), (EntityGraph<? extends E>) entry.getValue());
+            }
+        }
+        return result;
+    }
+
+    EntityGraphImpl<?> getEntityGraphImpl(String graphName) {
+        initEntityGraphs();
+        return _entityGraphs.get(graphName);
+    }
+
+    @SuppressWarnings("unchecked")
+    <T> List<EntityGraph<? super T>> getEntityGraphsForType(Class<T> entityClass) {
+        initEntityGraphs();
+        List<EntityGraph<? super T>> result = new ArrayList<>();
+        for (EntityGraphImpl<?> eg : _entityGraphs.values()) {
+            if (entityClass.isAssignableFrom(eg.getEntityType())
+                    || eg.getEntityType().isAssignableFrom(entityClass)) {
+                result.add((EntityGraph<? super T>) eg);
+            }
+        }
+        return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void initEntityGraphs() {
+        if (_entityGraphsInitialized) return;
+        synchronized (_entityGraphs) {
+            if (_entityGraphsInitialized) return;
+            MetaDataRepository mdr = getConfiguration()
+                .getMetaDataRepositoryInstance();
+
+            // First, check MDR for annotation-parser-sourced metadata
+            Collection<EntityGraphMetaData> metas =
+                mdr.getEntityGraphMetaDatas();
+            MetamodelImpl mm = getMetamodel();
+
+            if (metas.isEmpty()) {
+                // Annotation parser may not have run in the right mode.
+                // Scan entity classes directly for @NamedEntityGraph.
+                for (org.apache.openjpa.meta.ClassMetaData cmd
+                        : mdr.getMetaDatas()) {
+                    Class<?> cls = cmd.getDescribedType();
+                    scanNamedEntityGraphs(cls, mdr);
+                }
+                metas = mdr.getEntityGraphMetaDatas();
+            }
+
+            for (EntityGraphMetaData egm : metas) {
+                EntityGraphImpl<?> eg = buildEntityGraph(egm, mm);
+                _entityGraphs.put(eg.getName(), eg);
+            }
+            _entityGraphsInitialized = true;
+        }
+    }
+
+    private void scanNamedEntityGraphs(Class<?> cls,
+            MetaDataRepository mdr) {
+        jakarta.persistence.NamedEntityGraphs negs =
+            cls.getAnnotation(jakarta.persistence.NamedEntityGraphs.class);
+        if (negs != null) {
+            for (jakarta.persistence.NamedEntityGraph neg : negs.value()) {
+                addEntityGraphFromAnnotation(cls, neg, mdr);
+            }
+        }
+        jakarta.persistence.NamedEntityGraph neg =
+            cls.getAnnotation(jakarta.persistence.NamedEntityGraph.class);
+        if (neg != null) {
+            addEntityGraphFromAnnotation(cls, neg, mdr);
+        }
+    }
+
+    private void addEntityGraphFromAnnotation(Class<?> cls,
+            jakarta.persistence.NamedEntityGraph graph,
+            MetaDataRepository mdr) {
+        String graphName = graph.name();
+        if (graphName == null || graphName.isEmpty()) {
+            jakarta.persistence.Entity entityAnno =
+                cls.getAnnotation(jakarta.persistence.Entity.class);
+            if (entityAnno != null && entityAnno.name() != null
+                    && !entityAnno.name().isEmpty()) {
+                graphName = entityAnno.name();
+            } else {
+                graphName = cls.getSimpleName();
+            }
+        }
+
+        EntityGraphMetaData egm = new EntityGraphMetaData();
+        egm.setName(graphName);
+        egm.setEntityClass(cls);
+        egm.setIncludeAllAttributes(graph.includeAllAttributes());
+
+        for (jakarta.persistence.NamedAttributeNode node
+                : graph.attributeNodes()) {
+            egm.getAttributeNodes().add(
+                new EntityGraphMetaData.AttributeNodeData(
+                    node.value(), node.subgraph(), node.keySubgraph()));
+        }
+
+        for (jakarta.persistence.NamedSubgraph sg : graph.subgraphs()) {
+            EntityGraphMetaData.SubgraphData sgData =
+                new EntityGraphMetaData.SubgraphData(sg.name(), sg.type());
+            for (jakarta.persistence.NamedAttributeNode node
+                    : sg.attributeNodes()) {
+                sgData.getAttributeNodes().add(
+                    new EntityGraphMetaData.AttributeNodeData(
+                        node.value(), node.subgraph(), node.keySubgraph()));
+            }
+            egm.getSubgraphs().add(sgData);
+        }
+
+        for (jakarta.persistence.NamedSubgraph sg
+                : graph.subclassSubgraphs()) {
+            EntityGraphMetaData.SubgraphData sgData =
+                new EntityGraphMetaData.SubgraphData(sg.name(), sg.type());
+            for (jakarta.persistence.NamedAttributeNode node
+                    : sg.attributeNodes()) {
+                sgData.getAttributeNodes().add(
+                    new EntityGraphMetaData.AttributeNodeData(
+                        node.value(), node.subgraph(), node.keySubgraph()));
+            }
+            egm.getSubclassSubgraphs().add(sgData);
+        }
+
+        mdr.addEntityGraphMetaData(graphName, egm);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private EntityGraphImpl<?> buildEntityGraph(EntityGraphMetaData egm,
+            MetamodelImpl mm) {
+        EntityGraphImpl eg = new EntityGraphImpl(
+            egm.getName(), egm.getEntityClass(), mm);
+
+        // add explicit attribute nodes
+        for (EntityGraphMetaData.AttributeNodeData nodeData
+                : egm.getAttributeNodes()) {
+            eg.addAttributeNodeDirect(nodeData.attributeName());
+        }
+
+        // build subgraphs by name for wiring
+        Map<String, SubgraphImpl<?>> subgraphMap = new HashMap<>();
+        for (EntityGraphMetaData.SubgraphData sgData : egm.getSubgraphs()) {
+            Class<?> sgType = sgData.getType();
+            if (sgType == void.class || sgType == Object.class) {
+                // default type — not specified in annotation
+                sgType = egm.getEntityClass();
+            }
+            SubgraphImpl sg = new SubgraphImpl(sgType, mm);
+            for (EntityGraphMetaData.AttributeNodeData nodeData
+                    : sgData.getAttributeNodes()) {
+                sg.addAttributeNodeDirect(nodeData.attributeName());
+            }
+            subgraphMap.put(sgData.getName(), sg);
+        }
+
+        // wire subgraphs into attribute nodes
+        for (EntityGraphMetaData.AttributeNodeData nodeData
+                : egm.getAttributeNodes()) {
+            String sgRef = nodeData.subgraphName();
+            if (sgRef != null && !sgRef.isEmpty()) {
+                SubgraphImpl<?> sg = subgraphMap.get(sgRef);
+                if (sg != null) {
+                    AttributeNodeImpl<?> node =
+                        eg.getOrCreateNode(nodeData.attributeName());
+                    node.addSubgraph(sg.getClassType(), sg);
+                }
+            }
+            String keySgRef = nodeData.keySubgraphName();
+            if (keySgRef != null && !keySgRef.isEmpty()) {
+                SubgraphImpl<?> sg = subgraphMap.get(keySgRef);
+                if (sg != null) {
+                    AttributeNodeImpl<?> node =
+                        eg.getOrCreateNode(nodeData.attributeName());
+                    node.addKeySubgraph(sg.getClassType(), sg);
+                }
+            }
+        }
+
+        return eg;
     }
     
     /**
