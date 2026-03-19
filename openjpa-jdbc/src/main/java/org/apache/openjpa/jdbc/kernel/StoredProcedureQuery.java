@@ -172,23 +172,49 @@ public class StoredProcedureQuery extends AbstractStoreQuery {
             try {
                 DBDictionary dict = _store.getDBDictionary();
                 Connection conn = _store.getConnection();
+
+                // PostgreSQL requires auto-commit off for procedures
+                // that return REF_CURSOR (cursor lives within transaction)
+                boolean resetAutoCommit = false;
+                if (conn.getAutoCommit() && _proc.getOutColumns().length > 0) {
+                    conn.setAutoCommit(false);
+                    resetAutoCommit = true;
+                }
+
                 CallableStatement stmnt = conn.prepareCall(_proc.getCallSQL());
 
                 final StoredProcedureQuery spq = (StoredProcedureQuery) q;
                 for (Column c : spq.getProcedure().getInColumns()) {
-                    dict.setUnknown(stmnt, c.getIndex() + 1, params[c.getIndex()], c);
+                    if (params != null && c.getIndex() < params.length) {
+                        dict.setUnknown(stmnt, c.getIndex() + 1, params[c.getIndex()], c);
+                    }
                 }
                 for (Column c : spq.getProcedure().getInOutColumns()) {
                     final int index = c.getIndex() + 1;
                     stmnt.registerOutParameter(index, c.getType());
-                    dict.setUnknown(stmnt, index, params[index - 1], c);
+                    if (params != null && index - 1 < params.length) {
+                        dict.setUnknown(stmnt, index, params[index - 1], c);
+                    }
                 }
                 for (Column c : spq.getProcedure().getOutColumns()) {
                     stmnt.registerOutParameter(c.getIndex() + 1, c.getType());
                 }
 
+                // Collect OUT parameter positions for REF_CURSOR handling
+                Column[] outCols = spq.getProcedure().getOutColumns();
+                int[] cursorPositions = null;
+                if (outCols.length > 0) {
+                    cursorPositions = new int[outCols.length];
+                    for (int i = 0; i < outCols.length; i++) {
+                        cursorPositions[i] = outCols[i].getIndex() + 1;
+                    }
+                }
+
                 JDBCFetchConfiguration fetch = (JDBCFetchConfiguration)q.getContext().getFetchConfiguration();
-                ResultObjectProvider rop = new XROP(_resultMappings, _resultClasses, _store, fetch, stmnt);
+                XROP rop = new XROP(_resultMappings, _resultClasses, _store, fetch, stmnt);
+                if (cursorPositions != null) {
+                    rop.setCursorOutParams(cursorPositions);
+                }
                 rop.open();
                 return rop;
             } catch (Exception e) {
