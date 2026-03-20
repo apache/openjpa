@@ -125,7 +125,14 @@ public class MetamodelImpl implements Metamodel, Resolver {
      */
     @Override
     public <X> EmbeddableType<X> embeddable(Class<X> clazz) {
-        return (EmbeddableType<X>)find(clazz, _embeddables, EMBEDDABLE, false);
+        EmbeddableType<X> result =
+            (EmbeddableType<X>)find(clazz, _embeddables, EMBEDDABLE, false);
+        if (result == null) {
+            throw new IllegalArgumentException(
+                _loc.get("type-not-embeddable",
+                    clazz == null ? "null" : clazz.getName()).getMessage());
+        }
+        return result;
     }
 
 	@Override
@@ -146,7 +153,14 @@ public class MetamodelImpl implements Metamodel, Resolver {
      */
     @Override
     public <X> EntityType<X> entity(Class<X> clazz) {
-        return (EntityType<X>) find(clazz, _entities, ENTITY, false);
+        EntityType<X> result =
+            (EntityType<X>) find(clazz, _entities, ENTITY, false);
+        if (result == null) {
+            throw new IllegalArgumentException(
+                _loc.get("type-not-entity",
+                    clazz == null ? "null" : clazz.getName()).getMessage());
+        }
+        return result;
     }
 
     public <X> EntityType<X> entityImpl(Class<X> clazz) {

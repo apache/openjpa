@@ -255,6 +255,17 @@ public class PersistenceMetaDataDefaults
         //### EJB3: what if defined in XML?
         if (type.isAnnotationPresent(Embeddable.class))
             return EMBEDDED;
+        // Also check if the type has been declared as embeddable via XML
+        // mapping (orm.xml) without the @Embeddable annotation.
+        if (fmd != null) {
+            MetaDataRepository repos = fmd.getRepository();
+            if (repos != null) {
+                ClassMetaData typeMeta = repos.getCachedMetaData(type);
+                if (typeMeta != null && typeMeta.isEmbeddedOnly()) {
+                    return EMBEDDED;
+                }
+            }
+        }
         if (Serializable.class.isAssignableFrom(type))
             return BASIC;
         return null;

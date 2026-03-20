@@ -803,10 +803,19 @@ public abstract class MappingInfo implements Serializable {
         else if (col.getJavaType() == JavaTypes.OBJECT) {
             if (given != null && given.getJavaType() != JavaTypes.OBJECT)
                 col.setJavaType(given.getJavaType());
-            else
-                col.setJavaType(JavaTypes.getTypeCode
+            else {
+                int derivedType = JavaTypes.getTypeCode
                     (Schemas.getJavaType(col.getType(), col.getSize(),
-                        col.getDecimalDigits())));
+                        col.getDecimalDigits()));
+                // If the SQL type couldn't determine a specific Java type
+                // (e.g., Types.OTHER for UUID), use the template's Java type
+                if (derivedType == JavaTypes.OBJECT
+                        && tmplate.getJavaType() != JavaTypes.OBJECT) {
+                    col.setJavaType(tmplate.getJavaType());
+                } else {
+                    col.setJavaType(derivedType);
+                }
+            }
         }
         col.setAutoAssigned(autoAssign);
         col.setRelationId(relationId);

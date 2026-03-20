@@ -708,10 +708,12 @@ public class PCEnhancer {
 
         for (FieldMetaData fmd : fmds) {
             if (!(fmd.getBackingMember() instanceof Method)) {
-                // If not mixed access is not defined, flag the field members,
-                // otherwise do not process them because they are valid
-                // persistent attributes.
-                if (!_meta.isMixedAccess()) {
+                // If mixed access is defined, or if the field itself uses
+                // field access (e.g. inherited from a superclass with field
+                // access), do not flag it — it is a valid persistent
+                // attribute that just happens to be field-accessed.
+                if (!_meta.isMixedAccess()
+                        && !AccessCode.isField(fmd.getAccessType())) {
                     addViolation("property-bad-member",
                                  new Object[]{fmd, fmd.getBackingMember()},
                                  true);

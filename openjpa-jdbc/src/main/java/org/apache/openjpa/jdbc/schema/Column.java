@@ -781,6 +781,7 @@ public class Column extends ReferenceCounter {
                 switch (type) {
                     case Types.DATE:
                     case Types.TIMESTAMP:
+                    case Types.TIMESTAMP_WITH_TIMEZONE:
                         return true;
                     default:
                         return false;
@@ -790,6 +791,7 @@ public class Column extends ReferenceCounter {
                     case Types.DATE:
                     case Types.TIME:
                     case Types.TIMESTAMP:
+                    case Types.TIME_WITH_TIMEZONE:
                         return true;
                     default:
                         return false;

@@ -1628,10 +1628,22 @@ public class DBDictionary
                 setYear(stmnt, idx, (Year) val, col);
                 break;
             case JavaTypes.BIGDECIMAL:
-                setBigDecimal(stmnt, idx, (BigDecimal) val, col);
+                if (val instanceof BigDecimal) {
+                    setBigDecimal(stmnt, idx, (BigDecimal) val, col);
+                } else if (val instanceof BigInteger) {
+                    setBigDecimal(stmnt, idx, new BigDecimal((BigInteger) val), col);
+                } else {
+                    setBigDecimal(stmnt, idx, new BigDecimal(val.toString()), col);
+                }
                 break;
             case JavaTypes.BIGINTEGER:
-                setBigInteger(stmnt, idx, (BigInteger) val, col);
+                if (val instanceof BigInteger) {
+                    setBigInteger(stmnt, idx, (BigInteger) val, col);
+                } else if (val instanceof BigDecimal) {
+                    setBigInteger(stmnt, idx, ((BigDecimal) val).toBigInteger(), col);
+                } else {
+                    setBigInteger(stmnt, idx, new BigInteger(val.toString()), col);
+                }
                 break;
             case JavaTypes.NUMBER:
                 setNumber(stmnt, idx, (Number) val, col);
@@ -1690,7 +1702,15 @@ public class DBDictionary
                     setTimestamp(stmnt, idx, (Timestamp) val, null, col);
                 break;
             case JavaTypes.UUID_OBJ:
-                setObject(stmnt, idx, val, Types.OTHER, col);
+                if (supportsUuidType && (col == null
+                        || col.getType() == Types.OTHER
+                        || col.getType() == 0)) {
+                    setObject(stmnt, idx, val, Types.OTHER, col);
+                } else {
+                    // Column is VARCHAR or other non-native UUID type;
+                    // convert UUID to String to avoid type mismatch
+                    setString(stmnt, idx, val.toString(), col);
+                }
                 break;
             default:
                 if (col != null && (col.getType() == Types.BLOB
@@ -1995,6 +2015,10 @@ public class DBDictionary
                 return getPreferredType(Types.TIMESTAMP);
             case JavaTypes.YEAR:
                 return getPreferredType(Types.INTEGER);
+            case JavaTypes.UUID_OBJ:
+                if (supportsUuidType)
+                    return getPreferredType(Types.OTHER);
+                return getPreferredType(Types.VARCHAR);
             case JavaSQLTypes.SQL_ARRAY:
                 return getPreferredType(Types.ARRAY);
             case JavaSQLTypes.BINARY_STREAM:

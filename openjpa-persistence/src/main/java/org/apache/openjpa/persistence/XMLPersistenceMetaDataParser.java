@@ -2219,6 +2219,32 @@ public class XMLPersistenceMetaDataParser
             }
             if (_callbacks[event] == null)
                 _callbacks[event] = new ArrayList<>(3);
+
+            // JPA spec: XML callback declarations override annotation-based
+            // callbacks for the same method. Remove any annotation-parsed
+            // callback that targets the same method to prevent duplicates.
+            if (_listener != null && _callbacks[event] != null) {
+                Method xmlMethod = ((BeanLifecycleCallbacks) adapter)
+                    .getCallbackMethod();
+                int sizeBefore = _callbacks[event].size();
+                _callbacks[event].removeIf(existing -> {
+                    if (existing instanceof MethodLifecycleCallbacks) {
+                        Method existingMethod = ((MethodLifecycleCallbacks)
+                            existing).getCallbackMethod();
+                        return existingMethod.getName().equals(
+                            xmlMethod.getName())
+                            && existingMethod.getDeclaringClass().equals(
+                                xmlMethod.getDeclaringClass());
+                    }
+                    return false;
+                });
+                // Adjust _highs count for removed annotation-parsed callbacks
+                // since they were counted in startEntityListener
+                if (!system && _highs != null) {
+                    _highs[event] -= (sizeBefore - _callbacks[event].size());
+                }
+            }
+
             _callbacks[event].add(adapter);
             if (!system && _listener != null)
                 _highs[event]++;
