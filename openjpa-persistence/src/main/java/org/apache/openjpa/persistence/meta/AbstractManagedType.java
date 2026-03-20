@@ -71,7 +71,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
     public final MetamodelImpl model;
     public final ClassMetaData meta;
 
-    private java.util.Set<Attribute<? super X, ?>> attrs = new HashSet<>();
+    private final java.util.Set<Attribute<? super X, ?>> attrs = new HashSet<>();
 
     private final DeclaredAttributeFilter<X> declaredAttributeFilter;
     private final SingularAttributeFilter<X> singularAttributeFilter;
@@ -651,9 +651,8 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      */
      public final <Y> SingularAttribute<? super X, Y> getId(Class<Y> type) {
          Attribute<? super X, ?> result =  pick(attrs,
-                 new AttributeTypeFilter<>(type),
                  new IdAttributeFilter<>());
-         if (result != null)
+         if (result != null && isStrictTypeMatch(result, type))
              return (SingularAttribute<? super X, Y>) result;
          throw new IllegalArgumentException();
      }
@@ -667,9 +666,8 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      public final <Y> SingularAttribute<X, Y> getDeclaredId(Class<Y> type) {
          Attribute<? super X, ?> result =  pick(attrs,
                  declaredAttributeFilter,
-                 new AttributeTypeFilter<>(type),
                  new IdAttributeFilter<>());
-         if (result != null)
+         if (result != null && isStrictTypeMatch(result, type))
              return (SingularAttribute<X, Y>) result;
          throw new IllegalArgumentException();
      }
@@ -708,6 +706,16 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
     // =====================================================================
     // Support functions
     // =====================================================================
+
+    /**
+     * Strict type match for getId/getDeclaredId: the attribute's Java type
+     * must be assignable to the requested type (using wrapper types for primitives).
+     */
+    private static boolean isStrictTypeMatch(Attribute<?, ?> attr, Class<?> type) {
+        Class<?> attrType = Filters.wrap(attr.getJavaType());
+        Class<?> reqType = Filters.wrap(type);
+        return reqType.isAssignableFrom(attrType);
+    }
 
     FieldMetaData getField(String name) {
         return getField(name, null, null, null, false);
@@ -900,7 +908,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
 
         @Override
         public boolean selects(Attribute<? super X, ?> attr) {
-            return _invert ? attr.isCollection() : !attr.isCollection();
+            return _invert == attr.isCollection();
         }
 
         @Override
@@ -925,8 +933,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
 
         @Override
         public boolean selects(Attribute<? super X, ?> attr) {
-            return _invert ? attr.getDeclaringType() != owner : attr
-                    .getDeclaringType() == owner;
+            return _invert == (attr.getDeclaringType() != owner);
         }
 
         @Override
@@ -955,7 +962,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
         @Override
         public boolean selects(Attribute<? super X, ?> attr) {
             boolean result = _type == null || Filters.canConvert(attr.getJavaType(), _type, false);
-            return _invert ? !result : result;
+            return _invert != result;
         }
 
         @Override
@@ -980,8 +987,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
 
         @Override
         public boolean selects(Attribute<? super X, ?> attr) {
-            return _invert ? !attr.getName().equals(_name) : attr.getName()
-                    .equals(_name);
+            return _invert != attr.getName().equals(_name);
         }
 
         @Override
@@ -1008,7 +1014,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
         public boolean selects(Attribute<? super X, ?> attr) {
             boolean result = (attr instanceof PluralAttribute<?, ?, ?>)
                     && ((PluralAttribute<?, ?, ?>) attr).getCollectionType() == _category;
-            return _invert ? !result : result;
+            return _invert != result;
         }
 
         @Override
@@ -1041,7 +1047,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
                     && (_elementType == null
                     || ((PluralAttribute<?, ?, ?>) attr).getElementType().getJavaType()
                          == _elementType);
-            return _invert ? !result : result;
+            return _invert != result;
         }
 
         @Override
@@ -1073,7 +1079,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
                     || ((MapAttribute<?, ?, ?>) attr).getKeyType().getJavaType() == _keyType)
                     && (_valueType == null
                     || ((MapAttribute<?, ?, ?>) attr).getElementType().getJavaType() == _valueType);
-            return _invert ? !result : result;
+            return _invert != result;
         }
 
         @Override
@@ -1097,7 +1103,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
         @Override
         public boolean selects(Attribute<? super X, ?> attr) {
             boolean result = ((Members.Member<?, ?>) attr).fmd.isPrimaryKey();
-            return _invert ? !result : result;
+            return _invert != result;
         }
 
         @Override
@@ -1121,7 +1127,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
         public boolean selects(Attribute<? super X, ?> attr) {
             FieldMetaData fmd = ((Members.Member<?, ?>) attr).fmd;
             boolean result = fmd.isVersion();
-            return _invert ? !result : result;
+            return _invert != result;
         }
 
         @Override

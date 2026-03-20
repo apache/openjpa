@@ -335,34 +335,34 @@ public class TestMetamodel extends SingleEMFTestCase {
         String name = "unknown";
         try {
           Method[] getters = {
-            e0.getClass().getMethod("getAttribute",          new Class<?>[]{String.class}),
-            e0.getClass().getMethod("getCollection",         new Class<?>[]{String.class}),
-            e0.getClass().getMethod("getList",               new Class<?>[]{String.class}),
-            e0.getClass().getMethod("getSet",                new Class<?>[]{String.class}),
-            e0.getClass().getMethod("getSingularAttribute",  new Class<?>[]{String.class}),
+            e0.getClass().getMethod("getAttribute", String.class),
+            e0.getClass().getMethod("getCollection", String.class),
+            e0.getClass().getMethod("getList", String.class),
+            e0.getClass().getMethod("getSet", String.class),
+            e0.getClass().getMethod("getSingularAttribute", String.class),
 
-            e0.getClass().getMethod("getDeclaredAttribute",  new Class<?>[]{String.class}),
-            e0.getClass().getMethod("getDeclaredCollection", new Class<?>[]{String.class}),
-            e0.getClass().getMethod("getDeclaredList",       new Class<?>[]{String.class}),
-            e0.getClass().getMethod("getDeclaredSet",        new Class<?>[]{String.class}),
-            e0.getClass().getMethod("getDeclaredSingularAttribute", new Class<?>[]{String.class}),
+            e0.getClass().getMethod("getDeclaredAttribute", String.class),
+            e0.getClass().getMethod("getDeclaredCollection", String.class),
+            e0.getClass().getMethod("getDeclaredList", String.class),
+            e0.getClass().getMethod("getDeclaredSet", String.class),
+            e0.getClass().getMethod("getDeclaredSingularAttribute", String.class),
 
-            e0.getClass().getMethod("getAttribute",          new Class<?>[]{String.class, Class.class}),
-            e0.getClass().getMethod("getCollection",         new Class<?>[]{String.class, Class.class}),
-            e0.getClass().getMethod("getList",               new Class<?>[]{String.class, Class.class}),
-            e0.getClass().getMethod("getSet",                new Class<?>[]{String.class, Class.class}),
-            e0.getClass().getMethod("getSingularAttribute",  new Class<?>[]{String.class, Class.class}),
+            e0.getClass().getMethod("getAttribute", String.class, Class.class),
+            e0.getClass().getMethod("getCollection", String.class, Class.class),
+            e0.getClass().getMethod("getList", String.class, Class.class),
+            e0.getClass().getMethod("getSet", String.class, Class.class),
+            e0.getClass().getMethod("getSingularAttribute", String.class, Class.class),
 
-            e0.getClass().getMethod("getDeclaredAttribute",  new Class<?>[]{String.class, Class.class}),
-            e0.getClass().getMethod("getDeclaredCollection", new Class<?>[]{String.class, Class.class}),
-            e0.getClass().getMethod("getDeclaredList",       new Class<?>[]{String.class, Class.class}),
-            e0.getClass().getMethod("getDeclaredSet",        new Class<?>[]{String.class, Class.class}),
-            e0.getClass().getMethod("getDeclaredSingularAttribute", new Class<?>[]{String.class, Class.class}),
+            e0.getClass().getMethod("getDeclaredAttribute", String.class, Class.class),
+            e0.getClass().getMethod("getDeclaredCollection", String.class, Class.class),
+            e0.getClass().getMethod("getDeclaredList", String.class, Class.class),
+            e0.getClass().getMethod("getDeclaredSet", String.class, Class.class),
+            e0.getClass().getMethod("getDeclaredSingularAttribute", String.class, Class.class),
 
-            e0.getClass().getMethod("getMap",          new Class<?>[]{String.class}),
-            e0.getClass().getMethod("getMap",          new Class<?>[]{String.class, Class.class, Class.class}),
-            e0.getClass().getMethod("getDeclaredMap",  new Class<?>[]{String.class}),
-            e0.getClass().getMethod("getDeclaredMap",  new Class<?>[]{String.class, Class.class, Class.class}),
+            e0.getClass().getMethod("getMap", String.class),
+            e0.getClass().getMethod("getMap", String.class, Class.class, Class.class),
+            e0.getClass().getMethod("getDeclaredMap", String.class),
+            e0.getClass().getMethod("getDeclaredMap", String.class, Class.class, Class.class),
           };
 //                 e0.getClass().getMethod("getDeclaredVersion", new Class<?>[]{Class.class}),
 
@@ -421,5 +421,74 @@ public class TestMetamodel extends SingleEMFTestCase {
         } catch (Exception e) {
         }
         return null;
+    }
+
+    /**
+     * isAssociation() should return false for embedded attributes.
+     * JPA spec: an association is a relationship to an entity, not an embeddable.
+     */
+    public void testIsAssociationFalseForEmbeddable() {
+        EntityType<Address> addrType = model.entity(Address.class);
+        SingularAttribute<? super Address, ?> geocodeAttr =
+            addrType.getSingularAttribute("geocode", Geocode.class);
+        assertFalse("Embedded attribute should not be an association",
+            geocodeAttr.isAssociation());
+    }
+
+    /**
+     * isAssociation() should return true for entity relationships.
+     */
+    public void testIsAssociationTrueForEntityRelation() {
+        EntityType<OneOneParent> parentType = model.entity(OneOneParent.class);
+        SingularAttribute<? super OneOneParent, ?> childAttr =
+            parentType.getSingularAttribute("child", OneOneChild.class);
+        assertTrue("Entity relationship should be an association",
+            childAttr.isAssociation());
+    }
+
+    /**
+     * getBindableType() should return SINGULAR_ATTRIBUTE for embedded types.
+     */
+    public void testBindableTypeForEmbeddable() {
+        EntityType<Address> addrType = model.entity(Address.class);
+        SingularAttribute<? super Address, Geocode> geocodeAttr =
+            addrType.getSingularAttribute("geocode", Geocode.class);
+        assertEquals(BindableType.SINGULAR_ATTRIBUTE, geocodeAttr.getBindableType());
+    }
+
+    /**
+     * getBindableType() should return ENTITY_TYPE for entity relationships.
+     */
+    public void testBindableTypeForEntityRelation() {
+        EntityType<OneOneParent> parentType = model.entity(OneOneParent.class);
+        SingularAttribute<? super OneOneParent, OneOneChild> childAttr =
+            parentType.getSingularAttribute("child", OneOneChild.class);
+        assertEquals(BindableType.ENTITY_TYPE, childAttr.getBindableType());
+    }
+
+    /**
+     * getId() with wrong type should throw IllegalArgumentException.
+     */
+    public void testGetIdWithWrongTypeThrowsIAE() {
+        EntityType<OneOneParent> parentType = model.entity(OneOneParent.class);
+        try {
+            parentType.getId(java.util.Date.class);
+            fail("Expected IllegalArgumentException for wrong ID type");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+    }
+
+    /**
+     * getDeclaredId() with wrong type should throw IllegalArgumentException.
+     */
+    public void testGetDeclaredIdWithWrongTypeThrowsIAE() {
+        EntityType<OneOneParent> parentType = model.entity(OneOneParent.class);
+        try {
+            parentType.getDeclaredId(java.util.Date.class);
+            fail("Expected IllegalArgumentException for wrong ID type");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
     }
 }

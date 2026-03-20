@@ -140,6 +140,11 @@ public class PCSubclassValidator {
         // just considers accessor methods for now.
         FieldMetaData[] fmds = meta.getFields();
         for (FieldMetaData fmd : fmds) {
+            // Skip fields that use field access — they don't need
+            // getter/setter interception for dirty tracking
+            if (AccessCode.isField(fmd.getAccessType())) {
+                continue;
+            }
             Method getter = getBackingMember(fmd);
             if (getter == null) {
                 addError(loc.get("subclasser-no-getter",
@@ -177,7 +182,7 @@ public class PCSubclassValidator {
         }
 
         Method getter = Reflection.findGetter(meta.getDescribedType(), fmd.getName(), false);
-        if (getter != null) {
+        if (getter != null && !AccessCode.isField(fmd.getAccessType())) {
             fmd.backingMember(getter);
         }
         return getter;

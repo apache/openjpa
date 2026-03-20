@@ -37,6 +37,8 @@ import jakarta.persistence.criteria.Nulls;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Selection;
+import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.PluralAttribute;
 import jakarta.persistence.metamodel.Type.PersistenceType;
 
 import org.apache.openjpa.kernel.FillStrategy;
@@ -92,8 +94,14 @@ class CriteriaExpressionBuilder {
         for (Root<?> root : q.getRoots()) {
             metas.add(((AbstractManagedType<?>)root.getModel()).meta);
             for (Join<?,?> join : root.getJoins()) {
-                Class<?> cls = join.getAttribute().getJavaType();
-                if (join.getAttribute().isAssociation()) {
+                Attribute<?,?> attr = join.getAttribute();
+                Class<?> cls = attr.getJavaType();
+                // For plural attributes (Collection/List/Set/Map), use the
+                // element/value type for metadata lookup, not the collection type
+                if (attr instanceof PluralAttribute) {
+                    cls = ((PluralAttribute<?,?,?>)attr).getElementType().getJavaType();
+                }
+                if (attr.isAssociation()) {
                     ClassMetaData meta = metamodel.getRepository().getMetaData(cls, null, true);
                     PersistenceType type = MetamodelImpl.getPersistenceType(meta);
                     if (type == PersistenceType.ENTITY || type == PersistenceType.EMBEDDABLE)
