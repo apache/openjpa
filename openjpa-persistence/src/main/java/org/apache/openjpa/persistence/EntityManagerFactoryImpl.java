@@ -129,6 +129,10 @@ public class EntityManagerFactoryImpl
 
     @Override
     public Map<String,Object> getProperties() {
+        if (_factory.isClosed()) {
+            throw new IllegalStateException(
+                "EntityManagerFactory is closed.");
+        }
         if (properties == null) {
             Map<String,Object> props = _factory.getProperties();
             // convert to user readable values
@@ -218,11 +222,23 @@ public class EntityManagerFactoryImpl
     private OpenJPAEntityManagerSPI doCreateEM(SynchronizationType synchronizationType,
                                                Map props,
                                                boolean byPassSynchronizeMappings) {
+        if (_factory.isClosed()) {
+            throw new IllegalStateException(
+                "EntityManagerFactory is closed.");
+        }
         if (synchronizationType == null) {
             throw new NullPointerException("SynchronizationType must not be null");
         }
+        // Per JPA spec, SynchronizationType is only for JTA EntityManagerFactories.
+        // A RESOURCE_LOCAL EMF must throw IllegalStateException.
         if (SynchronizationType.UNSYNCHRONIZED.equals(synchronizationType)) {
-            throw new UnsupportedOperationException("TODO - implement JPA 2.1 feature");
+            if (getTransactionType() == PersistenceUnitTransactionType.RESOURCE_LOCAL) {
+                throw new IllegalStateException(
+                    "SynchronizationType.UNSYNCHRONIZED is not supported for " +
+                    "RESOURCE_LOCAL EntityManagerFactory.");
+            }
+            throw new IllegalStateException(
+                "SynchronizationType.UNSYNCHRONIZED is not yet supported.");
         }
 
         if (props == null) {
@@ -351,6 +367,10 @@ public class EntityManagerFactoryImpl
 
     @Override
     public void close() {
+        if (_factory.isClosed()) {
+            throw new IllegalStateException(
+                "EntityManagerFactory is already closed.");
+        }
         Log log = _factory.getConfiguration().getLog(OpenJPAConfiguration.LOG_RUNTIME);
         if (log.isTraceEnabled()) {
             log.trace(this + ".close() invoked.");
@@ -418,6 +438,10 @@ public class EntityManagerFactoryImpl
 
     @Override
     public OpenJPACriteriaBuilder getCriteriaBuilder() {
+        if (_factory.isClosed()) {
+            throw new IllegalStateException(
+                "EntityManagerFactory is closed.");
+        }
         return new CriteriaBuilderImpl().setMetaModel(getMetamodel());
     }
 
@@ -453,6 +477,10 @@ public class EntityManagerFactoryImpl
 
     @Override
     public PersistenceUnitUtil getPersistenceUnitUtil() {
+        if (_factory.isClosed()) {
+            throw new IllegalStateException(
+                "EntityManagerFactory is closed.");
+        }
         return this;
     }
 

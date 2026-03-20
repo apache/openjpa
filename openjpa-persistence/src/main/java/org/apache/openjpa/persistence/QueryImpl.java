@@ -443,6 +443,18 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
         }
 	}
 
+	/**
+	 * Asserts that this query is a SELECT query. Per JPA spec,
+	 * getLockMode() and setLockMode() must throw IllegalStateException
+	 * for UPDATE or DELETE queries.
+	 */
+	void assertSelectQuery() {
+        if (_query.getOperation() != QueryOperations.OP_SELECT) {
+            throw new IllegalStateException(_loc.get("not-select-query",
+                getQueryString()).getMessage());
+        }
+	}
+
 	@Override
     public OpenJPAQuery<X> closeAll() {
 		_query.closeAll();
@@ -458,6 +470,7 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
     public LockModeType getLockMode() {
         _em.assertNotCloseInvoked();
         assertJPQLOrCriteriaQuery();
+        assertSelectQuery();
         return getFetchPlan().getReadLockMode();
     }
 
@@ -473,6 +486,7 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
             ignorePreparedQuery();
         }
         assertJPQLOrCriteriaQuery();
+        assertSelectQuery();
        getFetchPlan().setReadLockMode(lockMode);
        return this;
     }

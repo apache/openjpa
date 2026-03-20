@@ -1013,9 +1013,10 @@ public class QueryImpl implements Query {
         // involved in this query, we have to execute in memory or flush
         boolean inMem = !_storeQuery.supportsDataStoreExecution()
             || _collection != null;
-        if (!inMem && (!_ignoreChanges || operation != OP_SELECT)
+        int flush = _fc.getFlushBeforeQueries();
+        if (!inMem && (!_ignoreChanges || operation != OP_SELECT
+            || flush == FLUSH_TRUE)
             && _broker.isActive() && isAccessPathDirty()) {
-            int flush = _fc.getFlushBeforeQueries();
             if ((flush == FLUSH_TRUE
                 || (flush == FLUSH_WITH_CONNECTION && _broker.hasConnection())
                 || operation != OP_SELECT
@@ -1191,7 +1192,7 @@ public class QueryImpl implements Query {
             switch (fmd.getDeclaredTypeCode()) {
                 case JavaTypes.BOOLEAN:
                     sm.settingBooleanField(into, i, sm.fetchBooleanField(i),
-                            val == null ? false : (Boolean) val,
+                            val != null && (Boolean) val,
                             set);
                     break;
                 case JavaTypes.BYTE:
@@ -1420,7 +1421,7 @@ public class QueryImpl implements Query {
                 if (!next)
                     return Collections.EMPTY_LIST;
                 // Collections.singletonList is JDK 1.3, so...
-                return Arrays.asList(new Object[]{ single });
+                return Arrays.asList(single);
             }
 
             // return single result
@@ -1548,12 +1549,11 @@ public class QueryImpl implements Query {
                     _query = _query.trim();
                 return true;
             }
-            if (!(query instanceof QueryImpl))
+            if (!(query instanceof QueryImpl q))
                 return _storeQuery.setQuery(query);
 
             // copy all non-transient state from the given query
             invalidateCompilation();
-            QueryImpl q = (QueryImpl) query;
             _class = q._class;
             _subclasses = q._subclasses;
             _query = q._query;
@@ -1882,11 +1882,10 @@ public class QueryImpl implements Query {
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder(255);
-        buf.append("Query: ").append(super.toString());
-        buf.append("; candidate class: ").append(_class);
-        buf.append("; query: ").append(_query);
-        return buf.toString();
+        String buf = "Query: " + super.toString() +
+                "; candidate class: " + _class +
+                "; query: " + _query;
+        return buf;
     }
 
     /**

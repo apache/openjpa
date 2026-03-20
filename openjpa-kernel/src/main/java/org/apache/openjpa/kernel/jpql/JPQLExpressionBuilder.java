@@ -1156,12 +1156,27 @@ public class JPQLExpressionBuilder
 
             case JJTINTEGERLITERAL:
                 // use BigDecimal because it can handle parsing exponents
+                boolean hasLongSuffix = node.text.endsWith("l")
+                    || node.text.endsWith("L");
                 BigDecimal intlit = new BigDecimal
-                    (node.text.endsWith("l") || node.text.endsWith("L")
+                    (hasLongSuffix
                         ? node.text.substring(0, node.text.length() - 1)
                         : node.text).
                     multiply(new BigDecimal(negative(node)));
-                return factory.newLiteral(intlit.longValue(),
+                // Per JPA spec section 4.8.5, use Integer for literals
+                // that fit in int range (unless explicitly suffixed with L).
+                // This ensures Short/Integer arithmetic produces Integer,
+                // not Long.
+                long longVal = intlit.longValue();
+                Object litVal;
+                if (!hasLongSuffix
+                    && longVal >= Integer.MIN_VALUE
+                    && longVal <= Integer.MAX_VALUE) {
+                    litVal = (int) longVal;
+                } else {
+                    litVal = longVal;
+                }
+                return factory.newLiteral(litVal,
                     Literal.TYPE_NUMBER);
 
             case JJTDECIMALLITERAL:

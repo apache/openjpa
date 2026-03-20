@@ -106,11 +106,11 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
     private Log _log = null;
 
     // track the pending statements so we can cancel them
-    private List<Statement> _stmnts = Collections.synchronizedList(new ArrayList<>());
+    private final List<Statement> _stmnts = Collections.synchronizedList(new ArrayList<>());
 
     // pool statements so that we can try to reuse rather than recreate
-    private List<CancelPreparedStatement> _cancelPreparedStatementsPool = new ArrayList<>();
-    private List<CancelStatement> _cancelStatementPool = new ArrayList<>();
+    private final List<CancelPreparedStatement> _cancelPreparedStatementsPool = new ArrayList<>();
+    private final List<CancelStatement> _cancelStatementPool = new ArrayList<>();
 
     @Override
     public StoreContext getContext() {
@@ -467,8 +467,16 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
                             continue;
                         }
                         OpenJPAStateManager sm = (OpenJPAStateManager) pc.pcGetStateManager();
-                        ClassMapping cm =
-                                (ClassMapping) _conf.getMetaDataRepositoryInstance().getCachedMetaData(pc.getClass());
+                        if (sm == null) {
+                            continue;
+                        }
+                        // Use sm.getMetaData() instead of getCachedMetaData(pc.getClass())
+                        // because for runtime-enhanced (subclassed) entities, pc.getClass()
+                        // returns the generated subclass which is not registered in metadata.
+                        ClassMapping cm = (ClassMapping) sm.getMetaData();
+                        if (cm == null) {
+                            continue;
+                        }
                         FieldMapping[] fmd = cm.getFieldMappings();
                         for (FieldMapping fieldMapping : fmd) {
                             // don't check the oids for basic fields.
@@ -514,9 +522,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
      * implementation of checking whether the result set is empty or not.
      */
     protected boolean isEmptyResult(Result res) throws SQLException {
-        if (res != null && !res.next())
-            return true;
-        return false;
+        return res != null && !res.next();
     }
 
     /**
@@ -1229,10 +1235,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
     private boolean getJoinedSupers(Select sel, ClassMapping mapping, int subs, boolean outer) {
         loadSubclasses(mapping);
         Joins joins = (outer) ? sel.newOuterJoins() : null;
-        boolean includeSubs = false;
-        if (subs == Select.SUBS_JOINABLE || subs == Select.SUBS_ANY_JOINABLE) {
-            includeSubs = true;
-        }
+        boolean includeSubs = subs == Select.SUBS_JOINABLE || subs == Select.SUBS_ANY_JOINABLE;
         return mapping.getDiscriminator().addClassConditions(sel, includeSubs, joins);
     }
 
@@ -1245,7 +1248,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             }
             else {
                 if (mapping.getDiscriminator() != null
-                    && SuperclassDiscriminatorStrategy.class.isInstance(mapping.getDiscriminator().getStrategy())
+                    && mapping.getDiscriminator().getStrategy() instanceof SuperclassDiscriminatorStrategy
                     && mapping.getMappingRepository().getConfiguration().getCompatibilityInstance()
                         .getSuperclassDiscriminatorStrategyByDefault()) {
                     retVal = true;
