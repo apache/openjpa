@@ -189,7 +189,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
     Object convertTemporalType(Date value, TemporalType type) {
         switch (type) {
         case DATE:
-            return value;
+            return new java.sql.Date(value.getTime());
         case TIME:
             return new Time(value.getTime());
         case TIMESTAMP:

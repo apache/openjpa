@@ -74,6 +74,7 @@ import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Broker;
+import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.DataCacheRetrieveMode;
 import org.apache.openjpa.kernel.DataCacheStoreMode;
 import org.apache.openjpa.kernel.DelegatingBroker;
@@ -612,10 +613,65 @@ public class EntityManagerImpl
         _broker.setLifecycleListenerCallbackMode(callbackMode);
     }
 
+    /**
+     * Validates that the given primary key value is of the correct type for the
+     * given entity class. Throws IllegalArgumentException if the entity class
+     * is not a managed entity, if the PK is null, or if the PK type does not
+     * match the entity's declared primary key type.
+     *
+     * @param cls the entity class
+     * @param oid the primary key value
+     * @param methodName the calling method name for error messages
+     */
+    private void validatePrimaryKey(Class<?> cls, Object oid, String methodName) {
+        MetaDataRepository repo = _broker.getConfiguration()
+            .getMetaDataRepositoryInstance();
+        ClassMetaData meta = repo.getMetaData(cls, null, false);
+        if (meta == null) {
+            throw new IllegalArgumentException(
+                _loc.get("not-entity", cls).getMessage());
+        }
+        if (oid == null) {
+            throw new IllegalArgumentException(
+                _loc.get("null-pk", cls).getMessage());
+        }
+        // For application identity with OpenJPA single-field identity,
+        // validate the PK value type matches the declared PK field type
+        if (meta.getIdentityType() == ClassMetaData.ID_APPLICATION
+            && meta.isOpenJPAIdentity()) {
+            FieldMetaData[] pkFields = meta.getPrimaryKeyFields();
+            if (pkFields.length == 1) {
+                Class<?> expectedType =
+                    Filters.wrap(pkFields[0].getDeclaredType());
+                Class<?> actualType = Filters.wrap(oid.getClass());
+                if (!expectedType.isAssignableFrom(actualType)) {
+                    throw new IllegalArgumentException(
+                        _loc.get("bad-pk-type", cls,
+                            expectedType.getName(),
+                            actualType.getName()).getMessage());
+                }
+            }
+        } else if (meta.getIdentityType() == ClassMetaData.ID_APPLICATION) {
+            // Composite PK: the oid must be assignable to the ID class
+            // or be a stringified form or Object[] (handled by newObjectId)
+            Class<?> idClass = meta.getObjectIdType();
+            if (idClass != null
+                && !ImplHelper.isAssignable(idClass, oid.getClass())
+                && !(oid instanceof String)
+                && !(oid instanceof Object[])) {
+                throw new IllegalArgumentException(
+                    _loc.get("bad-pk-type", cls,
+                        idClass.getName(),
+                        oid.getClass().getName()).getMessage());
+            }
+        }
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getReference(Class<T> cls, Object oid) {
         assertNotCloseInvoked();
+        validatePrimaryKey(cls, oid, "getReference");
         oid = _broker.newObjectId(cls, oid);
         return (T) _broker.find(oid, false, this);
     }

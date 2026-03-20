@@ -4520,11 +4520,21 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             boolean removed = false;
             if (_derefAdditions != null)
                 removed = _derefAdditions.remove(sm);
-            if (!removed && (_derefCache == null || !_derefCache.remove(sm)))
+            if (!removed && (_derefCache == null || !_derefCache.remove(sm))) {
+                // When a removed entity with orphanRemoval is re-persisted
+                // and cascade-persist reaches the orphaned dependent, the
+                // dependent may have already been cleaned up from the deref
+                // cache during flush. Allow this for deleted or newly
+                // re-persisted entities instead of throwing.
+                PCState state = sm.getPCState();
+                if (state != null && (state.isDeleted() || state.isNew())) {
+                    return;
+                }
                 throw new InvalidStateException(_loc.get("not-derefed",
                     Exceptions.toString(sm.getManagedInstance()))).
                     setFailedObject(sm.getManagedInstance()).
                     setFatal(true);
+            }
         } finally {
             unlock();
         }

@@ -1608,8 +1608,8 @@ public class AnnotationPersistenceMetaDataParser
             fmd.setMappedBy(anno.mappedBy());
         if (anno.targetEntity() != void.class)
             fmd.setTypeOverride(anno.targetEntity());
-        setCascades(fmd, anno.cascade());
         setOrphanRemoval(fmd, anno.orphanRemoval());
+        setCascades(fmd, anno.cascade());
         fmd.setAssociationType(FieldMetaData.ONE_TO_ONE);
     }
 
@@ -1649,8 +1649,8 @@ public class AnnotationPersistenceMetaDataParser
             fmd.setMappedBy(anno.mappedBy());
         if (anno.targetEntity() != void.class)
             fmd.getElement().setDeclaredType(anno.targetEntity());
-        setCascades(fmd.getElement(), anno.cascade());
         setOrphanRemoval(fmd.getElement(), anno.orphanRemoval());
+        setCascades(fmd.getElement(), anno.cascade());
         fmd.setAssociationType(FieldMetaData.ONE_TO_MANY);
     }
 
