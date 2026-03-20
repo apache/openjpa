@@ -188,6 +188,8 @@ TOKEN [ IGNORE_CASE ]: /* basics */
 	|   < LONG: "LONG" >
 	|   < FLOAT: "FLOAT" >
 	|   < DOUBLE: "DOUBLE" >
+	|   < TREAT: "TREAT" >
+	|   < ON: "ON" >
 }
 
 TOKEN [ IGNORE_CASE ]: /* aggregates */
@@ -505,7 +507,8 @@ void subquery_from_item() : { }
 
 void inner_join() #INNERJOIN : { }
 {
-	[<INNER>] <JOIN> path() [<AS>] identification_variable()
+	[<INNER>] <JOIN> (LOOKAHEAD(treat_join_path()) treat_join_path() | path()) [LOOKAHEAD(1)<AS>] identification_variable()
+	[LOOKAHEAD(<ON>) join_on_clause()]
 }
 
 
@@ -518,7 +521,13 @@ void collection_member_declaration() #INNERJOIN : { }
 
 void outer_join() #OUTERJOIN : { }
 {
-	<LEFT> [ <OUTER>] <JOIN> path() [ LOOKAHEAD(1)<AS>] identification_variable()
+	<LEFT> [ <OUTER>] <JOIN> (LOOKAHEAD(treat_join_path()) treat_join_path() | path()) [ LOOKAHEAD(1)<AS>] identification_variable()
+	[LOOKAHEAD(<ON>) join_on_clause()]
+}
+
+void join_on_clause() #JOINON : { }
+{
+	<ON> "(" conditional_expression() ")"
 }
 
 
@@ -545,6 +554,18 @@ void path() #PATH : { }
 	// a path is any dot-separated path expression starting with a
 	// non-reserved word
 	identification_variable() (LOOKAHEAD(2) <DOT> path_component())+
+}
+
+void treat_join_path() #TREATJOIN : { }
+{
+	// TREAT(path AS Type) - used in JOIN clauses
+	<TREAT> "(" path() <AS> abstract_schema_name() ")"
+}
+
+void treat_path() #TREATPATH : { }
+{
+	// TREAT(identifier AS Type).field... - used in WHERE/SELECT clauses
+	<TREAT> "(" identification_variable() <AS> abstract_schema_name() ")" (LOOKAHEAD(2) <DOT> path_component())+
 }
 
 
@@ -613,6 +634,7 @@ void select_expression() #SELECTEXPRESSION : { }
 {
 	(LOOKAHEAD(scalar_expression()) scalar_expression()
 		| LOOKAHEAD(aggregate_select_expression()) aggregate_select_expression()
+		| LOOKAHEAD(treat_path()) treat_path()
 		| LOOKAHEAD(path()) path()
 		| LOOKAHEAD(qualified_path()) qualified_path()
 		| LOOKAHEAD(qualified_identification_variable()) qualified_identification_variable()
@@ -1046,6 +1068,7 @@ void arithmetic_factor() : { }
 {
 	numeric_literal() |
 	input_parameter() |
+	LOOKAHEAD(treat_path()) treat_path() |
 	LOOKAHEAD(path()) path() |
 	LOOKAHEAD(qualified_path()) qualified_path() |
 	LOOKAHEAD(general_identification_variable()) general_identification_variable() |
@@ -1215,7 +1238,7 @@ void string_expression() : { }
 
 void string_primary() : { }
 {
-	string_literal() | string_literal2() | LOOKAHEAD(path()) path() |
+	string_literal() | string_literal2() | LOOKAHEAD(treat_path()) treat_path() | LOOKAHEAD(path()) path() |
 	LOOKAHEAD(qualified_path()) qualified_path() |
 	LOOKAHEAD(general_identification_variable()) general_identification_variable() |
 	LOOKAHEAD(identification_variable()) identification_variable() |
@@ -1235,7 +1258,7 @@ void datetime_expression() : { }
 void datetime_primary() : { }
 {
     date_literal() | time_literal() | timestamp_literal() |
-	LOOKAHEAD(path()) path() | functions_returning_datetime() | input_parameter() | aggregate_select_expression()
+	LOOKAHEAD(treat_path()) treat_path() | LOOKAHEAD(path()) path() | functions_returning_datetime() | input_parameter() | aggregate_select_expression()
 	| LOOKAHEAD(qualified_path()) qualified_path()
 	| LOOKAHEAD(general_identification_variable()) general_identification_variable()
 	| LOOKAHEAD(identification_variable()) identification_variable()
@@ -1257,7 +1280,7 @@ void boolean_expression() : { }
 
 void boolean_primary() : { }
 {
-	LOOKAHEAD(path()) path() | boolean_literal() | input_parameter()
+	LOOKAHEAD(treat_path()) treat_path() | LOOKAHEAD(path()) path() | boolean_literal() | input_parameter()
 	| LOOKAHEAD(qualified_path()) qualified_path()
 	| LOOKAHEAD(general_identification_variable()) general_identification_variable()
 	| LOOKAHEAD(identification_variable()) identification_variable()
@@ -1273,7 +1296,8 @@ void enum_expression() : { }
 
 void enum_primary() : { }
 {
-	LOOKAHEAD(2) path()
+	LOOKAHEAD(treat_path()) treat_path()
+	| LOOKAHEAD(2) path()
 	| LOOKAHEAD(enum_literal()) enum_literal()
 	| LOOKAHEAD(input_parameter()) input_parameter()
 	| LOOKAHEAD(qualified_path()) qualified_path()
@@ -1652,6 +1676,8 @@ void path_component() #IDENTIFICATIONVARIABLE :
 	| t = <UNION>
 	| t = <INTERSECT>
 	| t = <EXCEPT>
+	| t = <TREAT>
+	| t = <ON>
     ) { jjtThis.setToken (t); }
 }
 

@@ -196,11 +196,11 @@ public class TestPersistenceUnitUtil {
 
         MapEntity me = new MapEntity();
 
-        assertEquals(false, puu.isLoaded(me));
-        assertEquals(false, puu.isLoaded(me,"mapValEntity"));
-        assertEquals(false, puu.isLoaded(me, "mapEntities"));
+        assertFalse(puu.isLoaded(me));
+        assertFalse(puu.isLoaded(me, "mapValEntity"));
+        assertFalse(puu.isLoaded(me, "mapEntities"));
 
-        assertEquals(false, puu.isLoaded(mve));
+        assertFalse(puu.isLoaded(mve));
 
         // Create a circular ref
         me.setMapValEntity(mve);
@@ -215,11 +215,11 @@ public class TestPersistenceUnitUtil {
         em.persist(me);
         em.getTransaction().commit();
 
-        assertEquals(true, puu.isLoaded(me));
-        assertEquals(true, puu.isLoaded(me, "mapValEntity"));
-        assertEquals(true, puu.isLoaded(me, "mapEntities"));
+        assertTrue(puu.isLoaded(me));
+        assertTrue(puu.isLoaded(me, "mapValEntity"));
+        assertTrue(puu.isLoaded(me, "mapEntities"));
 
-        assertEquals(true, puu.isLoaded(mve));
+        assertTrue(puu.isLoaded(mve));
 
     }
 
@@ -360,7 +360,7 @@ public class TestPersistenceUnitUtil {
         kem.getFetchPlan().resetFetchGroups().removeFetchGroup("default")
             .addField(EagerEntity.class, "eagerEmbed");
         ee = em.find(EagerEntity.class, id);
-        assertEquals(true, puu.isLoaded(ee));
+        assertTrue(puu.isLoaded(ee));
     }
 	
 	@Test
@@ -498,10 +498,9 @@ public class TestPersistenceUnitUtil {
 			fail("Should have thrown PersistenceException");
 		} catch (PersistenceException ex) {
 			assertTrue(ex.getMessage().contains("not persistent"));
-			return;
-		}
+        }
 	}
-	
+
 	@Test
 	public void testGetManagedEntityClass() {
 		PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
@@ -510,11 +509,69 @@ public class TestPersistenceUnitUtil {
 			em.persist(e_);
 			return e_;
 		});
-		
+
 		e = (Eager) em.createQuery("SELECT a FROM EagerEntity AS a WHERE a.id = :id").setParameter("id", e.getId()).getSingleResult();
-		
+
 		Class<?> clazz = puu.getClass(e);
 		assertEquals(EagerEntity.class, clazz);
+	}
+
+	@Test
+	public void testGetIdentifierManaged() {
+		PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
+		EagerEntity ee = createEagerEntity();
+		int expectedId = ee.getId();
+
+		em.getTransaction().begin();
+		em.persist(ee);
+		em.getTransaction().commit();
+
+		Object id = puu.getIdentifier(ee);
+		assertNotNull(id);
+		assertEquals(expectedId, id);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetIdentifierNonEntity() {
+		PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
+		// Pass a non-entity object - should throw IllegalArgumentException
+		puu.getIdentifier("not an entity");
+	}
+
+	@Test
+	public void testIsInstanceManaged() {
+		PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
+		EagerEntity ee = createEagerEntity();
+
+		em.getTransaction().begin();
+		em.persist(ee);
+		em.getTransaction().commit();
+
+		EagerEntity found = em.find(EagerEntity.class, ee.getId());
+		assertTrue(puu.isInstance(found, EagerEntity.class));
+	}
+
+	@Test
+	public void testIsInstanceNonManaged() {
+		PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
+		EagerEntity ee = createEagerEntity();
+		// Not managed, so isInstance should return false
+		assertFalse(puu.isInstance(ee, EagerEntity.class));
+	}
+
+	@Test
+	public void testLoadAndIsLoaded() {
+		PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
+		EagerEntity ee = createEagerEntity();
+
+		em.getTransaction().begin();
+		em.persist(ee);
+		em.getTransaction().commit();
+		em.clear();
+
+		EagerEntity found = em.find(EagerEntity.class, ee.getId());
+		puu.load(found, "name");
+		assertTrue(puu.isLoaded(found, "name"));
 	}
 	
 	private void verifyIsLoadedEagerState(boolean loaded) {
@@ -550,8 +607,8 @@ public class TestPersistenceUnitUtil {
         LazyEntity le = createLazyEntity();
 
         // Vfy LoadState is false for the unmanaged entity
-        assertEquals(false, puu.isLoaded(le));
-        assertEquals(false, puu.isLoaded(le,"id"));
+        assertFalse(puu.isLoaded(le));
+        assertFalse(puu.isLoaded(le, "id"));
 
         em.getTransaction().begin();
         em.persist(le);
@@ -568,32 +625,32 @@ public class TestPersistenceUnitUtil {
         assertEquals(loaded, puu.isLoaded(le, "id"));
 
         // Name is lazy fetch so it should not be loaded
-        assertEquals(false, puu.isLoaded(le, "name"));
+        assertFalse(puu.isLoaded(le, "name"));
         assertEquals(loaded, puu.isLoaded(le, "lazyEmbed"));
-        assertEquals(false, puu.isLoaded(le, "transField"));
+        assertFalse(puu.isLoaded(le, "transField"));
 
         em.close();
     }
 
 	private void verifyPULoadState(EntityManager em, PersistenceUnitUtil... puu) {
 		Eager ee = createEagerEntity();
-		assertEquals(false, puu[0].isLoaded(ee));
-		assertEquals(false, puu[0].isLoaded(ee, "id"));
-		assertEquals(false, puu[1].isLoaded(ee));
-		assertEquals(false, puu[1].isLoaded(ee, "id"));
-		assertEquals(false, puu[2].isLoaded(ee));
-		assertEquals(false, puu[2].isLoaded(ee, "id"));
+        assertFalse(puu[0].isLoaded(ee));
+        assertFalse(puu[0].isLoaded(ee, "id"));
+        assertFalse(puu[1].isLoaded(ee));
+        assertFalse(puu[1].isLoaded(ee, "id"));
+        assertFalse(puu[2].isLoaded(ee));
+        assertFalse(puu[2].isLoaded(ee, "id"));
 
 		em.getTransaction().begin();
 		em.persist(ee);
 		em.getTransaction().commit();
 
-		assertEquals(true, puu[0].isLoaded(ee));
-		assertEquals(true, puu[0].isLoaded(ee, "id"));
-		assertEquals(false, puu[1].isLoaded(ee));
-		assertEquals(false, puu[1].isLoaded(ee, "id"));
-		assertEquals(false, puu[2].isLoaded(ee));
-		assertEquals(false, puu[2].isLoaded(ee, "id"));
+        assertTrue(puu[0].isLoaded(ee));
+        assertTrue(puu[0].isLoaded(ee, "id"));
+        assertFalse(puu[1].isLoaded(ee));
+        assertFalse(puu[1].isLoaded(ee, "id"));
+        assertFalse(puu[2].isLoaded(ee));
+        assertFalse(puu[2].isLoaded(ee, "id"));
 	}
 
     private EagerEntity createEagerEntity() {
@@ -633,7 +690,7 @@ public class TestPersistenceUnitUtil {
         assertEquals(state, pu.isLoaded(ent, "id"));
         assertEquals(state, pu.isLoaded(ent, "name"));
         assertEquals(state, pu.isLoaded(ent, "eagerEmbed"));
-        assertEquals(false, pu.isLoaded(ent, "transField"));
+        assertFalse(pu.isLoaded(ent, "transField"));
     }
 
     @AfterClass

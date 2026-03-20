@@ -1804,9 +1804,9 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
 
             if (isEmbedded()) {
                 if (isEmbeddedNotUpdatable())
-                    throw new UserException(_loc.get
-                        ("cant-update-embed-in-query-result")).setFailedObject
-                        (getManagedInstance());
+                    // JPA spec: embeddable objects returned from query
+                    // projections are not managed; allow free modification
+                    return Boolean.FALSE;
                 else if (!_owner.isDeleted())
                     // notify owner of change
                     _owner.dirty(_ownerIndex, Boolean.TRUE, loadFetchGroup);

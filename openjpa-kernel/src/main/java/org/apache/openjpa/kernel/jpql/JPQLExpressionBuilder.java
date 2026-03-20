@@ -841,19 +841,69 @@ public class JPQLExpressionBuilder
         // the type will be the declared type for the field
         JPQLNode firstChild = firstChild(node);
         Path path = null;
-        if (firstChild.id == JJTQUALIFIEDPATH)
-            path = getQualifiedPath(firstChild);
-        else
-            path = getPath(firstChild, false, inner);
+        JPQLNode alias = null;
+        JPQLNode onClauseNode = null;
 
-        JPQLNode alias = node.getChildCount() >= 2 ? right(node) : null;
+        ClassMetaData treatTargetType = null;
+        if (firstChild.id == JJTTREATJOIN) {
+            // JOIN TREAT(path AS Type) alias
+            // TREATJOIN has children: PATH, ABSTRACTSCHEMANAME
+            JPQLNode pathNode = firstChild(firstChild);
+            path = getPath(pathNode, false, inner);
+            // Get the target type from ABSTRACTSCHEMANAME
+            JPQLNode schemaNode = firstChild.children[1];
+            String schemaName = assemble(schemaNode);
+            treatTargetType = getClassMetaData(schemaName, true);
+            // Find alias and ON clause among children of the join node
+            for (int i = 1; i < node.getChildCount(); i++) {
+                JPQLNode child = node.children[i];
+                if (child.id == JJTIDENTIFIER) {
+                    alias = child;
+                } else if (child.id == JJTJOINON) {
+                    onClauseNode = child;
+                }
+            }
+        } else {
+            if (firstChild.id == JJTQUALIFIEDPATH)
+                path = getQualifiedPath(firstChild);
+            else
+                path = getPath(firstChild, false, inner);
+
+            // Find alias and ON clause among children
+            for (int i = 1; i < node.getChildCount(); i++) {
+                JPQLNode child = node.children[i];
+                if (child.id == JJTJOINON) {
+                    onClauseNode = child;
+                } else if (child.id == JJTIDENTIFIER) {
+                    alias = child;
+                }
+            }
+        }
+
         // OPENJPA-15 support subquery's from clause do not start with
         // identification_variable_declaration()
         if (inner && ctx().getParent() != null && ctx().schemaAlias == null) {
             return getSubquery(alias.text, path, exp);
         }
 
-        return addJoin(path, alias, exp);
+        // First register the join (which binds the alias variable)
+        Expression joinExp = addJoin(path, alias, exp);
+
+        // For TREAT join, set the variable's metadata to the subclass type
+        // so that accessing subclass-specific fields works correctly
+        if (treatTargetType != null && alias != null) {
+            Value var = getVariable(alias.text, false);
+            if (var != null) {
+                var.setMetaData(treatTargetType);
+            }
+        }
+
+        // Then evaluate ON condition (which may reference the join variable)
+        if (onClauseNode != null) {
+            Expression onCondition = getExpression(onClauseNode.children[0]);
+            joinExp = and(joinExp, onCondition);
+        }
+        return joinExp;
     }
 
     private Expression addJoin(Path path, JPQLNode aliasNode,
@@ -1013,9 +1063,7 @@ public class JPQLExpressionBuilder
     @Override
     protected boolean isSeenVariable(String var) {
         Context c = ctx().findContext(var);
-        if (c != null)
-            return true;
-        return false;
+        return c != null;
     }
 
     /**
@@ -1288,6 +1336,9 @@ public class JPQLExpressionBuilder
 
             case JJTPATH:
                 return getPathOrConstant(node);
+
+            case JJTTREATPATH:
+                return getTreatPath(node);
 
             case JJTIDENTIFIER:
             case JJTIDENTIFICATIONVARIABLE:
@@ -2155,6 +2206,56 @@ public class JPQLExpressionBuilder
         }
     }
 
+    /**
+     * Handle TREAT(identifier AS Type).field... path expression.
+     * TREATPATH node children: IDENTIFIER, ABSTRACTSCHEMANAME, IDENTIFICATIONVARIABLE+
+     */
+    private Value getTreatPath(JPQLNode node) {
+        // child 0: IDENTIFIER (the variable, e.g. "p")
+        JPQLNode identNode = node.children[0];
+        String name = identNode.text;
+
+        // child 1: ABSTRACTSCHEMANAME (the target subclass type)
+        JPQLNode schemaNode = node.children[1];
+        String schemaName = assemble(schemaNode);
+        ClassMetaData treatMeta = getClassMetaData(schemaName, true);
+
+        // Resolve the base path using the variable
+        Path path = null;
+        final Value val = getVariable(name, false);
+
+        if (name.equalsIgnoreCase(ctx().schemaAlias)) {
+            if (ctx().subquery != null) {
+                path = factory.newPath(ctx().subquery);
+                path.setMetaData(ctx().subquery.getMetaData());
+            } else {
+                path = factory.newPath();
+                path.setMetaData(ctx().meta);
+            }
+        } else if (getMetaDataForAlias(name) != null) {
+            path = newPath(null, getMetaDataForAlias(name));
+        } else if (val instanceof Path) {
+            path = (Path) val;
+        } else if (val.getMetaData() != null) {
+            path = newPath(val, val.getMetaData());
+        } else {
+            throw parseException(EX_USER, "path-invalid",
+                new Object[]{ assemble(node), name }, null);
+        }
+
+        path.setSchemaAlias(name);
+
+        // Override the metadata to the treat target type
+        path.setMetaData(treatMeta);
+
+        // Walk through the remaining children (path components after the dot)
+        for (int i = 2; i < node.children.length; i++) {
+            path = (Path) traversePath(path, node.children[i].text, false, true);
+        }
+
+        return path;
+    }
+
     private Path getPath(JPQLNode node) {
         return getPath(node, false, true);
     }
@@ -2244,7 +2345,7 @@ public class JPQLExpressionBuilder
         int nChild = node.getChildCount();
 
         Object val = eval(lastChild(node));
-        Object exp[] = new Expression[nChild - 2];
+        Object[] exp = new Expression[nChild - 2];
         for (int i = 1; i < nChild - 1; i++)
             exp[i-1] = eval(node.children[i]);
 
@@ -2259,7 +2360,7 @@ public class JPQLExpressionBuilder
         int nChild = node.getChildCount();
 
         Object val = eval(lastChild(node));
-        Object exp[] = new Expression[nChild - 1];
+        Object[] exp = new Expression[nChild - 1];
         for (int i = 0; i < nChild - 1; i++)
             exp[i] = eval(node.children[i]);
 
@@ -2281,7 +2382,7 @@ public class JPQLExpressionBuilder
     private Value getCoalesceExpression(JPQLNode node) {
         int nChild = node.getChildCount();
 
-        Object vals[] = new Value[nChild];
+        Object[] vals = new Value[nChild];
         for (int i = 0; i < nChild; i++)
             vals[i] = eval(node.children[i]);
 
@@ -2518,7 +2619,7 @@ public class JPQLExpressionBuilder
             if (children == null) {
                 children = new JPQLNode[i + 1];
             } else if (i >= children.length) {
-                JPQLNode c[] = new JPQLNode[i + 1];
+                JPQLNode[] c = new JPQLNode[i + 1];
                 System.arraycopy(children, 0, c, 0, children.length);
                 children = c;
             }
@@ -2560,7 +2661,7 @@ public class JPQLExpressionBuilder
         }
 
         public String toString(String prefix) {
-            return prefix + toString();
+            return prefix + this;
         }
 
         /**
@@ -2694,7 +2795,7 @@ public class JPQLExpressionBuilder
         }
 
         if (numericParms) {
-            if (!parameterTypes.keySet().contains(1)) {
+            if (!parameterTypes.containsKey(1)) {
                 throw new UserException(_loc.get("missing-positional-parameter", resolver.getQueryContext()
                     .getQueryString(), parameterTypes.keySet().toString()));
             }

@@ -196,7 +196,11 @@ public class EntityManagerImpl
 
     @Override
     public OpenJPAEntityManagerFactory getEntityManagerFactory() {
-        assertNotCloseInvoked();
+        try {
+            assertNotCloseInvoked();
+        } catch (RuntimeException re) {
+            throw translateException(re);
+        }
         return _emf;
     }
 
@@ -662,6 +666,10 @@ public class EntityManagerImpl
     @SuppressWarnings("unchecked")
     public <T> T find(Class<T> cls, Object oid, LockModeType mode, Map<String, Object> properties) {
         assertNotCloseInvoked();
+        if (oid == null) {
+            throw new IllegalArgumentException(
+                _loc.get("null-pk", cls).getMessage());
+        }
         properties = cloneProperties(properties);
         configureCurrentCacheModes(pushFetchPlan(), properties);
         configureCurrentFetchPlan(getFetchPlan(), properties, mode, true);
@@ -748,6 +756,7 @@ public class EntityManagerImpl
     @Override
     public void begin() {
         _broker.begin();
+        _isJoinedToTransaction = true;
     }
 
     @Override
@@ -756,8 +765,7 @@ public class EntityManagerImpl
             _broker.commit();
         } catch (RollbackException | IllegalStateException e) {
             throw e;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
         	// Per JPA 2.0 spec, if the exception was due to a JSR-303
             // constraint violation, the ConstraintViolationException should be
             // thrown.  Since JSR-303 is optional, the cast to RuntimeException
@@ -777,12 +785,15 @@ public class EntityManagerImpl
             }
 
             throw new RollbackException(e).setFailedObject(failedObject);
+        } finally {
+            _isJoinedToTransaction = false;
         }
     }
 
     @Override
     public void rollback() {
         _broker.rollback();
+        _isJoinedToTransaction = false;
     }
 
     @Override
@@ -1353,7 +1364,11 @@ public class EntityManagerImpl
 
     @Override
     public StoredProcedureQuery createStoredProcedureQuery(String procedureName) {
-        return newProcedure(procedureName, null);
+        try {
+            return newProcedure(procedureName, null);
+        } catch (PersistenceException pe) {
+            throw new IllegalArgumentException(pe.getMessage(), pe);
+        }
     }
 
     @Override
@@ -1363,7 +1378,11 @@ public class EntityManagerImpl
         for (Class<?> res : resultClasses) {
             meta.addComponent(res);
         }
-        return newProcedure(procedureName, meta);
+        try {
+            return newProcedure(procedureName, meta);
+        } catch (PersistenceException pe) {
+            throw new IllegalArgumentException(pe.getMessage(), pe);
+        }
     }
 
     @Override
@@ -1515,8 +1534,12 @@ public class EntityManagerImpl
 
     @Override
     public Object getDelegate() {
-        _broker.assertOpen();
-        assertNotCloseInvoked();
+        try {
+            _broker.assertOpen();
+            assertNotCloseInvoked();
+        } catch (RuntimeException re) {
+            throw translateException(re);
+        }
         return this;
     }
 
@@ -1987,6 +2010,14 @@ public class EntityManagerImpl
         if (entity == null)
             throw new IllegalArgumentException(_loc.get("null-detach").getMessage());
         assertNotCloseInvoked();
+        // Per JPA spec, detach should throw IAE if the argument is not an entity
+        ClassMetaData meta = _broker.getConfiguration()
+            .getMetaDataRepositoryInstance()
+            .getMetaData(entity.getClass(), null, false);
+        if (meta == null) {
+            throw translateException(new IllegalArgumentException(
+                _loc.get("not-entity", entity.getClass()).getMessage()));
+        }
         _broker.detach(entity, this);
     }
 
@@ -2013,6 +2044,9 @@ public class EntityManagerImpl
                 facadeQuery.declareParameter(param, param);
             }
             return facadeQuery;
+        } catch (IllegalStateException ise) {
+            // Per JPA spec, createQuery(CriteriaQuery) throws IAE for invalid criteria
+            throw new IllegalArgumentException(ise.getMessage(), ise);
         } catch (RuntimeException re) {
             throw translateException(re);
         }
@@ -2110,7 +2144,11 @@ public class EntityManagerImpl
 
     @Override
     public OpenJPACriteriaBuilder getCriteriaBuilder() {
-        assertNotCloseInvoked();
+        try {
+            assertNotCloseInvoked();
+        } catch (RuntimeException re) {
+            throw translateException(re);
+        }
         return _emf.getCriteriaBuilder();
     }
 
@@ -2226,7 +2264,11 @@ public class EntityManagerImpl
 
     @Override
     public Metamodel getMetamodel() {
-        assertNotCloseInvoked();
+        try {
+            assertNotCloseInvoked();
+        } catch (RuntimeException re) {
+            throw translateException(re);
+        }
         return _emf.getMetamodel();
     }
 
@@ -2398,9 +2440,40 @@ public class EntityManagerImpl
 	@SuppressWarnings("unchecked")
 	public <T> T getReference(T entity) {
 		assertNotCloseInvoked();
-		assertValidAttchedEntity("getReference", entity);
-		Object oid = _broker.getObjectId(entity);
-		return (T) _broker.find(oid, false, this);
+		if (entity == null) {
+			throw new IllegalArgumentException("entity is null");
+		}
+		// JPA 3.2: getReference(entity) extracts the entity class and PK,
+		// then delegates to getReference(Class, Object) for lazy loading
+		Class<T> entityClass = (Class<T>) entity.getClass();
+		ClassMetaData meta = _broker.getConfiguration()
+			.getMetaDataRepositoryInstance()
+			.getMetaData(entityClass, null, false);
+		if (meta == null) {
+			throw new IllegalArgumentException(
+				_loc.get("not-entity", entityClass).getMessage());
+		}
+		// Extract the primary key value from the entity instance
+		FieldMetaData[] pkFields = meta.getPrimaryKeyFields();
+		Object pk = null;
+		if (pkFields.length == 1) {
+			FieldMetaData pkField = pkFields[0];
+			if (pkField.getBackingMember() instanceof Method) {
+				try {
+					pk = ((Method) pkField.getBackingMember()).invoke(entity);
+				} catch (Exception e) {
+					throw new IllegalArgumentException("Cannot extract PK from entity", e);
+				}
+			} else if (pkField.getBackingMember() instanceof Field f) {
+				try {
+                    f.setAccessible(true);
+					pk = f.get(entity);
+				} catch (Exception e) {
+					throw new IllegalArgumentException("Cannot extract PK from entity", e);
+				}
+			}
+		}
+		return getReference(entityClass, pk);
 	}
 
 	@Override

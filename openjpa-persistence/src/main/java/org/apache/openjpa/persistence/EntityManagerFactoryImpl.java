@@ -44,6 +44,7 @@ import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.spi.LoadState;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.kernel.AutoDetach;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerFactory;
@@ -675,6 +676,10 @@ public class EntityManagerFactoryImpl
      */
     @Override
     public Object getIdentifier(Object entity) {
+        if (!ImplHelper.isManageable(entity)) {
+            throw new IllegalArgumentException(_loc.get("invalid_entity_argument",
+                    "getIdentifier", entity == null ? "null" : Exceptions.toString(entity)).getMessage());
+        }
         return OpenJPAPersistenceUtil.getIdentifier(this, entity);
     }
 
@@ -782,9 +787,18 @@ public class EntityManagerFactoryImpl
     
     @Override
     public boolean isInstance(Object entity, Class<?> entityClass) {
-    	return entity != null && entityClass != null
-    			&& OpenJPAPersistenceUtil.isManagedBy(this, entity)
-    			&& entityClass.isAssignableFrom(entity.getClass());
+        if (entity == null || entityClass == null) {
+            return false;
+        }
+        if (!OpenJPAPersistenceUtil.isManagedBy(this, entity)) {
+            return false;
+        }
+        // Use the metadata's described type to handle unenhanced entity subclasses
+        Class<?> entityType = OpenJPAPersistenceUtil.getClass(this, entity);
+        if (entityType != null) {
+            return entityClass.isAssignableFrom(entityType);
+        }
+        return entityClass.isAssignableFrom(entity.getClass());
     }
     
     @Override
