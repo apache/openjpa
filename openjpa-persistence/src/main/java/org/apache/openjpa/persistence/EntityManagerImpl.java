@@ -1320,6 +1320,19 @@ public class EntityManagerImpl
             Object[] values = meta.getHintValues();
             for (int i = 0; i < hints.length; i++)
                 q.setHint(hints[i], values[i]);
+
+            // Restore JPA-level properties from addNamedQuery (JPA 3.2)
+            if (meta.getFlushType() != -1) {
+                q.setFlushMode(fromFlushBeforeQueries(meta.getFlushType()));
+            }
+            if (meta.getMaxResults() != -1) {
+                q.setMaxResults(meta.getMaxResults());
+            }
+            if (meta.getLockMode() != null) {
+                q.setLockMode(jakarta.persistence.LockModeType.valueOf(
+                    meta.getLockMode()));
+            }
+
             return q;
         } catch (RuntimeException re) {
             throw translateException(re);

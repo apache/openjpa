@@ -433,6 +433,10 @@ public class EntityManagerFactoryImpl
 
     @Override
     public MetamodelImpl getMetamodel() {
+        if (!isOpen()) {
+            throw new IllegalStateException(
+                "EntityManagerFactory is closed.");
+        }
         if (_metaModel == null) {
             MetaDataRepository mdr = getConfiguration().getMetaDataRepositoryInstance();
             mdr.setValidate(MetaDataRepository.VALIDATE_RUNTIME, true);
@@ -454,11 +458,49 @@ public class EntityManagerFactoryImpl
 
     @Override
     public void addNamedQuery(String name, Query query) {
-        org.apache.openjpa.kernel.Query kernelQuery = ((QueryImpl<?>)query).getDelegate();
-        MetaDataRepository metaDataRepositoryInstance = _factory.getConfiguration().getMetaDataRepositoryInstance();
-        QueryMetaData metaData = metaDataRepositoryInstance.newQueryMetaData(null, null);
+        QueryImpl<?> queryImpl = (QueryImpl<?>) query;
+        org.apache.openjpa.kernel.Query kernelQuery = queryImpl.getDelegate();
+        MetaDataRepository repos = _factory.getConfiguration().getMetaDataRepositoryInstance();
+        QueryMetaData metaData = repos.newQueryMetaData(null, name);
         metaData.setFrom(kernelQuery);
-        metaDataRepositoryInstance.addQueryMetaData(metaData);
+
+        // Capture JPA-level query properties per JPA 3.2 spec
+        // FlushMode
+        try {
+            jakarta.persistence.FlushModeType fm = query.getFlushMode();
+            if (fm != null) {
+                metaData.setFlushType(
+                    EntityManagerImpl.toFlushBeforeQueries(fm));
+            }
+        } catch (Exception e) {
+            // ignore if not supported for this query type
+        }
+
+        // MaxResults
+        try {
+            int maxResults = query.getMaxResults();
+            if (maxResults != Integer.MAX_VALUE) {
+                metaData.setMaxResults(maxResults);
+            }
+        } catch (Exception e) {
+            // ignore if not supported for this query type
+        }
+
+        // LockMode (only for JPQL and Criteria queries, not native)
+        try {
+            jakarta.persistence.LockModeType lm = query.getLockMode();
+            if (lm != null) {
+                metaData.setLockMode(lm.name());
+            }
+        } catch (Exception e) {
+            // ignore - native queries don't support getLockMode()
+        }
+
+        // Remove any existing query with this name, then add the new one
+        repos.removeQueryMetaData(repos.getQueryMetaData(null, name,
+            _factory.getConfiguration().getClassResolverInstance()
+                .getClassLoader(null, null), false));
+        repos.addQueryMetaData(metaData);
     }
 
     @Override

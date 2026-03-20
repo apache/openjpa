@@ -554,6 +554,17 @@ public class AnnotationPersistenceMappingParser
         for (AttributeOverride attr : attrs) {
             if (StringUtil.isEmpty(attr.name()))
                 throw new MetaDataException(_loc.get("no-override-name", cm));
+
+            // First check if this is the entity's own declared field.
+            // @AttributeOverride on an entity class can override column
+            // mappings for its own fields (not just inherited ones).
+            FieldMapping ownField = cm.getDeclaredFieldMapping(attr.name());
+            if (ownField != null) {
+                if (attr.column() != null)
+                    parseColumns(ownField, attr.column());
+                continue;
+            }
+
             sup = (FieldMapping) cm.getDefinedSuperclassField(attr.name());
             if (sup == null)
                 sup = (FieldMapping) cm.addDefinedSuperclassField(attr.name(),
@@ -1606,12 +1617,11 @@ public class AnnotationPersistenceMappingParser
                 embed = fm.getElementMapping().getEmbeddedMapping();
                 break;
             case JavaTypes.MAP: // a map
-                if (!isKey && !isValue)
-                    throw new MetaDataException(_loc.get("embed-override-name",
-                        fm, attrName));
                 if (isKey)
                     embed = getEmbeddedMapping(fm.getKeyMapping(), mustExist);
-                else if (isValue)
+                else
+                    // Per JPA spec, unqualified attribute override names
+                    // (and "value." prefixed names) refer to the map value
                     embed = getEmbeddedMapping(fm.getElementMapping(),
                         mustExist);
                 break;
@@ -1652,12 +1662,11 @@ public class AnnotationPersistenceMappingParser
                 embed = fm.getElementMapping();
                 break;
             case JavaTypes.MAP: // a map
-                if (!isKey && !isValue)
-                    throw new MetaDataException(_loc.get("embed-override-name",
-                        fm, attrName));
                 if (isKey)
                     embed = fm.getKeyMapping();
-                else if (isValue)
+                else
+                    // Per JPA spec, unqualified attribute override names
+                    // (and "value." prefixed names) refer to the map value
                     embed = fm.getElementMapping();
                 break;
             default: // an embeddable
