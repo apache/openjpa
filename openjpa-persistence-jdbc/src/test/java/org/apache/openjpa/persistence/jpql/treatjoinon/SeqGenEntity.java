@@ -18,18 +18,27 @@
  */
 package org.apache.openjpa.persistence.jpql.treatjoinon;
 
-import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.SequenceGenerators;
 import jakarta.persistence.Table;
 
+/**
+ * Entity using @SequenceGenerators container annotation.
+ * Tests that the parser correctly handles this JPA 3.1+ feature.
+ * Note: @GeneratedValue is NOT used here because Derby doesn't
+ * support native sequences - we only test metadata parsing.
+ */
 @Entity
-@Table(name = "TPRODUCT")
-@DiscriminatorValue("SW")
-public class TSoftwareProduct extends TProduct {
-    private double revisionNumber;
+@Table(name = "SEQGEN_ENTITY")
+@SequenceGenerators({
+    @SequenceGenerator(name = "TEST_SEQ_GEN", allocationSize = 1, initialValue = 10)
+})
+public class SeqGenEntity {
+    @Id
+    private int id;
 
-    public double getRevisionNumber() { return revisionNumber; }
-    public void setRevisionNumber(double revisionNumber) {
-        this.revisionNumber = revisionNumber;
-    }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 }

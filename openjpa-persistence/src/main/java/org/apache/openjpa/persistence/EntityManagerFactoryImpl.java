@@ -765,7 +765,49 @@ public class EntityManagerFactoryImpl
             throw new IllegalArgumentException(_loc.get("invalid_entity_argument",
                     "getIdentifier", entity == null ? "null" : Exceptions.toString(entity)).getMessage());
         }
-        return OpenJPAPersistenceUtil.getIdentifier(this, entity);
+        Object id = OpenJPAPersistenceUtil.getIdentifier(this, entity);
+        if (id != null) {
+            return id;
+        }
+        // For unmanaged entities (new, detached, or not yet persisted),
+        // read the identity field value directly from the entity using
+        // metadata and reflection.
+        return getIdentifierFromFields(entity);
+    }
+
+    /**
+     * Reads the identity field value directly from the entity using
+     * metadata, supporting both enhanced and unenhanced entities.
+     */
+    private Object getIdentifierFromFields(Object entity) {
+        try {
+            MetaDataRepository repos = _factory.getConfiguration()
+                .getMetaDataRepositoryInstance();
+            Class<?> cls = entity.getClass();
+            org.apache.openjpa.meta.ClassMetaData meta =
+                repos.getMetaData(cls, null, false);
+            if (meta == null) {
+                return null;
+            }
+            org.apache.openjpa.meta.FieldMetaData[] pkFields =
+                meta.getPrimaryKeyFields();
+            if (pkFields == null || pkFields.length == 0) {
+                return null;
+            }
+            if (pkFields.length == 1) {
+                java.lang.reflect.Member member = pkFields[0].getBackingMember();
+                if (member instanceof java.lang.reflect.Field f) {
+                    f.setAccessible(true);
+                    return f.get(entity);
+                } else if (member instanceof java.lang.reflect.Method m) {
+                    m.setAccessible(true);
+                    return m.invoke(entity);
+                }
+            }
+        } catch (Exception e) {
+            // If reflection fails, return null
+        }
+        return null;
     }
 
     @Override

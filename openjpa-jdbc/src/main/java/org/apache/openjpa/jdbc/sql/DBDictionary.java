@@ -1822,9 +1822,11 @@ public class DBDictionary
         else if (val instanceof Reader)
             setCharacterStream(stmnt, idx, (Reader) val,
                 (sized == null) ? 0 : sized.size, col);
-        else if (val instanceof UUID && supportsUuidType)
+        else if (val instanceof UUID && supportsUuidType
+                && (col == null || col.getType() == Types.OTHER
+                    || col.getType() == 0))
             setObject(stmnt, idx, (UUID) val, Types.OTHER, col);
-        else if (val instanceof UUID && !supportsUuidType) 
+        else if (val instanceof UUID)
             setString(stmnt, idx, val.toString(), col);
         else
             throw new UserException(_loc.get("bad-param", val.getClass()));

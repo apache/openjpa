@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.jpql.treatjoinon;
 
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorType;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -28,6 +31,8 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "TPRODUCT")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "PRODUCT_TYPE", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorValue("Product")
 public class TProduct {
     @Id
     @GeneratedValue

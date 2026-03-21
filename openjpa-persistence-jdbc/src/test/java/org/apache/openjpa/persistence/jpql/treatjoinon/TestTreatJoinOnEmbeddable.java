@@ -182,10 +182,15 @@ public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
             "SELECT s.name FROM TLineItem l JOIN TREAT(l.product AS TSoftwareProduct) s",
             String.class).getResultList();
 
-        // The TREAT join should parse and execute successfully
-        // and return products linked to line items
+        // TREAT join should only return software products (not hardware)
+        // We have 2 line items with software products (sp1, sp2) and 1 with hardware
         assertNotNull(results);
-        assertFalse("TREAT join should return results", results.isEmpty());
+        Collections.sort(results);
+        assertEquals("TREAT join should return only software products", 2, results.size());
+        assertTrue(results.contains("Software A"));
+        assertTrue(results.contains("Software B"));
+        // Hardware X should NOT be in the results due to TREAT filtering
+        assertFalse(results.contains("Hardware X"));
 
         em.getTransaction().commit();
         em.close();

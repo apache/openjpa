@@ -191,8 +191,11 @@ public class MappingTool
      * list of values. Defaults to {@link SchemaTool#ACTION_ADD}.
      */
     /**
-     * Returns true if the schema actions contain only drop/script-drop
-     * operations and no create/add operations.
+     * Returns true if the schema actions contain only script-drop
+     * operations (executing a pre-written drop script) and no actions
+     * that require entity mapping resolution.
+     * SchemaTool.ACTION_DROP needs entity mappings to know what tables
+     * to generate DROP statements for, so it returns false for that case.
      */
     private boolean isDropOnlySchemaAction() {
         if (_schemaActions == null || _schemaActions.isEmpty()) {
@@ -200,7 +203,7 @@ public class MappingTool
         }
         for (String action : _schemaActions.split(",")) {
             String a = action.trim();
-            if (!a.equals(ACTION_SCRIPT_DROP) && !a.equals(SchemaTool.ACTION_DROP)) {
+            if (!a.equals(ACTION_SCRIPT_DROP)) {
                 return false;
             }
         }

@@ -717,6 +717,7 @@ public abstract class MappingInfo implements Serializable {
         }
 
         boolean ttype = true;
+        boolean keepExistingType = false;
         int otype = type;
         String typeName = tmplate.getTypeName();
         Boolean notNull = null;
@@ -780,25 +781,44 @@ public abstract class MappingInfo implements Serializable {
             col.setType(type);
         } else if ((compat || !ttype) &&
                 !col.isCompatible(type, typeName, size, decimals)) {
-            // if existing column isn't compatible with desired type, die if
-            // can't adapt, else warn and change the existing column type
+            // if existing column isn't compatible with desired type, warn
+            // and change the existing column type. Multiple entities may
+            // share the same table column with different type expectations
+            // (e.g., @MapKeyEnumerated ORDINAL vs STRING on the same column).
+            // When merging incompatible types, prefer VARCHAR as it can
+            // store both string and numeric values.
             Message msg = _loc.get(prefix + "-bad-col", context,
                 Schemas.getJDBCName(type), col.getDescription());
-            if (!adapt && !dict.disableSchemaFactoryColumnTypeErrors)
-                throw new MetaDataException(msg);
             Log log = repos.getLog();
             if (log.isWarnEnabled())
                 log.warn(msg);
 
-            col.setType(type);
+            int existingType = col.getType();
+            boolean existingIsVarchar = (existingType == Types.VARCHAR
+                || existingType == Types.CHAR
+                || existingType == Types.LONGVARCHAR
+                || existingType == Types.CLOB);
+            boolean newIsVarchar = (type == Types.VARCHAR
+                || type == Types.CHAR
+                || type == Types.LONGVARCHAR
+                || type == Types.CLOB);
+            if (existingIsVarchar && !newIsVarchar) {
+                // Keep the existing VARCHAR type; it can store both
+                // string and numeric values.
+                keepExistingType = true;
+            } else {
+                col.setType(type);
+            }
         } else if (given != null && given.getType() != Types.OTHER) {
             // as long as types are compatible, set column to expected type
             col.setType(type);
         }
 
         // always set the java type and autoassign to expected values, even on
-        // an existing column, since we don't get this from the DB
-        if (compat)
+        // an existing column, since we don't get this from the DB.
+        // When we preserved the existing VARCHAR type above, also preserve
+        // its java type (STRING) so that handlers can store data correctly.
+        if (compat && !keepExistingType)
             col.setJavaType(tmplate.getJavaType());
         else if (col.getJavaType() == JavaTypes.OBJECT) {
             if (given != null && given.getJavaType() != JavaTypes.OBJECT)

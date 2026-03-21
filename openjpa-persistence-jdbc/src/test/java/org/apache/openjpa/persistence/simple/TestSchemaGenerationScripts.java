@@ -596,4 +596,176 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
         assertTrue("Drop script should contain DROP TABLE",
             dropSql.toUpperCase().contains("DROP TABLE"));
     }
+
+    /**
+     * Test that scripts.action=drop generates a non-empty drop script
+     * when used via Persistence.generateSchema() with a Writer target.
+     * This mirrors the TCK executeDropScriptReaderTest pattern.
+     */
+    public void testScriptsActionDropOnlyWithWriter() throws Exception {
+        StringWriter dropWriter = new StringWriter();
+        PrintWriter pw = new PrintWriter(dropWriter);
+
+        // Step 1: Generate drop-only script to a Writer
+        Map<String, Object> props = new HashMap<>();
+        props.put("jakarta.persistence.jdbc.driver",
+            "org.apache.derby.jdbc.EmbeddedDriver");
+        props.put("jakarta.persistence.jdbc.url",
+            "jdbc:derby:target/scriptsDropOnly-db;create=true");
+        props.put("jakarta.persistence.schema-generation.database.action",
+            "none");
+        props.put("jakarta.persistence.schema-generation.scripts.action",
+            "drop");
+        props.put("jakarta.persistence.schema-generation.scripts.drop-target",
+            pw);
+
+        EntityManagerFactory emf2 = createEMF(
+            AllFieldTypes.class,
+            "jakarta.persistence.schema-generation.database.action", "none",
+            "jakarta.persistence.schema-generation.scripts.action", "drop",
+            "jakarta.persistence.schema-generation.scripts.drop-target", pw);
+        try {
+            // EMF creation triggers script generation
+        } finally {
+            closeEMF(emf2);
+        }
+
+        pw.flush();
+        String dropSql = dropWriter.toString();
+        assertTrue("Drop script should not be empty when using "
+            + "scripts.action=drop, got empty string",
+            dropSql.length() > 0);
+        assertTrue("Drop script should contain DROP TABLE, got: " + dropSql,
+            dropSql.toUpperCase().contains("DROP TABLE"));
+    }
+
+    /**
+     * Test that drop script for entities with @JoinColumn @ForeignKey
+     * includes ALTER TABLE DROP CONSTRAINT before DROP TABLE.
+     * Mirrors the TCK orderColumnTest drop script expectations.
+     */
+    public void testDropScriptContainsForeignKeyDrop() throws Exception {
+        File createFile = new File(tempDir, "fk_create.sql");
+        File dropFile = new File(tempDir, "fk_drop.sql");
+
+        EntityManagerFactory emf2 = createEMF(
+            SchemaGenDept.class, SchemaGenEmp.class,
+            "jakarta.persistence.schema-generation.database.action", "none",
+            "jakarta.persistence.schema-generation.scripts.action",
+                "drop-and-create",
+            "jakarta.persistence.schema-generation.scripts.create-target",
+                createFile.toURI().toString(),
+            "jakarta.persistence.schema-generation.scripts.drop-target",
+                dropFile.toURI().toString());
+        try {
+        } finally {
+            closeEMF(emf2);
+        }
+
+        assertTrue("Drop script should exist", dropFile.exists());
+        String dropSql = new String(Files.readAllBytes(dropFile.toPath()));
+        String dropUpper = dropSql.toUpperCase();
+
+        // TCK expects either ALTER TABLE...DROP CONSTRAINT
+        // or DROP TABLE...CASCADE CONSTRAINTS
+        boolean hasAlterDrop = dropUpper.contains("ALTER TABLE")
+            && dropUpper.contains("DROP CONSTRAINT");
+        boolean hasCascade = dropUpper.contains("CASCADE CONSTRAINTS");
+        assertTrue("Drop script should contain ALTER TABLE DROP CONSTRAINT "
+            + "or CASCADE CONSTRAINTS for FK. Got: " + dropSql,
+            hasAlterDrop || hasCascade);
+
+        assertTrue("Drop script should contain DROP TABLE SCHEMAGENEMP",
+            dropUpper.contains("DROP TABLE SCHEMAGENEMP"));
+        assertTrue("Drop script should contain DROP TABLE SCHEMAGENDEPT",
+            dropUpper.contains("DROP TABLE SCHEMAGENDEPT"));
+    }
+
+    /**
+     * Test that create script for @OrderColumn entities includes
+     * the order column in the DDL.
+     * Mirrors the TCK orderColumnTest create script expectations.
+     */
+    public void testOrderColumnInCreateScript() throws Exception {
+        File createFile = new File(tempDir, "oc_create.sql");
+
+        EntityManagerFactory emf2 = createEMF(
+            SchemaGenDept.class, SchemaGenEmp.class,
+            "jakarta.persistence.schema-generation.database.action", "none",
+            "jakarta.persistence.schema-generation.scripts.action", "create",
+            "jakarta.persistence.schema-generation.scripts.create-target",
+                createFile.toURI().toString());
+        try {
+        } finally {
+            closeEMF(emf2);
+        }
+
+        assertTrue("Create script should exist", createFile.exists());
+        String createSql = new String(Files.readAllBytes(createFile.toPath()));
+        String createUpper = createSql.toUpperCase();
+
+        assertTrue("Create script should contain THEORDERCOLUMN. Got: "
+            + createSql,
+            createUpper.contains("THEORDERCOLUMN"));
+        assertTrue("Create script should contain SCHEMAGENEMP",
+            createUpper.contains("CREATE TABLE SCHEMAGENEMP"));
+        assertTrue("Create script should contain FK_DEPT",
+            createUpper.contains("FK_DEPT"));
+    }
+
+    /**
+     * Test that @SecondaryTable generates both tables and FK constraint
+     * in create/drop scripts.
+     * Mirrors the TCK secondaryTableTest expectations.
+     */
+    public void testSecondaryTableInScripts() throws Exception {
+        File createFile = new File(tempDir, "sec_create.sql");
+        File dropFile = new File(tempDir, "sec_drop.sql");
+
+        EntityManagerFactory emf2 = createEMF(
+            SchemaGenSecondary.class,
+            "jakarta.persistence.schema-generation.database.action", "none",
+            "jakarta.persistence.schema-generation.scripts.action",
+                "drop-and-create",
+            "jakarta.persistence.schema-generation.scripts.create-target",
+                createFile.toURI().toString(),
+            "jakarta.persistence.schema-generation.scripts.drop-target",
+                dropFile.toURI().toString());
+        try {
+        } finally {
+            closeEMF(emf2);
+        }
+
+        // Check create script
+        assertTrue("Create script should exist", createFile.exists());
+        String createSql = new String(Files.readAllBytes(createFile.toPath()));
+        String createUpper = createSql.toUpperCase();
+
+        assertTrue("Create script should contain primary table",
+            createUpper.contains("CREATE TABLE SCHEMAGENSIMPLE"));
+        assertTrue("Create script should contain secondary table",
+            createUpper.contains("CREATE TABLE SCHEMAGENSIMPLE_SECOND"));
+        assertTrue("Create script should contain SECONDARY_ID column",
+            createUpper.contains("SECONDARY_ID"));
+
+        // Check drop script
+        assertTrue("Drop script should exist", dropFile.exists());
+        String dropSql = new String(Files.readAllBytes(dropFile.toPath()));
+        String dropUpper = dropSql.toUpperCase();
+
+        assertTrue("Drop script should contain DROP TABLE SCHEMAGENSIMPLE",
+            dropUpper.contains("DROP TABLE SCHEMAGENSIMPLE"));
+        assertTrue("Drop script should contain DROP TABLE "
+            + "SCHEMAGENSIMPLE_SECOND",
+            dropUpper.contains("DROP TABLE SCHEMAGENSIMPLE_SECOND"));
+
+        // FK constraint drop
+        boolean hasAlterDrop = dropUpper.contains("ALTER TABLE")
+            && dropUpper.contains("DROP CONSTRAINT");
+        boolean hasCascade = dropUpper.contains("CASCADE CONSTRAINTS");
+        assertTrue("Drop script should contain ALTER TABLE DROP CONSTRAINT "
+            + "or CASCADE CONSTRAINTS for secondary table FK. Got: "
+            + dropSql,
+            hasAlterDrop || hasCascade);
+    }
 }

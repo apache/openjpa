@@ -1031,6 +1031,12 @@ public class SchemaTool {
                         fk = null;
                         if (dbTable != null)
                             fk = findForeignKey(dbTable, foreignKey);
+                        // When writing to a script, generate FK drops
+                        // even if the table doesn't exist in the DB yet
+                        if (_writer != null && dbTable == null) {
+                            dropForeignKey(foreignKey);
+                            continue;
+                        }
                         if (dbTable == null || fk == null)
                             continue;
 
@@ -1048,15 +1054,17 @@ public class SchemaTool {
             for (Table drop : drops) {
                 tab = drop;
                 dbTable = db.findTable(tab);
-                if (dbTable == null)
+                if (dbTable == null && _writer == null)
                     continue;
 
-                fks = db.findExportedForeignKeys(dbTable.getPrimaryKey());
-                for (ForeignKey foreignKey : fks) {
-                    if (dropForeignKey(foreignKey))
-                        dbTable.removeForeignKey(foreignKey);
-                    else
-                        _log.warn(_loc.get("drop-fk", foreignKey, dbTable));
+                if (dbTable != null) {
+                    fks = db.findExportedForeignKeys(dbTable.getPrimaryKey());
+                    for (ForeignKey foreignKey : fks) {
+                        if (dropForeignKey(foreignKey))
+                            dbTable.removeForeignKey(foreignKey);
+                        else
+                            _log.warn(_loc.get("drop-fk", foreignKey, dbTable));
+                    }
                 }
             }
         }

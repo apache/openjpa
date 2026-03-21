@@ -65,6 +65,7 @@ import static org.apache.openjpa.persistence.MetaDataTag.QUERIES;
 import static org.apache.openjpa.persistence.MetaDataTag.QUERY;
 import static org.apache.openjpa.persistence.MetaDataTag.READ_ONLY;
 import static org.apache.openjpa.persistence.MetaDataTag.SEQ_GENERATOR;
+import static org.apache.openjpa.persistence.MetaDataTag.SEQ_GENERATORS;
 import static org.apache.openjpa.persistence.MetaDataTag.STOREDPROCEDURE_QUERIES;
 import static org.apache.openjpa.persistence.MetaDataTag.STOREDPROCEDURE_QUERY;
 import static org.apache.openjpa.persistence.MetaDataTag.TYPE;
@@ -145,6 +146,7 @@ import jakarta.persistence.PreRemove;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.QueryHint;
 import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.SequenceGenerators;
 import jakarta.persistence.StoredProcedureParameter;
 import jakarta.persistence.Version;
 
@@ -234,6 +236,7 @@ public class AnnotationPersistenceMetaDataParser
         _tags.put(PreRemove.class, PRE_REMOVE);
         _tags.put(PreUpdate.class, PRE_UPDATE);
         _tags.put(SequenceGenerator.class, SEQ_GENERATOR);
+        _tags.put(SequenceGenerators.class, SEQ_GENERATORS);
         _tags.put(Version.class, VERSION);
         _tags.put(DataCache.class, DATA_CACHE);
         _tags.put(DataStoreId.class, DATASTORE_ID);
@@ -506,6 +509,13 @@ public class AnnotationPersistenceMetaDataParser
                         (pkgMode & MODE_MAPPING) == 0)
                         parseSequenceGenerator(pkg, (SequenceGenerator) anno);
                     break;
+                case SEQ_GENERATORS:
+                    if (isMappingOverrideMode() &&
+                        (pkgMode & MODE_MAPPING) == 0)
+                        for (SequenceGenerator gen :
+                            ((SequenceGenerators) anno).value())
+                            parseSequenceGenerator(pkg, gen);
+                    break;
                 default:
                     throw new UnsupportedException(_loc.get("unsupported", pkg,
                         anno.toString()));
@@ -665,6 +675,12 @@ public class AnnotationPersistenceMetaDataParser
                 case SEQ_GENERATOR:
                     if (isMappingOverrideMode())
                         parseSequenceGenerator(_cls, (SequenceGenerator) anno);
+                    break;
+                case SEQ_GENERATORS:
+                    if (isMappingOverrideMode())
+                        for (SequenceGenerator gen :
+                            ((SequenceGenerators) anno).value())
+                            parseSequenceGenerator(_cls, gen);
                     break;
                 case DATA_CACHE:
                     if (isMetaDataMode())
@@ -1277,6 +1293,12 @@ public class AnnotationPersistenceMetaDataParser
                 case SEQ_GENERATOR:
                     if (isMappingOverrideMode())
                         parseSequenceGenerator(el, (SequenceGenerator) anno);
+                    break;
+                case SEQ_GENERATORS:
+                    if (isMappingOverrideMode())
+                        for (SequenceGenerator gen :
+                            ((SequenceGenerators) anno).value())
+                            parseSequenceGenerator(el, gen);
                     break;
                 case VERSION:
                     fmd.setVersion(true);

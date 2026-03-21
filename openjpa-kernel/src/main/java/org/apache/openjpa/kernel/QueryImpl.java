@@ -1014,9 +1014,24 @@ public class QueryImpl implements Query {
         boolean inMem = !_storeQuery.supportsDataStoreExecution()
             || _collection != null;
         int flush = _fc.getFlushBeforeQueries();
+
+        // Per JPA spec, FlushModeType.AUTO (FLUSH_TRUE) requires that
+        // pending changes are visible to queries. The access path check
+        // may miss dirty entities reachable via navigation (e.g.,
+        // o.customer.spouse), so when FLUSH_TRUE is set we check for
+        // ANY dirty objects rather than only those in the access path.
+        boolean dirty;
+        if (flush == FLUSH_TRUE && _broker.isActive()) {
+            dirty = !_broker.getPersistedTypes().isEmpty()
+                || !_broker.getUpdatedTypes().isEmpty()
+                || !_broker.getDeletedTypes().isEmpty();
+        } else {
+            dirty = isAccessPathDirty();
+        }
+
         if (!inMem && (!_ignoreChanges || operation != OP_SELECT
             || flush == FLUSH_TRUE)
-            && _broker.isActive() && isAccessPathDirty()) {
+            && _broker.isActive() && dirty) {
             if ((flush == FLUSH_TRUE
                 || (flush == FLUSH_WITH_CONNECTION && _broker.hasConnection())
                 || operation != OP_SELECT
