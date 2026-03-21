@@ -26,6 +26,9 @@ import jakarta.persistence.FlushModeType;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -39,7 +42,7 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
 
     @Override
     public void setUp() {
-        setUp(CLEAR_TABLES, AllFieldTypes.class);
+        setUp(CLEAR_TABLES, AllFieldTypes.class, PropertyAccessMember.class);
     }
 
     /**
@@ -324,6 +327,166 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
                 Long.class);
             long count = q.getSingleResult();
             assertEquals("Entity should be committed to database", 1L, count);
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
+     * Test addNamedQuery with criteria-based TypedQuery preserves MaxResults.
+     * This mirrors the TCK addNamedQueryMaxResultTest which fails with
+     * AbstractMethodError when criteria queries are stored and recreated.
+     */
+    public void testAddNamedQueryCriteriaMaxResults() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            // Insert test data
+            em.getTransaction().begin();
+            for (int i = 0; i < 5; i++) {
+                AllFieldTypes aft = new AllFieldTypes();
+                aft.setStringField("criteriaItem" + i);
+                em.persist(aft);
+            }
+            em.getTransaction().commit();
+
+            // Create criteria query
+            CriteriaBuilder cb = emf.getCriteriaBuilder();
+            CriteriaQuery<AllFieldTypes> cquery = cb.createQuery(AllFieldTypes.class);
+            Root<AllFieldTypes> root = cquery.from(AllFieldTypes.class);
+            cquery.select(root);
+            cquery.orderBy(cb.asc(root.get("stringField")));
+
+            TypedQuery<AllFieldTypes> typedQuery = em.createQuery(cquery);
+            typedQuery.setMaxResults(2);
+            emf.addNamedQuery("criteria_max_query", typedQuery);
+
+            // Recreate from named query - this should not throw AbstractMethodError
+            em.getTransaction().begin();
+            TypedQuery<AllFieldTypes> namedQuery = em.createNamedQuery(
+                "criteria_max_query", AllFieldTypes.class);
+            assertEquals("MaxResults should be preserved for criteria query",
+                2, namedQuery.getMaxResults());
+
+            List<AllFieldTypes> results = namedQuery.getResultList();
+            assertEquals("Should return maxResults number of results",
+                2, results.size());
+            em.getTransaction().commit();
+
+            // Verify changing maxResults on instance doesn't affect template
+            namedQuery.setMaxResults(3);
+            TypedQuery<AllFieldTypes> namedQuery2 = em.createNamedQuery(
+                "criteria_max_query", AllFieldTypes.class);
+            assertEquals("Template maxResults should be unchanged",
+                2, namedQuery2.getMaxResults());
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+    }
+
+    /**
+     * Test addNamedQuery with criteria-based TypedQuery preserves FlushMode.
+     * Mirrors TCK addNamedQueryFlushModeTest.
+     */
+    public void testAddNamedQueryCriteriaFlushMode() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            // Create criteria query with FlushMode.AUTO
+            CriteriaBuilder cb = emf.getCriteriaBuilder();
+            CriteriaQuery<AllFieldTypes> cquery = cb.createQuery(AllFieldTypes.class);
+            Root<AllFieldTypes> root = cquery.from(AllFieldTypes.class);
+            cquery.select(root);
+
+            TypedQuery<AllFieldTypes> typedQuery = em.createQuery(cquery);
+            typedQuery.setFlushMode(FlushModeType.AUTO);
+            emf.addNamedQuery("criteria_flush_query", typedQuery);
+
+            // Recreate and verify flush mode
+            TypedQuery<AllFieldTypes> namedQuery = em.createNamedQuery(
+                "criteria_flush_query", AllFieldTypes.class);
+            assertEquals("FlushMode should be preserved for criteria query",
+                FlushModeType.AUTO, namedQuery.getFlushMode());
+
+            // Change on instance should not affect template
+            namedQuery.setFlushMode(FlushModeType.COMMIT);
+            TypedQuery<AllFieldTypes> namedQuery2 = em.createNamedQuery(
+                "criteria_flush_query", AllFieldTypes.class);
+            assertEquals("Template FlushMode should be unchanged",
+                FlushModeType.AUTO, namedQuery2.getFlushMode());
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
+     * Test addNamedQuery with criteria-based TypedQuery preserves LockMode.
+     * Mirrors TCK addNamedQueryLockModeTest.
+     */
+    public void testAddNamedQueryCriteriaLockMode() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            // Create criteria query with LockMode.NONE
+            CriteriaBuilder cb = emf.getCriteriaBuilder();
+            CriteriaQuery<AllFieldTypes> cquery = cb.createQuery(AllFieldTypes.class);
+            Root<AllFieldTypes> root = cquery.from(AllFieldTypes.class);
+            cquery.select(root);
+
+            TypedQuery<AllFieldTypes> typedQuery = em.createQuery(cquery);
+            typedQuery.setLockMode(LockModeType.NONE);
+            emf.addNamedQuery("criteria_lock_query", typedQuery);
+
+            // Recreate and verify lock mode
+            em.getTransaction().begin();
+            TypedQuery<AllFieldTypes> namedQuery = em.createNamedQuery(
+                "criteria_lock_query", AllFieldTypes.class);
+            LockModeType lmt = namedQuery.getLockMode();
+            assertNotNull("LockMode should not be null", lmt);
+            assertEquals("LockMode should be preserved for criteria query",
+                LockModeType.NONE, lmt);
+            em.getTransaction().commit();
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+    }
+
+    /**
+     * Test callInTransaction with a property-access entity that has
+     * equals()/hashCode() using getClass() check (mirrors TCK callInTransactionTest).
+     * Verifies that the returned entity from callInTransaction can be
+     * found and compared via equals() with an entity from find().
+     */
+    public void testCallInTransactionPropertyAccessEquals() {
+        final int MEMBER_ID = 42;
+
+        PropertyAccessMember member = emf.callInTransaction(em -> {
+            PropertyAccessMember m = new PropertyAccessMember(MEMBER_ID,
+                String.valueOf(MEMBER_ID));
+            em.persist(m);
+            return m;
+        });
+
+        assertNotNull("Result from callInTransaction should not be null",
+            member);
+
+        // Find the entity via a different EntityManager
+        EntityManager em = emf.createEntityManager();
+        try {
+            PropertyAccessMember found = em.find(PropertyAccessMember.class,
+                MEMBER_ID);
+            assertNotNull("Entity should be found after callInTransaction",
+                found);
+            assertEquals("Entity memberId should match",
+                MEMBER_ID, found.getMemberId());
+            assertEquals("Entity memberName should match",
+                String.valueOf(MEMBER_ID), found.getMemberName());
+            // This is the key assertion: equals() with getClass() check
+            assertEquals("Persisted and found entities should be equal",
+                member, found);
         } finally {
             em.close();
         }

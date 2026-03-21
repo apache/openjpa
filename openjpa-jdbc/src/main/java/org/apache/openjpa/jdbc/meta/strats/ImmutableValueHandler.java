@@ -18,7 +18,11 @@
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
@@ -26,6 +30,7 @@ import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 
@@ -103,6 +108,43 @@ public class ImmutableValueHandler extends AbstractValueHandler {
             default:
                 return false;
         }
+    }
+
+    @Override
+    public Object toObjectValue(ValueMapping vm, Object val) {
+        if (val == null) {
+            return null;
+        }
+        // When multiple entities share the same table column (e.g.,
+        // BigDecimal and BigInteger entities both using DATATYPES3.ID),
+        // the column's javaType may not match this field's declared type.
+        // Convert numeric types to the expected field type to avoid
+        // ClassCastException in the generated pcReplaceField.
+        int typeCode = vm.getTypeCode();
+        if (typeCode == JavaTypes.BIGDECIMAL && !(val instanceof BigDecimal)) {
+            if (val instanceof BigInteger) {
+                return new BigDecimal((BigInteger) val);
+            } else if (val instanceof Number) {
+                return new BigDecimal(((Number) val).doubleValue());
+            } else {
+                return new BigDecimal(val.toString());
+            }
+        } else if (typeCode == JavaTypes.BIGINTEGER
+                && !(val instanceof BigInteger)) {
+            if (val instanceof BigDecimal) {
+                return ((BigDecimal) val).toBigInteger();
+            } else if (val instanceof Number || val instanceof String) {
+                return new BigInteger(val.toString());
+            }
+        }
+        return val;
+    }
+
+    @Override
+    public Object toObjectValue(ValueMapping vm, Object val,
+        OpenJPAStateManager sm, JDBCStore store,
+        JDBCFetchConfiguration fetch) {
+        return toObjectValue(vm, val);
     }
 
     @Override

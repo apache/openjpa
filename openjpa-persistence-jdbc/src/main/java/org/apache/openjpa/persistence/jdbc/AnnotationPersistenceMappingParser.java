@@ -624,6 +624,17 @@ public class AnnotationPersistenceMappingParser
             } else {
             	info.addSecondaryTable(sName);
             }
+            // Parse @ForeignKey on @SecondaryTable
+            jakarta.persistence.ForeignKey jpaFk = table.foreignKey();
+            if (jpaFk != null
+                && jpaFk.value() == ConstraintMode.CONSTRAINT) {
+                org.apache.openjpa.jdbc.schema.ForeignKey fk =
+                    new org.apache.openjpa.jdbc.schema.ForeignKey();
+                if (!StringUtil.isEmpty(jpaFk.name()))
+                    fk.setIdentifier(DBIdentifier.newForeignKey(
+                        jpaFk.name(), delimit()));
+                info.setSecondaryTableForeignKey(sName, fk);
+            }
             addUniqueConstraints(sName.getName(), cm, info, table.uniqueConstraints());
         }
     }
@@ -1983,6 +1994,15 @@ public class AnnotationPersistenceMappingParser
         }
 
         setColumns(fm, info, cols, unique);
+        // Parse @ForeignKey on @JoinColumn(s) — use the first explicit one
+        for (JoinColumn join : joins) {
+            jakarta.persistence.ForeignKey jpaFk = join.foreignKey();
+            if (jpaFk != null
+                && jpaFk.value() != ConstraintMode.PROVIDER_DEFAULT) {
+                parseJpaForeignKey(info, jpaFk);
+                break;
+            }
+        }
         if (!DBIdentifier.isNull(sSecondary))
             fm.getMappingInfo().setTableIdentifier(sSecondary);
         String mappedByIdValue = fm.getMappedByIdValue();

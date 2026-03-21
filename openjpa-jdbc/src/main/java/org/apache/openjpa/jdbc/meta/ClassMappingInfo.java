@@ -79,6 +79,9 @@ public class ClassMappingInfo
     private Map<DBIdentifier,List<Unique>> _uniques;
 
     private Map<DBIdentifier,List<Index>> _indices = new HashMap<>();
+
+    // Foreign keys for secondary tables, indexed by secondary table name
+    private Map<DBIdentifier, ForeignKey> _secondaryForeignKeys = null;
     /**
      * The described class name.
      */
@@ -312,6 +315,24 @@ public class ClassMappingInfo
         if (_seconds == null)
             _seconds = new LinkedHashMap<>();
         _seconds.put(tableName, cols);
+    }
+
+    /**
+     * Get the foreign key template for a secondary table, or null if none.
+     */
+    public ForeignKey getSecondaryTableForeignKey(DBIdentifier tableName) {
+        if (_secondaryForeignKeys == null || DBIdentifier.isNull(tableName))
+            return null;
+        return _secondaryForeignKeys.get(tableName);
+    }
+
+    /**
+     * Set the foreign key template for a secondary table.
+     */
+    public void setSecondaryTableForeignKey(DBIdentifier tableName, ForeignKey fk) {
+        if (_secondaryForeignKeys == null)
+            _secondaryForeignKeys = new HashMap<>();
+        _secondaryForeignKeys.put(tableName, fk);
     }
 
     /**

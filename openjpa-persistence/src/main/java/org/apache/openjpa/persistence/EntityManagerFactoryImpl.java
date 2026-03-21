@@ -492,6 +492,21 @@ public class EntityManagerFactoryImpl
         QueryMetaData metaData = repos.newQueryMetaData(null, name);
         metaData.setFrom(kernelQuery);
 
+        // If the source query uses the Criteria language, convert to JPQL
+        // so that createNamedQuery can recreate it without needing the
+        // original CriteriaQuery object (CriteriaBuilder.parse() only
+        // accepts CriteriaQuery objects, not strings).
+        if (OpenJPACriteriaBuilder.LANG_CRITERIA.equals(metaData.getLanguage())) {
+            metaData.setLanguage(org.apache.openjpa.kernel.jpql.JPQLParser.LANG_JPQL);
+            // For criteria queries, the kernel query string is null.
+            // Use the facade's getQueryString() which returns the JPQL
+            // generated from the CriteriaQuery (stored as the query id).
+            String jpql = queryImpl.getQueryString();
+            if (jpql != null) {
+                metaData.setQueryString(jpql);
+            }
+        }
+
         // Capture JPA-level query properties per JPA 3.2 spec
         // FlushMode
         try {
@@ -781,6 +796,7 @@ public class EntityManagerFactoryImpl
     }
     
     @Override
+    @SuppressWarnings("unchecked")
     public <R> R callInTransaction(Function<EntityManager, R> work) {
     	EntityManager em = createEntityManager();
     	boolean startedTransaction = false;
@@ -804,12 +820,37 @@ public class EntityManagerFactoryImpl
     				em.getTransaction().commit();
     			}
     		}
+    		// For unenhanced (runtime-subclassed) entities, the user's function
+    		// may return an original POJO that was passed to persist().
+    		// Entities loaded via find() on other EMs are subclass instances,
+    		// causing getClass() mismatches in equals(). To ensure consistent
+    		// class identity, re-find managed entities from the database so that
+    		// the returned instance is a subclass (matching what find() returns).
+    		if (result != null && em.contains(result)) {
+    			try {
+    				Object id = getPersistenceUnitUtil().getIdentifier(result);
+    				if (id != null) {
+    					Class<R> entityClass = (Class<R>) result.getClass();
+    					em.clear();
+    					R refound = em.find(entityClass, id);
+    					if (refound != null) {
+    						result = refound;
+    					}
+    				}
+    			} catch (Exception e) {
+    				// If re-find fails, return original result
+    			}
+    		}
     		return result;
     	} catch (Exception ex) {
     		if (jtaTransaction) {
     			broker.rollback();
     		} else {
-    			em.getTransaction().rollback();
+    			try {
+    				em.getTransaction().rollback();
+    			} catch (Exception rollbackEx) {
+    				// Transaction may already be rolled back
+    			}
     		}
     		throw new UserException(ex.getMessage(), ex);
     	} finally {

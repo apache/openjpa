@@ -1910,6 +1910,11 @@ public class AnnotationPersistenceMetaDataParser
         // create new sequence
         meta = getRepository().addSequenceMetaData(name);
         String seq = gen.sequenceName();
+        // JPA spec: when sequenceName is not specified, use the generator name
+        // as the database sequence name
+        if (StringUtil.isEmpty(seq)) {
+            seq = name;
+        }
         // Do not normalize the sequence name if it appears to be a plugin
         if (seq.indexOf('(') == -1){
             seq = normalizeSequenceName(seq);

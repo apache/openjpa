@@ -39,17 +39,20 @@ public class TestEntityAPIValidation extends SingleEMFTestCase {
     }
 
     /**
-     * find(Class, Object) should NOT throw IAE when PK type is wrong.
-     * OpenJPA converts compatible types; mismatched types return null.
-     * This is different from getReference() which must throw IAE per spec.
+     * find(Class, Object) should throw IAE when PK type is wrong.
+     * Per JPA spec, find() must throw IllegalArgumentException if the
+     * second argument is not a valid type for the entity's primary key.
+     * Mirrors TCK entityAPITest4: Coffee has Integer PK, Long is not valid.
      */
-    public void testFindWithWrongPKTypeDoesNotThrowIAE() {
+    public void testFindWithWrongPKTypeThrowsIAE() {
         EntityManager em = emf.createEntityManager();
         try {
-            // Long is not the declared PK type (Integer) but find() should
-            // attempt conversion rather than throwing IAE
+            // Long is not the declared PK type (Integer)
             em.find(CoffeeBean.class, 55L);
-            // no exception expected - may return null since entity doesn't exist
+            fail("Expected IllegalArgumentException for wrong PK type "
+                + "(Long instead of Integer)");
+        } catch (IllegalArgumentException e) {
+            // expected per spec
         } finally {
             em.close();
         }

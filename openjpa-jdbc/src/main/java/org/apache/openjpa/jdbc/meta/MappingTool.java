@@ -530,6 +530,12 @@ public class MappingTool
                 if (_dropUnused)
                     dropUnusedSchemaComponents(mappings);
                 addSequenceComponents(mappings);
+                // Ensure secondary tables from @SecondaryTable annotations
+                // are in the schema group (they may not be if metadata was
+                // resolved by a different MappingRepository)
+                for (ClassMapping mapping : mappings) {
+                    mapping.ensureSecondaryTables(getRepository());
+                }
 
                 // now run the schematool as long as we're doing some schema
                 // action and the user doesn't just want an xml output
@@ -877,8 +883,13 @@ public class MappingTool
 
         MappingRepository repos = getRepository();
         repos.setStrategyInstaller(new RuntimeStrategyInstaller(repos));
-        if (getMapping(repos, cls, true) == null)
+        ClassMapping mapping = getMapping(repos, cls, true);
+        if (mapping == null)
             return;
+
+        // ensure secondary tables are created in the current schema group
+        // (they may not be if metadata was cached from a previous EMF)
+        mapping.ensureSecondaryTables(repos);
 
         // set any logical pks to non-logical so they get flushed
         _flushSchema = true;

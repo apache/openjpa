@@ -2936,7 +2936,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
                 }
             }
             sm.delete();
-        } else if (assertPersistenceCapable(obj).pcIsDetached() == Boolean.TRUE)
+        } else if (isDetached(obj))
             throw newDetachedException(obj, "delete");
     }
 

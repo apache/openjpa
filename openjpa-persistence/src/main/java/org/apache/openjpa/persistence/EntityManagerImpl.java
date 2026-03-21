@@ -737,6 +737,47 @@ public class EntityManagerImpl
         }
     }
 
+    /**
+     * Validates that the given primary key value is type-compatible with
+     * the entity's declared primary key type. Per JPA spec, find() must
+     * throw IllegalArgumentException if the PK type is not valid.
+     */
+    private void validatePrimaryKeyType(Class<?> cls, Object oid) {
+        MetaDataRepository repos = _broker.getConfiguration()
+            .getMetaDataRepositoryInstance();
+        ClassMetaData meta = repos.getMetaData(cls,
+            _broker.getClassLoader(), false);
+        if (meta == null) {
+            return;
+        }
+        if (meta.getIdentityType() == ClassMetaData.ID_APPLICATION) {
+            if (meta.isOpenJPAIdentity()) {
+                // single-field PK: check that the value type matches exactly
+                FieldMetaData pkField = meta.getPrimaryKeyFields()[0];
+                Class<?> pkType = pkField.getDeclaredType();
+                // wrap primitives
+                if (pkType.isPrimitive()) {
+                    pkType = Filters.wrap(pkType);
+                }
+                if (!pkType.isInstance(oid)) {
+                    throw new IllegalArgumentException(
+                        _loc.get("bad-pk-type", cls.getName(),
+                            pkType.getName(), oid.getClass().getName())
+                            .getMessage());
+                }
+            } else {
+                // compound PK or IdClass: value must be instance of IdClass
+                Class<?> idClass = meta.getObjectIdType();
+                if (idClass != null && !idClass.isInstance(oid)) {
+                    throw new IllegalArgumentException(
+                        _loc.get("bad-pk-type", cls.getName(),
+                            idClass.getName(), oid.getClass().getName())
+                            .getMessage());
+                }
+            }
+        }
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public <T> T[] findAll(Class<T> cls, Object... oids) {
