@@ -1409,21 +1409,34 @@ public class AnnotationPersistenceMetaDataParser
             return;
         }
         // attributeName may be "embeddedField.attribute" or just "attribute"
-        // For now, store as-is and let the mapping layer resolve
         int dot = attrName.lastIndexOf('.');
         if (dot > 0) {
             String fieldName = attrName.substring(0, dot);
             String embAttr = attrName.substring(dot + 1);
             FieldMetaData fmd = meta.getDeclaredField(fieldName);
+            if (fmd == null) {
+                fmd = meta.getField(fieldName);
+            }
             if (fmd != null) {
                 fmd.addEmbeddedConverter(embAttr, convert.converter());
             }
         } else {
-            // Simple attribute name - applies to all embedded fields
-            // that have this attribute
-            for (FieldMetaData fmd : meta.getDeclaredFields()) {
-                if (fmd.isEmbedded()) {
-                    fmd.addEmbeddedConverter(attrName, convert.converter());
+            // Simple attribute name - first check if it is a direct field
+            // (including inherited fields from mapped superclass)
+            FieldMetaData directField = meta.getDeclaredField(attrName);
+            if (directField == null) {
+                directField = meta.getField(attrName);
+            }
+            if (directField != null) {
+                // Direct field or inherited field - override converter
+                directField.setConverter(convert.converter());
+            } else {
+                // Not a direct field - applies to embedded field attributes
+                for (FieldMetaData fmd : meta.getDeclaredFields()) {
+                    if (fmd.isEmbedded()) {
+                        fmd.addEmbeddedConverter(attrName,
+                            convert.converter());
+                    }
                 }
             }
         }

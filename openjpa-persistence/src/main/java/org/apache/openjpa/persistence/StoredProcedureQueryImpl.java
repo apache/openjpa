@@ -174,6 +174,8 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
             RuntimeExceptionTranslator trans = PersistenceExceptions
                     .getRollbackTranslator(_delegate.getEntityManager());
             return new DelegatingResultList(result, trans).iterator().next();
+        } catch (NoResultException | NonUniqueResultException ex) {
+            throw ex;
         } catch (Exception ex) {
             throw new jakarta.persistence.PersistenceException(ex);
         }
@@ -225,7 +227,20 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
 
     @Override
     public <T> T getParameterValue(Parameter<T> param) {
-        // TODO JPA 2.1 Method
+        // Verify that the Parameter object actually belongs to this query,
+        // not just one that shares the same position/name from a different query.
+        buildParametersIfNeeded();
+        boolean found = false;
+        for (Parameter<?> qp : _delegate.getParameters()) {
+            if (qp == param) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            throw new IllegalArgumentException(
+                "Parameter does not belong to this query");
+        }
         return _delegate.getParameterValue(param);
     }
 
@@ -274,11 +289,39 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
 
     @Override
     public Object getOutputParameterValue(int position) {
+        // Validate that the position corresponds to a registered parameter
+        buildParametersIfNeeded();
+        boolean found = false;
+        for (Parameter<?> p : _delegate.getParameters()) {
+            if (p.getPosition() != null && p.getPosition().intValue() == position) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            throw new IllegalArgumentException(
+                "Parameter position " + position
+                    + " does not correspond to a parameter of the query");
+        }
         return _callback == null ? null : _callback.getOut(position);
     }
 
     @Override
     public Object getOutputParameterValue(String parameterName) {
+        // Validate that the name corresponds to a registered parameter
+        buildParametersIfNeeded();
+        boolean found = false;
+        for (Parameter<?> p : _delegate.getParameters()) {
+            if (parameterName.equals(p.getName())) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            throw new IllegalArgumentException(
+                "Parameter name '" + parameterName
+                    + "' does not correspond to a parameter of the query");
+        }
         return _callback == null ? null : _callback.getOut(parameterName);
     }
 

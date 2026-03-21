@@ -25,6 +25,7 @@ import static org.apache.openjpa.persistence.jdbc.MappingTag.COLLECTION_TABLE;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.COLS;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.COLUMN_NAME;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.COLUMN_RESULT;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.CONSTRUCTOR_RESULT;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.DATASTORE_ID_COL;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.DELIMITED_IDS;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.DISCRIM_COL;
@@ -41,6 +42,7 @@ import static org.apache.openjpa.persistence.jdbc.MappingTag.JOIN_COL;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.JOIN_TABLE;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.MAP_KEY_COL;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.MAP_KEY_ENUMERATED;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.NAMED_STORED_PROCEDURE_QUERY;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.MAP_KEY_JOIN_COL;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.MAP_KEY_TEMPORAL;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.NAME;
@@ -99,6 +101,7 @@ import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.meta.MultiQueryMetaData;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.persistence.XMLPersistenceMetaDataParser;
 import org.apache.openjpa.util.InternalException;
@@ -126,6 +129,7 @@ public class XMLPersistenceMappingParser
         _elems.put("columns", COLS);
         _elems.put("column-name", COLUMN_NAME);
         _elems.put("column-result", COLUMN_RESULT);
+        _elems.put("constructor-result", CONSTRUCTOR_RESULT);
         _elems.put("data-store-id-column", DATASTORE_ID_COL);
         _elems.put("delimited-identifiers", DELIMITED_IDS);
         _elems.put("discriminator-column", DISCRIM_COL);
@@ -146,6 +150,7 @@ public class XMLPersistenceMappingParser
         _elems.put("map-key-join-column", MAP_KEY_JOIN_COL);
         _elems.put("map-key-temporal", MAP_KEY_TEMPORAL);
         _elems.put("name", NAME);
+        _elems.put("named-stored-procedure-query", NAMED_STORED_PROCEDURE_QUERY);
         _elems.put("order-column", ORDER_COLUMN);
         _elems.put("primary-key-join-column", PK_JOIN_COL);
         _elems.put("secondary-table", SECONDARY_TABLE);
@@ -175,6 +180,7 @@ public class XMLPersistenceMappingParser
     private Column _discCol;
     private int _resultIdx = 0;
     private QueryResultMapping _nativeQueryResultMapping = null;
+    private QueryResultMapping.ConstructorResultInfo _constructorResult = null;
     private final DBDictionary _dict;
 
     // ForeignKey info
@@ -213,6 +219,12 @@ public class XMLPersistenceMappingParser
         if (tag == null) {
             if ("schema".equals(name))
                 return name;
+            // Handle 'parameter' child element of named-stored-procedure-query
+            if ("parameter".equals(name)
+                && currentElement() instanceof MultiQueryMetaData) {
+                startStoredProcedureParameter(attrs);
+                return name;
+            }
             return null;
         }
 
@@ -232,6 +244,21 @@ public class XMLPersistenceMappingParser
                 break;
             case COLUMN_RESULT:
                 ret = startColumnResult(attrs);
+                break;
+            case CONSTRUCTOR_RESULT:
+                ret = startConstructorResult(attrs);
+                break;
+            case NAMED_STORED_PROCEDURE_QUERY:
+                ret = startNamedStoredProcedureQuery(attrs);
+                break;
+            case COL:
+                // 'column' inside constructor-result is a constructor column
+                if (_constructorResult != null) {
+                    startConstructorColumn(attrs);
+                    ret = true;
+                } else {
+                    ret = false;
+                }
                 break;
             default:
                 ret = false;
@@ -257,6 +284,12 @@ public class XMLPersistenceMappingParser
                 break;
             case ENTITY_RESULT:
                 endEntityResult();
+                break;
+            case CONSTRUCTOR_RESULT:
+                endConstructorResult();
+                break;
+            case NAMED_STORED_PROCEDURE_QUERY:
+                endNamedStoredProcedureQuery();
                 break;
         }
     }
@@ -295,7 +328,12 @@ public class XMLPersistenceMappingParser
                 ret = startPrimaryKeyJoinColumn(attrs);
                 break;
             case COL:
-                ret = startColumn(attrs);
+                if (_constructorResult != null) {
+                    startConstructorColumn(attrs);
+                    ret = true;
+                } else {
+                    ret = startColumn(attrs);
+                }
                 break;
             case COLS:
                 ret = true;
@@ -332,6 +370,9 @@ public class XMLPersistenceMappingParser
                 break;
             case COLUMN_RESULT:
                 ret = startColumnResult(attrs);
+                break;
+            case CONSTRUCTOR_RESULT:
+                ret = startConstructorResult(attrs);
                 break;
             case COLUMN_NAME:
                 ret = true;
@@ -423,6 +464,9 @@ public class XMLPersistenceMappingParser
                 break;
             case ENTITY_RESULT:
                 endEntityResult();
+                break;
+            case CONSTRUCTOR_RESULT:
+                endConstructorResult();
                 break;
             case UNIQUE:
                 endUniqueConstraint();
@@ -1228,6 +1272,146 @@ public class XMLPersistenceMappingParser
     }
 
     /**
+     * Start processing {@code constructor-result} element within a
+     * {@code sql-result-set-mapping}.
+     */
+    private boolean startConstructorResult(Attributes attrs) {
+        String targetClassName = attrs.getValue("target-class");
+        if (StringUtil.isEmpty(targetClassName))
+            return false;
+        Class<?> targetClass;
+        try {
+            targetClass = Class.forName(targetClassName, true,
+                getRepository().getConfiguration()
+                    .getClassResolverInstance().getClassLoader(null, null));
+        } catch (ClassNotFoundException e) {
+            throw new MetaDataException(
+                "Could not load constructor-result target class: "
+                    + targetClassName);
+        }
+        Object cur = currentElement();
+        if (cur instanceof QueryResultMapping) {
+            _constructorResult =
+                ((QueryResultMapping) cur).addConstructorResult(targetClass);
+        }
+        return true;
+    }
+
+    /**
+     * End processing {@code constructor-result} element.
+     */
+    private void endConstructorResult() {
+        _constructorResult = null;
+    }
+
+    /**
+     * Start processing {@code named-stored-procedure-query} element.
+     * Creates a {@link MultiQueryMetaData} and pushes it on the stack.
+     */
+    private boolean startNamedStoredProcedureQuery(Attributes attrs) {
+        String name = attrs.getValue("name");
+        String procedureName = attrs.getValue("procedure-name");
+        if (StringUtil.isEmpty(name) || StringUtil.isEmpty(procedureName))
+            return false;
+
+        Log log = getLog();
+        if (log.isTraceEnabled())
+            log.trace("Parsing named-stored-procedure-query: " + name);
+
+        // XML overrides annotation-defined named stored procedure queries.
+        // Remove any existing metadata first to ensure replacement.
+        if (getRepository().removeQueryMetaData(null, name)) {
+            if (log.isWarnEnabled())
+                log.warn("XML overriding named stored procedure query: "
+                    + name);
+        }
+        MultiQueryMetaData meta = new MultiQueryMetaData(
+            null, name, procedureName, false);
+        meta.setQueryString(procedureName);
+        getRepository().addQueryMetaData(meta);
+
+        meta.setSource(getSourceFile(), null, SourceTracker.SRC_XML, name);
+        pushElement(meta);
+        return true;
+    }
+
+    /**
+     * End processing {@code named-stored-procedure-query} element.
+     */
+    private void endNamedStoredProcedureQuery() throws SAXException {
+        popElement();
+    }
+
+    /**
+     * Parse a {@code column} child element of {@code constructor-result}.
+     * Adds the column name and optional type to the current
+     * constructor result info.
+     */
+    private void startConstructorColumn(Attributes attrs) {
+        String colName = attrs.getValue("name");
+        String typeStr = attrs.getValue("class");
+        Class<?> type = null;
+        if (typeStr != null) {
+            try {
+                type = Class.forName(typeStr, true,
+                    getRepository().getConfiguration()
+                        .getClassResolverInstance().getClassLoader(null, null));
+            } catch (ClassNotFoundException e) {
+                throw new MetaDataException(
+                    "Could not load column class: " + typeStr);
+            }
+        }
+        _constructorResult.addColumn(colName, type);
+    }
+
+    /**
+     * Parse a {@code parameter} child element of
+     * {@code named-stored-procedure-query}.
+     */
+    private void startStoredProcedureParameter(Attributes attrs) {
+        MultiQueryMetaData meta = (MultiQueryMetaData) currentElement();
+        String name = attrs.getValue("name");
+        String modeStr = attrs.getValue("mode");
+        String classStr = attrs.getValue("class");
+        Class<?> type = Object.class;
+        if (classStr != null) {
+            try {
+                type = Class.forName(classStr, true,
+                    getRepository().getConfiguration()
+                        .getClassResolverInstance().getClassLoader(null, null));
+            } catch (ClassNotFoundException e) {
+                throw new MetaDataException(
+                    "Could not load parameter class: " + classStr);
+            }
+        }
+        MultiQueryMetaData.Parameter.Mode mode =
+            MultiQueryMetaData.Parameter.Mode.IN;
+        if (modeStr != null) {
+            switch (modeStr.toUpperCase()) {
+                case "OUT":
+                    mode = MultiQueryMetaData.Parameter.Mode.OUT;
+                    break;
+                case "INOUT":
+                    mode = MultiQueryMetaData.Parameter.Mode.INOUT;
+                    break;
+                case "REF_CURSOR":
+                    mode = MultiQueryMetaData.Parameter.Mode.CURSOR;
+                    break;
+                default:
+                    mode = MultiQueryMetaData.Parameter.Mode.IN;
+                    break;
+            }
+        }
+        MultiQueryMetaData.Parameter p;
+        if (name != null && !name.isEmpty()) {
+            p = new MultiQueryMetaData.Parameter(name, type, mode);
+        } else {
+            p = new MultiQueryMetaData.Parameter(name, type, mode);
+        }
+        meta.registerParameter(p);
+    }
+
+    /**
      * JPA 3.2: Override to create an implicit QueryResultMapping for
      * inline entity-result/column-result children.
      */
@@ -1325,6 +1509,24 @@ public class XMLPersistenceMappingParser
      */
     private boolean startColumnResult(Attributes attrs)
         throws SAXException {
+        String colName = attrs.getValue("name");
+        // If inside a constructor-result, add as constructor column
+        if (_constructorResult != null) {
+            String typeStr = attrs.getValue("class");
+            Class<?> type = null;
+            if (typeStr != null) {
+                try {
+                    type = Class.forName(typeStr, true,
+                        getRepository().getConfiguration()
+                            .getClassResolverInstance().getClassLoader(null, null));
+                } catch (ClassNotFoundException e) {
+                    throw new MetaDataException(
+                        "Could not load column-result class: " + typeStr);
+                }
+            }
+            _constructorResult.addColumn(colName, type);
+            return true;
+        }
         // JPA 3.2: column-result may appear inside named-native-query
         QueryResultMapping parent;
         if (currentElement() instanceof QueryResultMapping) {

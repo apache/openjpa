@@ -829,6 +829,23 @@ public class MappingRepository extends MetaDataRepository {
             return new HandlerFieldStrategy();
         }
 
+        // check for JPA @Convert / AttributeConverter (non-collection fields)
+        if (field.getConverter() != null) {
+            int tc = field.getDeclaredTypeCode();
+            if (tc != JavaTypes.COLLECTION && tc != JavaTypes.MAP
+                    && tc != JavaTypes.ARRAY) {
+                Class<?> dbType = field.getConverterDatabaseType();
+                if (dbType != null && dbType != Object.class) {
+                    if (installHandlers) {
+                        field.setHandler(
+                            new org.apache.openjpa.jdbc.meta.strats
+                                .ConverterValueHandler(dbType));
+                    }
+                    return new HandlerFieldStrategy();
+                }
+            }
+        }
+
         // check for an explicitly mapped strategy
         Object explicitStrat = mappedStrategy(field, field.getType(), adapting);
         if (explicitStrat != null) {
@@ -941,6 +958,16 @@ public class MappingRepository extends MetaDataRepository {
             case JavaTypes.COLLECTION:
                 ValueMapping elem = field.getElementMapping();
                 ValueHandler ehandler = namedHandler(elem);
+                if (ehandler == null && field.getConverter() != null) {
+                    // Element collection with @Convert: use converter handler
+                    Class<?> dbType = field.getConverterDatabaseType();
+                    if (dbType != null && dbType != Object.class) {
+                        ehandler =
+                            new org.apache.openjpa.jdbc.meta.strats
+                                .ConverterElementHandler(
+                                    field.getConverter(), dbType);
+                    }
+                }
                 if (ehandler == null)
                     ehandler = defaultHandler(elem);
                 if (ehandler != null)
