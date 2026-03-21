@@ -2143,12 +2143,11 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
                 detachAllInternal(null);
             }
 
-            // If close() was called while the transaction was active,
-            // free now that the transaction has completed.
-            // JPA 3.2 spec Section 7.7: the persistence context remains
-            // managed until the transaction completes.
+            // if close was invoked while a transaction was active,
+            // the actual close was deferred; now that the transaction
+            // has completed, free the resources
             if ((_flags & FLAG_CLOSE_INVOKED) != 0
-                && (!_managed || _compat.getCloseOnManagedCommit()))
+                && (_compat.getCloseOnManagedCommit() || !_managed))
                 free();
         } catch (OpenJPAException ke) {
             if (_log.isTraceEnabled())
@@ -4594,16 +4593,9 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
     public void close() {
         beginOperation(false);
         try {
+            // only close if not active; if active trans (managed or local)
+            // wait for completion per JPA spec section 3.3.2
             _flags |= FLAG_CLOSE_INVOKED;
-
-            // JPA 3.2 spec Section 7.7: if close() is called when a
-            // resource-local transaction is active, roll it back before
-            // closing.  For managed transactions, defer closing until
-            // the transaction completes.
-            if (!_managed && (_flags & FLAG_ACTIVE) != 0) {
-                rollback();
-            }
-
             if ((_flags & FLAG_ACTIVE) == 0)
                 free();
         } finally {

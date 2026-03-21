@@ -1025,14 +1025,14 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     }
 
     public FieldMetaData getOrderByField(ClassMetaData meta, String orderBy) {
-        FieldMetaData field = meta.getField(orderBy);
+        FieldMetaData field = findFieldByName(meta, orderBy);
         if (field != null)
             return field;
         int dotIdx = orderBy.indexOf(".");
         if (dotIdx == -1)
             return null;
         String fieldName = orderBy.substring(0, dotIdx);
-        FieldMetaData field1 = meta.getField(fieldName);
+        FieldMetaData field1 = findFieldByName(meta, fieldName);
         if (field1 == null)
             return null;
         ClassMetaData meta1 = field1.getEmbeddedMetaData();
@@ -1040,6 +1040,28 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             return null;
         String mappedBy1 = orderBy.substring(dotIdx + 1);
         return getOrderByField(meta1, mappedBy1);
+    }
+
+    /**
+     * Find a field by name, falling back to case-insensitive matching
+     * and backing member name matching when exact lookup fails.
+     * This handles cases where @OrderBy uses field names that differ
+     * in case from the property names stored in metadata (e.g. "zipcode"
+     * vs "zipCode" for embeddable access type).
+     */
+    private FieldMetaData findFieldByName(ClassMetaData meta, String name) {
+        FieldMetaData field = meta.getField(name);
+        if (field != null)
+            return field;
+        // try case-insensitive match and backing member name match
+        for (FieldMetaData fmd : meta.getFields()) {
+            if (fmd.getName().equalsIgnoreCase(name))
+                return fmd;
+            if (fmd.getBackingMember() != null
+                && fmd.getBackingMember().getName().equalsIgnoreCase(name))
+                return fmd;
+        }
+        return null;
     }
 
     /**

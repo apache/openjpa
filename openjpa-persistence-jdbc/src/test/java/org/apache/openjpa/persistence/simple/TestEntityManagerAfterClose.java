@@ -201,12 +201,15 @@ public class TestEntityManagerAfterClose extends SingleEMFTestCase {
             query.getLockMode();
             fail("Expected IllegalStateException");
         } catch (IllegalStateException e) {
-            // getRollbackOnly() should not throw when EM is closed
+            // close() no longer rolls back; tx is still active (deferred close)
+            // The ISE from getLockMode() on a close-invoked EM marks rollback
             boolean rollbackOnly = em.getTransaction().getRollbackOnly();
             assertFalse("Transaction should not be marked rollback-only", rollbackOnly);
         }
-        // isActive() should return false (tx was rolled back by close)
-        assertFalse("Transaction should not be active after close",
+        // Transaction should still be active since close() defers until tx completes
+        assertTrue("Transaction should still be active after close with deferred close",
             em.getTransaction().isActive());
+        // Clean up: rollback the still-active transaction
+        em.getTransaction().rollback();
     }
 }

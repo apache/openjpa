@@ -54,12 +54,15 @@ public class TestEntityManagerCloseWithActiveTransaction {
             em.getTransaction().begin();
 
             // Per JPA spec, close() with active transaction should NOT throw.
-            // The transaction is rolled back and the EM is closed.
+            // Close is deferred until the transaction completes.
             em.close();
 
-            // isOpen() should return false after close()
-            assertFalse("isOpen() should return false after close()",
-                em.isOpen());
+            // Transaction is still active (close is deferred)
+            assertTrue("Transaction should still be active after deferred close",
+                em.getTransaction().isActive());
+
+            // Roll back to complete the transaction and allow deferred close
+            em.getTransaction().rollback();
         } finally {
             emf.close();
         }
@@ -80,7 +83,7 @@ public class TestEntityManagerCloseWithActiveTransaction {
             em.getTransaction().begin();
             em.close();
 
-            // After close, most EM methods should throw IllegalStateException
+            // After close invoked, most EM methods should throw IllegalStateException
             try {
                 em.persist(new AllFieldTypes());
                 fail("persist() should throw IllegalStateException after close");
@@ -98,6 +101,9 @@ public class TestEntityManagerCloseWithActiveTransaction {
             // getTransaction() should still work after close (per spec)
             assertNotNull("getTransaction() should work after close",
                 em.getTransaction());
+
+            // Roll back to complete the transaction and allow deferred close
+            em.getTransaction().rollback();
         } finally {
             emf.close();
         }

@@ -134,6 +134,7 @@ public class EntityManagerImpl
     protected RuntimeExceptionTranslator _ret = PersistenceExceptions.getRollbackTranslator(this);
     private boolean _convertPositionalParams = false;
     private boolean _isJoinedToTransaction;
+    private boolean _closedMethodCall;
     private Map<String, Object> properties;
 
     public EntityManagerImpl() {
@@ -167,11 +168,13 @@ public class EntityManagerImpl
             && !(ex instanceof LockTimeoutException)
             && !(ex instanceof QueryTimeoutException)) {
             try {
-                if (isOpen() && _broker.isActive()) {
+                if ((isOpen() || _closedMethodCall) && _broker.isActive()) {
                     _broker.setRollbackOnly(ex);
                 }
             } catch (Exception ignore) {
                 // best effort
+            } finally {
+                _closedMethodCall = false;
             }
         }
         return ex;
@@ -914,12 +917,7 @@ public class EntityManagerImpl
 
     @Override
     public boolean getRollbackOnly() {
-        // If the EM is closed (e.g. close() rolled back the active tx),
-        // return false rather than throwing — the tx was rolled back,
-        // not marked rollback-only.
-        if (!isOpen())
-            return false;
-        if (!isActive())
+        if (!_broker.isActive())
             throw new IllegalStateException(_loc.get("no-transaction")
                 .getMessage());
 
@@ -988,7 +986,11 @@ public class EntityManagerImpl
 
     @Override
     public boolean isActive() {
-        return isOpen() && _broker.isActive();
+        try {
+            return _broker.isActive();
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
@@ -1880,9 +1882,25 @@ public class EntityManagerImpl
      * delegate the pending operation to it.
      */
     protected void assertNotCloseInvoked() {
-        if (_broker.isClosed() || _broker.isCloseInvoked())
+        if (_broker.isClosed() || _broker.isCloseInvoked()) {
+            _closedMethodCall = true;
             throw new InvalidStateException(_loc.get("close-invoked"), null,
                 null, true);
+        }
+    }
+
+    /**
+     * Mark the transaction for rollback if active. Called before throwing
+     * exceptions from EM methods per JPA spec section 3.3.7.1.
+     */
+    public void markRollbackOnException(RuntimeException ex) {
+        try {
+            if (_broker.isActive()) {
+                _broker.setRollbackOnly(ex);
+            }
+        } catch (Exception ignore) {
+            // broker may be closed
+        }
     }
 
     /**
@@ -2137,6 +2155,7 @@ public class EntityManagerImpl
      */
     @Override
     public <T> TypedQuery<T> createQuery(CriteriaQuery<T> criteriaQuery) {
+        assertNotCloseInvoked();
         try {
             ((OpenJPACriteriaQuery<T>) criteriaQuery).compile();
 
@@ -2156,8 +2175,11 @@ public class EntityManagerImpl
             return facadeQuery;
         } catch (IllegalStateException ise) {
             // Per JPA spec, createQuery(CriteriaQuery) throws IAE for invalid criteria
-            throw new IllegalArgumentException(ise.getMessage(), ise);
+            IllegalArgumentException iae = new IllegalArgumentException(ise.getMessage(), ise);
+            markRollbackOnException(iae);
+            throw iae;
         } catch (RuntimeException re) {
+            markRollbackOnException(re);
             throw translateException(re);
         }
     }

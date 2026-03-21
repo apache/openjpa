@@ -401,7 +401,10 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 		if (_query.getOperation() == QueryOperations.OP_UPDATE) {
 	       return asInt(paramValues.isEmpty() ? _query.updateAll() : _query.updateAll(paramValues));
 		}
-        throw new InvalidStateException(_loc.get("not-update-delete-query", getQueryString()), null, null, false);
+        RuntimeException ex = new InvalidStateException(
+            _loc.get("not-update-delete-query", getQueryString()), null, null, false);
+        _em.markRollbackOnException(ex);
+        throw ex;
 	}
 
 	/**
