@@ -102,6 +102,7 @@ public class PersistenceMetaDataDefaults
     private static final Map<Class<?>, PersistenceStrategy> _strats =
         new HashMap<>();
     private static final Set<String> _ignoredAnnos = new HashSet<>();
+    private static final Set<Class<?>> _accessDefiningAnnos = new HashSet<>();
 
     static {
         _strats.put(Basic.class, BASIC);
@@ -124,6 +125,11 @@ public class PersistenceMetaDataDefaults
         _ignoredAnnos.add(PrePersist.class.getName());
         _ignoredAnnos.add(PreRemove.class.getName());
         _ignoredAnnos.add(PreUpdate.class.getName());
+
+        _accessDefiningAnnos.add(Id.class);
+        _accessDefiningAnnos.add(EmbeddedId.class);
+        _accessDefiningAnnos.add(Version.class);
+        _accessDefiningAnnos.addAll(_strats.keySet());
     }
 
 	/**
@@ -428,32 +434,91 @@ public class PersistenceMetaDataDefaults
         if (fields.isEmpty() && getters.isEmpty())
         	return AccessCode.EMPTY;
 
-        fields = filter(fields, annotatedFilter);
-        getters = filter(getters, annotatedFilter);
+        // Use access-defining filter for access type determination.
+        AccessDefiningFilter accessFilter = new AccessDefiningFilter();
+        List<Field> accessFields = filter(fields, accessFilter);
+        List<Method> accessGetters = filter(getters, accessFilter);
 
         List<Method> setters = filter(methods, setterFilter);
-        getters =  matchGetterAndSetter(getters, setters);
+        accessGetters = matchGetterAndSetter(accessGetters, setters);
 
-        boolean mixed = !fields.isEmpty() && !getters.isEmpty();
+        boolean mixed = !accessFields.isEmpty() && !accessGetters.isEmpty();
         if (mixed) {
-        	// Both fields and getters have JPA annotations (mixed placement).
-        	// Determine access from strategy annotations (@Id, @Basic, etc.)
-        	// Supplementary annotations like @Column don't determine access.
-        	List<Field> stratFields = filter(fields, accessTypeFilter);
-        	List<Method> stratGetters = filter(getters, accessTypeFilter);
-        	if (!stratFields.isEmpty() && stratGetters.isEmpty()) {
-        		return AccessCode.FIELD;
-        	}
-        	if (!stratGetters.isEmpty() && stratFields.isEmpty()) {
-        		return AccessCode.PROPERTY;
-        	}
-        	if (!stratFields.isEmpty() && !stratGetters.isEmpty()) {
-        		// Strategy annotations on both fields AND getters (e.g. @Id
-        		// on field and getter). Prefer property access since getters
-        		// typically carry the complete mapping annotations.
-        		return AccessCode.PROPERTY;
-        	}
+            // Collect getter property names for overlap detection
+            Set<String> getterPropertyNames = new HashSet<>();
+            for (Method getter : accessGetters) {
+                String gn = getter.getName();
+                if (gn.startsWith("get") && gn.length() > 3) {
+                    getterPropertyNames.add(
+                        Character.toLowerCase(gn.charAt(3)) + gn.substring(4));
+                } else if (gn.startsWith("is") && gn.length() > 2) {
+                    getterPropertyNames.add(
+                        Character.toLowerCase(gn.charAt(2)) + gn.substring(3));
+                }
+            }
+
+            // Remove fields whose getter also has access-defining annotations
+            // (same attribute annotated on both — property access wins).
+            List<Field> uniqueAccessFields = new ArrayList<>();
+            for (Field f : accessFields) {
+                if (!getterPropertyNames.contains(f.getName())) {
+                    uniqueAccessFields.add(f);
+                }
+            }
+
+            // Remove getters whose field is @Transient (implicit
+            // property-access override, not mixed access).
+            List<Method> nonTransientGetters = new ArrayList<>();
+            for (Method getter : accessGetters) {
+                String getterName = getter.getName();
+                String fieldName = null;
+                if (getterName.startsWith("get") && getterName.length() > 3) {
+                    fieldName = Character.toLowerCase(getterName.charAt(3))
+                        + getterName.substring(4);
+                } else if (getterName.startsWith("is")
+                    && getterName.length() > 2) {
+                    fieldName = Character.toLowerCase(getterName.charAt(2))
+                        + getterName.substring(3);
+                }
+                if (fieldName != null) {
+                    boolean hasTransientField = false;
+                    for (Field f : allFields) {
+                        if (f.getName().equals(fieldName)
+                            && f.isAnnotationPresent(Transient.class)) {
+                            hasTransientField = true;
+                            break;
+                        }
+                    }
+                    if (!hasTransientField) {
+                        nonTransientGetters.add(getter);
+                    }
+                } else {
+                    nonTransientGetters.add(getter);
+                }
+            }
+
+            if (!uniqueAccessFields.isEmpty()
+                && !nonTransientGetters.isEmpty()) {
+                throw new UserException(_loc.get("access-mixed",
+                    cls, toFieldNames(uniqueAccessFields),
+                    toMethodNames(nonTransientGetters)));
+            }
+        }
+        // After the mixed block, if all accessFields were overlapping
+        // with accessGetters (dual-annotated), accessGetters wins (PROPERTY).
+        if (!accessGetters.isEmpty()) {
+        	return AccessCode.PROPERTY;
+        }
+        if (!accessFields.isEmpty()) {
         	return AccessCode.FIELD;
+        }
+        // Fall back to AnnotatedFilter if no access-defining annotations
+        fields = filter(fields, annotatedFilter);
+        getters = filter(getters, annotatedFilter);
+        getters = matchGetterAndSetter(getters, setters);
+        if (!fields.isEmpty() && !getters.isEmpty()) {
+        	throw new UserException(_loc.get("access-mixed",
+        		cls, toFieldNames(fields), toMethodNames(getters)));
         }
         if (!fields.isEmpty()) {
         	return AccessCode.FIELD;
@@ -644,7 +709,62 @@ public class PersistenceMetaDataDefaults
     			members.addAll(fields);
     		}
     	}
+    	if (AccessCode.isField(meta.getAccessType())
+    	    && !AccessCode.isMixed(meta.getAccessType())) {
+    	    List<Method> transientOverrides =
+    	        getTransientFieldPropertyOverrides(meta);
+    	    if (!transientOverrides.isEmpty()) {
+    	        members.addAll(transientOverrides);
+    	        meta.setAccessType(AccessCode.MIXED
+    	            | meta.getAccessType() | AccessCode.EXPLICIT);
+    	    }
+    	}
+
     	return members;
+    }
+
+    private List<Method> getTransientFieldPropertyOverrides(
+        ClassMetaData meta) {
+        List<Method> result = new ArrayList<>();
+        Class<?> cls = meta.getDescribedType();
+        Field[] allFields = cls.getDeclaredFields();
+        Method[] methods = cls.getDeclaredMethods();
+
+        getterFilter.setIncludePrivate(
+            meta.getRepository().getConfiguration()
+                .getCompatibilityInstance()
+                .getPrivatePersistentProperties());
+
+        List<Method> getters = filter(methods, getterFilter);
+        List<Method> setters = filter(methods, setterFilter);
+        getters = matchGetterAndSetter(getters, setters);
+
+        AccessDefiningFilter adf = new AccessDefiningFilter();
+        for (Method getter : getters) {
+            if (!adf.includes(getter)) {
+                continue;
+            }
+            String getterName = getter.getName();
+            String fieldName = null;
+            if (getterName.startsWith("get") && getterName.length() > 3) {
+                fieldName = Character.toLowerCase(getterName.charAt(3))
+                    + getterName.substring(4);
+            } else if (getterName.startsWith("is")
+                && getterName.length() > 2) {
+                fieldName = Character.toLowerCase(getterName.charAt(2))
+                    + getterName.substring(3);
+            }
+            if (fieldName != null) {
+                for (Field f : allFields) {
+                    if (f.getName().equals(fieldName)
+                        && f.isAnnotationPresent(Transient.class)) {
+                        result.add(getter);
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     void assertNoDuplicate(List<Field> fields, List<Method> getters) {
@@ -761,6 +881,14 @@ public class PersistenceMetaDataDefaults
     	    && annotatedFilter.includes((AnnotatedElement)member);
     }
 
+    private static final AccessDefiningFilter _accessDefiningFilter =
+        new AccessDefiningFilter();
+
+    private boolean isAccessDefiningAnnotated(Member member) {
+        return member != null && member instanceof AnnotatedElement
+            && _accessDefiningFilter.includes((AnnotatedElement) member);
+    }
+
     private boolean isNotTransient(Member member) {
         return member != null && member instanceof AnnotatedElement
             && nonTransientFilter.includes((AnnotatedElement)member);
@@ -781,16 +909,11 @@ public class PersistenceMetaDataDefaults
         	access;
         if (field == null && getter == null)
         	error(meta, _loc.get("access-no-property", cls, property));
-    	if ((isNotTransient(getter) && isAnnotated(getter)) &&
-    	     isNotTransient(field) && isAnnotated(field)) {
-    		// Both field and getter are annotated. If access type is
-    		// already determined, let the access code branch handle it.
-    		// Only throw if access type is unknown (truly ambiguous).
-    		if (AccessCode.isUnknown(accessCode)) {
-    			throw new IllegalStateException(_loc.get("access-duplicate",
-    				field, getter).toString());
-    		}
-    	}
+    	if ((isNotTransient(getter) && isAccessDefiningAnnotated(getter)) &&
+    	     isNotTransient(field) && isAccessDefiningAnnotated(field)
+    	     && AccessCode.isUnknown(accessCode))
+    		throw new IllegalStateException(_loc.get("access-duplicate",
+    			field, getter).toString());
 
         if (AccessCode.isField(accessCode)) {
            if (isAnnotatedAccess(getter, AccessType.PROPERTY)) {
@@ -996,6 +1119,18 @@ public class PersistenceMetaDataDefaults
                 	return true;
         	}
         	return false;
+        }
+    }
+
+    static class AccessDefiningFilter
+        implements InclusiveFilter<AnnotatedElement> {
+        @Override
+        public boolean includes(AnnotatedElement obj) {
+            for (Annotation anno : obj.getAnnotations()) {
+                if (_accessDefiningAnnos.contains(anno.annotationType()))
+                    return true;
+            }
+            return false;
         }
     }
 
