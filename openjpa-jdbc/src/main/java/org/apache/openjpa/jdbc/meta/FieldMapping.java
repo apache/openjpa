@@ -487,8 +487,20 @@ public class FieldMapping
                 ClassMapping orig = repos.getMapping(cls.getDescribedType(),
                     cls.getEnvClassLoader(), true);
                 FieldMapping tmplate = orig.getFieldMapping(getName());
-                if (tmplate != null)
-                    copyMappingInfo(tmplate);
+                // Skip copying mapping info from template if this
+                // embedded field has a converter that changes the
+                // DB column type (e.g. int -> String). The converter
+                // handler will create correct columns.
+                if (tmplate != null) {
+                    // Skip copying mapping info if this embedded
+                    // field has a converter that differs from the
+                    // template (the converter changes column types)
+                    if (getConverter() == null
+                            || getConverter().equals(
+                                tmplate.getConverter())) {
+                        copyMappingInfo(tmplate);
+                    }
+                }
             }
             // copy superclass field info
             else if (cls.isMapped() && cls.getPCSuperclass() != null

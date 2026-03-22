@@ -1381,6 +1381,11 @@ public class AnnotationPersistenceMetaDataParser
      * the converter is stored as an embedded converter; otherwise it is the
      * direct converter for this field.
      */
+    /**
+     * Apply a field-level @Convert annotation. If attributeName is specified,
+     * the converter is stored as an embedded converter; otherwise it is the
+     * direct converter for this field.
+     */
     private void applyFieldConvert(FieldMetaData fmd, Convert convert) {
         if (convert.disableConversion())
             return;
@@ -1389,6 +1394,15 @@ public class AnnotationPersistenceMetaDataParser
             // Embedded converter: the converter applies to an attribute
             // within the embedded object
             fmd.addEmbeddedConverter(attrName, convert.converter());
+            // Also set the converter on the embedded metadata's field
+            // if it already exists
+            ClassMetaData embMeta = fmd.getEmbeddedMetaData();
+            if (embMeta != null) {
+                FieldMetaData embField = embMeta.getField(attrName);
+                if (embField != null) {
+                    embField.setConverter(convert.converter());
+                }
+            }
         } else {
             fmd.setConverter(convert.converter());
         }
@@ -1430,7 +1444,11 @@ public class AnnotationPersistenceMetaDataParser
             if (directField != null) {
                 // Direct field or inherited field - override converter
                 directField.setConverter(convert.converter());
-            } else {
+            }
+            // Also store as a pending override in case the field doesn't
+            // exist yet (MappedSuperclass fields are inherited later)
+            meta.addConverterOverride(attrName, convert.converter());
+            if (directField == null) {
                 // Not a direct field - applies to embedded field attributes
                 for (FieldMetaData fmd : meta.getDeclaredFields()) {
                     if (fmd.isEmbedded()) {

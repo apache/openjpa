@@ -163,6 +163,9 @@ public class ClassMetaData
     private Map<String,FieldMetaData> _supFieldMap = null;
     private boolean _defSupFields = false;
     private Collection<String> _staticFields = null;
+    // Pending converter overrides from class-level @Convert/@Converts.
+    // Applied when MappedSuperclass fields are inherited.
+    private Map<String, Class> _converterOverrides = null;
     private int[] _fieldDataTable = null;
     private Map<String,FetchGroup> _fgMap = null;
 
@@ -1909,6 +1912,11 @@ public class ClassMetaData
         // this ensures that all field indexes get set when fields are cached
         cacheFields();
 
+        // Apply any pending converter overrides from class-level
+        // @Convert/@Converts that couldn't be applied earlier because
+        // MappedSuperclass fields hadn't been inherited yet.
+        applyConverterOverrides();
+
         // JPA 3.2: register record types with PCRegistry now that fields are known.
         // This must run regardless of runtime flag since metadata may be resolved
         // during enhancement and cached, never re-entering this method at runtime.
@@ -2882,5 +2890,34 @@ public class ClassMetaData
      */
     public Class<?> getIdClass() {
         return _idClass;
+    }
+
+    /**
+     * Add a pending converter override for a field that may not yet
+     * exist (e.g. inherited from a MappedSuperclass). The override
+     * will be applied when the field is resolved.
+     */
+    public void addConverterOverride(String fieldName, Class converterClass) {
+        if (_converterOverrides == null) {
+            _converterOverrides = new HashMap<>();
+        }
+        _converterOverrides.put(fieldName, converterClass);
+    }
+
+    /**
+     * Apply any pending converter overrides to the resolved fields.
+     * Called after MappedSuperclass fields have been inherited.
+     */
+    public void applyConverterOverrides() {
+        if (_converterOverrides == null || _converterOverrides.isEmpty()) {
+            return;
+        }
+        for (Map.Entry<String, Class> entry
+                : _converterOverrides.entrySet()) {
+            FieldMetaData fmd = getField(entry.getKey());
+            if (fmd != null) {
+                fmd.setConverter(entry.getValue());
+            }
+        }
     }
 }

@@ -64,6 +64,7 @@ import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.ProxyManager;
+import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
 
@@ -1309,11 +1310,11 @@ public class FieldMetaData
             || getExternalValueMap() != null) {
             return true;
         }
-        // Converter on a non-collection/map field => externalized
+        // Converter on a non-collection/map field => externalized.
+        // Arrays (e.g. char[]) with a converter are also externalized.
         if (getConverter() != null) {
             int tc = getDeclaredTypeCode();
-            if (tc != JavaTypes.COLLECTION && tc != JavaTypes.MAP
-                && tc != JavaTypes.ARRAY) {
+            if (tc != JavaTypes.COLLECTION && tc != JavaTypes.MAP) {
                 return true;
             }
         }
@@ -1376,7 +1377,12 @@ public class FieldMetaData
             } catch (InvocationTargetException ite) {
                 Throwable cause = ite.getTargetException();
                 if (cause instanceof RuntimeException) {
-                    throw (RuntimeException) cause;
+                    // JPA spec: converter RuntimeExceptions must be
+                    // wrapped in PersistenceException. Wrap in
+                    // StoreException so the persistence layer can
+                    // translate it.
+                    throw new StoreException(cause.getMessage())
+                        .setCause(cause);
                 }
                 throw new MetaDataException(_loc.get("converter-err", this,
                     Exceptions.toString(val),
@@ -1455,7 +1461,12 @@ public class FieldMetaData
             } catch (InvocationTargetException ite) {
                 Throwable cause = ite.getTargetException();
                 if (cause instanceof RuntimeException) {
-                    throw (RuntimeException) cause;
+                    // JPA spec: converter RuntimeExceptions must be
+                    // wrapped in PersistenceException. Wrap in
+                    // StoreException so the persistence layer can
+                    // translate it.
+                    throw new StoreException(cause.getMessage())
+                        .setCause(cause);
                 }
                 throw new MetaDataException(_loc.get("converter-err", this,
                     Exceptions.toString(val),
@@ -2075,16 +2086,20 @@ public class FieldMetaData
             applyAutoApplyConverter();
         }
 
-        // Propagate embedded converters to the embedded class fields
-        if (_embeddedConverters != null && !_embeddedConverters.isEmpty()) {
-            propagateEmbeddedConverters();
-        }
-
         // only pass on metadata resolve mode so that metadata is always
         // resolved before any other resolve modes our subclasses pass along
         _val.resolve(MODE_META);
         _key.resolve(MODE_META);
         _elem.resolve(MODE_META);
+
+        // Propagate embedded converters to the embedded class fields.
+        // This must happen AFTER _val.resolve(MODE_META) because the
+        // embedded metadata's resolveMeta() copies fields from the
+        // "real" type metadata, which would overwrite any converters
+        // set before the copy.
+        if (_embeddedConverters != null && !_embeddedConverters.isEmpty()) {
+            propagateEmbeddedConverters();
+        }
 
         MetaDataRepository repos = getRepository();
         int validate = repos.getValidate();
@@ -2114,7 +2129,7 @@ public class FieldMetaData
         if (isPrimaryKey() || isVersion())
             return;
         int tc = getDeclaredTypeCode();
-        if (tc == JavaTypes.PC || tc == JavaTypes.ARRAY
+        if (tc == JavaTypes.PC
             || tc == JavaTypes.COLLECTION || tc == JavaTypes.MAP)
             return;
         Class<?> converterCls = getRepository()
@@ -2130,33 +2145,33 @@ public class FieldMetaData
      * specifying converters for embedded attributes.
      */
     private void propagateEmbeddedConverters() {
-        ClassMetaData embeddedMeta = _val.getEmbeddedMetaData();
-        if (embeddedMeta == null) {
-            // Embedded metadata may not exist yet; try the declared type
-            ClassMetaData typeMeta = getRepository().getMetaData(
-                getDeclaredType(), null, false);
-            if (typeMeta == null)
-                return;
-            // Apply converters to the type's fields so they'll be
-            // picked up when the embedded copy is created
+        // Always set converters on the "real" type metadata so that
+        // the mapping template has the correct strategy/column types
+        ClassMetaData typeMeta = getRepository().getMetaData(
+            getDeclaredType(), null, false);
+        if (typeMeta != null) {
             for (Map.Entry<String, Class> entry
                     : _embeddedConverters.entrySet()) {
                 String attrName = entry.getKey();
                 Class convClass = entry.getValue();
-                FieldMetaData embField = typeMeta.getField(attrName);
+                FieldMetaData typeField = typeMeta.getField(attrName);
+                if (typeField != null) {
+                    typeField.setConverter(convClass);
+                }
+            }
+        }
+
+        // Also set on the embedded metadata copy if it exists
+        ClassMetaData embeddedMeta = _val.getEmbeddedMetaData();
+        if (embeddedMeta != null) {
+            for (Map.Entry<String, Class> entry
+                    : _embeddedConverters.entrySet()) {
+                String attrName = entry.getKey();
+                Class convClass = entry.getValue();
+                FieldMetaData embField = embeddedMeta.getField(attrName);
                 if (embField != null) {
                     embField.setConverter(convClass);
                 }
-            }
-            return;
-        }
-        for (Map.Entry<String, Class> entry
-                : _embeddedConverters.entrySet()) {
-            String attrName = entry.getKey();
-            Class convClass = entry.getValue();
-            FieldMetaData embField = embeddedMeta.getField(attrName);
-            if (embField != null) {
-                embField.setConverter(convClass);
             }
         }
     }

@@ -116,7 +116,30 @@ public class EmbedFieldStrategy
 
         // before we map the null indicator column, we need to make sure our
         // value is mapped so we can tell whether the column is synthetic
-        field.getValueMapping().resolve(MetaDataModes.MODE_META | MetaDataModes.MODE_MAPPING);
+        java.util.Map<String, Class> embConvs = field.getEmbeddedConverters();
+        if (embConvs != null && !embConvs.isEmpty()) {
+            // Apply embedded converters from @Converts on this field.
+            // Resolve META first to create/copy embedded fields.
+            field.getValueMapping().resolve(MetaDataModes.MODE_META);
+            // Set converters on the embedded fields before MAPPING
+            // resolve so strategies and column types are correct.
+            ClassMapping embMapping = field.getEmbeddedMapping();
+            if (embMapping != null) {
+                for (java.util.Map.Entry<String, Class> entry
+                        : embConvs.entrySet()) {
+                    FieldMapping embField =
+                        embMapping.getFieldMapping(entry.getKey());
+                    if (embField != null
+                            && embField.getConverter() == null) {
+                        embField.setConverter(entry.getValue());
+                    }
+                }
+            }
+            field.getValueMapping().resolve(MetaDataModes.MODE_MAPPING);
+        } else {
+            field.getValueMapping().resolve(
+                MetaDataModes.MODE_META | MetaDataModes.MODE_MAPPING);
+        }
         Column col = vinfo.getNullIndicatorColumn(field, field.getName(),
             field.getTable(), adapt);
         if (col != null) {

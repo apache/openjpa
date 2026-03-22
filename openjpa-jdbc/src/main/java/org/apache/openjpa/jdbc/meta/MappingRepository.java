@@ -830,10 +830,10 @@ public class MappingRepository extends MetaDataRepository {
         }
 
         // check for JPA @Convert / AttributeConverter (non-collection fields)
+        // Arrays (e.g. char[]) with an explicit converter are also handled.
         if (field.getConverter() != null) {
             int tc = field.getDeclaredTypeCode();
-            if (tc != JavaTypes.COLLECTION && tc != JavaTypes.MAP
-                    && tc != JavaTypes.ARRAY) {
+            if (tc != JavaTypes.COLLECTION && tc != JavaTypes.MAP) {
                 Class<?> dbType = field.getConverterDatabaseType();
                 if (dbType != null && dbType != Object.class) {
                     if (installHandlers) {
