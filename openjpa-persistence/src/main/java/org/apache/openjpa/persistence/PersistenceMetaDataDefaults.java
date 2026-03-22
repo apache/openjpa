@@ -503,6 +503,13 @@ public class PersistenceMetaDataDefaults
                     cls, toFieldNames(uniqueAccessFields),
                     toMethodNames(nonTransientGetters)));
             }
+
+            // Exclude getters whose field is @Transient from access type
+            // determination. These getters represent property-access overrides
+            // on individual fields (mixed access), not a signal to change the
+            // class-level access type. They will be discovered later via
+            // getTransientFieldPropertyOverrides() in getPersistentMembers().
+            accessGetters = nonTransientGetters;
         }
         // After the mixed block, if all accessFields were overlapping
         // with accessGetters (dual-annotated), accessGetters wins (PROPERTY).
@@ -825,8 +832,16 @@ public class PersistenceMetaDataDefaults
             // If mixed or unknown, field default access, keep explicit property
             // members
             if (AccessCode.isField(access)) {
-                if (!isAnnotatedAccess(member, AccessType.PROPERTY))
-                    return false;
+                if (!isAnnotatedAccess(member, AccessType.PROPERTY)) {
+                    // JPA spec allows implicit property-access override:
+                    // @Transient on field + annotation on getter.
+                    // If this getter was discovered via
+                    // getTransientFieldPropertyOverrides(), treat as persistent.
+                    if (!hasTransientFieldForGetter(
+                            meta.getDescribedType(), (Method) member)) {
+                        return false;
+                    }
+                }
             }
             try {
                 String setterName;
@@ -859,6 +874,33 @@ public class PersistenceMetaDataDefaults
     private boolean isAnnotatedTransient(Member member) {
         return member instanceof AnnotatedElement
             && ((AnnotatedElement) member).isAnnotationPresent(Transient.class);
+    }
+
+    /**
+     * Checks whether the given getter method has a corresponding field with
+     * @Transient annotation. This indicates an implicit property-access
+     * override per JPA spec (field marked @Transient, getter carries the
+     * persistence annotations).
+     */
+    private boolean hasTransientFieldForGetter(Class<?> cls, Method getter) {
+        String getterName = getter.getName();
+        String fieldName = null;
+        if (getterName.startsWith("get") && getterName.length() > 3) {
+            fieldName = Character.toLowerCase(getterName.charAt(3))
+                + getterName.substring(4);
+        } else if (getterName.startsWith("is") && getterName.length() > 2) {
+            fieldName = Character.toLowerCase(getterName.charAt(2))
+                + getterName.substring(3);
+        }
+        if (fieldName != null) {
+            try {
+                Field f = cls.getDeclaredField(fieldName);
+                return f.isAnnotationPresent(Transient.class);
+            } catch (NoSuchFieldException e) {
+                return false;
+            }
+        }
+        return false;
     }
 
     /**
