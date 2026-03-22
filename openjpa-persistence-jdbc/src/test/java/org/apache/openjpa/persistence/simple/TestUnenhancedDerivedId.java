@@ -46,6 +46,10 @@ public class TestUnenhancedDerivedId extends SingleEMFTestCase {
             UnenhancedDID1bEmployee.class,
             UnenhancedDID1bDependent.class,
             UnenhancedDID1bDependentId.class,
+            UnenhancedDID2aEmployeeId.class,
+            UnenhancedDID2aEmployee.class,
+            UnenhancedDID2aDependent.class,
+            UnenhancedDID2aDependentId.class,
             UnenhancedDID3EmployeeId.class,
             UnenhancedDID3Employee.class,
             UnenhancedDID3Dependent.class,
@@ -205,6 +209,63 @@ public class TestUnenhancedDerivedId extends SingleEMFTestCase {
                 em.getTransaction().rollback();
             }
             fail("ex3a test failed with exception: " + e.getMessage());
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
+     * ex2a: @IdClass with @Id @ManyToOne, composite parent @IdClass.
+     * Mirrors TCK core/derivedid/ex2a/Client.DIDTest.
+     */
+    public void testEx2a_IdClassWithCompositeParentIdClass() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+
+        try {
+            final UnenhancedDID2aEmployee employee1 =
+                new UnenhancedDID2aEmployee("John", "Duke");
+            final UnenhancedDID2aEmployee employee2 =
+                new UnenhancedDID2aEmployee("foo", "bar");
+
+            final UnenhancedDID2aDependent dep1 =
+                new UnenhancedDID2aDependent("Obama", employee1);
+            final UnenhancedDID2aDependent dep2 =
+                new UnenhancedDID2aDependent("Michelle", employee1);
+            final UnenhancedDID2aDependent dep3 =
+                new UnenhancedDID2aDependent("John", employee2);
+
+            em.persist(dep1);
+            em.persist(dep2);
+            em.persist(dep3);
+            em.persist(employee1);
+            em.persist(employee2);
+            em.flush();
+
+            // Find with composite IdClass key
+            UnenhancedDID2aDependentId depId = new UnenhancedDID2aDependentId(
+                "Obama", new UnenhancedDID2aEmployeeId("John", "Duke"));
+            UnenhancedDID2aDependent newDependent =
+                em.find(UnenhancedDID2aDependent.class, depId);
+            assertNotNull("Should find dependent by IdClass key", newDependent);
+            em.refresh(newDependent);
+
+            // Query
+            List depList = em.createQuery(
+                "Select d from UnenhancedDID2aDependent d where d.name='Obama'"
+                + " and d.emp.firstName='John'")
+                .getResultList();
+            assertTrue("Query should return results", depList.size() > 0);
+
+            newDependent = (UnenhancedDID2aDependent) depList.get(0);
+            assertSame("Should be same managed instance", dep1, newDependent);
+
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            fail("ex2a test failed with exception: " + e.getMessage());
         } finally {
             em.close();
         }

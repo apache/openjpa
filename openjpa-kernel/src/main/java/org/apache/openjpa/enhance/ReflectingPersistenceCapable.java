@@ -303,6 +303,13 @@ public class ReflectingPersistenceCapable
             // (unwrapped from OpenJPAId/ObjectId) so it matches the IdClass field type.
             pks[i] = getRelatedEntityIdForIdClass(pkFields[i], val);
         }
+
+        // For non-OpenJPA identity (IdClass), construct the OID directly
+        // via reflection to avoid going through PCRegistry.copyKeyFieldsToObjectId()
+        // which uses enhanced bytecode that may inconsistently handle ObjectId wrapping.
+        if (!meta.isOpenJPAIdentity()) {
+            return buildIdClassOidViaReflection(pkFields, pks);
+        }
         return ApplicationIds.fromPKValues(pks, meta);
     }
 
@@ -425,6 +432,36 @@ public class ReflectingPersistenceCapable
         Class type = (Class) in.readObject();
         pcSubclassInstance = PCRegistry.newInstance(type, null, false);
         ImplHelper.registerPersistenceCapable(this);
+    }
+
+    /**
+     * Build the OID for a non-OpenJPA identity (IdClass) type directly via
+     * reflection, bypassing PCRegistry.copyKeyFieldsToObjectId(). This avoids
+     * issues where enhanced bytecode inconsistently handles ObjectId wrapping
+     * for derived identity fields (depending on whether metadata was fully
+     * resolved at enhancement time).
+     */
+    private Object buildIdClassOidViaReflection(FieldMetaData[] pkFields, Object[] pks) {
+        Class<?> oidType = meta.getObjectIdType();
+        if (oidType == null) {
+            // Fallback to fromPKValues if no object id type
+            return ApplicationIds.fromPKValues(pks, meta);
+        }
+        try {
+            Object oidInstance = oidType.getConstructor().newInstance();
+            for (int i = 0; i < pkFields.length; i++) {
+                Field f = Reflection.findField(oidType, pkFields[i].getName(), true);
+                Reflection.set(oidInstance, f, pks[i]);
+            }
+            // Wrap in ObjectId if the identity type is shared
+            if (meta.isObjectIdTypeShared()) {
+                return new ObjectId(meta.getDescribedType(), oidInstance);
+            }
+            return oidInstance;
+        } catch (Exception e) {
+            // Fallback to fromPKValues on any error
+            return ApplicationIds.fromPKValues(pks, meta);
+        }
     }
 
     /**
