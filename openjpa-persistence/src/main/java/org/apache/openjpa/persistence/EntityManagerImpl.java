@@ -647,7 +647,8 @@ public class EntityManagerImpl
                 Class<?> expectedType =
                     Filters.wrap(pkFields[0].getDeclaredType());
                 Class<?> actualType = Filters.wrap(oid.getClass());
-                if (!expectedType.isAssignableFrom(actualType)) {
+                if (!expectedType.isAssignableFrom(actualType)
+                    && !isNumericCompatible(expectedType, actualType)) {
                     throw new IllegalArgumentException(
                         _loc.get("bad-pk-type", cls,
                             expectedType.getName(),
@@ -674,19 +675,36 @@ public class EntityManagerImpl
     @SuppressWarnings("unchecked")
     public <T> T getReference(Class<T> cls, Object oid) {
         assertNotCloseInvoked();
-        validatePrimaryKey(cls, oid, "getReference");
-        oid = _broker.newObjectId(cls, oid);
-        return (T) _broker.find(oid, false, this);
+        try {
+            validatePrimaryKey(cls, oid, "getReference");
+            oid = _broker.newObjectId(cls, oid);
+            return (T) _broker.find(oid, false, this);
+        } catch (jakarta.persistence.EntityNotFoundException enfe) {
+            throw enfe;
+        } catch (RuntimeException re) {
+            throw translateException(re);
+        } catch (Exception e) {
+            // Per JPA spec, getReference() should throw EntityNotFoundException
+            // if the entity does not exist in the database. With runtime-enhanced
+            // (unenhanced) entities, the broker may eagerly load the entity to
+            // determine the concrete subclass type, and throw ObjectNotFoundException
+            // immediately rather than returning a hollow proxy.
+            throw new jakarta.persistence.EntityNotFoundException(
+                e.getMessage());
+        }
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T> T find(Class<T> cls, Object oid) {
         assertNotCloseInvoked();
-        if (oid == null)
-        	return null;
-        oid = _broker.newObjectId(cls, oid);
-        return (T) _broker.find(oid, true, this);
+        try {
+            validateFindArguments(cls, oid);
+            oid = _broker.newObjectId(cls, oid);
+            return (T) _broker.find(oid, true, this);
+        } catch (RuntimeException re) {
+            throw translateException(re);
+        }
     }
 
     @Override
@@ -725,19 +743,42 @@ public class EntityManagerImpl
     @SuppressWarnings("unchecked")
     public <T> T find(Class<T> cls, Object oid, LockModeType mode, Map<String, Object> properties) {
         assertNotCloseInvoked();
+        try {
+            validateFindArguments(cls, oid);
+            properties = cloneProperties(properties);
+            configureCurrentCacheModes(pushFetchPlan(), properties);
+            configureCurrentFetchPlan(getFetchPlan(), properties, mode, true);
+            try {
+                oid = _broker.newObjectId(cls, oid);
+                return (T) _broker.find(oid, true, this);
+            } finally {
+                popFetchPlan();
+            }
+        } catch (RuntimeException re) {
+            throw translateException(re);
+        }
+    }
+
+    /**
+     * Validates find/getReference arguments per JPA spec: class must be
+     * an entity, PK must not be null, and PK type must be compatible.
+     */
+    private void validateFindArguments(Class<?> cls, Object oid) {
         if (oid == null) {
             throw new IllegalArgumentException(
                 _loc.get("null-pk", cls).getMessage());
         }
-        properties = cloneProperties(properties);
-        configureCurrentCacheModes(pushFetchPlan(), properties);
-        configureCurrentFetchPlan(getFetchPlan(), properties, mode, true);
-        try {
-            oid = _broker.newObjectId(cls, oid);
-            return (T) _broker.find(oid, true, this);
-        } finally {
-            popFetchPlan();
+        // Verify cls is a known entity
+        MetaDataRepository repos = _broker.getConfiguration()
+            .getMetaDataRepositoryInstance();
+        ClassMetaData meta = repos.getMetaData(cls,
+            _broker.getClassLoader(), false);
+        if (meta == null) {
+            throw new IllegalArgumentException(
+                "Class \"" + cls.getName()
+                + "\" is not a known entity type.");
         }
+        validatePrimaryKeyType(cls, oid);
     }
 
     /**
@@ -755,30 +796,59 @@ public class EntityManagerImpl
         }
         if (meta.getIdentityType() == ClassMetaData.ID_APPLICATION) {
             if (meta.isOpenJPAIdentity()) {
-                // single-field PK: check that the value type matches exactly
+                // single-field PK: check that the value type is compatible
                 FieldMetaData pkField = meta.getPrimaryKeyFields()[0];
                 Class<?> pkType = pkField.getDeclaredType();
-                // wrap primitives
+                // Skip validation for derived identity (@Id @ManyToOne/@OneToOne)
+                // where the PK field type is an entity and the passed value
+                // is the related entity's PK, not the entity itself
+                if (pkField.getDeclaredTypeMetaData() != null) {
+                    return;
+                }
                 if (pkType.isPrimitive()) {
                     pkType = Filters.wrap(pkType);
                 }
-                if (!pkType.isInstance(oid)) {
+                if (!pkType.isInstance(oid)
+                    && !isNumericCompatible(pkType, oid.getClass())) {
                     throw new IllegalArgumentException(
                         _loc.get("bad-pk-type", cls.getName(),
                             pkType.getName(), oid.getClass().getName())
                             .getMessage());
                 }
-            } else {
-                // compound PK or IdClass: value must be instance of IdClass
-                Class<?> idClass = meta.getObjectIdType();
-                if (idClass != null && !idClass.isInstance(oid)) {
-                    throw new IllegalArgumentException(
-                        _loc.get("bad-pk-type", cls.getName(),
-                            idClass.getName(), oid.getClass().getName())
-                            .getMessage());
-                }
+            }
+            // For compound PK or IdClass, let newObjectId() handle validation
+            // since the value may be the IdClass, a stringified form, or
+            // a related entity's PK (derived identity)
+        }
+    }
+
+    private static final Class<?>[] NUMERIC_WIDENING_ORDER = {
+        Byte.class, Short.class, Integer.class, Long.class,
+        Float.class, Double.class, java.math.BigInteger.class,
+        java.math.BigDecimal.class
+    };
+
+    private static boolean isNumericCompatible(Class<?> target, Class<?> value) {
+        if (!Number.class.isAssignableFrom(target)
+            || !Number.class.isAssignableFrom(value)) {
+            return false;
+        }
+        // Allow widening (e.g. Integer → Long) but not narrowing
+        int targetIdx = numericIndex(target);
+        int valueIdx = numericIndex(value);
+        if (targetIdx < 0 || valueIdx < 0) {
+            return false;
+        }
+        return valueIdx <= targetIdx;
+    }
+
+    private static int numericIndex(Class<?> cls) {
+        for (int i = 0; i < NUMERIC_WIDENING_ORDER.length; i++) {
+            if (NUMERIC_WIDENING_ORDER[i] == cls) {
+                return i;
             }
         }
+        return -1;
     }
 
     @Override
