@@ -298,9 +298,10 @@ public class ReflectingPersistenceCapable
         Object[] pks = new Object[pkFields.length];
         for (int i = 0; i < pkFields.length; i++) {
             Object val = getValue(pkFields[i].getIndex(), o);
-            // For derived identity (@MapsId), a PK field value may be a related
-            // entity. The ObjectId needs the related entity's ID, not the entity itself.
-            pks[i] = getRelatedEntityId(pkFields[i], val);
+            // For derived identity (@MapsId/@Id @ManyToOne), a PK field value
+            // may be a related entity. Extract the related entity's raw ID value
+            // (unwrapped from OpenJPAId/ObjectId) so it matches the IdClass field type.
+            pks[i] = getRelatedEntityIdForIdClass(pkFields[i], val);
         }
         return ApplicationIds.fromPKValues(pks, meta);
     }
@@ -454,10 +455,13 @@ public class ReflectingPersistenceCapable
             return null;
         }
         // Check if this PK field maps to another entity (derived identity)
-        if (pk.getDeclaredTypeMetaData() != null) {
+        ClassMetaData relatedMeta = pk.getDeclaredTypeMetaData();
+        if (relatedMeta != null) {
             Object relatedOid = ApplicationIds.getRelatedObjectId(val);
             if (relatedOid == null) {
-                return val;
+                // The related entity is unenhanced and not yet in the instance map.
+                // Extract its PK value(s) directly via reflection.
+                return extractRelatedIdViaReflection(relatedMeta, val);
             }
             // For OpenJPA identity types, unwrap to the raw id value
             if (relatedOid instanceof org.apache.openjpa.util.OpenJPAId) {
@@ -470,5 +474,47 @@ public class ReflectingPersistenceCapable
             return relatedOid;
         }
         return val;
+    }
+
+    /**
+     * Extract the primary key value from an unenhanced related entity using
+     * reflection on its metadata. For single-field identity, returns the raw
+     * PK value. For EmbeddedId, returns the embedded id object.
+     * For IdClass with multiple fields, constructs the IdClass via reflection.
+     */
+    private Object extractRelatedIdViaReflection(ClassMetaData relatedMeta, Object relatedEntity) {
+        FieldMetaData[] relPkFields = relatedMeta.getPrimaryKeyFields();
+        if (relPkFields.length == 0) {
+            return relatedEntity;
+        }
+
+        // Single PK field: return the raw value directly
+        if (relPkFields.length == 1) {
+            FieldMetaData pkField = relPkFields[0];
+            Field f = Reflection.findField(relatedMeta.getDescribedType(), pkField.getName(), true);
+            Object pkVal = Reflection.get(relatedEntity, f);
+            // For EmbeddedId, return the embedded object directly
+            // For simple types (long, String, etc.), return the value
+            return pkVal;
+        }
+
+        // Multiple PK fields: construct the IdClass
+        Class<?> oidType = relatedMeta.getObjectIdType();
+        if (oidType == null) {
+            return relatedEntity;
+        }
+        try {
+            Object idClassInstance = oidType.getConstructor().newInstance();
+            for (FieldMetaData pkField : relPkFields) {
+                Field entityField = Reflection.findField(relatedMeta.getDescribedType(), pkField.getName(), true);
+                Object fieldVal = Reflection.get(relatedEntity, entityField);
+                Field idField = Reflection.findField(oidType, pkField.getName(), true);
+                Reflection.set(idClassInstance, idField, fieldVal);
+            }
+            return idClassInstance;
+        } catch (Exception e) {
+            // If we can't construct the IdClass, fall back to returning the entity
+            return relatedEntity;
+        }
     }
 }
