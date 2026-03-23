@@ -218,10 +218,22 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
         Configurations.configureInstance(tool, conf, props,
             "SynchronizeMappings");
 
-        // Check for ExcludeTypes property to skip specific entity classes
-        // during schema synchronization (e.g. entities whose tables are
-        // intentionally absent from DDL scripts).
+        // Check for ExcludeTypes to skip specific entity classes during
+        // schema synchronization. Supports both the parenthesized form
+        // buildSchema(ExcludeTypes=...) and the standalone config property
+        // openjpa.jdbc.SyncMappingsExcludeTypes.
         Set<String> excludeTypes = parseExcludeTypes(props);
+        if (excludeTypes.isEmpty()) {
+            String excludeProp = conf.getSyncMappingsExcludeTypes();
+            if (excludeProp != null && !excludeProp.isEmpty()) {
+                for (String type : excludeProp.split(";")) {
+                    type = type.trim();
+                    if (!type.isEmpty()) {
+                        excludeTypes.add(type);
+                    }
+                }
+            }
+        }
 
         // initialize the schema
         for (Class<?> cls : classes) {

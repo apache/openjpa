@@ -387,6 +387,18 @@ public interface JDBCConfiguration
     void setSynchronizeMappings(String synchronizeMappings);
 
     /**
+     * Semicolon-separated list of fully-qualified class names to exclude
+     * from SynchronizeMappings schema synchronization.
+     */
+    String getSyncMappingsExcludeTypes();
+
+    /**
+     * Semicolon-separated list of fully-qualified class names to exclude
+     * from SynchronizeMappings schema synchronization.
+     */
+    void setSyncMappingsExcludeTypes(String types);
+
+    /**
      * A comma-separated list of the {@link JDBCListener} plugins for
      * listening to {@link JDBCEvent}s.
      */

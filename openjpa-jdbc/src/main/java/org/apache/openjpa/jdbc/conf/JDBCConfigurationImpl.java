@@ -78,6 +78,7 @@ public class JDBCConfigurationImpl
     public FetchModeValue subclassFetchMode;
     public IntValue lrsSize;
     public StringValue synchronizeMappings;
+    public StringValue syncMappingsExcludeTypes;
     public ObjectValue jdbcListenerPlugins;
     public ObjectValue connectionDecoratorPlugins;
     public PluginValue dbdictionaryPlugin;
@@ -192,6 +193,8 @@ public class JDBCConfigurationImpl
         aliases = new String[]{ "false", null };
         synchronizeMappings.setAliases(aliases);
         synchronizeMappings.setDefault(aliases[0]);
+
+        syncMappingsExcludeTypes = addString("jdbc.SyncMappingsExcludeTypes");
 
         jdbcListenerPlugins = addPluginList("jdbc.JDBCListeners");
         jdbcListenerPlugins.setInstantiatingGetter("getJDBCListenerInstances");
@@ -531,6 +534,16 @@ public class JDBCConfigurationImpl
     @Override
     public String getSynchronizeMappings() {
         return synchronizeMappings.get();
+    }
+
+    @Override
+    public String getSyncMappingsExcludeTypes() {
+        return syncMappingsExcludeTypes.get();
+    }
+
+    @Override
+    public void setSyncMappingsExcludeTypes(String types) {
+        syncMappingsExcludeTypes.set(types);
     }
 
     @Override
