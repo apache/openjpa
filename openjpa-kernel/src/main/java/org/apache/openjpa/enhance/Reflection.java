@@ -180,6 +180,24 @@ public class Reflection {
             throw new GeneralException(e);
         }
 
+        // Fallback: try "set" + prop as-is (handles lowercase property names
+        // like getdescription/setdescription)
+        String fallbackName = "set" + prop;
+        if (!fallbackName.equals(name)) {
+            try {
+                for (Class c = cls; c != null && c != Object.class;
+                    c = c.getSuperclass()) {
+                    m = getDeclaredMethod(c, fallbackName, param);
+                    if (m != null) {
+                        setSetterMethod(cls, prop, m);
+                        return m;
+                    }
+                }
+            } catch (Exception e) {
+                throw new GeneralException(e);
+            }
+        }
+
         if (mustExist)
             throw new UserException(_loc.get("bad-setter", cls, prop));
         return null;

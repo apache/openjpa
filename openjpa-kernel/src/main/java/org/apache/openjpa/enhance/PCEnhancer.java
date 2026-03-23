@@ -32,6 +32,7 @@ import java.io.ObjectStreamException;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
@@ -4414,13 +4415,20 @@ public class PCEnhancer {
     private void addSubclassGetMethod(ClassNode classNode, FieldMetaData fmd) {
         String getterName = "get" + StringUtil.capitalize(fmd.getName());
 
-        final String finalGetterName = getterName;
-        final boolean hasGetter = managedType.getClassNode().methods.stream()
-                .filter(m -> m.name.equals(finalGetterName) && (m.parameters == null || m.parameters.isEmpty()))
-                .findAny()
-                .isPresent();
-        if (!hasGetter) {
-            getterName = "is" + StringUtil.capitalize(fmd.getName());
+        // If the backing member is a Method, use its name directly to preserve
+        // the original case (e.g. getdescription instead of getDescription)
+        Member backingMember = fmd.getBackingMember();
+        if (backingMember instanceof Method) {
+            getterName = backingMember.getName();
+        } else {
+            final String finalGetterName = getterName;
+            final boolean hasGetter = managedType.getClassNode().methods.stream()
+                    .filter(m -> m.name.equals(finalGetterName) && (m.parameters == null || m.parameters.isEmpty()))
+                    .findAny()
+                    .isPresent();
+            if (!hasGetter) {
+                getterName = "is" + StringUtil.capitalize(fmd.getName());
+            }
         }
 
         final Class propType = fmd.getDeclaredType();

@@ -2771,6 +2771,27 @@ public class FieldMetaData
     }
 
     public String getSetterName() {
+        // If the backing member is a getter method, derive setter name from it
+        // to preserve the original case (e.g. getdescription -> setdescription)
+        Member backingMember = getBackingMember();
+        if (backingMember instanceof Method) {
+            String getterName = backingMember.getName();
+            String derivedSetterName = null;
+            if (getterName.startsWith("get")) {
+                derivedSetterName = "set" + getterName.substring(3);
+            } else if (getterName.startsWith("is")) {
+                derivedSetterName = "set" + getterName.substring(2);
+            }
+            if (derivedSetterName != null) {
+                Class<?> type = getDeclaringMetaData().getDescribedType();
+                try {
+                    type.getDeclaredMethod(derivedSetterName, getType());
+                    return derivedSetterName;
+                } catch (Exception e) {
+                    // fall through to capitalize approach
+                }
+            }
+        }
         String setterName = "set" + StringUtil.capitalize(_name);
         if (_name.length() > 1 && Character.isLowerCase(_name.charAt(0)) && Character.isUpperCase(_name.charAt(1))) {
             // We have the special case where the first char is lower, and the
