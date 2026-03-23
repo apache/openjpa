@@ -222,8 +222,29 @@ public class HandlerRelationMapTableFieldStrategy
         if (map == null || map.isEmpty())
             return;
 
-        if (!field.isBiMTo1JT() && field.getMappedBy() != null)
+        if (!field.isBiMTo1JT() && field.getMappedBy() != null) {
+            // For mappedBy maps with @MapKeyColumn, write the key column
+            // to the value entity's table via UPDATE (like EclipseLink's
+            // two-phase write: INSERT Employee, then UPDATE to set OFFICE_ID).
+            if (_kcols != null && _kcols.length > 0) {
+                ValueMapping key = field.getKeyMapping();
+                StoreContext ctx = store.getContext();
+                for (Object o : map.entrySet()) {
+                    Map.Entry entry = (Map.Entry) o;
+                    OpenJPAStateManager valsm = RelationStrategies.getStateManager(
+                        entry.getValue(), ctx);
+                    if (valsm != null) {
+                        Row row = rm.getRow(field.getElementMapping()
+                            .getDeclaredTypeMapping().getTable(),
+                            Row.ACTION_UPDATE, valsm, true);
+                        row.wherePrimaryKey(valsm);
+                        HandlerStrategies.set(key, entry.getKey(), store, row,
+                            _kcols, _kio, true);
+                    }
+                }
+            }
             return;
+        }
 
         Row row = null;
         if (!field.isUni1ToMFK()) {
@@ -276,8 +297,16 @@ public class HandlerRelationMapTableFieldStrategy
     @Override
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
-        if (field.getMappedBy() != null && !field.isBiMTo1JT())
+        if (field.getMappedBy() != null && !field.isBiMTo1JT()) {
+            // For mappedBy maps with @MapKeyColumn, update key columns
+            if (_kcols != null && _kcols.length > 0) {
+                Map map = (Map) sm.fetchObject(field.getIndex());
+                if (map != null && !map.isEmpty()) {
+                    insert(sm, store, rm, map);
+                }
+            }
             return;
+        }
 
         Map map = (Map) sm.fetchObject(field.getIndex());
         ChangeTracker ct = null;
@@ -465,7 +494,9 @@ public class HandlerRelationMapTableFieldStrategy
             return;
         if (field.isUni1ToMFK()) {
             Map mapObj = (Map)sm.fetchObject(field.getIndex());
-            updateSetNull(sm, store, rm, mapObj.keySet());
+            if (mapObj != null) {
+                updateSetNull(sm, store, rm, mapObj.keySet());
+            }
             return;
         }
 
