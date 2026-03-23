@@ -223,31 +223,22 @@ public class EnumValueHandler extends AbstractValueHandler {
             initEnumeratedValueField(vm.getType());
             Enum<?> result = _dbToEnum.get(val);
             if (result == null && val instanceof Number) {
-                // try numeric conversion (e.g. long to int)
                 result = _dbToEnum.get(((Number) val).intValue());
             }
             if (result == null) {
-                // try string conversion
                 result = _dbToEnum.get(val.toString());
             }
             return result;
         }
         if (_ordinal) {
-            // Handle both Number values (from numeric columns) and
-            // String values (when column type was changed to varchar
-            // due to multiple entities sharing the same column with
-            // different @MapKeyEnumerated types).
             if (val instanceof Number) {
                 return _vals[((Number) val).intValue()];
             }
-            return _vals[Integer.parseInt(val.toString())];
+            return _vals[Integer.parseInt(val.toString().trim())];
         }
-        // Handle both String values and numeric values that need
-        // conversion to enum name.
         if (val instanceof String) {
             return Enum.valueOf(vm.getType(), (String) val);
         }
-        // Numeric value in a STRING enum column — look up by ordinal
         return _vals[((Number) val).intValue()];
     }
 }

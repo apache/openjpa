@@ -781,32 +781,37 @@ public abstract class MappingInfo implements Serializable {
             col.setType(type);
         } else if ((compat || !ttype) &&
                 !col.isCompatible(type, typeName, size, decimals)) {
-            // if existing column isn't compatible with desired type, warn
-            // and change the existing column type. Multiple entities may
-            // share the same table column with different type expectations
-            // (e.g., @MapKeyEnumerated ORDINAL vs STRING on the same column).
-            // When merging incompatible types, prefer VARCHAR as it can
-            // store both string and numeric values.
-            Message msg = _loc.get(prefix + "-bad-col", context,
-                Schemas.getJDBCName(type), col.getDescription());
-            Log log = repos.getLog();
-            if (log.isWarnEnabled())
-                log.warn(msg);
-
+            // When multiple mappings share the same column with different
+            // enum types (ORDINAL=SMALLINT vs STRING=VARCHAR), always
+            // resolve to VARCHAR since it can hold both ordinal numbers
+            // as strings and enum name strings.
             int existingType = col.getType();
-            boolean existingIsVarchar = (existingType == Types.VARCHAR
-                || existingType == Types.CHAR
-                || existingType == Types.LONGVARCHAR
-                || existingType == Types.CLOB);
-            boolean newIsVarchar = (type == Types.VARCHAR
-                || type == Types.CHAR
-                || type == Types.LONGVARCHAR
-                || type == Types.CLOB);
-            if (existingIsVarchar && !newIsVarchar) {
-                // Keep the existing VARCHAR type; it can store both
-                // string and numeric values.
+            boolean isExistingVarchar = existingType == Types.VARCHAR
+                    || existingType == Types.CHAR
+                    || existingType == Types.LONGVARCHAR;
+            boolean isNewVarchar = type == Types.VARCHAR
+                    || type == Types.CHAR
+                    || type == Types.LONGVARCHAR;
+
+            if (isExistingVarchar && isNumericType(type)) {
+                // Existing VARCHAR, new wants numeric: keep VARCHAR
+                keepExistingType = true;
+            } else if (isNumericType(existingType) && isNewVarchar) {
+                // Existing numeric, new wants VARCHAR: upgrade to VARCHAR
+                col.setType(type);
+                col.setJavaType(JavaTypes.STRING);
+                if (size > 0) {
+                    col.setSize(size);
+                }
                 keepExistingType = true;
             } else {
+                Message msg = _loc.get(prefix + "-bad-col", context,
+                    Schemas.getJDBCName(type), col.getDescription());
+                if (!adapt && !dict.disableSchemaFactoryColumnTypeErrors)
+                    throw new MetaDataException(msg);
+                Log log = repos.getLog();
+                if (log.isWarnEnabled())
+                    log.warn(msg);
                 col.setType(type);
             }
         } else if (given != null && given.getType() != Types.OTHER) {
@@ -871,6 +876,52 @@ public abstract class MappingInfo implements Serializable {
         if (tmplate.isXML())
             col.setXML(tmplate.isXML());
         return col;
+    }
+
+    /**
+     * Return true if the given SQL type is a numeric type.
+     */
+    private static boolean isNumericType(int type) {
+        switch (type) {
+            case Types.BIT:
+            case Types.TINYINT:
+            case Types.SMALLINT:
+            case Types.INTEGER:
+            case Types.BIGINT:
+            case Types.FLOAT:
+            case Types.REAL:
+            case Types.DOUBLE:
+            case Types.NUMERIC:
+            case Types.DECIMAL:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Return true if the given JavaTypes code is a numeric type.
+     */
+    private static boolean isNumericJavaType(int javaType) {
+        switch (javaType) {
+            case JavaTypes.BYTE:
+            case JavaTypes.BYTE_OBJ:
+            case JavaTypes.SHORT:
+            case JavaTypes.SHORT_OBJ:
+            case JavaTypes.INT:
+            case JavaTypes.INT_OBJ:
+            case JavaTypes.LONG:
+            case JavaTypes.LONG_OBJ:
+            case JavaTypes.FLOAT:
+            case JavaTypes.FLOAT_OBJ:
+            case JavaTypes.DOUBLE:
+            case JavaTypes.DOUBLE_OBJ:
+            case JavaTypes.BIGINTEGER:
+            case JavaTypes.BIGDECIMAL:
+                return true;
+            default:
+                return false;
+        }
     }
 
     /**
