@@ -2272,6 +2272,7 @@ public class EntityManagerImpl
             }
             return facadeQuery;
         } catch (RuntimeException re) {
+            markRollbackOnException(re);
             throw translateException(re);
         }
     }
@@ -2294,6 +2295,7 @@ public class EntityManagerImpl
             }
             return facadeQuery;
         } catch (RuntimeException re) {
+            markRollbackOnException(re);
             throw translateException(re);
         }
     }

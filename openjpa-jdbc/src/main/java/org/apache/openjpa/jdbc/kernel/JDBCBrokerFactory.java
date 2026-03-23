@@ -26,18 +26,25 @@ import static org.apache.openjpa.conf.SchemaGenerationSource.METADATA_THEN_SCRIP
 import static org.apache.openjpa.conf.SchemaGenerationSource.SCRIPT;
 import static org.apache.openjpa.conf.SchemaGenerationSource.SCRIPT_THEN_METADATA;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.sql.DataSource;
+
 import org.apache.openjpa.conf.SchemaGenerationSource;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
+import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.meta.MappingTool;
 import org.apache.openjpa.jdbc.schema.SchemaTool;
+import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Bootstrap;
 import org.apache.openjpa.kernel.Broker;
@@ -260,11 +267,76 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
             }
         }
         tool.record();
+
+        // For excluded types, actively drop their tables if they exist
+        // in the database. This ensures tables from previous runs (before
+        // the type was excluded) don't persist and cause operations to
+        // succeed silently instead of throwing the expected RuntimeException.
+        if (!excludeTypes.isEmpty()) {
+            dropExcludedTypeTables(conf, repo, excludeTypes, loader);
+        }
+
         return true; // todo: check?
     }
 
     protected boolean synchronizeMappings(ClassLoader loader) {
         return synchronizeMappings(loader, (JDBCConfiguration) getConfiguration());
+    }
+
+    /**
+     * Drop tables for entity types that are excluded from schema
+     * synchronization. This ensures that tables left over from a previous
+     * run (before the type was excluded) are removed so that SQL operations
+     * against them will fail as expected.
+     */
+    private void dropExcludedTypeTables(JDBCConfiguration conf,
+            MappingRepository repo, Set<String> excludeTypes,
+            ClassLoader loader) {
+        Log log = conf.getLog("openjpa.jdbc.Schema");
+        DataSource ds = conf.getDataSource2(null);
+        for (String typeName : excludeTypes) {
+            try {
+                ClassLoader clsLoader = conf.getClassResolverInstance()
+                    .getClassLoader(getClass(), loader);
+                Class<?> cls = Class.forName(typeName, true, clsLoader);
+
+                // Use the mapping repository to determine the table name
+                ClassMapping mapping = repo.getMapping(cls, clsLoader, false);
+                if (mapping == null || mapping.getTable() == null) {
+                    continue;
+                }
+                String tableName =
+                    mapping.getTable().getFullIdentifier().getName();
+
+                Connection conn = ds.getConnection();
+                try {
+                    conn.setAutoCommit(true);
+                    Statement stmt = conn.createStatement();
+                    try {
+                        stmt.executeUpdate("DROP TABLE " + tableName);
+                        if (log.isTraceEnabled()) {
+                            log.trace("Dropped excluded type table: "
+                                + tableName);
+                        }
+                    } catch (SQLException sqle) {
+                        // Table may not exist; ignore silently
+                        if (log.isTraceEnabled()) {
+                            log.trace("Could not drop excluded type table "
+                                + tableName + ": " + sqle.getMessage());
+                        }
+                    } finally {
+                        stmt.close();
+                    }
+                } finally {
+                    conn.close();
+                }
+            } catch (Exception e) {
+                if (log.isTraceEnabled()) {
+                    log.trace("Error dropping table for excluded type "
+                        + typeName + ": " + e.getMessage());
+                }
+            }
+        }
     }
 
     private void mapSchemaGenerationToSynchronizeMappings(JDBCConfiguration conf) {

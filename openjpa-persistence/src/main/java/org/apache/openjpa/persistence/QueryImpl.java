@@ -395,11 +395,18 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
     public int executeUpdate() {
 		_em.assertNotCloseInvoked();
         Map<?,?> paramValues = getParameterValues();
-		if (_query.getOperation() == QueryOperations.OP_DELETE) {
-		   return asInt(paramValues.isEmpty() ? _query.deleteAll() : _query.deleteAll(paramValues));
-		}
-		if (_query.getOperation() == QueryOperations.OP_UPDATE) {
-	       return asInt(paramValues.isEmpty() ? _query.updateAll() : _query.updateAll(paramValues));
+		try {
+			if (_query.getOperation() == QueryOperations.OP_DELETE) {
+				return asInt(paramValues.isEmpty()
+					? _query.deleteAll() : _query.deleteAll(paramValues));
+			}
+			if (_query.getOperation() == QueryOperations.OP_UPDATE) {
+				return asInt(paramValues.isEmpty()
+					? _query.updateAll() : _query.updateAll(paramValues));
+			}
+		} catch (RuntimeException re) {
+			_em.markRollbackOnException(re);
+			throw re;
 		}
         RuntimeException ex = new InvalidStateException(
             _loc.get("not-update-delete-query", getQueryString()), null, null, false);
