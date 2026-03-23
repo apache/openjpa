@@ -809,12 +809,22 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
                  && ImplHelper.isManageable(obj)
                  && ((PersistenceCapable)obj).pcGetStateManager() != null) {
                     return;
-                } else {
-                    throw new InvalidStateException(_loc.get("cant-cascade-persist",
-                            vmd.toString(), Exceptions.toString(obj),
-                            sm == null ? " unmanaged" : sm.getPCState().getClass().getSimpleName()))
-                    .setFailedObject(obj);
                 }
+
+                // If the object is manageable (e.g. subclass-redefined) but
+                // has no state manager in this context, it may be a detached
+                // entity whose SM was cleared after a prior transaction
+                // committed. Do a DB lookup to confirm it was previously
+                // persisted (detached) vs. truly transient.
+                if (sm == null && ImplHelper.isManageable(obj)
+                    && _broker.isDetached(obj, true)) {
+                    return; // confirmed detached via DB lookup
+                }
+
+                throw new InvalidStateException(_loc.get("cant-cascade-persist",
+                        vmd.toString(), Exceptions.toString(obj),
+                        sm == null ? " unmanaged" : sm.getPCState().getClass().getSimpleName()))
+                .setFailedObject(obj);
             }
         } else {
             if (vmd.getCascadePersist() == ValueMetaData.CASCADE_IMMEDIATE) {

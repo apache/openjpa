@@ -419,7 +419,11 @@ public class SchemaTool {
      */
     protected void drop()
         throws SQLException {
-        drop(getDBSchemaGroup(false), assertSchemaGroup());
+        // When writing to a script file, don't consider database state
+        // so that FK constraint drops are always generated regardless
+        // of whether the tables currently exist in the DB.
+        boolean considerDb = (_writer == null);
+        drop(getDBSchemaGroup(false), assertSchemaGroup(), considerDb);
     }
 
     /**

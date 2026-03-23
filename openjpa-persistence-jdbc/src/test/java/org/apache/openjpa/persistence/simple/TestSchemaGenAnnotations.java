@@ -152,6 +152,19 @@ public class TestSchemaGenAnnotations extends SingleEMFTestCase {
             dropUpper.contains("SCHEMAGENSIMPLE"));
         assertTrue("Drop should contain SCHEMAGENSIMPLE_SECOND: " + dropSql,
             dropUpper.contains("SCHEMAGENSIMPLE_SECOND"));
+
+        // TCK secondaryTableTest expects either:
+        // 1. ALTER TABLE ... SCHEMAGENSIMPLE_SECOND DROP (constraint), or
+        // 2. DROP TABLE ... SCHEMAGENSIMPLE_SECOND ... CASCADE CONSTRAINTS
+        boolean hasAlterDrop = dropUpper.contains("ALTER TABLE")
+            && dropUpper.contains("SCHEMAGENSIMPLE_SECOND")
+            && dropUpper.contains("DROP");
+        boolean hasCascade = dropUpper.contains("DROP TABLE")
+            && dropUpper.contains("SCHEMAGENSIMPLE_SECOND")
+            && dropUpper.contains("CASCADE CONSTRAINTS");
+        assertTrue("Drop script should contain ALTER TABLE DROP CONSTRAINT "
+            + "or DROP TABLE CASCADE CONSTRAINTS for secondary table FK: "
+            + dropSql, hasAlterDrop || hasCascade);
     }
 
     /**
