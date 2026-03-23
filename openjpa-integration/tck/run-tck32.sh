@@ -140,6 +140,23 @@ if [ "$RDBMS" == "derby" ] || [ -z "$RDBMS" ]; then
         "-Djakarta.persistence.jdbc.url=jdbc:derby://localhost:1527/derbyDB;create=true" \
         ${EXTRA_ARGS}
 elif [ "$RDBMS" == "postgresql" ]; then
+    # Drop stale tables that may have incorrect columns from previous builds.
+    # The buildSchema action is add-only and won't remove stale columns.
+    echo "Dropping stale PostgreSQL tables..."
+    DB_HOST_ONLY="${DB_HOST%%:*}"
+    DB_PORT="${DB_HOST##*:}"
+    PGPASSWORD="${DB_PASSWORD:-openjpa}" psql -h "${DB_HOST_ONLY}" -p "${DB_PORT}" \
+        -U "${DB_USER:-openjpa}" -d openjpa_tck -c "
+            DROP TABLE IF EXISTS \"did1bdependent\" CASCADE;
+            DROP TABLE IF EXISTS \"DID1bDependent\" CASCADE;
+            DROP TABLE IF EXISTS \"did1bemployee\" CASCADE;
+            DROP TABLE IF EXISTS \"DID1bEmployee\" CASCADE;
+            DROP TABLE IF EXISTS \"ITEM\" CASCADE;
+            DROP TABLE IF EXISTS \"ORDER1\" CASCADE;
+            DROP TABLE IF EXISTS \"PURCHASE_ORDER\" CASCADE;
+            DROP TABLE IF EXISTS \"COFFEE\" CASCADE;
+        " 2>/dev/null || echo "Warning: Failed to drop stale tables (non-fatal)"
+
     # Execute stored procedure DDL if available
     SP_DDL="${TCK_HOME}/sql/postgresql/postgresql.ddl.persistence.sprocs.sql"
     if [ -f "$SP_DDL" ]; then
