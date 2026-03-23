@@ -149,28 +149,44 @@ public class TestUnenhancedCascadeAndEM2 extends SingleEMFTestCase {
     }
 
     /**
-     * TCK: runWithConnectionTest
+     * TCK: runWithConnectionTest - mirrors the exact TCK test logic:
+     * insert via JDBC, commit, find via JPA, check equals
      */
     public void testRunWithConnection() {
         EntityManagerImpl em = (EntityManagerImpl) emf.createEntityManager();
         try {
+            UnenhancedSimpleOrderEntity order =
+                new UnenhancedSimpleOrderEntity(50, 5555, "desc55");
+
             em.getTransaction().begin();
 
             em.<Connection>runWithConnection(connection -> {
                 try (PreparedStatement stmt = connection.prepareStatement(
                         "INSERT INTO UNENH_SIMPLE_ORDER(ID, TOTAL, DESCRIPTION) VALUES(?, ?, ?)")) {
-                    stmt.setInt(1, 50);
-                    stmt.setInt(2, 5555);
-                    stmt.setString(3, "desc55");
+                    stmt.setInt(1, order.getId());
+                    stmt.setInt(2, order.getTotal());
+                    stmt.setString(3, order.getDescription());
                     stmt.executeUpdate();
                 }
             });
 
             em.getTransaction().commit();
 
-            UnenhancedSimpleOrderEntity found = em.find(UnenhancedSimpleOrderEntity.class, 50);
-            assertNotNull("Order should be found after runWithConnection insert", found);
-            assertEquals(50, found.getId());
+            UnenhancedSimpleOrderEntity found =
+                em.find(UnenhancedSimpleOrderEntity.class, order.getId());
+            assertNotNull("Order should be found after runWithConnection insert",
+                found);
+            assertTrue("Found entity should equal original order"
+                + " (found.id=" + found.getId()
+                + ", found.total=" + found.getTotal()
+                + ", found.desc=" + found.getDescription()
+                + ", order.id=" + order.getId()
+                + ", order.total=" + order.getTotal()
+                + ", order.desc=" + order.getDescription()
+                + ", found.class=" + found.getClass().getName()
+                + ", order.class=" + order.getClass().getName()
+                + ")",
+                found.equals(order));
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -180,45 +196,62 @@ public class TestUnenhancedCascadeAndEM2 extends SingleEMFTestCase {
     }
 
     /**
-     * TCK: callWithConnectionTest
+     * TCK: callWithConnectionTest - mirrors the exact TCK test logic:
+     * insert + read via JDBC, commit, find via JPA, check equals
      */
     public void testCallWithConnection() {
         EntityManagerImpl em = (EntityManagerImpl) emf.createEntityManager();
         try {
+            UnenhancedSimpleOrderEntity order =
+                new UnenhancedSimpleOrderEntity(60, 6666, "desc66");
+
             em.getTransaction().begin();
 
-            UnenhancedSimpleOrderEntity selectedOrder = em.<Connection, UnenhancedSimpleOrderEntity>callWithConnection(
+            UnenhancedSimpleOrderEntity selectedOrder =
+                em.<Connection, UnenhancedSimpleOrderEntity>callWithConnection(
                 connection -> {
                     try (PreparedStatement stmt = connection.prepareStatement(
-                            "INSERT INTO UNENH_SIMPLE_ORDER(ID, TOTAL, DESCRIPTION) VALUES(?, ?, ?)")) {
-                        stmt.setInt(1, 60);
-                        stmt.setInt(2, 6666);
-                        stmt.setString(3, "desc66");
+                            "INSERT INTO UNENH_SIMPLE_ORDER(ID, TOTAL, DESCRIPTION)"
+                            + " VALUES(?, ?, ?)")) {
+                        stmt.setInt(1, order.getId());
+                        stmt.setInt(2, order.getTotal());
+                        stmt.setString(3, order.getDescription());
                         stmt.executeUpdate();
                     }
-                    UnenhancedSimpleOrderEntity order = new UnenhancedSimpleOrderEntity();
+                    UnenhancedSimpleOrderEntity o =
+                        new UnenhancedSimpleOrderEntity();
                     try (PreparedStatement stmt = connection.prepareStatement(
                             "SELECT ID, TOTAL, DESCRIPTION FROM UNENH_SIMPLE_ORDER WHERE ID = ?")) {
-                        stmt.setInt(1, 60);
+                        stmt.setInt(1, order.getId());
                         stmt.execute();
                         ResultSet rSet = stmt.getResultSet();
                         rSet.next();
-                        order.setId(rSet.getInt(1));
-                        order.setTotal(rSet.getInt(2));
-                        order.setDescription(rSet.getString(3));
+                        o.setId(rSet.getInt(1));
+                        o.setTotal(rSet.getInt(2));
+                        o.setDescription(rSet.getString(3));
                         rSet.close();
                     }
-                    return order;
+                    return o;
                 }
             );
 
             em.getTransaction().commit();
 
-            assertNotNull("Selected order should not be null", selectedOrder);
-            assertEquals(60, selectedOrder.getId());
-
-            UnenhancedSimpleOrderEntity found = em.find(UnenhancedSimpleOrderEntity.class, 60);
-            assertNotNull("Order should be found after callWithConnection", found);
+            UnenhancedSimpleOrderEntity found =
+                em.find(UnenhancedSimpleOrderEntity.class, order.getId());
+            assertNotNull("Order should be found after callWithConnection",
+                found);
+            assertTrue("Found entity should equal selected order"
+                + " (found.id=" + found.getId()
+                + ", found.total=" + found.getTotal()
+                + ", found.desc=" + found.getDescription()
+                + ", selected.id=" + selectedOrder.getId()
+                + ", selected.total=" + selectedOrder.getTotal()
+                + ", selected.desc=" + selectedOrder.getDescription()
+                + ", found.class=" + found.getClass().getName()
+                + ", selected.class=" + selectedOrder.getClass().getName()
+                + ")",
+                found.equals(selectedOrder));
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();

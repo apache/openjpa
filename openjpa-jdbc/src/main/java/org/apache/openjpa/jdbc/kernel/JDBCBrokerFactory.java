@@ -28,7 +28,9 @@ import static org.apache.openjpa.conf.SchemaGenerationSource.SCRIPT_THEN_METADAT
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.openjpa.conf.SchemaGenerationSource;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -216,8 +218,16 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
         Configurations.configureInstance(tool, conf, props,
             "SynchronizeMappings");
 
+        // Check for ExcludeTypes property to skip specific entity classes
+        // during schema synchronization (e.g. entities whose tables are
+        // intentionally absent from DDL scripts).
+        Set<String> excludeTypes = parseExcludeTypes(props);
+
         // initialize the schema
         for (Class<?> cls : classes) {
+            if (excludeTypes.contains(cls.getName())) {
+                continue;
+            }
             try {
                 tool.run(cls);
             } catch (IllegalArgumentException iae) {
@@ -290,6 +300,36 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
             //    of auto-creating via buildSchema.
             conf.setSynchronizeMappings(null);
         }
+    }
+
+    /**
+     * Parses the ExcludeTypes property from SynchronizeMappings config props.
+     * The format is: ExcludeTypes=com.example.Entity1;com.example.Entity2
+     * (semicolon-separated fully-qualified class names).
+     */
+    private Set<String> parseExcludeTypes(String props) {
+        Set<String> excluded = new HashSet<>();
+        if (props == null || props.isEmpty()) {
+            return excluded;
+        }
+        // props is a comma-separated list of key=value pairs
+        for (String prop : props.split(",")) {
+            prop = prop.trim();
+            if (prop.startsWith("ExcludeTypes=")) {
+                String value = prop.substring("ExcludeTypes=".length()).trim();
+                // Remove surrounding quotes if present
+                if (value.startsWith("'") && value.endsWith("'")) {
+                    value = value.substring(1, value.length() - 1);
+                }
+                for (String type : value.split(";")) {
+                    type = type.trim();
+                    if (!type.isEmpty()) {
+                        excluded.add(type);
+                    }
+                }
+            }
+        }
+        return excluded;
     }
 
     private String appendAction(String actions, String newAction) {

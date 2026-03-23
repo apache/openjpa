@@ -1113,6 +1113,178 @@ public class PCEnhancer {
                 }
             }
         }
+
+        // When createSubclass is active, runtime-enhanced entities use a
+        // generated subclass (e.g. Order$pcsubclass).  Object.getClass()
+        // returns the subclass, which breaks equals()/hashCode() methods
+        // that use getClass() for type comparison.  Replace getClass()
+        // calls in these methods with ImplHelper.getEntityClass() which
+        // returns the original entity class for pcsubclass instances.
+        if (getCreateSubclass()) {
+            if (getRedefine()) {
+                // When retransformation is available, modify the original
+                // class methods in-place.
+                final ClassNode mNode = managedType.getClassNode();
+                for (MethodNode methodNode : mNode.methods) {
+                    if (("equals".equals(methodNode.name) || "hashCode".equals(methodNode.name))
+                        && methodNode.instructions.size() > 0) {
+                        replaceGetClassCalls(methodNode);
+                    }
+                }
+            } else {
+                // When retransformation is NOT available, copy equals() and
+                // hashCode() from the parent entity class to the subclass
+                // and apply the getClass() replacement on the copies.
+                final ClassNode subclassNode = pc.getClassNode();
+                final ClassNode parentNode = managedType.getClassNode();
+                for (MethodNode parentMethod : parentNode.methods) {
+                    if (("equals".equals(parentMethod.name) || "hashCode".equals(parentMethod.name))
+                        && parentMethod.instructions.size() > 0
+                        && hasGetClassCall(parentMethod)) {
+                        MethodNode copy = copyMethodWithLabelRemap(parentMethod);
+                        replaceGetClassCalls(copy);
+                        replacePrivateFieldAccess(copy, parentNode.name);
+                        subclassNode.methods.add(copy);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Checks whether the given method contains any
+     * {@code INVOKEVIRTUAL java/lang/Object.getClass} calls.
+     */
+    private boolean hasGetClassCall(MethodNode methodNode) {
+        AbstractInsnNode insn = methodNode.instructions.getFirst();
+        while (insn != null) {
+            if (insn instanceof MethodInsnNode) {
+                MethodInsnNode mi = (MethodInsnNode) insn;
+                if (mi.getOpcode() == Opcodes.INVOKEVIRTUAL
+                    && "java/lang/Object".equals(mi.owner)
+                    && "getClass".equals(mi.name)) {
+                    return true;
+                }
+            }
+            insn = insn.getNext();
+        }
+        return false;
+    }
+
+    /**
+     * Creates a deep copy of a method node, remapping all label references
+     * so the copy is independent of the original.
+     */
+    private MethodNode copyMethodWithLabelRemap(MethodNode source) {
+        MethodNode copy = new MethodNode(
+            source.access, source.name, source.desc,
+            source.signature,
+            source.exceptions == null ? null : source.exceptions.toArray(new String[0]));
+        Map<LabelNode, LabelNode> labelMap = new HashMap<>();
+        // First pass: create label mappings
+        AbstractInsnNode insn = source.instructions.getFirst();
+        while (insn != null) {
+            if (insn instanceof LabelNode) {
+                labelMap.put((LabelNode) insn, new LabelNode());
+            }
+            insn = insn.getNext();
+        }
+        // Second pass: clone instructions with remapped labels
+        insn = source.instructions.getFirst();
+        while (insn != null) {
+            copy.instructions.add(insn.clone(labelMap));
+            insn = insn.getNext();
+        }
+        // Copy try-catch blocks
+        if (source.tryCatchBlocks != null) {
+            copy.tryCatchBlocks = new ArrayList<>();
+            for (TryCatchBlockNode tcb : source.tryCatchBlocks) {
+                copy.tryCatchBlocks.add(new TryCatchBlockNode(
+                    labelMap.getOrDefault(tcb.start, tcb.start),
+                    labelMap.getOrDefault(tcb.end, tcb.end),
+                    labelMap.getOrDefault(tcb.handler, tcb.handler),
+                    tcb.type));
+            }
+        }
+        // Copy local variable info
+        if (source.localVariables != null) {
+            copy.localVariables = new ArrayList<>();
+            for (LocalVariableNode lv : source.localVariables) {
+                copy.localVariables.add(new LocalVariableNode(
+                    lv.name, lv.desc, lv.signature,
+                    labelMap.getOrDefault(lv.start, lv.start),
+                    labelMap.getOrDefault(lv.end, lv.end),
+                    lv.index));
+            }
+        }
+        copy.maxStack = source.maxStack;
+        copy.maxLocals = source.maxLocals;
+        return copy;
+    }
+
+    /**
+     * Replaces private GETFIELD instructions in the given method with
+     * INVOKEVIRTUAL calls to the corresponding getter methods. This is
+     * needed when copying equals()/hashCode() from a parent class to a
+     * subclass, since the subclass cannot access private fields directly.
+     */
+    private void replacePrivateFieldAccess(MethodNode methodNode, String ownerName) {
+        if (_meta == null) {
+            return;
+        }
+        AbstractInsnNode insn = methodNode.instructions.getFirst();
+        while (insn != null) {
+            AbstractInsnNode next = insn.getNext();
+            if (insn instanceof FieldInsnNode && insn.getOpcode() == Opcodes.GETFIELD) {
+                FieldInsnNode fi = (FieldInsnNode) insn;
+                if (fi.owner.equals(ownerName)) {
+                    FieldMetaData fmd = _meta.getField(fi.name);
+                    if (fmd != null && fmd.getBackingMember() instanceof Method) {
+                        Method getter = (Method) fmd.getBackingMember();
+                        String getterDesc = Type.getMethodDescriptor(getter);
+                        MethodInsnNode call = new MethodInsnNode(
+                            Opcodes.INVOKEVIRTUAL,
+                            fi.owner,
+                            getter.getName(),
+                            getterDesc,
+                            false);
+                        methodNode.instructions.insertBefore(insn, call);
+                        methodNode.instructions.remove(insn);
+                    }
+                }
+            }
+            insn = next;
+        }
+    }
+
+    /**
+     * Replaces {@code INVOKEVIRTUAL java/lang/Object.getClass} calls in the
+     * given method with {@code INVOKESTATIC ImplHelper.getEntityClass(Object)}.
+     * This ensures that runtime-enhanced pcsubclass instances return the
+     * original entity class in equals()/hashCode() comparisons.
+     */
+    private void replaceGetClassCalls(MethodNode methodNode) {
+        AbstractInsnNode insn = methodNode.instructions.getFirst();
+        while (insn != null) {
+            AbstractInsnNode next = insn.getNext();
+            if (insn instanceof MethodInsnNode) {
+                MethodInsnNode mi = (MethodInsnNode) insn;
+                if (mi.getOpcode() == Opcodes.INVOKEVIRTUAL
+                    && "java/lang/Object".equals(mi.owner)
+                    && "getClass".equals(mi.name)
+                    && "()Ljava/lang/Class;".equals(mi.desc)) {
+                    MethodInsnNode replacement = new MethodInsnNode(
+                        Opcodes.INVOKESTATIC,
+                        "org/apache/openjpa/util/ImplHelper",
+                        "getEntityClass",
+                        "(Ljava/lang/Object;)Ljava/lang/Class;",
+                        false);
+                    methodNode.instructions.insertBefore(insn, replacement);
+                    methodNode.instructions.remove(insn);
+                }
+            }
+            insn = next;
+        }
     }
 
     /**
