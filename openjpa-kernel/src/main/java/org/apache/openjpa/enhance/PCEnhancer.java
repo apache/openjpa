@@ -4808,15 +4808,22 @@ public class PCEnhancer {
      * attribute name for the backing field <code>name</code>.
      */
     private String fromBackingFieldName(String name) {
-        // meta is null when enhancing persistence-aware
-        FieldMetaData fmd = _meta == null ? null : _meta.getField(name);
-        if (_meta != null && isPropertyAccess(fmd)
-                && _fieldsToAttrs != null && _fieldsToAttrs.containsKey(name)) {
+        // First check the fields-to-attributes map directly. This handles
+        // property-access entities where the backing field name differs from
+        // the persistent attribute name (e.g., field "last" backing property
+        // "lastName"). The map was populated during bytecode analysis of
+        // getters/setters and is authoritative.
+        if (_fieldsToAttrs != null && _fieldsToAttrs.containsKey(name)) {
             return _fieldsToAttrs.get(name);
         }
-        else {
+        // Fallback: check metadata for property access
+        FieldMetaData fmd = _meta == null ? null : _meta.getField(name);
+        if (_meta != null && isPropertyAccess(fmd)) {
+            // The field name matches the attribute name and it uses
+            // property access - return as-is
             return name;
         }
+        return name;
     }
 
     /**
