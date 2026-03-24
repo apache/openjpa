@@ -31,6 +31,7 @@ import org.apache.openjpa.jdbc.meta.ValueHandler;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
+import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
@@ -66,6 +67,7 @@ public class HandlerHandlerMapTableFieldStrategy
     private Column[] _vcols = null;
     private ColumnIO _vio = null;
     private boolean _vload = false;
+    private Boolean _sharedEntityTable = null;
 
     @Override
     public Column[] getKeyColumns(ClassMapping cls) {
@@ -134,14 +136,39 @@ public class HandlerHandlerMapTableFieldStrategy
 
         field.mapJoin(adapt, true);
         _kio = new ColumnIO();
-        List columns = key.getValueInfo().getColumns();
-        DBDictionary dict = field.getMappingRepository().getDBDictionary();
-        DBIdentifier colName = dict.getValidColumnName(DBIdentifier.newColumn("key"), field.getTable());
-        _kcols = HandlerStrategies.map(key, colName.getName(), _kio, adapt);
+        // JPA 3.2 spec 11.1.35: default map key column name is <field_name>_KEY
+        _kcols = HandlerStrategies.map(key, field.getName() + "_KEY", _kio, adapt);
 
         _vio = new ColumnIO();
         _vcols = HandlerStrategies.map(val, "value", _vio, adapt);
         field.mapPrimaryKey(adapt);
+
+    }
+
+    /**
+     * Checks whether this element collection's table is also used as the
+     * primary table of an entity class. This occurs in the JPA TCK where
+     * Employee4 entity and Department4's element collection both map to
+     * EMP_MAPKEYCOL2. Lazily computed and cached.
+     */
+    private boolean isSharedEntityTable() {
+        if (_sharedEntityTable != null)
+            return _sharedEntityTable;
+        Table collTable = field.getTable();
+        if (collTable == null) {
+            _sharedEntityTable = false;
+            return false;
+        }
+        ClassMapping[] mappings = field.getMappingRepository().getMappings();
+        for (ClassMapping cm : mappings) {
+            if (cm.getTable() != null
+                && cm.getTable().getIdentifier().equals(collTable.getIdentifier())) {
+                _sharedEntityTable = true;
+                return true;
+            }
+        }
+        _sharedEntityTable = false;
+        return false;
     }
 
     @Override
@@ -162,6 +189,10 @@ public class HandlerHandlerMapTableFieldStrategy
         Map map)
         throws SQLException {
         if (map == null || map.isEmpty())
+            return;
+        // Skip insert when collection table is shared with an entity table —
+        // entity rows already exist and inserting would cause PK conflicts
+        if (isSharedEntityTable())
             return;
 
         Row row = rm.getSecondaryRow(field.getTable(), Row.ACTION_INSERT);
@@ -184,6 +215,9 @@ public class HandlerHandlerMapTableFieldStrategy
     @Override
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
+        // Skip update when collection table is shared with an entity table
+        if (isSharedEntityTable())
+            return;
         Map map = (Map) sm.fetchObject(field.getIndex());
         ChangeTracker ct = null;
         if (map instanceof Proxy) {
@@ -248,6 +282,16 @@ public class HandlerHandlerMapTableFieldStrategy
                 rm.flushSecondaryRow(changeRow);
             }
         }
+    }
+
+    @Override
+    public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
+        throws SQLException {
+        // Skip delete when collection table is shared with an entity table —
+        // deleting would remove entity rows
+        if (isSharedEntityTable())
+            return;
+        super.delete(sm, store, rm);
     }
 
     @Override

@@ -962,6 +962,13 @@ public class PersistenceMetaDataDefaults
         	   meta.setAccessType(AccessCode.MIXED | meta.getAccessType());
                return getter;
            }
+           // @Transient on field + persistence annotation on getter = mixed access override
+           if (field != null && getter != null
+               && ((AnnotatedElement) field).isAnnotationPresent(Transient.class)
+               && isAccessDefiningAnnotated(getter)) {
+               meta.setAccessType(AccessCode.MIXED | AccessCode.EXPLICIT | meta.getAccessType());
+               return getter;
+           }
            return field == null ? getter : field;
         } else if (AccessCode.isProperty(accessCode)) {
             if (isAnnotatedAccess(field, AccessType.FIELD)) {

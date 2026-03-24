@@ -411,11 +411,10 @@ extends AbstractCachedEMFTestCase {
             em.getTransaction().begin();
             em.getTransaction().commit();
 
-            // on some databases KEY is a forbidden name for columns.
-            String keyColumn = getDbDictionary(emf).getInvalidColumnWordSet().contains("KEY")
-                            ? "KEY0"
-                            : "KEY";
-            assertSQLFragnments(sql, "CREATE TABLE C_U1M_Map_FK", "Uni1MFK_ID", keyColumn);
+            // JPA 3.2 spec 11.1.35: default map key column name is the
+            // concatenation of the field name + "_KEY" (was "KEY"/"KEY0" before).
+            // Field Uni_1ToM_Map_FK.entityCs -> column "entityCs_KEY"
+            assertSQLFragnments(sql, "CREATE TABLE C_U1M_Map_FK", "Uni1MFK_ID", "entityCs_KEY");
 
             assertSQLFragnments(sql, "CREATE TABLE Bi1M_Map_JT_C", "B_ID", "C_ID");
             assertSQLFragnments(sql, "CREATE TABLE C_U1M_Map_RelKey_FK", "Uni1MFK_ID");

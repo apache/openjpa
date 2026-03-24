@@ -27,6 +27,8 @@ import java.util.Set;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
@@ -265,4 +267,45 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
         em.getTransaction().commit();
         em.close();
     }
+
+    /**
+     * Tests that the default map key column name follows JPA 3.2 spec 11.1.35:
+     * when no @MapKeyColumn is specified, the default column name should be
+     * &lt;collection_attribute_name&gt;_KEY (e.g. "lastNameEmployees_KEY"),
+     * not just "KEY" or "KEY0" or "KEY2".
+     */
+    public void testDefaultMapKeyColumnName() {
+        // Force metadata resolution by opening an EM
+        EntityManager em = emf.createEntityManager();
+
+        // Check MKEDepartment4 (ElementCollection with @MapKeyEnumerated, no @MapKeyColumn)
+        ClassMapping mapping4 = (ClassMapping) JPAFacadeHelper
+            .getMetaData(emf, MKEDepartment4.class);
+        FieldMapping fm4 = mapping4.getFieldMapping("lastNameEmployees");
+        assertNotNull("Field mapping for lastNameEmployees should exist", fm4);
+        assertEquals("Default map key column should be lastNameEmployees_KEY",
+            "lastNameEmployees_KEY",
+            fm4.getKeyMapping().getColumns()[0].getName());
+
+        // Check MKTDepartment4 (ElementCollection with explicit @MapKeyColumn(name="THEDATE"))
+        ClassMapping mappingT4 = (ClassMapping) JPAFacadeHelper
+            .getMetaData(emf, MKTDepartment4.class);
+        FieldMapping fmT4 = mappingT4.getFieldMapping("lastNameEmployees");
+        assertNotNull("Field mapping for lastNameEmployees should exist", fmT4);
+        assertEquals("Explicit @MapKeyColumn name should be preserved",
+            "THEDATE",
+            fmT4.getKeyMapping().getColumns()[0].getName());
+
+        // Check MKEDepartment (OneToMany with explicit @MapKeyColumn(name="OFFICE_ID"))
+        ClassMapping mapping = (ClassMapping) JPAFacadeHelper
+            .getMetaData(emf, MKEDepartment.class);
+        FieldMapping fm = mapping.getFieldMapping("lastNameEmployees");
+        assertNotNull("Field mapping for lastNameEmployees should exist", fm);
+        assertEquals("Explicit @MapKeyColumn name should be preserved",
+            "OFFICE_ID",
+            fm.getKeyMapping().getColumns()[0].getName());
+
+        em.close();
+    }
+
 }

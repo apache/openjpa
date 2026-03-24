@@ -1070,7 +1070,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
             + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
             + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE " +
-            "((t1.KEY0 = ? OR t1.KEY0 = ? OR t1.KEY0 = ? OR t1.KEY0 = ? OR t1.KEY0 = ?) "
+            "((t1.photos_KEY = ? OR t1.photos_KEY = ? OR t1.photos_KEY = ? OR t1.photos_KEY = ? OR t1.photos_KEY = ?) "
             + "AND 0 < (SELECT COUNT(*) FROM CR_ITEM_photos WHERE CR_ITEM_photos.ITEM_ID = t0.id))";
 
         CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
@@ -1091,7 +1091,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
             + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
             + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE " +
-            "(t1.KEY0 IN (?, ?, ?, ?, ?))";
+            "(t1.photos_KEY IN (?, ?, ?, ?, ?))";
 
         CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
         Root<Item> item = q.from(Item.class);
@@ -1149,7 +1149,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
             + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
             + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE " +
-            "(NOT (t1.KEY0 = ? OR t1.KEY0 = ? OR t1.KEY0 = ? OR t1.KEY0 = ? OR t1.KEY0 = ?) "
+            "(NOT (t1.photos_KEY = ? OR t1.photos_KEY = ? OR t1.photos_KEY = ? OR t1.photos_KEY = ? OR t1.photos_KEY = ?) "
             + "AND 0 < (SELECT COUNT(*) FROM CR_ITEM_photos WHERE CR_ITEM_photos.ITEM_ID = t0.id))";
 
         CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
@@ -1170,7 +1170,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
             + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
             + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE " +
-            "(NOT (t1.KEY0 IN (?, ?, ?, ?, ?)))";
+            "(NOT (t1.photos_KEY IN (?, ?, ?, ?, ?)))";
 
         CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
         Root<Item> item = q.from(Item.class);

@@ -585,6 +585,9 @@ public class MappingTool
                             } else if (_conf.getDropScriptTarget() != null) {
                                 tool.setWriter(new PrintWriter(toFilePath(_conf.getDropScriptTarget())));
                             }
+                            if (w != null || _conf.getDropScriptTarget() != null) {
+                                tool.setForeignKeys(true);
+                            }
                         }
 
                         // configure the tool with additional settings

@@ -155,6 +155,8 @@ elif [ "$RDBMS" == "postgresql" ]; then
             DROP TABLE IF EXISTS \"ORDER1\" CASCADE;
             DROP TABLE IF EXISTS \"PURCHASE_ORDER\" CASCADE;
             DROP TABLE IF EXISTS \"COFFEE\" CASCADE;
+            DROP TABLE IF EXISTS \"EMP_MAPKEYCOL\" CASCADE;
+            DROP TABLE IF EXISTS \"EMP_MAPKEYCOL2\" CASCADE;
         " 2>/dev/null || echo "Warning: Failed to drop stale tables (non-fatal)"
 
     # Execute stored procedure DDL if available
