@@ -22,6 +22,11 @@ import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.meta.FieldMapping;
+import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.schema.ForeignKey;
+import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -324,5 +329,38 @@ public class TestUnenhancedDerivedId extends SingleEMFTestCase {
         } finally {
             em.close();
         }
+    }
+
+    /**
+     * Verify that @MapsId FK column uses JPA default FK naming convention
+     * (relationship field name + "_" + referenced PK column name) rather than
+     * the embedded ID field name.
+     *
+     * For @MapsId("empPK") on @ManyToOne DID1bEmployee emp, the FK column
+     * should be "EMP_ID" (from field "emp" + "_" + PK column "ID"),
+     * not "empPK" (the embedded ID field name).
+     */
+    public void testMapsIdFKColumnNaming() {
+        ClassMapping mapping = (ClassMapping) JPAFacadeHelper
+            .getMetaData(emf, UnenhancedDID1bDependent.class);
+        assertNotNull("Should have mapping for UnenhancedDID1bDependent",
+            mapping);
+
+        FieldMapping empField = mapping.getFieldMapping("emp");
+        assertNotNull("Should have 'emp' field mapping", empField);
+
+        ForeignKey fk = empField.getForeignKey();
+        assertNotNull("Should have FK on 'emp' field", fk);
+
+        Column[] fkCols = fk.getColumns();
+        assertNotNull("FK should have columns", fkCols);
+        assertEquals("FK should have 1 column", 1, fkCols.length);
+
+        String fkColName = fkCols[0].getIdentifier().getName()
+            .toUpperCase();
+        assertEquals(
+            "@MapsId FK column should use default FK naming convention "
+            + "(field_name + '_' + referenced PK column name)",
+            "EMP_ID", fkColName);
     }
 }

@@ -236,6 +236,32 @@ public class RelationFieldStrategy
                                 (FieldMapping) fmd, cols);
                 }
             }
+            // JPA spec: @MapsId FK columns use the default FK naming
+            // convention (relationship field name + "_" + referenced PK
+            // column name) instead of the embedded ID field name.
+            if (mappedByIdValue.length() > 0 && cols.size() > 0) {
+                ClassMapping targetMapping = field.getTypeMapping();
+                if (targetMapping != null
+                        && targetMapping.getTable() != null) {
+                    PrimaryKey targetPk =
+                        targetMapping.getTable().getPrimaryKey();
+                    if (targetPk != null) {
+                        Column[] targetPkCols = targetPk.getColumns();
+                        if (targetPkCols.length == cols.size()) {
+                            String fieldName = field.getName();
+                            for (int i = 0; i < cols.size(); i++) {
+                                Column col = (Column) cols.get(i);
+                                DBIdentifier fkColName =
+                                    DBIdentifier.combine(
+                                        DBIdentifier.newColumn(fieldName),
+                                        targetPkCols[i].getIdentifier()
+                                            .getName());
+                                col.setIdentifier(fkColName);
+                            }
+                        }
+                    }
+                }
+            }
             return cols;
         } else { // primary key is single-value
             Class pkType = pk.getDeclaredType();
