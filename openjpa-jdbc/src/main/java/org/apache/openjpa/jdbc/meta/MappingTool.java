@@ -564,6 +564,18 @@ public class MappingTool
                             tool = newSchemaTool(schemaAction);
                         }
 
+                        // configure the tool with additional settings
+                        // (before script-target writers so they take
+                        // precedence over flags.sqlWriter)
+                        if (flags != null) {
+                            tool.setDropTables(flags.dropTables);
+                            tool.setRollbackBeforeDDL(flags.rollbackBeforeDDL);
+                            tool.setDropSequences(flags.dropSequences);
+                            tool.setWriter(flags.sqlWriter);
+                            tool.setOpenJPATables(flags.openjpaTables);
+                            tool.setSQLTerminator(flags.sqlTerminator);
+                        }
+
                         if (schemaAction.equals(SchemaTool.ACTION_BUILD)) {
                             java.io.Writer w = _conf.getCreateScriptTargetWriter();
                             if (w != null) {
@@ -588,16 +600,6 @@ public class MappingTool
                             if (w != null || _conf.getDropScriptTarget() != null) {
                                 tool.setForeignKeys(true);
                             }
-                        }
-
-                        // configure the tool with additional settings
-                        if (flags != null) {
-                            tool.setDropTables(flags.dropTables);
-                            tool.setRollbackBeforeDDL(flags.rollbackBeforeDDL);
-                            tool.setDropSequences(flags.dropSequences);
-                            tool.setWriter(flags.sqlWriter);
-                            tool.setOpenJPATables(flags.openjpaTables);
-                            tool.setSQLTerminator(flags.sqlTerminator);
                         }
 
                         switch (schemaAction) {

@@ -173,10 +173,6 @@ public class ForeignKey extends Constraint {
 
     @Override
     public boolean isLogical() {
-        // A FK with an explicit name (from JPA @ForeignKey annotation) is
-        // always physical, even without a specified delete action.
-        if (!DBIdentifier.isNull(getIdentifier()))
-            return false;
         return _delAction == ACTION_NONE;
     }
 

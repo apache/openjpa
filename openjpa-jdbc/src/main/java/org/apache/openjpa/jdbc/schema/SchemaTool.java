@@ -800,7 +800,13 @@ public class SchemaTool {
                     dbTable = db.findTable(value, tab.getQualifiedPath());
                 }
                 for (ForeignKey foreignKey : fks) {
-                    if (!foreignKey.isLogical() && dbTable != null) {
+                    // Include physical FKs, and also named logical FKs
+                    // when writing to a script (e.g. @SecondaryTable FK)
+                    boolean include = !foreignKey.isLogical()
+                        || (_writer != null
+                            && !DBIdentifier.isNull(
+                                foreignKey.getIdentifier()));
+                    if (include && dbTable != null) {
                         fk = findForeignKey(dbTable, foreignKey);
                         if (fk == null) {
                             if (addForeignKey(foreignKey))
@@ -811,6 +817,10 @@ public class SchemaTool {
                         }
                         else if (!foreignKey.equalsForeignKey(fk))
                             _log.warn(_loc.get("bad-fk", fk, dbTable));
+                    }
+                    // Script mode: add named FK even without dbTable
+                    else if (include && _writer != null && dbTable == null) {
+                        addForeignKey(foreignKey);
                     }
                 }
             }
@@ -1029,16 +1039,23 @@ public class SchemaTool {
                     fks = tab.getForeignKeys();
                     dbTable = db.findTable(tab);
                     for (ForeignKey foreignKey : fks) {
-                        if (foreignKey.isLogical())
-                            continue;
+                        // Skip logical FKs, but include named logical
+                        // FKs when writing to a script (e.g. @SecondaryTable)
+                        if (foreignKey.isLogical()) {
+                            if (_writer == null || DBIdentifier.isNull(
+                                    foreignKey.getIdentifier()))
+                                continue;
+                        }
 
                         fk = null;
                         if (dbTable != null)
                             fk = findForeignKey(dbTable, foreignKey);
-                        // When writing to a script, generate FK drops
-                        // even if the table doesn't exist in the DB yet
-                        if (_writer != null && dbTable == null) {
+                        // When writing to a script, always generate FK drops
+                        // from metadata regardless of DB state
+                        if (_writer != null) {
                             dropForeignKey(foreignKey);
+                            if (fk != null && dbTable != null)
+                                dbTable.removeForeignKey(fk);
                             continue;
                         }
                         if (dbTable == null || fk == null)
