@@ -37,12 +37,10 @@ public class TestUnenhancedDerivedIdEx2b extends SingleEMFTestCase {
     @Override
     public void setUp() {
         setUp(DROP_TABLES,
-            UnenhancedDID2bEmployeeId.class,
             UnenhancedDID2bEmployee.class,
             UnenhancedDID2bDependent.class,
             UnenhancedDID2bDependentId.class,
-            "openjpa.RuntimeUnenhancedClasses", "supported",
-            "openjpa.DynamicEnhancementAgent", "false");
+            "openjpa.RuntimeUnenhancedClasses", "supported");
     }
 
     public void testEx2b_EmbeddedIdWithNonEmbeddableIdClass() {

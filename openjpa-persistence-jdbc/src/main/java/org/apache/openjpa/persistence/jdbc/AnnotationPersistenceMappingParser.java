@@ -2015,8 +2015,13 @@ public class AnnotationPersistenceMappingParser
                 ClassMapping embeddedMeta = (ClassMapping)pks[0].getValue().getEmbeddedMetaData();
                 if (embeddedMeta != null) {
                     FieldMapping fmd = embeddedMeta.getFieldMapping(mappedByIdValue);
-                    if (fmd != null)
+                    if (fmd != null) {
                         fmd.getValueInfo().setMapsIdColumns(cols);
+                        // Mark as explicit so resolveMeta() won't demote
+                        // this field to MANAGE_NONE when its type (a
+                        // plain @IdClass POJO) has no PC metadata.
+                        fmd.setExplicit(true);
+                    }
                 }
             }
         }

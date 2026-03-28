@@ -305,6 +305,12 @@ public abstract class AbstractExpressionBuilder {
             meta = fmd.getEmbeddedMetaData();
         else
             meta = fmd.getDeclaredTypeMetaData();
+        if (meta == null && fmd.isEmbedded()
+            && !hasEmbeddableAnnotation(fmd.getDeclaredType())) {
+            // Non-@Embeddable @IdClass field inside @EmbeddedId (JPA 2.4.1.3
+            // ex2b). Resolve via the @MapsId @ManyToOne target entity.
+            meta = resolveMapsIdTargetMeta(fmd);
+        }
         if (meta != null) {
             addAccessPath(meta);
             path.setMetaData(meta);
@@ -343,6 +349,54 @@ public abstract class AbstractExpressionBuilder {
         if (path.last().getElement().getDeclaredTypeMetaData() == null) return false;
         if (path.last().getElement().getDeclaredTypeMetaData().getField(field) == null) return false;
         return true;
+    }
+
+    /**
+     * Checks whether a class has an @Embeddable annotation via reflection.
+     * Uses annotation simple name to avoid compile-time dependency on
+     * jakarta.persistence.
+     */
+    private static boolean hasEmbeddableAnnotation(Class<?> type) {
+        if (type == null) return false;
+        for (java.lang.annotation.Annotation ann : type.getAnnotations()) {
+            if ("Embeddable".equals(ann.annotationType().getSimpleName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * For a non-@Embeddable @IdClass field inside an @EmbeddedId,
+     * resolve the target entity metadata via @MapsId on the owning entity.
+     * This allows JPQL navigation like d.id.empPK.firstName (JPA 2.4.1.3 ex2b).
+     */
+    private ClassMetaData resolveMapsIdTargetMeta(FieldMetaData fmd) {
+        // Walk up to the owning entity via the embedding metadata chain
+        ClassMetaData embeddedMeta = fmd.getDefiningMetaData();
+        if (embeddedMeta == null || embeddedMeta.getEmbeddingMetaData() == null)
+            return null;
+
+        // The embedding field is the @EmbeddedId field on the entity
+        FieldMetaData embeddingField = embeddedMeta.getEmbeddingMetaData()
+            .getFieldMetaData();
+        if (embeddingField == null)
+            return null;
+        ClassMetaData ownerMeta = embeddingField.getDefiningMetaData();
+        if (ownerMeta == null)
+            return null;
+
+        // Find the @MapsId field whose value matches this field's name
+        String fieldName = fmd.getName();
+        FieldMetaData[] ownerFields = ownerMeta.getFields();
+        for (FieldMetaData of : ownerFields) {
+            if (of.isMappedById()
+                && fieldName.equals(of.getMappedByIdValue())) {
+                // This is the @MapsId @ManyToOne field; get target entity
+                return of.getDeclaredTypeMetaData();
+            }
+        }
+        return null;
     }
 
     /**

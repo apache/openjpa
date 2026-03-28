@@ -161,6 +161,14 @@ public class PCClassFileTransformer
             	Thread.currentThread().setContextClassLoader(oldLoader);
             }
         } catch (Throwable t) {
+            // During retransformClasses, another transformer (e.g.
+            // ClassRedefiner's temporary transformer) may provide valid
+            // bytecode.  Return null so the JVM can proceed to the next
+            // transformer instead of aborting the whole retransform.
+            if (redef != null) {
+                _log.info(_loc.get("cft-exception-thrown", className), t);
+                return null;
+            }
             _log.warn(_loc.get("cft-exception-thrown", className), t);
             if (t instanceof RuntimeException)
                 throw (RuntimeException) t;

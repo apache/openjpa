@@ -821,6 +821,18 @@ public class MappingRepository extends MetaDataRepository {
             NoneClassStrategy.getInstance())
             return NoneFieldStrategy.getInstance();
 
+        // For @EmbeddedId fields that contain a non-@Embeddable @IdClass
+        // type with @MapsId columns: the FK columns from @MapsId provide
+        // the column mapping, so skip normal handler/BLOB strategy.
+        // This handles JPA 2.4.1.3 ex2b: @EmbeddedId with @MapsId
+        // where the embedded field type is a plain @IdClass (not @Embeddable).
+        if (field.getDefiningMetaData().getEmbeddingMetaData() != null
+            && !isEmbeddableType(field.getDeclaredType())
+            && field.getDeclaredTypeCode() == JavaTypes.OBJECT
+            && hasMapsIdColumnsOnField(field)) {
+            return NoneFieldStrategy.getInstance();
+        }
+
         // check for named handler first
         ValueHandler handler = namedHandler(field);
         if (handler != null) {
@@ -924,6 +936,65 @@ public class MappingRepository extends MetaDataRepository {
             return new HandlerFieldStrategy();
         }
         return new MaxEmbeddedBlobFieldStrategy();
+    }
+
+    /**
+     * Check if a FieldMapping has mapsIdColumns set on its ValueInfo.
+     * This is more reliable than hasMapsIdCols() during strategy resolution
+     * because the columns may be set before the hasMapsIdCols flag.
+     */
+    private static boolean hasMapsIdColumnsOnField(FieldMapping field) {
+        List<Column> cols = field.getValueInfo().getMapsIdColumns();
+        if (cols != null && !cols.isEmpty()) {
+            return true;
+        }
+        // Also check via the owning entity's @MapsId relationship
+        return isMapsIdTarget(field);
+    }
+
+    /**
+     * Checks whether a field in an embedded mapping is the target of a @MapsId
+     * annotation on the owning entity. Walks up the embedding chain to find
+     * the owning entity and checks for a @MapsId field whose value matches
+     * this field's name.
+     */
+    private static boolean isMapsIdTarget(FieldMapping field) {
+        ClassMetaData embeddedMeta = field.getDefiningMetaData();
+        if (embeddedMeta == null || embeddedMeta.getEmbeddingMetaData() == null)
+            return false;
+        FieldMetaData embeddingField = embeddedMeta.getEmbeddingMetaData()
+            .getFieldMetaData();
+        if (embeddingField == null)
+            return false;
+        ClassMetaData ownerMeta = embeddingField.getDefiningMetaData();
+        if (ownerMeta == null)
+            return false;
+        String fieldName = field.getName();
+        FieldMetaData[] ownerFields = ownerMeta.getFields();
+        for (FieldMetaData of : ownerFields) {
+            if (of.isMappedById()
+                && fieldName.equals(of.getMappedByIdValue())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks whether a class has an @Embeddable annotation via reflection.
+     * Uses annotation simple name to avoid compile-time dependency on
+     * jakarta.persistence.
+     */
+    private static boolean isEmbeddableType(Class<?> type) {
+        if (type == null) {
+            return false;
+        }
+        for (java.lang.annotation.Annotation ann : type.getAnnotations()) {
+            if ("Embeddable".equals(ann.annotationType().getSimpleName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

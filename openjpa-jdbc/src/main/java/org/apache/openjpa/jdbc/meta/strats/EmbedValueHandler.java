@@ -87,9 +87,38 @@ public abstract class EmbedValueHandler
                 continue;
             FieldStrategy strat = fm.getStrategy();
 
-            if (!(strat instanceof Embeddable))
+            if (!(strat instanceof Embeddable)) {
+                // JPA 2.4.1.3 ex2b: non-@Embeddable @IdClass field inside
+                // @EmbeddedId. Include @MapsId FK columns so the identity
+                // covers all PK columns. Columns are read-only (the
+                // @ManyToOne FK relationship handles insert/update).
+                List<Column> mapsIdCols = fm.getValueInfo()
+                    .getMapsIdColumns();
+                if (mapsIdCols != null && mapsIdCols.size() > 0) {
+                    // Get target entity PK columns for proper types
+                    Column[] tgtCols = findMapsIdTargetCols(vm);
+                    for (int j = 0; j < mapsIdCols.size(); j++) {
+                        Column col = new Column();
+                        col.setIdentifier(mapsIdCols.get(j).getIdentifier());
+                        if (tgtCols != null && j < tgtCols.length) {
+                            col.setType(tgtCols[j].getType());
+                            col.setSize(tgtCols[j].getSize());
+                        } else {
+                            col.setType(java.sql.Types.VARCHAR);
+                        }
+                        col.setNotNull(true);
+                        io.setInsertable(cols.size(), false);
+                        io.setNullInsertable(cols.size(), false);
+                        io.setUpdatable(cols.size(), false);
+                        io.setNullUpdatable(cols.size(), false);
+                        cols.add(col);
+                        args.add(null);
+                    }
+                    continue;
+                }
                 throw new MetaDataException(_loc.get("not-embeddable",
                         vm, fm));
+            }
 
             ValueMapping val = fm.getValueMapping();
             if (val.getEmbeddedMapping() != null)
@@ -180,6 +209,44 @@ public abstract class EmbedValueHandler
                 }
             }
 
+            // JPA 2.4.1.3 ex2b: non-@Embeddable @IdClass field — extract
+            // POJO field values to FK columns via reflection
+            if (!(fms[i].getStrategy() instanceof Embeddable)) {
+                List<Column> mic = fms[i].getValueInfo().getMapsIdColumns();
+                if (mic != null && !mic.isEmpty()) {
+                    Object idObj = (em == null) ? null : em.fetch(i);
+                    if (idObj != null) {
+                        try {
+                            java.lang.reflect.Field[] df =
+                                idObj.getClass().getDeclaredFields();
+                            int ci = 0;
+                            for (java.lang.reflect.Field f : df) {
+                                if (java.lang.reflect.Modifier
+                                        .isStatic(f.getModifiers()))
+                                    continue;
+                                if (ci >= mic.size()) break;
+                                f.setAccessible(true);
+                                Object fv = f.get(idObj);
+                                if (cols.length == 1) rvals.add(fv);
+                                else ((Object[]) rvals.get(0))[idx++] = fv;
+                                ci++;
+                            }
+                        } catch (Exception ex) {
+                            for (int c = 0; c < mic.size(); c++) {
+                                if (cols.length == 1) rvals.add(null);
+                                else ((Object[]) rvals.get(0))[idx++] = null;
+                            }
+                        }
+                    } else {
+                        for (int c = 0; c < mic.size(); c++) {
+                            if (cols.length == 1) rvals.add(null);
+                            else ((Object[]) rvals.get(0))[idx++] = null;
+                        }
+                    }
+                }
+                continue;
+            }
+
             embed = (Embeddable) fms[i].getStrategy();
             ecols = embed.getColumns();
             if (ecols.length == 0)
@@ -200,6 +267,24 @@ public abstract class EmbedValueHandler
             }
         }
         return idx;
+    }
+
+    /**
+     * Find the target entity's PK columns for @MapsId column types.
+     */
+    private Column[] findMapsIdTargetCols(ValueMapping vm) {
+        if (!(vm instanceof FieldMapping)) return null;
+        ClassMapping owner = ((FieldMapping) vm).getDefiningMapping();
+        for (FieldMapping f : owner.getFieldMappings()) {
+            if (f.getMappedByIdValue() != null
+                && f.getDeclaredTypeMetaData() != null) {
+                ClassMapping target =
+                    (ClassMapping) f.getDeclaredTypeMetaData();
+                if (target.getTable() != null)
+                    return target.getPrimaryKeyColumns();
+            }
+        }
+        return null;
     }
 
     private Object getValue(Embeddable embed, OpenJPAStateManager sm, int idx) {
@@ -241,6 +326,40 @@ public abstract class EmbedValueHandler
 
             ValueMapping vm1 = fm.getValueMapping();
             OpenJPAStateManager em1 = null;
+
+            // JPA 2.4.1.3 ex2b: non-@Embeddable @IdClass field —
+            // reconstruct POJO from FK column values via reflection
+            if (!(fm.getStrategy() instanceof Embeddable)) {
+                List<Column> mic = fm.getValueInfo().getMapsIdColumns();
+                if (mic != null && !mic.isEmpty()) {
+                    try {
+                        Object idObj = fm.getDeclaredType()
+                            .getDeclaredConstructor().newInstance();
+                        java.lang.reflect.Field[] df =
+                            fm.getDeclaredType().getDeclaredFields();
+                        int ci = 0;
+                        for (java.lang.reflect.Field f : df) {
+                            if (java.lang.reflect.Modifier
+                                    .isStatic(f.getModifiers()))
+                                continue;
+                            if (ci >= mic.size()) break;
+                            f.setAccessible(true);
+                            Object cv;
+                            if (val instanceof Object[])
+                                cv = ((Object[]) val)[idx + ci];
+                            else
+                                cv = val;
+                            f.set(idObj, cv);
+                            ci++;
+                        }
+                        em.store(fm.getIndex(), idObj);
+                    } catch (Exception ex) {
+                        // field stays null
+                    }
+                    idx += mic.size();
+                }
+                continue;
+            }
 
             embed = (Embeddable) fm.getStrategy();
             if (vm1.getEmbeddedMapping() != null) {
@@ -301,6 +420,19 @@ public abstract class EmbedValueHandler
 
     public static void getEmbeddedIdCols(FieldMapping fmd, List cols) {
         ClassMapping embed = fmd.getEmbeddedMapping();
+        if (embed == null) {
+            // Non-@Embeddable @IdClass field with @MapsId columns
+            if (fmd.hasMapsIdCols()) {
+                List<Column> mapsIdCols = fmd.getValueInfo()
+                    .getMapsIdColumns();
+                for (Object col : mapsIdCols) {
+                    Column newCol = new Column();
+                    newCol.copy((Column) col);
+                    cols.add(newCol);
+                }
+            }
+            return;
+        }
         FieldMapping[] fmds = embed.getFieldMappings();
         for (FieldMapping fieldMapping : fmds) {
             if (fieldMapping.getValue().getEmbeddedMetaData() == null) {
@@ -320,4 +452,5 @@ public abstract class EmbedValueHandler
             cols.add(newCol);
         }
     }
+
 }
