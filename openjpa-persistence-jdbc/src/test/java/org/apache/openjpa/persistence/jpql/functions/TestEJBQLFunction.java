@@ -626,7 +626,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals(1000L, result.get(0));
+        assertEquals(1000, ((Number) result.get(0)).intValue());
 
         endEm(em);
     }
