@@ -19,20 +19,36 @@
 #
 
 #
-# Script to download, setup and run the JPA 3.2 TCK against OpenJPA.
+# Script to download, setup and run the JPA 3.2 TCK against OpenJPA
+# using PostgreSQL.
 #
 # Usage:
-#   ./run-tck32.sh                          # Run with Derby (default)
-#   ./run-tck32.sh postgresql               # Run with PostgreSQL
+#   ./run-tck32.sh                          # Run full TCK
+#   DB_HOST=myhost:5432 ./run-tck32.sh      # Custom DB host
 #   OPENJPA_VERSION=4.2.0-SNAPSHOT ./run-tck32.sh
 #
 # Prerequisites:
 #   - OpenJPA must be built and installed in local Maven repo
 #     (run 'mvn install -DskipTests' from the project root)
 #   - Java 17+ and Maven 3.x
+#   - PostgreSQL running (see docker-compose.yml in project root)
 #
 
 set -e
+
+# Check required commands
+MISSING=""
+for cmd in java mvn curl unzip python3 psql grep sed; do
+    if ! command -v "$cmd" &>/dev/null; then
+        MISSING="${MISSING}  - ${cmd}\n"
+    fi
+done
+if [ -n "$MISSING" ]; then
+    echo "ERROR: The following required commands are not available:"
+    echo -e "$MISSING"
+    echo "Please install them before running this script."
+    exit 1
+fi
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 TCK_VERSION="${TCK_VERSION:-3.2.0}"
@@ -41,7 +57,11 @@ TCK_DIR="${SCRIPT_DIR}/target/tck32"
 TCK_ZIP="${TCK_DIR}/jakarta-persistence-tck-${TCK_VERSION}.zip"
 TCK_HOME="${TCK_DIR}/persistence-tck"
 OPENJPA_VERSION="${OPENJPA_VERSION:-4.2.0-SNAPSHOT}"
-RDBMS="${1:-derby}"
+
+DB_HOST="${DB_HOST:-localhost:5433}"
+DB_USER="${DB_USER:-openjpa}"
+DB_PASSWORD="${DB_PASSWORD:-openjpa}"
+DB_NAME="${DB_NAME:-openjpa_tck}"
 
 GF_VERSION="${GF_VERSION:-8.0.0}"
 
@@ -49,7 +69,7 @@ echo "=== JPA 3.2 TCK Runner for OpenJPA ==="
 echo "OpenJPA version: ${OPENJPA_VERSION}"
 echo "TCK version:     ${TCK_VERSION}"
 echo "GlassFish:       ${GF_VERSION}"
-echo "Database:        ${RDBMS}"
+echo "Database:        PostgreSQL (${DB_HOST}/${DB_NAME})"
 echo ""
 
 # Step 1: Download TCK if not present
@@ -124,60 +144,48 @@ else
     echo "OpenJPA profile already present in TCK pom.xml."
 fi
 
-# Step 5: Run TCK
+# Step 5: Prepare PostgreSQL database
+echo ""
+echo "=== Preparing PostgreSQL database ==="
+
+DB_HOST_ONLY="${DB_HOST%%:*}"
+DB_PORT="${DB_HOST##*:}"
+
+# Drop stale tables that may have incorrect columns from previous builds.
+# The buildSchema action is add-only and won't remove stale columns.
+echo "Dropping stale PostgreSQL tables..."
+PGPASSWORD="${DB_PASSWORD}" psql -h "${DB_HOST_ONLY}" -p "${DB_PORT}" \
+    -U "${DB_USER}" -d "${DB_NAME}" -c "
+        DROP TABLE IF EXISTS \"did1bdependent\" CASCADE;
+        DROP TABLE IF EXISTS \"DID1bDependent\" CASCADE;
+        DROP TABLE IF EXISTS \"did1bemployee\" CASCADE;
+        DROP TABLE IF EXISTS \"DID1bEmployee\" CASCADE;
+        DROP TABLE IF EXISTS \"ITEM\" CASCADE;
+        DROP TABLE IF EXISTS \"ORDER1\" CASCADE;
+        DROP TABLE IF EXISTS \"PURCHASE_ORDER\" CASCADE;
+        DROP TABLE IF EXISTS \"COFFEE\" CASCADE;
+        DROP TABLE IF EXISTS \"EMP_MAPKEYCOL\" CASCADE;
+        DROP TABLE IF EXISTS \"EMP_MAPKEYCOL2\" CASCADE;
+    " 2>/dev/null || echo "Warning: Failed to drop stale tables (non-fatal)"
+
+# Execute stored procedure DDL if available
+SP_DDL="${TCK_HOME}/sql/postgresql/postgresql.ddl.persistence.sprocs.sql"
+if [ -f "$SP_DDL" ]; then
+    echo "Creating stored procedures on PostgreSQL..."
+    PGPASSWORD="${DB_PASSWORD}" psql -h "${DB_HOST_ONLY}" -p "${DB_PORT}" \
+        -U "${DB_USER}" -d "${DB_NAME}" -f "$SP_DDL" 2>/dev/null || \
+        echo "Warning: Failed to create stored procedures (non-fatal)"
+fi
+
+# Step 6: Run TCK
 echo ""
 echo "=== Running JPA 3.2 TCK ==="
 echo ""
 
-EXTRA_ARGS=""
-
-if [ "$RDBMS" == "derby" ] || [ -z "$RDBMS" ]; then
-    mvn -e -f "${TCK_POM}" -P "openjpa,derby" verify \
-        "-Dopenjpa.version=${OPENJPA_VERSION}" \
-        "-Dglassfish.container.version=${GF_VERSION}" \
-        "-Djakarta.persistence.jdbc.user=cts1" \
-        "-Djakarta.persistence.jdbc.password=cts1" \
-        "-Djakarta.persistence.jdbc.url=jdbc:derby://localhost:1527/derbyDB;create=true" \
-        ${EXTRA_ARGS}
-elif [ "$RDBMS" == "postgresql" ]; then
-    # Drop stale tables that may have incorrect columns from previous builds.
-    # The buildSchema action is add-only and won't remove stale columns.
-    echo "Dropping stale PostgreSQL tables..."
-    DB_HOST_ONLY="${DB_HOST%%:*}"
-    DB_PORT="${DB_HOST##*:}"
-    PGPASSWORD="${DB_PASSWORD:-openjpa}" psql -h "${DB_HOST_ONLY}" -p "${DB_PORT}" \
-        -U "${DB_USER:-openjpa}" -d openjpa_tck -c "
-            DROP TABLE IF EXISTS \"did1bdependent\" CASCADE;
-            DROP TABLE IF EXISTS \"DID1bDependent\" CASCADE;
-            DROP TABLE IF EXISTS \"did1bemployee\" CASCADE;
-            DROP TABLE IF EXISTS \"DID1bEmployee\" CASCADE;
-            DROP TABLE IF EXISTS \"ITEM\" CASCADE;
-            DROP TABLE IF EXISTS \"ORDER1\" CASCADE;
-            DROP TABLE IF EXISTS \"PURCHASE_ORDER\" CASCADE;
-            DROP TABLE IF EXISTS \"COFFEE\" CASCADE;
-            DROP TABLE IF EXISTS \"EMP_MAPKEYCOL\" CASCADE;
-            DROP TABLE IF EXISTS \"EMP_MAPKEYCOL2\" CASCADE;
-        " 2>/dev/null || echo "Warning: Failed to drop stale tables (non-fatal)"
-
-    # Execute stored procedure DDL if available
-    SP_DDL="${TCK_HOME}/sql/postgresql/postgresql.ddl.persistence.sprocs.sql"
-    if [ -f "$SP_DDL" ]; then
-        echo "Creating stored procedures on PostgreSQL..."
-        DB_HOST_ONLY="${DB_HOST%%:*}"
-        DB_PORT="${DB_HOST##*:}"
-        PGPASSWORD="${DB_PASSWORD:-openjpa}" psql -h "${DB_HOST_ONLY}" -p "${DB_PORT}" \
-            -U "${DB_USER:-openjpa}" -d openjpa_tck -f "$SP_DDL" 2>/dev/null || \
-            echo "Warning: Failed to create stored procedures (non-fatal)"
-    fi
-    mvn -e -f "${TCK_POM}" -P "openjpa,postgresql" verify \
-        "-Dopenjpa.version=${OPENJPA_VERSION}" \
-        "-Dglassfish.container.version=${GF_VERSION}" \
-        "-Djakarta.persistence.jdbc.user=${DB_USER:-openjpa}" \
-        "-Djakarta.persistence.jdbc.password=${DB_PASSWORD:-openjpa}" \
-        "-Djakarta.persistence.jdbc.url=jdbc:postgresql://${DB_HOST:-localhost}/openjpa_tck" \
-        ${EXTRA_ARGS}
-else
-    echo "Unsupported RDBMS: ${RDBMS}"
-    echo "Supported: derby, postgresql"
-    exit 1
-fi
+mvn -e -f "${TCK_POM}" -P "openjpa,postgresql" verify \
+    "-Dopenjpa.version=${OPENJPA_VERSION}" \
+    "-Dglassfish.container.version=${GF_VERSION}" \
+    "-Djakarta.persistence.jdbc.user=${DB_USER}" \
+    "-Djakarta.persistence.jdbc.password=${DB_PASSWORD}" \
+    "-Djakarta.persistence.jdbc.url=jdbc:postgresql://${DB_HOST}/${DB_NAME}" \
+    "$@"
