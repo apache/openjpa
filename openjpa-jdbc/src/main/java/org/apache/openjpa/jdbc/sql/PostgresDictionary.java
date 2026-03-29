@@ -193,7 +193,8 @@ public class PostgresDictionary extends DBDictionary {
         // reservedWordSet subset that CANNOT be used as valid column names
         // (i.e., without surrounding them with double-quotes)
         // generated at 2021-05-03T10:44:58.562 via org.apache.openjpa.reservedwords.ReservedWordsIT
-        invalidColumnWordSet.addAll(Arrays.asList("ALL", "ANALYSE", "ANALYZE", "AND", "ANY", "ARRAY", "AS", "ASC", "ASYMMETRIC", "AUTHORIZATION", "BINARY", "BOTH",
+        invalidColumnWordSet.addAll(Arrays.asList("ALL", "ANALYSE", "ANALYZE", "AND", "ANY", "ARRAY",
+                "AS", "ASC", "ASYMMETRIC", "AUTHORIZATION", "BINARY", "BOTH",
                 "CASE", "CAST", "CHECK", "COLLATE", "COLLATION", "COLUMN", "CONSTRAINT", "CREATE", "CROSS", "CURRENT_DATE", "CURRENT_ROLE",
                 "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER", "DEFAULT", "DEFERRABLE", "DESC", "DISTINCT", "DO", "ELSE",
                 "END", "END-EXEC", "EXCEPT", "FALSE", "FETCH", "FOR", "FOREIGN", "FREEZE", "FROM", "FULL", "GRANT", "GROUP", "HAVING",
