@@ -346,6 +346,8 @@ public class RelationFieldStrategy
             return;
 
         Map mapObj = (Map)rel.fetchObjectField(mapField.getIndex());
+        if (mapObj == null)
+            return;
         Object keyObj = getMapKeyObj(mapObj, sm.getPersistenceCapable());
         ValueMapping key = mapField.getKeyMapping();
         if (!key.isEmbedded()) {
