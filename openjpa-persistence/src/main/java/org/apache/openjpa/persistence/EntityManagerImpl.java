@@ -787,6 +787,11 @@ public class EntityManagerImpl
      * throw IllegalArgumentException if the PK type is not valid.
      */
     private void validatePrimaryKeyType(Class<?> cls, Object oid) {
+        // OpenJPA identity objects (IntId, LongId, etc.) are already valid
+        // internal identity values — newObjectId() handles them directly.
+        if (oid instanceof org.apache.openjpa.util.OpenJPAId) {
+            return;
+        }
         MetaDataRepository repos = _broker.getConfiguration()
             .getMetaDataRepositoryInstance();
         ClassMetaData meta = repos.getMetaData(cls,
