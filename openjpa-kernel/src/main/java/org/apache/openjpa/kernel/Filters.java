@@ -245,9 +245,9 @@ public class Filters {
             return !strict;
         if (c1 == String.class && isTemporalType(c2))
             return true;
-        if ((c1 == java.util.Date.class ||c1 == java.sql.Time.class) && c2 == java.sql.Timestamp.class)
+        if ((c1 == java.util.Date.class || c1 == java.sql.Date.class || c1 == java.sql.Time.class) && c2 == java.sql.Timestamp.class)
             return false;
-        if ((c1 == java.util.Date.class ||c1 == java.sql.Timestamp.class) && c2 == java.sql.Time.class)
+        if ((c1 == java.util.Date.class || c1 == java.sql.Date.class || c1 == java.sql.Timestamp.class) && c2 == java.sql.Time.class)
             return false;
         if (isTemporalType(c1) && isTemporalType(c2))
             return true;
