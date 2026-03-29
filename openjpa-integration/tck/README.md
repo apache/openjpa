@@ -9,6 +9,7 @@ against OpenJPA using PostgreSQL.
 - Maven 3.x
 - PostgreSQL (via Docker or a standalone instance)
 - `psql` command-line client (for database preparation)
+- `python3`, `curl`, `unzip` (the script checks for all required commands at startup)
 
 ## Quick Start
 
@@ -127,4 +128,3 @@ This invokes `run-tck32.sh` automatically.
 | `run-tck32.sh`               | Main TCK runner script                               |
 | `tck32-openjpa-profile.xml`  | Maven profile fragment injected into TCK pom.xml     |
 | `pom.xml`                    | Module POM with `tck32-profile` for Maven invocation |
-| `sql/`                       | Database-specific DDL scripts (legacy TCK versions)  |
