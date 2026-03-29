@@ -48,6 +48,7 @@ import org.apache.openjpa.jdbc.sql.Union;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.ChangeTracker;
 import org.apache.openjpa.util.MetaDataException;
@@ -223,9 +224,12 @@ public class HandlerRelationMapTableFieldStrategy
             return;
 
         if (!field.isBiMTo1JT() && field.getMappedBy() != null) {
-            // For mappedBy maps with @MapKeyColumn, write the key column
-            // to the value entity's table via UPDATE (like EclipseLink's
-            // two-phase write: INSERT Employee, then UPDATE to set OFFICE_ID).
+            // For @ManyToMany(mappedBy), the owning side manages the join
+            // table — skip key column writes from the inverse side.
+            if (field.getAssociationType() == FieldMetaData.MANY_TO_MANY)
+                return;
+            // For @OneToMany(mappedBy) maps with @MapKeyColumn, write the
+            // key column to the value entity's table via UPDATE.
             if (_kcols != null && _kcols.length > 0) {
                 ValueMapping key = field.getKeyMapping();
                 StoreContext ctx = store.getContext();
