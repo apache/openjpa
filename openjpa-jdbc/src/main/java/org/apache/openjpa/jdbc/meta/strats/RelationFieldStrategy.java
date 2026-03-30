@@ -239,7 +239,10 @@ public class RelationFieldStrategy
             // JPA spec: @MapsId FK columns use the default FK naming
             // convention (relationship field name + "_" + referenced PK
             // column name) instead of the embedded ID field name.
-            if (mappedByIdValue.length() > 0 && cols.size() > 0) {
+            // Only enabled in spec-compliant mode for backward compatibility.
+            if (mappedByIdValue.length() > 0 && cols.size() > 0
+                    && field.getRepository().getConfiguration()
+                        .isSpecCompliantSchemaGeneration()) {
                 ClassMapping targetMapping = field.getTypeMapping();
                 if (targetMapping != null
                         && targetMapping.getTable() != null) {
