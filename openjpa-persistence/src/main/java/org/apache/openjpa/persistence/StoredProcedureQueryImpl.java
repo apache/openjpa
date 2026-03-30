@@ -289,13 +289,22 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
 
     @Override
     public Object getOutputParameterValue(int position) {
-        // Validate that the position corresponds to a registered parameter
+        // Validate that the position corresponds to a registered parameter.
+        // For named parameters, map 1-based position to declaration order.
         buildParametersIfNeeded();
+        Set<Parameter<?>> params = _delegate.getParameters();
         boolean found = false;
-        for (Parameter<?> p : _delegate.getParameters()) {
+        for (Parameter<?> p : params) {
             if (p.getPosition() != null && p.getPosition().intValue() == position) {
                 found = true;
                 break;
+            }
+        }
+        if (!found) {
+            // Named parameters: accept positional access if position is
+            // within the valid range (1-based declaration order)
+            if (position >= 1 && position <= params.size()) {
+                found = true;
             }
         }
         if (!found) {
