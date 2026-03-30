@@ -337,6 +337,13 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
     }
 
     private void mapSchemaGenerationToSynchronizeMappings(JDBCConfiguration conf) {
+        // Clear dropped-table tracking when this EMF has active schema gen
+        // properties. EMFs without schema gen (plain buildSchema) must
+        // preserve tracking from prior generateSchema() calls.
+        if (conf.getDatabaseActionConstant() != 0
+                || conf.getScriptsActionConstant() != 0) {
+            SchemaTool.clearDroppedTables();
+        }
         String actions = "";
         if (conf.getDatabaseAction() != null) {
             int databaseAction = conf.getDatabaseActionConstant();

@@ -103,9 +103,17 @@ public class SchemaTool {
     // Tables dropped by script execution during JPA schema generation.
     // Only active when SpecCompliantSchemaGeneration is enabled (TCK mode).
     // Prevents buildSchema/add from re-creating tables that were explicitly
-    // dropped by schema gen scripts within the same JVM session.
+    // dropped by schema gen scripts within the same schema generation flow.
     private static final java.util.Set<String> _droppedTables =
         java.util.Collections.synchronizedSet(new java.util.HashSet<>());
+
+    /**
+     * Clear the dropped tables tracking set. Called at the start of each
+     * schema generation flow to prevent cross-EMF contamination.
+     */
+    public static void clearDroppedTables() {
+        _droppedTables.clear();
+    }
 
     protected final JDBCConfiguration _conf;
     protected final DataSource _ds;
@@ -1196,12 +1204,13 @@ public class SchemaTool {
      */
     public boolean createTable(Table table)
         throws SQLException {
-        if (_conf.isSpecCompliantSchemaGeneration()) {
-            String tableName = table.getFullIdentifier().getName().toUpperCase();
-            if (ACTION_ADD.equals(_action) && _droppedTables.contains(tableName)) {
-                return false;
-            }
-            _droppedTables.remove(tableName);
+        String tableName = table.getFullIdentifier().getName().toUpperCase();
+        if (_log.isTraceEnabled()) {
+            _log.trace("createTable: " + tableName + " action=" + _action
+                + " droppedTables=" + _droppedTables);
+        }
+        if (ACTION_ADD.equals(_action) && _droppedTables.remove(tableName)) {
+            return false;
         }
         return executeSQL(_dict.getCreateTableSQL(table, _db));
     }
@@ -1470,9 +1479,8 @@ public class SchemaTool {
                                 + ", conn=" + conn.getClass().getName() + "]");
                         }
                         statement.executeUpdate(s);
-                        // Track DROP/CREATE TABLE in spec-compliant mode
-                        if (_conf.isSpecCompliantSchemaGeneration()
-                                && ACTION_EXECUTE_SCRIPT.equals(_action)) {
+                        // Track DROP/CREATE TABLE for drop-then-rebuild flows
+                        if (ACTION_EXECUTE_SCRIPT.equals(_action)) {
                             String upper = s.toUpperCase().trim();
                             if (upper.startsWith("DROP TABLE")) {
                                 String tableName = s.trim()
