@@ -217,19 +217,12 @@ public abstract class EmbedValueHandler
                     Object idObj = (em == null) ? null : em.fetch(i);
                     if (idObj != null) {
                         try {
-                            java.lang.reflect.Field[] df =
-                                idObj.getClass().getDeclaredFields();
-                            int ci = 0;
+                            List<java.lang.reflect.Field> df =
+                                getInstanceFields(idObj.getClass(), mic.size());
                             for (java.lang.reflect.Field f : df) {
-                                if (java.lang.reflect.Modifier
-                                        .isStatic(f.getModifiers()))
-                                    continue;
-                                if (ci >= mic.size()) break;
-                                f.setAccessible(true);
                                 Object fv = f.get(idObj);
                                 if (cols.length == 1) rvals.add(fv);
                                 else ((Object[]) rvals.get(0))[idx++] = fv;
-                                ci++;
                             }
                         } catch (Exception ex) {
                             for (int c = 0; c < mic.size(); c++) {
@@ -335,15 +328,10 @@ public abstract class EmbedValueHandler
                     try {
                         Object idObj = fm.getDeclaredType()
                             .getDeclaredConstructor().newInstance();
-                        java.lang.reflect.Field[] df =
-                            fm.getDeclaredType().getDeclaredFields();
+                        List<java.lang.reflect.Field> df =
+                            getInstanceFields(fm.getDeclaredType(), mic.size());
                         int ci = 0;
                         for (java.lang.reflect.Field f : df) {
-                            if (java.lang.reflect.Modifier
-                                    .isStatic(f.getModifiers()))
-                                continue;
-                            if (ci >= mic.size()) break;
-                            f.setAccessible(true);
                             Object cv;
                             if (val instanceof Object[])
                                 cv = ((Object[]) val)[idx + ci];
@@ -451,6 +439,23 @@ public abstract class EmbedValueHandler
             newCol.copy(pkCol);
             cols.add(newCol);
         }
+    }
+
+    /**
+     * Returns up to {@code limit} non-static declared fields from the class,
+     * each made accessible. Used for @IdClass POJO field reflection.
+     */
+    private static List<java.lang.reflect.Field> getInstanceFields(
+            Class<?> cls, int limit) {
+        List<java.lang.reflect.Field> result = new ArrayList<>();
+        for (java.lang.reflect.Field f : cls.getDeclaredFields()) {
+            if (java.lang.reflect.Modifier.isStatic(f.getModifiers()))
+                continue;
+            if (result.size() >= limit) break;
+            f.setAccessible(true);
+            result.add(f);
+        }
+        return result;
     }
 
 }

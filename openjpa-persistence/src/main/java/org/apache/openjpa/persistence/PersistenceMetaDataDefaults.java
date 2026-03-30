@@ -450,13 +450,9 @@ public class PersistenceMetaDataDefaults
             // Collect getter property names for overlap detection
             Set<String> getterPropertyNames = new HashSet<>();
             for (Method getter : accessGetters) {
-                String gn = getter.getName();
-                if (gn.startsWith("get") && gn.length() > 3) {
-                    getterPropertyNames.add(
-                        Character.toLowerCase(gn.charAt(3)) + gn.substring(4));
-                } else if (gn.startsWith("is") && gn.length() > 2) {
-                    getterPropertyNames.add(
-                        Character.toLowerCase(gn.charAt(2)) + gn.substring(3));
+                String pn = toPropertyName(getter.getName());
+                if (pn != null) {
+                    getterPropertyNames.add(pn);
                 }
             }
 
@@ -473,16 +469,7 @@ public class PersistenceMetaDataDefaults
             // property-access override, not mixed access).
             List<Method> nonTransientGetters = new ArrayList<>();
             for (Method getter : accessGetters) {
-                String getterName = getter.getName();
-                String fieldName = null;
-                if (getterName.startsWith("get") && getterName.length() > 3) {
-                    fieldName = Character.toLowerCase(getterName.charAt(3))
-                        + getterName.substring(4);
-                } else if (getterName.startsWith("is")
-                    && getterName.length() > 2) {
-                    fieldName = Character.toLowerCase(getterName.charAt(2))
-                        + getterName.substring(3);
-                }
+                String fieldName = toPropertyName(getter.getName());
                 if (fieldName != null) {
                     boolean hasTransientField = false;
                     for (Field f : allFields) {
@@ -754,16 +741,7 @@ public class PersistenceMetaDataDefaults
             if (!adf.includes(getter)) {
                 continue;
             }
-            String getterName = getter.getName();
-            String fieldName = null;
-            if (getterName.startsWith("get") && getterName.length() > 3) {
-                fieldName = Character.toLowerCase(getterName.charAt(3))
-                    + getterName.substring(4);
-            } else if (getterName.startsWith("is")
-                && getterName.length() > 2) {
-                fieldName = Character.toLowerCase(getterName.charAt(2))
-                    + getterName.substring(3);
-            }
+            String fieldName = toPropertyName(getter.getName());
             if (fieldName != null) {
                 for (Field f : allFields) {
                     if (f.getName().equals(fieldName)
@@ -886,15 +864,7 @@ public class PersistenceMetaDataDefaults
      * persistence annotations).
      */
     private boolean hasTransientFieldForGetter(Class<?> cls, Method getter) {
-        String getterName = getter.getName();
-        String fieldName = null;
-        if (getterName.startsWith("get") && getterName.length() > 3) {
-            fieldName = Character.toLowerCase(getterName.charAt(3))
-                + getterName.substring(4);
-        } else if (getterName.startsWith("is") && getterName.length() > 2) {
-            fieldName = Character.toLowerCase(getterName.charAt(2))
-                + getterName.substring(3);
-        }
+        String fieldName = toPropertyName(getter.getName());
         if (fieldName != null) {
             try {
                 Field f = cls.getDeclaredField(fieldName);
@@ -1229,6 +1199,21 @@ public class PersistenceMetaDataDefaults
 
     String toMethodNames(List<Method> methods) {
     	return methods.toString();
+    }
+
+    /**
+     * Extracts the property name from a getter method name.
+     * "getFoo" → "foo", "isFoo" → "foo", other → null.
+     */
+    static String toPropertyName(String methodName) {
+        if (methodName.startsWith("get") && methodName.length() > 3) {
+            return Character.toLowerCase(methodName.charAt(3))
+                + methodName.substring(4);
+        } else if (methodName.startsWith("is") && methodName.length() > 2) {
+            return Character.toLowerCase(methodName.charAt(2))
+                + methodName.substring(3);
+        }
+        return null;
     }
 
     @Override

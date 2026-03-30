@@ -229,14 +229,7 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
         Set<String> excludeTypes = parseExcludeTypes(props);
         if (excludeTypes.isEmpty()) {
             String excludeProp = conf.getSyncMappingsExcludeTypes();
-            if (excludeProp != null && !excludeProp.isEmpty()) {
-                for (String type : excludeProp.split(";")) {
-                    type = type.trim();
-                    if (!type.isEmpty()) {
-                        excludeTypes.add(type);
-                    }
-                }
-            }
+            addSemicolonDelimited(excludeProp, excludeTypes);
         }
 
         // initialize the schema
@@ -408,15 +401,22 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
                 if (value.startsWith("'") && value.endsWith("'")) {
                     value = value.substring(1, value.length() - 1);
                 }
-                for (String type : value.split(";")) {
-                    type = type.trim();
-                    if (!type.isEmpty()) {
-                        excluded.add(type);
-                    }
-                }
+                addSemicolonDelimited(value, excluded);
             }
         }
         return excluded;
+    }
+
+    private static void addSemicolonDelimited(String value, Set<String> target) {
+        if (value == null || value.isEmpty()) {
+            return;
+        }
+        for (String item : value.split(";")) {
+            item = item.trim();
+            if (!item.isEmpty()) {
+                target.add(item);
+            }
+        }
     }
 
     private String appendAction(String actions, String newAction) {
