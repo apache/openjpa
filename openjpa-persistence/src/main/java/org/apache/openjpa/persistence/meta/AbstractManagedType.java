@@ -650,10 +650,13 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      *  @throws IllegalArgumentException if no such attribute exists
      */
      public final <Y> SingularAttribute<? super X, Y> getId(Class<Y> type) {
-         Attribute<? super X, ?> result =  pick(attrs,
-                 new IdAttributeFilter<>());
-         if (result != null && isStrictTypeMatch(result, type))
-             return (SingularAttribute<? super X, Y>) result;
+         // For IdClass entities with multiple ID attributes, iterate all
+         // and find the one matching the requested type.
+         IdAttributeFilter<X> idFilter = new IdAttributeFilter<>();
+         for (Attribute<? super X, ?> attr : attrs) {
+             if (idFilter.selects(attr) && isStrictTypeMatch(attr, type))
+                 return (SingularAttribute<? super X, Y>) attr;
+         }
          throw new IllegalArgumentException();
      }
 
@@ -664,11 +667,13 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
       *  @throws IllegalArgumentException if no such attribute exists
       */
      public final <Y> SingularAttribute<X, Y> getDeclaredId(Class<Y> type) {
-         Attribute<? super X, ?> result =  pick(attrs,
-                 declaredAttributeFilter,
-                 new IdAttributeFilter<>());
-         if (result != null && isStrictTypeMatch(result, type))
-             return (SingularAttribute<X, Y>) result;
+         IdAttributeFilter<X> idFilter = new IdAttributeFilter<>();
+         for (Attribute<? super X, ?> attr : attrs) {
+             if (declaredAttributeFilter.selects(attr)
+                     && idFilter.selects(attr)
+                     && isStrictTypeMatch(attr, type))
+                 return (SingularAttribute<X, Y>) attr;
+         }
          throw new IllegalArgumentException();
      }
 
