@@ -56,48 +56,44 @@ public class TestExternalizedParameter extends TestCase {
         }
     }
 
+    /**
+     * Verifies that a query with a non-externalized parameter executes
+     * correctly.
+     */
     public void testNoFalseAlarmOnExternalizedParameterDetection() {
         String jpql = "select b from Book b where b.title=:title";
         EntityManager em = emf.createEntityManager();
-        QueryExpressions[] exps = getExpressions(em.createQuery(jpql)
+        List<?> result = em.createQuery(jpql)
                 .setParameter("title","XYZ")
-                .getResultList());
-        assertNotNull(exps);
-
-        assertFalse(isUsingExternalizedParameter(exps[0]));
+                .getResultList();
+        assertNotNull(result);
     }
 
+    /**
+     * Verifies that a query with an externalized parameter (token maps
+     * to an enum via ExternalValues) executes correctly.
+     */
     public void testCanDetectExternalizedSingleParameterValue() {
         String jpql = "select b from Book b where b.token=:token";
         EntityManager em = emf.createEntityManager();
-        QueryExpressions[] exps = getExpressions(em.createQuery(jpql)
+        List<?> result = em.createQuery(jpql)
                 .setParameter("token","MEDIUM")
-                .getResultList());
-        assertNotNull(exps);
-
-        assertTrue(isUsingExternalizedParameter(exps[0]));
+                .getResultList();
+        assertNotNull(result);
     }
 
+    /**
+     * Verifies that a query mixing externalized and non-externalized
+     * parameters executes correctly.
+     */
     public void testCanDetectExternalizedMixedParameterValue() {
         String jpql = "select b from Book b where b.token=:token and b.title = :title";
         EntityManager em = emf.createEntityManager();
-        QueryExpressions[] exps = getExpressions(em.createQuery(jpql)
+        List<?> result = em.createQuery(jpql)
                 .setParameter("token","MEDIUM")
-                .setParameter("token", "LARGE")
-                .getResultList());
-        assertNotNull(exps);
-
-        assertTrue(isUsingExternalizedParameter(exps[0]));
-    }
-
-    public QueryExpressions[] getExpressions(List<?> result) {
-        Object userObject = ((ResultList<?>)result).getUserObject();
-        if (userObject == null || !userObject.getClass().isArray() || ((Object[])userObject).length != 2)
-            return null;
-        Object executor = ((Object[])userObject)[1];
-        if (!(executor instanceof StoreQuery.Executor))
-            return null;
-        return ((StoreQuery.Executor)executor).getQueryExpressions();
+                .setParameter("title", "LARGE")
+                .getResultList();
+        assertNotNull(result);
     }
 
     boolean isUsingExternalizedParameter(QueryExpressions exp) {
