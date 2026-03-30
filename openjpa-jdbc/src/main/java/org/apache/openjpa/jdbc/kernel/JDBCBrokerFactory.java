@@ -208,9 +208,6 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
      * Synchronize the mappings of the classes listed in the configuration.
      */
     protected boolean synchronizeMappings(ClassLoader loader, JDBCConfiguration conf, String action) {
-
-        mapSchemaGenerationToSynchronizeMappings(conf);
-
         if (StringUtil.isEmpty(action))
             return false;
 
@@ -375,13 +372,12 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
         if (actions.length() > 0) {
             conf.setSynchronizeMappings("buildSchema(ForeignKeys=true,schemaAction='" + actions + "')");
 
-        } else if (conf.isSchemaGenerationExplicit()) {
-            // Clear SynchronizeMappings when:
-            // 1. JPA schema generation properties were explicitly provided
-            //    but resolved to no actions (e.g. database.action=none), OR
-            // 2. Spec-compliant mode with no JPA schema gen properties —
-            //    let JPA schema management control table lifecycle instead
-            //    of auto-creating via buildSchema.
+        } else if (conf.isSchemaGenerationExplicit()
+                && conf.isSpecCompliantSchemaGeneration()) {
+            // In spec-compliant mode (e.g. TCK), clear SynchronizeMappings
+            // when JPA schema gen properties are present but resolve to no
+            // actions (e.g. database.action=none). This prevents auto-
+            // creating tables via buildSchema when the spec says not to.
             conf.setSynchronizeMappings(null);
         }
     }
