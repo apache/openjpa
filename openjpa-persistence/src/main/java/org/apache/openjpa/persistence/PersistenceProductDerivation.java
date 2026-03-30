@@ -571,6 +571,12 @@ public class PersistenceProductDerivation
                 parser.parse(url);
                 pinfos.addAll((List<PersistenceUnitInfoImpl>) parser.getResults());
             } catch (IOException ioe) {
+                // Re-throw XML validation errors (SAXException wrapped in
+                // IOException) — these are real configuration errors.
+                // Only skip actual I/O errors (corrupt jars, unreadable files).
+                if (ioe.getCause() instanceof org.xml.sax.SAXException) {
+                    throw ioe;
+                }
                 log(_loc.get("unreadable-persistence-xml", url.toString(), ioe.toString()).getMessage());
             }
         }
