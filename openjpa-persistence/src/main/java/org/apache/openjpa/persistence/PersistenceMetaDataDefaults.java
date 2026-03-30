@@ -421,6 +421,9 @@ public class PersistenceMetaDataDefaults
         Field[] allFields = cls.getDeclaredFields();
 		Method[] methods = cls.getDeclaredMethods();
         List<Field> fields = filter(allFields, new TransientFilter(true));
+        // Filter out static fields (e.g. enhancer-generated pcFieldNames,
+        // pcFieldTypes etc.) so they don't prevent EMPTY detection.
+        fields.removeIf(f -> Modifier.isStatic(f.getModifiers()));
         /*
          * OpenJPA 1.x permitted private properties to be persistent.  This is
          * contrary to the JPA 1.0 specification, which states that persistent
