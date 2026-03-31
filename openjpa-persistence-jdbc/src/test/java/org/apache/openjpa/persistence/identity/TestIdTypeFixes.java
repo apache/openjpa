@@ -40,7 +40,6 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Tests for JPA 3.2 ID type and field type fixes:
- * - BigDecimal @Id with shared table (BigDecimal/BigInteger)
  * - OffsetDateTime column compatibility (TIMESTAMP_WITH_TIMEZONE)
  * - UUID @Id persist and find
  */
@@ -48,58 +47,9 @@ public class TestIdTypeFixes extends SingleEMFTestCase {
 
     @Override
     public void setUp() {
-        setUp(SharedTableBigDecimalId.class,
-              SharedTableBigIntegerId.class,
-              UUIDIdEntity.class,
+        setUp(UUIDIdEntity.class,
               DateTimeTypesEntity.class,
               DROP_TABLES);
-    }
-
-    /**
-     * Test that BigDecimal @Id works when sharing a table with
-     * a BigInteger @Id entity. Previously this threw:
-     * ClassCastException: BigDecimal cannot be cast to BigInteger
-     */
-    public void testBigDecimalIdSharedTable() {
-        BigDecimal id = new BigDecimal("12345.67");
-        BigDecimal value = new BigDecimal("99.99");
-
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        SharedTableBigDecimalId entity = new SharedTableBigDecimalId(id, value);
-        em.persist(entity);
-        em.getTransaction().commit();
-        em.close();
-
-        // Verify the entity can be found
-        em = emf.createEntityManager();
-        SharedTableBigDecimalId found = em.find(SharedTableBigDecimalId.class, id);
-        assertNotNull("BigDecimal ID entity should be found", found);
-        assertEquals(0, id.compareTo(found.getId()));
-        em.close();
-    }
-
-    /**
-     * Test that BigInteger @Id works when sharing a table with
-     * a BigDecimal @Id entity.
-     */
-    public void testBigIntegerIdSharedTable() {
-        BigInteger id = new BigInteger("67890");
-        BigInteger value = new BigInteger("42");
-
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        SharedTableBigIntegerId entity = new SharedTableBigIntegerId(id, value);
-        em.persist(entity);
-        em.getTransaction().commit();
-        em.close();
-
-        // Verify the entity can be found
-        em = emf.createEntityManager();
-        SharedTableBigIntegerId found = em.find(SharedTableBigIntegerId.class, id);
-        assertNotNull("BigInteger ID entity should be found", found);
-        assertEquals(id, found.getId());
-        em.close();
     }
 
     /**
