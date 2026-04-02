@@ -1707,8 +1707,6 @@ public class DBDictionary
                         || col.getType() == 0)) {
                     setObject(stmnt, idx, val, Types.OTHER, col);
                 } else {
-                    // Column is VARCHAR or other non-native UUID type;
-                    // convert UUID to String to avoid type mismatch
                     setString(stmnt, idx, val.toString(), col);
                 }
                 break;
@@ -1941,6 +1939,10 @@ public class DBDictionary
                 case JavaSQLTypes.ASCII_STREAM:
                 case JavaSQLTypes.CHAR_STREAM:
                     return getPreferredType(Types.CLOB);
+                case JavaTypes.UUID_OBJ:
+                    if (supportsUuidType)
+                        return getPreferredType(Types.OTHER);
+                    return getPreferredType(Types.VARCHAR);
                 default:
                     return getPreferredType(Types.BLOB);
             }

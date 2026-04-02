@@ -419,6 +419,22 @@ public class PostgresDictionary extends DBDictionary {
         return super.getBytes(rs, column);
     }
 
+
+    /**
+     * PostgreSQL cannot store the null character (0x00) in CHAR/VARCHAR
+     * columns. When storeCharsAsNumbers is false (native CHAR storage),
+     * convert the Java default char value '\0' to a SQL NULL.
+     */
+    @Override
+    public void setChar(PreparedStatement stmnt, int idx, char val,
+        Column col) throws SQLException {
+        if (val == 0) {
+            setNull(stmnt, idx, java.sql.Types.CHAR, col);
+        } else {
+            super.setChar(stmnt, idx, val, col);
+        }
+    }
+
     @Override
     protected void appendSelectRange(SQLBuffer buf, long start, long end,
         boolean subselect) {
