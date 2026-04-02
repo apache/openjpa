@@ -324,10 +324,17 @@ public class PostgresDictionary extends DBDictionary {
             return null;
         }
         String n = name.getName();
-        // Strip quote characters from delimited identifiers
+        // Strip quote characters from delimited identifiers, but only
+        // when the unquoted form is a valid SQL identifier. Identifiers
+        // that start with a digit (e.g., "1") or contain special chars
+        // must keep their quotes to remain valid in PostgreSQL DDL.
         if (n != null && n.length() > 2
                 && n.charAt(0) == '"' && n.charAt(n.length() - 1) == '"') {
-            n = n.substring(1, n.length() - 1);
+            String unquoted = n.substring(1, n.length() - 1);
+            if (unquoted.length() > 0
+                    && Character.isLetter(unquoted.charAt(0))) {
+                n = unquoted;
+            }
         }
         return n;
     }
