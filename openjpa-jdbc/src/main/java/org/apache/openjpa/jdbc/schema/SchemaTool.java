@@ -1209,7 +1209,10 @@ public class SchemaTool {
             _log.trace("createTable: " + tableName + " action=" + _action
                 + " droppedTables=" + _droppedTables);
         }
-        if (ACTION_ADD.equals(_action) && _droppedTables.remove(tableName)) {
+        if (ACTION_ADD.equals(_action)
+                && (_conf.isSpecCompliantSchemaGeneration()
+                    ? _droppedTables.contains(tableName)
+                    : _droppedTables.remove(tableName))) {
             return false;
         }
         return executeSQL(_dict.getCreateTableSQL(table, _db));
