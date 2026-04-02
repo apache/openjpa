@@ -46,6 +46,8 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
+import java.util.UUID;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.Normalizer;
@@ -351,6 +353,40 @@ public class PostgresDictionary extends DBDictionary {
         if (colType == Types.BLOB)
             colType = Types.BINARY;
         stmnt.setNull(idx, colType);
+    }
+
+    /**
+     * PostgreSQL cannot implicitly cast between its native UUID type and
+     * VARCHAR in either direction. When a UUID column is mapped as VARCHAR
+     * (e.g. external DDL), sending a native UUID via setObject(Types.OTHER)
+     * causes "operator does not exist: character varying = uuid".
+     *
+     * By converting the UUID to its string form and sending it as Types.OTHER
+     * (which the PG JDBC driver maps to PostgreSQL's "unknown" pseudo-type),
+     * PostgreSQL resolves the actual type from the column context — this works
+     * for both native UUID columns and VARCHAR columns.
+     */
+    @Override
+    public void setUnknown(PreparedStatement stmnt, int idx, Column col, Object val) throws SQLException {
+        if (val instanceof UUID) {
+            stmnt.setObject(idx, val.toString(), Types.OTHER);
+            return;
+        }
+        super.setUnknown(stmnt, idx, col, val);
+    }
+
+    /**
+     * Override typed UUID parameter binding for PostgreSQL.
+     * @see #setUnknown(PreparedStatement, int, Column, Object)
+     */
+    @Override
+    public void setTyped(PreparedStatement stmnt, int idx, Object val,
+        Column col, int type, JDBCStore store) throws SQLException {
+        if (type == JavaTypes.UUID_OBJ && val != null) {
+            stmnt.setObject(idx, val.toString(), Types.OTHER);
+            return;
+        }
+        super.setTyped(stmnt, idx, val, col, type, store);
     }
 
     /**
