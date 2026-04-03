@@ -143,10 +143,6 @@ public class PostgresDictionary extends DBDictionary {
         maxConstraintNameLength = 63;
         maxAutoAssignNameLength = 63;
         schemaCase = SCHEMA_CASE_LOWER;
-        // PostgreSQL lowercases unquoted identifiers. Set delimitedCase
-        // to LOWER before annotation parsing so that identifiers from
-        // @Table(name="ITEM") are undelimited (matching DDL-created tables).
-        delimitedCase = SCHEMA_CASE_LOWER;
         rangePosition = RANGE_POST_LOCK;
         requiresAliasForSubselect = true;
         allowsAliasInBulkClause = false;
@@ -303,13 +299,20 @@ public class PostgresDictionary extends DBDictionary {
     }
 
     /**
-     * Prevent connectedConfiguration from resetting delimitedCase to
-     * PRESERVE. PostgreSQL lowercases unquoted identifiers; keeping
-     * delimitedCase=LOWER ensures identifiers are never quoted.
+     * In TCK (SpecCompliantSchemaGeneration) mode, force delimitedCase
+     * to LOWER so that identifiers from annotations like @Table(name="ITEM")
+     * are never quoted — matching the lowercase tables created by TCK DDL.
+     * In normal mode, let the base class detect the correct case from
+     * the JDBC driver, which for PostgreSQL is PRESERVE (quoted
+     * identifiers keep their original case).
      */
     @Override
     protected void setDelimitedCase(java.sql.DatabaseMetaData metaData) {
-        delimitedCase = SCHEMA_CASE_LOWER;
+        if (conf != null && conf.isSpecCompliantSchemaGeneration()) {
+            delimitedCase = SCHEMA_CASE_LOWER;
+        } else {
+            super.setDelimitedCase(metaData);
+        }
     }
 
     /**
