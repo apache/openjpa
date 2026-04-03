@@ -325,18 +325,41 @@ public class PostgresDictionary extends DBDictionary {
         }
         String n = name.getName();
         // Strip quote characters from delimited identifiers, but only
-        // when the unquoted form is a valid SQL identifier. Identifiers
-        // that start with a digit (e.g., "1") or contain special chars
+        // when the unquoted form is a valid unquoted SQL identifier.
+        // PostgreSQL unquoted identifiers must start with a letter or
+        // underscore and contain only letters, digits, and underscores.
+        // Identifiers with spaces, digits at start, or special chars
         // must keep their quotes to remain valid in PostgreSQL DDL.
         if (n != null && n.length() > 2
                 && n.charAt(0) == '"' && n.charAt(n.length() - 1) == '"') {
             String unquoted = n.substring(1, n.length() - 1);
-            if (unquoted.length() > 0
-                    && Character.isLetter(unquoted.charAt(0))) {
+            if (isValidUnquotedIdentifier(unquoted)) {
                 n = unquoted;
             }
         }
         return n;
+    }
+
+    /**
+     * Check if an identifier is valid as an unquoted SQL identifier
+     * in PostgreSQL. Must start with a letter or underscore, and
+     * contain only letters, digits, and underscores.
+     */
+    private boolean isValidUnquotedIdentifier(String id) {
+        if (id == null || id.isEmpty()) {
+            return false;
+        }
+        char first = id.charAt(0);
+        if (!Character.isLetter(first) && first != '_') {
+            return false;
+        }
+        for (int i = 1; i < id.length(); i++) {
+            char c = id.charAt(i);
+            if (!Character.isLetterOrDigit(c) && c != '_') {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
