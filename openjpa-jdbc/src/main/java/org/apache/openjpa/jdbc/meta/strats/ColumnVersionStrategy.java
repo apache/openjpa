@@ -160,6 +160,16 @@ public abstract class ColumnVersionStrategy
                 templates[i].setDecimalDigits(infoColumn.getDecimalDigits());
         		templates[i].setJavaType(getJavaType(i));
         		templates[i].setIdentifier(infoColumn.getIdentifier());
+                // For temporal @Version types, request microsecond precision
+                // (6 fractional digits) so MariaDB/MySQL do not silently use
+                // DATETIME(0) and defeat optimistic locking within a single
+                // whole second. No-op on dialects already at microsecond
+                // precision. Preserve any user-specified precision.
+                if (isTemporalJavaType(getJavaType(i))
+                    && templates[i].getSecondPrecision() < 0
+                    && templates[i].getDecimalDigits() == 0) {
+                    templates[i].setSecondPrecision(6);
+                }
         	}
         	Column[] cols = info.getColumns(vers, templates, adapt);
             for (Column col : cols) {
@@ -173,6 +183,16 @@ public abstract class ColumnVersionStrategy
            DBDictionary dict = vers.getMappingRepository().getDBDictionary();
            DBIdentifier versName = DBIdentifier.newColumn("versn", dict != null ? dict.delimitAll() : false);
            tmplate.setIdentifier(versName);
+           // For temporal @Version types, request microsecond precision
+           // (6 fractional digits) so MariaDB/MySQL do not silently use
+           // DATETIME(0) and defeat optimistic locking within a single
+           // whole second. No-op on dialects already at microsecond
+           // precision. Preserve any user-specified precision.
+           if (isTemporalJavaType(getJavaType())
+               && tmplate.getSecondPrecision() < 0
+               && tmplate.getDecimalDigits() == 0) {
+               tmplate.setSecondPrecision(6);
+           }
 
            Column[] cols = info.getColumns(vers, new Column[]{ tmplate },
                    adapt);
@@ -183,6 +203,18 @@ public abstract class ColumnVersionStrategy
            Index idx = info.getIndex(vers, cols, adapt);
            vers.setIndex(idx);
         }
+    }
+
+    /**
+     * Returns true if the given {@link JavaTypes} code denotes a temporal
+     * type for which fractional-second precision is meaningful on DATETIME /
+     * TIMESTAMP columns.
+     */
+    private static boolean isTemporalJavaType(int javaType) {
+        return javaType == JavaTypes.DATE
+            || javaType == JavaTypes.CALENDAR
+            || javaType == JavaTypes.LOCAL_DATETIME
+            || javaType == JavaTypes.INSTANT;
     }
 
     @Override
