@@ -543,10 +543,17 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
             createUpper.contains("CREATE TABLE SCHEMAGEN_COURSE_STUDENT"));
         assertTrue("Should contain ALTER TABLE with FK constraint",
             createUpper.contains("ALTER TABLE"));
-        assertTrue("Should contain CONSTRAINT COURSEIDCONSTRAINT",
-            createUpper.contains("CONSTRAINT COURSEIDCONSTRAINT"));
-        assertTrue("Should contain CONSTRAINT STUDENTIDCONSTRAINT",
-            createUpper.contains("CONSTRAINT STUDENTIDCONSTRAINT"));
+        // ANSI SQL uses "CONSTRAINT <name> FOREIGN KEY", but MariaDB/MySQL
+        // legitimately emit "FOREIGN KEY <name>" (constraintNameMode =
+        // CONS_NAME_MID). Accept either form.
+        assertTrue("Should contain CONSTRAINT COURSEIDCONSTRAINT or FOREIGN "
+            + "KEY COURSEIDCONSTRAINT",
+            createUpper.contains("CONSTRAINT COURSEIDCONSTRAINT")
+                || createUpper.contains("FOREIGN KEY COURSEIDCONSTRAINT"));
+        assertTrue("Should contain CONSTRAINT STUDENTIDCONSTRAINT or FOREIGN "
+            + "KEY STUDENTIDCONSTRAINT",
+            createUpper.contains("CONSTRAINT STUDENTIDCONSTRAINT")
+                || createUpper.contains("FOREIGN KEY STUDENTIDCONSTRAINT"));
 
         String dropSql = new String(Files.readAllBytes(dropFile.toPath()));
         System.out.println("=== JoinTable Drop Script ===");
@@ -667,12 +674,17 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
         String dropUpper = dropSql.toUpperCase();
 
         // TCK expects either ALTER TABLE...DROP CONSTRAINT
-        // or DROP TABLE...CASCADE CONSTRAINTS
+        // or DROP TABLE...CASCADE CONSTRAINTS.
+        // MariaDB/MySQL legitimately emit "ALTER TABLE ... DROP FOREIGN KEY"
+        // (their dictionaries override getDropForeignKeySQL). Accept that form
+        // too.
         boolean hasAlterDrop = dropUpper.contains("ALTER TABLE")
-            && dropUpper.contains("DROP CONSTRAINT");
+            && (dropUpper.contains("DROP CONSTRAINT")
+                || dropUpper.contains("DROP FOREIGN KEY"));
         boolean hasCascade = dropUpper.contains("CASCADE CONSTRAINTS");
-        assertTrue("Drop script should contain ALTER TABLE DROP CONSTRAINT "
-            + "or CASCADE CONSTRAINTS for FK. Got: " + dropSql,
+        assertTrue("Drop script should contain ALTER TABLE DROP "
+            + "CONSTRAINT/FOREIGN KEY or CASCADE CONSTRAINTS for FK. Got: "
+            + dropSql,
             hasAlterDrop || hasCascade);
 
         assertTrue("Drop script should contain DROP TABLE SCHEMAGENEMP",
@@ -759,13 +771,16 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
             + "SCHEMAGENSIMPLE_SECOND",
             dropUpper.contains("DROP TABLE SCHEMAGENSIMPLE_SECOND"));
 
-        // FK constraint drop
+        // FK constraint drop. MariaDB/MySQL legitimately emit
+        // "ALTER TABLE ... DROP FOREIGN KEY" (their dictionaries override
+        // getDropForeignKeySQL). Accept that form too.
         boolean hasAlterDrop = dropUpper.contains("ALTER TABLE")
-            && dropUpper.contains("DROP CONSTRAINT");
+            && (dropUpper.contains("DROP CONSTRAINT")
+                || dropUpper.contains("DROP FOREIGN KEY"));
         boolean hasCascade = dropUpper.contains("CASCADE CONSTRAINTS");
-        assertTrue("Drop script should contain ALTER TABLE DROP CONSTRAINT "
-            + "or CASCADE CONSTRAINTS for secondary table FK. Got: "
-            + dropSql,
+        assertTrue("Drop script should contain ALTER TABLE DROP "
+            + "CONSTRAINT/FOREIGN KEY or CASCADE CONSTRAINTS for secondary "
+            + "table FK. Got: " + dropSql,
             hasAlterDrop || hasCascade);
     }
 }
