@@ -1234,10 +1234,7 @@ public class SelectImpl
     public void appendNullsPrecedence(int nullPrecedence) {
         if (_ordering == null)
             return;
-        if (nullPrecedence == QueryExpressions.NULLS_FIRST)
-            _ordering.append(" NULLS FIRST");
-        else if (nullPrecedence == QueryExpressions.NULLS_LAST)
-            _ordering.append(" NULLS LAST");
+        _dict.appendNullsPrecedence(_ordering, nullPrecedence);
     }
 
     @Override

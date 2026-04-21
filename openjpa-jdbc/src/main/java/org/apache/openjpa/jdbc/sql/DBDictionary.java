@@ -108,6 +108,7 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.kernel.exps.Path;
+import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.identifier.IdentifierConfiguration;
@@ -2969,6 +2970,27 @@ public class DBDictionary
         return toOperation(getSelectOperation(fetch), selects, from, where,
             group, having, order, distinct, start, end,
             getForUpdateClause(fetch, forUpdate, null));
+    }
+
+    /**
+     * Append the SQL representation of a JPA {@code NULLS FIRST} / {@code NULLS LAST}
+     * precedence to an {@code ORDER BY} buffer whose last appended term is
+     * already {@code &lt;expr&gt; ASC} or {@code &lt;expr&gt; DESC}.
+     * <p>
+     * Default implementation emits ANSI SQL {@code NULLS FIRST} / {@code NULLS LAST}.
+     * Dialects that do not support the ANSI syntax should override this method
+     * to emulate the behavior (e.g. using {@code &lt;expr&gt; IS NULL} as an
+     * auxiliary sort key).
+     *
+     * @param ordering the in-progress ORDER BY buffer
+     * @param nullPrecedence {@link QueryExpressions#NULLS_FIRST} or
+     *                       {@link QueryExpressions#NULLS_LAST}
+     */
+    public void appendNullsPrecedence(SQLBuffer ordering, int nullPrecedence) {
+        if (nullPrecedence == QueryExpressions.NULLS_FIRST)
+            ordering.append(" NULLS FIRST");
+        else if (nullPrecedence == QueryExpressions.NULLS_LAST)
+            ordering.append(" NULLS LAST");
     }
 
     /**
