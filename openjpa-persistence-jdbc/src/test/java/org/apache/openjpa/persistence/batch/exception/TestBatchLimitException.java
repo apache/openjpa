@@ -23,7 +23,6 @@ import jakarta.persistence.EntityManagerFactory;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.jdbc.sql.PostgresDictionary;
@@ -44,7 +43,6 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
 
     static boolean isOracle = false;
     static boolean isPostgres = false;
-    static boolean isMariaDB = false;
 
     final String expectedFailureMsg =
         "INSERT INTO Ent1 (pk, name) VALUES (?, ?) [params=(int) 200, (String) twohundred]";
@@ -66,7 +64,6 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
         DBDictionary dict = conf.getDBDictionaryInstance();
         isOracle = dict instanceof OracleDictionary;
         isPostgres = dict instanceof PostgresDictionary;
-        isMariaDB = dict instanceof MariaDBDictionary;
         return emf;
     }
 
@@ -358,7 +355,7 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
             Ent1 failedObject = (Ent1) e.getFailedObject();
 
             assertNotNull("Failed object was null.", failedObject);
-            if (!isOracle && !isPostgres && !isMariaDB) {
+            if (!isOracle && !isPostgres) {
                 assertEquals(expectedFailedObject, failedObject);
             } else if (isOracle) {
                 // since Oracle 18 we see a different behaviour, so test both ways
@@ -375,7 +372,7 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
 
     public void verifyExMsg(String msg) {
         assertNotNull("Exception message was null.", msg);
-        if (!isOracle && !isPostgres && !isMariaDB) {
+        if (!isOracle && !isPostgres) {
             assertTrue("Did not see expected text in message. Expected <" + expectedFailureMsg + "> but was " +
                 msg, msg.contains(expectedFailureMsg));
         } else if (isOracle) {
