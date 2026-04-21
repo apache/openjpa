@@ -91,7 +91,7 @@
         <javadoc.additionalparam />
         <version.maven.surefire>3.5.2</version.maven.surefire>
 
-        <xbean.version>4.26</xbean.version>
+        <xbean.version>4.30</xbean.version>
         <bval.version>3.0.2</bval.version>
         <log4j2.version>2.23.1</log4j2.version>
         <ant.version>1.10.15</ant.version>
