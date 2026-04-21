@@ -130,7 +130,12 @@
                         <phase>process-classes</phase>
                         <configuration>
                             <target>
-                                <java classname="org.apache.openjpa.util.ProxyManagerImpl" classpathref="maven.runtime.classpath">
+                                <!-- fork=true avoids Ant's in-process SecurityManager install,
+                                     which is unsupported on JDK 24+. failonerror surfaces
+                                     generator issues instead of silently producing no output. -->
+                                <java classname="org.apache.openjpa.util.ProxyManagerImpl"
+                                      classpathref="maven.runtime.classpath"
+                                      fork="true" failonerror="true">
                                     <arg line="-utils 5" />
                                 </java>
                             </target>
