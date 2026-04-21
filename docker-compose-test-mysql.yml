@@ -16,10 +16,10 @@
 # MySQL test environment matching the test-mysql-docker Maven profile.
 # Usage:
 #   docker compose -f docker-compose-test-mysql.yml up -d
-#   mvn test -pl openjpa-persistence-jdbc -Ptest-mysql-docker -Ddocker.skip=true -Dcheckstyle.skip=true
+#   mvn test -pl openjpa-persistence-jdbc -Ptest-mysql-docker -Ddocker.skip=true \
+#       -Ddocker.external.mysql.port=3307 -Dcheckstyle.skip=true
 #
-# Note: port 3306 conflicts with docker-compose-test-mariadb.yml. Stop MariaDB first:
-#   docker compose -f docker-compose-test-mariadb.yml down
+# Uses host port 3307 so MySQL can run in parallel with MariaDB (3306).
 #
 services:
   mysql:
@@ -34,7 +34,7 @@ services:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
     ports:
-      - "127.0.0.1:3306:3306"
+      - "127.0.0.1:3307:3306"
     volumes:
       - mysqldata:/var/lib/mysql
     healthcheck:
