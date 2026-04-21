@@ -25,7 +25,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "TCUSTOMER")
+@Table(name = "TTREAT_CUSTOMER")
 public class TCustomer {
     @Id
     @GeneratedValue
