@@ -220,6 +220,47 @@ public class PostgresDictionary extends DBDictionary {
 
 
 
+    /**
+     * Returns {@code DROP SEQUENCE IF EXISTS <name>}.
+     * <p>
+     * When a sequence is owned by an IDENTITY column, PostgreSQL drops the
+     * sequence as part of the owning table/column drop. OpenJPA's schema
+     * reflection may still report the sequence as existing (stale metadata
+     * after a table drop). Using {@code IF EXISTS} makes the subsequent
+     * DROP SEQUENCE idempotent so refresh / truncate actions don't fail
+     * with {@code sequence "..." does not exist} on PostgreSQL 17.
+     */
+    @Override
+    public String[] getDropSequenceSQL(org.apache.openjpa.jdbc.schema.Sequence seq) {
+        return new String[]{ "DROP SEQUENCE IF EXISTS " + getFullName(seq) };
+    }
+
+    /**
+     * The PostgreSQL JDBC driver reports native {@code boolean} / {@code bool}
+     * columns as {@link Types#BIT}. OpenJPA's generic schema-diff logic then
+     * treats the column as a numeric type and silently coerces VARCHAR
+     * mappings to "upgrade" it, defeating {@code SchemaManager.validate()}
+     * detection of genuine VARCHAR ↔ BOOLEAN schema drift.
+     * <p>
+     * Re-map reflected {@code bool}/{@code boolean} columns to
+     * {@link Types#BOOLEAN} so the column-type comparison treats them as
+     * their true native type.
+     */
+    @Override
+    protected Column newColumn(ResultSet colMeta) throws SQLException {
+        Column col = super.newColumn(colMeta);
+        if (col.getType() == Types.BIT) {
+            String typeName = col.getTypeIdentifier() == null ? null
+                    : col.getTypeIdentifier().getName();
+            if (typeName != null
+                    && ("bool".equalsIgnoreCase(typeName)
+                            || "boolean".equalsIgnoreCase(typeName))) {
+                col.setType(Types.BOOLEAN);
+            }
+        }
+        return col;
+    }
+
     @Override
     public Date getDate(ResultSet rs, int column)
         throws SQLException {
