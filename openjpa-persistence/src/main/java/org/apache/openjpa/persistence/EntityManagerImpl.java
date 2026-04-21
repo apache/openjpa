@@ -2784,12 +2784,20 @@ public class EntityManagerImpl
 	public <C> void runWithConnection(ConnectionConsumer<C> action) {
 		assertNotCloseInvoked();
 		C connection = (C) getConnection();
+		boolean txActive = _broker.isActive();
 		try {
 			action.accept(connection);
 		} catch (Exception e) {
 			throw PersistenceExceptions.toPersistenceException(e);
 		} finally {
-			if (connection instanceof AutoCloseable) {
+			// Per JPA 3.2, the connection passed to runWithConnection is on
+			// loan to the user code; its lifecycle is owned by the EM/broker
+			// when a transaction is active. Closing the user-facing wrapper
+			// during an active transaction can cause some JDBC drivers (e.g.
+			// MariaDB Connector/J) to discard pending work on the underlying
+			// connection. Only close when no transaction is active (i.e. a
+			// free-standing connection was borrowed).
+			if (!txActive && connection instanceof AutoCloseable) {
 				try {
 					((AutoCloseable) connection).close();
 				} catch (Exception e) {
@@ -2804,12 +2812,20 @@ public class EntityManagerImpl
 	public <C, T> T callWithConnection(ConnectionFunction<C, T> function) {
 		assertNotCloseInvoked();
 		C connection = (C) getConnection();
+		boolean txActive = _broker.isActive();
 		try {
 			return function.apply(connection);
 		} catch (Exception e) {
 			throw PersistenceExceptions.toPersistenceException(e);
 		} finally {
-			if (connection instanceof AutoCloseable) {
+			// Per JPA 3.2, the connection passed to callWithConnection is on
+			// loan to the user code; its lifecycle is owned by the EM/broker
+			// when a transaction is active. Closing the user-facing wrapper
+			// during an active transaction can cause some JDBC drivers (e.g.
+			// MariaDB Connector/J) to discard pending work on the underlying
+			// connection. Only close when no transaction is active (i.e. a
+			// free-standing connection was borrowed).
+			if (!txActive && connection instanceof AutoCloseable) {
 				try {
 					((AutoCloseable) connection).close();
 				} catch (Exception e2) {
