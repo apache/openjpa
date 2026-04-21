@@ -210,12 +210,13 @@ public class MariaDBDictionary extends DBDictionary {
             fixedSizeTypeNameSet.remove(timestampTypeName);
             fractionalTypeNameSet.add(timestampTypeName);
 
-            // also TIME type now has optional fraction digits
+            // Request microsecond precision for temporal columns so @Version
+            // Instant/LocalDateTime can detect concurrent updates within a
+            // single whole second. Matches PostgreSQL/Derby defaults.
+            dateFractionDigits = 6;
 
-            if (dateFractionDigits > 0 ) {
-                timeTypeName = "TIME{0}";
-                fractionalTypeNameSet.add(timeTypeName);
-            }
+            timeTypeName = "TIME{0}";
+            fractionalTypeNameSet.add(timeTypeName);
         }
     }
 
