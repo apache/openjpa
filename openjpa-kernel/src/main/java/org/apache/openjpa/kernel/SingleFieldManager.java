@@ -86,9 +86,11 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
                 proxy = checkProxy(fmd);
                 if (proxy == null) {
                     proxy = (Proxy) _sm.newFieldProxy(field);
-                    ((Date) proxy).setTime(((Date) objval).getTime());
-                    if (proxy instanceof Timestamp && objval instanceof Timestamp)
-                        ((Timestamp) proxy).setNanos(((Timestamp) objval).getNanos());
+                    Date dateVal = (objval instanceof Calendar)
+                        ? ((Calendar) objval).getTime() : (Date) objval;
+                    ((Date) proxy).setTime(dateVal.getTime());
+                    if (proxy instanceof Timestamp && dateVal instanceof Timestamp)
+                        ((Timestamp) proxy).setNanos(((Timestamp) dateVal).getNanos());
                     ret = true;
                 }
                 break;
@@ -98,7 +100,9 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
                 proxy = checkProxy(fmd);
                 if (proxy == null) {
                     proxy = (Proxy) _sm.newFieldProxy(field);
-                    ((Calendar) proxy).setTime(((Calendar) objval).getTime());
+                    Date calSrc = (objval instanceof Date)
+                        ? (Date) objval : ((Calendar) objval).getTime();
+                    ((Calendar) proxy).setTime(calSrc);
                     ret = true;
                 } else {
                     Object init = fmd.getInitializer();

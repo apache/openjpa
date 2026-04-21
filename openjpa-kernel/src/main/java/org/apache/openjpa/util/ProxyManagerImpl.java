@@ -623,7 +623,7 @@ public class ProxyManagerImpl
             return null;
         }
 
-        return GeneratedClasses.loadAsmClass(proxyClassName, classBytes, ProxyDate.class, l);
+        return GeneratedClasses.loadAsmClass(proxyClassName, classBytes, ProxyCalendar.class, l);
     }
 
     private Class generateAndLoadProxyCollection(Class type, boolean runtime, ClassLoader l) {
