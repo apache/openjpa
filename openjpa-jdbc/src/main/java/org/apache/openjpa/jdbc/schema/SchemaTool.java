@@ -510,6 +510,13 @@ public class SchemaTool {
         }
         Table[] tableArray = tables.toArray(new Table[tables.size()]);
         Connection conn = _ds.getConnection();
+        // Truncate is a best-effort operation: the repo SchemaGroup may
+        // declare tables the dialect never actually created (e.g.
+        // OPENJPA_SEQUENCE_TABLE on dialects that prefer native sequences,
+        // or tables in other schemas). Log missing-table errors instead of
+        // aborting.
+        boolean savedIgnore = _ignoreErrs;
+        _ignoreErrs = true;
         try {
             String[] sql = _conf.getDBDictionaryInstance()
                 .getDeleteTableContentsSQL(tableArray, conn);
@@ -517,6 +524,7 @@ public class SchemaTool {
                 _log.warn(_loc.get("delete-table-contents"));
             }
         } finally {
+            _ignoreErrs = savedIgnore;
             closeConnection(conn);
         }
     }
