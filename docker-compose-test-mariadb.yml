@@ -20,7 +20,10 @@
 #
 services:
   mariadb:
-    image: mariadb:11.4
+    # Track the current MariaDB LTS (:lts resolves to 11.8 at the time of
+    # writing). Pinned to an explicit version so local runs match what
+    # reviewers and CI see when they pull mariadb:lts.
+    image: mariadb:11.8
     restart: unless-stopped
     environment:
       MARIADB_DATABASE: openjpatst
