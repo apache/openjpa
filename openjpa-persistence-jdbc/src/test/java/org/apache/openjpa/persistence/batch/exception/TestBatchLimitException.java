@@ -23,6 +23,7 @@ import jakarta.persistence.EntityManagerFactory;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.jdbc.sql.PostgresDictionary;
@@ -43,6 +44,12 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
 
     static boolean isOracle = false;
     static boolean isPostgres = false;
+    // MariaDB 11.8 + Connector/J 3.5.4 reports the first row of a failing
+    // batch as the "failed object" (like Oracle/Postgres), not the actual
+    // duplicate row. Earlier Connector/J + 11.4 combos were per-row, which is
+    // why this flag briefly went away on this branch — restoring it, gated
+    // by the dictionary, keeps the test stable across MariaDB server versions.
+    static boolean isMariaDB = false;
 
     final String expectedFailureMsg =
         "INSERT INTO Ent1 (pk, name) VALUES (?, ?) [params=(int) 200, (String) twohundred]";
@@ -64,6 +71,7 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
         DBDictionary dict = conf.getDBDictionaryInstance();
         isOracle = dict instanceof OracleDictionary;
         isPostgres = dict instanceof PostgresDictionary;
+        isMariaDB = dict instanceof MariaDBDictionary;
         return emf;
     }
 
@@ -355,13 +363,14 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
             Ent1 failedObject = (Ent1) e.getFailedObject();
 
             assertNotNull("Failed object was null.", failedObject);
-            if (!isOracle && !isPostgres) {
+            if (!isOracle && !isPostgres && !isMariaDB) {
                 assertEquals(expectedFailedObject, failedObject);
-            } else if (isOracle) {
-                // since Oracle 18 we see a different behaviour, so test both ways
-                assertTrue(failedObject.equals(expectedFailedObject) || failedObject.equals(expectedFailedObjectOracle) );
+            } else if (isOracle || isMariaDB) {
+                // Oracle 18 and MariaDB 11.8 both vary between per-row and
+                // first-row-of-batch reporting across versions, so accept either.
+                assertTrue(failedObject.equals(expectedFailedObject) || failedObject.equals(expectedFailedObjectOracle));
             } else {
-                // special case, as Oracle returns all statements in the batch
+                // special case, as Postgres returns all statements in the batch
                 assertEquals(expectedFailedObjectOracle, failedObject);
             }
         }
@@ -372,14 +381,15 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
 
     public void verifyExMsg(String msg) {
         assertNotNull("Exception message was null.", msg);
-        if (!isOracle && !isPostgres) {
+        if (!isOracle && !isPostgres && !isMariaDB) {
             assertTrue("Did not see expected text in message. Expected <" + expectedFailureMsg + "> but was " +
                 msg, msg.contains(expectedFailureMsg));
-        } else if (isOracle) {
-            // since Oracle 18 we see a different behaviour, so test both ways
+        } else if (isOracle || isMariaDB) {
+            // Oracle 18 and MariaDB 11.8 both vary between per-row and
+            // first-row-of-batch reporting across versions, so accept either.
             assertTrue(msg.contains(expectedFailureMsg) || msg.contains(expectedFailureMsgOracle));
         } else {
-            // special case, as Oracle returns all statements in the batch
+            // special case, as Postgres returns all statements in the batch
             assertTrue("Did not see expected text in message. Expected <" + expectedFailureMsgOracle + "> but was " +
                 msg, msg.contains(expectedFailureMsgOracle));
         }
