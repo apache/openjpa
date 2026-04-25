@@ -79,7 +79,7 @@ run_flavor() {
     local collect="$BUILDS_DIR/$flavor"
     mkdir -p "$collect"
 
-    {
+    (
         echo "===== OpenJPA install build against $flavor ====="
         echo "start:   $(date -Iseconds)"
         echo "host:    $(hostname)"
@@ -105,12 +105,12 @@ run_flavor() {
             rm -rf "$HOME/.m2/repository"
         fi
 
-        local mvn_cmd=(mvn clean install "-P$profile" -fae)
+        mvn_cmd=(mvn clean install "-P$profile" -fae)
         [[ -n "$extra" ]] && mvn_cmd+=($extra)
 
         echo "----- running: ${mvn_cmd[*]} (timeout $MVN_TIMEOUT) -----"
         (cd "$PROJECT_ROOT" && timeout "$MVN_TIMEOUT" "${mvn_cmd[@]}")
-        local rc=$?
+        rc=$?
 
         if [[ $rc -eq 0 ]]; then
             echo
@@ -121,10 +121,10 @@ run_flavor() {
         fi
 
         echo "----- collecting surefire/failsafe reports into $collect -----"
-        local count=0
+        count=0
         while IFS= read -r -d '' report; do
-            local rel="${report#$PROJECT_ROOT/}"
-            local dest="$collect/$rel"
+            rel="${report#$PROJECT_ROOT/}"
+            dest="$collect/$rel"
             mkdir -p "$(dirname "$dest")"
             cp "$report" "$dest"
             count=$((count + 1))
@@ -141,7 +141,7 @@ run_flavor() {
 
         echo "end: $(date -Iseconds)"
         exit $rc
-    } >"$log" 2>&1
+    ) >"$log" 2>&1
     return $?
 }
 
