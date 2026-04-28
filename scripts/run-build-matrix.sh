@@ -139,6 +139,12 @@ run_flavor() {
         echo "----- tearing down $flavor container -----"
         docker compose -f "$compose" down -v --remove-orphans || true
 
+        # Some xmlstore tests stamp the JDBC URL into a literal directory name
+        # (e.g. "openjpa-xmlstore/jdbc:mariadb:/") instead of using target/.
+        # Sweep those up so they don't show up as untracked between runs.
+        echo "----- cleaning stray jdbc: artifact dirs -----"
+        find "$PROJECT_ROOT" -maxdepth 3 -type d -name 'jdbc:*' -print -exec rm -rf {} + 2>/dev/null || true
+
         echo "end: $(date -Iseconds)"
         exit $rc
     ) >"$log" 2>&1
