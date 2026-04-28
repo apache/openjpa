@@ -125,22 +125,23 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         em1.getTransaction().begin();
         TypedQuery<Employee> query = em1.createQuery("select e from Employee e where e.id < 10", Employee.class)
                 .setFirstResult(1);
-        // Lock all selected Employees, skip the first one, i.e should lock
-        // Employee(2)
+        // Lock all selected Employees, skip the first one. Without ORDER BY the
+        // database may return either id=1 or id=2 first, so we lock whichever
+        // employee survived the OFFSET and check em2.find blocks on that same id.
         query.setLockMode(LockModeType.PESSIMISTIC_READ);
         query.setHint("jakarta.persistence.query.timeout", lockWaitTime);
         List<Employee> employees = query.getResultList();
         assertEquals("Expected 1 element with emplyee id=2", employees.size(), 1);
-        assertTrue("Test Employee first name = 'first.2'", employees.get(0).getFirstName().equals("first.1")
+        assertTrue("Test Employee first name = 'first.1' or 'first.2'", employees.get(0).getFirstName().equals("first.1")
                 || employees.get(0).getFirstName().equals("first.2"));
+        int lockedId = employees.get(0).getId();
 
         em2.getTransaction().begin();
         Map<String, Object> hints = new HashMap<>();
         hints.put("jakarta.persistence.lock.timeout", lockWaitTime);
-        // find Employee(2) with a lock, should block and expected a
-        // PessimisticLockException
+        // find the Employee em1 just locked; should block and throw a PessimisticLockException
         try {
-            em2.find(Employee.class, 2, LockModeType.PESSIMISTIC_READ, hints);
+            em2.find(Employee.class, lockedId, LockModeType.PESSIMISTIC_READ, hints);
             fail("Unexcpected find succeeded. Should throw a PessimisticLockException.");
         } catch (Throwable e) {
             assertError(e, PessimisticLockException.class, LockTimeoutException.class);
