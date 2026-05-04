@@ -726,6 +726,12 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 		_em.assertNotCloseInvoked();
 		setHint(QueryHints.HINT_RESULT_COUNT, 1);
 		boolean queryFetchPlanUsed = pushQueryFetchPlan();
+		// Two rows is enough to distinguish none/one/more-than-one;
+		// don't override a tighter user-supplied limit.
+		int originalMax = getMaxResults();
+		if (originalMax > 2) {
+			setMaxResults(2);
+		}
 		try {
 			List result = getResultList();
 			if (result == null || result.isEmpty())
@@ -735,6 +741,9 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 						getQueryString(), result.size()).getMessage());
 			return (X) result.get(0);
 		} finally {
+			if (originalMax > 2) {
+				setMaxResults(originalMax);
+			}
 			popQueryFetchPlan(queryFetchPlanUsed);
 		}
 	}
