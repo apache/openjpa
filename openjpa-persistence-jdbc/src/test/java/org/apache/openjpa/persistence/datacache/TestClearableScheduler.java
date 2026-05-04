@@ -26,7 +26,6 @@ import org.apache.openjpa.datacache.ClearableScheduler;
 import org.apache.openjpa.datacache.ConcurrentDataCache;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-import org.junit.Ignore;
 
 public class TestClearableScheduler extends SingleEMFTestCase {
 
@@ -49,7 +48,6 @@ public class TestClearableScheduler extends SingleEMFTestCase {
             );
     }
 
-    @Ignore
     public void testBasic() throws Exception {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         OpenJPAConfiguration conf = ((OpenJPAEntityManagerSPI) em).getConfiguration();
