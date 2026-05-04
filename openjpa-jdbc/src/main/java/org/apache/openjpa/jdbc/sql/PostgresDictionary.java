@@ -157,7 +157,6 @@ public class PostgresDictionary extends DBDictionary {
         useSetBytesForBlobs = true;
         useGetStringForClobs = true;
         useSetStringForClobs = true;
-        storeCharsAsNumbers = false;
         bitTypeName = "BOOL";
         smallintTypeName = "SMALLINT";
         realTypeName = "FLOAT4";
@@ -1061,6 +1060,13 @@ public class PostgresDictionary extends DBDictionary {
         // Old PostgreSQL requires double-escape for strings.
         if ((maj <= 8 || (maj == 9 && min == 0))) {
             searchStringEscape = "\\\\";
+        }
+
+        // Modern PostgreSQL supports native CHAR storage; only the older
+        // releases required the DBDictionary default (chars stored as
+        // numeric values).
+        if (maj >= 9) {
+            storeCharsAsNumbers = false;
         }
     }
 
