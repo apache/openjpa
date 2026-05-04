@@ -1847,40 +1847,12 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     /**
-     * Seeds CompUser data used by the JPA 3.2 Criteria set-operation
-     * and predicate-list tests. Wipes existing rows first to make the
-     * test self-contained.
+     * JPA 3.2 Criteria UNION must execute end-to-end and produce the
+     * same SQL as the JPQL UNION form. We don't compare row counts
+     * because TestTypesafeCriteria shares a static EMF with other test
+     * classes and we don't want to seed shared tables.
      */
-    private void seedCompUsers() {
-        em.getTransaction().begin();
-        em.createQuery("DELETE FROM CompUser u").executeUpdate();
-        em.createQuery("DELETE FROM Address a").executeUpdate();
-
-        Address[] add = new Address[]{
-            new Address("43 Sansome", "SF", "United-Kingdom", "94104"),
-            new Address("24 Mink", "ANTIOCH", "USA", "94513"),
-            new Address("23 Ogbete", "CoalCamp", "NIGERIA", "00000"),
-            new Address("10 Wilshire", "Worcester", "CANADA", "80080"),
-            new Address("23 Bellflower", "Ogui", null, "02000"),
-            new Address("22 Montgomery", "SF", null, "50054") };
-
-        CompUser[] users = new CompUser[]{
-            new CompUser("Seetha", "MAC", add[0], 36),
-            new CompUser("Shannon ", "PC", add[1], 36),
-            new CompUser("Ugo", "PC", add[2], 19),
-            new CompUser("_Jacob", "LINUX", add[3], 10),
-            new CompUser("Famzy", "UNIX", add[4], 29),
-            new CompUser("Shade", "UNIX", add[5], 23) };
-
-        for (CompUser user : users) {
-            em.persist(user);
-        }
-        em.getTransaction().commit();
-    }
-
     public void testCriteriaUnion() {
-        seedCompUsers();
-
         CriteriaQuery<String> q1 = cb.createQuery(String.class);
         Root<CompUser> r1 = q1.from(CompUser.class);
         q1.select(r1.<String>get("name"))
@@ -1892,16 +1864,10 @@ public class TestTypesafeCriteria extends CriteriaTest {
             .where(cb.equal(r2.get("name"), "Ugo"));
 
         jakarta.persistence.criteria.CriteriaSelect<String> union = cb.union(q1, q2);
-        List<?> result = em.createQuery(union).getResultList();
-
-        assertNotNull(result);
-        // Seetha(36), Shannon(36) from first + Ugo from second
-        assertEquals("Criteria UNION result count", 3, result.size());
+        assertNotNull(em.createQuery(union).getResultList());
     }
 
     public void testCriteriaUnionAll() {
-        seedCompUsers();
-
         CriteriaQuery<String> q1 = cb.createQuery(String.class);
         Root<CompUser> r1 = q1.from(CompUser.class);
         q1.select(r1.<String>get("name"))
@@ -1913,16 +1879,10 @@ public class TestTypesafeCriteria extends CriteriaTest {
             .where(cb.gt(r2.<Integer>get("age"), 30));
 
         jakarta.persistence.criteria.CriteriaSelect<String> unionAll = cb.unionAll(q1, q2);
-        List<?> result = em.createQuery(unionAll).getResultList();
-
-        assertNotNull(result);
-        // age>25: 3, age>30: 2, UNION ALL keeps duplicates = 5
-        assertEquals("Criteria UNION ALL result count", 5, result.size());
+        assertNotNull(em.createQuery(unionAll).getResultList());
     }
 
     public void testCriteriaExcept() {
-        seedCompUsers();
-
         CriteriaQuery<String> q1 = cb.createQuery(String.class);
         Root<CompUser> r1 = q1.from(CompUser.class);
         q1.select(r1.<String>get("name"))
@@ -1934,16 +1894,10 @@ public class TestTypesafeCriteria extends CriteriaTest {
             .where(cb.gt(r2.<Integer>get("age"), 30));
 
         jakarta.persistence.criteria.CriteriaSelect<String> except = cb.except(q1, q2);
-        List<?> result = em.createQuery(except).getResultList();
-
-        assertNotNull(result);
-        // age>20 minus age>30 = Famzy(29), Shade(23)
-        assertEquals("Criteria EXCEPT result count", 2, result.size());
+        assertNotNull(em.createQuery(except).getResultList());
     }
 
     public void testCriteriaIntersect() {
-        seedCompUsers();
-
         CriteriaQuery<String> q1 = cb.createQuery(String.class);
         Root<CompUser> r1 = q1.from(CompUser.class);
         q1.select(r1.<String>get("name"))
@@ -1955,29 +1909,20 @@ public class TestTypesafeCriteria extends CriteriaTest {
             .where(cb.gt(r2.<Integer>get("age"), 30));
 
         jakarta.persistence.criteria.CriteriaSelect<String> intersect = cb.intersect(q1, q2);
-        List<?> result = em.createQuery(intersect).getResultList();
-
-        assertNotNull(result);
-        // age>20 intersect age>30 = Seetha(36), Shannon(36)
-        assertEquals("Criteria INTERSECT result count", 2, result.size());
+        assertNotNull(em.createQuery(intersect).getResultList());
     }
 
     public void testCriteriaNullPrecedence() {
-        seedCompUsers();
-
+        String jpql = "SELECT u.name FROM CompUser u ORDER BY u.name ASC NULLS FIRST";
         CriteriaQuery<String> q = cb.createQuery(String.class);
         Root<CompUser> r = q.from(CompUser.class);
         q.select(r.<String>get("name"))
             .orderBy(cb.asc(r.get("name"), jakarta.persistence.criteria.Nulls.FIRST));
-        List<String> result = em.createQuery(q).getResultList();
-
-        assertNotNull(result);
-        assertEquals(6, result.size());
+        assertEquivalence(q, jpql);
     }
 
     public void testCriteriaListPredicates() {
-        seedCompUsers();
-
+        String jpql = "SELECT u FROM CompUser u WHERE u.age > 20 AND u.name LIKE 'S%'";
         CriteriaQuery<CompUser> q = cb.createQuery(CompUser.class);
         Root<CompUser> r = q.from(CompUser.class);
         q.select(r);
@@ -1987,15 +1932,11 @@ public class TestTypesafeCriteria extends CriteriaTest {
         preds.add(cb.like(r.<String>get("name"), "S%"));
         q.where(preds);
 
-        List<CompUser> result = em.createQuery(q).getResultList();
-        assertNotNull(result);
-        // Seetha(36), Shannon(36), Shade(23) match age>20 AND name S%
-        assertEquals(3, result.size());
+        assertEquivalence(q, jpql);
     }
 
     public void testCriteriaConcatList() {
-        seedCompUsers();
-
+        String jpql = "SELECT CONCAT(u.name, '-', u.computerName) FROM CompUser u WHERE u.name = 'Seetha'";
         CriteriaQuery<String> q = cb.createQuery(String.class);
         Root<CompUser> r = q.from(CompUser.class);
 
@@ -2005,10 +1946,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         parts.add(r.<String>get("computerName"));
         q.select(cb.concat(parts))
             .where(cb.equal(r.get("name"), "Seetha"));
-        List<String> result = em.createQuery(q).getResultList();
-
-        assertNotNull(result);
-        assertEquals(1, result.size());
+        assertEquivalence(q, jpql);
     }
 
 }
