@@ -34,6 +34,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 /**
  * Returns the given value as a number
  *
+ * @since 4.2.0
  */
 public class TypecastAsNumber
     extends AbstractVal {

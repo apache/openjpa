@@ -20,6 +20,8 @@ package org.apache.openjpa.kernel.exps;
 
 /**
  * Identifiers used by CAST TO (INTEGER|LONG|FLOAT|DOUBLE)
+ *
+ * @since 4.2.0
  */
 public enum TypecastAsNumberPart {
 

@@ -33,6 +33,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 /**
  * Returns the temporal field of a given date or time.
  *
+ * @since 4.2.0
  */
 public class TypecastAsString
     extends AbstractVal {

@@ -389,12 +389,16 @@ public interface JDBCConfiguration
     /**
      * Semicolon-separated list of fully-qualified class names to exclude
      * from SynchronizeMappings schema synchronization.
+     *
+     * @since 4.2.0
      */
     String getSyncMappingsExcludeTypes();
 
     /**
      * Semicolon-separated list of fully-qualified class names to exclude
      * from SynchronizeMappings schema synchronization.
+     *
+     * @since 4.2.0
      */
     void setSyncMappingsExcludeTypes(String types);
 

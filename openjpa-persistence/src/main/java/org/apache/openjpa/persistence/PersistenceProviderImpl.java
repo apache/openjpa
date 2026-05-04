@@ -164,6 +164,9 @@ public class PersistenceProviderImpl
         return createEntityManagerFactory(name, null, m);
     }
 
+	/**
+	 * @since 4.2.0
+	 */
 	@Override
 	public EntityManagerFactory createEntityManagerFactory(PersistenceConfiguration config) {
 		return createContainerEntityManagerFactory(PersistenceUnitInfoImpl.convert(config), config.properties());

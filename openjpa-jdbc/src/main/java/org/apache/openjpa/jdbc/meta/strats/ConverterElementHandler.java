@@ -35,6 +35,8 @@ import org.apache.openjpa.util.MetaDataException;
  * {@code AttributeConverter}. Unlike {@link ConverterValueHandler}, this
  * handler actively converts values because element collection elements
  * are not routed through the externalization path.
+ *
+ * @since 4.2.0
  */
 public class ConverterElementHandler extends AbstractValueHandler {
 

@@ -259,15 +259,18 @@ public interface ExpressionFactory {
     Value getDateTimePart(DateTimeExtractPart part, Value value);
     
     /**
-     * Returns the value typecasted as string
-     * 
+     * Returns the value typecasted as string.
+     *
+     * @since 4.2.0
      */
     Value newTypecastAsString(Value value);
-    
+
     /**
-     * Returns the value typecasted as the given Number type
+     * Returns the value typecasted as the given Number type.
+     *
      * @param value
      * @return
+     * @since 4.2.0
      */
     Value newTypecastAsNumber(Value value, Class<? extends Number> numberType);
 
@@ -419,18 +422,24 @@ public interface ExpressionFactory {
     
     /**
      * Returns a value representing the left function on the given target
-     * with the given arguments. 
+     * with the given arguments.
+     *
+     * @since 4.2.0
      */
     Value left(Value str, Value length);
 
     /**
      * Returns a value representing the right function on the given target
-     * with the given arguments. 
+     * with the given arguments.
+     *
+     * @since 4.2.0
      */
     Value right(Value str, Value length);
-    
+
     /**
-     * Returns the original string with the pattern replaced by the third argument
+     * Returns the original string with the pattern replaced by the third argument.
+     *
+     * @since 4.2.0
      */
     Value replace(Value orig, Value pattern, Value replacement);
 
@@ -535,12 +544,16 @@ public interface ExpressionFactory {
 	Value getObjectId(Value val);
 
 	/**
-	 * Returns the id of the given value
+	 * Returns the id of the given value.
+	 *
+	 * @since 4.2.0
 	 */
 	Value getNativeObjectId(Value val);
-	
+
 	/**
-	 * Returns the version of the given value
+	 * Returns the version of the given value.
+	 *
+	 * @since 4.2.0
 	 */
 	Value version(Value val);
 

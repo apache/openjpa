@@ -36,6 +36,8 @@ import jakarta.persistence.metamodel.PluralAttribute;
 
 /**
  * Implementation of {@link EntityGraph}.
+ *
+ * @since 4.2.0
  */
 public class EntityGraphImpl<T> implements EntityGraph<T> {
 

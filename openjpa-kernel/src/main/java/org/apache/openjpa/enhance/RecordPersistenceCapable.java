@@ -38,7 +38,7 @@ import org.apache.openjpa.util.InternalException;
  * instance is requested, the record is constructed via its canonical
  * constructor.</p>
  *
- * @since 4.0.0
+ * @since 4.2.0
  */
 public class RecordPersistenceCapable
         implements PersistenceCapable, ManagedInstanceProvider {

@@ -38,11 +38,6 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.common.utils.DatabaseHelper;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.CriteriaSelect;
-import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Root;
 
 public class TestEJBQLFunction extends AbstractTestCase {
 
@@ -1228,106 +1223,6 @@ public class TestEJBQLFunction extends AbstractTestCase {
     	endEm(em);
     }
 
-    public void testCriteriaUnion() {
-    	EntityManager em = currentEntityManager();
-    	CriteriaBuilder cb = em.getCriteriaBuilder();
-
-    	CriteriaQuery<String> q1 = cb.createQuery(String.class);
-    	Root<CompUser> r1 = q1.from(CompUser.class);
-    	q1.select(r1.get("name"))
-    		.where(cb.gt(r1.get("age"), 30));
-
-    	CriteriaQuery<String> q2 = cb.createQuery(String.class);
-    	Root<CompUser> r2 = q2.from(CompUser.class);
-    	q2.select(r2.get("name"))
-    		.where(cb.equal(r2.get("name"), "Ugo"));
-
-    	CriteriaSelect<String> union = cb.union(q1, q2);
-    	List result = em.createQuery(union).getResultList();
-
-    	assertNotNull(result);
-    	// Seetha(36), Shannon(36) from first + Ugo from second
-    	assertEquals("Criteria UNION result count", 3,
-    		result.size());
-
-    	endEm(em);
-    }
-
-    public void testCriteriaUnionAll() {
-    	EntityManager em = currentEntityManager();
-    	CriteriaBuilder cb = em.getCriteriaBuilder();
-
-    	CriteriaQuery<String> q1 = cb.createQuery(String.class);
-    	Root<CompUser> r1 = q1.from(CompUser.class);
-    	q1.select(r1.get("name"))
-    		.where(cb.gt(r1.get("age"), 25));
-
-    	CriteriaQuery<String> q2 = cb.createQuery(String.class);
-    	Root<CompUser> r2 = q2.from(CompUser.class);
-    	q2.select(r2.get("name"))
-    		.where(cb.gt(r2.get("age"), 30));
-
-    	CriteriaSelect<String> unionAll = cb.unionAll(q1, q2);
-    	List result = em.createQuery(unionAll).getResultList();
-
-    	assertNotNull(result);
-    	// age>25: 3, age>30: 2, UNION ALL keeps dupes = 5
-    	assertEquals("Criteria UNION ALL result count", 5,
-    		result.size());
-
-    	endEm(em);
-    }
-
-    public void testCriteriaExcept() {
-    	EntityManager em = currentEntityManager();
-    	CriteriaBuilder cb = em.getCriteriaBuilder();
-
-    	CriteriaQuery<String> q1 = cb.createQuery(String.class);
-    	Root<CompUser> r1 = q1.from(CompUser.class);
-    	q1.select(r1.get("name"))
-    		.where(cb.gt(r1.get("age"), 20));
-
-    	CriteriaQuery<String> q2 = cb.createQuery(String.class);
-    	Root<CompUser> r2 = q2.from(CompUser.class);
-    	q2.select(r2.get("name"))
-    		.where(cb.gt(r2.get("age"), 30));
-
-    	CriteriaSelect<String> except = cb.except(q1, q2);
-    	List result = em.createQuery(except).getResultList();
-
-    	assertNotNull(result);
-    	// age>20 minus age>30 = Famzy(29), Shade(23)
-    	assertEquals("Criteria EXCEPT result count", 2,
-    		result.size());
-
-    	endEm(em);
-    }
-
-    public void testCriteriaIntersect() {
-    	EntityManager em = currentEntityManager();
-    	CriteriaBuilder cb = em.getCriteriaBuilder();
-
-    	CriteriaQuery<String> q1 = cb.createQuery(String.class);
-    	Root<CompUser> r1 = q1.from(CompUser.class);
-    	q1.select(r1.get("name"))
-    		.where(cb.gt(r1.get("age"), 20));
-
-    	CriteriaQuery<String> q2 = cb.createQuery(String.class);
-    	Root<CompUser> r2 = q2.from(CompUser.class);
-    	q2.select(r2.get("name"))
-    		.where(cb.gt(r2.get("age"), 30));
-
-    	CriteriaSelect<String> intersect = cb.intersect(q1, q2);
-    	List result = em.createQuery(intersect).getResultList();
-
-    	assertNotNull(result);
-    	// age>20 intersect age>30 = Seetha(36), Shannon(36)
-    	assertEquals("Criteria INTERSECT result count", 2,
-    		result.size());
-
-    	endEm(em);
-    }
-
     public void testScalarOrderBy() {
     	EntityManager em = currentEntityManager();
 
@@ -1355,67 +1250,6 @@ public class TestEJBQLFunction extends AbstractTestCase {
     			name.length() <= prevLen);
     		prevLen = name.length();
     	}
-
-    	endEm(em);
-    }
-
-    public void testCriteriaNullPrecedence() {
-    	EntityManager em = currentEntityManager();
-    	CriteriaBuilder cb = em.getCriteriaBuilder();
-
-    	CriteriaQuery<String> q = cb.createQuery(String.class);
-    	Root<CompUser> r = q.from(CompUser.class);
-    	q.select(r.get("name"))
-    		.orderBy(cb.asc(r.get("name"),
-    			jakarta.persistence.criteria.Nulls.FIRST));
-    	List result = em.createQuery(q).getResultList();
-
-    	assertNotNull(result);
-    	assertEquals(6, result.size());
-
-    	endEm(em);
-    }
-
-    public void testCriteriaListPredicates() {
-    	EntityManager em = currentEntityManager();
-    	CriteriaBuilder cb = em.getCriteriaBuilder();
-
-    	CriteriaQuery<CompUser> q = cb.createQuery(CompUser.class);
-    	Root<CompUser> r = q.from(CompUser.class);
-    	q.select(r);
-
-    	java.util.List<jakarta.persistence.criteria.Predicate> preds =
-    		new java.util.ArrayList<>();
-    	preds.add(cb.gt(r.get("age"), 20));
-    	preds.add(cb.like(r.get("name"), "S%"));
-    	q.where(preds);
-
-    	List result = em.createQuery(q).getResultList();
-    	assertNotNull(result);
-    	// Seetha(36), Shannon(36), Shade(23) match age>20 AND name S%
-    	assertEquals(3, result.size());
-
-    	endEm(em);
-    }
-
-    public void testCriteriaConcatList() {
-    	EntityManager em = currentEntityManager();
-    	CriteriaBuilder cb = em.getCriteriaBuilder();
-
-    	CriteriaQuery<String> q = cb.createQuery(String.class);
-    	Root<CompUser> r = q.from(CompUser.class);
-
-    	java.util.List<Expression<String>> parts =
-    		new java.util.ArrayList<>();
-    	parts.add(r.get("name"));
-    	parts.add(cb.literal("-"));
-    	parts.add(r.get("computerName"));
-    	q.select(cb.concat(parts))
-    		.where(cb.equal(r.get("name"), "Seetha"));
-    	List result = em.createQuery(q).getResultList();
-
-    	assertNotNull(result);
-    	assertEquals(1, result.size());
 
     	endEm(em);
     }

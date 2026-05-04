@@ -27,6 +27,8 @@ import jakarta.persistence.Subgraph;
 
 /**
  * Implementation of {@link AttributeNode}.
+ *
+ * @since 4.2.0
  */
 public class AttributeNodeImpl<T> implements AttributeNode<T> {
 

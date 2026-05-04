@@ -33,6 +33,7 @@ import org.apache.openjpa.meta.ClassMetaData;
  *
  * @author Abe White
  * @author Paulo Cristovão Filho
+ * @since 4.2.0
  */
 public class Left
     extends AbstractVal {

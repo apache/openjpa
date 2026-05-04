@@ -35,6 +35,8 @@ import jakarta.persistence.metamodel.PluralAttribute;
 
 /**
  * Implementation of {@link Subgraph}.
+ *
+ * @since 4.2.0
  */
 public class SubgraphImpl<T> implements Subgraph<T> {
 

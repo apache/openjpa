@@ -34,6 +34,8 @@ import org.apache.openjpa.meta.JavaTypes;
  * entity attribute type and database column type is handled by the
  * externalization path in {@code FieldMetaData.getExternalValue()} and
  * {@code FieldMetaData.getFieldValue()}.
+ *
+ * @since 4.2.0
  */
 public class ConverterValueHandler extends AbstractValueHandler {
 

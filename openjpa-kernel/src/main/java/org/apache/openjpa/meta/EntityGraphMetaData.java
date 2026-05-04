@@ -26,6 +26,8 @@ import java.util.List;
  * Instances are created during annotation parsing (before the Metamodel is
  * available) and later materialised into EntityGraph objects by the
  * persistence layer.
+ *
+ * @since 4.2.0
  */
 public class EntityGraphMetaData {
 

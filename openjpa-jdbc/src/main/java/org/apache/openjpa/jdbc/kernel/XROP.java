@@ -62,6 +62,8 @@ public class XROP implements BatchedResultObjectProvider {
      * Set OUT parameter positions (1-based) that may contain REF_CURSOR
      * result sets. Used on PostgreSQL where cursors are returned as OUT
      * parameters rather than via getResultSet().
+     *
+     * @since 4.2.0
      */
     public void setCursorOutParams(int[] positions) {
         _cursorOutParams = positions;

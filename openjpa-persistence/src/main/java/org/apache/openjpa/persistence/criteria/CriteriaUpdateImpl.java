@@ -48,8 +48,6 @@ import org.apache.openjpa.persistence.meta.MetamodelImpl;
  * CriteriaUpdate implementation for bulk update operations.
  *
  * @param <T> the entity type that is the target of the update
- *
- * @since 3.2.0
  */
 class CriteriaUpdateImpl<T> implements CriteriaUpdate<T> {
 

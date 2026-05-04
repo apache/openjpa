@@ -44,8 +44,6 @@ import org.apache.openjpa.persistence.meta.MetamodelImpl;
  * CriteriaDelete implementation for bulk delete operations.
  *
  * @param <T> the entity type that is the target of the delete
- *
- * @since 3.2.0
  */
 class CriteriaDeleteImpl<T> implements CriteriaDelete<T> {
 

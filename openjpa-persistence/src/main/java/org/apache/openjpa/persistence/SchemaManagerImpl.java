@@ -24,11 +24,12 @@ import jakarta.persistence.SchemaManager;
 import jakarta.persistence.SchemaValidationException;
 
 /**
- * Implements a no-op SchemaManager object that will throw 
+ * Implements a no-op SchemaManager object that will throw
  * UnsupportedOperationException if not concretelly implemented
  * by the given persistence layer.
- * 
+ *
  * @author Paulo Cristovão Filho
+ * @since 4.2.0
  */
 public class SchemaManagerImpl implements SchemaManager {
 	

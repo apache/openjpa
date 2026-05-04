@@ -1842,8 +1842,173 @@ public class TestTypesafeCriteria extends CriteriaTest {
     	Root<Person> c = cq.from(Person.class);
     	cq.where(cb.equal(cb.replace(c.get("name"), "ohn", "ack"), "Jack Fitzgerald Doe"));
     	em.createQuery(cq).getResultList();
-    	
+
     	assertEquivalence(cq, jpql);
+    }
+
+    /**
+     * Seeds CompUser data used by the JPA 3.2 Criteria set-operation
+     * and predicate-list tests. Wipes existing rows first to make the
+     * test self-contained.
+     */
+    private void seedCompUsers() {
+        em.getTransaction().begin();
+        em.createQuery("DELETE FROM CompUser u").executeUpdate();
+        em.createQuery("DELETE FROM Address a").executeUpdate();
+
+        Address[] add = new Address[]{
+            new Address("43 Sansome", "SF", "United-Kingdom", "94104"),
+            new Address("24 Mink", "ANTIOCH", "USA", "94513"),
+            new Address("23 Ogbete", "CoalCamp", "NIGERIA", "00000"),
+            new Address("10 Wilshire", "Worcester", "CANADA", "80080"),
+            new Address("23 Bellflower", "Ogui", null, "02000"),
+            new Address("22 Montgomery", "SF", null, "50054") };
+
+        CompUser[] users = new CompUser[]{
+            new CompUser("Seetha", "MAC", add[0], 36),
+            new CompUser("Shannon ", "PC", add[1], 36),
+            new CompUser("Ugo", "PC", add[2], 19),
+            new CompUser("_Jacob", "LINUX", add[3], 10),
+            new CompUser("Famzy", "UNIX", add[4], 29),
+            new CompUser("Shade", "UNIX", add[5], 23) };
+
+        for (CompUser user : users) {
+            em.persist(user);
+        }
+        em.getTransaction().commit();
+    }
+
+    public void testCriteriaUnion() {
+        seedCompUsers();
+
+        CriteriaQuery<String> q1 = cb.createQuery(String.class);
+        Root<CompUser> r1 = q1.from(CompUser.class);
+        q1.select(r1.<String>get("name"))
+            .where(cb.gt(r1.<Integer>get("age"), 30));
+
+        CriteriaQuery<String> q2 = cb.createQuery(String.class);
+        Root<CompUser> r2 = q2.from(CompUser.class);
+        q2.select(r2.<String>get("name"))
+            .where(cb.equal(r2.get("name"), "Ugo"));
+
+        jakarta.persistence.criteria.CriteriaSelect<String> union = cb.union(q1, q2);
+        List<?> result = em.createQuery(union).getResultList();
+
+        assertNotNull(result);
+        // Seetha(36), Shannon(36) from first + Ugo from second
+        assertEquals("Criteria UNION result count", 3, result.size());
+    }
+
+    public void testCriteriaUnionAll() {
+        seedCompUsers();
+
+        CriteriaQuery<String> q1 = cb.createQuery(String.class);
+        Root<CompUser> r1 = q1.from(CompUser.class);
+        q1.select(r1.<String>get("name"))
+            .where(cb.gt(r1.<Integer>get("age"), 25));
+
+        CriteriaQuery<String> q2 = cb.createQuery(String.class);
+        Root<CompUser> r2 = q2.from(CompUser.class);
+        q2.select(r2.<String>get("name"))
+            .where(cb.gt(r2.<Integer>get("age"), 30));
+
+        jakarta.persistence.criteria.CriteriaSelect<String> unionAll = cb.unionAll(q1, q2);
+        List<?> result = em.createQuery(unionAll).getResultList();
+
+        assertNotNull(result);
+        // age>25: 3, age>30: 2, UNION ALL keeps duplicates = 5
+        assertEquals("Criteria UNION ALL result count", 5, result.size());
+    }
+
+    public void testCriteriaExcept() {
+        seedCompUsers();
+
+        CriteriaQuery<String> q1 = cb.createQuery(String.class);
+        Root<CompUser> r1 = q1.from(CompUser.class);
+        q1.select(r1.<String>get("name"))
+            .where(cb.gt(r1.<Integer>get("age"), 20));
+
+        CriteriaQuery<String> q2 = cb.createQuery(String.class);
+        Root<CompUser> r2 = q2.from(CompUser.class);
+        q2.select(r2.<String>get("name"))
+            .where(cb.gt(r2.<Integer>get("age"), 30));
+
+        jakarta.persistence.criteria.CriteriaSelect<String> except = cb.except(q1, q2);
+        List<?> result = em.createQuery(except).getResultList();
+
+        assertNotNull(result);
+        // age>20 minus age>30 = Famzy(29), Shade(23)
+        assertEquals("Criteria EXCEPT result count", 2, result.size());
+    }
+
+    public void testCriteriaIntersect() {
+        seedCompUsers();
+
+        CriteriaQuery<String> q1 = cb.createQuery(String.class);
+        Root<CompUser> r1 = q1.from(CompUser.class);
+        q1.select(r1.<String>get("name"))
+            .where(cb.gt(r1.<Integer>get("age"), 20));
+
+        CriteriaQuery<String> q2 = cb.createQuery(String.class);
+        Root<CompUser> r2 = q2.from(CompUser.class);
+        q2.select(r2.<String>get("name"))
+            .where(cb.gt(r2.<Integer>get("age"), 30));
+
+        jakarta.persistence.criteria.CriteriaSelect<String> intersect = cb.intersect(q1, q2);
+        List<?> result = em.createQuery(intersect).getResultList();
+
+        assertNotNull(result);
+        // age>20 intersect age>30 = Seetha(36), Shannon(36)
+        assertEquals("Criteria INTERSECT result count", 2, result.size());
+    }
+
+    public void testCriteriaNullPrecedence() {
+        seedCompUsers();
+
+        CriteriaQuery<String> q = cb.createQuery(String.class);
+        Root<CompUser> r = q.from(CompUser.class);
+        q.select(r.<String>get("name"))
+            .orderBy(cb.asc(r.get("name"), jakarta.persistence.criteria.Nulls.FIRST));
+        List<String> result = em.createQuery(q).getResultList();
+
+        assertNotNull(result);
+        assertEquals(6, result.size());
+    }
+
+    public void testCriteriaListPredicates() {
+        seedCompUsers();
+
+        CriteriaQuery<CompUser> q = cb.createQuery(CompUser.class);
+        Root<CompUser> r = q.from(CompUser.class);
+        q.select(r);
+
+        java.util.List<jakarta.persistence.criteria.Predicate> preds = new java.util.ArrayList<>();
+        preds.add(cb.gt(r.<Integer>get("age"), 20));
+        preds.add(cb.like(r.<String>get("name"), "S%"));
+        q.where(preds);
+
+        List<CompUser> result = em.createQuery(q).getResultList();
+        assertNotNull(result);
+        // Seetha(36), Shannon(36), Shade(23) match age>20 AND name S%
+        assertEquals(3, result.size());
+    }
+
+    public void testCriteriaConcatList() {
+        seedCompUsers();
+
+        CriteriaQuery<String> q = cb.createQuery(String.class);
+        Root<CompUser> r = q.from(CompUser.class);
+
+        java.util.List<Expression<String>> parts = new java.util.ArrayList<>();
+        parts.add(r.<String>get("name"));
+        parts.add(cb.literal("-"));
+        parts.add(r.<String>get("computerName"));
+        q.select(cb.concat(parts))
+            .where(cb.equal(r.get("name"), "Seetha"));
+        List<String> result = em.createQuery(q).getResultList();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
     }
 
 }
