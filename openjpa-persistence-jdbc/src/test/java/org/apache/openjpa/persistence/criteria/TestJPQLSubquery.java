@@ -1156,9 +1156,16 @@ public class TestJPQLSubquery extends CriteriaTest {
             + "     ELSE false END from Order o2"
             + " where o.customer.id = o2.customer.id)";
 
-        String expectedSQL = "SELECT t0.id FROM CR_ODR t0 WHERE (t0.delivered = ("
-            + "SELECT  CASE  WHEN t1.quantity > ? THEN true WHEN t1.quantity = ? THEN false ELSE false END  "
-            + "FROM CR_ODR t1 WHERE (t0.CUSTOMER_ID = t1.CUSTOMER_ID)))";
+        String expectedSQL = null;
+		if (getDictionary() instanceof DerbyDictionary) {
+			expectedSQL = "SELECT t0.id FROM CR_ODR t0 WHERE (t0.delivered = ("
+					+ "SELECT  CASE  WHEN t1.quantity > ? THEN 1 WHEN t1.quantity = ? THEN 0 ELSE 0 END  "
+					+ "FROM CR_ODR t1 WHERE (t0.CUSTOMER_ID = t1.CUSTOMER_ID)))";
+		} else {
+			expectedSQL = "SELECT t0.id FROM CR_ODR t0 WHERE (t0.delivered = ("
+					+ "SELECT  CASE  WHEN t1.quantity > ? THEN true WHEN t1.quantity = ? THEN false ELSE false END  "
+					+ "FROM CR_ODR t1 WHERE (t0.CUSTOMER_ID = t1.CUSTOMER_ID)))";
+		}
         executeAndCompareSQL(jpql, expectedSQL);
 
         CriteriaQuery<Integer> q = cb.createQuery(Integer.class);
