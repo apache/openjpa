@@ -84,7 +84,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
      */
     protected OpenJPAEntityManagerFactorySPI createNamedEMF(Class<?>... types) {
         Map<Object, Object> map = new HashMap<>();
-        map.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true," + "SchemaAction='add')");
+        map.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true," + "SchemaAction='drop,add')");
         map.put("openjpa.jdbc.QuerySQLCache", "false");
         map.put("openjpa.DynamicEnhancementAgent", "false");
         map.put("openjpa.RuntimeUnenhancedClasses", "unsupported");

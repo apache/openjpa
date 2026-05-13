@@ -40,16 +40,12 @@ import org.apache.openjpa.persistence.criteria.Person_;
  */
 
 public class TestMultiselect extends CriteriaTest {
-    private static boolean initialized = false;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        if (!initialized) {
-            clearData();
-            createData();
-            initialized = true;
-        }
+        clearData();
+        createData();
     }
 
     void clearData() {

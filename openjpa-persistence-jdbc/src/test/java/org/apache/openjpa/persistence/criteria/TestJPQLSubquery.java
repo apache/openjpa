@@ -35,6 +35,7 @@ import jakarta.persistence.criteria.SetJoin;
 import jakarta.persistence.criteria.Subquery;
 
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
+import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 
 /**
  * Tests type-strict version of Criteria API.
@@ -1156,7 +1157,7 @@ public class TestJPQLSubquery extends CriteriaTest {
             + " where o.customer.id = o2.customer.id)";
 
         String expectedSQL = "SELECT t0.id FROM CR_ODR t0 WHERE (t0.delivered = ("
-            + "SELECT  CASE  WHEN t1.quantity > ? THEN 1 WHEN t1.quantity = ? THEN 0 ELSE 0 END  "
+            + "SELECT  CASE  WHEN t1.quantity > ? THEN true WHEN t1.quantity = ? THEN false ELSE false END  "
             + "FROM CR_ODR t1 WHERE (t0.CUSTOMER_ID = t1.CUSTOMER_ID)))";
         executeAndCompareSQL(jpql, expectedSQL);
 
@@ -1291,7 +1292,7 @@ public class TestJPQLSubquery extends CriteriaTest {
             + " where o.quantity > 10)";
         String useCast = getDictionary() instanceof DerbyDictionary
            ? "(CAST(t1.name AS VARCHAR(1000)) || CAST(? AS VARCHAR(1000))) "
-           : "CONCAT(t1.name,?) ";
+           : ((getDictionary() instanceof PostgresDictionary) ? "(t1.name||?) " :  "CONCAT(t1.name,?) ");
         String expectedSQL = "SELECT t2.id FROM CR_ODR t2 "
             + "INNER JOIN CR_CUST t3 ON t2.CUSTOMER_ID = t3.id WHERE (t3.name IN ("
             + "SELECT " + useCast
