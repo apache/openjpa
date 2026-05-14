@@ -34,7 +34,10 @@ import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.SetJoin;
 import jakarta.persistence.criteria.Subquery;
 
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
+import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
+import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 
 /**
@@ -1157,7 +1160,8 @@ public class TestJPQLSubquery extends CriteriaTest {
             + " where o.customer.id = o2.customer.id)";
 
         String expectedSQL = null;
-		if (getDictionary() instanceof DerbyDictionary) {
+        DBDictionary dict = getDictionary();
+		if (dict instanceof DerbyDictionary || dict instanceof MariaDBDictionary || dict instanceof MySQLDictionary) {
 			expectedSQL = "SELECT t0.id FROM CR_ODR t0 WHERE (t0.delivered = ("
 					+ "SELECT  CASE  WHEN t1.quantity > ? THEN 1 WHEN t1.quantity = ? THEN 0 ELSE 0 END  "
 					+ "FROM CR_ODR t1 WHERE (t0.CUSTOMER_ID = t1.CUSTOMER_ID)))";
