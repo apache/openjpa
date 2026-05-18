@@ -665,7 +665,7 @@
                 <dbcp.maxIdle>5</dbcp.maxIdle>
                 <dbcp.minIdle>0</dbcp.minIdle>
 
-                <mysql.server.version>5.7</mysql.server.version>
+                <mysql.server.version>8.0.32</mysql.server.version>
             </properties>
 
             <build>
