@@ -78,10 +78,10 @@
         <!-- common JDBC driver versions -->
         <derby.version>10.16.1.1</derby.version>
         <hsqldb.version>2.7.4</hsqldb.version>
-        <mysql.connector.version>9.3.0</mysql.connector.version>
-        <mariadb.connector.version>3.5.4</mariadb.connector.version>
-        <postgresql.connector.version>42.7.7</postgresql.connector.version>
-        <mssql.connector.version>12.10.0.jre11</mssql.connector.version>
+        <mysql.connector.version>9.7.0</mysql.connector.version>
+        <mariadb.connector.version>3.5.8</mariadb.connector.version>
+        <postgresql.connector.version>42.7.11</postgresql.connector.version>
+        <mssql.connector.version>13.4.0.jre11</mssql.connector.version>
 
         <!-- other common versions -->
         <kubernetes-client.version>6.13.3</kubernetes-client.version>
@@ -93,7 +93,7 @@
 
         <xbean.version>4.30</xbean.version>
         <bval.version>3.0.2</bval.version>
-        <log4j2.version>2.23.1</log4j2.version>
+        <log4j2.version>2.25.4</log4j2.version>
         <ant.version>1.10.15</ant.version>
 
         <jmock.version>2.13.1</jmock.version>
