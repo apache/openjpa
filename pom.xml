@@ -760,7 +760,7 @@
                 <dbcp.maxIdle>5</dbcp.maxIdle>
                 <dbcp.minIdle>0</dbcp.minIdle>
 
-                <mariadb.server.version>10.5</mariadb.server.version>
+                <mariadb.server.version>11.8</mariadb.server.version>
             </properties>
 
             <build>
@@ -771,7 +771,7 @@
                         <configuration>
                             <images>
                                 <image>
-                                    <name>mariadb/server:${mariadb.server.version}</name>
+                                    <name>mariadb:${mariadb.server.version}</name>
                                     <run>
                                         <env>
                                             <!-- mariadb still uses the old mysql env variables -->
