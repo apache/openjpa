@@ -93,7 +93,7 @@
 
         <xbean.version>4.28</xbean.version>
         <bval.version>3.0.2</bval.version>
-        <log4j2.version>2.25.3</log4j2.version>
+        <log4j2.version>2.25.4</log4j2.version>
         <ant.version>1.10.15</ant.version>
 
         <jmock.version>2.13.1</jmock.version>
