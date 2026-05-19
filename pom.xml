@@ -665,7 +665,7 @@
                 <dbcp.maxIdle>5</dbcp.maxIdle>
                 <dbcp.minIdle>0</dbcp.minIdle>
 
-                <mysql.server.version>5.7</mysql.server.version>
+                <mysql.server.version>8.0</mysql.server.version>
             </properties>
 
             <build>
@@ -682,6 +682,7 @@
                                             <MYSQL_DATABASE>${openjpa.mysql.dbname}</MYSQL_DATABASE>
                                             <MYSQL_USER>${connection.username}</MYSQL_USER>
                                             <MYSQL_PASSWORD>${connection.password}</MYSQL_PASSWORD>
+                                            <MYSQL_RANDOM_ROOT_PASSWORD>yes</MYSQL_RANDOM_ROOT_PASSWORD>
                                         </env>
                                         <ports>
                                             <port>${docker.external.mysql.port}:3306</port>

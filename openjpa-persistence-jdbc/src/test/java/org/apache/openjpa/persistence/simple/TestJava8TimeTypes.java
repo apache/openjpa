@@ -69,7 +69,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         // it still can fail in case will be started exactly at midnight
         entity2.setId(2);
         entity2.setOldDateField(new Date());
-        entity2.setLocalTimeField(LocalTime.now().minusSeconds(1)); // hopefully test will pass in 1 sec
+        entity2.setLocalTimeField(LocalTime.now().minusSeconds(30)); // hopefully test will pass in 30 sec
         entity2.setLocalDateField(LocalDate.parse(VAL_LOCAL_DATE));
         entity2.setLocalDateTimeField(LocalDateTime.parse(VAL_LOCAL_DATETIME));
         entity2.setOffsetTimeField(entity2.getLocalTimeField().atOffset(ZoneOffset.ofHours(-9)));
