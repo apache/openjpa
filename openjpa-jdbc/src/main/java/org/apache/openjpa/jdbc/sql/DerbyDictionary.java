@@ -69,7 +69,7 @@ public class DerbyDictionary
         supportsNullUniqueColumn = false;
 
         supportsComments = true;
-
+        
         // Derby does still not support 'WITH TIMEZONE' from the SQL92 standard
 
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{

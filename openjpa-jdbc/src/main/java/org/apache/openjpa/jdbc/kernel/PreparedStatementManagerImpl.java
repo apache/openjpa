@@ -120,14 +120,21 @@ public class PreparedStatementManagerImpl
         try {
             int count = executeUpdate(stmnt, sql, row);
             if (count != 1) {
-                logSQLWarnings(stmnt);
-                Object failed = row.getFailedObject();
-                if (failed != null)
-                    _exceptions.add(new OptimisticException(failed));
-                else if (row.getAction() == Row.ACTION_INSERT)
-                    throw new SQLException(_loc.get(
-                        "update-failed-no-failed-obj", String.valueOf(count),
-                        sql).getMessage());
+                // For DELETE actions, tolerate count=0 because the row may
+                // have already been removed by a database-level ON DELETE
+                // CASCADE triggered by a related row's deletion.
+                if (count == 0 && row.getAction() == Row.ACTION_DELETE) {
+                    // row already gone - not an error
+                } else {
+                    logSQLWarnings(stmnt);
+                    Object failed = row.getFailedObject();
+                    if (failed != null)
+                        _exceptions.add(new OptimisticException(failed));
+                    else if (row.getAction() == Row.ACTION_INSERT)
+                        throw new SQLException(_loc.get(
+                            "update-failed-no-failed-obj",
+                            String.valueOf(count), sql).getMessage());
+                }
             }
             if (autoAssignColNames != null)
                 populateAutoAssignCols(stmnt, autoAssign, autoAssignColNames,

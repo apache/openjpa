@@ -49,15 +49,15 @@ public class KubernetesTCPRemoteCommitProviderTest {
 
     private static final String LABEL = "testKey";
 
-    @SuppressWarnings("unchecked")
     private static List<String> getAddresses(final KubernetesTCPRemoteCommitProvider rcp)
             throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
 
         Field _addresses = TCPRemoteCommitProvider.class.getDeclaredField("_addresses");
         _addresses.setAccessible(true);
+        Iterable<? extends Object> addresses = (Iterable<? extends Object>) _addresses.get(rcp);
 
         List<String> result = new ArrayList<>();
-        for (Object address : ((Iterable<? extends Object>) _addresses.get(rcp))) {
+        for (Object address : addresses) {
             Field _address = address.getClass().getDeclaredField("_address");
             _address.setAccessible(true);
 

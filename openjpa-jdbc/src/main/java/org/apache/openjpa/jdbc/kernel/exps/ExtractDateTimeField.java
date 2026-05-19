@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
-import java.lang.Math;
 import java.sql.SQLException;
 
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;

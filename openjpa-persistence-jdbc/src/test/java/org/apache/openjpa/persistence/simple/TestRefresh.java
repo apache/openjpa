@@ -95,7 +95,7 @@ public class TestRefresh extends SingleEMTestCase {
         em.setProperty(JPAProperties.CACHE_RETRIEVE_MODE, CacheRetrieveMode.USE);
         Map<String, Object> properties = em.getProperties();
         if (!properties.containsKey(JPAProperties.CACHE_RETRIEVE_MODE)) {
-            System.err.println(properties);
+            // System.err.println(properties);
             fail("Expected " + JPAProperties.CACHE_RETRIEVE_MODE + " properties be returned");
         }
         Object mode = properties.get(JPAProperties.CACHE_RETRIEVE_MODE);
@@ -107,7 +107,7 @@ public class TestRefresh extends SingleEMTestCase {
         em.setProperty(JPAProperties.CACHE_STORE_MODE, CacheStoreMode.USE);
         Map<String, Object> properties = em.getProperties();
         if (!properties.containsKey(JPAProperties.CACHE_STORE_MODE)) {
-            System.err.println(properties);
+            // System.err.println(properties);
             fail("Expected " + JPAProperties.CACHE_STORE_MODE + " properties be returned");
         }
         Object mode = properties.get(JPAProperties.CACHE_STORE_MODE);
@@ -150,11 +150,11 @@ public class TestRefresh extends SingleEMTestCase {
         em.setProperty(JPAProperties.CACHE_RETRIEVE_MODE, CacheRetrieveMode.USE);
         Map<String, Object> properties = em.getProperties();
         if (!properties.containsKey(JPAProperties.CACHE_STORE_MODE)) {
-            System.err.println(properties);
+            // System.err.println(properties);
             fail("Expected " + JPAProperties.CACHE_STORE_MODE + " properties be returned");
         }
         if (!properties.containsKey(JPAProperties.CACHE_RETRIEVE_MODE)) {
-            System.err.println(properties);
+            // System.err.println(properties);
             fail("Expected " + JPAProperties.CACHE_RETRIEVE_MODE + " properties be returned");
         }
         Map<String, Object> paramProperties = new HashMap<>();
@@ -191,11 +191,11 @@ public class TestRefresh extends SingleEMTestCase {
         em.setProperty(JPAProperties.CACHE_RETRIEVE_MODE, CacheRetrieveMode.USE);
         Map<String, Object> properties = em.getProperties();
         if (!properties.containsKey(JPAProperties.CACHE_STORE_MODE)) {
-            System.err.println(properties);
+            // System.err.println(properties);
             fail("Expected " + JPAProperties.CACHE_STORE_MODE + " properties be returned");
         }
         if (!properties.containsKey(JPAProperties.CACHE_RETRIEVE_MODE)) {
-            System.err.println(properties);
+            // System.err.println(properties);
             fail("Expected " + JPAProperties.CACHE_RETRIEVE_MODE + " properties be returned");
         }
         Map<String, Object> paramProperties = new HashMap<>();

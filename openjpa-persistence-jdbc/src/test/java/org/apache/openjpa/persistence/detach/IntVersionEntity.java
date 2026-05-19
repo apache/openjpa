@@ -77,7 +77,4 @@ public class IntVersionEntity implements Serializable {
     public IntVersionEntity() {
     }
 
-    public void printE2() {
-        System.out.println("e2 - " + e2);
-    }
 }

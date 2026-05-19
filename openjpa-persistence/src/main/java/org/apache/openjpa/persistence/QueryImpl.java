@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence;
 import static org.apache.openjpa.kernel.QueryLanguages.LANG_PREPARED_SQL;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -28,6 +29,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
+import jakarta.persistence.CacheRetrieveMode;
+import jakarta.persistence.CacheStoreMode;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.NoResultException;
@@ -248,6 +251,7 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 
 	@Override
     public int getFirstResult() {
+		_em.assertNotCloseInvoked();
 		return asInt(_query.getStartRange());
 	}
 
@@ -266,6 +270,7 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 
 	@Override
     public int getMaxResults() {
+		_em.assertNotCloseInvoked();
 		return asInt(_query.getEndRange() - _query.getStartRange());
 	}
 
@@ -312,15 +317,16 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 		boolean queryFetchPlanUsed = pushQueryFetchPlan();
 		try {
 		    Object ob = execute();
-		    if (ob instanceof List) {
-			    List ret = (List) ob;
-			    if (ret instanceof ResultList) {
+		    if (ob instanceof List ret) {
+                if (ret instanceof ResultList) {
 			        RuntimeExceptionTranslator trans = PersistenceExceptions.getRollbackTranslator(_em);
+			        List delegate;
 			        if (_query.isDistinct()) {
-			            return new DistinctResultList((ResultList) ret, trans);
+			            delegate = new DistinctResultList((ResultList) ret, trans);
 			        } else {
-			            return new DelegatingResultList((ResultList) ret, trans);
+			            delegate = new DelegatingResultList((ResultList) ret, trans);
 			        }
+			        return new ArrayList<>(delegate);
 			    } else {
 				    return ret;
 			    }
@@ -389,13 +395,23 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
     public int executeUpdate() {
 		_em.assertNotCloseInvoked();
         Map<?,?> paramValues = getParameterValues();
-		if (_query.getOperation() == QueryOperations.OP_DELETE) {
-		   return asInt(paramValues.isEmpty() ? _query.deleteAll() : _query.deleteAll(paramValues));
+		try {
+			if (_query.getOperation() == QueryOperations.OP_DELETE) {
+				return asInt(paramValues.isEmpty()
+					? _query.deleteAll() : _query.deleteAll(paramValues));
+			}
+			if (_query.getOperation() == QueryOperations.OP_UPDATE) {
+				return asInt(paramValues.isEmpty()
+					? _query.updateAll() : _query.updateAll(paramValues));
+			}
+		} catch (RuntimeException re) {
+			_em.markRollbackOnException(re);
+			throw re;
 		}
-		if (_query.getOperation() == QueryOperations.OP_UPDATE) {
-	       return asInt(paramValues.isEmpty() ? _query.updateAll() : _query.updateAll(paramValues));
-		}
-        throw new InvalidStateException(_loc.get("not-update-delete-query", getQueryString()), null, null, false);
+        RuntimeException ex = new InvalidStateException(
+            _loc.get("not-update-delete-query", getQueryString()), null, null, false);
+        _em.markRollbackOnException(ex);
+        throw ex;
 	}
 
 	/**
@@ -411,6 +427,7 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 
 	@Override
     public FlushModeType getFlushMode() {
+		_em.assertNotCloseInvoked();
 		return EntityManagerImpl.fromFlushBeforeQueries(_query
                 .getFetchConfiguration().getFlushBeforeQueries());
 	}
@@ -431,9 +448,20 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
         if (JPQLParser.LANG_JPQL.equals(language)
          || QueryLanguages.LANG_PREPARED_SQL.equals(language)
          || OpenJPACriteriaBuilder.LANG_CRITERIA.equals(language)) {
-            return;
         } else {
             throw new IllegalStateException(_loc.get("not-jpql-or-criteria-query").getMessage());
+        }
+	}
+
+	/**
+	 * Asserts that this query is a SELECT query. Per JPA spec,
+	 * getLockMode() and setLockMode() must throw IllegalStateException
+	 * for UPDATE or DELETE queries.
+	 */
+	void assertSelectQuery() {
+        if (_query.getOperation() != QueryOperations.OP_SELECT) {
+            throw new IllegalStateException(_loc.get("not-select-query",
+                getQueryString()).getMessage());
         }
 	}
 
@@ -450,7 +478,9 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 
     @Override
     public LockModeType getLockMode() {
+        _em.assertNotCloseInvoked();
         assertJPQLOrCriteriaQuery();
+        assertSelectQuery();
         return getFetchPlan().getReadLockMode();
     }
 
@@ -466,6 +496,7 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
             ignorePreparedQuery();
         }
         assertJPQLOrCriteriaQuery();
+        assertSelectQuery();
        getFetchPlan().setReadLockMode(lockMode);
        return this;
     }
@@ -493,6 +524,7 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
     //TODO: JPA 2.0 Hints that are not set to FetchConfiguration
     @Override
     public Map<String, Object> getHints() {
+        _em.assertNotCloseInvoked();
         if (_hintHandler == null)
             return Collections.emptyMap();
         return _hintHandler.getHints();
@@ -688,4 +720,80 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
         String result = _query.getQueryString();
         return result != null ? result : _id;
     }
+
+	@Override
+	public X getSingleResultOrNull() {
+		_em.assertNotCloseInvoked();
+		setHint(QueryHints.HINT_RESULT_COUNT, 1);
+		boolean queryFetchPlanUsed = pushQueryFetchPlan();
+		// Two rows is enough to distinguish none/one/more-than-one;
+		// don't override a tighter user-supplied limit.
+		int originalMax = getMaxResults();
+		if (originalMax > 2) {
+			setMaxResults(2);
+		}
+		try {
+			List result = getResultList();
+			if (result == null || result.isEmpty())
+				return null;
+			if (result.size() > 1)
+				throw new NonUniqueResultException(_loc.get("non-unique-result",
+						getQueryString(), result.size()).getMessage());
+			return (X) result.get(0);
+		} finally {
+			if (originalMax > 2) {
+				setMaxResults(originalMax);
+			}
+			popQueryFetchPlan(queryFetchPlanUsed);
+		}
+	}
+
+	@Override
+	public TypedQuery<X> setCacheRetrieveMode(CacheRetrieveMode cacheRetrieveMode) {
+		setHint(JPAProperties.CACHE_RETRIEVE_MODE, cacheRetrieveMode);
+		return this;
+	}
+
+	@Override
+	public CacheRetrieveMode getCacheRetrieveMode() {
+		Object val = getHints().get(JPAProperties.CACHE_RETRIEVE_MODE);
+		if (val instanceof CacheRetrieveMode) {
+			return (CacheRetrieveMode) val;
+		}
+		return CacheRetrieveMode.USE;
+	}
+
+	@Override
+	public CacheStoreMode getCacheStoreMode() {
+		Object val = getHints().get(JPAProperties.CACHE_STORE_MODE);
+		if (val instanceof CacheStoreMode) {
+			return (CacheStoreMode) val;
+		}
+		return CacheStoreMode.USE;
+	}
+
+	@Override
+	public TypedQuery<X> setCacheStoreMode(CacheStoreMode cacheStoreMode) {
+		setHint(JPAProperties.CACHE_STORE_MODE, cacheStoreMode);
+		return this;
+	}
+
+	@Override
+	public Integer getTimeout() {
+		Object val = getHints().get(JPAProperties.QUERY_TIMEOUT);
+		if (val instanceof Integer) {
+			return (Integer) val;
+		}
+		if (val instanceof Number) {
+			return ((Number) val).intValue();
+		}
+		return null;
+	}
+
+	@Override
+	public TypedQuery<X> setTimeout(Integer timeout) {
+		setHint(JPAProperties.QUERY_TIMEOUT, timeout);
+		return this;
+	}
+	
 }

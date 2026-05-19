@@ -554,6 +554,16 @@ public class InMemoryExpressionFactory
     public Value getDateTimePart(DateTimeExtractPart part, Value value) {
         return new ExtractDateTimePart(part, (Val) value);
     }
+    
+    @Override
+    public Value newTypecastAsString(Value value) {
+    	return new TypecastAsString((Val) value);
+    }
+    
+    @Override
+    public Value newTypecastAsNumber(Value value, Class<? extends Number> numberType) {
+    	return new TypecastAsNumber((Val) value, numberType);
+    }
 
     @Override
     public Parameter newParameter(Object name, Class type) {
@@ -705,6 +715,21 @@ public class InMemoryExpressionFactory
     public Value substring(Value val1, Value val2) {
         return new Substring((Val) val1, (Val) val2);
     }
+    
+    @Override
+    public Value left(Value str, Value length) {
+    	return new Left((Val) str, (Val) length);
+    }
+    
+    @Override
+    public Value right(Value str, Value length) {
+    	return new Right((Val) str, (Val) length);
+    }
+    
+    @Override
+    public Value replace(Value orig, Value pattern, Value replacement) {
+    	return new Replace((Val) orig, (Val) pattern, (Val) replacement);
+    }
 
     @Override
     public Value toUpperCase(Value val) {
@@ -789,6 +814,16 @@ public class InMemoryExpressionFactory
     @Override
     public Value getObjectId(Value val) {
         return new GetObjectId((Val) val);
+    }
+    
+    @Override
+    public Value getNativeObjectId(Value val) {
+    	return new GetObjectId((Val) val);
+    }
+    
+    @Override
+    public Value version(Value val) {
+    	return new VersionVal((Val) val);
     }
 
     /**

@@ -19,8 +19,6 @@
 package org.apache.openjpa.lib.util;
 
 import java.lang.reflect.Field;
-import java.security.AccessController;
-import java.security.PrivilegedExceptionAction;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -37,44 +35,39 @@ public class TestUUIDGenerator {
 
     @Test
     public void testUniqueString() {
-        Set seen = new HashSet();
+        Set<String> seen = new HashSet<>();
         for (int i = 0; i < 10000; i++)
-            assertTrue(seen.add(
-                UUIDGenerator.nextString(UUIDGenerator.TYPE1)));
+            assertTrue(seen.add(UUIDGenerator.nextString(UUIDGenerator.TYPE1)));
     }
 
     @Test
     public void testUniqueHex() {
-        Set seen = new HashSet();
+        Set<String> seen = new HashSet<>();
         for (int i = 0; i < 10000; i++)
-            assertTrue(seen.add(
-                UUIDGenerator.nextHex(UUIDGenerator.TYPE1)));
+            assertTrue(seen.add(UUIDGenerator.nextHex(UUIDGenerator.TYPE1)));
     }
 
     @Test
     public void testUniqueType4String() {
-        Set seen = new HashSet();
+        Set<String> seen = new HashSet<>();
         for (int i = 0; i < 10000; i++)
-            assertTrue(seen.add(
-                UUIDGenerator.nextString(UUIDGenerator.TYPE4)));
+            assertTrue(seen.add(UUIDGenerator.nextString(UUIDGenerator.TYPE4)));
     }
 
     @Test
     public void testUniqueType4Hex() {
-        Set seen = new HashSet();
+        Set<String> seen = new HashSet<>();
         for (int i = 0; i < 10000; i++)
-            assertTrue(seen.add(
-                UUIDGenerator.nextHex(UUIDGenerator.TYPE4)));
+            assertTrue(seen.add(UUIDGenerator.nextHex(UUIDGenerator.TYPE4)));
     }
 
     @Test
     public void testUniqueMixedTypesHex() {
-        Set seen = new HashSet();
+        Set<String> seen = new HashSet<>();
         for (int i = 0; i < 10000; i++) {
             int type = (i % 2 == 0) ?
                 UUIDGenerator.TYPE4 : UUIDGenerator.TYPE1;
-            assertTrue(seen.add(
-                UUIDGenerator.nextHex(type)));
+            assertTrue(seen.add(UUIDGenerator.nextHex(type)));
         }
     }
 
@@ -92,33 +85,27 @@ public class TestUUIDGenerator {
     public void testInitType1MultiThreaded() throws Exception {
         // This test method depends IP and RANDOM in UUIDGenerator to be null
         // and type1Initialized to be false. Using reflection to ensure that
-        // those fields are null. Wrap this  method in doPrivledgedAction so it
-        // doesn't fail when running with security.
-        AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
-            @Override
-            public Object run() throws Exception {
-                Class uuid = UUIDGenerator.class;
-                Field[] fields = uuid.getDeclaredFields();
-                for (Field f : fields) {
-                    if (f.getName().equals("type1Initialized")) {
-                        f.setAccessible(true);
-                        f.set(null, false);
-                    } else if (f.getName().equals("IP") || f.getName().equals("RANDOM")) {
-                        f.setAccessible(true);
-                        f.set(null, null);
-                    }
-                }
-                Thread t = new Thread() {
-                    @Override
-                    public void run() {
-                        UUIDGenerator.createType1();
-                    }
-                };
-
-                t.start();
-                UUIDGenerator.createType1();
-                return null;
+        // those fields are null.
+        Class<UUIDGenerator> uuid = UUIDGenerator.class;
+        Field[] fields = uuid.getDeclaredFields();
+        for (Field f : fields) {
+            if (f.getName().equals("type1Initialized")) {
+                f.setAccessible(true);
+                f.set(null, false);
+            } else if (f.getName().equals("IP") || f.getName().equals("RANDOM")) {
+                f.setAccessible(true);
+                f.set(null, null);
             }
-        });
-    }// end testInitType1MultiThreaded
+        }
+        Thread t = new Thread() {
+            @Override
+            public void run() {
+                UUIDGenerator.createType1();
+            }
+        };
+
+        t.start();
+        UUIDGenerator.createType1();
+    }
+    
 }

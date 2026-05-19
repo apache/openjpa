@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.datacache;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import jakarta.persistence.EntityManagerFactory;
 
@@ -31,8 +32,9 @@ import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectE;
 
-public class TestQueryResultSize
-    extends AbstractTestCase {
+public class TestQueryResultSize extends AbstractTestCase {
+	
+	private static final Logger logger = Logger.getLogger(TestQueryResultSize.class.getCanonicalName());
 
     public TestQueryResultSize(String test) {
         super(test, "datacachecactusapp");
@@ -43,8 +45,7 @@ public class TestQueryResultSize
 
     @Override
     public void setUp() {
-        System.out.println("****Deleted Records "
-            + deleteAll(CacheObjectE.class));
+        logger.fine("****Deleted Records " + deleteAll(CacheObjectE.class));
         deleteAll(CascadeParent.class);
         deleteAll(CascadeChild.class);
         Map propsMap = new HashMap();
@@ -72,8 +73,7 @@ public class TestQueryResultSize
         assertEquals(0, getQueryCacheSize());
         endEm(pm);
 
-        System.out.println("****Deleted Records " +
-            deleteAll(CacheObjectE.class));
+        logger.fine("****Deleted Records " + deleteAll(CacheObjectE.class));
     }
 
     private int getQueryCacheSize() {

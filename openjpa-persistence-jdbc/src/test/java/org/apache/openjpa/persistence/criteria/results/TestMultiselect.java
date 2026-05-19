@@ -40,16 +40,12 @@ import org.apache.openjpa.persistence.criteria.Person_;
  */
 
 public class TestMultiselect extends CriteriaTest {
-    private static boolean initialized = false;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        if (!initialized) {
-            clearData();
-            createData();
-            initialized = true;
-        }
+        clearData();
+        createData();
     }
 
     void clearData() {
@@ -272,12 +268,11 @@ public class TestMultiselect extends CriteriaTest {
     }
 
     /**
-     * An element of the list passed to the multiselect method
+     * JPA 3.2 Section 6.9.1: An element of the list passed to the multiselect method
      * must not be a tuple- or array-valued compound selection item.
-     *
+     * Verify that nesting tuples throws IllegalArgumentException.
      */
-    // This test is retired because we are now supporting arbitrary nesting
-    public void xtestTupleCanNotBeNested() {
+    public void testTupleCanNotBeNested() {
         CriteriaQuery<Tuple> q = cb.createTupleQuery();
         Root<Person> p = q.from(Person.class);
 
@@ -286,9 +281,9 @@ public class TestMultiselect extends CriteriaTest {
 
         try {
             cb.tuple(tuple1, tuple2);
-            fail("Expected exception while nesting tuples");
+            fail("Expected IllegalArgumentException when nesting tuple compound selections");
         } catch (IllegalArgumentException e) {
-
+            // expected per JPA 3.2 spec
         }
     }
 
@@ -358,25 +353,22 @@ public class TestMultiselect extends CriteriaTest {
         assertResult(q, Foo.class);
     }
 
+    /**
+     * JPA 3.2 Section 6.9.1: compound selections (tuple, array) must not
+     * contain other compound selections. Nesting cb.tuple() inside cb.array()
+     * must throw IllegalArgumentException.
+     */
     public void testDeeplyNestedShape() {
         CriteriaQuery<Tuple> q = cb.createQuery(Tuple.class);
         Root<Foo> foo = q.from(Foo.class);
-        q.multiselect(cb.construct(Foo.class, foo.get(Foo_.flong), foo.get(Foo_.fstring)),
-                 cb.tuple(foo, cb.array(foo.get(Foo_.fint), cb.tuple(foo.get(Foo_.fstring)))));
-        List<Tuple> result = em.createQuery(q).getResultList();
-        assertFalse(result.isEmpty());
-        Tuple tuple = result.get(0);
 
-        assertEquals(Foo.class,   tuple.get(0).getClass());
-        assertTrue(Tuple.class.isAssignableFrom(tuple.get(1).getClass()));
-        Tuple tuple2 = (Tuple)tuple.get(1);
-        assertEquals(Foo.class,   tuple2.get(0).getClass());
-        assertEquals(Object[].class, tuple2.get(1).getClass());
-        Object[] level3 = (Object[])tuple2.get(1);
-        assertEquals(Integer.class, level3[0].getClass());
-        assertTrue(Tuple.class.isAssignableFrom(level3[1].getClass()));
-        Tuple tuple4 = (Tuple)level3[1];
-        assertEquals(String.class, tuple4.get(0).getClass());
+        try {
+            cb.array(foo.get(Foo_.fint), cb.tuple(foo.get(Foo_.fstring)));
+            fail("Expected IllegalArgumentException when nesting tuple inside array");
+        } catch (IllegalArgumentException e) {
+            // expected per JPA 3.2 spec - compound selections cannot contain
+            // other compound selections
+        }
     }
 
     public void testConstructorFailsFast() {
@@ -387,14 +379,14 @@ public class TestMultiselect extends CriteriaTest {
             fail("Expected IllegalArgumentException becuase Foo(long) is not a valid constructor");
         } catch (IllegalArgumentException e) {
             // good -- but print the error message to check it is informative enough
-            System.err.println(e);
+            e.printStackTrace();
         }
         try {
             q.multiselect(cb.construct(Foo.class));
             fail("Expected IllegalArgumentException becuase Foo() is not a valid constructor");
         } catch (IllegalArgumentException e) {
             // good -- but print the error message to check it is informative enough
-            System.err.println(e);
+            e.printStackTrace();
         }
 
     }

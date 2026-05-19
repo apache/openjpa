@@ -402,5 +402,5 @@ public class TestStringCriteria extends CriteriaTest {
 
         assertEquivalence(q, jpql);
     }
-
+    
 }

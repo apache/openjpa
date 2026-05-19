@@ -31,11 +31,13 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
+import java.time.Year;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -591,6 +593,38 @@ public abstract class AbstractResult
             return (OffsetDateTime) val;
 
         return OffsetDateTime.parse(val.toString());
+    }
+
+    @Override
+    public Instant getInstant(Object obj) throws SQLException {
+        return getInstantInternal(translate(obj, null), null);
+    }
+
+    protected Instant getInstantInternal(Object obj, Joins joins) throws SQLException {
+        Object val = checkNull(getObjectInternal(obj, JavaTypes.INSTANT, null, joins));
+        if (val == null)
+            return null;
+        if (val instanceof Instant)
+            return (Instant) val;
+
+        return Instant.parse(val.toString());
+    }
+
+    @Override
+    public Year getYear(Object obj) throws SQLException {
+        return getYearInternal(translate(obj, null), null);
+    }
+
+    protected Year getYearInternal(Object obj, Joins joins) throws SQLException {
+        Object val = checkNull(getObjectInternal(obj, JavaTypes.YEAR, null, joins));
+        if (val == null)
+            return null;
+        if (val instanceof Year)
+            return (Year) val;
+        if (val instanceof Number)
+            return Year.of(((Number) val).intValue());
+
+        return Year.parse(val.toString());
     }
 
     @Override

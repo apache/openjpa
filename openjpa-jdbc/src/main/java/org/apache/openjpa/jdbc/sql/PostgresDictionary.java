@@ -18,13 +18,14 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.security.AccessController;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -45,6 +46,8 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
+import java.util.UUID;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.Normalizer;
@@ -57,7 +60,6 @@ import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.lib.jdbc.DelegatingConnection;
 import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
 import org.apache.openjpa.lib.jdbc.ReportingSQLException;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.InternalException;
@@ -167,46 +169,41 @@ public class PostgresDictionary extends DBDictionary {
         longVarcharTypeName = "TEXT";
         doubleTypeName = "DOUBLE PRECISION";
         timestampTypeName = "TIMESTAMP";
-        fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
-            "BOOL", "BYTEA", "NAME", "INT8", "INT2", "INT2VECTOR", "INT4",
-            "REGPROC", "TEXT", "OID", "TID", "XID", "CID", "OIDVECTOR",
-            "SET", "FLOAT4", "FLOAT8", "ABSTIME", "RELTIME", "TINTERVAL",
-            "MONEY",
-        }));
+        fixedSizeTypeNameSet.addAll(Arrays.asList("BOOL", "BYTEA", "NAME", "INT8", "INT2", "INT2VECTOR", "INT4",
+                "REGPROC", "TEXT", "OID", "TID", "XID", "CID", "OIDVECTOR",
+                "SET", "FLOAT4", "FLOAT8", "ABSTIME", "RELTIME", "TINTERVAL",
+                "MONEY"));
         booleanRepresentation = BooleanRepresentationFactory.BOOLEAN;
 
         supportsLockingWithDistinctClause = false;
         supportsLockingWithOuterJoin = false;
 
-        reservedWordSet.addAll(Arrays.asList(new String[]{
-            "ABORT", "ACL", "AGGREGATE", "APPEND", "ARCHIVE", "ARCH_STORE",
-            "BACKWARD", "BINARY", "CHANGE", "CLUSTER", "COPY", "DATABASE",
-            "DELIMITER", "DELIMITERS", "DO", "EXPLAIN", "EXTEND",
-            "FORWARD", "HEAVY", "INDEX", "INHERITS", "ISNULL", "LIGHT",
-            "LISTEN", "LOAD", "MERGE", "NOTHING", "NOTIFY", "NOTNULL",
-            "OID", "OIDS", "PURGE", "RECIPE", "RENAME", "REPLACE",
-            "RETRIEVE", "RETURNS", "RULE", "SETOF", "STDIN", "STDOUT",
-            "STORE", "VACUUM", "VERBOSE", "VERSION",
-        }));
+        reservedWordSet.addAll(Arrays.asList("ABORT", "ACL", "AGGREGATE", "APPEND", "ARCHIVE", "ARCH_STORE",
+                "BACKWARD", "BINARY", "CHANGE", "CLUSTER", "COPY", "DATABASE",
+                "DELIMITER", "DELIMITERS", "DO", "EXPLAIN", "EXTEND",
+                "FORWARD", "HEAVY", "INDEX", "INHERITS", "ISNULL", "LIGHT",
+                "LISTEN", "LOAD", "MERGE", "NOTHING", "NOTIFY", "NOTNULL",
+                "OID", "OIDS", "PURGE", "RECIPE", "RENAME", "REPLACE",
+                "RETRIEVE", "RETURNS", "RULE", "SETOF", "STDIN", "STDOUT",
+                "STORE", "VACUUM", "VERBOSE", "VERSION"));
 
         // reservedWordSet subset that CANNOT be used as valid column names
         // (i.e., without surrounding them with double-quotes)
         // generated at 2021-05-03T10:44:58.562 via org.apache.openjpa.reservedwords.ReservedWordsIT
-        invalidColumnWordSet.addAll(Arrays.asList(new String[] {
-            "ALL", "ANALYSE", "ANALYZE", "AND", "ANY", "ARRAY", "AS", "ASC", "ASYMMETRIC", "AUTHORIZATION", "BINARY", "BOTH",
-            "CASE", "CAST", "CHECK", "COLLATE", "COLLATION", "COLUMN", "CONSTRAINT", "CREATE", "CROSS", "CURRENT_DATE", "CURRENT_ROLE",
-            "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER", "DEFAULT", "DEFERRABLE", "DESC", "DISTINCT", "DO", "ELSE",
-            "END", "END-EXEC", "EXCEPT", "FALSE", "FETCH", "FOR", "FOREIGN", "FREEZE", "FROM", "FULL", "GRANT", "GROUP", "HAVING",
-            "ILIKE", "IN", "INITIALLY", "INNER", "INTERSECT", "INTO", "IS", "ISNULL", "JOIN", "LATERAL", "LEADING", "LEFT",
-            "LIKE", "LIMIT", "LOCALTIME", "LOCALTIMESTAMP", "NATURAL", "NOT", "NOTNULL", "NULL", "OFFSET", "ON", "ONLY", "OR",
-            "ORDER", "OUTER", "OVERLAPS", "PLACING", "PRIMARY", "REFERENCES", "RIGHT", "SELECT", "SESSION_USER", "SIMILAR",
-            "SOME", "SYMMETRIC", "TABLE", "TABLESAMPLE", "THEN", "TO", "TRAILING", "TRUE", "UNION", "UNIQUE", "USER", "USING",
-            "VERBOSE", "WHEN", "WHERE", "WINDOW", "WITH",
-            // end generated.
-            // The following keywords used to be defined as reserved words in the past, but now seem to work
-            // we still add them for compat reasons
-            "BETWEEN",
-        }));
+        invalidColumnWordSet.addAll(Arrays.asList("ALL", "ANALYSE", "ANALYZE", "AND", "ANY", "ARRAY",
+                "AS", "ASC", "ASYMMETRIC", "AUTHORIZATION", "BINARY", "BOTH",
+                "CASE", "CAST", "CHECK", "COLLATE", "COLLATION", "COLUMN", "CONSTRAINT", "CREATE", "CROSS", "CURRENT_DATE", "CURRENT_ROLE",
+                "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER", "DEFAULT", "DEFERRABLE", "DESC", "DISTINCT", "DO", "ELSE",
+                "END", "END-EXEC", "EXCEPT", "FALSE", "FETCH", "FOR", "FOREIGN", "FREEZE", "FROM", "FULL", "GRANT", "GROUP", "HAVING",
+                "ILIKE", "IN", "INITIALLY", "INNER", "INTERSECT", "INTO", "IS", "ISNULL", "JOIN", "LATERAL", "LEADING", "LEFT",
+                "LIKE", "LIMIT", "LOCALTIME", "LOCALTIMESTAMP", "NATURAL", "NOT", "NOTNULL", "NULL", "OFFSET", "ON", "ONLY", "OR",
+                "ORDER", "OUTER", "OVERLAPS", "PLACING", "PRIMARY", "REFERENCES", "RIGHT", "SELECT", "SESSION_USER", "SIMILAR",
+                "SOME", "SYMMETRIC", "TABLE", "TABLESAMPLE", "THEN", "TO", "TRAILING", "TRUE", "UNION", "UNIQUE", "USER", "USING",
+                "VERBOSE", "WHEN", "WHERE", "WINDOW", "WITH",
+                // end generated.
+                // The following keywords used to be defined as reserved words in the past, but now seem to work
+                // we still add them for compat reasons
+                "BETWEEN"));
 
         _timestampTypes.add("ABSTIME");
         _timestampTypes.add("TIMESTAMP");
@@ -221,6 +218,47 @@ public class PostgresDictionary extends DBDictionary {
     }
 
 
+
+    /**
+     * Returns {@code DROP SEQUENCE IF EXISTS <name>}.
+     * <p>
+     * When a sequence is owned by an IDENTITY column, PostgreSQL drops the
+     * sequence as part of the owning table/column drop. OpenJPA's schema
+     * reflection may still report the sequence as existing (stale metadata
+     * after a table drop). Using {@code IF EXISTS} makes the subsequent
+     * DROP SEQUENCE idempotent so refresh / truncate actions don't fail
+     * with {@code sequence "..." does not exist} on PostgreSQL 17.
+     */
+    @Override
+    public String[] getDropSequenceSQL(org.apache.openjpa.jdbc.schema.Sequence seq) {
+        return new String[]{ "DROP SEQUENCE IF EXISTS " + getFullName(seq) };
+    }
+
+    /**
+     * The PostgreSQL JDBC driver reports native {@code boolean} / {@code bool}
+     * columns as {@link Types#BIT}. OpenJPA's generic schema-diff logic then
+     * treats the column as a numeric type and silently coerces VARCHAR
+     * mappings to "upgrade" it, defeating {@code SchemaManager.validate()}
+     * detection of genuine VARCHAR ↔ BOOLEAN schema drift.
+     * <p>
+     * Re-map reflected {@code bool}/{@code boolean} columns to
+     * {@link Types#BOOLEAN} so the column-type comparison treats them as
+     * their true native type.
+     */
+    @Override
+    protected Column newColumn(ResultSet colMeta) throws SQLException {
+        Column col = super.newColumn(colMeta);
+        if (col.getType() == Types.BIT) {
+            String typeName = col.getTypeIdentifier() == null ? null
+                    : col.getTypeIdentifier().getName();
+            if (typeName != null
+                    && ("bool".equalsIgnoreCase(typeName)
+                            || "boolean".equalsIgnoreCase(typeName))) {
+                col.setType(Types.BOOLEAN);
+            }
+        }
+        return col;
+    }
 
     @Override
     public Date getDate(ResultSet rs, int column)
@@ -301,6 +339,78 @@ public class PostgresDictionary extends DBDictionary {
     }
 
     /**
+     * In TCK (SpecCompliantSchemaGeneration) mode, force delimitedCase
+     * to LOWER so that identifiers from annotations like @Table(name="ITEM")
+     * are never quoted — matching the lowercase tables created by TCK DDL.
+     * In normal mode, let the base class detect the correct case from
+     * the JDBC driver, which for PostgreSQL is PRESERVE (quoted
+     * identifiers keep their original case).
+     */
+    @Override
+    protected void setDelimitedCase(java.sql.DatabaseMetaData metaData) {
+        if (conf != null && conf.isSpecCompliantSchemaGeneration()) {
+            delimitedCase = SCHEMA_CASE_LOWER;
+        } else {
+            super.setDelimitedCase(metaData);
+        }
+    }
+
+    /**
+     * Return unquoted identifier names. PostgreSQL lowercases unquoted
+     * identifiers, so CREATE TABLE ITEM creates lowercase "item".
+     * Quoting would create case-sensitive "ITEM" that differs from
+     * DDL-created lowercase tables.
+     */
+    @Override
+    public String toDBName(DBIdentifier name) {
+        if (DBIdentifier.isNull(name)) {
+            return null;
+        }
+        String n = name.getName();
+        // Strip quote characters from delimited identifiers, but only
+        // when the unquoted form is a valid unquoted SQL identifier.
+        // PostgreSQL unquoted identifiers must start with a letter or
+        // underscore and contain only letters, digits, and underscores.
+        // Identifiers with spaces, digits at start, or special chars
+        // must keep their quotes to remain valid in PostgreSQL DDL.
+        if (n != null && n.length() > 2
+                && n.charAt(0) == '"' && n.charAt(n.length() - 1) == '"') {
+            String unquoted = n.substring(1, n.length() - 1);
+            if (isValidUnquotedIdentifier(unquoted)) {
+                n = unquoted;
+            }
+        }
+        return n;
+    }
+
+    /**
+     * Check if an identifier is valid as an unquoted SQL identifier
+     * in PostgreSQL. Must start with a letter or underscore, and
+     * contain only letters, digits, and underscores.
+     */
+    private boolean isValidUnquotedIdentifier(String id) {
+        if (id == null || id.isEmpty()) {
+            return false;
+        }
+        char first = id.charAt(0);
+        if (!Character.isLetter(first) && first != '_') {
+            return false;
+        }
+        for (int i = 1; i < id.length(); i++) {
+            char c = id.charAt(i);
+            if (!Character.isLetterOrDigit(c) && c != '_') {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public String toDBName(DBIdentifier name, boolean delimit) {
+        return toDBName(name);
+    }
+
+    /**
      * Handle XML and bytea/oid columns in a PostgreSQL way.
      */
     @Override
@@ -316,6 +426,122 @@ public class PostgresDictionary extends DBDictionary {
         if (colType == Types.BLOB)
             colType = Types.BINARY;
         stmnt.setNull(idx, colType);
+    }
+
+    /**
+     * PostgreSQL cannot implicitly cast between its native UUID type and
+     * VARCHAR in either direction. When a UUID column is mapped as VARCHAR
+     * (e.g. external DDL), sending a native UUID via setObject(Types.OTHER)
+     * causes "operator does not exist: character varying = uuid".
+     *
+     * By converting the UUID to its string form and sending it as Types.OTHER
+     * (which the PG JDBC driver maps to PostgreSQL's "unknown" pseudo-type),
+     * PostgreSQL resolves the actual type from the column context — this works
+     * for both native UUID columns and VARCHAR columns.
+     */
+    @Override
+    public void setUnknown(PreparedStatement stmnt, int idx, Column col, Object val) throws SQLException {
+        if (val instanceof UUID) {
+            stmnt.setObject(idx, val.toString(), Types.OTHER);
+            return;
+        }
+        super.setUnknown(stmnt, idx, col, val);
+    }
+
+    /**
+     * Override typed UUID parameter binding for PostgreSQL.
+     * @see #setUnknown(PreparedStatement, int, Column, Object)
+     */
+    @Override
+    public void setTyped(PreparedStatement stmnt, int idx, Object val,
+        Column col, int type, JDBCStore store) throws SQLException {
+        if (type == JavaTypes.UUID_OBJ && val != null) {
+            stmnt.setObject(idx, val.toString(), Types.OTHER);
+            return;
+        }
+        super.setTyped(stmnt, idx, val, col, type, store);
+    }
+
+    /**
+     * Handle OID columns properly. PostgreSQL OID columns store Large Object
+     * references. The default setBytes() sends data in bytea format, which
+     * PostgreSQL rejects for OID columns with:
+     * "column X is of type oid but expression is of type bytea".
+     * Detect OID parameters via ParameterMetaData and use the Blob API
+     * (which the PG JDBC driver handles via the Large Object protocol).
+     */
+    @Override
+    public void setBytes(PreparedStatement stmnt, int idx, byte[] val,
+        Column col) throws SQLException {
+        if (val != null) {
+            try {
+                String paramTypeName = stmnt.getParameterMetaData()
+                    .getParameterTypeName(idx);
+                if ("oid".equalsIgnoreCase(paramTypeName)) {
+                    stmnt.setBlob(idx, new ByteArrayInputStream(val),
+                        (long) val.length);
+                    return;
+                }
+            } catch (SQLException e) {
+                // ParameterMetaData not available; fall through to default
+            }
+        }
+        super.setBytes(stmnt, idx, val, col);
+    }
+
+    /**
+     * Handle OID columns properly. PostgreSQL OID columns store Large Object
+     * references. The default getBytes() with useGetBytesForBlobs returns the
+     * raw OID integer bytes, not the Large Object content. Detect OID columns
+     * via ResultSetMetaData and use the Blob API to read the actual content.
+     */
+    @Override
+    public byte[] getBytes(ResultSet rs, int column) throws SQLException {
+        String typeName = rs.getMetaData().getColumnTypeName(column);
+        if ("oid".equalsIgnoreCase(typeName)) {
+            // PostgreSQL Large Object API requires a transaction.
+            // If auto-commit is on, temporarily disable it.
+            Connection conn = rs.getStatement().getConnection();
+            boolean autoCommit = conn.getAutoCommit();
+            if (autoCommit) {
+                conn.setAutoCommit(false);
+            }
+            try {
+                Blob blob = rs.getBlob(column);
+                if (blob == null) {
+                    return null;
+                }
+                int length = (int) blob.length();
+                if (length == 0) {
+                    return null;
+                }
+                byte[] bytes = blob.getBytes(1, length);
+                blob.free();
+                return bytes;
+            } finally {
+                if (autoCommit) {
+                    conn.commit();
+                    conn.setAutoCommit(true);
+                }
+            }
+        }
+        return super.getBytes(rs, column);
+    }
+
+
+    /**
+     * PostgreSQL cannot store the null character (0x00) in CHAR/VARCHAR
+     * columns. When storeCharsAsNumbers is false (native CHAR storage),
+     * convert the Java default char value '\0' to a SQL NULL.
+     */
+    @Override
+    public void setChar(PreparedStatement stmnt, int idx, char val,
+        Column col) throws SQLException {
+        if (val == 0) {
+            setNull(stmnt, idx, java.sql.Types.CHAR, col);
+        } else {
+            super.setChar(stmnt, idx, val, col);
+        }
     }
 
     @Override
@@ -386,10 +612,7 @@ public class PostgresDictionary extends DBDictionary {
         if (super.isSystemSequence(name, schema, targetSchema))
             return true;
 
-        if (isOwnedSequence(name, schema, conn)) {
-            return true;
-        }
-        return false;
+        return isOwnedSequence(name, schema, conn);
     }
 
     /**
@@ -462,16 +685,12 @@ public class PostgresDictionary extends DBDictionary {
                 return false;
             }
             String val = getString(rs, 1);
-            if (val == null || val.length() == 0) {
-                return false;
-            }
-            return true;
+            return val != null && val.length() != 0;
         } catch (Throwable t) {
-            if (t instanceof ReportingSQLException) {
+            if (t instanceof ReportingSQLException rse) {
                 // Handle known/acceptable exceptions
                 // 42P01 - table does not exist
                 // 42703 - column does not exist within table
-                ReportingSQLException rse = (ReportingSQLException)t;
                 if ("42P01".equals(rse.getSQLState()) ||
                     "42703".equals(rse.getSQLState())) {
                     return false;
@@ -629,10 +848,9 @@ public class PostgresDictionary extends DBDictionary {
                 // The create method is valid in versions previous to 8.3
                 // in 8.3 this method is deprecated, use createLO
                 int oid = lom.create();
-                LargeObject lo = lom.open(oid, LargeObjectManager.WRITE);
-                OutputStream os = lo.getOutputStream();
-                copy((InputStream)ob, os);
-                lo.close();
+                try (LargeObject lo = lom.open(oid, LargeObjectManager.WRITE); OutputStream os = lo.getOutputStream()) {
+                    copy((InputStream)ob, os);
+                }
                 row.setInt(col, oid);
             } catch (IOException ioe) {
                 throw new StoreException(ioe);
@@ -665,26 +883,22 @@ public class PostgresDictionary extends DBDictionary {
                 conn.setAutoCommit(false);
                 LargeObjectManager lom = getLargeObjectManager(conn);
                 if (ob != null) {
-                    LargeObject lo = lom.open(oid, LargeObjectManager.WRITE);
-                    OutputStream os = lo.getOutputStream();
-                    long size = copy((InputStream) ob, os);
-                    lo.truncate((int) size);
-                    lo.close();
+                    try (LargeObject lo = lom.open(oid, LargeObjectManager.WRITE); OutputStream os = lo.getOutputStream()) {
+                        long size = copy((InputStream) ob, os);
+                        lo.truncate((int) size);
+                    }
                 } else {
                     lom.delete(oid);
                     row.setInt(col, -1);
                 }
-            } else {
-                if (ob != null) {
-                    conn.setAutoCommit(false);
-                    LargeObjectManager lom = getLargeObjectManager(conn);
-                    oid = lom.create();
-                    LargeObject lo = lom.open(oid, LargeObjectManager.WRITE);
-                    OutputStream os = lo.getOutputStream();
+            } else if (ob != null) {
+                conn.setAutoCommit(false);
+                LargeObjectManager lom = getLargeObjectManager(conn);
+                oid = lom.create();
+                try (LargeObject lo = lom.open(oid, LargeObjectManager.WRITE); OutputStream os = lo.getOutputStream()) {
                     copy((InputStream)ob, os);
-                    lo.close();
-                    row.setInt(col, oid);
                 }
+                row.setInt(col, oid);
             }
 
         } catch (IOException ioe) {
@@ -820,7 +1034,7 @@ public class PostgresDictionary extends DBDictionary {
             try {
                 // The product version looks like "8.3.5".
                 String productVersion = metaData.getDatabaseProductVersion();
-                String majMin[] = productVersion.split("\\.");
+                String[] majMin = productVersion.split("\\.");
                 maj = Integer.parseInt(majMin[0]);
                 min = Integer.parseInt(majMin[1]);
             } catch (Exception e) {
@@ -841,6 +1055,13 @@ public class PostgresDictionary extends DBDictionary {
         // Old PostgreSQL requires double-escape for strings.
         if ((maj <= 8 || (maj == 9 && min == 0))) {
             searchStringEscape = "\\\\";
+        }
+
+        // Modern PostgreSQL supports native CHAR storage; only the older
+        // releases required the DBDictionary default (chars stored as
+        // numeric values).
+        if (maj >= 9) {
+            storeCharsAsNumbers = false;
         }
     }
 
@@ -945,8 +1166,7 @@ public class PostgresDictionary extends DBDictionary {
     private void appendXmlValue(SQLBuffer buf, FilterValue val) {
         Class rc = Filters.wrap(val.getType());
         int type = getJDBCType(JavaTypes.getTypeCode(rc), false);
-        boolean isXmlAttribute = (val.getXmlMapping() == null) ? false
-                : val.getXmlMapping().isXmlAttribute();
+        boolean isXmlAttribute = val.getXmlMapping() != null && val.getXmlMapping().isXmlAttribute();
         SQLBuffer newBufer = new SQLBuffer(this);
         newBufer.append("(xpath('/*/");
         val.appendTo(newBufer);
@@ -1003,13 +1223,10 @@ public class PostgresDictionary extends DBDictionary {
         Connection delegate = null;
         try {
             if (dbcpGetDelegate == null) {
+            	ClassLoader currentThreadCL = Thread.currentThread().getContextClassLoader();
                 Class<?> dbcpConnectionClass =
-                    Class.forName("org.apache.commons.dbcp2.DelegatingConnection", true, AccessController
-                        .doPrivileged(J2DoPrivHelper.getContextClassLoaderAction()));
-                Class<?> poolingDataSource = Class.forName(
-                        "org.apache.commons.dbcp2.PoolingDataSource", true,
-                        AccessController.doPrivileged(J2DoPrivHelper
-                                .getContextClassLoaderAction()));
+                    Class.forName("org.apache.commons.dbcp2.DelegatingConnection", true, currentThreadCL);
+                Class<?> poolingDataSource = Class.forName("org.apache.commons.dbcp2.PoolingDataSource", true, currentThreadCL);
                 Method setAccessToUnderlyingConnectionAllowed = poolingDataSource
                         .getMethod("setAccessToUnderlyingConnectionAllowed",
                                 boolean.class);

@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.logging.Logger;
 
 import jakarta.persistence.Parameter;
 import jakarta.persistence.Query;
@@ -51,6 +52,7 @@ import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.Metamodel;
 
 import org.apache.openjpa.jdbc.sql.AbstractSQLServerDictionary;
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.common.utils.DatabaseHelper;
 import org.apache.openjpa.persistence.test.AllowFailure;
@@ -66,6 +68,8 @@ import org.apache.openjpa.persistence.test.AllowFailure;
  *
  */
 public class TestTypesafeCriteria extends CriteriaTest {
+	
+	private static final Logger logger = Logger.getLogger(TestTypesafeCriteria.class.getCanonicalName());
     private static final String TRUE_JPQL = "SELECT p FROM Person p WHERE 1=1";
     private static final String FALSE_JPQL = "SELECT p FROM Person p WHERE 1<>1";
 
@@ -682,7 +686,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         query.setParameter(paramName, name);
         query.setParameter(paramLastName, lastName);
 
-        System.err.println("CQ: " + query.toString());
+        logger.fine("CQ: " + query.toString());
 
         final List<Customer> customers = query.getResultList();
         assertNotNull(customers);
@@ -1066,7 +1070,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
             + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
             + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE " +
-            "((t1.KEY0 = ? OR t1.KEY0 = ? OR t1.KEY0 = ? OR t1.KEY0 = ? OR t1.KEY0 = ?) "
+            "((t1.photos_KEY = ? OR t1.photos_KEY = ? OR t1.photos_KEY = ? OR t1.photos_KEY = ? OR t1.photos_KEY = ?) "
             + "AND 0 < (SELECT COUNT(*) FROM CR_ITEM_photos WHERE CR_ITEM_photos.ITEM_ID = t0.id))";
 
         CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
@@ -1087,7 +1091,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
             + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
             + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE " +
-            "(t1.KEY0 IN (?, ?, ?, ?, ?))";
+            "(t1.photos_KEY IN (?, ?, ?, ?, ?))";
 
         CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
         Root<Item> item = q.from(Item.class);
@@ -1145,7 +1149,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
             + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
             + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE " +
-            "(NOT (t1.KEY0 = ? OR t1.KEY0 = ? OR t1.KEY0 = ? OR t1.KEY0 = ? OR t1.KEY0 = ?) "
+            "(NOT (t1.photos_KEY = ? OR t1.photos_KEY = ? OR t1.photos_KEY = ? OR t1.photos_KEY = ? OR t1.photos_KEY = ?) "
             + "AND 0 < (SELECT COUNT(*) FROM CR_ITEM_photos WHERE CR_ITEM_photos.ITEM_ID = t0.id))";
 
         CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
@@ -1166,7 +1170,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
             + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
             + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE " +
-            "(NOT (t1.KEY0 IN (?, ?, ?, ?, ?)))";
+            "(NOT (t1.photos_KEY IN (?, ?, ?, ?, ?)))";
 
         CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
         Root<Item> item = q.from(Item.class);
@@ -1780,6 +1784,169 @@ public class TestTypesafeCriteria extends CriteriaTest {
         em.createQuery(cq).getResultList();
 
         assertEquivalence(cq, jpql);
+    }
+    
+    public void testLeft() {
+    	if (getDictionary() instanceof DerbyDictionary) {
+    		// TODO Derby DB does not support LEFT, RIGHT or REPLACE functions
+    		return;
+    	}
+    	String jpql = "select p from Person p where left(p.name, 4) = 'John'";
+        em.getTransaction().begin();
+        Person p = new Person();
+        p.setName("John Fitzgerald Doe");
+        em.persist(p);
+        em.getTransaction().commit();
+    	
+    	CriteriaQuery<Person> cq = cb.createQuery(Person.class);
+    	Root<Person> c = cq.from(Person.class);
+    	cq.where(cb.equal(cb.left(c.get("name"), 4), "John"));
+    	em.createQuery(cq).getResultList();
+    	
+    	assertEquivalence(cq, jpql);
+    }
+
+    public void testRight() {
+    	if (getDictionary() instanceof DerbyDictionary) {
+    		// TODO Derby DB does not support LEFT, RIGHT or REPLACE functions
+    		return;
+    	}
+    	String jpql = "select p from Person p where RIGHT(p.name, 3) = 'Doe'";
+        em.getTransaction().begin();
+        Person p = new Person();
+        p.setName("John Fitzgerald Doe");
+        em.persist(p);
+        em.getTransaction().commit();
+
+        CriteriaQuery<Person> cq = cb.createQuery(Person.class);
+    	Root<Person> c = cq.from(Person.class);
+    	cq.where(cb.equal(cb.right(c.get("name"), 3), "Doe"));
+    	em.createQuery(cq).getResultList();
+    	
+    	assertEquivalence(cq, jpql);
+    }
+    
+    public void testReplace() {
+    	if (getDictionary() instanceof DerbyDictionary) {
+    		// TODO Derby DB does not support LEFT, RIGHT or REPLACE functions
+    		return;
+    	}
+        em.getTransaction().begin();
+        Person p = new Person();
+        p.setName("John Fitzgerald Doe");
+        em.persist(p);
+        em.getTransaction().commit();
+
+        String jpql = "select p from Person p where REPLACE(p.name, 'ohn', 'ack') = 'Jack Fitzgerald Doe'";
+        CriteriaQuery<Person> cq = cb.createQuery(Person.class);
+    	Root<Person> c = cq.from(Person.class);
+    	cq.where(cb.equal(cb.replace(c.get("name"), "ohn", "ack"), "Jack Fitzgerald Doe"));
+    	em.createQuery(cq).getResultList();
+
+    	assertEquivalence(cq, jpql);
+    }
+
+    /**
+     * JPA 3.2 Criteria UNION must execute end-to-end and produce the
+     * same SQL as the JPQL UNION form. We don't compare row counts
+     * because TestTypesafeCriteria shares a static EMF with other test
+     * classes and we don't want to seed shared tables.
+     */
+    public void testCriteriaUnion() {
+        CriteriaQuery<String> q1 = cb.createQuery(String.class);
+        Root<CompUser> r1 = q1.from(CompUser.class);
+        q1.select(r1.<String>get("name"))
+            .where(cb.gt(r1.<Integer>get("age"), 30));
+
+        CriteriaQuery<String> q2 = cb.createQuery(String.class);
+        Root<CompUser> r2 = q2.from(CompUser.class);
+        q2.select(r2.<String>get("name"))
+            .where(cb.equal(r2.get("name"), "Ugo"));
+
+        jakarta.persistence.criteria.CriteriaSelect<String> union = cb.union(q1, q2);
+        assertNotNull(em.createQuery(union).getResultList());
+    }
+
+    public void testCriteriaUnionAll() {
+        CriteriaQuery<String> q1 = cb.createQuery(String.class);
+        Root<CompUser> r1 = q1.from(CompUser.class);
+        q1.select(r1.<String>get("name"))
+            .where(cb.gt(r1.<Integer>get("age"), 25));
+
+        CriteriaQuery<String> q2 = cb.createQuery(String.class);
+        Root<CompUser> r2 = q2.from(CompUser.class);
+        q2.select(r2.<String>get("name"))
+            .where(cb.gt(r2.<Integer>get("age"), 30));
+
+        jakarta.persistence.criteria.CriteriaSelect<String> unionAll = cb.unionAll(q1, q2);
+        assertNotNull(em.createQuery(unionAll).getResultList());
+    }
+
+    public void testCriteriaExcept() {
+        CriteriaQuery<String> q1 = cb.createQuery(String.class);
+        Root<CompUser> r1 = q1.from(CompUser.class);
+        q1.select(r1.<String>get("name"))
+            .where(cb.gt(r1.<Integer>get("age"), 20));
+
+        CriteriaQuery<String> q2 = cb.createQuery(String.class);
+        Root<CompUser> r2 = q2.from(CompUser.class);
+        q2.select(r2.<String>get("name"))
+            .where(cb.gt(r2.<Integer>get("age"), 30));
+
+        jakarta.persistence.criteria.CriteriaSelect<String> except = cb.except(q1, q2);
+        assertNotNull(em.createQuery(except).getResultList());
+    }
+
+    public void testCriteriaIntersect() {
+        CriteriaQuery<String> q1 = cb.createQuery(String.class);
+        Root<CompUser> r1 = q1.from(CompUser.class);
+        q1.select(r1.<String>get("name"))
+            .where(cb.gt(r1.<Integer>get("age"), 20));
+
+        CriteriaQuery<String> q2 = cb.createQuery(String.class);
+        Root<CompUser> r2 = q2.from(CompUser.class);
+        q2.select(r2.<String>get("name"))
+            .where(cb.gt(r2.<Integer>get("age"), 30));
+
+        jakarta.persistence.criteria.CriteriaSelect<String> intersect = cb.intersect(q1, q2);
+        assertNotNull(em.createQuery(intersect).getResultList());
+    }
+
+    public void testCriteriaNullPrecedence() {
+        String jpql = "SELECT u.name FROM CompUser u ORDER BY u.name ASC NULLS FIRST";
+        CriteriaQuery<String> q = cb.createQuery(String.class);
+        Root<CompUser> r = q.from(CompUser.class);
+        q.select(r.<String>get("name"))
+            .orderBy(cb.asc(r.get("name"), jakarta.persistence.criteria.Nulls.FIRST));
+        assertEquivalence(q, jpql);
+    }
+
+    public void testCriteriaListPredicates() {
+        String jpql = "SELECT u FROM CompUser u WHERE u.age > 20 AND u.name LIKE 'S%'";
+        CriteriaQuery<CompUser> q = cb.createQuery(CompUser.class);
+        Root<CompUser> r = q.from(CompUser.class);
+        q.select(r);
+
+        java.util.List<jakarta.persistence.criteria.Predicate> preds = new java.util.ArrayList<>();
+        preds.add(cb.gt(r.<Integer>get("age"), 20));
+        preds.add(cb.like(r.<String>get("name"), "S%"));
+        q.where(preds);
+
+        assertEquivalence(q, jpql);
+    }
+
+    public void testCriteriaConcatList() {
+        String jpql = "SELECT CONCAT(u.name, '-', u.computerName) FROM CompUser u WHERE u.name = 'Seetha'";
+        CriteriaQuery<String> q = cb.createQuery(String.class);
+        Root<CompUser> r = q.from(CompUser.class);
+
+        java.util.List<Expression<String>> parts = new java.util.ArrayList<>();
+        parts.add(r.<String>get("name"));
+        parts.add(cb.literal("-"));
+        parts.add(r.<String>get("computerName"));
+        q.select(cb.concat(parts))
+            .where(cb.equal(r.get("name"), "Seetha"));
+        assertEquivalence(q, jpql);
     }
 
 }

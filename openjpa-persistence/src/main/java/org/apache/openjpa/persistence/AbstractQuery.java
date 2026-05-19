@@ -137,7 +137,23 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
                 throw new IllegalArgumentException(_loc.get("illegal-index", pos).getMessage());
             }
             Parameter<?> param;
-            if (isNative() || isProcedure()) {
+            if (isProcedure()) {
+                // For stored procedure queries, parameters may be pre-declared via
+                // registerStoredProcedureParameter or metadata. If declared params
+                // exist, validate position; otherwise auto-declare for backward compat.
+                Map<Object, Parameter<?>> declared = getDeclaredParameters();
+                param = declared.get(pos);
+                if (param == null) {
+                    if (!declared.isEmpty()) {
+                        throw new IllegalArgumentException(
+                            _loc.get("param-missing-pos", pos, getQueryString(),
+                                getDeclaredParameterKeys()).getMessage());
+                    }
+                    // No params declared yet — auto-declare
+                    param = new ParameterImpl<>(pos, Object.class);
+                    declareParameter(pos, param);
+                }
+            } else if (isNative()) {
                 param = new ParameterImpl<>(pos, Object.class);
                 declareParameter(pos, param);
             } else {
@@ -173,7 +189,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
     Object convertTemporalType(Date value, TemporalType type) {
         switch (type) {
         case DATE:
-            return value;
+            return new java.sql.Date(value.getTime());
         case TIME:
             return new Time(value.getTime());
         case TIMESTAMP:
@@ -309,7 +325,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
     @Override
     public <T> Parameter<T> getParameter(String name, Class<T> type) {
         Parameter<?> param = getParameter(name);
-        if (param.getParameterType().isAssignableFrom(type))
+        if (!param.getParameterType().isAssignableFrom(type))
             throw new IllegalArgumentException(param + " does not match the requested type " + type);
         return (Parameter<T>) param;
     }
@@ -328,7 +344,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
             return getParameter("_" + pos, type);
         }
         Parameter<?> param = getParameter(pos);
-        if (param.getParameterType().isAssignableFrom(type))
+        if (!param.getParameterType().isAssignableFrom(type))
             throw new IllegalArgumentException(param + " does not match the requested type " + type);
         return (Parameter<T>) param;
     }
@@ -346,8 +362,10 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      */
     @Override
     public <T> T getParameterValue(Parameter<T> p) {
+        _em.assertNotCloseInvoked();
+        assertParameterBelongsToQuery(p);
         if (!isBound(p)) {
-            throw new IllegalArgumentException(_loc.get("param-missing", p, getQueryString(), getBoundParameterKeys())
+            throw new IllegalStateException(_loc.get("param-missing", p, getQueryString(), getBoundParameterKeys())
                 .getMessage());
         }
         return (T) _boundParams.get(p);
@@ -358,27 +376,41 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      */
     @Override
     public Set<Parameter<?>> getParameters() {
+        _em.assertNotCloseInvoked();
         Set<Parameter<?>> result = new HashSet<>(getDeclaredParameters().values());
         return result;
     }
 
     @Override
     public <T> OpenJPAQuery<X> setParameter(Parameter<T> p, T arg1) {
+        _em.assertNotCloseInvoked();
+        assertParameterBelongsToQuery(p);
         bindValue(p, arg1);
-        if (BindableParameter.class.isInstance(p)) {
-            BindableParameter.class.cast(p).setValue(arg1);
+        if (p instanceof BindableParameter) {
+            ((BindableParameter) p).setValue(arg1);
         }
         return this;
     }
 
     @Override
     public OpenJPAQuery<X> setParameter(Parameter<Date> p, Date date, TemporalType type) {
+        _em.assertNotCloseInvoked();
+        assertParameterBelongsToQuery(p);
         return setParameter(p, (Date) convertTemporalType(date, type));
     }
 
     @Override
     public TypedQuery<X> setParameter(Parameter<Calendar> p, Calendar cal, TemporalType type) {
-        return setParameter(p, (Calendar) convertTemporalType(cal, type));
+        _em.assertNotCloseInvoked();
+        assertParameterBelongsToQuery(p);
+        // convertTemporalType returns a Date; wrap it back into a Calendar for binding
+        Object converted = convertTemporalType(cal, type);
+        if (converted instanceof Date && !(converted instanceof Calendar)) {
+            Calendar wrapped = Calendar.getInstance();
+            wrapped.setTime((Date) converted);
+            return setParameter(p, wrapped);
+        }
+        return setParameter(p, (Calendar) converted);
     }
 
     /**
@@ -392,6 +424,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      */
     @Override
     public Parameter<?> getParameter(String name) {
+        _em.assertNotCloseInvoked();
         if (isNative()) {
             throw new IllegalStateException(_loc.get("param-named-non-native", name).getMessage());
         }
@@ -420,6 +453,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      */
     @Override
     public Parameter<?> getParameter(int pos) {
+        _em.assertNotCloseInvoked();
         if (_convertPositionalParams) {
             return getParameter("_" + pos);
         }
@@ -442,7 +476,10 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      */
     @Override
     public Object getParameterValue(String name) {
-        return _boundParams.get(getParameter(name));
+        _em.assertNotCloseInvoked();
+        Parameter<?> param = getParameter(name);
+        assertBound(param);
+        return _boundParams.get(param);
     }
 
     /**
@@ -457,6 +494,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      */
     @Override
     public Object getParameterValue(int pos) {
+        _em.assertNotCloseInvoked();
         Parameter<?> param = getParameter(pos);
         assertBound(param);
         return _boundParams.get(param);
@@ -570,6 +608,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      */
     @Override
     public boolean isBound(Parameter<?> param) {
+        _em.assertNotCloseInvoked();
         return _boundParams != null && _boundParams.containsKey(param);
     }
 
@@ -577,6 +616,34 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
         if (!isBound(param)) {
             throw new IllegalStateException(_loc.get("param-not-bound", param, getQueryString(),
                 getBoundParameterKeys()).getMessage());
+        }
+    }
+
+    /**
+     * Validates that the given parameter belongs to this query.
+     * @throws IllegalArgumentException if the parameter does not belong to this query
+     */
+    void assertParameterBelongsToQuery(Parameter<?> param) {
+        Set<Parameter<?>> queryParams = getParameters();
+        if (!queryParams.contains(param)) {
+            String paramName = param.getName();
+            Integer paramPos = param.getPosition();
+            if (paramName != null) {
+                // Check by name — the Parameter object may differ but represent the same query parameter
+                for (Parameter<?> qp : queryParams) {
+                    if (paramName.equals(qp.getName())) {
+                        return;
+                    }
+                }
+            } else if (paramPos != null) {
+                for (Parameter<?> qp : queryParams) {
+                    if (paramPos.equals(qp.getPosition())) {
+                        return;
+                    }
+                }
+            }
+            throw new IllegalArgumentException(
+                _loc.get("param-missing", param, getQueryString(), getDeclaredParameterKeys()).getMessage());
         }
     }
 

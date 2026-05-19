@@ -39,6 +39,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 
 import static java.util.Collections.singleton;
 import static org.junit.Assert.assertEquals;
@@ -47,6 +48,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class TestSnakeCaseDDL {
+	
+	private static final Logger logger = Logger.getLogger(TestSnakeCaseDDL.class.getCanonicalName());
 
     @Test
     public void ddlInSnakeCase() throws SQLException {
@@ -58,7 +61,7 @@ public class TestSnakeCaseDDL {
         }
         catch (Exception e) {
             // all fine
-            System.out.println("Skipping Derby specific test because Derby cannot be found in ClassPath");
+            logger.finest("Skipping Derby specific test because Derby cannot be found in ClassPath");
             return;
         }
 

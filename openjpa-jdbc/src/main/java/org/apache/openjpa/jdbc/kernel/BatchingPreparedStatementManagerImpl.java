@@ -254,13 +254,22 @@ public class BatchingPreparedStatementManagerImpl extends
             row.flush(ps, _dict, _store);
         int count = executeUpdate(ps, row.getSQL(_dict), row);
         if (count != 1) {
-            logSQLWarnings(ps);
-            Object failed = row.getFailedObject();
-            if (failed != null)
-                _exceptions.add(new OptimisticException(failed));
-            else if (row.getAction() == Row.ACTION_INSERT)
-                throw new SQLException(_loc.get("update-failed-no-failed-obj",
-                    String.valueOf(count), row.getSQL(_dict)).getMessage());
+            // For DELETE actions, tolerate count=0 because the row may
+            // have already been removed by a database-level ON DELETE
+            // CASCADE triggered by a related row's deletion.
+            if (count == 0 && row.getAction() == Row.ACTION_DELETE) {
+                // row already gone - not an error
+            } else {
+                logSQLWarnings(ps);
+                Object failed = row.getFailedObject();
+                if (failed != null)
+                    _exceptions.add(new OptimisticException(failed));
+                else if (row.getAction() == Row.ACTION_INSERT)
+                    throw new SQLException(_loc.get(
+                        "update-failed-no-failed-obj",
+                        String.valueOf(count),
+                        row.getSQL(_dict)).getMessage());
+            }
         }
     }
 
@@ -317,8 +326,12 @@ public class BatchingPreparedStatementManagerImpl extends
                         String.valueOf(cnt),
                         row.getSQL(_dict)).getMessage());
                 break;
-            case 0: // no row is inserted, treats it as failed
-                // case
+            case 0: // no row is affected, treats it as failed
+                // case unless it's a DELETE (the row may have already
+                // been removed by a database-level ON DELETE CASCADE)
+                if (row.getAction() == Row.ACTION_DELETE) {
+                    break;
+                }
                 logSQLWarnings(ps);
                 if (failed != null)
                     _exceptions.add(new OptimisticException(failed));

@@ -22,8 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -192,6 +190,26 @@ public class MappingTool
      * ACTION constants in {@link SchemaTool}. May be a comma-separated
      * list of values. Defaults to {@link SchemaTool#ACTION_ADD}.
      */
+    /**
+     * Returns true if the schema actions contain only script-drop
+     * operations (executing a pre-written drop script) and no actions
+     * that require entity mapping resolution.
+     * SchemaTool.ACTION_DROP needs entity mappings to know what tables
+     * to generate DROP statements for, so it returns false for that case.
+     */
+    private boolean isDropOnlySchemaAction() {
+        if (_schemaActions == null || _schemaActions.isEmpty()) {
+            return false;
+        }
+        for (String action : _schemaActions.split(",")) {
+            String a = action.trim();
+            if (!a.equals(ACTION_SCRIPT_DROP)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public String getSchemaAction() {
         return _schemaActions;
     }
@@ -496,10 +514,10 @@ public class MappingTool
         if (!ACTION_DROP.equals(_action))
             mappings = repos.getMappings();
         else if (_dropMap != null)
-            mappings = (ClassMapping[]) _dropMap.toArray
+            mappings = _dropMap.toArray
                 (new ClassMapping[_dropMap.size()]);
         else
-            mappings = new ClassMapping[0];
+            mappings = ClassMapping.EMPTY_MAPPINGS;
 
         try {
             if (_dropCls != null && !_dropCls.isEmpty()) {
@@ -515,6 +533,12 @@ public class MappingTool
                 if (_dropUnused)
                     dropUnusedSchemaComponents(mappings);
                 addSequenceComponents(mappings);
+                // Ensure secondary tables from @SecondaryTable annotations
+                // are in the schema group (they may not be if metadata was
+                // resolved by a different MappingRepository)
+                for (ClassMapping mapping : mappings) {
+                    mapping.ensureSecondaryTables(getRepository());
+                }
 
                 // now run the schematool as long as we're doing some schema
                 // action and the user doesn't just want an xml output
@@ -529,23 +553,20 @@ public class MappingTool
                                 schemaAction.equals(ACTION_SCRIPT_DROP) ||
                                 schemaAction.equals(ACTION_SCRIPT_LOAD)) {
                             tool = newSchemaTool(SchemaTool.ACTION_EXECUTE_SCRIPT);
+                            // Script execution should be resilient to errors
+                            // like "table already exists" or "table not found"
+                            // which can occur when SynchronizeMappings=buildSchema
+                            // has already created/dropped tables before the
+                            // explicit script execution.
+                            tool.setIgnoreErrors(true);
                         }
                         else {
                             tool = newSchemaTool(schemaAction);
                         }
 
-                        if (schemaAction.equals(SchemaTool.ACTION_BUILD) && _conf.getCreateScriptTarget() != null) {
-                            tool.setWriter(new PrintWriter(_conf.getCreateScriptTarget()));
-                            tool.setIndexes(true);
-                            tool.setForeignKeys(true);
-                            tool.setSequences(true);
-                        }
-
-                        if (schemaAction.equals(SchemaTool.ACTION_DROP) && _conf.getDropScriptTarget() != null) {
-                            tool.setWriter(new PrintWriter(_conf.getDropScriptTarget()));
-                        }
-
                         // configure the tool with additional settings
+                        // (before script-target writers so they take
+                        // precedence over flags.sqlWriter)
                         if (flags != null) {
                             tool.setDropTables(flags.dropTables);
                             tool.setRollbackBeforeDDL(flags.rollbackBeforeDDL);
@@ -555,15 +576,56 @@ public class MappingTool
                             tool.setSQLTerminator(flags.sqlTerminator);
                         }
 
+                        if (schemaAction.equals(SchemaTool.ACTION_BUILD)) {
+                            java.io.Writer w = _conf.getCreateScriptTargetWriter();
+                            if (w != null) {
+                                tool.setWriter(w);
+                            } else if (_conf.getCreateScriptTarget() != null) {
+                                tool.setWriter(new PrintWriter(toFilePath(_conf.getCreateScriptTarget())));
+                            }
+                            if (w != null || _conf.getCreateScriptTarget() != null) {
+                                tool.setIndexes(true);
+                                tool.setForeignKeys(true);
+                                tool.setSequences(true);
+                            }
+                        }
+
+                        if (schemaAction.equals(SchemaTool.ACTION_DROP)) {
+                            java.io.Writer w = _conf.getDropScriptTargetWriter();
+                            if (w != null) {
+                                tool.setWriter(w);
+                            } else if (_conf.getDropScriptTarget() != null) {
+                                tool.setWriter(new PrintWriter(toFilePath(_conf.getDropScriptTarget())));
+                            }
+                            if (w != null || _conf.getDropScriptTarget() != null) {
+                                tool.setForeignKeys(true);
+                            }
+                        }
+
                         switch (schemaAction) {
                             case ACTION_SCRIPT_CREATE:
-                                tool.setScriptToExecute(_conf.getCreateScriptSource());
+                                java.io.Reader createReader =
+                                    _conf.getCreateScriptSourceReader();
+                                if (createReader != null) {
+                                    tool.setScriptReader(createReader);
+                                } else {
+                                    tool.setScriptToExecute(
+                                        _conf.getCreateScriptSource());
+                                }
                                 break;
                             case ACTION_SCRIPT_DROP:
-                                tool.setScriptToExecute(_conf.getDropScriptSource());
+                                java.io.Reader dropReader =
+                                    _conf.getDropScriptSourceReader();
+                                if (dropReader != null) {
+                                    tool.setScriptReader(dropReader);
+                                } else {
+                                    tool.setScriptToExecute(
+                                        _conf.getDropScriptSource());
+                                }
                                 break;
                             case ACTION_SCRIPT_LOAD:
-                                tool.setScriptToExecute(_conf.getLoadScriptSource());
+                                tool.setScriptToExecute(
+                                    _conf.getLoadScriptSource());
                                 break;
                         }
 
@@ -819,10 +881,23 @@ public class MappingTool
         if (cls == null)
             return;
 
+        // For drop-only schema actions, skip entity mapping resolution
+        // which would add tables to the schema group and cause them to be
+        // re-created after being dropped.
+        if (isDropOnlySchemaAction()) {
+            _flushSchema = true;
+            return;
+        }
+
         MappingRepository repos = getRepository();
         repos.setStrategyInstaller(new RuntimeStrategyInstaller(repos));
-        if (getMapping(repos, cls, true) == null)
+        ClassMapping mapping = getMapping(repos, cls, true);
+        if (mapping == null)
             return;
+
+        // ensure secondary tables are created in the current schema group
+        // (they may not be if metadata was cached from a previous EMF)
+        mapping.ensureSecondaryTables(repos);
 
         // set any logical pks to non-logical so they get flushed
         _flushSchema = true;
@@ -1170,18 +1245,37 @@ public class MappingTool
             Class<?>[] types = Services.getImplementorClasses(ImportExport.class);
             ImportExport[] instances = new ImportExport[types.length];
             for (int i = 0; i < types.length; i++)
-                instances[i] = (ImportExport) AccessController.doPrivileged(
-                    J2DoPrivHelper.newInstanceAction(types[i]));
+                instances[i] = (ImportExport) J2DoPrivHelper.newInstance(types[i]);
             return instances;
         } catch (Throwable t) {
-            if (t instanceof PrivilegedActionException)
-                t = ((PrivilegedActionException) t).getException();
             throw new InternalException(_loc.get("importexport-instantiate"),t);
         }
     }
 
     private static boolean contains(String list, String key) {
-    	return (list == null) ? false : list.indexOf(key) != -1;
+    	return list != null && list.indexOf(key) != -1;
+    }
+
+    /**
+     * Convert a script target path to a file path, handling file: URIs.
+     * Also ensures the parent directory exists.
+     */
+    private static String toFilePath(String target) {
+        java.io.File file;
+        if (target.startsWith("file:")) {
+            try {
+                file = new java.io.File(new java.net.URI(target));
+            } catch (java.net.URISyntaxException e) {
+                file = new java.io.File(target);
+            }
+        } else {
+            file = new java.io.File(target);
+        }
+        java.io.File parent = file.getParentFile();
+        if (parent != null && !parent.exists()) {
+            parent.mkdirs();
+        }
+        return file.getAbsolutePath();
     }
 
     /**

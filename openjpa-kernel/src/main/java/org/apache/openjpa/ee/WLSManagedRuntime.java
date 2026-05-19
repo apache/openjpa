@@ -37,10 +37,9 @@ public class WLSManagedRuntime extends AbstractManagedRuntime
 
     public WLSManagedRuntime()
         throws ClassNotFoundException, NoSuchMethodException {
-        Class txHelper = Class.forName
-            ("weblogic.transaction.TransactionHelper");
-        _txHelperMeth = txHelper.getMethod("getTransactionHelper", null);
-        _txManagerMeth = txHelper.getMethod("getTransactionManager", null);
+        Class<?> txHelper = Class.forName("weblogic.transaction.TransactionHelper");
+        _txHelperMeth = txHelper.getMethod("getTransactionHelper");
+        _txManagerMeth = txHelper.getMethod("getTransactionManager");
     }
 
     @Override
@@ -48,8 +47,8 @@ public class WLSManagedRuntime extends AbstractManagedRuntime
         throws Exception {
         // return TransactionHelper.getTransactionHelper ().
         //	getTransactionManager ();
-        Object o = _txHelperMeth.invoke(null, null);
-        return (TransactionManager) _txManagerMeth.invoke(o, null);
+        Object o = _txHelperMeth.invoke(null);
+        return (TransactionManager) _txManagerMeth.invoke(o);
     }
 
     @Override

@@ -40,6 +40,7 @@ import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
@@ -179,6 +180,7 @@ public class MariaDBDictionary extends DBDictionary {
         fixedSizeTypeNameSet.remove("NUMERIC");
 
         dateFractionDigits = 0;
+        supportsUnsizedCharOnCast = false;
     }
 
     @Override
@@ -209,12 +211,13 @@ public class MariaDBDictionary extends DBDictionary {
             fixedSizeTypeNameSet.remove(timestampTypeName);
             fractionalTypeNameSet.add(timestampTypeName);
 
-            // also TIME type now has optional fraction digits
+            // Request microsecond precision for temporal columns so @Version
+            // Instant/LocalDateTime can detect concurrent updates within a
+            // single whole second. Matches PostgreSQL/Derby defaults.
+            dateFractionDigits = 6;
 
-            if (dateFractionDigits > 0 ) {
-                timeTypeName = "TIME{0}";
-                fractionalTypeNameSet.add(timeTypeName);
-            }
+            timeTypeName = "TIME{0}";
+            fractionalTypeNameSet.add(timeTypeName);
         }
     }
 
@@ -428,11 +431,6 @@ public class MariaDBDictionary extends DBDictionary {
         buf.append("')");
     }
 
-    @Override
-    public int getBatchFetchSize(int batchFetchSize) {
-        return Integer.MIN_VALUE;
-    }
-
     /**
      * Check to see if we have set the {@link #SELECT_HINT} in the
      * fetch configuration, and if so, append the MySQL hint after the
@@ -535,6 +533,56 @@ public class MariaDBDictionary extends DBDictionary {
             start.appendTo(buf);
         }
         buf.append(")");
+    }
+
+    /**
+     * MariaDB / MySQL do not support ANSI SQL {@code NULLS FIRST} / {@code NULLS LAST}.
+     * Emulate via an auxiliary {@code &lt;expr&gt; IS NULL} sort key.
+     * <p>
+     * MariaDB's default NULL ordering places NULLs before non-NULLs when
+     * sorting ASC and after non-NULLs when sorting DESC. When the requested
+     * precedence already matches that default, nothing extra is emitted.
+     * Otherwise the last order term {@code &lt;expr&gt; ASC|DESC} is rewritten
+     * to {@code &lt;expr&gt; IS NULL &lt;sort&gt;, &lt;expr&gt; ASC|DESC}.
+     */
+    @Override
+    public void appendNullsPrecedence(SQLBuffer ordering, int nullPrecedence) {
+        if (nullPrecedence != QueryExpressions.NULLS_FIRST
+                && nullPrecedence != QueryExpressions.NULLS_LAST) {
+            return;
+        }
+        String sql = ordering.getSQL();
+        int lastAsc = sql.lastIndexOf(" ASC");
+        int lastDesc = sql.lastIndexOf(" DESC");
+        boolean asc;
+        int termDirStart;
+        int termDirEnd;
+        if (lastAsc > lastDesc) {
+            asc = true;
+            termDirStart = lastAsc;
+            termDirEnd = lastAsc + " ASC".length();
+        } else if (lastDesc >= 0) {
+            asc = false;
+            termDirStart = lastDesc;
+            termDirEnd = lastDesc + " DESC".length();
+        } else {
+            return;
+        }
+        boolean defaultMatches =
+                (nullPrecedence == QueryExpressions.NULLS_FIRST && asc)
+             || (nullPrecedence == QueryExpressions.NULLS_LAST && !asc);
+        if (defaultMatches) {
+            return;
+        }
+        int termStart = sql.lastIndexOf(", ", termDirStart);
+        termStart = (termStart < 0) ? 0 : termStart + 2;
+        String expr = sql.substring(termStart, termDirStart);
+        String direction = asc ? "ASC" : "DESC";
+        String nullSort = (nullPrecedence == QueryExpressions.NULLS_FIRST)
+                ? "DESC" : "ASC";
+        String replacement = expr + " IS NULL " + nullSort + ", "
+                + expr + " " + direction;
+        ordering.replaceSqlString(termStart, termDirEnd, replacement);
     }
 
     @Override

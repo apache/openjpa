@@ -18,10 +18,7 @@
  */
 package org.apache.openjpa.util;
 
-import java.security.AccessController;
-
 import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 
 /**
@@ -80,7 +77,7 @@ public final class Id
      */
     public Id(String str, ClassLoader loader) {
         if (loader == null)
-            loader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
+            loader = Thread.currentThread().getContextClassLoader();
 
         if (str == null)
             _id = 0L;

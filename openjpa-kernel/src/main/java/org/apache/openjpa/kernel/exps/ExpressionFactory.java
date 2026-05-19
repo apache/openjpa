@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.kernel.exps;
 
-import java.time.temporal.ChronoField;
 import java.time.temporal.Temporal;
 import java.util.Date;
 
@@ -258,6 +257,22 @@ public interface ExpressionFactory {
      * Return the Date or time part of the given temporal value
      */
     Value getDateTimePart(DateTimeExtractPart part, Value value);
+    
+    /**
+     * Returns the value typecasted as string.
+     *
+     * @since 4.2.0
+     */
+    Value newTypecastAsString(Value value);
+
+    /**
+     * Returns the value typecasted as the given Number type.
+     *
+     * @param value
+     * @return
+     * @since 4.2.0
+     */
+    Value newTypecastAsNumber(Value value, Class<? extends Number> numberType);
 
     /**
      * Return a value representing a parameter for the given value. The
@@ -404,6 +419,29 @@ public interface ExpressionFactory {
      * the start index is one-based, and the second argument is the length.
      */
     Value substring(Value str, Value args);
+    
+    /**
+     * Returns a value representing the left function on the given target
+     * with the given arguments.
+     *
+     * @since 4.2.0
+     */
+    Value left(Value str, Value length);
+
+    /**
+     * Returns a value representing the right function on the given target
+     * with the given arguments.
+     *
+     * @since 4.2.0
+     */
+    Value right(Value str, Value length);
+
+    /**
+     * Returns the original string with the pattern replaced by the third argument.
+     *
+     * @since 4.2.0
+     */
+    Value replace(Value orig, Value pattern, Value replacement);
 
     /**
      * Return the upper case of the given value.
@@ -498,14 +536,28 @@ public interface ExpressionFactory {
 	 *
 	 * @since 0.4.0.0
 	 */
-	Value distinct (Value obj);
+	Value distinct(Value obj);
 
 	/**
 	 * Return the object id of the given value.
 	 */
-	Value getObjectId (Value val);
+	Value getObjectId(Value val);
 
-    /**
+	/**
+	 * Returns the id of the given value.
+	 *
+	 * @since 4.2.0
+	 */
+	Value getNativeObjectId(Value val);
+
+	/**
+	 * Returns the version of the given value.
+	 *
+	 * @since 4.2.0
+	 */
+	Value version(Value val);
+
+	/**
      * Return a simple case expression
      */
     Value simpleCaseExpression(Value caseOperand,
@@ -551,4 +603,5 @@ public interface ExpressionFactory {
      * Return true if the Value is a Type expression and the Type uses joined table strategy.
      */
     boolean isVerticalType(Value val);
+
 }

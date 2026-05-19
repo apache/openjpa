@@ -25,8 +25,6 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -271,8 +269,7 @@ public class ResultPacker {
             if (_constructor != null)
                 return _constructor.newInstance(result);
 
-            Object user = AccessController.doPrivileged(
-                J2DoPrivHelper.newInstanceAction(_resultClass));
+            Object user = J2DoPrivHelper.newInstance(_resultClass);
             for (int i = 0; i < _aliases.length; i++) {
                 if (_sets[i] instanceof Method) {
                     Method meth = (Method) _sets[i];
@@ -289,9 +286,9 @@ public class ResultPacker {
             return user;
         } catch (OpenJPAException ke) {
             throw ke;
-        } catch (PrivilegedActionException pae) {
+        } catch (IllegalAccessException iae) {
             throw new UserException(_loc.get("pack-instantiation-err",
-                _resultClass), pae.getException());
+                _resultClass), iae);
         } catch (InstantiationException ie) {
             throw new UserException(_loc.get("pack-instantiation-err",
                 _resultClass), ie);

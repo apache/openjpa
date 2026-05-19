@@ -70,7 +70,7 @@ public class TestOneToOne
         pc = em.find(AnnoTest1.class, 5L);
         pc2 = pc.getSelfOneOne();
         assertNotNull(pc2);
-        assertEquals(new Long(15), pc2.getPk());
+        assertEquals(Long.valueOf(15), pc2.getPk());
         em.close();
     }
 
@@ -89,7 +89,7 @@ public class TestOneToOne
         pc = em.find(AnnoTest1.class, 5L);
         pc2 = pc.getSelfOneOne();
         assertNotNull(pc2);
-        assertEquals(new Long(15), pc2.getPk());
+        assertEquals(Long.valueOf(15), pc2.getPk());
         em.close();
     }
 

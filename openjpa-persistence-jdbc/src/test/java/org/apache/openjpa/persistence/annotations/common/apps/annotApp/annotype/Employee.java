@@ -19,6 +19,8 @@
 package
     org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
 
+import java.util.logging.Logger;
+
 import jakarta.persistence.Basic;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -37,6 +39,9 @@ import jakarta.persistence.Transient;
 @EntityListeners({NameValidator.class, LongNameValidator.class})
 public class Employee implements NamedEntity
 {
+	
+	private static final Logger logger = Logger.getLogger(Employee.class.getCanonicalName());
+	
 	@Id
 	private int id;
 
@@ -82,8 +87,7 @@ public class Employee implements NamedEntity
 	@PostPersist
 	private void resetSyncTime()
 	{
-        System.out.println("resetSyncTime is running on " + this + "GEN #: "
-                + lifecheck);
+        logger.fine("resetSyncTime is running on " + this + "GEN #: " + lifecheck);
 		syncTime = System.currentTimeMillis();
 
 		CallbackStorage store = CallbackStorage.getInstance();

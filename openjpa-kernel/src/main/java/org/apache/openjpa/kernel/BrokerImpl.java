@@ -23,7 +23,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Modifier;
-import java.security.AccessController;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,6 +51,7 @@ import org.apache.openjpa.datacache.TypesChangedEvent;
 import org.apache.openjpa.ee.ManagedRuntime;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.enhance.RecordPersistenceCapable;
 import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.event.LifecycleEvent;
 import org.apache.openjpa.event.LifecycleEventManager;
@@ -63,7 +63,6 @@ import org.apache.openjpa.kernel.exps.ExpressionParser;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.instrumentation.InstrumentationLevel;
 import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ReferenceHashMap;
 import org.apache.openjpa.lib.util.ReferenceHashSet;
@@ -239,7 +238,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
     private boolean _detachedNew = true;
     private boolean _orderDirty = false;
     private boolean _cachePreparedQuery = true;
-    private boolean _cacheFinderQuery = true;
+    private final boolean _cacheFinderQuery = true;
     private boolean _suppressBatchOLELogging = false;
     private boolean _allowReferenceToSiblingContext = false;
     private boolean _postLoadOnMerge = false;
@@ -268,11 +267,10 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
 
     // Set of supported property keys. The keys in this set correspond to bean-style setter methods
     // that can be set by reflection. The keys are not qualified by any prefix.
-    private static Set<String> _supportedPropertyNames;
+    private static final Set<String> _supportedPropertyNames;
     static {
         _supportedPropertyNames = new HashSet<>();
-        _supportedPropertyNames.addAll(Arrays.asList(new String[] {
-                "AutoClear",
+        _supportedPropertyNames.addAll(Arrays.asList("AutoClear",
                 "AutoDetach",
                 "CacheFinderQuery",
                 "CachePreparedQuery",
@@ -287,8 +285,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
                 "Optimistic",
                 "PopulateDataCache",
                 "RestoreState",
-                "RetainState",
-                }));
+                "RetainState"));
     }
 
     private boolean _printParameters = false;
@@ -331,8 +328,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         boolean fromDeserialization, boolean fromWriteBehindCallback) {
         _fromWriteBehindCallback = fromWriteBehindCallback;
         _initializeWasInvoked = true;
-        _loader = AccessController.doPrivileged(
-            J2DoPrivHelper.getContextClassLoaderAction());
+        _loader = Thread.currentThread().getContextClassLoader();
         if (!fromDeserialization){
             _conf = factory.getConfiguration();
             _repo = _conf.getMetaDataRepositoryInstance();
@@ -2147,11 +2143,11 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
                 detachAllInternal(null);
             }
 
-            // in an ee context, it's possible that the user tried to close
-            // us but we didn't actually close because we were waiting on this
-            // transaction; if that's true, then close now
+            // if close was invoked while a transaction was active,
+            // the actual close was deferred; now that the transaction
+            // has completed, free the resources
             if ((_flags & FLAG_CLOSE_INVOKED) != 0
-                && _compat.getCloseOnManagedCommit())
+                && (_compat.getCloseOnManagedCommit() || !_managed))
                 free();
         } catch (OpenJPAException ke) {
             if (_log.isTraceEnabled())
@@ -2552,7 +2548,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
                 }
                 else {
                     if (sm.getPCState() == PCState.PNEWDELETED || sm.getPCState() == PCState.PDELETED) {
-                        fireLifecycleEvent(sm.getPersistenceCapable(), null, sm.getMetaData(),
+                        fireLifecycleEvent(sm.getManagedInstance(), null, sm.getMetaData(),
                                 LifecycleEvent.AFTER_DELETE_PERFORMED);
                     }
                     sm.commit();
@@ -2669,8 +2665,10 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         Throwable[] t = exceps.toArray(new Throwable[exceps.size()]);
         for (Throwable throwable : t) {
             if (throwable instanceof OpenJPAException
-                    && ((OpenJPAException) throwable).isFatal())
+                    && ((OpenJPAException) throwable).isFatal()) {
                 fatal = true;
+                break;
+            }
         }
         OpenJPAException err;
         if (datastore)
@@ -2937,7 +2935,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
                 }
             }
             sm.delete();
-        } else if (assertPersistenceCapable(obj).pcIsDetached() == Boolean.TRUE)
+        } else if (isDetached(obj))
             throw newDetachedException(obj, "delete");
     }
 
@@ -3028,6 +3026,13 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             PersistenceCapable copy;
             PCState state;
             Class<?> type = meta.getDescribedType();
+
+            // JPA 3.2: register record types with PCRegistry on demand
+            if (meta.isRecord()
+                    && !PCRegistry.isRegistered(type)) {
+                RecordPersistenceCapable.registerRecordType(type, meta);
+            }
+
             if (obj != null) {
                 // give copy and the original instance the same state manager
                 // so that we can copy fields from one to the other
@@ -3035,8 +3040,24 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
                 PersistenceCapable pc;
                 if (orig == null) {
                     copySM = sm;
-                    pc = assertPersistenceCapable(obj);
-                    pc.pcReplaceStateManager(sm);
+                    if (meta.isRecord()) {
+                        // Wrap the record in a RecordPersistenceCapable.
+                        // obj might be a raw record, a RecordPC, or another
+                        // PC wrapper (e.g. ReflectingPC during attach/merge).
+                        // Extract the raw managed instance first.
+                        if (obj instanceof RecordPersistenceCapable) {
+                            pc = (PersistenceCapable) obj;
+                        } else {
+                            Object rawObj =
+                                    ImplHelper.getManagedInstance(obj);
+                            pc = new RecordPersistenceCapable(
+                                    type, meta, rawObj);
+                        }
+                        pc.pcReplaceStateManager(sm);
+                    } else {
+                        pc = assertPersistenceCapable(obj);
+                        pc.pcReplaceStateManager(sm);
+                    }
                 } else {
                     copySM = orig;
                     pc = orig.getPersistenceCapable();
@@ -3068,6 +3089,14 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             }
 
             sm.initialize(copy, state);
+
+            // JPA 3.2: for records, register the raw record instance →
+            // embedded copy mapping so that getStateManagerImpl can find
+            // the SM when the owner's enhanced field provides the raw record
+            if (obj != null && meta.isRecord()) {
+                ImplHelper._unenhancedInstanceMap.put(obj, copy);
+            }
+
             return sm;
         } catch (OpenJPAException ke) {
             throw ke;
@@ -4490,11 +4519,21 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             boolean removed = false;
             if (_derefAdditions != null)
                 removed = _derefAdditions.remove(sm);
-            if (!removed && (_derefCache == null || !_derefCache.remove(sm)))
+            if (!removed && (_derefCache == null || !_derefCache.remove(sm))) {
+                // When a removed entity with orphanRemoval is re-persisted
+                // and cascade-persist reaches the orphaned dependent, the
+                // dependent may have already been cleaned up from the deref
+                // cache during flush. Allow this for deleted or newly
+                // re-persisted entities instead of throwing.
+                PCState state = sm.getPCState();
+                if (state != null && (state.isDeleted() || state.isNew())) {
+                    return;
+                }
                 throw new InvalidStateException(_loc.get("not-derefed",
                     Exceptions.toString(sm.getManagedInstance()))).
                     setFailedObject(sm.getManagedInstance()).
                     setFatal(true);
+            }
         } finally {
             unlock();
         }
@@ -4554,14 +4593,9 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
     public void close() {
         beginOperation(false);
         try {
-            // throw an exception if closing in an active local trans
-            if (!_managed && (_flags & FLAG_ACTIVE) != 0)
-                throw new InvalidStateException(_loc.get("active"));
-
-            // only close if not active; if active managed trans wait
-            // for completion
+            // only close if not active; if active trans (managed or local)
+            // wait for completion per JPA spec section 3.3.2
             _flags |= FLAG_CLOSE_INVOKED;
-
             if ((_flags & FLAG_ACTIVE) == 0)
                 free();
         } finally {
@@ -4676,9 +4710,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         // 1.5 doesn't initialize classes without a true Class.forName
         if (!PCRegistry.isRegistered(cls)) {
             try {
-                Class.forName(cls.getName(), true,
-                    AccessController.doPrivileged(
-                        J2DoPrivHelper.getClassLoaderAction(cls)));
+                Class.forName(cls.getName(), true, cls.getClassLoader());
             } catch (Throwable t) {
             }
         }
@@ -4867,14 +4899,10 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         Class<?>[] intfs = obj.getClass().getInterfaces();
         for (int i = 0; intfs != null && i < intfs.length; i++) {
             if (intfs[i].getName().equals(PersistenceCapable.class.getName())) {
-                throw new UserException(_loc.get("pc-loader-different",
-                    Exceptions.toString(obj),
-                    AccessController.doPrivileged(
-                        J2DoPrivHelper.getClassLoaderAction(
-                            PersistenceCapable.class)),
-                    AccessController.doPrivileged(
-                        J2DoPrivHelper.getClassLoaderAction(intfs[i]))))
-                    .setFailedObject(obj);
+            	throw new UserException(_loc.get("pc-loader-different",
+            		Exceptions.toString(obj),
+            		PersistenceCapable.class.getClassLoader(),
+            		intfs[i].getClassLoader())).setFailedObject(obj);
             }
         }
 

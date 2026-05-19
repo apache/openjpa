@@ -49,6 +49,8 @@ import static org.apache.openjpa.persistence.MetaDataTag.MANAGED_INTERFACE;
 import static org.apache.openjpa.persistence.MetaDataTag.MAPPED_BY_ID;
 import static org.apache.openjpa.persistence.MetaDataTag.MAP_KEY;
 import static org.apache.openjpa.persistence.MetaDataTag.MAP_KEY_CLASS;
+import static org.apache.openjpa.persistence.MetaDataTag.NAMED_ENTITY_GRAPH;
+import static org.apache.openjpa.persistence.MetaDataTag.NAMED_ENTITY_GRAPHS;
 import static org.apache.openjpa.persistence.MetaDataTag.NATIVE_QUERIES;
 import static org.apache.openjpa.persistence.MetaDataTag.NATIVE_QUERY;
 import static org.apache.openjpa.persistence.MetaDataTag.ORDER_BY;
@@ -63,6 +65,7 @@ import static org.apache.openjpa.persistence.MetaDataTag.QUERIES;
 import static org.apache.openjpa.persistence.MetaDataTag.QUERY;
 import static org.apache.openjpa.persistence.MetaDataTag.READ_ONLY;
 import static org.apache.openjpa.persistence.MetaDataTag.SEQ_GENERATOR;
+import static org.apache.openjpa.persistence.MetaDataTag.SEQ_GENERATORS;
 import static org.apache.openjpa.persistence.MetaDataTag.STOREDPROCEDURE_QUERIES;
 import static org.apache.openjpa.persistence.MetaDataTag.STOREDPROCEDURE_QUERY;
 import static org.apache.openjpa.persistence.MetaDataTag.TYPE;
@@ -78,7 +81,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -98,6 +100,7 @@ import jakarta.persistence.Basic;
 import jakarta.persistence.Cacheable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Convert;
+import jakarta.persistence.Converts;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
@@ -120,10 +123,14 @@ import jakarta.persistence.MapKey;
 import jakarta.persistence.MapKeyClass;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.MapsId;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedEntityGraph;
+import jakarta.persistence.NamedEntityGraphs;
 import jakarta.persistence.NamedNativeQueries;
 import jakarta.persistence.NamedNativeQuery;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
+import jakarta.persistence.NamedSubgraph;
 import jakarta.persistence.NamedStoredProcedureQueries;
 import jakarta.persistence.NamedStoredProcedureQuery;
 import jakarta.persistence.OneToMany;
@@ -139,6 +146,7 @@ import jakarta.persistence.PreRemove;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.QueryHint;
 import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.SequenceGenerators;
 import jakarta.persistence.StoredProcedureParameter;
 import jakarta.persistence.Version;
 
@@ -152,7 +160,6 @@ import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.SourceTracker;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.AccessCode;
@@ -166,6 +173,7 @@ import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.MultiQueryMetaData;
 import org.apache.openjpa.meta.Order;
+import org.apache.openjpa.meta.EntityGraphMetaData;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.meta.UpdateStrategies;
@@ -177,6 +185,7 @@ import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
 import static org.apache.openjpa.persistence.MetaDataTag.CONVERT;
+import static org.apache.openjpa.persistence.MetaDataTag.CONVERTS;
 
 
 /**
@@ -216,6 +225,8 @@ public class AnnotationPersistenceMetaDataParser
         _tags.put(NamedStoredProcedureQuery.class, STOREDPROCEDURE_QUERY);
         _tags.put(NamedQueries.class, QUERIES);
         _tags.put(NamedQuery.class, QUERY);
+        _tags.put(NamedEntityGraphs.class, NAMED_ENTITY_GRAPHS);
+        _tags.put(NamedEntityGraph.class, NAMED_ENTITY_GRAPH);
         _tags.put(OrderBy.class, ORDER_BY);
         _tags.put(PostLoad.class, POST_LOAD);
         _tags.put(PostPersist.class, POST_PERSIST);
@@ -225,6 +236,7 @@ public class AnnotationPersistenceMetaDataParser
         _tags.put(PreRemove.class, PRE_REMOVE);
         _tags.put(PreUpdate.class, PRE_UPDATE);
         _tags.put(SequenceGenerator.class, SEQ_GENERATOR);
+        _tags.put(SequenceGenerators.class, SEQ_GENERATORS);
         _tags.put(Version.class, VERSION);
         _tags.put(DataCache.class, DATA_CACHE);
         _tags.put(DataStoreId.class, DATASTORE_ID);
@@ -235,6 +247,7 @@ public class AnnotationPersistenceMetaDataParser
         _tags.put(ExternalValues.class, EXTERNAL_VALS);
         _tags.put(Externalizer.class, EXTERNALIZER);
         _tags.put(Convert.class, CONVERT);
+        _tags.put(Converts.class, CONVERTS);
         _tags.put(Factory.class, FACTORY);
         _tags.put(FetchGroup.class, FETCH_GROUP);
         _tags.put(FetchGroups.class, FETCH_GROUPS);
@@ -496,6 +509,13 @@ public class AnnotationPersistenceMetaDataParser
                         (pkgMode & MODE_MAPPING) == 0)
                         parseSequenceGenerator(pkg, (SequenceGenerator) anno);
                     break;
+                case SEQ_GENERATORS:
+                    if (isMappingOverrideMode() &&
+                        (pkgMode & MODE_MAPPING) == 0)
+                        for (SequenceGenerator gen :
+                            ((SequenceGenerators) anno).value())
+                            parseSequenceGenerator(pkg, gen);
+                    break;
                 default:
                     throw new UnsupportedException(_loc.get("unsupported", pkg,
                         anno.toString()));
@@ -552,10 +572,9 @@ public class AnnotationPersistenceMetaDataParser
         // setup defaults (ie: Basic fields).
         ClassMetaData m = getRepository().getCachedMetaData(_cls);
         if (m == null) {
-            if (!AccessController.doPrivileged(J2DoPrivHelper.isAnnotationPresentAction(_cls, Entity.class))
-                && !AccessController.doPrivileged(J2DoPrivHelper.isAnnotationPresentAction(_cls, Embeddable.class))
-                && !AccessController.doPrivileged(J2DoPrivHelper.isAnnotationPresentAction(_cls,
-                    MappedSuperclass.class)))
+            if (!_cls.isAnnotationPresent(Entity.class)
+                && !_cls.isAnnotationPresent(Embeddable.class)
+                && !_cls.isAnnotationPresent(MappedSuperclass.class))
                 return null;
         }
         // find / create metadata
@@ -617,10 +636,6 @@ public class AnnotationPersistenceMetaDataParser
                     break;
                 case ID_CLASS:
                     if (isMetaDataMode()) {
-                    	Class<?> idClass = ((IdClass)anno).value();
-                    	if (!Serializable.class.isAssignableFrom(idClass)) {
-                    		_log.warn(_loc.get("id-class-not-serializable", idClass, _cls).toString());
-                    	}
                         meta.setObjectIdType(((IdClass) anno).value(), true);
                     }
                     break;
@@ -649,9 +664,23 @@ public class AnnotationPersistenceMetaDataParser
                     if (isQueryMode())
                         parseNamedStoredProcedureQueries(_cls, ((NamedStoredProcedureQuery) anno));
                     break;
+                case NAMED_ENTITY_GRAPHS:
+                    if (isMetaDataMode() || isQueryMode())
+                        parseNamedEntityGraphs(_cls, ((NamedEntityGraphs) anno).value());
+                    break;
+                case NAMED_ENTITY_GRAPH:
+                    if (isMetaDataMode() || isQueryMode())
+                        parseNamedEntityGraphs(_cls, (NamedEntityGraph) anno);
+                    break;
                 case SEQ_GENERATOR:
                     if (isMappingOverrideMode())
                         parseSequenceGenerator(_cls, (SequenceGenerator) anno);
+                    break;
+                case SEQ_GENERATORS:
+                    if (isMappingOverrideMode())
+                        for (SequenceGenerator gen :
+                            ((SequenceGenerators) anno).value())
+                            parseSequenceGenerator(_cls, gen);
                     break;
                 case DATA_CACHE:
                     if (isMetaDataMode())
@@ -684,6 +713,15 @@ public class AnnotationPersistenceMetaDataParser
                     if (isMetaDataMode()) {
                         parseCache(meta, (Cacheable) anno);
                     }
+                    break;
+                case CONVERT:
+                    if (isMetaDataMode())
+                        parseClassLevelConvert(meta, (Convert) anno);
+                    break;
+                case CONVERTS:
+                    if (isMetaDataMode())
+                        for (Convert c : ((Converts) anno).value())
+                            parseClassLevelConvert(meta, c);
                     break;
                 default:
                     throw new UnsupportedException(_loc.get("unsupported", _cls,
@@ -795,8 +833,7 @@ public class AnnotationPersistenceMetaDataParser
      */
     private int getAccessCode(Class<?> cls) {
         int accessCode = AccessCode.UNKNOWN;
-        Access access = AccessController.doPrivileged(
-            J2DoPrivHelper.getAnnotationAction(cls, Access.class));
+        Access access = cls.getAnnotation(Access.class);
         if (access != null) {
             accessCode |=  AccessCode.EXPLICIT |
                 (access.value() == AccessType.FIELD ?
@@ -817,18 +854,14 @@ public class AnnotationPersistenceMetaDataParser
             cls = cls.getEnclosingClass();
 
         String rsrc = StringUtil.replace(cls.getName(), ".", "/");
-        ClassLoader loader = AccessController.doPrivileged(
-            J2DoPrivHelper.getClassLoaderAction(cls));
+        ClassLoader loader = cls.getClassLoader();
         if (loader == null)
-            loader = AccessController.doPrivileged(
-                J2DoPrivHelper.getSystemClassLoaderAction());
+            loader = ClassLoader.getSystemClassLoader();
         if (loader == null)
             return null;
-        URL url = AccessController.doPrivileged(
-            J2DoPrivHelper.getResourceAction(loader, rsrc + ".java"));
+        URL url = loader.getResource(rsrc + ".java");
         if (url == null) {
-            url = AccessController.doPrivileged(
-                J2DoPrivHelper.getResourceAction(loader, rsrc + ".class"));
+            url = loader.getResource(rsrc + ".class");
             if (url == null)
                 return null;
         }
@@ -929,12 +962,9 @@ public class AnnotationPersistenceMetaDataParser
             else
                 meta.setDetachedState(detached.fieldName());
         } else {
-            Field[] fields = (Field[]) AccessController.doPrivileged(
-                J2DoPrivHelper.getDeclaredFieldsAction(
-                    meta.getDescribedType()));
+            Field[] fields = meta.getDescribedType().getDeclaredFields();
             for (Field field : fields)
-                if (AccessController.doPrivileged(J2DoPrivHelper
-                        .isAnnotationPresentAction(field, DetachedState.class)))
+                if (field.isAnnotationPresent(DetachedState.class))
                     meta.setDetachedState(field.getName());
         }
     }
@@ -986,7 +1016,7 @@ public class AnnotationPersistenceMetaDataParser
         MethodKey key;
         Set<MethodKey> seen = new HashSet<>();
         do {
-            for (Method m : (Method[]) AccessController.doPrivileged(J2DoPrivHelper.getDeclaredMethodsAction(sup))) {
+            for (Method m : sup.getDeclaredMethods()) {
                 mods = m.getModifiers();
                 if (Modifier.isStatic(mods) || Modifier.isFinal(mods) ||
                     Object.class.equals(m.getDeclaringClass()))
@@ -1003,9 +1033,7 @@ public class AnnotationPersistenceMetaDataParser
 
         OpenJPAConfiguration conf = repos.getConfiguration();
         for (Method m : methods) {
-            for (Annotation anno : (Annotation[]) AccessController
-                .doPrivileged(J2DoPrivHelper
-                    .getDeclaredAnnotationsAction(m))) {
+            for (Annotation anno : m.getDeclaredAnnotations()) {
                 MetaDataTag tag = _tags.get(anno.annotationType());
                 if (tag == null)
                     continue;
@@ -1173,48 +1201,44 @@ public class AnnotationPersistenceMetaDataParser
         fmd.setExplicit(true);
 
         AnnotatedElement el = (AnnotatedElement) member;
-        boolean lob = AccessController.doPrivileged(J2DoPrivHelper
-                .isAnnotationPresentAction(el, Lob.class));
+        boolean lob = el.isAnnotationPresent(Lob.class);
         if (isMetaDataMode()) {
             switch (pstrat) {
                 case BASIC:
-                    parseBasic(fmd, (Basic) el.getAnnotation(Basic.class), lob);
+                    parseBasic(fmd, el.getAnnotation(Basic.class), lob);
                     break;
                 case MANY_ONE:
-                    parseManyToOne(fmd, (ManyToOne) el.getAnnotation
+                    parseManyToOne(fmd, el.getAnnotation
                         (ManyToOne.class));
                     break;
                 case ONE_ONE:
-                    parseOneToOne(fmd, (OneToOne) el.getAnnotation
+                    parseOneToOne(fmd, el.getAnnotation
                         (OneToOne.class));
                     break;
                 case EMBEDDED:
-                    parseEmbedded(fmd, (Embedded) el.getAnnotation
+                    parseEmbedded(fmd, el.getAnnotation
                         (Embedded.class));
                     break;
                 case ONE_MANY:
-                    parseOneToMany(fmd, (OneToMany) el.getAnnotation
+                    parseOneToMany(fmd, el.getAnnotation
                         (OneToMany.class));
                     break;
                 case MANY_MANY:
-                    parseManyToMany(fmd, (ManyToMany) el.getAnnotation
+                    parseManyToMany(fmd, el.getAnnotation
                         (ManyToMany.class));
                     break;
                 case PERS:
-                    parsePersistent(fmd, (Persistent) el.getAnnotation
+                    parsePersistent(fmd, el.getAnnotation
                         (Persistent.class));
                     break;
                 case PERS_COLL:
-                    parsePersistentCollection(fmd, (PersistentCollection)
-                        el.getAnnotation(PersistentCollection.class));
+                    parsePersistentCollection(fmd, el.getAnnotation(PersistentCollection.class));
                     break;
                 case ELEM_COLL:
-                    parseElementCollection(fmd, (ElementCollection)
-                        el.getAnnotation(ElementCollection.class));
+                    parseElementCollection(fmd, el.getAnnotation(ElementCollection.class));
                     break;
                 case PERS_MAP:
-                    parsePersistentMap(fmd, (PersistentMap)
-                        el.getAnnotation(PersistentMap.class));
+                    parsePersistentMap(fmd, el.getAnnotation(PersistentMap.class));
                     break;
                 case TRANSIENT:
                     break;
@@ -1264,11 +1288,17 @@ public class AnnotationPersistenceMetaDataParser
                     break;
                 case ORDER_BY:
                     parseOrderBy(fmd,
-                        (OrderBy) el.getAnnotation(OrderBy.class));
+                            el.getAnnotation(OrderBy.class));
                     break;
                 case SEQ_GENERATOR:
                     if (isMappingOverrideMode())
                         parseSequenceGenerator(el, (SequenceGenerator) anno);
+                    break;
+                case SEQ_GENERATORS:
+                    if (isMappingOverrideMode())
+                        for (SequenceGenerator gen :
+                            ((SequenceGenerators) anno).value())
+                            parseSequenceGenerator(el, gen);
                     break;
                 case VERSION:
                     fmd.setVersion(true);
@@ -1331,12 +1361,101 @@ public class AnnotationPersistenceMetaDataParser
                             value()));
                     break;
                 case CONVERT:
-                    if (isMetaDataMode() && !((Convert) anno).disableConversion())
-                        fmd.setConverter(((Convert) anno).converter());
+                    if (isMetaDataMode())
+                        applyFieldConvert(fmd, (Convert) anno);
+                    break;
+                case CONVERTS:
+                    if (isMetaDataMode())
+                        for (Convert c : ((Converts) anno).value())
+                            applyFieldConvert(fmd, c);
                     break;
                 default:
                     throw new UnsupportedException(_loc.get("unsupported", fmd,
                         anno.toString()));
+            }
+        }
+    }
+
+    /**
+     * Apply a field-level @Convert annotation. If attributeName is specified,
+     * the converter is stored as an embedded converter; otherwise it is the
+     * direct converter for this field.
+     */
+    /**
+     * Apply a field-level @Convert annotation. If attributeName is specified,
+     * the converter is stored as an embedded converter; otherwise it is the
+     * direct converter for this field.
+     */
+    private void applyFieldConvert(FieldMetaData fmd, Convert convert) {
+        if (convert.disableConversion())
+            return;
+        String attrName = convert.attributeName();
+        if (attrName != null && !attrName.isEmpty()) {
+            // Embedded converter: the converter applies to an attribute
+            // within the embedded object
+            fmd.addEmbeddedConverter(attrName, convert.converter());
+            // Also set the converter on the embedded metadata's field
+            // if it already exists
+            ClassMetaData embMeta = fmd.getEmbeddedMetaData();
+            if (embMeta != null) {
+                FieldMetaData embField = embMeta.getField(attrName);
+                if (embField != null) {
+                    embField.setConverter(convert.converter());
+                }
+            }
+        } else {
+            fmd.setConverter(convert.converter());
+        }
+    }
+
+    /**
+     * Handle class-level @Convert. These specify converters for attributes
+     * of embedded fields or inherited fields. The attributeName is required
+     * for class-level @Convert.
+     */
+    private void parseClassLevelConvert(ClassMetaData meta, Convert convert) {
+        if (convert.disableConversion())
+            return;
+        String attrName = convert.attributeName();
+        if (attrName == null || attrName.isEmpty()) {
+            // Class-level @Convert without attributeName - ignore silently
+            // (spec says attributeName is required at class level)
+            return;
+        }
+        // attributeName may be "embeddedField.attribute" or just "attribute"
+        int dot = attrName.lastIndexOf('.');
+        if (dot > 0) {
+            String fieldName = attrName.substring(0, dot);
+            String embAttr = attrName.substring(dot + 1);
+            FieldMetaData fmd = meta.getDeclaredField(fieldName);
+            if (fmd == null) {
+                fmd = meta.getField(fieldName);
+            }
+            if (fmd != null) {
+                fmd.addEmbeddedConverter(embAttr, convert.converter());
+            }
+        } else {
+            // Simple attribute name - first check if it is a direct field
+            // (including inherited fields from mapped superclass)
+            FieldMetaData directField = meta.getDeclaredField(attrName);
+            if (directField == null) {
+                directField = meta.getField(attrName);
+            }
+            if (directField != null) {
+                // Direct field or inherited field - override converter
+                directField.setConverter(convert.converter());
+            }
+            // Also store as a pending override in case the field doesn't
+            // exist yet (MappedSuperclass fields are inherited later)
+            meta.addConverterOverride(attrName, convert.converter());
+            if (directField == null) {
+                // Not a direct field - applies to embedded field attributes
+                for (FieldMetaData fmd : meta.getDeclaredFields()) {
+                    if (fmd.isEmbedded()) {
+                        fmd.addEmbeddedConverter(attrName,
+                            convert.converter());
+                    }
+                }
             }
         }
     }
@@ -1542,8 +1661,8 @@ public class AnnotationPersistenceMetaDataParser
             fmd.setMappedBy(anno.mappedBy());
         if (anno.targetEntity() != void.class)
             fmd.setTypeOverride(anno.targetEntity());
-        setCascades(fmd, anno.cascade());
         setOrphanRemoval(fmd, anno.orphanRemoval());
+        setCascades(fmd, anno.cascade());
         fmd.setAssociationType(FieldMetaData.ONE_TO_ONE);
     }
 
@@ -1583,8 +1702,8 @@ public class AnnotationPersistenceMetaDataParser
             fmd.setMappedBy(anno.mappedBy());
         if (anno.targetEntity() != void.class)
             fmd.getElement().setDeclaredType(anno.targetEntity());
-        setCascades(fmd.getElement(), anno.cascade());
         setOrphanRemoval(fmd.getElement(), anno.orphanRemoval());
+        setCascades(fmd.getElement(), anno.cascade());
         fmd.setAssociationType(FieldMetaData.ONE_TO_MANY);
     }
 
@@ -1844,6 +1963,11 @@ public class AnnotationPersistenceMetaDataParser
         // create new sequence
         meta = getRepository().addSequenceMetaData(name);
         String seq = gen.sequenceName();
+        // JPA spec: when sequenceName is not specified, use the generator name
+        // as the database sequence name
+        if (StringUtil.isEmpty(seq)) {
+            seq = name;
+        }
         // Do not normalize the sequence name if it appears to be a plugin
         if (seq.indexOf('(') == -1){
             seq = normalizeSequenceName(seq);
@@ -1928,6 +2052,60 @@ public class AnnotationPersistenceMetaDataParser
     }
 
     /**
+     * Parse @NamedEntityGraph annotations.
+     */
+    private void parseNamedEntityGraphs(Class<?> cls, NamedEntityGraph... graphs) {
+        for (NamedEntityGraph graph : graphs) {
+            String graphName = graph.name();
+            if (graphName == null || graphName.isEmpty()) {
+                // default to entity name per JPA spec
+                jakarta.persistence.Entity entityAnno =
+                    cls.getAnnotation(jakarta.persistence.Entity.class);
+                if (entityAnno != null && entityAnno.name() != null
+                        && !entityAnno.name().isEmpty()) {
+                    graphName = entityAnno.name();
+                } else {
+                    graphName = cls.getSimpleName();
+                }
+            }
+
+            EntityGraphMetaData egm = new EntityGraphMetaData();
+            egm.setName(graphName);
+            egm.setEntityClass(cls);
+            egm.setIncludeAllAttributes(graph.includeAllAttributes());
+
+            for (NamedAttributeNode node : graph.attributeNodes()) {
+                egm.getAttributeNodes().add(new EntityGraphMetaData.AttributeNodeData(
+                    node.value(), node.subgraph(), node.keySubgraph()));
+            }
+
+            for (NamedSubgraph sg : graph.subgraphs()) {
+                EntityGraphMetaData.SubgraphData sgData =
+                    new EntityGraphMetaData.SubgraphData(sg.name(), sg.type());
+                for (NamedAttributeNode node : sg.attributeNodes()) {
+                    sgData.getAttributeNodes().add(
+                        new EntityGraphMetaData.AttributeNodeData(
+                            node.value(), node.subgraph(), node.keySubgraph()));
+                }
+                egm.getSubgraphs().add(sgData);
+            }
+
+            for (NamedSubgraph sg : graph.subclassSubgraphs()) {
+                EntityGraphMetaData.SubgraphData sgData =
+                    new EntityGraphMetaData.SubgraphData(sg.name(), sg.type());
+                for (NamedAttributeNode node : sg.attributeNodes()) {
+                    sgData.getAttributeNodes().add(
+                        new EntityGraphMetaData.AttributeNodeData(
+                            node.value(), node.subgraph(), node.keySubgraph()));
+                }
+                egm.getSubclassSubgraphs().add(sgData);
+            }
+
+            getRepository().addEntityGraphMetaData(graphName, egm);
+        }
+    }
+
+    /**
      * A private worker method that calculates the lock mode for an individual NamedQuery. If the NamedQuery is
      * configured to use the NONE lock mode(explicit or implicit), this method will promote the lock to a READ
      * level lock. This was done to allow for JPA1 apps to function properly under a 2.0 runtime.
@@ -1956,7 +2134,7 @@ public class AnnotationPersistenceMetaDataParser
     /**
      * Parse @NamedNativeQuery.
      */
-    private void parseNamedNativeQueries(AnnotatedElement el,
+    protected void parseNamedNativeQueries(AnnotatedElement el,
         NamedNativeQuery... queries) {
         QueryMetaData meta;
         for (NamedNativeQuery query : queries) {
@@ -2015,33 +2193,27 @@ public class AnnotationPersistenceMetaDataParser
     	}
     }
 
-    private static class MethodKey {
-
-        private final Method _method;
-
-        public MethodKey(Method m) {
-            _method = m;
-        }
+    private record MethodKey(Method _method) {
 
         @Override
-        public int hashCode() {
-            int code = 46 * 12 + _method.getName().hashCode();
-            for (Class<?> param : _method.getParameterTypes())
-                code = 46 * code + param.hashCode();
-            return code;
-        }
+            public int hashCode() {
+                int code = 46 * 12 + _method.getName().hashCode();
+                for (Class<?> param : _method.getParameterTypes())
+                    code = 46 * code + param.hashCode();
+                return code;
+            }
 
-        @Override
-        public boolean equals(Object o) {
-            if (!(o instanceof MethodKey))
-                return false;
-            Method other = ((MethodKey) o)._method;
-            if (!_method.getName().equals(other.getName()))
-                return false;
-            return Arrays.equals(_method.getParameterTypes(),
-                other.getParameterTypes());
+            @Override
+            public boolean equals(Object o) {
+                if (!(o instanceof MethodKey))
+                    return false;
+                Method other = ((MethodKey) o)._method;
+                if (!_method.getName().equals(other.getName()))
+                    return false;
+                return Arrays.equals(_method.getParameterTypes(),
+                        other.getParameterTypes());
+            }
         }
-    }
 
     private static class MethodComparator implements Comparator<Method> {
 

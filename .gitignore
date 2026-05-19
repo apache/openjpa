@@ -11,3 +11,8 @@ nbactions*.xml
 .checkstyle
 .vscode
 
+.claude
+CLAUDE.md
+tck-dev
+docker-compose.yml
+pgdata

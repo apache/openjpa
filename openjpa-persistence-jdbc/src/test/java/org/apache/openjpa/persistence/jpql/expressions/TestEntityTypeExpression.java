@@ -82,7 +82,7 @@ public class TestEntityTypeExpression extends AbstractTestCase {
         List rs = null;
         try {
             rs =  em.createQuery(query).setParameter(1, Address.class).getResultList();
-            System.out.println("rs size="+rs.size());
+            fail("Should have thrown an exception here.");
         } catch(Exception e) {
             // as expected
             //System.out.println(e.getMessage());

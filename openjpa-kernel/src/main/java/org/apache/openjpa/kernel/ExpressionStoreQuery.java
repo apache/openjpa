@@ -331,12 +331,11 @@ public class ExpressionStoreQuery
             if (val.isVariable())
                 return;
 
-            Class<?> type;
-            if (val instanceof Path) {
-                FieldMetaData fmd = ((Path) val).last();
-                type = (fmd == null) ? val.getType() : fmd.getDeclaredType();
-            } else
-                type = val.getType();
+            // Use val.getType() which resolves collection/map fields to their
+            // element type (e.g. Map<String,Employee> -> Employee).
+            // This supports Criteria API queries that select a collection or
+            // map attribute, which represents an implicit join to the elements.
+            Class<?> type = val.getType();
 
             switch (JavaTypes.getTypeCode(type)) {
                 case JavaTypes.ARRAY:

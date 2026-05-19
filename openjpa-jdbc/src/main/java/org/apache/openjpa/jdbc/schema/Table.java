@@ -66,6 +66,7 @@ public class Table
     private Index[] _idxs = null;
     private Unique[] _unqs = null;
     private String _comment = null;
+    private String _options = null;
     private int _lineNum = 0;
     private int _colNum = 0;
     private boolean _isAssociation = false;
@@ -959,6 +960,14 @@ public class Table
 
     public void setComment(String comment) {
         _comment = comment;
+    }
+
+    public String getOptions() {
+        return _options;
+    }
+
+    public void setOptions(String options) {
+        _options = options;
     }
 
     @Override

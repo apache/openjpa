@@ -38,6 +38,7 @@ enum MappingTag {
     COLLECTION_TABLE,
     COLUMN_NAME,
     COLUMN_RESULT,
+    CONSTRUCTOR_RESULT,
     DELIMITED_IDS,
     DISCRIM_COL,
     DISCRIM_VAL,
@@ -46,6 +47,7 @@ enum MappingTag {
     FIELD_RESULT,
     GEN_ID_TABLE,
     INHERITANCE,
+    NAMED_STORED_PROCEDURE_QUERY,
     JOIN_COL,
     JOIN_COLS,
     JOIN_TABLE,
@@ -59,6 +61,7 @@ enum MappingTag {
     SQL_RESULT_SET_MAPPINGS,
     TABLE,
     TABLE_GEN,
+    TABLE_GENS,
     TEMPORAL,
     // openjpa extensions
     CLASS_CRIT,

@@ -29,6 +29,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.util.UserException;
 
 public class TestPartitionedDataCache extends SingleEMFTestCase {
+	
     @Override
     public void setUp() {
         super.setUp("openjpa.DataCache", "partitioned(PartitionType=concurrent,partitions="+
@@ -45,35 +46,35 @@ public class TestPartitionedDataCache extends SingleEMFTestCase {
             cache.setPartitions(badProperty);
             fail("Expected parse error on " + badProperty);
         } catch (UserException e) {
-            System.err.println(e);
+            e.printStackTrace(System.err);
         }
         badProperty = "(name=a,cacheSize=100)(name=b,cacheSize=200)";// missing comma
         try {
             cache.setPartitions(badProperty);
             fail("Expected parse error on " + badProperty);
         } catch (UserException e) {
-            System.err.println(e);
+            e.printStackTrace(System.err);
         }
         badProperty = "(cacheSize=100),(name=b,cacheSize=200)";// missing name
         try {
             cache.setPartitions(badProperty);
             fail("Expected parse error on " + badProperty);
         } catch (UserException e) {
-            System.err.println(e);
+            e.printStackTrace(System.err);
         }
         badProperty = "(name=a,cacheSize=100),(name=a,cacheSize=200)";// duplicate name
         try {
             cache.setPartitions(badProperty);
             fail("Expected parse error on " + badProperty);
         } catch (UserException e) {
-            System.err.println(e);
+            e.printStackTrace(System.err);
         }
         badProperty = "(name=default,cacheSize=100),(name=a,cacheSize=200)";// default name
         try {
             cache.setPartitions(badProperty);
             fail("Expected parse error on " + badProperty);
         } catch (UserException e) {
-            System.err.println(e);
+            e.printStackTrace(System.err);
         }
 
     }

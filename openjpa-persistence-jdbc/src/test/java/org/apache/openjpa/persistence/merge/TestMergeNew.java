@@ -60,7 +60,7 @@ public class TestMergeNew extends SQLListenerTestCase {
 
         // verify key fields
         assertEquals(newParent.getKey1(), "K1");
-        assertEquals(newParent.getKey2(), new Integer(1));
+        assertEquals(newParent.getKey2(), Integer.valueOf(1));
 
         // verify Child field
         ArrayList<Child> childs = (ArrayList<Child>)newParent.getChilds();
@@ -70,7 +70,7 @@ public class TestMergeNew extends SQLListenerTestCase {
         assertNotSame(child, newChild);
         Parent childParent = newChild.getParent();
         assertEquals(childParent, newParent);
-        assertEquals(newChild.getChildKey(), new Integer(1));
+        assertEquals(newChild.getChildKey(), Integer.valueOf(1));
 
         // verify GrandChild field
         ArrayList<GrandChild> grandChilds = (ArrayList<GrandChild>)newChild.getGrandChilds();
@@ -118,7 +118,7 @@ public class TestMergeNew extends SQLListenerTestCase {
 
        	// verify key fields
        	assertEquals(newParent.getKey1(), "K1");
-       	assertEquals(newParent.getKey2(), new Integer(1));
+       	assertEquals(newParent.getKey2(), Integer.valueOf(1));
 
        	// verify Child field
        	ArrayList<Child> childs = (ArrayList<Child>)newParent.getChilds();
@@ -128,7 +128,7 @@ public class TestMergeNew extends SQLListenerTestCase {
        	assertNotSame(child, newChild);
        	Parent childParent = newChild.getParent();
        	assertNotNull(childParent);
-       	assertEquals(newChild.getChildKey(), new Integer(1));
+       	assertEquals(newChild.getChildKey(), Integer.valueOf(1));
 
        	// verify GrandChild field
        	ArrayList<GrandChild> grandChilds = (ArrayList<GrandChild>)newChild.getGrandChilds();

@@ -27,8 +27,10 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.Temporal;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -36,12 +38,14 @@ import jakarta.persistence.Tuple;
 import jakarta.persistence.criteria.CollectionJoin;
 import jakarta.persistence.criteria.CompoundSelection;
 import jakarta.persistence.criteria.CriteriaDelete;
+import jakarta.persistence.criteria.CriteriaSelect;
 import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.From;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.ListJoin;
 import jakarta.persistence.criteria.MapJoin;
+import jakarta.persistence.criteria.Nulls;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.ParameterExpression;
 import jakarta.persistence.criteria.Path;
@@ -51,17 +55,20 @@ import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Selection;
 import jakarta.persistence.criteria.SetJoin;
 import jakarta.persistence.criteria.Subquery;
+import jakarta.persistence.criteria.TemporalField;
 import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.ManagedType;
 import jakarta.persistence.metamodel.Metamodel;
 
 import org.apache.openjpa.kernel.ExpressionStoreQuery;
+import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.ExpressionParser;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
+import org.apache.openjpa.persistence.meta.Types;
 
 /**
  * Factory for Criteria query expressions.
@@ -83,6 +90,29 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
         return this;
     }
 
+    /**
+     * Creates a snapshot of the given criteria query, delete, or update object.
+     * Per JPA spec, createQuery() should capture the query state at that point.
+     * Subsequent modifications to the original criteria object should NOT affect
+     * the already-created Query.
+     *
+     * @param criteria a CriteriaQuery, CriteriaDelete, or CriteriaUpdate
+     * @return a snapshot copy that is isolated from future changes to the original
+     */
+    @SuppressWarnings("unchecked")
+    public static Object snapshotQuery(Object criteria) {
+        if (criteria instanceof CriteriaQueryImpl<?>) {
+            return ((CriteriaQueryImpl<?>) criteria).snapshot();
+        }
+        if (criteria instanceof CriteriaDeleteImpl<?>) {
+            return ((CriteriaDeleteImpl<?>) criteria).snapshot();
+        }
+        if (criteria instanceof CriteriaUpdateImpl<?>) {
+            return ((CriteriaUpdateImpl<?>) criteria).snapshot();
+        }
+        return criteria;
+    }
+
     @Override
     public Metamodel getMetamodel() {
         return _model;
@@ -91,6 +121,18 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
     @Override
     public QueryExpressions eval(Object parsed, ExpressionStoreQuery query,
         ExpressionFactory factory, ClassMetaData candidate) {
+        if (parsed instanceof CriteriaSelectImpl) {
+            return ((CriteriaSelectImpl<?>) parsed)
+                .getQueryExpressions(factory);
+        }
+        if (parsed instanceof CriteriaDeleteImpl) {
+            return ((CriteriaDeleteImpl<?>) parsed)
+                .getQueryExpressions(factory);
+        }
+        if (parsed instanceof CriteriaUpdateImpl) {
+            return ((CriteriaUpdateImpl<?>) parsed)
+                .getQueryExpressions(factory);
+        }
         CriteriaQueryImpl<?> c = (CriteriaQueryImpl<?>) parsed;
         return c.getQueryExpressions(factory);
     }
@@ -128,12 +170,12 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 
     @Override
     public <T> CriteriaUpdate<T> createCriteriaUpdate(Class<T> targetEntity) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        return new CriteriaUpdateImpl<>(_model, targetEntity);
     }
 
     @Override
     public <T> CriteriaDelete<T> createCriteriaDelete(Class<T> targetEntity) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        return new CriteriaDeleteImpl<>(_model, targetEntity);
     }
 
     @Override
@@ -143,10 +185,29 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 
     @Override
     public void populate(Object parsed, ExpressionStoreQuery query) {
-        CriteriaQueryImpl<?> c = (CriteriaQueryImpl<?>) parsed;
         query.invalidateCompilation();
-        query.getContext().setCandidateType(c.getRoot().getJavaType(), true);
+        if (parsed instanceof CriteriaDeleteImpl<?> cd) {
+            query.getContext().setCandidateType(cd.getRoot().getJavaType(), true);
+            query.setQuery(cd);
+            return;
+        }
+        if (parsed instanceof CriteriaUpdateImpl<?> cu) {
+            query.getContext().setCandidateType(cu.getRoot().getJavaType(), true);
+            query.setQuery(cu);
+            return;
+        }
+        CriteriaQueryImpl<?> leaf = getLeftmostQuery(parsed);
+        query.getContext().setCandidateType(
+            leaf.getRoot().getJavaType(), true);
         query.setQuery(parsed);
+    }
+
+    private CriteriaQueryImpl<?> getLeftmostQuery(Object parsed) {
+        if (parsed instanceof CriteriaSelectImpl) {
+            return getLeftmostQuery(
+                ((CriteriaSelectImpl<?>) parsed).getLeft());
+        }
+        return (CriteriaQueryImpl<?>) parsed;
     }
 
     @Override
@@ -364,38 +425,50 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <X, T, V extends T> Join<X, V> treat(Join<X, T> join, Class<V> type) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        return (Join<X, V>) join;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <X, T, E extends T> CollectionJoin<X, E> treat(CollectionJoin<X, T> join, Class<E> type) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        return (CollectionJoin<X, E>) join;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <X, T, E extends T> SetJoin<X, E> treat(SetJoin<X, T> join, Class<E> type) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        return (SetJoin<X, E>) join;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <X, T, E extends T> ListJoin<X, E> treat(ListJoin<X, T> join, Class<E> type) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        return (ListJoin<X, E>) join;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <X, K, T, V extends T> MapJoin<X, K, V> treat(MapJoin<X, K, T> join, Class<V> type) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        return (MapJoin<X, K, V>) join;
     }
 
     @Override
     public <X, T extends X> Path<T> treat(Path<X> path, Class<T> type) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        if (path instanceof Root) {
+            return (Path<T>) treat((Root<X>) path, type);
+        }
+        // For general paths, return the path cast to the subclass type.
+        // The path already carries the correct parent navigation; we just
+        // need the subclass type for subsequent attribute resolution.
+        return (Path<T>) path;
     }
 
     @Override
     public <X, T extends X> Root<T> treat(Root<X> root, Class<T> type) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        Types.Entity<T> targetEntity = (Types.Entity<T>) _model.entity(type);
+        return new RootImpl.TreatedRoot<>(targetEntity, (RootImpl<X>) root);
     }
 
     @Override
@@ -491,8 +564,7 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 
     @Override
     public Predicate isTrue(Expression<Boolean> x) {
-        if (x instanceof PredicateImpl) {
-            PredicateImpl predicate = (PredicateImpl)x;
+        if (x instanceof PredicateImpl predicate) {
             if (predicate.isEmpty()) {
                 return predicate.getOperator() == BooleanOperator.AND ? PredicateImpl.TRUE() : PredicateImpl.FALSE();
             }
@@ -580,6 +652,8 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 
     @Override
     public <T> Expression<T> literal(T value) {
+        if (value == null)
+            throw new IllegalArgumentException("CriteriaBuilder.literal() does not accept null");
         if (Boolean.TRUE.equals(value))
             return (Expression<T>)PredicateImpl.TRUE();
         if (Boolean.FALSE.equals(value))
@@ -940,6 +1014,7 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 
     @Override
     public CompoundSelection<Object[]> array(Selection<?>... terms) {
+        assertNoCompoundSelections(terms);
         return new CompoundSelections.Array<>(Object[].class, terms);
     }
 
@@ -955,7 +1030,7 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 
     @Override
     public <T> Expression<T> nullLiteral(Class<T> t) {
-        return new Expressions.Constant<>(t, (T)null);
+        return new Expressions.Constant<>(t, null);
     }
 
 
@@ -968,6 +1043,7 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
      */
     @Override
     public CompoundSelection<Tuple> tuple(Selection<?>... selections) {
+        assertNoCompoundSelections(selections);
         return new CompoundSelections.Tuple(selections);
     }
 
@@ -1041,6 +1117,161 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
     @Override
     public Expression<LocalTime> localTime() {
         return new Expressions.CurrentLocalTime();
+    }
+
+	@Override
+	public CompoundSelection<Tuple> tuple(List<Selection<?>> selections) {
+		return tuple(selections.toArray(new Selection<?>[0]));
+	}
+
+	@Override
+	public CompoundSelection<Object[]> array(List<Selection<?>> selections) {
+		return array(selections.toArray(new Selection<?>[0]));
+	}
+
+	@Override
+	public Order asc(Expression<?> expression, Nulls nullPrecedence) {
+		return new OrderImpl(expression, true, nullPrecedence);
+	}
+
+	@Override
+	public Order desc(Expression<?> expression, Nulls nullPrecedence) {
+		return new OrderImpl(expression, false, nullPrecedence);
+	}
+
+	@Override
+	public Predicate and(List<Predicate> restrictions) {
+		return and(restrictions.toArray(new Predicate[0]));
+	}
+
+	@Override
+	public Predicate or(List<Predicate> restrictions) {
+		return or(restrictions.toArray(new Predicate[0]));
+	}
+
+	@Override
+	public Expression<String> concat(List<Expression<String>> expressions) {
+		if (expressions == null || expressions.isEmpty())
+			throw new IllegalArgumentException(
+				"concat requires at least one expression");
+		Expression<String> result = expressions.get(0);
+		for (int i = 1; i < expressions.size(); i++) {
+			result = new Expressions.Concat(result, expressions.get(i));
+		}
+		return result;
+	}
+
+	@Override
+	public Expression<String> left(Expression<String> x, int len) {
+		return new Expressions.Left(x, len);
+	}
+
+	@Override
+	public Expression<String> left(Expression<String> x, Expression<Integer> len) {
+		return new Expressions.Left(x, len);
+	}
+	
+	@Override
+	public Expression<String> right(Expression<String> x, int len) {
+		return new Expressions.Right(x, len);
+	}
+
+	@Override
+	public Expression<String> right(Expression<String> x, Expression<Integer> len) {
+		return new Expressions.Right(x, len);
+	}
+
+	@Override
+	public Expression<String> replace(Expression<String> str, Expression<String> substring, Expression<String> replacement) {
+    	return new Expressions.Replace(str, substring, replacement);
+	}
+
+	@Override
+	public Expression<String> replace(Expression<String> str, String substring, Expression<String> replacement) {
+		return new Expressions.Replace(str, new Expressions.Constant<String>(substring), replacement);
+	}
+
+	@Override
+	public Expression<String> replace(Expression<String> str, Expression<String> substring, String replacement) {
+		return new Expressions.Replace(str, substring, new Expressions.Constant<String>(replacement));
+	}
+
+	@Override
+	public Expression<String> replace(Expression<String> str, String substring, String replacement) {
+		return new Expressions.Replace(str, new Expressions.Constant<String>(substring), new Expressions.Constant<String>(replacement));
+	}
+
+	@Override
+	public <N, T extends Temporal> Expression<N> extract(TemporalField<N, T> field, Expression<T> temporal) {
+		String fieldName = field.toString().toUpperCase();
+		DateTimeExtractField extractField = DateTimeExtractField.valueOf(fieldName);
+		@SuppressWarnings("unchecked")
+		Class<N> resultType = fieldName.equals("SECOND") ? (Class<N>) Double.class : (Class<N>) Integer.class;
+		return new Expressions.ExtractField<>(resultType, extractField, temporal);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> CriteriaSelect<T> union(CriteriaSelect<? extends T> left, CriteriaSelect<? extends T> right) {
+		return new CriteriaSelectImpl<>(QueryExpressions.SET_OP_UNION,
+			left, right, getResultClass(left));
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> CriteriaSelect<T> unionAll(CriteriaSelect<? extends T> left, CriteriaSelect<? extends T> right) {
+		return new CriteriaSelectImpl<>(QueryExpressions.SET_OP_UNION_ALL,
+			left, right, getResultClass(left));
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> CriteriaSelect<T> intersect(CriteriaSelect<? super T> left, CriteriaSelect<? super T> right) {
+		return new CriteriaSelectImpl<>(QueryExpressions.SET_OP_INTERSECT,
+			left, right, (Class<T>) getResultClass(left));
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> CriteriaSelect<T> intersectAll(CriteriaSelect<? super T> left, CriteriaSelect<? super T> right) {
+		return new CriteriaSelectImpl<>(QueryExpressions.SET_OP_INTERSECT_ALL,
+			left, right, (Class<T>) getResultClass(left));
+	}
+
+	@Override
+	public <T> CriteriaSelect<T> except(CriteriaSelect<T> left, CriteriaSelect<?> right) {
+		return new CriteriaSelectImpl<>(QueryExpressions.SET_OP_EXCEPT,
+			left, right, getResultClass(left));
+	}
+
+	@Override
+	public <T> CriteriaSelect<T> exceptAll(CriteriaSelect<T> left, CriteriaSelect<?> right) {
+		return new CriteriaSelectImpl<>(QueryExpressions.SET_OP_EXCEPT_ALL,
+			left, right, getResultClass(left));
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> Class<T> getResultClass(CriteriaSelect<? extends T> select) {
+		if (select instanceof CriteriaQueryImpl) {
+			return ((CriteriaQueryImpl<T>) select).getResultType();
+		}
+		if (select instanceof CriteriaSelectImpl) {
+			return ((CriteriaSelectImpl<T>) select).getResultClass();
+		}
+		return (Class<T>) Object.class;
+	}
+
+    /**
+     * Validates that none of the given selections is a compound (tuple or array) selection.
+     * Per JPA spec, tuple() and array() must not accept compound selection arguments.
+     */
+    private void assertNoCompoundSelections(Selection<?>... selections) {
+        for (Selection<?> s : selections) {
+            if (s.isCompoundSelection()) {
+                throw new IllegalArgumentException(
+                    "A compound selection (tuple or array) must not contain another compound selection");
+            }
+        }
     }
 
 }

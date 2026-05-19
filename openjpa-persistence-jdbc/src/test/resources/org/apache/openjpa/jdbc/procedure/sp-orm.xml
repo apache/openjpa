@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+-->
+<entity-mappings xmlns="https://jakarta.ee/xml/ns/persistence/orm"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence/orm
+    https://jakarta.ee/xml/ns/persistence/orm/orm_3_2.xsd"
+    version="3.2">
+
+    <!-- This should override the annotation-defined "EntityWithStoredProcedure.simple"
+         which maps to TESTSIMPLE. XML overrides it to TESTOVERRIDE procedure. -->
+    <named-stored-procedure-query name="EntityWithStoredProcedure.simple"
+                                  procedure-name="TESTOVERRIDE">
+        <parameter mode="IN" class="java.lang.Integer"/>
+        <parameter mode="OUT" class="java.lang.String"/>
+    </named-stored-procedure-query>
+
+    <!-- Constructor-result mapping test -->
+    <sql-result-set-mapping name="constructorMapping">
+       <constructor-result target-class="org.apache.openjpa.jdbc.procedure.entity.EntityWithStoredProcedure">
+           <column name="ID" class="java.lang.Long"/>
+           <column name="NAME" class="java.lang.String"/>
+       </constructor-result>
+    </sql-result-set-mapping>
+
+</entity-mappings>

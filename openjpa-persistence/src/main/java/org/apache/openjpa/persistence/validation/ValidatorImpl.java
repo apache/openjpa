@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.persistence.validation;
 
-import java.security.AccessController;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -26,6 +25,7 @@ import java.util.Set;
 import jakarta.persistence.ValidationMode;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import jakarta.validation.metadata.BeanDescriptor;
@@ -34,7 +34,6 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.event.LifecycleEvent;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.persistence.JPAProperties;
@@ -274,8 +273,7 @@ public class ValidatorImpl extends AbstractValidator {
     public <T> ValidationException validate(T arg0, int event) {
         if (!isValidating(event))
             return null;
-        Set<ConstraintViolation<T>> violations = AccessController.doPrivileged(
-                J2DoPrivHelper.validateAction(_validator, arg0, getValidationGroup(event)));
+        Set<ConstraintViolation<T>> violations = _validator.validate(arg0, getValidationGroup(event));
 
         if (violations != null && violations.size() > 0) {
             return new ValidationException(
@@ -283,7 +281,7 @@ public class ValidatorImpl extends AbstractValidator {
                     // A validation constraint failure occurred for class "{0}".
                     _loc.get("validate-failed",
                         arg0.getClass().getName()).getMessage(),
-                    (Set)violations),
+                    (Set) violations),
                 true);
         }
         return null;
@@ -314,7 +312,7 @@ public class ValidatorImpl extends AbstractValidator {
                     // property "{1}" in class "{0}".
                     _loc.get("valdiate-property-failed",
                         arg0.getClass().getName(),property).getMessage(),
-                    (Set)violations),
+                    (Set) violations),
                 true);
         }
         return null;
@@ -346,7 +344,7 @@ public class ValidatorImpl extends AbstractValidator {
                     // value "{2}" of property "{1}" in class "{0}".
                     _loc.get("validate-value-failed", arg0.getName(),
                         arg1, arg2.toString()).getMessage(),
-                    (Set)violations),
+                    (Set) violations),
                 true);
         }
         return null;
@@ -376,7 +374,7 @@ public class ValidatorImpl extends AbstractValidator {
     private ValidatorFactory getDefaultValidatorFactory() {
         ValidatorFactory factory = null;
         try {
-            factory = AccessController.doPrivileged(J2DoPrivHelper.buildDefaultValidatorFactoryAction());
+        	factory = Validation.buildDefaultValidatorFactory();
         } catch (jakarta.validation.ValidationException e) {
             if (_log != null && _log.isTraceEnabled())
                 _log.trace(_loc.get("factory-create-failed"), e);

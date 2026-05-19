@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.datacache;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import jakarta.persistence.EntityManagerFactory;
 
@@ -31,8 +32,9 @@ import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectA;
 import org.apache.openjpa.persistence.test.AllowFailure;
 
 @AllowFailure(message="surefire excluded")
-public class TestUniteratedQueryResult
-    extends AbstractTestCase {
+public class TestUniteratedQueryResult extends AbstractTestCase {
+	
+	private static final Logger logger = Logger.getLogger(TestUniteratedQueryResult.class.getCanonicalName());
 
     public TestUniteratedQueryResult(String test) {
         super(test, "datacachecactusapp");
@@ -42,7 +44,7 @@ public class TestUniteratedQueryResult
 
     @Override
     public void setUp() {
-        System.out.println("****Deleted Records "
+        logger.fine("****Deleted Records "
             + deleteAll(CacheObjectA.class));
         Map propsMap = new HashMap();
         propsMap.put("openjpa.DataCache", "true");

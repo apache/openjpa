@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.datacache;
 
-import java.security.AccessController;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -100,10 +99,7 @@ public class ClearableScheduler implements Runnable {
         _clearables.put(clearable, schedule);
         _stop = false;
         if (_thread == null) {
-            _thread =
-                AccessController.doPrivileged(J2DoPrivHelper
-                    .newDaemonThreadAction(this, _loc.get("scheduler-name")
-                        .getMessage()));
+            _thread = J2DoPrivHelper.newDeamonThread(this, _loc.get("scheduler-name").getMessage());
             _thread.start();
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("scheduler-start", _thread.getName()));

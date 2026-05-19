@@ -28,8 +28,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.lang.reflect.Modifier;
-import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -63,6 +64,7 @@ import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.ProxyManager;
+import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
 
@@ -189,6 +191,9 @@ public class FieldMetaData
     private boolean _generated = false;
     private boolean _useSchemaElement = true;
     private Class _converter;
+    // Map of attributeName -> converterClass for embedded converters
+    // e.g., from @Convert(converter=X.class, attributeName="foo") on an embedded field
+    private Map<String, Class> _embeddedConverters;
 
     // Members aren't serializable. Use a proxy that can provide a Member
     // to avoid writing the full Externalizable implementation.
@@ -200,8 +205,10 @@ public class FieldMetaData
     private transient Member _factMethod = DEFAULT_METHOD;
 
     private transient Constructor _converterConstructor;
+    private transient Object _converterInstance;
     private transient Method _converterExtMethod;
     private transient Method _converterFactMethod;
+    private transient Class _converterDbType;
     
     // intermediate and impl data
     private boolean _intermediate = true;
@@ -265,8 +272,7 @@ public class FieldMetaData
 
         Class<?> type;
         Class<?>[] types;
-        if (member instanceof Field) {
-            Field f = (Field) member;
+        if (member instanceof Field f) {
             type = f.getType();
             types = JavaVersions.getParameterizedTypes(f);
             setAccessType(AccessCode.FIELD);
@@ -1300,8 +1306,19 @@ public class FieldMetaData
      * Whether the field is externalized.
      */
     public boolean isExternalized() {
-        return getExternalizerMethod() != null
-            || getExternalValueMap() != null;
+        if (getExternalizerMethod() != null
+            || getExternalValueMap() != null) {
+            return true;
+        }
+        // Converter on a non-collection/map field => externalized.
+        // Arrays (e.g. char[]) with a converter are also externalized.
+        if (getConverter() != null) {
+            int tc = getDeclaredTypeCode();
+            if (tc != JavaTypes.COLLECTION && tc != JavaTypes.MAP) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -1335,14 +1352,14 @@ public class FieldMetaData
                 // non-static val.toExternal([ctx]) method
                 if (Modifier.isStatic(externalizer.getModifiers())) {
                     if (externalizer.getParameterTypes().length == 1)
-                        return externalizer.invoke(null, new Object[]{ val });
-                    return externalizer.invoke(null, new Object[]{ val, ctx });
+                        return externalizer.invoke(null, val);
+                    return externalizer.invoke(null, val, ctx);
                 }
                 if (val == null)
                     return null;
                 if (externalizer.getParameterTypes().length == 0)
                     return externalizer.invoke(val, (Object[]) null);
-                return externalizer.invoke(val, new Object[]{ ctx });
+                return externalizer.invoke(val, ctx);
             } catch (OpenJPAException ke) {
                 throw ke;
             } catch (Exception e) {
@@ -1354,17 +1371,22 @@ public class FieldMetaData
         Class converter = getConverter();
         if (converter != null && val != null) {
             try {
-                // TODO support CDI (OPENJPA-2714)
-                if (_converterConstructor == null) {
-                    _converterConstructor = converter.getDeclaredConstructor();
+                Object instance = getConverterInstance();
+                Method m = getConverterToDatabaseMethod();
+                return m.invoke(instance, val);
+            } catch (InvocationTargetException ite) {
+                Throwable cause = ite.getTargetException();
+                if (cause instanceof RuntimeException) {
+                    // JPA spec: converter RuntimeExceptions must be
+                    // wrapped in PersistenceException. Wrap in
+                    // StoreException so the persistence layer can
+                    // translate it.
+                    throw new StoreException(cause.getMessage())
+                        .setCause(cause);
                 }
-                Object instance = _converterConstructor.newInstance();
-
-                // see AttributeConverter.java from the JPA specs
-                if (_converterExtMethod == null) {
-                    _converterExtMethod = converter.getDeclaredMethod("convertToDatabaseColumn", Object.class);
-                }
-                return _converterExtMethod.invoke(instance, val);
+                throw new MetaDataException(_loc.get("converter-err", this,
+                    Exceptions.toString(val),
+                    cause.toString())).setCause(cause);
             } catch (OpenJPAException ke) {
                 throw ke;
             } catch (Exception e) {
@@ -1390,8 +1412,7 @@ public class FieldMetaData
         if (factory != null) {
             try {
                 if (val == null && getNullValue() == NULL_DEFAULT)
-                    return AccessController.doPrivileged(
-                        J2DoPrivHelper.newInstanceAction(getDeclaredType()));
+                    return J2DoPrivHelper.newInstance(getDeclaredType());
 
                 // invoke either the constructor for the field type,
                 // or the static type.toField(val[, ctx]) method
@@ -1399,13 +1420,13 @@ public class FieldMetaData
                     if (val == null)
                         return null;
                     return ((Constructor) factory).newInstance
-                        (new Object[]{ val });
+                        (val);
                 }
 
                 Method meth = (Method) factory;
                 if (meth.getParameterTypes().length == 1)
-                    return meth.invoke(null, new Object[]{ val });
-                return meth.invoke(null, new Object[]{ val, ctx });
+                    return meth.invoke(null, val);
+                return meth.invoke(null, val, ctx);
             } catch (Exception e) {
                 // unwrap cause
                 if (e instanceof InvocationTargetException) {
@@ -1434,17 +1455,22 @@ public class FieldMetaData
         Class converter = getConverter();
         if (converter != null && val != null) {
             try {
-                // TODO support CDI (OPENJPA-2714)
-                if (_converterConstructor == null) {
-                    _converterConstructor = converter.getDeclaredConstructor();
+                Object instance = getConverterInstance();
+                Method m = getConverterToEntityMethod();
+                return m.invoke(instance, val);
+            } catch (InvocationTargetException ite) {
+                Throwable cause = ite.getTargetException();
+                if (cause instanceof RuntimeException) {
+                    // JPA spec: converter RuntimeExceptions must be
+                    // wrapped in PersistenceException. Wrap in
+                    // StoreException so the persistence layer can
+                    // translate it.
+                    throw new StoreException(cause.getMessage())
+                        .setCause(cause);
                 }
-                Object instance = _converterConstructor.newInstance();
-
-                // see AttributeConverter.java from the JPA specs
-                if (_converterFactMethod == null) {
-                    _converterFactMethod = converter.getDeclaredMethod("convertToEntityAttribute", Object.class);
-                }
-                return _converterFactMethod.invoke(instance, val);
+                throw new MetaDataException(_loc.get("converter-err", this,
+                    Exceptions.toString(val),
+                    cause.toString())).setCause(cause);
             } catch (OpenJPAException ke) {
                 throw ke;
             } catch (Exception e) {
@@ -1475,8 +1501,118 @@ public class FieldMetaData
         _converter = converter;
         _converterExtMethod = null;
         _converterFactMethod = null;
+        _converterInstance = null;
+        _converterDbType = null;
     }
-    
+
+    /**
+     * Get (or create) a cached instance of the converter class.
+     */
+    private Object getConverterInstance() throws Exception {
+        if (_converterInstance == null) {
+            Class converter = getConverter();
+            if (converter == null) {
+                return null;
+            }
+            if (_converterConstructor == null) {
+                _converterConstructor = converter.getDeclaredConstructor();
+                _converterConstructor.setAccessible(true);
+            }
+            _converterInstance = _converterConstructor.newInstance();
+        }
+        return _converterInstance;
+    }
+
+    /**
+     * Resolve the convertToDatabaseColumn method on the converter.
+     * Searches through the class hierarchy to find the actual typed method
+     * from AttributeConverter, not just the bridge method with Object params.
+     */
+    private Method getConverterToDatabaseMethod() {
+        if (_converterExtMethod == null) {
+            _converterExtMethod = findConverterMethod(
+                getConverter(), "convertToDatabaseColumn");
+        }
+        return _converterExtMethod;
+    }
+
+    /**
+     * Resolve the convertToEntityAttribute method on the converter.
+     */
+    private Method getConverterToEntityMethod() {
+        if (_converterFactMethod == null) {
+            _converterFactMethod = findConverterMethod(
+                getConverter(), "convertToEntityAttribute");
+        }
+        return _converterFactMethod;
+    }
+
+    /**
+     * Find a converter method by name, preferring the typed (non-bridge)
+     * version over the bridge method with Object parameter.
+     */
+    private static Method findConverterMethod(Class converterClass,
+            String methodName) {
+        Method bridge = null;
+        for (Method m : converterClass.getMethods()) {
+            if (!m.getName().equals(methodName))
+                continue;
+            if (m.getParameterCount() != 1)
+                continue;
+            if (m.isBridge()) {
+                bridge = m;
+                continue;
+            }
+            // Found the non-bridge (typed) method
+            m.setAccessible(true);
+            return m;
+        }
+        // Fall back to bridge method
+        if (bridge != null) {
+            bridge.setAccessible(true);
+            return bridge;
+        }
+        throw new MetaDataException("No method " + methodName
+            + " found on converter " + converterClass.getName());
+    }
+
+    /**
+     * Return the database column type for this converter, i.e. the Y type
+     * in AttributeConverter&lt;X,Y&gt;. Returns null if no converter is set.
+     */
+    public Class getConverterDatabaseType() {
+        if (_converter == null)
+            return null;
+        if (_converterDbType == null) {
+            _converterDbType = resolveConverterDatabaseType(_converter);
+        }
+        return _converterDbType;
+    }
+
+    /**
+     * Extract the database type (second type argument) from an
+     * AttributeConverter implementation class.
+     */
+    private static Class resolveConverterDatabaseType(Class converterClass) {
+        for (Type iface : converterClass.getGenericInterfaces()) {
+            if (iface instanceof ParameterizedType pt) {
+                Type rawType = pt.getRawType();
+                if (rawType instanceof Class
+                        && "jakarta.persistence.AttributeConverter"
+                            .equals(((Class) rawType).getName())) {
+                    Type dbArg = pt.getActualTypeArguments()[1];
+                    if (dbArg instanceof Class<?>)
+                        return (Class) dbArg;
+                }
+            }
+        }
+        // Check superclass
+        Class superclass = converterClass.getSuperclass();
+        if (superclass != null && superclass != Object.class)
+            return resolveConverterDatabaseType(superclass);
+        return Object.class;
+    }
+
     /**
      * The name of this field's factory, or null if none.
      */
@@ -1548,7 +1684,7 @@ public class FieldMetaData
         Map.Entry entry;
         Object extValue, fieldValue;
         for (Map.Entry<Object, Object> objectObjectEntry : values.entrySet()) {
-            entry = (Map.Entry) objectObjectEntry;
+            entry = objectObjectEntry;
             fieldValue = transform((String) entry.getKey(),
                     getDeclaredTypeCode());
             extValue = transform((String) entry.getValue(), getTypeCode());
@@ -1633,7 +1769,7 @@ public class FieldMetaData
                 try {
                     if (_factName == null)
                         _factMethod = getDeclaredType().getConstructor
-                            (new Class[]{ getType() });
+                            (getType());
                     else
                     	_factMethod = findMethodByNameAndType(_factName, getType());
                 } catch (OpenJPAException ke) {
@@ -1943,11 +2079,27 @@ public class FieldMetaData
         if (externalizer != null)
             setType(externalizer.getReturnType());
 
+        // Apply auto-apply converters if no explicit converter is set
+        // and no externalizer is configured
+        if (_converter == null && externalizer == null
+                && _manage == MANAGE_PERSISTENT) {
+            applyAutoApplyConverter();
+        }
+
         // only pass on metadata resolve mode so that metadata is always
         // resolved before any other resolve modes our subclasses pass along
         _val.resolve(MODE_META);
         _key.resolve(MODE_META);
         _elem.resolve(MODE_META);
+
+        // Propagate embedded converters to the embedded class fields.
+        // This must happen AFTER _val.resolve(MODE_META) because the
+        // embedded metadata's resolveMeta() copies fields from the
+        // "real" type metadata, which would overwrite any converters
+        // set before the copy.
+        if (_embeddedConverters != null && !_embeddedConverters.isEmpty()) {
+            propagateEmbeddedConverters();
+        }
 
         MetaDataRepository repos = getRepository();
         int validate = repos.getValidate();
@@ -1962,6 +2114,66 @@ public class FieldMetaData
             validateExtensionKeys();
         }
         return false;
+    }
+
+    /**
+     * Check if an auto-apply converter is registered for this field's
+     * declared type, and if so, set it as the converter.
+     */
+    private void applyAutoApplyConverter() {
+        Class declType = getDeclaredType();
+        if (declType == null || declType.isPrimitive())
+            return;
+        // Don't apply converters to ID fields, version fields, or
+        // relationship fields
+        if (isPrimaryKey() || isVersion())
+            return;
+        int tc = getDeclaredTypeCode();
+        if (tc == JavaTypes.PC
+            || tc == JavaTypes.COLLECTION || tc == JavaTypes.MAP)
+            return;
+        Class<?> converterCls = getRepository()
+            .getAutoApplyConverter(declType);
+        if (converterCls != null) {
+            setConverter(converterCls);
+        }
+    }
+
+    /**
+     * Propagate embedded converters from this field to the fields of the
+     * embedded class. Called when this field has @Converts annotations
+     * specifying converters for embedded attributes.
+     */
+    private void propagateEmbeddedConverters() {
+        // Always set converters on the "real" type metadata so that
+        // the mapping template has the correct strategy/column types
+        ClassMetaData typeMeta = getRepository().getMetaData(
+            getDeclaredType(), null, false);
+        if (typeMeta != null) {
+            for (Map.Entry<String, Class> entry
+                    : _embeddedConverters.entrySet()) {
+                String attrName = entry.getKey();
+                Class convClass = entry.getValue();
+                FieldMetaData typeField = typeMeta.getField(attrName);
+                if (typeField != null) {
+                    typeField.setConverter(convClass);
+                }
+            }
+        }
+
+        // Also set on the embedded metadata copy if it exists
+        ClassMetaData embeddedMeta = _val.getEmbeddedMetaData();
+        if (embeddedMeta != null) {
+            for (Map.Entry<String, Class> entry
+                    : _embeddedConverters.entrySet()) {
+                String attrName = entry.getKey();
+                Class convClass = entry.getValue();
+                FieldMetaData embField = embeddedMeta.getField(attrName);
+                if (embField != null) {
+                    embField.setConverter(convClass);
+                }
+            }
+        }
     }
 
     /**
@@ -2102,6 +2314,9 @@ public class FieldMetaData
         _orderDec = field._orderDec;
         _useSchemaElement = field._useSchemaElement;
         _converter = field._converter;
+        if (field._embeddedConverters != null) {
+            _embeddedConverters = new HashMap<>(field._embeddedConverters);
+        }
 
         // embedded fields can't be versions
         if (_owner.getEmbeddingMetaData() == null && _version == null)
@@ -2410,21 +2625,16 @@ public class FieldMetaData
             String memberName = (String) in.readObject();
             try {
                 if (isField)
-                    _member = AccessController.doPrivileged(
-                        J2DoPrivHelper.getDeclaredFieldAction(
-                            cls, memberName));
+                    _member = cls.getDeclaredField(memberName);
                 else {
                     Class<?>[] parameterTypes = (Class[]) in.readObject();
-                    _member = AccessController.doPrivileged(
-                        J2DoPrivHelper.getDeclaredMethodAction(
-                            cls, memberName, parameterTypes));
+                    _member = cls.getDeclaredMethod(memberName, parameterTypes);
                 }
             } catch (SecurityException e) {
                 IOException ioe = new IOException(e.getMessage(), e);
                 throw ioe;
-            } catch (PrivilegedActionException pae) {
-                IOException ioe = new IOException(
-                    pae.getException().getMessage(), pae);
+            } catch (NoSuchFieldException | NoSuchMethodException e) {
+                IOException ioe = new IOException(e.getMessage(), e);
                 throw ioe;
             }
         }
@@ -2561,6 +2771,27 @@ public class FieldMetaData
     }
 
     public String getSetterName() {
+        // If the backing member is a getter method, derive setter name from it
+        // to preserve the original case (e.g. getdescription -> setdescription)
+        Member backingMember = getBackingMember();
+        if (backingMember instanceof Method) {
+            String getterName = backingMember.getName();
+            String derivedSetterName = null;
+            if (getterName.startsWith("get")) {
+                derivedSetterName = "set" + getterName.substring(3);
+            } else if (getterName.startsWith("is")) {
+                derivedSetterName = "set" + getterName.substring(2);
+            }
+            if (derivedSetterName != null) {
+                Class<?> type = getDeclaringMetaData().getDescribedType();
+                try {
+                    type.getDeclaredMethod(derivedSetterName, getType());
+                    return derivedSetterName;
+                } catch (Exception e) {
+                    // fall through to capitalize approach
+                }
+            }
+        }
         String setterName = "set" + StringUtil.capitalize(_name);
         if (_name.length() > 1 && Character.isLowerCase(_name.charAt(0)) && Character.isUpperCase(_name.charAt(1))) {
             // We have the special case where the first char is lower, and the
@@ -2584,5 +2815,23 @@ public class FieldMetaData
 
     public Class getConverter() {
         return _converter;
+    }
+
+    /**
+     * Add a converter for an attribute within an embedded object.
+     * Used when @Convert specifies an attributeName on an embedded field.
+     */
+    public void addEmbeddedConverter(String attributeName, Class converterClass) {
+        if (_embeddedConverters == null)
+            _embeddedConverters = new HashMap<>();
+        _embeddedConverters.put(attributeName, converterClass);
+    }
+
+    /**
+     * Return the map of embedded converters (attributeName -> converterClass),
+     * or null if none.
+     */
+    public Map<String, Class> getEmbeddedConverters() {
+        return _embeddedConverters;
     }
 }

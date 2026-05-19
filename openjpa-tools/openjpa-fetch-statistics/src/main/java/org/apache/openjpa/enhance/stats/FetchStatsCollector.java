@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.enhance.stats;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
@@ -55,20 +53,14 @@ public final class FetchStatsCollector {
 
     static {
         Runtime.getRuntime().addShutdownHook(new Shutdown());
-        AccessController.doPrivileged(new PrivilegedAction<Object>() {
+        TimerTask statsOutputTask = new TimerTask() {
             @Override
-            public Object run() {
-                TimerTask statsOutputTask = new TimerTask() {
-                    @Override
-                    public void run() {
-                        dump();
-                    }
-                };
-                timer = new Timer();
-                timer.schedule(statsOutputTask, DEFAULT_INTERVAL, DEFAULT_INTERVAL);
-                return null;
+            public void run() {
+                dump();
             }
-        });
+        };
+        timer = new Timer();
+        timer.schedule(statsOutputTask, DEFAULT_INTERVAL, DEFAULT_INTERVAL);
     }
 
     public static void registerEntity(ClassMetaData cmd) {

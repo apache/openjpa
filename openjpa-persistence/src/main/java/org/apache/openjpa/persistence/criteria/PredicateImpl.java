@@ -202,6 +202,7 @@ abstract class PredicateImpl extends ExpressionImpl<Boolean> implements Predicat
         if (isNegated()) buffer.insert(0, "NOT ");
         return buffer;
     }
+    
 
     /**
      * Concrete AND predicate.

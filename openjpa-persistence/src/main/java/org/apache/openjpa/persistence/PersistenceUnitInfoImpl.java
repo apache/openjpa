@@ -24,8 +24,6 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,7 +32,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import jakarta.persistence.PersistenceConfiguration;
 import jakarta.persistence.SharedCacheMode;
 import jakarta.persistence.ValidationMode;
 import jakarta.persistence.spi.ClassTransformer;
@@ -49,6 +49,7 @@ import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.MultiClassLoader;
+import org.apache.openjpa.lib.util.TemporaryClassLoader;
 import org.apache.openjpa.util.ClassResolver;
 
 /**
@@ -84,6 +85,8 @@ public class PersistenceUnitInfoImpl
     private String _schemaVersion = "1.0";
     private ValidationMode _validationMode;
     private SharedCacheMode _sharedCacheMode;
+    private List<String> _qualifierAnnotationNames;
+    private String _scopeAnnotationName;
 
     // A persistence unit is defined by a persistence.xml file. The jar
     // file or directory whose META-INF directory contains the
@@ -105,9 +108,7 @@ public class PersistenceUnitInfoImpl
 
     @Override
     public ClassLoader getNewTempClassLoader() {
-        return AccessController.doPrivileged(J2DoPrivHelper
-            .newTemporaryClassLoaderAction(AccessController
-                .doPrivileged(J2DoPrivHelper.getContextClassLoaderAction())));
+    	return new TemporaryClassLoader(Thread.currentThread().getContextClassLoader());
     }
 
     @Override
@@ -248,14 +249,12 @@ public class PersistenceUnitInfoImpl
     }
 
     public void validateJarFileName(String name) {
-        ClassLoader contextClassLoader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
-        MultiClassLoader loader = AccessController
-            .doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
+        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+        MultiClassLoader loader = new MultiClassLoader();
         loader.addClassLoader(contextClassLoader);
         loader.addClassLoader(getClass().getClassLoader());
         loader.addClassLoader(MultiClassLoader.THREAD_LOADER);
-        URL url = AccessController.doPrivileged(
-            J2DoPrivHelper.getResourceAction(loader, name));
+        URL url = loader.getResource(name);
         if (url != null) {
             addJarFile(url);
             return;
@@ -279,8 +278,7 @@ public class PersistenceUnitInfoImpl
         }
 
         if (classPath == null) {
-            classPath = AccessController.doPrivileged(
-                    J2DoPrivHelper.getPropertyAction("java.class.path"));
+            classPath = System.getProperty("java.class.path");
         }
         String[] cp = classPath.split(J2DoPrivHelper.getPathSeparator());
 
@@ -288,12 +286,9 @@ public class PersistenceUnitInfoImpl
             if (s.equals(name)
                     || s.endsWith(File.separatorChar + name)) {
                 try {
-                    addJarFile(AccessController
-                            .doPrivileged(J2DoPrivHelper
-                                    .toURLAction(new File(s))));
+                    addJarFile(new File(s).toURI().toURL());
                     return;
-                }
-                catch (PrivilegedActionException | MalformedURLException pae) {
+                } catch (MalformedURLException pae) {
                     break;
                 }
             }
@@ -369,6 +364,12 @@ public class PersistenceUnitInfoImpl
                     setJtaDataSource((DataSource) val);
                 }
             } else if (JPAProperties.DATASOURCE_NONJTA.equals(key)) {
+                if (val instanceof String) {
+                    setNonJtaDataSourceName((String) val);
+                } else {
+                    setNonJtaDataSource((DataSource) val);
+                }
+            } else if (JPAProperties.DATASOURCE.equals(key)) {
                 if (val instanceof String) {
                     setNonJtaDataSourceName((String) val);
                 } else {
@@ -614,4 +615,52 @@ public class PersistenceUnitInfoImpl
     public void setSharedCacheMode(SharedCacheMode mode) {
         _sharedCacheMode = mode;
     }
+    
+    public void setScopeAnnotationName(String scopeAnnotationName) {
+    	_scopeAnnotationName = scopeAnnotationName;
+    }
+
+	@Override
+	public String getScopeAnnotationName() {
+    	return _scopeAnnotationName;
+	}
+	
+	public void addQualifierAnnotationNames(String qualifierAnnotationName) {
+		if (_qualifierAnnotationNames == null) {
+			_qualifierAnnotationNames = new ArrayList<String>();
+		}
+		_qualifierAnnotationNames.add(qualifierAnnotationName);
+	}
+
+	@Override
+	public List<String> getQualifierAnnotationNames() {
+		if (_qualifierAnnotationNames == null) {
+			return List.of();
+		}
+    	return _qualifierAnnotationNames;
+	}
+	
+	public static PersistenceUnitInfoImpl convert(PersistenceConfiguration config) {
+		PersistenceUnitInfoImpl pinfo = new PersistenceUnitInfoImpl();
+		pinfo.setJtaDataSourceName(config.jtaDataSource());
+		pinfo.setNonJtaDataSourceName(config.nonJtaDataSource());
+		pinfo.setPersistenceProviderClassName(config.provider());
+		pinfo.setPersistenceUnitName(config.name());
+		pinfo.setSharedCacheMode(config.sharedCacheMode());
+		pinfo.setTransactionType(config.transactionType() == jakarta.persistence.PersistenceUnitTransactionType.JTA ? 
+				PersistenceUnitTransactionType.JTA : PersistenceUnitTransactionType.RESOURCE_LOCAL);
+		pinfo.setValidationMode(config.validationMode());
+		List<Class<?>> managedClasses = config.managedClasses();
+		if (managedClasses != null && !managedClasses.isEmpty()) {
+			String managedClassesList = managedClasses.stream().map(Class::getName).collect(Collectors.joining(";"));
+			String old = config.properties().containsKey("openjpa.MetaDataFactory")
+					? "," + config.properties().get("openjpa.MetaDataFactory").toString()
+					: "";
+			config.property("openjpa.MetaDataFactory", "jpa(Types=" + managedClassesList + old + ")");
+		}
+		config.property("openjpa.noPersistenceXMLResource", true);
+		pinfo.setPersistenceUnitName(config.name());
+		return pinfo;
+	}
+	
 }

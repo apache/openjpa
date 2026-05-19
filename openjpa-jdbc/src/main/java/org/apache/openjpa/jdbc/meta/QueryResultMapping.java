@@ -64,6 +64,7 @@ public class QueryResultMapping
     private String[] _comments = null;
     private List<Object> _colList = null;  // list of column ids, typically the column name.
     private List<PCResult> _pcList = null;
+    private List<ConstructorResultInfo> _constructorResults = null;
 
     private PCResult[] _pcs = null;
     private Object[] _cols = null;
@@ -144,6 +145,27 @@ public class QueryResultMapping
             _pcs = pcs;
         }
         return _pcs;
+    }
+
+    /**
+     * Return the mapped constructor results in the query result.
+     */
+    public ConstructorResultInfo[] getConstructorResults() {
+        if (_constructorResults == null)
+            return new ConstructorResultInfo[0];
+        return _constructorResults.toArray(
+            new ConstructorResultInfo[_constructorResults.size()]);
+    }
+
+    /**
+     * Add a mapped constructor result with the given target class.
+     */
+    public ConstructorResultInfo addConstructorResult(Class<?> targetClass) {
+        if (_constructorResults == null)
+            _constructorResults = new ArrayList<>();
+        ConstructorResultInfo cr = new ConstructorResultInfo(targetClass);
+        _constructorResults.add(cr);
+        return cr;
     }
 
     /**
@@ -561,6 +583,54 @@ public class QueryResultMapping
                 _constructorParams = new ArrayList<>();
             }
             _constructorParams.add(name);
+        }
+    }
+
+    /**
+     * A constructor result mapping that maps SQL result columns to a
+     * constructor of a target class.
+     */
+    public static class ConstructorResultInfo {
+
+        private final Class<?> _targetClass;
+        private final List<ColumnInfo> _columns = new ArrayList<>();
+
+        public ConstructorResultInfo(Class<?> targetClass) {
+            _targetClass = targetClass;
+        }
+
+        public Class<?> getTargetClass() {
+            return _targetClass;
+        }
+
+        public void addColumn(String name, Class<?> type) {
+            _columns.add(new ColumnInfo(name, type));
+        }
+
+        public List<ColumnInfo> getColumns() {
+            return _columns;
+        }
+    }
+
+    /**
+     * Column info for a constructor result.
+     */
+    public static class ColumnInfo {
+
+        private final String _name;
+        private final Class<?> _type;
+
+        public ColumnInfo(String name, Class<?> type) {
+            _name = name;
+            _type = type;
+        }
+
+        public String getName() {
+            return _name;
+        }
+
+        public Class<?> getType() {
+            return _type;
         }
     }
 

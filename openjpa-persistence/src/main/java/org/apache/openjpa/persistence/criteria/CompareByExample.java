@@ -69,7 +69,7 @@ class CompareByExample<T> extends PredicateImpl {
                 this.add(p);
                 continue;
             }
-            if (attr.isAssociation()) {
+            if (attr.getType() instanceof ManagedType) {
                 p = new CompareByExample(builder, (ManagedType<?>)attr.getType(),
                         from.get(attr), value, style, excludes);
             } else if (attr.getJavaType() == String.class) {
@@ -125,4 +125,5 @@ class CompareByExample<T> extends PredicateImpl {
     static <T> BooleanOperator extractOperator(ComparisonStyle style) {
         return style == null ? BooleanOperator.AND : style.isDisjunction() ? BooleanOperator.OR : BooleanOperator.AND;
     }
+
 }

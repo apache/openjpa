@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import jakarta.persistence.EntityManagerFactory;
 
@@ -41,6 +42,8 @@ import org.apache.openjpa.persistence.test.AllowFailure;
  */
 @AllowFailure(message="surefire excluded")
 public class TestResultShapes extends AbstractTestCase {
+	
+	private static final Logger logger = Logger.getLogger(TestResultShapes.class.getCanonicalName());
 
     public TestResultShapes(String test) {
         super(test, "datacachecactusapp");
@@ -217,16 +220,16 @@ public class TestResultShapes extends AbstractTestCase {
     private void mapHelper(boolean unique, Collection recordClasses,
         Collection results, boolean inCache) {
         Query q = setUpQuery(unique, results);
-        System.out.println("Query String " + q.getQueryString());
+        logger.fine("Query String " + q.getQueryString());
         Collection coll = null;
         if (q.execute() != null && (q.execute() instanceof Collection)) {
             coll = (Collection) q.execute();
         }
-        System.out.println("Type of q.execute is : " + q.execute().getClass());
+        logger.fine("Type of q.execute is : " + q.execute().getClass());
 
         Iterator it = coll.iterator();
         while (it.hasNext())
-            System.out.println("Query result is " + it.next().getClass());
+        	logger.fine("Query result is " + it.next().getClass());
 
         q.setResultType(HashMap.class);
 
@@ -303,7 +306,7 @@ public class TestResultShapes extends AbstractTestCase {
 
         if (unique)
             filter += " where a.age = 0";
-        System.out.println("****Query: " + filter);
+        logger.fine("****Query: " + filter);
         Query q = _broker.newQuery(JPQLParser.LANG_JPQL, filter);
         q.setUnique(unique);
         q.setCandidateType(CacheObjectAChild1.class, false);

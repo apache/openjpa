@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.lib.meta;
 
-import java.security.AccessController;
-
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 
@@ -47,11 +45,9 @@ public class SourceTrackers {
         buf.append(_loc.get("source-trackers-location-header")).append(SEP);
         String sourceFilePath;
         for (int i = 0; i < trackers.length; i++) {
-            sourceFilePath = (trackers[i].getSourceFile() == null ?
-                _loc.get("source-tracker-file-unknown").getMessage() :
-                AccessController.doPrivileged(
-                    J2DoPrivHelper.getAbsolutePathAction(
-                        trackers[i].getSourceFile())));
+            sourceFilePath = (trackers[i].getSourceFile() == null ? 
+            		_loc.get("source-tracker-file-unknown").getMessage() : 
+            			trackers[i].getSourceFile().getAbsolutePath());
             buf.append("  ").append(_loc.get(
                 "source-trackers-location-line-item",
                 trackers[i].getResourceName(), sourceFilePath));

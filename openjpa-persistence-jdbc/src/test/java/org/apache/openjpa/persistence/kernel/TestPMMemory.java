@@ -29,6 +29,7 @@ package org.apache.openjpa.persistence.kernel;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.openjpa.event.AbstractTransactionListener;
 import org.apache.openjpa.event.TransactionEvent;
@@ -39,6 +40,8 @@ import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 
 public class TestPMMemory extends BaseKernelTest {
+	
+	private static final Logger logger = Logger.getLogger(TestPMMemory.class.getCanonicalName());
 
     /**
      * Creates a new instance of TestPMMemory
@@ -68,10 +71,9 @@ public class TestPMMemory extends BaseKernelTest {
 
     @Override
     public void setUp() {
-        System.out.println("About to delete all");
+        // About to delete all
         deleteAllStaged(getPM(), RuntimeTest1.class);
         // deleteAll (RuntimeTest1.class);
-        System.out.println("Done delete all");
     }
 
     public void deleteAllStaged(OpenJPAEntityManager pmArg, Class classType) {
@@ -101,7 +103,7 @@ public class TestPMMemory extends BaseKernelTest {
                 needToDelete = false;
                 break;
             }
-            System.out.println("We need to delete " + results.size());
+            // We need to delete results.size() items
             Iterator iter = results.iterator();
             while (iter.hasNext()) {
                 pm.remove(iter.next());
@@ -113,11 +115,11 @@ public class TestPMMemory extends BaseKernelTest {
                     break;
                 }
             }
-            System.out.print("deleted 200");
+            // deleted 200
             endTx(pm);
             endEm(pm);
         }
-        System.out.println("Done deleting");
+        // Done deleting
     }
 
     private void reportMemory() {
@@ -135,8 +137,7 @@ public class TestPMMemory extends BaseKernelTest {
         System.gc();
         long memUsed = Runtime.getRuntime().totalMemory();
         long memFree = Runtime.getRuntime().freeMemory();
-        System.out.println("" + msg + " : " + memUsed + ", " +
-            memFree);
+        logger.fine("" + msg + " : " + memUsed + ", " + memFree);
     }
 
     private void pause(double seconds) {
@@ -153,8 +154,7 @@ public class TestPMMemory extends BaseKernelTest {
 
     public void testMemoryUse() throws Exception {
 
-        System.out.println("Baseline, starting memory for N objects of " +
-            NUM_OBJECTS);
+        // Baseline, starting memory for N objects of NUM_OBJECTS
         OpenJPAEntityManagerFactory kpmf =
             (OpenJPAEntityManagerFactory) getEmf();
         OpenJPAEntityManager kpm = (OpenJPAEntityManager)
@@ -164,17 +164,14 @@ public class TestPMMemory extends BaseKernelTest {
         int runningId = performAddsModifiesDeletes(kpm, NUM_OBJECTS, 0);
         endTx(kpm);
 
-        System.out.println("Baseline, starting memory ");
+        // Baseline, starting memory
         reportMemory();
 
         TransactionListener l = new AbstractTransactionListener() {
             @Override
             public void afterCommit(TransactionEvent ev) {
-                System.out.println(
-                    "My Listener in afterCommit");
-                System.out.println(
-                    "Num objects in transaction "
-                        + ev.getTransactionalObjects().size());
+                logger.finest("My Listener in afterCommit");
+                logger.finest("Num objects in transaction " + ev.getTransactionalObjects().size());
 
                 // send out an email confirming that the
                 // transaction was a success
@@ -190,9 +187,7 @@ public class TestPMMemory extends BaseKernelTest {
         startTx(kpm);
         int objCount = 0;
         for (int i = 0; i < NUM_FLUSHES; i++) {
-            System.out.println();
-            System.out.println("Iteration #" + i + " created " +
-                objCount);
+            logger.fine("Iteration #" + i + " created " + objCount);
             reportMemory();
             //kpm.setLargeTransaction(true);
             kpm.setTrackChangesByType(true);
@@ -203,11 +198,11 @@ public class TestPMMemory extends BaseKernelTest {
             //    pause(30);
         }
 
-        System.out.println("Created objects, about to commit ()");
+        logger.fine("Created objects, about to commit ()");
         pause(90);
         endTx(kpm);
         pause(1);
-        System.out.println("Now commit ()");
+        logger.fine("Now commit ()");
         reportMemory();
         pause(33);
     }
@@ -222,7 +217,7 @@ public class TestPMMemory extends BaseKernelTest {
                 glob = new int[size];
                 size *= 2;
             } catch (OutOfMemoryError e) {
-                System.out.println("Mem grabbed " + size);
+                logger.fine("Mem grabbed " + size);
                 grab = false;
                 glob = null;
             }

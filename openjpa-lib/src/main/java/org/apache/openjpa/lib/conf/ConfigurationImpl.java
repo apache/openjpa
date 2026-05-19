@@ -39,7 +39,6 @@ import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -178,10 +177,8 @@ public class ConfigurationImpl
      * {@link ProductDerivation}s, and from System properties.
      */
     public boolean loadGlobals() {
-        MultiClassLoader loader = AccessController
-            .doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
-        loader.addClassLoader(AccessController.doPrivileged(
-            J2DoPrivHelper.getContextClassLoaderAction()));
+        MultiClassLoader loader = new MultiClassLoader();
+        loader.addClassLoader(Thread.currentThread().getContextClassLoader());
         loader.addClassLoader(getClass().getClassLoader());
         ConfigurationProvider provider = ProductDerivations.loadGlobals(loader);
         if (provider != null)
@@ -189,8 +186,7 @@ public class ConfigurationImpl
 
         // let system properties override other globals
         try {
-            Properties systemProperties = AccessController.doPrivileged(
-                    J2DoPrivHelper.getPropertiesAction());
+            Properties systemProperties = System.getProperties();
             HashMap sysPropHM = null;
             synchronized(systemProperties) {
                 // Prevent concurrent modification of systemProperties until HashMap ctor is completed.

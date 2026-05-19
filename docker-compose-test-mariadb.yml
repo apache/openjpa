@@ -1,0 +1,46 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements.  See the NOTICE file distributed with this work for additional
+# information regarding copyright ownership.  The ASF licenses this file to you
+# under the Apache License, Version 2.0 (the # "License"); you may not use this
+# file except in compliance with the License.  You may obtain a copy of the License
+# at:
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed
+# under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+# CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations under the License.
+#
+# MariaDB test environment matching the test-mariadb-docker Maven profile.
+# Usage:
+#   docker compose -f docker-compose-test-mariadb.yml up -d
+#   mvn test -pl openjpa-persistence-jdbc -Ptest-mariadb-docker -Dcheckstyle.skip=true
+#
+services:
+  mariadb:
+    # Track the current MariaDB LTS (:lts resolves to 11.8 at the time of
+    # writing). Pinned to an explicit version so local runs match what
+    # reviewers and CI see when they pull mariadb:lts.
+    image: mariadb:11.8
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: openjpatst
+      MARIADB_ROOT_PASSWORD: openjpatst
+      MARIADB_AUTO_UPGRADE: "1"
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - mariadbdata:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  mariadbdata:

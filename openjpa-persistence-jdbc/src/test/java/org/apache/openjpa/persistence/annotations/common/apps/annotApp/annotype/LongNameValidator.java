@@ -16,18 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package
-    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
+package org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
+
+import java.util.logging.Logger;
 
 import jakarta.persistence.PostUpdate;
 import jakarta.persistence.PrePersist;
 
-public class LongNameValidator
-{
+public class LongNameValidator {
+	
+	private static final Logger logger = Logger.getLogger(LongNameValidator.class.getCanonicalName()); 
+	
 	@PrePersist
-	public void validateName(NamedEntity obj)
-	{
-		System.out.println("LongNameValidator is running on "+obj);
+	public void validateName(NamedEntity obj) {
+		logger.finest("LongNameValidator is running on "+obj);
+		
 		if(obj.getName().equals("") || obj.getName() == null)
 			throw new NullPointerException();
 
@@ -36,11 +39,9 @@ public class LongNameValidator
 	}
 
 	@PostUpdate
-	public void testpost(NamedEntity obj)
-	{
+	public void testpost(NamedEntity obj) {
 		CallbackStorage store = CallbackStorage.getInstance();
 		store.getClist().add("longnamevalidatorpou");
 	}
-
 
 }

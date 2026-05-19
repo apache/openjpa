@@ -391,4 +391,65 @@ public class DelayedLinkedHashSetProxy extends LinkedHashSet implements DelayedP
     protected boolean isDelayLoad() {
         return ProxyCollections.isDelayed(this);
     }
+
+    // Java 21 SequencedCollection/SequencedSet methods.
+    // Not declared as @Override since they don't exist in Java 17's
+    // LinkedHashSet, but at runtime on Java 21+ the JVM matches these
+    // to the SequencedSet default methods.
+
+    public Object getFirst() {
+        if (!_directAccess && isDelayLoad()) {
+            load();
+        }
+        return iterator().next();
+    }
+
+    public Object getLast() {
+        if (!_directAccess && isDelayLoad()) {
+            load();
+        }
+        Object last = null;
+        for (Object e : this) {
+            last = e;
+        }
+        return last;
+    }
+
+    public void addFirst(Object e) {
+        add(e);
+    }
+
+    public void addLast(Object e) {
+        add(e);
+    }
+
+    public Object removeFirst() {
+        if (!_directAccess && isDelayLoad()) {
+            load();
+        }
+        Object first = iterator().next();
+        remove(first);
+        return first;
+    }
+
+    public Object removeLast() {
+        if (!_directAccess && isDelayLoad()) {
+            load();
+        }
+        Object last = null;
+        for (Object e : this) {
+            last = e;
+        }
+        remove(last);
+        return last;
+    }
+
+    public java.util.LinkedHashSet reversed() {
+        if (!_directAccess && isDelayLoad()) {
+            load();
+        }
+        java.util.LinkedList list = new java.util.LinkedList(this);
+        java.util.Collections.reverse(list);
+        return new java.util.LinkedHashSet(list);
+    }
 }

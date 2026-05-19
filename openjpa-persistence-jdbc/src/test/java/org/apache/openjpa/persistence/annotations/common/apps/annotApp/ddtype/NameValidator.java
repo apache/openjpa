@@ -18,17 +18,20 @@
  */
 package org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype;
 
+import java.util.logging.Logger;
+
 import jakarta.persistence.PostRemove;
 import jakarta.persistence.PostUpdate;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreRemove;
 
-public class NameValidator
-{
+public class NameValidator {
+	
+	private static final Logger logger = Logger.getLogger(NameValidator.class.getCanonicalName());
+	
 	@PrePersist
-	public void validateName(NamedEntity obj)
-	{
-		System.out.println("NameValidator is running on "+obj);
+	public void validateName(NamedEntity obj) {
+		logger.finest(String.format("NameValidator is running on %s", obj));
 		if(obj.getName().equals("") || obj.getName() == null)
 			throw new NullPointerException();
 
@@ -37,27 +40,25 @@ public class NameValidator
 	}
 
 	@PostUpdate
-	public void testpost(NamedEntity obj)
-	{
+	public void testpost(NamedEntity obj) {
 		CallbackStorage store = CallbackStorage.getInstance();
 		store.getClist().add("namevalidatorpou");
 	}
 
 	@PostRemove
-	public void validateNothing(NamedEntity obj)
-	{
-		System.out.println("NameValidator is running on ");
+	public void validateNothing(NamedEntity obj) {
+		logger.finest(String.format("NameValidator is running on %s", obj));
 
 		CallbackStorage store = CallbackStorage.getInstance();
 		store.getClist().add("namevalidatorpor");
 	}
 
 	@PreRemove
-	public void validateNothing1(NamedEntity obj)
-	{
-		System.out.println("NameValidator is running on ");
+	public void validateNothing1(NamedEntity obj) {
+		logger.finest(String.format("NameValidator is running on %s", obj));
 
 		CallbackStorage store = CallbackStorage.getInstance();
 		store.getClist().add("namevalidatorprr");
 	}
+	
 }

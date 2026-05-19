@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -38,6 +39,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * @author Austin Dorenkamp (ajdorenk)
  */
 public class TestJira2780ReverseCustomizer extends SingleEMFTestCase {
+	
+	private static final Logger logger = Logger.getLogger(TestJira2780ReverseCustomizer.class.getCanonicalName());
 
     @Override
     public void setUp() throws Exception {
@@ -70,7 +73,7 @@ public class TestJira2780ReverseCustomizer extends SingleEMFTestCase {
             em.getTransaction().commit();
         } catch (Throwable t) {
             em.getTransaction().rollback();
-            System.out.println(t.toString());
+            logger.warning(t.toString());
         }
 
         final String clsName = "Abc";

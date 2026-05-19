@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.util;
 
-import java.security.AccessController;
-
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 
 /**
@@ -34,10 +32,8 @@ public class GeneratedClasses {
      * classes.
      */
     public static ClassLoader getMostDerivedLoader(Class c1, Class c2) {
-        ClassLoader l1 = AccessController.doPrivileged(
-            J2DoPrivHelper.getClassLoaderAction(c1));
-        ClassLoader l2 = AccessController.doPrivileged(
-            J2DoPrivHelper.getClassLoaderAction(c2));
+        ClassLoader l1 = c1.getClassLoader();
+        ClassLoader l2 = c2.getClassLoader();
         if (l1 == l2)
             return l1;
         if (l1 == null)

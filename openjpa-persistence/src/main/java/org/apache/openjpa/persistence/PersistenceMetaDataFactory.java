@@ -20,9 +20,9 @@ package org.apache.openjpa.persistence;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.URL;
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,6 +33,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.MappedSuperclass;
@@ -53,7 +55,6 @@ import org.apache.openjpa.lib.meta.ClassAnnotationMetaDataFilter;
 import org.apache.openjpa.lib.meta.ClassArgParser;
 import org.apache.openjpa.lib.meta.MetaDataFilter;
 import org.apache.openjpa.lib.meta.MetaDataParser;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.MultiClassLoader;
 import org.apache.openjpa.lib.util.Options;
@@ -88,6 +89,7 @@ public class PersistenceMetaDataFactory
     private Map<URL, Set<String>> _xml = null; // xml rsrc -> class names
     private Set<URL> _unparsed = null; // xml rsrc
     private boolean _fieldOverride = true;
+    private boolean _autoApplyScanned = false;
 
     protected Stack<XMLPersistenceMetaDataParser> _stack =
         new Stack<>();
@@ -219,6 +221,7 @@ public class PersistenceMetaDataFactory
         // mapPersistentTypeNames if it hasn't been called already, which
         // caches XML resources
         getPersistentTypeNames(false, envLoader);
+        scanAutoApplyConverters(envLoader);
         URL xml = findXML(cls);
 
         // we have to parse metadata up-front to register persistence unit
@@ -266,6 +269,73 @@ public class PersistenceMetaDataFactory
         meta = repos.getCachedMetaData(cls);
         if (meta != null && (meta.getSourceMode() & mode) == mode)
             validateStrategies(meta);
+    }
+
+    /**
+     * Scan for @Converter(autoApply=true) classes and register them
+     * in the MetaDataRepository. This only runs once per factory.
+     */
+    private void scanAutoApplyConverters(ClassLoader envLoader) {
+        if (_autoApplyScanned)
+            return;
+        _autoApplyScanned = true;
+
+        Set<String> typeNames = getPersistentTypeNames(false, envLoader);
+        if (typeNames == null || typeNames.isEmpty())
+            return;
+
+        ClassLoader loader = repos.getConfiguration()
+            .getClassResolverInstance().getClassLoader(null, null);
+        if (envLoader != null && envLoader != loader) {
+            MultiClassLoader mult = new MultiClassLoader();
+            mult.addClassLoader(envLoader);
+            if (loader instanceof MultiClassLoader)
+                mult.addClassLoaders((MultiClassLoader) loader);
+            else
+                mult.addClassLoader(loader);
+            loader = mult;
+        }
+
+        for (String typeName : typeNames) {
+            Class<?> cls;
+            try {
+                cls = Class.forName(typeName, false, loader);
+            } catch (ClassNotFoundException | LinkageError e) {
+                continue;
+            }
+            Converter conv = cls.getAnnotation(Converter.class);
+            if (conv == null || !conv.autoApply())
+                continue;
+            if (!AttributeConverter.class.isAssignableFrom(cls))
+                continue;
+
+            // Extract the entity attribute type from the generic interface
+            Class<?> entityType = getConverterEntityType(cls);
+            if (entityType != null) {
+                repos.addAutoApplyConverter(entityType, cls);
+            }
+        }
+    }
+
+    /**
+     * Extract the entity attribute type (first type parameter) from an
+     * AttributeConverter implementation.
+     */
+    private Class<?> getConverterEntityType(Class<?> converterClass) {
+        for (Type iface : converterClass.getGenericInterfaces()) {
+            if (iface instanceof ParameterizedType pt) {
+                if (pt.getRawType() == AttributeConverter.class) {
+                    Type entityArg = pt.getActualTypeArguments()[0];
+                    if (entityArg instanceof Class<?>)
+                        return (Class<?>) entityArg;
+                }
+            }
+        }
+        // Check superclass
+        Class<?> superclass = converterClass.getSuperclass();
+        if (superclass != null && superclass != Object.class)
+            return getConverterEntityType(superclass);
+        return null;
     }
 
     /**
@@ -353,37 +423,26 @@ public class PersistenceMetaDataFactory
             return null;
         Collection<Class<?>> classes = repos.loadPersistentTypes(false, loader);
         for (Class<?> cls :  classes) {
-            if (AccessController.doPrivileged(J2DoPrivHelper
-                    .isAnnotationPresentAction(cls, NamedQuery.class)) && hasNamedQuery
-                (queryName, (NamedQuery) cls.getAnnotation(NamedQuery.class)))
+            if (cls.isAnnotationPresent(NamedQuery.class) 
+            		&& hasNamedQuery(queryName, cls.getAnnotation(NamedQuery.class)))
                 return cls;
-            if (AccessController.doPrivileged(J2DoPrivHelper
-                    .isAnnotationPresentAction(cls, NamedQueries.class)) &&
-                hasNamedQuery(queryName, ((NamedQueries) cls.
-                    getAnnotation(NamedQueries.class)).value()))
+            if (cls.isAnnotationPresent(NamedQueries.class) 
+            		&& hasNamedQuery(queryName, cls.getAnnotation(NamedQueries.class).value()))
                 return cls;
-            if (AccessController.doPrivileged(J2DoPrivHelper
-                    .isAnnotationPresentAction(cls, NamedNativeQuery.class)) &&
-                hasNamedNativeQuery(queryName, (NamedNativeQuery) cls.
-                    getAnnotation(NamedNativeQuery.class)))
+            if (cls.isAnnotationPresent(NamedNativeQuery.class) 
+            		&& hasNamedNativeQuery(queryName, cls.getAnnotation(NamedNativeQuery.class)))
                 return cls;
-            if (AccessController.doPrivileged(J2DoPrivHelper
-                    .isAnnotationPresentAction(cls, NamedNativeQueries.class)) &&
-                hasNamedNativeQuery(queryName, ((NamedNativeQueries) cls.
-                    getAnnotation(NamedNativeQueries.class)).value()))
+            if (cls.isAnnotationPresent(NamedNativeQueries.class) 
+            		&& hasNamedNativeQuery(queryName, cls.getAnnotation(NamedNativeQueries.class).value()))
                 return cls;
-            if (isAnnotated(cls, NamedStoredProcedureQuery.class)
+            if (cls.isAnnotationPresent(NamedStoredProcedureQuery.class)
                     && hasNamedStoredProcedure(queryName, cls.getAnnotation(NamedStoredProcedureQuery.class)))
                 return cls;
-            if (isAnnotated(cls, NamedStoredProcedureQueries.class)
+            if (cls.isAnnotationPresent(NamedStoredProcedureQueries.class)
                     && hasNamedStoredProcedure(queryName, cls.getAnnotation(NamedStoredProcedureQueries.class).value()))
                 return cls;
         }
         return null;
-    }
-
-    private boolean isAnnotated(Class<?> cls, Class<? extends Annotation> annotationClazz) {
-        return AccessController.doPrivileged(J2DoPrivHelper.isAnnotationPresentAction(cls, annotationClazz));
     }
 
     @Override
@@ -395,16 +454,12 @@ public class PersistenceMetaDataFactory
         Collection<Class<?>> classes = repos.loadPersistentTypes(false, loader);
         for (Class<?> cls : classes) {
 
-            if (AccessController.doPrivileged(J2DoPrivHelper
-                    .isAnnotationPresentAction(cls, SqlResultSetMapping.class)) &&
-                hasRSMapping(rsMappingName, (SqlResultSetMapping) cls.
-                getAnnotation(SqlResultSetMapping.class)))
+            if (cls.isAnnotationPresent(SqlResultSetMapping.class) 
+            		&& hasRSMapping(rsMappingName, cls.getAnnotation(SqlResultSetMapping.class)))
                 return cls;
 
-            if (AccessController.doPrivileged(J2DoPrivHelper
-                    .isAnnotationPresentAction(cls, SqlResultSetMappings.class)) &&
-                hasRSMapping(rsMappingName, ((SqlResultSetMappings) cls.
-                getAnnotation(SqlResultSetMappings.class)).value()))
+            if (cls.isAnnotationPresent(SqlResultSetMappings.class) 
+            		&& hasRSMapping(rsMappingName, cls.getAnnotation(SqlResultSetMappings.class).value()))
                 return cls;
         }
         return null;
@@ -536,12 +591,10 @@ public class PersistenceMetaDataFactory
     private File defaultXMLFile() {
         ClassLoader loader = repos.getConfiguration().
             getClassResolverInstance().getClassLoader(getClass(), null);
-        URL rsrc = AccessController.doPrivileged(
-            J2DoPrivHelper.getResourceAction(loader, "META-INF/orm.xml"));
+        URL rsrc = loader.getResource("META-INF/orm.xml");
         if (rsrc != null) {
             File file = new File(rsrc.getFile());
-            if (AccessController.doPrivileged(
-                    J2DoPrivHelper.existsAction(file)))
+            if (file.exists())
                 return file;
         }
         return new File(dir, "orm.xml");
@@ -607,7 +660,7 @@ public class PersistenceMetaDataFactory
         parser.parse(cls);
     }
 
-    private static String UNDERSCORE = "_";
+    private static final String UNDERSCORE = "_";
 
     @Override
     public String getManagedClassName(String mmClassName) {

@@ -45,17 +45,15 @@ public class TestMissingMetaData extends TestCase {
             "test-missing-metadata", "persistence2.xml", props);
     }
 
+    /**
+     * Verify that a non-entity class listed in persistence.xml is
+     * gracefully skipped. Per JPA 3.2, persistence units may list
+     * non-entity managed classes (e.g. converters, listeners,
+     * ID classes, exceptions) which should not cause errors.
+     */
     public void testMissingMetaData() {
-        String msg =
-            "No registered metadata for type " +
-            "\"class org.apache.openjpa.persistence.simple.Animal\".";
-        try {
-            emf.createEntityManager();
-            fail("didn't receive expected ArgumentException - " + msg);
-        } catch (Exception e) {
-            assertEquals(ArgumentException.class,e.getClass());
-            assertTrue("Unexpected Exception : " + e.getMessage(), e.getMessage().startsWith(msg));
-        }
+        // Should not throw — non-entity classes are silently skipped
+        emf.createEntityManager().close();
     }
 
     @Override

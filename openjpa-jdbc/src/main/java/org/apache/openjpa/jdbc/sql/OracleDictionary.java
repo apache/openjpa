@@ -23,7 +23,6 @@ import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.security.AccessController;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Connection;
@@ -61,7 +60,6 @@ import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.lib.jdbc.DelegatingDatabaseMetaData;
 import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.StoreException;
@@ -252,6 +250,7 @@ public class OracleDictionary
         }));
 
         substringFunctionName = "SUBSTR";
+        leftFunctionName = substringFunctionName;
         super.setBatchLimit(defaultBatchLimit);
         selectWordSet.add("WITH");
         reportsSuccessNoInfoOnBatchUpdates = true;
@@ -279,9 +278,7 @@ public class OracleDictionary
 
     private Method getMethodByReflection(String className, String methodName, Class<?>... paramTypes) {
         try {
-            return Class.forName(className,true,
-                    AccessController.doPrivileged(J2DoPrivHelper
-                            .getContextClassLoaderAction())).
+            return Class.forName(className, true, Thread.currentThread().getContextClassLoader()).
                     getMethod(methodName, paramTypes);
         }
         catch (Exception e) {
@@ -1598,6 +1595,33 @@ public class OracleDictionary
                 return String.format("length (%s) != 0 ",  colAlias);
         }
         return super.getIsNotNullSQL(colAlias, colType);
+    }
+    
+    @Override
+    public void left(SQLBuffer buf, FilterValue str, FilterValue length) {
+    	buf.append(leftFunctionName).append("(");
+    	str.appendTo(buf);
+    	buf.append(", ").append(Long.toString(0l)).append(", ");
+    	if (length.getValue() instanceof Number) {
+    		buf.append(Long.toString(toLong(length)));
+    	} else {
+    		length.appendTo(buf);
+    	}
+    	buf.append(")");
+    }
+
+    @Override
+    public void right(SQLBuffer buf, FilterValue str, FilterValue length) {
+    	buf.append(rightFunctionName).append("(");
+    	str.appendTo(buf);
+    	buf.append(", ");
+    	if (length.getValue() instanceof Number) {
+    		buf.append(Long.toString(toLong(length)));
+    	} else {
+    		buf.append("-");
+    		length.appendTo(buf);
+    	}
+    	buf.append(")");
     }
 
     @Override

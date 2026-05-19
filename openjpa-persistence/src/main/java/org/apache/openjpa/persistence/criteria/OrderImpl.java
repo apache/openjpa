@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.criteria;
 
 import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Nulls;
 import jakarta.persistence.criteria.Order;
 
 /**
@@ -30,6 +31,7 @@ import jakarta.persistence.criteria.Order;
 class OrderImpl implements Order, CriteriaExpression {
 	private boolean _ascending;
 	private final ExpressionImpl<?> e;
+	private Nulls _nullPrecedence = Nulls.NONE;
 
 	public OrderImpl(Expression<?> e, boolean asc) {
 		this.e = (ExpressionImpl<?>) e;
@@ -38,6 +40,12 @@ class OrderImpl implements Order, CriteriaExpression {
 
 	public OrderImpl(Expression<?> e) {
 		this(e, true);
+	}
+
+	public OrderImpl(Expression<?> e, boolean asc, Nulls nullPrecedence) {
+		this.e = (ExpressionImpl<?>) e;
+		_ascending = asc;
+		_nullPrecedence = nullPrecedence;
 	}
 
 	@Override
@@ -79,4 +87,9 @@ class OrderImpl implements Order, CriteriaExpression {
     public StringBuilder asVariable(AliasContext q) {
         throw new IllegalStateException(this + " can not be rendered as variable");
     }
+
+	@Override
+	public Nulls getNullPrecedence() {
+		return _nullPrecedence;
+	}
 }

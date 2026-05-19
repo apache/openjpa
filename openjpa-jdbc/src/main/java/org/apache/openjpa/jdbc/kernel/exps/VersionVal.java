@@ -1,0 +1,166 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package org.apache.openjpa.jdbc.kernel.exps;
+
+import java.sql.SQLException;
+
+import org.apache.openjpa.jdbc.kernel.exps.PCPath.PathExpState;
+import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.sql.Result;
+import org.apache.openjpa.jdbc.sql.SQLBuffer;
+import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.exps.ExpressionVisitor;
+import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.util.UserException;
+
+/**
+ * Select the version value of an object; typically used in projections.
+ *
+ * @author Abe White
+ * @author Paulo Cristovão Filho
+ */
+class VersionVal
+    extends AbstractVal {
+
+    
+    private static final long serialVersionUID = 1L;
+
+    private static final Localizer _loc = Localizer.forPackage(VersionVal.class);
+
+    protected final PCPath _path;
+    private ClassMetaData _meta = null;
+
+    /**
+     * Constructor. Provide the value whose version to extract.
+     */
+    public VersionVal(PCPath path) {
+        _path = path;
+    }
+
+    /**
+     * Return the version column.
+     */
+    public Column[] getColumns(ExpState state) {
+        return _path.getClassMapping(state).getVersionFieldMapping().getColumns();
+    }
+
+    @Override
+    public ClassMetaData getMetaData() {
+        return _meta;
+    }
+
+    @Override
+    public void setMetaData(ClassMetaData meta) {
+        _meta = meta;
+    }
+
+    @Override
+    public Class getType() {
+    	FieldMetaData versionField = _path.getMetaData().getVersionField();
+    	if (versionField != null) {
+    		return versionField.getType();
+    	}
+        return null;
+    }
+
+    @Override
+    public void setImplicitType(Class type) {
+    }
+
+    @Override
+    public ExpState initialize(Select sel, ExpContext ctx, int flags) {
+        ExpState state = _path.initialize(sel, ctx, JOIN_REL);
+
+        // it's difficult to get calls on non-pc fields to always return null
+        // without screwing up the SQL, to just don't let users call it on
+        // non-pc fields at all
+        ClassMapping cls = _path.getClassMapping(state);
+        if (cls == null || cls.getEmbeddingMapping() != null)
+            throw new UserException(_loc.get("bad-getobjectid", _path.getFieldMapping(state)));
+        return state;
+    }
+
+    @Override
+    public Object toDataStoreValue(Select sel, ExpContext ctx, ExpState state, Object val) {
+        ClassMapping mapping = _path.getClassMapping(state);
+        if (mapping.getVersion() != null) {
+        	return Filters.convert(val, getType());
+        }
+        return null;
+    }
+
+    @Override
+    public void select(Select sel, ExpContext ctx, ExpState state,
+        boolean pks) {
+        selectColumns(sel, ctx, state, true);
+    }
+
+    @Override
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state,
+        boolean pks) {
+    	sel.setSchemaAlias(_path.getSchemaAlias());
+    	sel.select(getColumns(state), ((PathExpState) state).joins);
+    }
+
+    @Override
+    public void groupBy(Select sel, ExpContext ctx, ExpState state) {
+        _path.groupBy(sel, ctx, state);
+    }
+
+    @Override
+    public void orderBy(Select sel, ExpContext ctx, ExpState state,
+        boolean asc) {
+        _path.orderBy(sel, ctx, state, asc);
+    }
+
+    @Override
+    public Object load(ExpContext ctx, ExpState state, Result res)
+        throws SQLException {
+        return res.getObject(getColumns(state)[0], null, ((PathExpState) state).joins);
+    }
+
+    @Override
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state,
+        Val other, ExpState otherState) {
+        _path.calculateValue(sel, ctx, state, null, null);
+    }
+
+    @Override
+    public int length(Select sel, ExpContext ctx, ExpState state) {
+        return _path.length(sel, ctx, state);
+    }
+
+    @Override
+    public void appendTo(Select sel, ExpContext ctx, ExpState state,
+        SQLBuffer sql, int index) {
+        _path.appendTo(sel, ctx, state, sql, index);
+    }
+
+    @Override
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _path.acceptVisit(visitor);
+        visitor.exit(this);
+    }
+}
+

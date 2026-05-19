@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.lang.reflect.Modifier;
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -1426,11 +1425,9 @@ public class ApplicationIdTool {
             name = ClassUtil.getPackageName(context) + "." + name;
 
         // first try with regular class loader
-        ClassLoader loader = AccessController.doPrivileged(
-            J2DoPrivHelper.getClassLoaderAction(context));
+        ClassLoader loader = context.getClassLoader();
         if (loader == null)
-            loader = AccessController.doPrivileged(
-                J2DoPrivHelper.getContextClassLoaderAction());
+            loader = Thread.currentThread().getContextClassLoader();
         try {
             return Class.forName(name, false, loader);
         } catch (Throwable t) {

@@ -22,15 +22,18 @@ package org.apache.openjpa.persistence.criteria;
 import java.util.HashSet;
 
 import jakarta.persistence.criteria.CollectionJoin;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Fetch;
 import jakarta.persistence.criteria.From;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.ListJoin;
 import jakarta.persistence.criteria.MapJoin;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.SetJoin;
 import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.CollectionAttribute;
+import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.ListAttribute;
 import jakarta.persistence.metamodel.ManagedType;
 import jakarta.persistence.metamodel.MapAttribute;
@@ -56,7 +59,7 @@ import org.apache.openjpa.persistence.meta.Members;
 class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     private java.util.Set<Join<X, ?>> _joins;
     private java.util.Set<Fetch<X, ?>> _fetches;
-    private Type<X> type;
+    private final Type<X> type;
 
     /**
      * Supply the non-null managed type.
@@ -242,7 +245,7 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     @Override
     public <W,K,V> MapJoin<W,K,V>  joinMap(String attr, JoinType jt) {
         assertJoinable(type);
-        return (MapJoin<W,K,V>)join(((ManagedType<X>)type).getMap(attr));
+        return (MapJoin<W,K,V>)join(((ManagedType<X>)type).getMap(attr), jt);
     }
 
     @Override
@@ -331,6 +334,57 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
 
     @Override
     public From<Z,X> getCorrelationParent() {
+        if (!isCorrelated()) {
+            throw new IllegalStateException(
+                "This From node is not a correlated reference. Cannot call getCorrelationParent().");
+        }
         return (From<Z,X>)getCorrelatedPath();
     }
+
+	@Override
+	public <Y> Join<X, Y> join(Class<Y> entityClass) {
+		return join(entityClass, JoinType.INNER);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <Y> Join<X, Y> join(Class<Y> entityClass, JoinType joinType) {
+		jakarta.persistence.metamodel.Attribute<? super X, ?> attr =
+			findAttributeForType(entityClass);
+		if (attr instanceof jakarta.persistence.metamodel.SingularAttribute) {
+			return join(
+				(jakarta.persistence.metamodel.SingularAttribute<? super X, Y>)
+					attr, joinType);
+		}
+		throw new IllegalArgumentException(
+			"No joinable attribute found for entity class: "
+			+ entityClass.getName());
+	}
+
+	@Override
+	public <Y> Join<X, Y> join(EntityType<Y> entity) {
+		return join(entity.getJavaType(), JoinType.INNER);
+	}
+
+	@Override
+	public <Y> Join<X, Y> join(EntityType<Y> entity, JoinType joinType) {
+		return join(entity.getJavaType(), joinType);
+	}
+
+	@SuppressWarnings("unchecked")
+	private <Y> jakarta.persistence.metamodel.Attribute<? super X, ?>
+			findAttributeForType(Class<Y> entityClass) {
+		jakarta.persistence.metamodel.ManagedType<X> type =
+			(jakarta.persistence.metamodel.ManagedType<X>) getModel();
+		for (jakarta.persistence.metamodel.Attribute<? super X, ?> attr
+				: type.getAttributes()) {
+			if (entityClass.isAssignableFrom(attr.getJavaType())) {
+				return attr;
+			}
+		}
+		throw new IllegalArgumentException(
+			"No attribute of type " + entityClass.getName()
+			+ " found on " + type.getJavaType().getName());
+	}
+	
 }

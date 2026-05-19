@@ -332,7 +332,7 @@ public class TestFieldRange extends BaseKernelTest {
         int retrievedObjectMonth = retrievedObject.getTestDate().getMonth();
         int retrievedObjectYear = retrievedObject.getTestDate().getYear();
 
-        System.out.println("i1 : " + i1 + "\ni2 : " + i2);
+        // System.out.println("i1 : " + i1 + "\ni2 : " + i2);
 
         // CR346162. In this CR, it was stated that @Temporal(DATE) fields will
         // be equal for year, month, day but not for hours,

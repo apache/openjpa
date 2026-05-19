@@ -33,11 +33,13 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
+import java.time.Year;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -353,6 +355,18 @@ public class ResultSetResult
     }
 
     @Override
+    protected Instant getInstantInternal(Object obj, Joins joins)
+            throws SQLException {
+        return _dict.getInstant(_rs, ((Number) obj).intValue());
+    }
+
+    @Override
+    protected Year getYearInternal(Object obj, Joins joins)
+            throws SQLException {
+        return _dict.getYear(_rs, ((Number) obj).intValue());
+    }
+
+    @Override
     protected char getCharInternal(Object obj, Joins joins)
         throws SQLException {
         return _dict.getChar(_rs, ((Number) obj).intValue());
@@ -483,6 +497,10 @@ public class ResultSetResult
                 return getOffsetTimeInternal(obj, joins);
             case JavaTypes.OFFSET_DATETIME:
                 return getOffsetDateTimeInternal(obj, joins);
+            case JavaTypes.INSTANT:
+                return getInstantInternal(obj, joins);
+            case JavaTypes.YEAR:
+                return getYearInternal(obj, joins);
             case JavaTypes.BIGDECIMAL:
                 return getBigDecimalInternal(obj, joins);
             case JavaTypes.NUMBER:

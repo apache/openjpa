@@ -45,6 +45,8 @@ public class XROP implements BatchedResultObjectProvider {
     private final JDBCStore store;
     // Result of first execution
     private boolean executionResult;
+    // OUT parameter indices that may hold REF_CURSOR result sets
+    private int[] _cursorOutParams;
 
     public XROP(List<QueryResultMapping> mappings, List<Class<?>> classes,
                 JDBCStore store, JDBCFetchConfiguration fetch,
@@ -54,6 +56,17 @@ public class XROP implements BatchedResultObjectProvider {
         this.stmt = stmt;
         this.fetch = fetch;
         this.store = store;
+    }
+
+    /**
+     * Set OUT parameter positions (1-based) that may contain REF_CURSOR
+     * result sets. Used on PostgreSQL where cursors are returned as OUT
+     * parameters rather than via getResultSet().
+     *
+     * @since 4.2.0
+     */
+    public void setCursorOutParams(int[] positions) {
+        _cursorOutParams = positions;
     }
 
     /**
@@ -71,6 +84,22 @@ public class XROP implements BatchedResultObjectProvider {
     @Override
     public void open() throws Exception {
         executionResult = stmt.execute();
+        // On PostgreSQL, REF_CURSOR procedures return false from execute()
+        // but the result set is available from OUT parameters.
+        // Check if any OUT param actually holds a ResultSet.
+        if (!executionResult && _cursorOutParams != null) {
+            for (int pos : _cursorOutParams) {
+                try {
+                    Object out = stmt.getObject(pos);
+                    if (out instanceof ResultSet) {
+                        executionResult = true;
+                        break;
+                    }
+                } catch (SQLException e) {
+                    // ignore
+                }
+            }
+        }
     }
 
     /**
@@ -84,6 +113,20 @@ public class XROP implements BatchedResultObjectProvider {
     @Override
     public ResultObjectProvider getResultObject() throws Exception {
         ResultSet rs = stmt.getResultSet();
+        // On PostgreSQL, REF_CURSOR results come from OUT parameters
+        if (rs == null && _cursorOutParams != null) {
+            for (int pos : _cursorOutParams) {
+                try {
+                    Object out = stmt.getObject(pos);
+                    if (out instanceof ResultSet) {
+                        rs = (ResultSet) out;
+                        break;
+                    }
+                } catch (SQLException e) {
+                    // ignore — parameter may not be a cursor
+                }
+            }
+        }
         if (rs == null)
             return null;
 

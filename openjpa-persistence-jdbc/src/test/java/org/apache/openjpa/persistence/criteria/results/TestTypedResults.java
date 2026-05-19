@@ -75,7 +75,7 @@ public class TestTypedResults extends SingleEMFTestCase {
             order = new Order();
             order.setId(i);
             order.setDate(df.parse(ORDER_DATES[i % ORDER_DATES.length]));
-            order.setFilled(i % 2 == 0 ? true : false);
+            order.setFilled(i % 2 == 0);
             order.setShop(s);
             order.setItems(new HashSet<>());
             s.getOrders().add(order);
@@ -215,7 +215,7 @@ public class TestTypedResults extends SingleEMFTestCase {
         // Get results using custom class
         CriteriaQuery<OrderProducer> constructQuery = qb.createQuery(OrderProducer.class);
         Root<Order> order2 = constructQuery.from(Order.class);
-        Join<Item, Producer> producer2 = order.join(Order_.items).join(Item_.producer);
+        Join<Item, Producer> producer2 = order2.join(Order_.items).join(Item_.producer);
         constructQuery.select(qb.construct(OrderProducer.class, order2, producer2));
         constructQuery.where(qb.equal(order2.get(Order_.filled), Boolean.TRUE));
         TypedQuery<OrderProducer> typedQuery = em.createQuery(constructQuery);

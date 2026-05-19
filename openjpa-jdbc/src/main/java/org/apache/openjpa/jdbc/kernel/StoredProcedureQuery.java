@@ -94,11 +94,13 @@ public class StoredProcedureQuery extends AbstractStoreQuery {
                 classes = new ArrayList<>();
                 MappingRepository repos = _store.getConfiguration().getMappingRepositoryInstance();
                 for (QueryMetaData part : parts) {
-                    QueryResultMapping mapping = repos.getQueryResultMapping(ctx.getResultMappingScope(),
-                            part.getResultSetMappingName(),
-                            null, true);
-                    if (mapping != null) {
-                        mappings.add(mapping);
+                    String mappingName = part.getResultSetMappingName();
+                    if (mappingName != null) {
+                        QueryResultMapping mapping = repos.getQueryResultMapping(
+                            ctx.getResultMappingScope(), mappingName, null, true);
+                        if (mapping != null) {
+                            mappings.add(mapping);
+                        }
                     }
                     if (part.getResultType() != null) {
                         classes.add(part.getResultType());
@@ -170,23 +172,49 @@ public class StoredProcedureQuery extends AbstractStoreQuery {
             try {
                 DBDictionary dict = _store.getDBDictionary();
                 Connection conn = _store.getConnection();
+
+                // PostgreSQL requires auto-commit off for procedures
+                // that return REF_CURSOR (cursor lives within transaction)
+                boolean resetAutoCommit = false;
+                if (conn.getAutoCommit() && _proc.getOutColumns().length > 0) {
+                    conn.setAutoCommit(false);
+                    resetAutoCommit = true;
+                }
+
                 CallableStatement stmnt = conn.prepareCall(_proc.getCallSQL());
 
-                final StoredProcedureQuery spq = StoredProcedureQuery.class.cast(q);
+                final StoredProcedureQuery spq = (StoredProcedureQuery) q;
                 for (Column c : spq.getProcedure().getInColumns()) {
-                    dict.setUnknown(stmnt, c.getIndex() + 1, params[c.getIndex()], c);
+                    if (params != null && c.getIndex() < params.length) {
+                        dict.setUnknown(stmnt, c.getIndex() + 1, params[c.getIndex()], c);
+                    }
                 }
                 for (Column c : spq.getProcedure().getInOutColumns()) {
                     final int index = c.getIndex() + 1;
                     stmnt.registerOutParameter(index, c.getType());
-                    dict.setUnknown(stmnt, index, params[index - 1], c);
+                    if (params != null && index - 1 < params.length) {
+                        dict.setUnknown(stmnt, index, params[index - 1], c);
+                    }
                 }
                 for (Column c : spq.getProcedure().getOutColumns()) {
                     stmnt.registerOutParameter(c.getIndex() + 1, c.getType());
                 }
 
+                // Collect OUT parameter positions for REF_CURSOR handling
+                Column[] outCols = spq.getProcedure().getOutColumns();
+                int[] cursorPositions = null;
+                if (outCols.length > 0) {
+                    cursorPositions = new int[outCols.length];
+                    for (int i = 0; i < outCols.length; i++) {
+                        cursorPositions[i] = outCols[i].getIndex() + 1;
+                    }
+                }
+
                 JDBCFetchConfiguration fetch = (JDBCFetchConfiguration)q.getContext().getFetchConfiguration();
-                ResultObjectProvider rop = new XROP(_resultMappings, _resultClasses, _store, fetch, stmnt);
+                XROP rop = new XROP(_resultMappings, _resultClasses, _store, fetch, stmnt);
+                if (cursorPositions != null) {
+                    rop.setCursorOutParams(cursorPositions);
+                }
                 rop.open();
                 return rop;
             } catch (Exception e) {
@@ -196,18 +224,25 @@ public class StoredProcedureQuery extends AbstractStoreQuery {
 
         @Override
         public Object[] toParameterArray(StoreQuery q, Map<?, ?> userParams) {
-            if (userParams == null) return NO_PARAM;
-            Object[] array = new Object[userParams.size()];
+            if (userParams == null || userParams.isEmpty()) return NO_PARAM;
+            StoredProcedureQuery storedProcedureQuery = (StoredProcedureQuery) q;
+            Column[] inCols = storedProcedureQuery.getProcedure().getInColumns();
+            Column[] inOutCols = storedProcedureQuery.getProcedure().getInOutColumns();
+            int paramCount = inCols.length + inOutCols.length;
+            if (paramCount == 0) return NO_PARAM;
+            Object[] array = new Object[paramCount];
             int i = 0;
-            StoredProcedureQuery storedProcedureQuery = StoredProcedureQuery.class.cast(q);
-            for (final Column[] columns : asList(
-                    storedProcedureQuery.getProcedure().getInColumns(),
-                    storedProcedureQuery.getProcedure().getInOutColumns())) {
+            for (final Column[] columns : asList(inCols, inOutCols)) {
                 for (Column c : columns) {
-                    array[i] = userParams.get(c.getIdentifier().getName());
-                    if (array[i++] == null) {
-                        userParams.get(c.getIndex());
+                    // Try by name first, then by 1-based position (matching user's declaration)
+                    Object val = userParams.get(c.getIdentifier().getName());
+                    if (val == null) {
+                        val = userParams.get(c.getIndex() + 1);
                     }
+                    if (val == null) {
+                        val = userParams.get(c.getIndex());
+                    }
+                    array[i++] = val;
                 }
             }
             return array;

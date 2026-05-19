@@ -26,8 +26,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -73,7 +71,6 @@ import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.util.ClassUtil;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -1219,15 +1216,9 @@ public class AnnotationPersistenceMetaDataSerializer
 
     @Override
     public void serialize(File file, int flags) throws IOException {
-        try {
-            FileWriter out = new FileWriter(AccessController
-                .doPrivileged(J2DoPrivHelper.getCanonicalPathAction(file)),
-                (flags & APPEND) > 0);
-            serialize(out, flags);
-            out.close();
-        } catch (PrivilegedActionException pae) {
-            throw (IOException) pae.getException();
-        }
+    	FileWriter out = new FileWriter(file.getCanonicalPath(), (flags & APPEND) > 0);
+        serialize(out, flags);
+        out.close();
     }
 
     @Override

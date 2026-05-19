@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
-import java.security.AccessController;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -36,7 +35,6 @@ import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.lib.conf.AbstractProductDerivation;
 import org.apache.openjpa.lib.conf.Configuration;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.persistence.FetchPlan;
 import org.apache.openjpa.persistence.PersistenceProductDerivation;
 
@@ -60,11 +58,9 @@ public class JDBCPersistenceProductDerivation
     }
 
     @Override
-    public void validate()
-        throws Exception {
+    public void validate() throws Exception {
         // make sure JPA is available
-        AccessController.doPrivileged(J2DoPrivHelper.getClassLoaderAction(
-            jakarta.persistence.EntityManagerFactory.class));
+    	jakarta.persistence.EntityManagerFactory.class.getClassLoader();
     }
 
     @Override

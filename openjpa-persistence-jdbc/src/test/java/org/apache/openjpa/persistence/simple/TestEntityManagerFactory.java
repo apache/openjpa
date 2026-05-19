@@ -18,9 +18,10 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-
+import jakarta.persistence.PersistenceConfiguration;
 import junit.framework.TestCase;
 
 public class TestEntityManagerFactory extends TestCase {
@@ -34,4 +35,32 @@ public class TestEntityManagerFactory extends TestCase {
                 Persistence.createEntityManagerFactory("invalid");
         emf.close();
     }
+	
+	public void testEMFCreation() {
+		PersistenceConfiguration conf = new PersistenceConfiguration("dynamicaly-created-pu");
+		conf.managedClass(AllFieldTypes.class);
+		conf.property(PersistenceConfiguration.SCHEMAGEN_DATABASE_ACTION, "drop-and-create");
+		
+		EntityManagerFactory emf = Persistence.createEntityManagerFactory(conf);
+		assertNotNull(emf);
+		EntityManager em = emf.createEntityManager();
+		assertNotNull(em);
+		
+		String countJPQL = "SELECT COUNT(DISTINCT a) FROM AllFieldTypes AS a";
+		long count = em.createQuery(countJPQL, Long.class).getSingleResult();
+		assertEquals(0L, count);
+		
+		AllFieldTypes aft = new AllFieldTypes();
+		em.getTransaction().begin();
+		em.persist(aft);
+		em.getTransaction().commit();
+		
+		assertNotNull(aft.getUniqueId());
+		count = em.createQuery(countJPQL, Long.class).getSingleResult();
+		assertEquals(1l, count);
+		
+		em.close();
+		emf.close();
+	}
+
 }

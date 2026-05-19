@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.datacache;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.event.TCPRemoteCommitProvider;
@@ -36,6 +37,8 @@ import org.apache.openjpa.util.Id;
 
 @AllowFailure(message="surefire excluded")
 public class TestDistributedKodoDataCache extends AbstractTestCase {
+	
+	private static final Logger logger = Logger.getLogger(TestDistributedKodoDataCache.class.getCanonicalName());
 
     // We want more than 1 instance of each type of class.
     private static final int NUM_OBJECTS = 4;
@@ -160,12 +163,11 @@ public class TestDistributedKodoDataCache extends AbstractTestCase {
             transType = "large";
             rcpType = "classes";
         }
-        System.out.println("-------------------");
-        System.out.println(
+        logger.fine("-------------------");
+        logger.fine(
             "2 PMFs created, acting as a cluster using ports 5636 and 6636");
-        System.out.println("Testing scenario:");
-        System.out
-            .println("  1 Seed datastore with instances of RuntimeTest1 AND "
+        logger.fine("Testing scenario:");
+        logger.fine("  1 Seed datastore with instances of RuntimeTest1 AND "
                 + "RuntimeTest2 objs.\n"
                 + "  2 pmf2 fills its cache with both sets of objs.\n"
                 + "  3 pmf1 does a "
@@ -175,7 +177,7 @@ public class TestDistributedKodoDataCache extends AbstractTestCase {
                 + " to affect a single Runtime1 \n"
                 + "    assert that both pmf1 and pmf2's data caches dropped all"
                 + "Runtime1s");
-        System.out.println("Remote commit event is transmiting " + rcpType);
+        logger.fine("Remote commit event is transmiting " + rcpType);
 
         // Create runtimes1s and 2s.
         // Noraml transaction

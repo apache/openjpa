@@ -76,7 +76,7 @@ public class TestOneToOne extends AnnotationTestCase
         pc = em.find(AnnoTest1.class, em.getObjectId(pc));
         pc2 = pc.getSelfOneOne();
         assertNotNull(pc2);
-        assertEquals(new Long(15), pc2.getPk());
+        assertEquals(Long.valueOf(15), pc2.getPk());
         endEm(em);
     }
 
@@ -95,7 +95,7 @@ public class TestOneToOne extends AnnotationTestCase
         pc = em.find(AnnoTest1.class, em.getObjectId(pc));
         pc2 = pc.getSelfOneOne();
         assertNotNull(pc2);
-        assertEquals(new Long(15), pc2.getPk());
+        assertEquals(Long.valueOf(15), pc2.getPk());
         endEm(em);
     }
 

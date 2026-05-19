@@ -22,7 +22,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.Date;
 import java.util.UUID;
@@ -31,6 +30,7 @@ import org.apache.openjpa.enhance.FieldManager;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.Reflection;
+import org.apache.openjpa.enhance.ReflectingPersistenceCapable;
 import org.apache.openjpa.kernel.ObjectIdStateManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StateManagerImpl;
@@ -69,8 +69,13 @@ public class ApplicationIds {
         Object[] pks;
         if (meta.isOpenJPAIdentity()) {
             pks = new Object[1];
-            if (oid != null)
-                pks[0] = ((OpenJPAId) oid).getIdObject();
+            if (oid != null) {
+            	if (oid instanceof OpenJPAId ojid) {
+            		pks[0] = ojid.getIdObject();
+            	} else {
+            		pks[0]= wrap(meta, oid);
+            	}
+            }
             return pks;
         }
 
@@ -187,7 +192,14 @@ public class ApplicationIds {
                 case JavaTypes.STRING:
                     return new StringId(meta.getDescribedType(), (String) val);
                 case JavaTypes.DATE:
+                    if (val instanceof java.util.Calendar) {
+                        return new DateId(meta.getDescribedType(),
+                            ((java.util.Calendar) val).getTime());
+                    }
                     return new DateId(meta.getDescribedType(), (Date) val);
+                case JavaTypes.CALENDAR:
+                    return new DateId(meta.getDescribedType(),
+                        val == null ? null : ((java.util.Calendar) val).getTime());
                 case JavaTypes.OID:
                 case JavaTypes.OBJECT:
                     return new ObjectId(meta.getDescribedType(), val);
@@ -208,7 +220,7 @@ public class ApplicationIds {
                     if (!convert && !(val instanceof Boolean))
                         throw new ClassCastException("!(x instanceof Boolean)");
                     return new BooleanId(meta.getDescribedType(),
-                        val == null ? false : (Boolean)val);
+                            val != null && (Boolean) val);
                 case JavaTypes.UUID_OBJ:
                     if (convert && (val instanceof String))
                         return new UuidId(meta.getDescribedType(), UUID.fromString((String) val));
@@ -238,8 +250,7 @@ public class ApplicationIds {
             throw new UserException(_loc.get("objectid-abstract", meta));
         Object copy = null;
         try {
-            copy = AccessController.doPrivileged(
-                J2DoPrivHelper.newInstanceAction(oidType));
+            copy = J2DoPrivHelper.newInstance(oidType);
         } catch (Throwable t) {
             if (t instanceof PrivilegedActionException)
                 t = ((PrivilegedActionException) t).getException();
@@ -318,6 +329,7 @@ public class ApplicationIds {
                     return new ObjectId(cls, koid.getIdObject(),
                         koid.hasSubclasses());
                 case JavaTypes.DATE:
+                case JavaTypes.CALENDAR:
                     return new DateId(cls, ((DateId) oid).getId(),
                         koid.hasSubclasses());
                 case JavaTypes.BIGDECIMAL:
@@ -376,8 +388,7 @@ public class ApplicationIds {
         Class<?> oidType = oid.getClass();
         Object copy = null;
         try {
-            copy = AccessController.doPrivileged(
-                J2DoPrivHelper.newInstanceAction(oidType));
+            copy = J2DoPrivHelper.newInstance(oidType);
         } catch (Throwable t) {
             if (t instanceof PrivilegedActionException)
                 t = ((PrivilegedActionException) t).getException();
@@ -565,7 +576,18 @@ public class ApplicationIds {
                 case JavaTypes.STRING:
                     return ((StringId)id).getId();
                 case JavaTypes.DATE:
+                    if (meta.getPrimaryKeyFields()[0].getDeclaredType()
+                        == java.util.Calendar.class) {
+                        java.util.Calendar calFromDate =
+                            java.util.Calendar.getInstance();
+                        calFromDate.setTime(((DateId)id).getId());
+                        return calFromDate;
+                    }
                     return ((DateId)id).getId();
+                case JavaTypes.CALENDAR:
+                    java.util.Calendar cal = java.util.Calendar.getInstance();
+                    cal.setTime(((DateId)id).getId());
+                    return cal;
                 case JavaTypes.OID:
                 case JavaTypes.OBJECT:
                     return ((ObjectId)id).getId();
@@ -588,6 +610,42 @@ public class ApplicationIds {
      */
     public static void setAppId(ObjectId id, Object newId) {
         id.setId(newId);
+    }
+
+    /**
+     * Extract the object id from a related entity, handling both enhanced
+     * and unenhanced (runtime-reflected) instances. This is used during
+     * derived identity (@MapsId) processing to avoid direct casts to
+     * PersistenceCapable which fail for unenhanced entities.
+     *
+     * @param relatedEntity the related entity instance (may or may not be enhanced)
+     * @return the object id of the related entity, or null if relatedEntity is null
+     */
+    public static Object getRelatedObjectId(Object relatedEntity) {
+        if (relatedEntity == null) {
+            return null;
+        }
+
+        PersistenceCapable pc;
+        if (relatedEntity instanceof PersistenceCapable) {
+            pc = (PersistenceCapable) relatedEntity;
+        } else {
+            // Unenhanced entity - look up or create a ReflectingPersistenceCapable wrapper
+            pc = ImplHelper.toPersistenceCapable(relatedEntity, null);
+            if (pc == null) {
+                return null;
+            }
+        }
+
+        // For types using OpenJPA single-field identity, pcNewObjectIdInstance()
+        // constructs the id from current field values.
+        // For types using IdClass/EmbeddedId, pcFetchObjectId() returns the
+        // already-assigned object id from the state manager.
+        Object oid = pc.pcFetchObjectId();
+        if (oid == null) {
+            oid = pc.pcNewObjectIdInstance();
+        }
+        return oid;
     }
 
     /**
@@ -664,7 +722,7 @@ public class ApplicationIds {
 
         @Override
         public boolean fetchBooleanField(int field) {
-            return (retrieve(field) == Boolean.TRUE) ? true : false;
+            return retrieve(field) == Boolean.TRUE;
         }
 
         @Override

@@ -20,16 +20,12 @@ package org.apache.openjpa.meta;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -57,7 +53,6 @@ import org.apache.openjpa.lib.meta.ZipFileMetaDataIterator;
 import org.apache.openjpa.lib.meta.ZipStreamMetaDataIterator;
 import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.Files;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.util.GeneralException;
@@ -107,8 +102,7 @@ public abstract class AbstractCFMetaDataFactory
             File file;
             for (String str : strs) {
                 file = new File(str);
-                if (AccessController.doPrivileged(
-                        J2DoPrivHelper.existsAction(file)))
+                if (file.exists())
                     this.files.add(file);
             }
         }
@@ -378,8 +372,7 @@ public abstract class AbstractCFMetaDataFactory
         for (ClassMetaData meta : metas) {
             if (getSourceFile(meta) == null)
                 setSourceFile(meta, defaultSourceFile(meta));
-            if (AccessController.doPrivileged(J2DoPrivHelper
-                    .existsAction(getSourceFile(meta)))) {
+            if (getSourceFile(meta).exists()) {
                 if (files == null)
                     files = new HashSet();
                 files.add(getSourceFile(meta));
@@ -394,8 +387,7 @@ public abstract class AbstractCFMetaDataFactory
                 query.setSource(defaultFile, query.getSourceScope(), query.getSourceType(),
                         defaultFile == null ? "" : defaultFile.getPath());
             }
-            if (AccessController.doPrivileged(
-                    J2DoPrivHelper.existsAction(query.getSourceFile()))) {
+            if (query.getSourceFile().exists()) {
                 if (files == null)
                     files = new HashSet();
                 files.add(query.getSourceFile());
@@ -406,8 +398,7 @@ public abstract class AbstractCFMetaDataFactory
                 if (getSourceFile(seq) == null)
                     setSourceFile(seq, defaultSourceFile(seq,
                             clsNames));
-                if (AccessController.doPrivileged(
-                        J2DoPrivHelper.existsAction(getSourceFile(seq)))) {
+                if (getSourceFile(seq).exists()) {
                     if (files == null)
                         files = new HashSet();
                     files.add(getSourceFile(seq));
@@ -435,8 +426,7 @@ public abstract class AbstractCFMetaDataFactory
                 query.setSource(defaultFile, query.getSourceScope(), query.getSourceType(),
                         defaultFile == null ? "" : defaultFile.getPath());
             }
-            if (AccessController.doPrivileged(
-                    J2DoPrivHelper.existsAction(query.getSourceFile()))) {
+            if (query.getSourceFile().exists()) {
                 if (files == null)
                     files = new HashSet();
                 files.add(query.getSourceFile());
@@ -509,8 +499,7 @@ public abstract class AbstractCFMetaDataFactory
         for (Object o : files) {
             file = (File) o;
             if (Files.backup(file, false) != null)
-                AccessController
-                        .doPrivileged(J2DoPrivHelper.deleteAction(file));
+                file.delete();
         }
     }
 
@@ -650,8 +639,7 @@ public abstract class AbstractCFMetaDataFactory
             File file;
             for (File value : files) {
                 file = value;
-                if (AccessController.doPrivileged(J2DoPrivHelper
-                        .isDirectoryAction(file))) {
+                if (file.isDirectory()) {
                     if (log.isTraceEnabled())
                         log.trace(_loc.get("scanning-directory", file));
                     scan(new FileMetaDataIterator(file, newMetaDataFilter()),
@@ -660,16 +648,9 @@ public abstract class AbstractCFMetaDataFactory
                 else if (file.getName().endsWith(".jar")) {
                     if (log.isTraceEnabled())
                         log.trace(_loc.get("scanning-jar", file));
-                    try {
-                        ZipFile zFile = AccessController
-                                .doPrivileged(J2DoPrivHelper
-                                        .newZipFileAction(file));
-                        scan(new ZipFileMetaDataIterator(zFile,
-                                newMetaDataFilter()), cparser, names, true, file);
-                    }
-                    catch (PrivilegedActionException pae) {
-                        throw (IOException) pae.getException();
-                    }
+                    ZipFile zFile = new ZipFile(file);
+                    scan(new ZipFileMetaDataIterator(zFile,
+                            newMetaDataFilter()), cparser, names, true, file);
                 }
                 else {
                     if (log.isTraceEnabled())
@@ -680,16 +661,8 @@ public abstract class AbstractCFMetaDataFactory
                     if (log.isTraceEnabled())
                         log.trace(_loc.get("scan-found-names", newNames, file));
                     names.addAll(newNames);
-                    File f = AccessController
-                            .doPrivileged(J2DoPrivHelper
-                                    .getAbsoluteFileAction(file));
-                    try {
-                        mapPersistentTypeNames(AccessController
-                                .doPrivileged(J2DoPrivHelper.toURLAction(f)), clss);
-                    }
-                    catch (PrivilegedActionException pae) {
-                        throw (FileNotFoundException) pae.getException();
-                    }
+                    File f = file.getAbsoluteFile();
+                	mapPersistentTypeNames(f.toURI().toURL(), clss);
                 }
             }
         }
@@ -698,18 +671,14 @@ public abstract class AbstractCFMetaDataFactory
             for (URL value : urls) {
                 url = value;
                 if ("file".equals(url.getProtocol())) {
-                    File file = AccessController
-                            .doPrivileged(J2DoPrivHelper
-                                    .getAbsoluteFileAction(new File(url.getFile())));
+                    File file = new File(url.getFile()).getAbsoluteFile();
+                    
                     if (files != null && files.contains(file)) {
                         continue;
-                    }
-                    else if (AccessController
-                            .doPrivileged(J2DoPrivHelper.isDirectoryAction(file))) {
+                    } else if (file.isDirectory()) {
                         if (log.isTraceEnabled())
                             log.trace(_loc.get("scanning-directory", file));
-                        scan(
-                                new FileMetaDataIterator(file, newMetaDataFilter()),
+                        scan(new FileMetaDataIterator(file, newMetaDataFilter()),
                                 cparser, names, true, file);
                         continue;
                     }
@@ -721,49 +690,36 @@ public abstract class AbstractCFMetaDataFactory
 
                     final URL finalUrl = url;
                     if (url.toString().endsWith(".jar")) {
-                        ZipInputStream zis = AccessController.doPrivileged(new PrivilegedAction<ZipInputStream>() {
+                    	ZipInputStream zis = null;
+                    	try {
+                    		Class vfs = Class.forName("org.jboss.vfs.VFS");
+                    		Method getChild = vfs.getDeclaredMethod("getChild", URL.class);
+                    		Object jarFile = getChild.invoke(null, finalUrl);
+                    		
+                    		Class virtualFileClass = Class.forName("org.jboss.vfs.VirtualFile");
+                    		Method openStream = virtualFileClass.getDeclaredMethod("openStream");
+                    		zis = (ZipInputStream) openStream.invoke(jarFile);
+                    	} catch (Exception e) {
+                    		log.error(_loc.get("while-scanning-vfs-url", finalUrl), e);
+                    		zis = null;
+                    	}
 
-                            @SuppressWarnings({"rawtypes", "unchecked"})
-                            @Override
-                            public ZipInputStream run() {
-                                try {
-                                    Class vfs = Class.forName("org.jboss.vfs.VFS");
-                                    Method getChild = vfs.getDeclaredMethod("getChild", URL.class);
-                                    Object jarFile = getChild.invoke(null, finalUrl);
-
-                                    Class virtualFileClass = Class.forName("org.jboss.vfs.VirtualFile");
-                                    Method openStream = virtualFileClass.getDeclaredMethod("openStream");
-                                    return (ZipInputStream) openStream.invoke(jarFile);
-                                }
-                                catch (Exception e) {
-                                    log.error(_loc.get("while-scanning-vfs-url", finalUrl), e);
-                                }
-                                return null;
-                            }
-                        });
-                        if (zis != null) {
+                    	if (zis != null) {
                             scan(new ZipStreamMetaDataIterator(zis, newMetaDataFilter()), cparser, names, true, url);
                         }
-                    }
-                    else {
+                    } else {
                         final URLConnection conn = url.openConnection();
                         final Object vfsContent = conn.getContent();
-                        File file = AccessController.doPrivileged(new PrivilegedAction<File>() {
-
-                            @SuppressWarnings({"rawtypes", "unchecked"})
-                            @Override
-                            public File run() {
-                                try {
-                                    Class virtualFileClass = Class.forName("org.jboss.vfs.VirtualFile");
-                                    Method getPhysicalFile = virtualFileClass.getDeclaredMethod("getPhysicalFile");
-                                    return (File) getPhysicalFile.invoke(vfsContent);
-                                }
-                                catch (Exception e) {
-                                    log.error(_loc.get("while-scanning-vfs-url", finalUrl), e);
-                                }
-                                return null;
-                            }
-                        });
+                        File file = null;
+                        try {
+                            Class virtualFileClass = Class.forName("org.jboss.vfs.VirtualFile");
+                            Method getPhysicalFile = virtualFileClass.getDeclaredMethod("getPhysicalFile");
+                            file = (File) getPhysicalFile.invoke(vfsContent);
+                        } catch (Exception e) {
+                            log.error(_loc.get("while-scanning-vfs-url", finalUrl), e);
+                            file = null;
+                        }
+                        
                         if (file != null) {
                             scan(new FileMetaDataIterator(file, newMetaDataFilter()), cparser, names, true, file);
                         }
@@ -787,31 +743,16 @@ public abstract class AbstractCFMetaDataFactory
                 else if (url.getPath().endsWith(".jar")) {
                     if (log.isTraceEnabled())
                         log.trace(_loc.get("scanning-jar-at-url", url));
-                    try {
-                        InputStream is = (InputStream)
-                                AccessController.doPrivileged(
-                                        J2DoPrivHelper.openStreamAction(url));
-                        scan(new ZipStreamMetaDataIterator(
-                                new ZipInputStream(is),
-                                newMetaDataFilter()), cparser, names, true, url);
-                    }
-                    catch (PrivilegedActionException pae) {
-                        throw (IOException) pae.getException();
-                    }
+                    InputStream is = (InputStream) url.openStream();
+                    scan(new ZipStreamMetaDataIterator(
+                            new ZipInputStream(is),
+                            newMetaDataFilter()), cparser, names, true, url);
                 }
                 else {
                     // Open an InputStream from the URL and sniff for a zip header.  If it is, then this is
                     // a URL with a jar-formated InputStream, as per the JPA specification.  Otherwise, fall back
                     // to URLMetaDataIterator.
-                    BufferedInputStream is = null;
-
-                    try {
-                        is = new BufferedInputStream((InputStream) AccessController.
-                                doPrivileged(J2DoPrivHelper.openStreamAction(url)));
-                    }
-                    catch (PrivilegedActionException pae) {
-                        throw (IOException) pae.getException();
-                    }
+                    BufferedInputStream is = new BufferedInputStream((InputStream) url.openStream());
 
                     // Check for zip header magic 0x50 0x4b 0x03 0x04
                     is.mark(0);
@@ -846,23 +787,15 @@ public abstract class AbstractCFMetaDataFactory
             for (String s : rsrcs) {
                 rsrc = s;
                 if (rsrc.endsWith(".jar")) {
-                    url = AccessController.doPrivileged(
-                            J2DoPrivHelper.getResourceAction(loader, rsrc));
+                	url = loader.getResource(rsrc);
                     if (url != null) {
                         if (log.isTraceEnabled())
                             log.trace(_loc.get("scanning-jar-stream-url", url));
-                        try {
-                            InputStream is = (InputStream)
-                                    AccessController.doPrivileged(
-                                            J2DoPrivHelper.openStreamAction(url));
-                            scan(new ZipStreamMetaDataIterator
-                                            (new ZipInputStream(is),
-                                                    newMetaDataFilter()), cparser, names, true,
-                                    url);
-                        }
-                        catch (PrivilegedActionException pae) {
-                            throw (IOException) pae.getException();
-                        }
+                        InputStream is = (InputStream) url.openStream();
+                        scan(new ZipStreamMetaDataIterator
+                                        (new ZipInputStream(is),
+                                                newMetaDataFilter()), cparser, names, true,
+                                url);
                     }
                 }
                 else {
@@ -885,11 +818,10 @@ public abstract class AbstractCFMetaDataFactory
                     try {
                         if (puUrlString != null) {
                             String puORMUrlStr = puUrlString + (puUrlString.endsWith("/") ? "" : "/") + rsrc;
-                            puORMUrl = AccessController.doPrivileged(J2DoPrivHelper.createURL(puORMUrlStr));
+                            puORMUrl = new URL(puORMUrlStr);
                         }
-                    }
-                    catch (PrivilegedActionException e) {
-                        throw new IOException("Error generating puORMUrlStr.", e.getCause());
+                    } catch (MalformedURLException e) {
+                        throw new IOException("Error generating puORMUrlStr.", e);
                     }
 
                     List<URL> urls = new ArrayList<>(3);

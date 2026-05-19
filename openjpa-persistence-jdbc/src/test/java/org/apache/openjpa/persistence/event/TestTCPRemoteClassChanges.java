@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.event;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import jakarta.persistence.EntityManager;
 
@@ -37,8 +38,9 @@ import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.test.AllowFailure;
 
 @AllowFailure(message="surefire excluded")
-public class TestTCPRemoteClassChanges
-    extends AbstractTestCase {
+public class TestTCPRemoteClassChanges extends AbstractTestCase {
+	
+	private static final Logger logger = Logger.getLogger(TestTCPRemoteClassChanges.class.getCanonicalName());
 
     public TestTCPRemoteClassChanges(String s) {
         super(s, "eventcactusapp");
@@ -87,17 +89,13 @@ public class TestTCPRemoteClassChanges
         OpenJPAEntityManager pmSender = (OpenJPAEntityManager)
             pmfSender.createEntityManager();
 
-        System.out.println("-------------------");
-        System.out.println(
-            "2 PMFs created, acting as a cluster using ports 5636 and 6636");
-        System.out.println(
-            "Testing scenario:");
-        System.out.println(
-            "  - tx of inserts (normal trans)\n" +
+        logger.fine("-------------------");
+        logger.fine("2 PMFs created, acting as a cluster using ports 5636 and 6636");
+        logger.fine("Testing scenario:");
+        logger.fine("  - tx of inserts (normal trans)\n" +
                 "  - tx of inserts (large trans)\n" +
                 "  - tx of inserts,updates, dels (large trans)");
-        System.out.println(
-            "Remote commit event will transmit classes.");
+        logger.fine("Remote commit event will transmit classes.");
 
         // Perform transaction that adds objects.
         // Noraml transaction

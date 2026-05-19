@@ -30,7 +30,6 @@ import java.io.Writer;
 import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,7 +42,6 @@ import javax.xml.parsers.SAXParser;
 
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.lib.util.Base16Encoder;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.xml.XMLFactory;
 import org.apache.openjpa.lib.xml.XMLWriter;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -80,10 +78,7 @@ public class XMLFileHandler {
      */
     public Collection load(ClassMetaData meta) {
         File f = getFile(meta);
-        if (!AccessController.doPrivileged(
-                J2DoPrivHelper.existsAction(f)) ||
-                AccessController.doPrivileged(
-                        J2DoPrivHelper.lengthAction(f)) == 0)
+        if (!f.exists() || f.length() == 0L)
             return Collections.EMPTY_SET;
         try {
             return read(f);
@@ -136,10 +131,8 @@ public class XMLFileHandler {
             throw new InternalException();
 
         File f = getFile(meta);
-        if (!AccessController.doPrivileged(
-                J2DoPrivHelper.existsAction(f.getParentFile())))
-            AccessController.doPrivileged(
-                J2DoPrivHelper.mkdirsAction(f.getParentFile()));
+        if (!f.getParentFile().exists())
+        	f.getParentFile().mkdirs();
 
         FileWriter fw = null;
         try {
@@ -373,7 +366,7 @@ public class XMLFileHandler {
                 // create an ObjectData that will contain the information
                 // for this instance, and set the version
                 _object = new ObjectData(oid, meta);
-                _object.setVersion(new Long(attrs.getValue("version")));
+                _object.setVersion(Long.valueOf(attrs.getValue("version")));
             }
             else if ("field".equals(qName)) { // field
                 // start parsing a field element: for container types,
@@ -483,7 +476,7 @@ public class XMLFileHandler {
 
                 case JavaTypes.BYTE:
                 case JavaTypes.BYTE_OBJ:
-                    return new Byte(str);
+                    return Byte.parseByte(str);
 
                 case JavaTypes.CHAR:
                 case JavaTypes.CHAR_OBJ:
@@ -495,23 +488,23 @@ public class XMLFileHandler {
 
                 case JavaTypes.DOUBLE:
                 case JavaTypes.DOUBLE_OBJ:
-                    return new Double(str);
+                    return Double.valueOf(str);
 
                 case JavaTypes.FLOAT:
                 case JavaTypes.FLOAT_OBJ:
-                    return new Float(str);
+                    return Float.valueOf(str);
 
                 case JavaTypes.INT:
                 case JavaTypes.INT_OBJ:
-                    return new Integer(str);
+                    return Integer.valueOf(str);
 
                 case JavaTypes.LONG:
                 case JavaTypes.LONG_OBJ:
-                    return new Long(str);
+                    return Long.valueOf(str);
 
                 case JavaTypes.SHORT:
                 case JavaTypes.SHORT_OBJ:
-                    return new Short(str);
+                    return Short.valueOf(str);
 
                 case JavaTypes.NUMBER:
                 case JavaTypes.BIGDECIMAL:

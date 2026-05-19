@@ -22,6 +22,7 @@ package org.apache.openjpa.audit;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.List;
+import java.util.logging.Logger;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Persistence;
@@ -38,6 +39,7 @@ import junit.framework.TestCase;
  *
  */
 public class TestAudit extends TestCase {
+	private static final Logger logger = Logger.getLogger(TestAudit.class.getCanonicalName());
 	private static OpenJPAEntityManagerFactory emf;
 	private static Auditor auditor;
 	private static Object oid;
@@ -142,10 +144,10 @@ public class TestAudit extends TestCase {
     	em = Persistence.createEntityManagerFactory("no-audit").createEntityManager();
     	assertNull(OpenJPAPersistence.cast(em).getEntityManagerFactory().getConfiguration().getAuditorInstance());
 		long m0 = insert(N, em);
-    	System.err.println("Memory used with no auditor " + m0);
-    	System.err.println("Memory used with auditor " + m2);
+		logger.fine("Memory used with no auditor " + m0);
+		logger.fine("Memory used with auditor " + m2);
 		double pct = 100.0*(m2-m0)/m0;
-		System.err.println("Extra memory with auditor " + pct);
+		logger.fine("Extra memory with auditor " + pct);
     	assertTrue(pct < 10.0);
     }
 

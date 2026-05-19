@@ -20,6 +20,7 @@
 package org.apache.openjpa.persistence.criteria;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -56,6 +57,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *
  */
 public class TestCriteria extends SingleEMFTestCase {
+	
+	private static final Logger logger = Logger.getLogger(TestCriteria.class.getCanonicalName());
+	
     protected OpenJPAQueryBuilder qb;
     protected StringComparison comparator = new StringComparison();
 
@@ -118,8 +122,8 @@ public class TestCriteria extends SingleEMFTestCase {
 
         QueryDefinition q2 = e.select(e).where(w2);
         String jpql2 = qb.toJPQL(q2);
-        System.err.println(jpql1);
-        System.err.println(jpql2);
+        logger.fine(jpql1);
+        logger.fine(jpql2);
         assertNotEquals(jpql1, jpql2);
         emf.createEntityManager().createDynamicQuery(q2).getResultList();
     }

@@ -112,6 +112,42 @@ public Predicate in(Object... values) {
     public Predicate isNull() {
     	return new Expressions.IsNull(this);
     }
+    
+    @Override
+    public Predicate equalTo(Expression<?> value) {
+    	return new Expressions.Equal(this, value);
+    }
+
+    @Override
+    public Predicate equalTo(Object value) {
+    	return new Expressions.Equal(this, value);
+    }
+    
+    @Override
+    public <X> Expression<X> cast(Class<X> type) {
+    	if (type == String.class) {
+    		return new Expressions.TypecastAs<>(this, type, "STRING");
+    	} else if (type == Integer.class || type == int.class) {
+    		return new Expressions.TypecastAs<>(this, type, "INTEGER");
+    	} else if (type == Long.class || type == long.class) {
+    		return new Expressions.TypecastAs<>(this, type, "LONG");
+    	} else if (type == Float.class || type == float.class) {
+    		return new Expressions.TypecastAs<>(this, type, "FLOAT");
+    	} else if (type == Double.class || type == double.class) {
+    		return new Expressions.TypecastAs<>(this, type, "DOUBLE");
+    	}
+		throw new IllegalArgumentException("Target cast not supported");
+    }
+    
+    @Override
+    public Predicate notEqualTo(Expression<?> value) {
+    	return new Expressions.NotEqual(this, value);
+    }
+
+    @Override
+    public Predicate notEqualTo(Object value) {
+    	return new Expressions.NotEqual(this, value);
+    }
 
     //  ------------------------------------------------------------------------------------
     //  Contract for bridge pattern to convert to an equivalent kernel representation.

@@ -19,7 +19,6 @@
 package org.apache.openjpa.enhance;
 
 import java.io.IOException;
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,8 +27,8 @@ import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.util.asm.AsmHelper;
 import org.apache.openjpa.util.asm.BytecodeWriter;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Options;
+import org.apache.openjpa.lib.util.TemporaryClassLoader;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
 import org.apache.openjpa.util.asm.ClassNodeTracker;
@@ -45,9 +44,7 @@ public class TestEnhancementWithMultiplePUs
         OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
         Configurations.populateConfiguration(conf, new Options());
         MetaDataRepository repos = conf.getMetaDataRepositoryInstance();
-        ClassLoader loader = AccessController
-            .doPrivileged(J2DoPrivHelper.newTemporaryClassLoaderAction(
-                getClass().getClassLoader()));
+        ClassLoader loader = new TemporaryClassLoader(getClass().getClassLoader());
         EnhancementProject project = new EnhancementProject();
 
         String className = "org.apache.openjpa.enhance.UnenhancedBootstrapInstance";
@@ -88,9 +85,7 @@ public class TestEnhancementWithMultiplePUs
             "META-INF/persistence.xml#second-persistence-unit");
         Configurations.populateConfiguration(conf, opts);
         MetaDataRepository repos = conf.getMetaDataRepositoryInstance();
-        ClassLoader loader = AccessController
-            .doPrivileged(J2DoPrivHelper.newTemporaryClassLoaderAction(
-                getClass().getClassLoader()));
+        ClassLoader loader = new TemporaryClassLoader(getClass().getClassLoader());
         EnhancementProject project = new EnhancementProject();
 
         // make sure that the class is not already enhanced for some reason
@@ -126,9 +121,7 @@ public class TestEnhancementWithMultiplePUs
         opts.setProperty("p", "META-INF/persistence.xml");
         Configurations.populateConfiguration(conf, opts);
         MetaDataRepository repos = conf.getMetaDataRepositoryInstance();
-        ClassLoader loader = AccessController
-            .doPrivileged(J2DoPrivHelper.newTemporaryClassLoaderAction(
-                getClass().getClassLoader()));
+        ClassLoader loader = new TemporaryClassLoader(getClass().getClassLoader());
         EnhancementProject project = new EnhancementProject();
 
         // make sure that the classes is not already enhanced for some reason

@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Persistence;
@@ -43,6 +44,8 @@ import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
  *
  */
 public class TestPropertiesMethods extends AbstractPersistenceTestCase {
+	
+	private static final Logger logger = Logger.getLogger(TestPropertiesMethods.class.getCanonicalName());
     private static final String UNIT_NAME = "test";
     private OpenJPAEntityManagerFactory emf;
     private OpenJPAEntityManager em;
@@ -278,16 +281,16 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
     }
 
     void print(String message, Map<String, Object> props) {
-        System.err.println(message);
+        logger.fine(message);
         for (Map.Entry<String, Object> e : props.entrySet()) {
-            System.err.println(e.getKey() + ":" + e.getValue() + " [" + (e.getValue() == null ?
+        	logger.fine(e.getKey() + ":" + e.getValue() + " [" + (e.getValue() == null ?
                     "" : e.getValue().getClass().getSimpleName()) + "]");
         }
     }
     void print(String message, Set<String> props) {
-        System.err.println(message);
+    	logger.fine(message);
         for (String p : props) {
-            System.err.println(p);
+        	logger.fine(p);
         }
     }
 

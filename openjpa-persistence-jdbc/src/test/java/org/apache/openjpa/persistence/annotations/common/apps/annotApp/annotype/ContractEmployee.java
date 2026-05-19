@@ -19,6 +19,8 @@
 package
     org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
 
+import java.util.logging.Logger;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.ExcludeSuperclassListeners;
@@ -27,8 +29,8 @@ import jakarta.persistence.PrePersist;
 @Entity
 @ExcludeSuperclassListeners
 @EntityListeners(LongNameValidator.class)
-public class ContractEmployee extends Employee
-{
+public class ContractEmployee extends Employee {
+	private static final Logger logger = Logger.getLogger(ContractEmployee.class.getCanonicalName());
 	private int dailyRate;
 	private int term;
 
@@ -44,7 +46,7 @@ public class ContractEmployee extends Employee
 	@PrePersist
 	public void verifyTerm()
 	{
-        System.out.println("VerifyTerm of ContractEmployee running on" + this);
+        logger.finest("VerifyTerm of ContractEmployee running on" + this);
 
 		CallbackStorage store = CallbackStorage.getInstance();
 		store.getClist().add("contractemployee");

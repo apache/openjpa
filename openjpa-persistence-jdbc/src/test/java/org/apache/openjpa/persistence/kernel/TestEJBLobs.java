@@ -20,9 +20,13 @@ package org.apache.openjpa.persistence.kernel;
 
 import jakarta.persistence.EntityManager;
 
+import java.util.logging.Logger;
+
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 public class TestEJBLobs extends AbstractTestCase {
+	
+	private static final Logger logger = Logger.getLogger(TestEJBLobs.class.getCanonicalName());
 
     private EntityManager _pm = null;
     private EJBLobsInnerEntity _inner = null;
@@ -57,9 +61,7 @@ public class TestEJBLobs extends AbstractTestCase {
             endTx(_pm);
         }
         catch (Exception jdoe) {
-            System.out.println(
-                "An exception was thrown while persisting the entity : \n" +
-                    getStackTrace(jdoe));
+            logger.warning("An exception was thrown while persisting the entity : \n" + getStackTrace(jdoe));
         }
         endEm(_pm);
 

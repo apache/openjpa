@@ -20,13 +20,11 @@ package org.apache.openjpa.enhance;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
-import java.security.AccessController;
 import java.security.ProtectionDomain;
 import java.util.Set;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.meta.MetaDataRepository;
@@ -145,8 +143,8 @@ public class PCClassFileTransformer
             if (enhance != Boolean.TRUE)
                 return null;
 
-            ClassLoader oldLoader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
-            AccessController.doPrivileged(J2DoPrivHelper.setContextClassLoaderAction(_tmpLoader));
+            ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
+            Thread.currentThread().setContextClassLoader(_tmpLoader);
             try {
                 EnhancementProject project = new EnhancementProject();
                 final ClassNodeTracker bc = project.loadClass(bytes, _tmpLoader);
@@ -160,9 +158,17 @@ public class PCClassFileTransformer
                 ClassNodeTracker cnt = enhancer.getPCBytecode();
                 return AsmHelper.toByteArray(cnt);
             } finally {
-                AccessController.doPrivileged(J2DoPrivHelper.setContextClassLoaderAction(oldLoader));
+            	Thread.currentThread().setContextClassLoader(oldLoader);
             }
         } catch (Throwable t) {
+            // During retransformClasses, another transformer (e.g.
+            // ClassRedefiner's temporary transformer) may provide valid
+            // bytecode.  Return null so the JVM can proceed to the next
+            // transformer instead of aborting the whole retransform.
+            if (redef != null) {
+                _log.info(_loc.get("cft-exception-thrown", className), t);
+                return null;
+            }
             _log.warn(_loc.get("cft-exception-thrown", className), t);
             if (t instanceof RuntimeException)
                 throw (RuntimeException) t;

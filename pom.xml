@@ -33,13 +33,13 @@
     <artifactId>openjpa-parent</artifactId>
     <packaging>pom</packaging>
     <name>OpenJPA Parent POM</name>
-    <description>Apache OpenJPA implementation of Jakarta JPA 3.1</description>
+    <description>Apache OpenJPA implementation of Jakarta JPA 3.2</description>
 
-    <version>4.1.2-SNAPSHOT</version>
+    <version>4.2.0-SNAPSHOT</version>
 
     <properties>
-        <java.class.version>11</java.class.version>
-        <java.testclass.version>11</java.testclass.version>
+        <java.class.version>17</java.class.version>
+        <java.testclass.version>17</java.testclass.version>
 
         <doclint>none</doclint>
 
@@ -76,12 +76,12 @@
         <createSource>none</createSource>
         <createSources>false</createSources>
         <!-- common JDBC driver versions -->
-        <derby.version>10.15.2.0</derby.version>
+        <derby.version>10.16.1.1</derby.version>
         <hsqldb.version>2.7.4</hsqldb.version>
-        <mysql.connector.version>5.1.49</mysql.connector.version>
-        <mariadb.connector.version>2.7.2</mariadb.connector.version>
+        <mysql.connector.version>9.7.0</mysql.connector.version>
+        <mariadb.connector.version>3.5.8</mariadb.connector.version>
         <postgresql.connector.version>42.7.11</postgresql.connector.version>
-        <mssql.connector.version>12.8.2.jre11</mssql.connector.version>
+        <mssql.connector.version>13.4.0.jre11</mssql.connector.version>
 
         <!-- other common versions -->
         <kubernetes-client.version>6.13.3</kubernetes-client.version>
@@ -91,7 +91,7 @@
         <javadoc.additionalparam />
         <version.maven.surefire>3.5.2</version.maven.surefire>
 
-        <xbean.version>4.28</xbean.version>
+        <xbean.version>4.30</xbean.version>
         <bval.version>3.0.2</bval.version>
         <log4j2.version>2.25.4</log4j2.version>
         <ant.version>1.10.15</ant.version>
@@ -101,7 +101,7 @@
         <pool2.version>2.12.1</pool2.version>
 
         <jakarta.annotation-api.version>2.1.1</jakarta.annotation-api.version>
-        <jakarta.persistence-api.version>3.1.0</jakarta.persistence-api.version>
+        <jakarta.persistence-api.version>3.2.0</jakarta.persistence-api.version>
         <jakarta.transaction-api.version>2.0.1</jakarta.transaction-api.version>
         <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
         <jakarta.jms-api.version>3.1.0</jakarta.jms-api.version>
@@ -478,9 +478,9 @@
                 </property>
             </activation>
             <properties>
-                <h2.version>2.1.214</h2.version>
+                <h2.version>2.3.232</h2.version>
                 <connection.driver.name>org.h2.Driver</connection.driver.name>
-                <connection.url>jdbc:h2:./target/database/openjpa-h2-database;MODE=STRICT</connection.url>
+                <connection.url>jdbc:h2:./target/database/openjpa-h2-database</connection.url>
                 <connection.username />
                 <connection.password />
                 <!-- TCK specific properties -->
@@ -610,14 +610,14 @@
             </activation>
             <dependencies>
                 <dependency>
-                    <groupId>mysql</groupId>
-                    <artifactId>mysql-connector-java</artifactId>
+                    <groupId>com.mysql</groupId>
+                    <artifactId>mysql-connector-j</artifactId>
                     <version>${mysql.connector.version}</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
             <properties>
-                <connection.driver.name>com.mysql.jdbc.Driver</connection.driver.name>
+                <connection.driver.name>com.mysql.cj.jdbc.Driver</connection.driver.name>
                 <!--<connection.url>jdbc:mysql://localhost/OPENJPA</connection.url>-->
                 <connection.url>${openjpa.mysql.url}</connection.url>
                 <connection.username>${openjpa.mysql.username}</connection.username>
@@ -639,19 +639,19 @@
             </activation>
             <dependencies>
                 <dependency>
-                    <groupId>mysql</groupId>
-                    <artifactId>mysql-connector-java</artifactId>
+                    <groupId>com.mysql</groupId>
+                    <artifactId>mysql-connector-j</artifactId>
                     <version>${mysql.connector.version}</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
             <properties>
-                <connection.driver.name>com.mysql.jdbc.Driver</connection.driver.name>
+                <connection.driver.name>com.mysql.cj.jdbc.Driver</connection.driver.name>
 
                 <!-- default settings for local docker -->
                 <docker.external.mysql.port>3306</docker.external.mysql.port>
                 <openjpa.mysql.dbname>openjpatst</openjpa.mysql.dbname>
-                <openjpa.mysql.url>jdbc:mysql://localhost:${docker.external.mysql.port}/${openjpa.mysql.dbname}?useSSL=false</openjpa.mysql.url>
+                <openjpa.mysql.url>jdbc:mysql://localhost:${docker.external.mysql.port}/${openjpa.mysql.dbname}?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;transformedBitIsBoolean=true</openjpa.mysql.url>
                 <openjpa.mysql.username>openjpatst</openjpa.mysql.username>
                 <openjpa.mysql.password>openjpatst</openjpa.mysql.password>
 
@@ -665,7 +665,7 @@
                 <dbcp.maxIdle>5</dbcp.maxIdle>
                 <dbcp.minIdle>0</dbcp.minIdle>
 
-                <mysql.server.version>5.7</mysql.server.version>
+                <mysql.server.version>8.0</mysql.server.version>
             </properties>
 
             <build>
@@ -676,12 +676,13 @@
                         <configuration>
                             <images>
                                 <image>
-                                    <name>mysql/mysql-server:${mysql.server.version}</name>
+                                    <name>mysql:${mysql.server.version}</name>
                                     <run>
                                         <env>
                                             <MYSQL_DATABASE>${openjpa.mysql.dbname}</MYSQL_DATABASE>
                                             <MYSQL_USER>${connection.username}</MYSQL_USER>
                                             <MYSQL_PASSWORD>${connection.password}</MYSQL_PASSWORD>
+                                            <MYSQL_RANDOM_ROOT_PASSWORD>yes</MYSQL_RANDOM_ROOT_PASSWORD>
                                         </env>
                                         <ports>
                                             <port>${docker.external.mysql.port}:3306</port>
@@ -760,7 +761,7 @@
                 <dbcp.maxIdle>5</dbcp.maxIdle>
                 <dbcp.minIdle>0</dbcp.minIdle>
 
-                <mariadb.server.version>10.5</mariadb.server.version>
+                <mariadb.server.version>11.8</mariadb.server.version>
             </properties>
 
             <build>
@@ -771,7 +772,7 @@
                         <configuration>
                             <images>
                                 <image>
-                                    <name>mariadb/server:${mariadb.server.version}</name>
+                                    <name>mariadb:${mariadb.server.version}</name>
                                     <run>
                                         <env>
                                             <!-- mariadb still uses the old mysql env variables -->
@@ -1816,8 +1817,8 @@
                 <version>${derby.version}</version>
             </dependency>
             <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-java</artifactId>
+                <groupId>com.mysql</groupId>
+                <artifactId>mysql-connector-j</artifactId>
                 <version>${mysql.connector.version}</version>
             </dependency>
             <dependency>
@@ -1826,14 +1827,14 @@
                 <version>${dbcp2.version}</version>
             </dependency>
             <dependency>
-                <groupId>javax.xml.bind</groupId>
-                <artifactId>jaxb-api</artifactId>
-                <version>2.2.1</version>
+                <groupId>jakarta.xml.bind</groupId>
+                <artifactId>jakarta.xml.bind-api</artifactId>
+                <version>4.0.2</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.xml.bind</groupId>
                 <artifactId>jaxb-impl</artifactId>
-                <version>2.2.1</version>
+                <version>4.0.5</version>
             </dependency>
             <dependency>
                 <groupId>org.hsqldb</groupId>
@@ -2212,6 +2213,7 @@
                             <failsOnError>true</failsOnError>
                             <consoleOutput>true</consoleOutput>
                             <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                            <excludeGeneratedSources>true</excludeGeneratedSources>
                             <excludes>**/*_.java</excludes>
                             <logViolationsToConsole>true</logViolationsToConsole>
                             <checkstyleRules>

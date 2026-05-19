@@ -19,7 +19,6 @@
 package org.apache.openjpa.kernel;
 
 import java.io.ObjectStreamException;
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -423,6 +422,9 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
     public Map<String,Object> getProperties() {
         // required props are VendorName and VersionNumber
         Map<String,Object> props = _conf.toProperties(true);
+        // Remove null values — callers (including TCK's displayMap) may
+        // not expect them and the JPA spec does not require null entries.
+        props.values().removeIf(Objects::isNull);
         props.put("VendorName", OpenJPAVersion.VENDOR_NAME);
         props.put("VersionNumber", OpenJPAVersion.VERSION_NUMBER);
         props.put("VersionId", OpenJPAVersion.VERSION_ID);
@@ -469,6 +471,26 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
     @Override
     public void unlock() {
         _lock.unlock();
+    }
+    
+    @Override
+    public void createPersistenceStructure(boolean createSchemas) {
+    	throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public void dropPersistenceStrucuture(boolean dropSchemas) {
+    	throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public void validatePersistenceStruture() throws Exception {
+    	throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public void truncateData() {
+    	throw new UnsupportedOperationException();
     }
 
     /**
@@ -787,7 +809,7 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
     public Collection<Broker> getOpenBrokers() {
         return Collections.unmodifiableCollection(_brokers);
     }
-
+    
     /**
      * Release <code>broker</code> from any internal data structures. This
      * is invoked by <code>broker</code> after the broker is fully closed.
@@ -902,8 +924,7 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
             mdr.setResolve(MetaDataModes.MODE_MAPPING_INIT, true);
 
             // Load persistent classes and hook in subclasser
-            loadPersistentTypes(AccessController.doPrivileged(J2DoPrivHelper
-                .getContextClassLoaderAction()));
+            loadPersistentTypes(Thread.currentThread().getContextClassLoader());
             mdr.preload();
         }
 

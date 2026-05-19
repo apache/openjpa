@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.criteria.multiselect;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Tuple;
@@ -34,6 +35,9 @@ import jakarta.persistence.criteria.Subquery;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestCriteriaMultiselectAliasing extends SQLListenerTestCase {
+	
+	private static final Logger logger = Logger.getLogger(TestCriteriaMultiselectAliasing.class.getCanonicalName());
+	
     CriteriaQuery<Tuple> critQuery;
     String critQueryString;
 
@@ -56,7 +60,7 @@ public class TestCriteriaMultiselectAliasing extends SQLListenerTestCase {
 
         critQuery = createCriteriaBuilder();
         critQueryString = critQuery.toString();
-        System.out.println("critQueryString = " + critQueryString);
+        logger.fine("critQueryString = " + critQueryString);
     }
 
     public void test (){
@@ -107,7 +111,7 @@ public class TestCriteriaMultiselectAliasing extends SQLListenerTestCase {
     public void ttestGeneratedCriteriaQueryString(){
         if (!"true".equals(doCB)){
         EntityManager em = emf.createEntityManager();
-        System.out.println("NOT doing CB");
+        logger.fine("NOT doing CB");
         resetSQL();
         em.createQuery(critQueryString).getResultList();
         assertNotSQL(".*T_DIM_DAY t3.*");

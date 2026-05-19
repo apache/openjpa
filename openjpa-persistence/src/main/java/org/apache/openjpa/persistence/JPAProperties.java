@@ -130,9 +130,9 @@ public class JPAProperties {
         if (JPAProperties.isValidKey(key)) {
             // works because enum values are identical String
             if (value instanceof CacheRetrieveMode || (value instanceof String && CACHE_RETRIEVE_MODE.equals(key))) {
-                return (T)DataCacheRetrieveMode.valueOf(value.toString().trim().toUpperCase(Locale.ENGLISH));
+                return (T) value;
             } else if (value instanceof CacheStoreMode || (value instanceof String && CACHE_STORE_MODE.equals(key))) {
-                return (T)DataCacheStoreMode.valueOf(value.toString().trim().toUpperCase(Locale.ENGLISH));
+                return (T) value;
             }
 
             // If the value doesn't match the result type, attempt to convert

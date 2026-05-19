@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+-->
+<entity-mappings version="3.2"
+    xmlns="https://jakarta.ee/xml/ns/persistence/orm"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence/orm
+        https://jakarta.ee/xml/ns/persistence/orm/orm_3_2.xsd">
+
+    <entity class="org.apache.openjpa.persistence.simple.NativeQueryResultEntity">
+        <named-native-query name="NativeQueryResultEntity.xmlFindAll">
+            <query>SELECT id, name FROM NativeQueryResultEntity</query>
+            <entity-result entity-class="org.apache.openjpa.persistence.simple.NativeQueryResultEntity">
+                <field-result name="id" column="id"/>
+                <field-result name="name" column="name"/>
+            </entity-result>
+        </named-native-query>
+        <named-native-query name="NativeQueryResultEntity.xmlFindNames">
+            <query>SELECT name FROM NativeQueryResultEntity</query>
+            <column-result name="name"/>
+        </named-native-query>
+    </entity>
+
+</entity-mappings>

@@ -23,8 +23,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -40,7 +38,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Files;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.xml.Commentable;
 import org.apache.openjpa.lib.xml.XMLWriter;
@@ -136,10 +133,8 @@ public abstract class XMLMetaDataSerializer implements MetaDataSerializer {
         File backup = Files.backup(file, false);
         if (backup == null) {
             File parent = file.getParentFile();
-            if (parent != null && !AccessController.doPrivileged(
-                    J2DoPrivHelper.existsAction(parent)))
-                AccessController.doPrivileged(
-                    J2DoPrivHelper.mkdirsAction(parent));
+            if (parent != null && !parent.exists())
+                parent.mkdirs();
         }
         return backup;
     }
@@ -194,16 +189,9 @@ public abstract class XMLMetaDataSerializer implements MetaDataSerializer {
             _log.info(_loc.get("ser-file", file));
 
         _backup = prepareWrite(file);
-        try {
-            FileWriter out = new FileWriter(
-                AccessController.doPrivileged(
-                    J2DoPrivHelper.getCanonicalPathAction(file)),
-                (flags & APPEND) > 0);
-            serialize(out, flags);
-            out.close();
-        } catch (PrivilegedActionException pae) {
-            throw (IOException) pae.getException();
-        }
+        FileWriter out = new FileWriter(file.getCanonicalPath(), (flags & APPEND) > 0);
+        serialize(out, flags);
+        out.close();
     }
 
     @Override

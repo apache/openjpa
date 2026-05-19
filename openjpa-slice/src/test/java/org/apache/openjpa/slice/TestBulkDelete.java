@@ -47,7 +47,7 @@ public class TestBulkDelete extends SliceTestCase {
 
 	@Override
     public void tearDown() throws Exception {
-		System.err.println("Delete all instances from all slices");
+		// Delete all instances from all slices
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		String delete = "delete from PObject p";
@@ -80,7 +80,7 @@ public class TestBulkDelete extends SliceTestCase {
 		assertEquals(N, total);
 
 		for (int i = 0; i < SLICES; i++) {
-			System.err.println("Query only on slice [" + SLICE_NAMES.get(i) + "]");
+			// Query only on slice SLICE_NAMES.get(i)
 			long count = em.createQuery(jpql,Long.class)
 			               .setHint(SlicePersistence.HINT_TARGET, SLICE_NAMES.get(i))
 			               .getSingleResult();
@@ -88,7 +88,7 @@ public class TestBulkDelete extends SliceTestCase {
 		}
 
 		em.getTransaction().begin();
-		System.err.println("Delete only from slice [" + SLICE_NAMES.get(0) + "]");
+		// Delete only from slice SLICE_NAMES.get(0)
 		String delete = "delete from PObject p";
 		int m = em.createQuery(delete)
 		  .setHint(SlicePersistence.HINT_TARGET, SLICE_NAMES.get(0))

@@ -22,7 +22,6 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,13 +41,13 @@ import org.apache.openjpa.datacache.CacheDistributionPolicy;
 import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.enhance.RecordPersistenceCapable;
 import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.lib.conf.Value;
 import org.apache.openjpa.lib.conf.ValueListener;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.util.ClassUtil;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.xml.Commentable;
@@ -142,7 +141,7 @@ public class ClassMetaData
         = new FetchGroup[0];
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
-    private MetaDataRepository _repos;
+    private final MetaDataRepository _repos;
     private transient ClassLoader _loader = null;
 
     private final ValueMetaData _owner;
@@ -164,6 +163,9 @@ public class ClassMetaData
     private Map<String,FieldMetaData> _supFieldMap = null;
     private boolean _defSupFields = false;
     private Collection<String> _staticFields = null;
+    // Pending converter overrides from class-level @Convert/@Converts.
+    // Applied when MappedSuperclass fields are inherited.
+    private Map<String, Class> _converterOverrides = null;
     private int[] _fieldDataTable = null;
     private Map<String,FetchGroup> _fgMap = null;
 
@@ -544,6 +546,7 @@ public class ClassMetaData
                 _objectId = StringId.class;
                 break;
             case JavaTypes.DATE:
+            case JavaTypes.CALENDAR:
                 _objectId = DateId.class;
                 break;
             case JavaTypes.OID:
@@ -814,6 +817,14 @@ public class ClassMetaData
     }
 
     /**
+     * Whether the described type is a Java record.
+     * JPA 3.2 allows records as embeddable classes.
+     */
+    public boolean isRecord() {
+        return _type != null && _type.isRecord();
+    }
+
+    /**
      * Whether the type's fields are actively intercepted, either by
      * redefinition or enhancement.
      */
@@ -835,7 +846,7 @@ public class ClassMetaData
     public boolean isManagedInterface() {
         if (!_type.isInterface())
             return false;
-        return _interface == null ? false : _interface;
+        return _interface != null && _interface;
     }
 
     /**
@@ -992,8 +1003,7 @@ public class ClassMetaData
         if (getDeclaredField(field) != null)
             return true;
         if (_staticFields == null) {
-            Field[] fields = AccessController.doPrivileged(
-                J2DoPrivHelper.getDeclaredFieldsAction(_type));
+            Field[] fields = _type.getDeclaredFields();
             Set<String> names = new HashSet<>();
             for (Field value : fields)
                 if (Modifier.isStatic(value.getModifiers()))
@@ -1902,6 +1912,18 @@ public class ClassMetaData
         // this ensures that all field indexes get set when fields are cached
         cacheFields();
 
+        // Apply any pending converter overrides from class-level
+        // @Convert/@Converts that couldn't be applied earlier because
+        // MappedSuperclass fields hadn't been inherited yet.
+        applyConverterOverrides();
+
+        // JPA 3.2: register record types with PCRegistry now that fields are known.
+        // This must run regardless of runtime flag since metadata may be resolved
+        // during enhancement and cached, never re-entering this method at runtime.
+        if (_type.isRecord() && !PCRegistry.isRegistered(_type)) {
+            RecordPersistenceCapable.registerRecordType(_type, this);
+        }
+
         // resolve lifecycle metadata now to prevent lazy threading problems
         _lifeMeta.resolve();
 
@@ -1927,7 +1949,10 @@ public class ClassMetaData
         }
 
         // if this is runtime, create a pc instance and scan it for comparators
-        if (runtime && !Modifier.isAbstract(_type.getModifiers())) {
+        // JPA 3.2: records are immutable and don't need proxy setup;
+        // they also need PCRegistry registration before newInstance can be called
+        if (runtime && !Modifier.isAbstract(_type.getModifiers())
+                && !_type.isRecord()) {
             ProxySetupStateManager sm = new ProxySetupStateManager();
             sm.setProxyData(PCRegistry.newInstance(_type, sm, false), this);
         }
@@ -2164,7 +2189,7 @@ public class ClassMetaData
      */
     private void validateAppIdClassMethods(Class<?> oid) {
         try {
-            oid.getConstructor((Class[]) null);
+            oid.getDeclaredConstructor((Class[]) null);
         } catch (Exception e) {
             throw new MetaDataException(_loc.get("null-cons", oid, _type)).
                 setCause(e);
@@ -2175,7 +2200,7 @@ public class ClassMetaData
         // declare primary key fields
         Method method;
         try {
-            method = oid.getMethod("equals", new Class[]{ Object.class });
+            method = oid.getMethod("equals", Object.class);
         } catch (Exception e) {
             throw new GeneralException(e).setFatal(true);
         }
@@ -2715,7 +2740,7 @@ public class ClassMetaData
 
         if (isAbstract()) {
             FieldMetaData[] declaredFields = getDeclaredFields();
-            if (declaredFields != null && declaredFields.length != 0) {
+            if (declaredFields != null) {
                 for (FieldMetaData fmd : declaredFields) {
                     if (fmd.isPrimaryKey()) {
                         temp = Boolean.TRUE;
@@ -2865,5 +2890,34 @@ public class ClassMetaData
      */
     public Class<?> getIdClass() {
         return _idClass;
+    }
+
+    /**
+     * Add a pending converter override for a field that may not yet
+     * exist (e.g. inherited from a MappedSuperclass). The override
+     * will be applied when the field is resolved.
+     */
+    public void addConverterOverride(String fieldName, Class converterClass) {
+        if (_converterOverrides == null) {
+            _converterOverrides = new HashMap<>();
+        }
+        _converterOverrides.put(fieldName, converterClass);
+    }
+
+    /**
+     * Apply any pending converter overrides to the resolved fields.
+     * Called after MappedSuperclass fields have been inherited.
+     */
+    public void applyConverterOverrides() {
+        if (_converterOverrides == null || _converterOverrides.isEmpty()) {
+            return;
+        }
+        for (Map.Entry<String, Class> entry
+                : _converterOverrides.entrySet()) {
+            FieldMetaData fmd = getField(entry.getKey());
+            if (fmd != null) {
+                fmd.setConverter(entry.getValue());
+            }
+        }
     }
 }

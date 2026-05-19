@@ -120,6 +120,25 @@
         </properties>
     </persistence-unit>
 
+    <persistence-unit name="xml-callback-dedup-pu">
+        <mapping-file>META-INF/xml-callback-orm.xml</mapping-file>
+        <class>org.apache.openjpa.persistence.callbacks.XmlCallbackEntity</class>
+        <properties>
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                  value="buildSchema(ForeignKeys=true)"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="xml-embeddable-override-pu">
+        <mapping-file>META-INF/xml-embeddable-orm.xml</mapping-file>
+        <class>org.apache.openjpa.persistence.embed.xmloverride.ComplaintEntity</class>
+        <properties>
+            <property name="openjpa.RuntimeUnenhancedClasses" value="supported"/>
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                  value="buildSchema(ForeignKeys=true)"/>
+        </properties>
+    </persistence-unit>
+
     <persistence-unit name="test-unique-constraint">
         <mapping-file>org/apache/openjpa/persistence/jdbc/unique/orm.xml</mapping-file>
         <class>org.apache.openjpa.persistence.jdbc.unique.UniqueA</class>
@@ -482,6 +501,14 @@
 		</properties>
 	</persistence-unit>
 
+	<persistence-unit name="native-query-inline-result">
+		<mapping-file>META-INF/native-query-inline-result-orm.xml</mapping-file>
+		<class>org.apache.openjpa.persistence.simple.NativeQueryResultEntity</class>
+		<properties>
+			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
+		</properties>
+	</persistence-unit>
+
 	<persistence-unit name="rev-mapping-pu">
 		<properties>
 			<property name="openjpa.jdbc.Schemas" value="USCHEMA.USCHANTBL"/>
@@ -534,6 +561,17 @@
             <property name="openjpa.ConnectionFactoryProperties" value="MaxTotal=110, MaxIdle=10, ValidationTimeout=50000,
                                                                      MaxCachedStatements=10, ValidationSQL='', MaxWait=10000, TestOnBorrow=true" />
             <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="listener-override-pu">
+        <mapping-file>META-INF/listener-override-orm.xml</mapping-file>
+        <class>org.apache.openjpa.persistence.callbacks.UnenhancedListenerOverrideEntity</class>
+        <properties>
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                  value="buildSchema(ForeignKeys=true)"/>
+            <property name="openjpa.RuntimeUnenhancedClasses"
+                  value="supported"/>
         </properties>
     </persistence-unit>
 </persistence>

@@ -83,6 +83,7 @@ import static org.apache.openjpa.persistence.jdbc.MappingTag.STRAT;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.SUBCLASS_FETCH_MODE;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.TABLE;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.TABLE_GEN;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.TABLE_GENS;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.TEMPORAL;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.UNIQUE;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.VERSION_COL;
@@ -100,46 +101,12 @@ import static org.apache.openjpa.persistence.jdbc.MappingTag.X_TABLE;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Modifier;
-import java.security.AccessController;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import jakarta.persistence.AssociationOverride;
-import jakarta.persistence.AssociationOverrides;
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.ColumnResult;
-import jakarta.persistence.ConstructorResult;
-import jakarta.persistence.DiscriminatorColumn;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.EntityResult;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FieldResult;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinColumns;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.MapKeyColumn;
-import jakarta.persistence.MapKeyEnumerated;
-import jakarta.persistence.MapKeyJoinColumn;
-import jakarta.persistence.MapKeyJoinColumns;
-import jakarta.persistence.MapKeyTemporal;
-import jakarta.persistence.PrimaryKeyJoinColumn;
-import jakarta.persistence.PrimaryKeyJoinColumns;
-import jakarta.persistence.SecondaryTable;
-import jakarta.persistence.SecondaryTables;
-import jakarta.persistence.SqlResultSetMapping;
-import jakarta.persistence.SqlResultSetMappings;
-import jakarta.persistence.Table;
-import jakarta.persistence.TableGenerator;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.UniqueConstraint;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
@@ -159,6 +126,7 @@ import org.apache.openjpa.jdbc.meta.SequenceMapping;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.meta.ValueMappingInfo;
 import org.apache.openjpa.jdbc.meta.strats.EnumValueHandler;
+import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.jdbc.meta.strats.FlatClassStrategy;
 import org.apache.openjpa.jdbc.meta.strats.FullClassStrategy;
 import org.apache.openjpa.jdbc.meta.strats.VerticalClassStrategy;
@@ -168,7 +136,6 @@ import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.SourceTracker;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -180,6 +147,42 @@ import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
+
+import jakarta.persistence.AssociationOverride;
+import jakarta.persistence.AssociationOverrides;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.ColumnResult;
+import jakarta.persistence.ConstraintMode;
+import jakarta.persistence.ConstructorResult;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.EntityResult;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FieldResult;
+import jakarta.persistence.NamedNativeQuery;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.MapKeyColumn;
+import jakarta.persistence.MapKeyEnumerated;
+import jakarta.persistence.MapKeyJoinColumn;
+import jakarta.persistence.MapKeyJoinColumns;
+import jakarta.persistence.MapKeyTemporal;
+import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.PrimaryKeyJoinColumns;
+import jakarta.persistence.SecondaryTable;
+import jakarta.persistence.SecondaryTables;
+import jakarta.persistence.SqlResultSetMapping;
+import jakarta.persistence.SqlResultSetMappings;
+import jakarta.persistence.Table;
+import jakarta.persistence.TableGenerator;
+import jakarta.persistence.TableGenerators;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.UniqueConstraint;
 
 /**
  * Persistence annotation mapping parser.
@@ -200,7 +203,7 @@ public class AnnotationPersistenceMappingParser
     private static final Map<Class<?>, MappingTag> _tags =
         new HashMap<>();
 
-    private DBDictionary _dict;
+    private final DBDictionary _dict;
 
     static {
         _tags.put(AssociationOverride.class, ASSOC_OVERRIDE);
@@ -246,6 +249,7 @@ public class AnnotationPersistenceMappingParser
         _tags.put(Table.class, TABLE);
         _tags.put(Temporal.class, TEMPORAL);
         _tags.put(TableGenerator.class, TABLE_GEN);
+        _tags.put(TableGenerators.class, TABLE_GENS);
         _tags.put(ClassCriteria.class, CLASS_CRIT);
         _tags.put(Columns.class, COLS);
         _tags.put(ContainerTable.class, CONTAINER_TABLE);
@@ -301,6 +305,11 @@ public class AnnotationPersistenceMappingParser
             switch (tag) {
                 case TABLE_GEN:
                     parseTableGenerator(pkg, (TableGenerator) anno);
+                    break;
+                case TABLE_GENS:
+                    for (TableGenerator tg :
+                        ((TableGenerators) anno).value())
+                        parseTableGenerator(pkg, tg);
                     break;
                 default:
                     throw new UnsupportedException(_loc.get("unsupported", pkg,
@@ -433,6 +442,11 @@ public class AnnotationPersistenceMappingParser
                 case TABLE_GEN:
                     parseTableGenerator(cls, (TableGenerator) anno);
                     break;
+                case TABLE_GENS:
+                    for (TableGenerator tg :
+                        ((TableGenerators) anno).value())
+                        parseTableGenerator(cls, tg);
+                    break;
                 case DATASTORE_ID_COL:
                     parseDataStoreIdColumn(cm, (DataStoreIdColumn) anno);
                     break;
@@ -540,6 +554,17 @@ public class AnnotationPersistenceMappingParser
         for (AttributeOverride attr : attrs) {
             if (StringUtil.isEmpty(attr.name()))
                 throw new MetaDataException(_loc.get("no-override-name", cm));
+
+            // First check if this is the entity's own declared field.
+            // @AttributeOverride on an entity class can override column
+            // mappings for its own fields (not just inherited ones).
+            FieldMapping ownField = cm.getDeclaredFieldMapping(attr.name());
+            if (ownField != null) {
+                if (attr.column() != null)
+                    parseColumns(ownField, attr.column());
+                continue;
+            }
+
             sup = (FieldMapping) cm.getDefinedSuperclassField(attr.name());
             if (sup == null)
                 sup = (FieldMapping) cm.addDefinedSuperclassField(attr.name(),
@@ -599,6 +624,17 @@ public class AnnotationPersistenceMappingParser
             } else {
             	info.addSecondaryTable(sName);
             }
+            // Parse @ForeignKey on @SecondaryTable
+            jakarta.persistence.ForeignKey jpaFk = table.foreignKey();
+            if (jpaFk != null
+                && jpaFk.value() == ConstraintMode.CONSTRAINT) {
+                org.apache.openjpa.jdbc.schema.ForeignKey fk =
+                    new org.apache.openjpa.jdbc.schema.ForeignKey();
+                if (!StringUtil.isEmpty(jpaFk.name()))
+                    fk.setIdentifier(DBIdentifier.newForeignKey(
+                        jpaFk.name(), delimit()));
+                info.setSecondaryTableForeignKey(sName, fk);
+            }
             addUniqueConstraints(sName.getName(), cm, info, table.uniqueConstraints());
         }
     }
@@ -613,6 +649,8 @@ public class AnnotationPersistenceMappingParser
         if (!DBIdentifier.isNull(tName)) {
             cm.getMappingInfo().setTableIdentifier(tName);
         }
+        if (!StringUtil.isEmpty(table.options()))
+            cm.getMappingInfo().setTableOptions(table.options());
         addUniqueConstraints(tName.getName(), cm, cm.getMappingInfo(),
             table.uniqueConstraints());
         addIndices(tName.getName(), cm, cm.getMappingInfo(), table.indexes());
@@ -659,15 +697,32 @@ public class AnnotationPersistenceMappingParser
             throw new UserException(_loc.get("index-no-column", ctx));
         }
 
-        DBIdentifier[] sColNames = DBIdentifier.toArray(columnNames.split(","), DBIdentifierType.COLUMN, delimit());
+        // Parse optional ASC/DESC sort direction from column names
+        // per JPA spec: columnList = "col1 ASC, col2 DESC"
+        String[] rawCols = columnNames.split(",");
+        boolean[] descending = new boolean[rawCols.length];
+        for (int i = 0; i < rawCols.length; i++) {
+            String col = rawCols[i].trim();
+            int space = col.indexOf(' ');
+            if (space > 0) {
+                String dir = col.substring(space + 1).trim().toUpperCase();
+                descending[i] = "DESC".equals(dir);
+                col = col.substring(0, space);
+            }
+            rawCols[i] = col;
+        }
+        DBIdentifier[] sColNames = DBIdentifier.toArray(rawCols, DBIdentifierType.COLUMN, delimit());
         org.apache.openjpa.jdbc.schema.Index indx = new org.apache.openjpa.jdbc.schema.Index();
-        for (DBIdentifier sColName : sColNames) {
-            if (DBIdentifier.isEmpty(sColName))
+        for (int i = 0; i < sColNames.length; i++) {
+            if (DBIdentifier.isEmpty(sColNames[i]))
                 throw new UserException(_loc.get("index-empty-column",
                         Arrays.toString(sColNames), ctx));
             Column column = new Column();
-            column.setIdentifier(sColName);
+            column.setIdentifier(sColNames[i]);
             indx.addColumn(column);
+            if (descending[i]) {
+                indx.setColumnSortDirection(sColNames[i], true);
+            }
         }
         indx.setUnique(anno.unique());
         if (!StringUtil.isEmpty(anno.name())) {
@@ -740,11 +795,76 @@ public class AnnotationPersistenceMappingParser
                 }
             }
             for (ConstructorResult constructorResult : anno.classes()) {
-                throw new UnsupportedOperationException("JPA 2.1, not yet impl");
+                QueryResultMapping.ConstructorResultInfo crInfo =
+                    result.addConstructorResult(constructorResult.targetClass());
+                for (ColumnResult col : constructorResult.columns()) {
+                    crInfo.addColumn(col.name(), col.type());
+                }
             }
             for (ColumnResult column : anno.columns()) {
                 DBIdentifier sName = DBIdentifier.newColumn(column.name(), delimit());
                 result.addColumnResult(sName.getName());
+            }
+        }
+    }
+
+    /**
+     * Override to handle JPA 3.2 inline result set mapping members
+     * (entities, classes, columns) on @NamedNativeQuery.
+     */
+    @Override
+    protected void parseNamedNativeQueries(java.lang.reflect.AnnotatedElement el,
+        NamedNativeQuery... queries) {
+        super.parseNamedNativeQueries(el, queries);
+
+        MappingRepository repos = (MappingRepository) getRepository();
+        for (NamedNativeQuery query : queries) {
+            EntityResult[] entities = query.entities();
+            ConstructorResult[] classes = query.classes();
+            ColumnResult[] columns = query.columns();
+
+            if (entities.length == 0 && classes.length == 0
+                && columns.length == 0)
+                continue;
+
+            // create an implicit result set mapping named after the query
+            String mappingName = query.name();
+            QueryResultMapping result = repos.getCachedQueryResultMapping(
+                null, mappingName);
+            if (result != null)
+                continue;
+
+            result = repos.addQueryResultMapping(null, mappingName);
+            result.setSource(getSourceFile(),
+                (el instanceof Class) ? (Class<?>) el : null,
+                SourceTracker.SRC_ANNOTATIONS);
+
+            for (EntityResult entity : entities) {
+                QueryResultMapping.PCResult entityResult =
+                    result.addPCResult(entity.entityClass());
+                if (!StringUtil.isEmpty(entity.discriminatorColumn()))
+                    entityResult.addMapping(
+                        QueryResultMapping.PCResult.DISCRIMINATOR,
+                        entity.discriminatorColumn());
+                for (FieldResult field : entity.fields()) {
+                    DBIdentifier sColName =
+                        DBIdentifier.newColumn(field.column(), delimit());
+                    entityResult.addMapping(field.name(),
+                        sColName.getName());
+                }
+            }
+            for (ColumnResult column : columns) {
+                DBIdentifier sName =
+                    DBIdentifier.newColumn(column.name(), delimit());
+                result.addColumnResult(sName.getName());
+            }
+
+            // set the mapping name on the query metadata
+            QueryMetaData meta = repos.searchQueryMetaDataByName(
+                query.name());
+            if (meta != null
+                && StringUtil.isEmpty(meta.getResultSetMappingName())) {
+                meta.setResultSetMappingName(mappingName);
             }
         }
     }
@@ -779,7 +899,7 @@ public class AnnotationPersistenceMappingParser
                 discrim.setJavaType(JavaTypes.STRING);
         }
         cm.getDiscriminator().getMappingInfo().setColumns
-            (Arrays.asList(new Column[]{ col }));
+            (List.of(col));
     }
 
     /**
@@ -843,7 +963,7 @@ public class AnnotationPersistenceMappingParser
             col.setSize(id.precision());
         col.setFlag(Column.FLAG_UNINSERTABLE, !id.insertable());
         col.setFlag(Column.FLAG_UNUPDATABLE, !id.updatable());
-        cm.getMappingInfo().setColumns(Arrays.asList(new Column[]{ col }));
+        cm.getMappingInfo().setColumns(List.of(col));
     }
 
 
@@ -878,6 +998,30 @@ public class AnnotationPersistenceMappingParser
         fk.setDeferred(deferred);
         fk.setDeleteAction(toForeignKeyAction(deleteAction));
         fk.setUpdateAction(toForeignKeyAction(updateAction));
+        info.setForeignKey(fk);
+    }
+
+    /**
+     * Parse a JPA standard {@link jakarta.persistence.ForeignKey} annotation
+     * and apply it to the given mapping info.
+     */
+    private void parseJpaForeignKey(MappingInfo info,
+        jakarta.persistence.ForeignKey jpaFk) {
+        if (jpaFk == null)
+            return;
+        ConstraintMode mode = jpaFk.value();
+        if (mode == ConstraintMode.NO_CONSTRAINT) {
+            info.setCanForeignKey(false);
+            return;
+        }
+        if (mode == ConstraintMode.PROVIDER_DEFAULT)
+            return;
+        // ConstraintMode.CONSTRAINT — create a named physical FK
+        org.apache.openjpa.jdbc.schema.ForeignKey fk =
+            new org.apache.openjpa.jdbc.schema.ForeignKey();
+        if (!StringUtil.isEmpty(jpaFk.name()))
+            fk.setIdentifier(DBIdentifier.newForeignKey(jpaFk.name(),
+                delimit()));
         info.setForeignKey(fk);
     }
 
@@ -1152,9 +1296,9 @@ public class AnnotationPersistenceMappingParser
         else
             col.setType(Types.BLOB);
         if (fmd.isElementCollection())
-            ((FieldMapping) fmd).getElementMapping().getValueInfo().setColumns(Arrays.asList(new Column[]{ col }));
+            ((FieldMapping) fmd).getElementMapping().getValueInfo().setColumns(List.of(col));
         else
-            ((FieldMapping) fmd).getValueInfo().setColumns(Arrays.asList(new Column[]{ col }));
+            ((FieldMapping) fmd).getValueInfo().setColumns(List.of(col));
 
     }
 
@@ -1271,6 +1415,11 @@ public class AnnotationPersistenceMappingParser
                 case TABLE_GEN:
                     parseTableGenerator(el, (TableGenerator) anno);
                     break;
+                case TABLE_GENS:
+                    for (TableGenerator tg :
+                        ((TableGenerators) anno).value())
+                        parseTableGenerator(el, tg);
+                    break;
                 case TEMPORAL:
                     parseTemporal(fm, (Temporal) anno);
                     break;
@@ -1348,8 +1497,7 @@ public class AnnotationPersistenceMappingParser
                         (((Nonpolymorphic) anno).value()));
                     break;
                 case ORDER_COLUMN:
-                    parseJavaxOrderColumn(fm,
-                        (jakarta.persistence.OrderColumn)anno);
+                    parseJakartaOrderColumn(fm, (jakarta.persistence.OrderColumn)anno);
                     break;
                 case ORDER_COL:
                     parseOrderColumn(fm, (OrderColumn) anno);
@@ -1480,12 +1628,11 @@ public class AnnotationPersistenceMappingParser
                 embed = fm.getElementMapping().getEmbeddedMapping();
                 break;
             case JavaTypes.MAP: // a map
-                if (!isKey && !isValue)
-                    throw new MetaDataException(_loc.get("embed-override-name",
-                        fm, attrName));
                 if (isKey)
                     embed = getEmbeddedMapping(fm.getKeyMapping(), mustExist);
-                else if (isValue)
+                else
+                    // Per JPA spec, unqualified attribute override names
+                    // (and "value." prefixed names) refer to the map value
                     embed = getEmbeddedMapping(fm.getElementMapping(),
                         mustExist);
                 break;
@@ -1526,12 +1673,11 @@ public class AnnotationPersistenceMappingParser
                 embed = fm.getElementMapping();
                 break;
             case JavaTypes.MAP: // a map
-                if (!isKey && !isValue)
-                    throw new MetaDataException(_loc.get("embed-override-name",
-                        fm, attrName));
                 if (isKey)
                     embed = fm.getKeyMapping();
-                else if (isValue)
+                else
+                    // Per JPA spec, unqualified attribute override names
+                    // (and "value." prefixed names) refer to the map value
                     embed = fm.getElementMapping();
                 break;
             default: // an embeddable
@@ -1585,11 +1731,21 @@ public class AnnotationPersistenceMappingParser
     }
 
     /**
-     * Parse @Enumerated.
+     * Parse @Enumerated. If the enum type has @EnumeratedValue, that takes
+     * precedence over the @Enumerated strategy.
      */
     private void parseEnumerated(FieldMapping fm, Enumerated anno) {
-        String strat = EnumValueHandler.class.getName() + "(StoreOrdinal="
-            + (anno.value() == EnumType.ORDINAL) + ")";
+        Class<?> enumType = fm.isElementCollection()
+            ? fm.getElement().getDeclaredType()
+            : fm.getDeclaredType();
+        String strat;
+        if (EnumValueHandler.hasEnumeratedValue(enumType)) {
+            strat = EnumValueHandler.class.getName()
+                + "(UseEnumeratedValue=true)";
+        } else {
+            strat = EnumValueHandler.class.getName() + "(StoreOrdinal="
+                + (anno.value() == EnumType.ORDINAL) + ")";
+        }
         if (fm.isElementCollection())
             fm.getElementMapping().getValueInfo().setStrategy(strat);
         else
@@ -1614,7 +1770,7 @@ public class AnnotationPersistenceMappingParser
             throw new MetaDataException(_loc.get("num-cols-mismatch", fm,
                 String.valueOf(cols.size()), "1"));
         if (cols.isEmpty()) {
-            cols = Arrays.asList(new Column[]{ new Column() });
+            cols = List.of(new Column());
             if (fm.isElementCollection()) {
                 if (!fm.getElementMapping().getValueInfo().getColumns().isEmpty())
                     cols = fm.getElementMapping().getValueInfo().getColumns();
@@ -1624,7 +1780,7 @@ public class AnnotationPersistenceMappingParser
                 fm.getValueInfo().setColumns(cols);
         }
 
-        Column col = (Column) cols.get(0);
+        Column col = cols.get(0);
         switch (anno.value()) {
             case DATE:
                 col.setType(Types.DATE);
@@ -1647,11 +1803,11 @@ public class AnnotationPersistenceMappingParser
             throw new MetaDataException(_loc.get("num-cols-mismatch", fm,
                 String.valueOf(cols.size()), "1"));
         if (cols.isEmpty()) {
-            cols = Arrays.asList(new Column[]{ new Column() });
+            cols = List.of(new Column());
             fm.getKeyMapping().getValueInfo().setColumns(cols);
         }
 
-        Column col = (Column) cols.get(0);
+        Column col = cols.get(0);
         switch (anno.value()) {
             case DATE:
                 col.setType(Types.DATE);
@@ -1683,7 +1839,7 @@ public class AnnotationPersistenceMappingParser
         // have a hard-wired dependency on JAXB here
         Class<?> xmlRootElementClass = null;
         try {
-            xmlRootElementClass = Class.forName("javax.xml.bind.annotation.XmlRootElement");
+            xmlRootElementClass = Class.forName("jakarta.xml.bind.annotation.XmlRootElement");
         } catch (Exception e) {
         }
 
@@ -1691,7 +1847,7 @@ public class AnnotationPersistenceMappingParser
         DBIdentifier sSecondary = DBIdentifier.NULL;
         for (int i = 0; i < pcols.length; i++) {
             if (cols.size() > i)
-                setupColumn((Column) cols.get(i), pcols[i], delimit());
+                setupColumn(cols.get(i), pcols[i], delimit());
             else {
                 if (cols.isEmpty())
                     cols = new ArrayList<>(pcols.length);
@@ -1699,9 +1855,7 @@ public class AnnotationPersistenceMappingParser
             }
             if (xmlRootElementClass != null
                 && StringUtil.isEmpty(pcols[i].columnDefinition())
-                && AccessController.doPrivileged(J2DoPrivHelper
-                    .isAnnotationPresentAction(fm.getDeclaredType(),
-                            (Class<? extends Annotation>) xmlRootElementClass))) {
+                && fm.getDeclaredType().isAnnotationPresent(xmlRootElementClass)) {
                 DBDictionary dict = ((MappingRepository) getRepository())
                     .getDBDictionary();
                 if (dict.supportsXMLColumn)
@@ -1747,6 +1901,10 @@ public class AnnotationPersistenceMappingParser
             col.setSize(anno.length());
         col.setNotNull(!anno.nullable());
         col.setDecimalDigits(anno.scale());
+        if (anno.secondPrecision() != -1)
+            col.setSecondPrecision(anno.secondPrecision());
+        if (!StringUtil.isEmpty(anno.options()))
+            col.setOptions(anno.options());
         col.setFlag(Column.FLAG_UNINSERTABLE, !anno.insertable());
         col.setFlag(Column.FLAG_UNUPDATABLE, !anno.updatable());
     }
@@ -1799,6 +1957,12 @@ public class AnnotationPersistenceMappingParser
             join.inverseJoinColumns());
         addUniqueConstraints(info.getTableIdentifier().getName(), fm, info,
             join.uniqueConstraints());
+        // Parse JPA @ForeignKey annotations on join table
+        parseJpaForeignKey(info, join.foreignKey());
+        parseJpaForeignKey(fm.getElementMapping().getValueInfo(),
+            join.inverseForeignKey());
+        // Parse @Index annotations on join table
+        addIndices(joinTbl.getName(), fm, info, join.indexes());
     }
 
     /**
@@ -1830,6 +1994,15 @@ public class AnnotationPersistenceMappingParser
         }
 
         setColumns(fm, info, cols, unique);
+        // Parse @ForeignKey on @JoinColumn(s) — use the first explicit one
+        for (JoinColumn join : joins) {
+            jakarta.persistence.ForeignKey jpaFk = join.foreignKey();
+            if (jpaFk != null
+                && jpaFk.value() != ConstraintMode.PROVIDER_DEFAULT) {
+                parseJpaForeignKey(info, jpaFk);
+                break;
+            }
+        }
         if (!DBIdentifier.isNull(sSecondary))
             fm.getMappingInfo().setTableIdentifier(sSecondary);
         String mappedByIdValue = fm.getMappedByIdValue();
@@ -1842,8 +2015,13 @@ public class AnnotationPersistenceMappingParser
                 ClassMapping embeddedMeta = (ClassMapping)pks[0].getValue().getEmbeddedMetaData();
                 if (embeddedMeta != null) {
                     FieldMapping fmd = embeddedMeta.getFieldMapping(mappedByIdValue);
-                    if (fmd != null)
+                    if (fmd != null) {
                         fmd.getValueInfo().setMapsIdColumns(cols);
+                        // Mark as explicit so resolveMeta() won't demote
+                        // this field to MANAGE_NONE when its type (a
+                        // plain @IdClass POJO) has no PC metadata.
+                        fmd.setExplicit(true);
+                    }
                 }
             }
         }
@@ -2043,7 +2221,7 @@ public class AnnotationPersistenceMappingParser
             Column col = new Column();
             if (!"true".equals(nullInd.getName()))
                 col.setIdentifier(nullInd);
-            info.setColumns(Arrays.asList(new Column[]{ col }));
+            info.setColumns(List.of(col));
         }
     }
 
@@ -2097,8 +2275,7 @@ public class AnnotationPersistenceMappingParser
     /**
      * Parse @jakarta.persistence.OrderColumn
      */
-    private void parseJavaxOrderColumn(FieldMapping fm,
-        jakarta.persistence.OrderColumn order) {
+    private void parseJakartaOrderColumn(FieldMapping fm, jakarta.persistence.OrderColumn order) {
 
         Column col = new Column();
         if (!StringUtil.isEmpty(order.name()))

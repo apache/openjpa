@@ -60,7 +60,6 @@ public class TestMergeComplexKey extends SingleEMFTestCase {
 
     void createDate() {
         EntityManager em = emf.createEntityManager();
-        System.out.println(em.createQuery("select o from AccountingHierarchy o").getResultList().size());
 
         String code = "TESTING";
         AccountingHierarchy accountingHierarchy = em.find(AccountingHierarchy.class, code);

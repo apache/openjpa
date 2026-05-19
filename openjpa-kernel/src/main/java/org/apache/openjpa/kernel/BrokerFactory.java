@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.util.Closeable;
+import org.apache.openjpa.util.OpenJPAException;
 
 /**
  * Factory for {@link Broker} instances.
@@ -161,4 +162,41 @@ public interface BrokerFactory
      * This method is invoked AFTER a BrokerFactory has been instantiated.
      */
     void postCreationCallback();
+
+    /**
+     * Creates the database schema and tables required by the persistence
+     * unit. Implements the {@code create} action of the JPA 3.2
+     * {@link jakarta.persistence.SchemaManager} contract.
+     *
+     * @since 4.2.0
+     */
+    void createPersistenceStructure(boolean createSchemas);
+
+    /**
+     * Drops the database schema and tables managed by the persistence
+     * unit. Implements the {@code drop} action of the JPA 3.2
+     * {@link jakarta.persistence.SchemaManager} contract.
+     *
+     * @since 4.2.0
+     */
+    void dropPersistenceStrucuture(boolean dropSchemas);
+
+    /**
+     * Validates that the live database schema matches the metadata of the
+     * persistence unit. Implements the {@code validate} action of the
+     * JPA 3.2 {@link jakarta.persistence.SchemaManager} contract.
+     *
+     * @since 4.2.0
+     */
+    void validatePersistenceStruture() throws Exception;
+
+    /**
+     * Truncates all rows from tables managed by the persistence unit.
+     * Implements the {@code truncate} action of the JPA 3.2
+     * {@link jakarta.persistence.SchemaManager} contract.
+     *
+     * @since 4.2.0
+     */
+    void truncateData();
+
 }

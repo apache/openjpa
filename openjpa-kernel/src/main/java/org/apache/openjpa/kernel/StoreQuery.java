@@ -53,6 +53,7 @@ public interface StoreQuery
     Object[] EMPTY_OBJECTS = new Object[0];
     Class<?>[] EMPTY_CLASSES = new Class[0];
     boolean[] EMPTY_BOOLEANS = new boolean[0];
+    int[] EMPTY_INTS = new int[0];
 
     /**
      * Return the query context that has been set.

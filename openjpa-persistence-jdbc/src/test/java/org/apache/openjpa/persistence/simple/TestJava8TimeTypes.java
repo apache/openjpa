@@ -29,7 +29,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
+import java.time.Year;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 
@@ -58,6 +60,8 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         entity1.setLocalDateTimeField(LocalDateTime.parse(VAL_LOCAL_DATETIME));
         entity1.setOffsetTimeField(entity1.getLocalTimeField().atOffset(ZoneOffset.ofHours(-9)));
         entity1.setOffsetDateTimeField(entity1.getLocalDateTimeField().atOffset(ZoneOffset.ofHours(-9)));
+        entity1.setInstantField(Instant.parse("2019-01-01T10:00:00Z"));
+        entity1.setYearField(Year.of(2019));
 
         em.persist(entity1);
 
@@ -65,11 +69,13 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         // it still can fail in case will be started exactly at midnight
         entity2.setId(2);
         entity2.setOldDateField(new Date());
-        entity2.setLocalTimeField(LocalTime.now().minusSeconds(1)); // hopefully test will pass in 1 sec
+        entity2.setLocalTimeField(LocalTime.now().minusSeconds(30)); // hopefully test will pass in 30 sec
         entity2.setLocalDateField(LocalDate.parse(VAL_LOCAL_DATE));
         entity2.setLocalDateTimeField(LocalDateTime.parse(VAL_LOCAL_DATETIME));
         entity2.setOffsetTimeField(entity2.getLocalTimeField().atOffset(ZoneOffset.ofHours(-9)));
         entity2.setOffsetDateTimeField(entity2.getLocalDateTimeField().atOffset(ZoneOffset.ofHours(-9)));
+        entity2.setInstantField(Instant.parse("2020-06-15T14:30:00Z"));
+        entity2.setYearField(Year.of(2020));
 
         em.persist(entity2);
         em.getTransaction().commit();
@@ -129,7 +135,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         final LocalTime max = qry.getSingleResult().withNano(0);
         final LocalTime etalon = (entity1.getLocalTimeField().compareTo(entity2.getLocalTimeField()) > 0
                 ? entity1.getLocalTimeField() : entity2.getLocalTimeField()).withNano(0);
-        assertEquals(etalon, max);
+        assertEquals(etalon, max.truncatedTo(ChronoUnit.SECONDS));
         em.close();
     }
 
@@ -261,6 +267,58 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         final List<Java8TimeTypes> times = qry.getResultList();
         assertNotNull(times);
         assertFalse(times.isEmpty());
+        em.close();
+    }
+
+    public void testReadInstant() {
+        EntityManager em = emf.createEntityManager();
+        Java8TimeTypes eRead = em.find(Java8TimeTypes.class, 1);
+        assertEquals(Instant.parse("2019-01-01T10:00:00Z"), eRead.getInstantField());
+        em.close();
+    }
+
+    public void testReadYear() {
+        EntityManager em = emf.createEntityManager();
+        Java8TimeTypes eRead = em.find(Java8TimeTypes.class, 1);
+        assertEquals(Year.of(2019), eRead.getYearField());
+        em.close();
+    }
+
+    public void testSelectInstant() {
+        EntityManager em = emf.createEntityManager();
+        final TypedQuery<Instant> qry = em.createQuery(
+                "select t.instantField from Java8TimeTypes AS t order by t.id", Instant.class);
+        final List<Instant> results = qry.getResultList();
+        assertEquals(2, results.size());
+        assertEquals(Instant.parse("2019-01-01T10:00:00Z"), results.get(0));
+        em.close();
+    }
+
+    public void testSelectYear() {
+        EntityManager em = emf.createEntityManager();
+        final TypedQuery<Year> qry = em.createQuery(
+                "select t.yearField from Java8TimeTypes AS t order by t.id", Year.class);
+        final List<Year> results = qry.getResultList();
+        assertEquals(2, results.size());
+        assertEquals(Year.of(2019), results.get(0));
+        em.close();
+    }
+
+    public void testMaxInstant() {
+        EntityManager em = emf.createEntityManager();
+        final TypedQuery<Instant> qry = em.createQuery(
+                "select max(t.instantField) from Java8TimeTypes AS t", Instant.class);
+        final Instant max = qry.getSingleResult();
+        assertEquals(Instant.parse("2020-06-15T14:30:00Z"), max);
+        em.close();
+    }
+
+    public void testMinYear() {
+        EntityManager em = emf.createEntityManager();
+        final TypedQuery<Year> qry = em.createQuery(
+                "select min(t.yearField) from Java8TimeTypes AS t", Year.class);
+        final Year min = qry.getSingleResult();
+        assertEquals(Year.of(2019), min);
         em.close();
     }
 }

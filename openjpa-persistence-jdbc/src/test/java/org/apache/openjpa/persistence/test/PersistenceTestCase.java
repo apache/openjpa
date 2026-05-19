@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -70,6 +71,9 @@ public abstract class PersistenceTestCase
     public static String ALLOW_FAILURE_SYS_PROP= "tests.openjpa.allowfailure";
 
     private static String allowFailureConfig = System.getProperty(ALLOW_FAILURE_SYS_PROP, ALLOW_FAILURE_IGNORE);
+    
+    private static final Logger logger = Logger.getLogger(PersistenceTestCase.class.getCanonicalName());
+    
     /**
      * Marker object you pass to {@link #setUp} to indicate that the
      * database table rows should be cleared.
@@ -454,11 +458,10 @@ public abstract class PersistenceTestCase
 
     public void printException(Throwable t, int tab) {
         if (t == null) return;
-        for (int i=0; i<tab*4;i++) System.out.print(" ");
         String sqlState = (t instanceof SQLException) ?
             "(SQLState=" + ((SQLException)t).getSQLState() + ":"
                 + t.getMessage() + ")" : "";
-        System.out.println(t.getClass().getName() + sqlState);
+        logger.warning("    " + t.getClass().getName() + sqlState);
         if (t.getCause() == t)
             return;
         printException(t.getCause(), tab+2);
@@ -488,9 +491,9 @@ public abstract class PersistenceTestCase
                     super.runBare();
                 } catch (Throwable t) {
                     if (ALLOW_FAILURE_LOG.equalsIgnoreCase(allowFailureConfig)) {
-                        System.err.println("*** FAILED (but ignored): " + this);
-                        System.err.println("***              Reason : " + allowFailureAnnotation.message());
-                        System.err.println("Stacktrace of failure");
+                        logger.warning("*** FAILED (but ignored): " + this);
+                        logger.warning("***              Reason : " + allowFailureAnnotation.message());
+                        logger.warning("Stacktrace of failure");
                         t.printStackTrace();
                     } else {
                         throw t;

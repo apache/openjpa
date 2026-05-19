@@ -20,6 +20,7 @@
 package demo;
 
 import java.util.Date;
+import java.util.logging.Logger;
 
 import jakarta.persistence.EntityManager;
 
@@ -30,6 +31,9 @@ import jakarta.persistence.EntityManager;
  *
  */
 public class DataLoader {
+	
+	private static final Logger logger = Logger.getLogger(DataLoader.class.getCanonicalName());
+	
     // Hand-tuned data for Testing
     @SuppressWarnings("deprecation")
     public static Object[][] ACTOR_DATA = {
@@ -71,7 +75,7 @@ public class DataLoader {
     public void populate(EntityManager em) throws Exception {
         Long count = em.createQuery("select count(m) from Movie m", Long.class).getSingleResult();
         if (count != null && count > 0) {
-            System.err.println("Found " + count + " Movie records in the database");
+            logger.fine("Found " + count + " Movie records in the database");
             return;
         }
 

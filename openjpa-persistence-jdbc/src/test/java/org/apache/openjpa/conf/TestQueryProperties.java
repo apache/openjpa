@@ -259,8 +259,7 @@ public class TestQueryProperties extends SingleEMFTestCase {
             qTime = 1000;
             // verify getHints values were updated
             hints = q.getHints();
-            timeout = new Integer((String)hints.get(
-                    "jakarta.persistence.query.timeout"));
+            timeout = Integer.valueOf((String) hints.get("jakarta.persistence.query.timeout"));
             assertEquals("Expected QueryHints updated query timeout",
                 qTime.intValue(), timeout.intValue());
             // verify internal config value was updated

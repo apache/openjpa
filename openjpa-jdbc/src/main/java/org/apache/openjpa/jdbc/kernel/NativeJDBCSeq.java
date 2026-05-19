@@ -67,7 +67,7 @@ public class NativeJDBCSeq
     public static final String ACTION_ADD = "add";
     public static final String ACTION_GET = "get";
 
-    private static Localizer _loc = Localizer.forPackage(NativeJDBCSeq.class);
+    private static final Localizer _loc = Localizer.forPackage(NativeJDBCSeq.class);
 
     private JDBCConfiguration _conf = null;
     private DBIdentifier _seqName = DBIdentifier.newSequence("OPENJPA_SEQUENCE");
@@ -97,7 +97,10 @@ public class NativeJDBCSeq
      * The sequence name. Defaults to <code>OPENJPA_SEQUENCE</code>.
      */
     public void setSequence(String seqName) {
-        _seqName = DBIdentifier.newSequence(seqName);
+        if (seqName != null && !seqName.isEmpty()) {
+            _seqName = DBIdentifier.newSequence(seqName);
+        }
+        // else keep the default OPENJPA_SEQUENCE
     }
 
     /**
@@ -190,7 +193,7 @@ public class NativeJDBCSeq
         String name = dict.getFullName(_seq);
         // Increment step is needed for Firebird which uses non-standard sequence fetch syntax.
         // Use String.valueOf to get rid of possible locale-specific number formatting.
-        _select = MessageFormat.format(format, new Object[]{name, String.valueOf(_allocate * _increment)});
+        _select = MessageFormat.format(format, name, String.valueOf(_allocate * _increment));
 
         type = dict.nativeSequenceType;
     }
@@ -255,7 +258,7 @@ public class NativeJDBCSeq
                 }
             }
             _nextValue = getSequence(conn);
-            _maxValue = _nextValue + _allocate * _increment;
+            _maxValue = _nextValue + (long) _allocate * _increment;
         } finally {
             closeConnection(conn);
         }

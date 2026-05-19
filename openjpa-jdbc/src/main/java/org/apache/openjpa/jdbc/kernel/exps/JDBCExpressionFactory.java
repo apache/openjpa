@@ -380,6 +380,23 @@ public class JDBCExpressionFactory
     public Value getDateTimePart(DateTimeExtractPart part, Value value) {
         return new ExtractDateTimePart((Val) value, part);
     }
+    
+    @Override
+    public Value newTypecastAsString(Value value) {
+    	return new TypecastAsString((Val) value);
+    }
+    
+    @Override
+    public Value newTypecastAsNumber(Value value, Class<? extends Number> numberType) {
+    	if (numberType == null ||
+    			(numberType != Integer.class && 
+    			numberType != Long.class &&
+    			numberType != Float.class &&
+    			numberType != Double.class)) {
+    		throw new IllegalArgumentException("Unexpected target type class: " + numberType);
+		}
+    	return new TypecastAsNumber((Val) value, numberType);
+    }
 
     @Override
     public Parameter newParameter(Object name, Class type) {
@@ -412,7 +429,7 @@ public class JDBCExpressionFactory
     @Override
     public Arguments newArgumentList(Value... vs) {
         if (vs == null)
-           return new Args(null);
+           return new Args();
         Val[] vals = new Val[vs.length];
         int i = 0;
         for (Value v : vs) {
@@ -531,6 +548,21 @@ public class JDBCExpressionFactory
     public Value substring(Value v1, Value v2) {
         return new Substring((Val) v1, (Val) v2);
     }
+    
+    @Override
+    public Value replace(Value orig, Value pattern, Value replacement) {
+    	return new Replace((Val) orig, (Val) pattern, (Val) replacement);
+    }
+    
+    @Override
+    public Value left(Value str, Value length) {
+    	return new Left((Val) str, (Val) length);
+    }
+    
+    @Override
+    public Value right(Value str, Value length) {
+    	return new Right((Val) str, (Val) length);
+    }
 
     @Override
     public Value toUpperCase(Value val) {
@@ -619,6 +651,19 @@ public class JDBCExpressionFactory
         if (val instanceof Const)
             return new ConstGetObjectId((Const) val);
         return new GetObjectId((PCPath) val);
+    }
+    
+    @Override
+    public Value getNativeObjectId(Value val) {
+    	if (val instanceof Const) {
+    		return new ConstGetObjectId((Const) val);
+    	}
+    	return new GetNativeObjectId((PCPath) val);
+    }
+    
+    @Override
+    public Value version(Value val) {
+    	return new VersionVal((PCPath) val);
     }
 
     @Override

@@ -54,6 +54,7 @@ import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.kernel.exps.Context;
+import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
@@ -61,6 +62,7 @@ import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.Id;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.util.InternalException;
 
 import static java.util.Collections.emptyIterator;
@@ -140,6 +142,7 @@ public class SelectImpl
 
     // query clauses
     private SQLBuffer _ordering = null;
+    private SQLBuffer _setOperatorBuf = null;
     private SQLBuffer _where = null;
     private SQLBuffer _grouping = null;
     private SQLBuffer _having = null;
@@ -597,10 +600,7 @@ public class SelectImpl
 
     @Override
     public void setParent(Select parent, String path) {
-        if (path != null)
-            _subPath = path;
-        else
-            _subPath = null;
+        _subPath = path;
 
         if (parent == _parent)
             return;
@@ -814,8 +814,8 @@ public class SelectImpl
                 else if (join.getTable2() == table)
                     tableAlias = join.getAlias2();
                 if (tableAlias != null)
-                    return new StringBuilder(tableAlias).append(".").
-                        append(_dict.getNamingUtil().toDBName(col.getIdentifier())).toString();
+                    return tableAlias + "." +
+                            _dict.toDBName(col.getIdentifier());
             }
         }
         throw new InternalException("Can not resolve alias for field: " +
@@ -827,7 +827,8 @@ public class SelectImpl
      * Return the alias for the given column.
      */
     private String getColumnAlias(String col, Table table, PathJoins pj) {
-        return getTableAlias(table, pj).append(_dict.getNamingUtil().toDBName(col)).toString();
+        return getTableAlias(table, pj).append(_dict.toDBName(
+            DBIdentifier.newColumn(col))).toString();
     }
 
     private StringBuilder getTableAlias(Table table, PathJoins pj) {
@@ -956,7 +957,7 @@ public class SelectImpl
 
     @Override
     public boolean select(Column col) {
-        return select(col, (Joins) null);
+        return select(col, null);
     }
 
     @Override
@@ -1069,7 +1070,7 @@ public class SelectImpl
 
     @Override
     public boolean selectIdentifier(Column col) {
-        return selectIdentifier(col, (Joins) null);
+        return selectIdentifier(col, null);
     }
 
     @Override
@@ -1230,6 +1231,48 @@ public class SelectImpl
             _ordering.append(" DESC");
     }
 
+    public void appendNullsPrecedence(int nullPrecedence) {
+        if (_ordering == null)
+            return;
+        _dict.appendNullsPrecedence(_ordering, nullPrecedence);
+    }
+
+    @Override
+    public void addSetOperatorSQL(int setOpType, SQLBuffer sql) {
+        if (_setOperatorBuf == null)
+            _setOperatorBuf = new SQLBuffer(_dict);
+        String keyword;
+        switch (setOpType) {
+            case QueryExpressions.SET_OP_UNION:
+                keyword = " UNION ";
+                break;
+            case QueryExpressions.SET_OP_UNION_ALL:
+                keyword = " UNION ALL ";
+                break;
+            case QueryExpressions.SET_OP_INTERSECT:
+                keyword = " INTERSECT ";
+                break;
+            case QueryExpressions.SET_OP_INTERSECT_ALL:
+                keyword = " INTERSECT ALL ";
+                break;
+            case QueryExpressions.SET_OP_EXCEPT:
+                keyword = " EXCEPT ";
+                break;
+            case QueryExpressions.SET_OP_EXCEPT_ALL:
+                keyword = " EXCEPT ALL ";
+                break;
+            default:
+                return;
+        }
+        _setOperatorBuf.append(keyword);
+        _setOperatorBuf.append(sql);
+    }
+
+    @Override
+    public SQLBuffer getSetOperatorBuffer() {
+        return _setOperatorBuf;
+    }
+
     @Override
     public int orderByPrimaryKey(ClassMapping mapping, boolean asc,
         boolean sel) {
@@ -1297,7 +1340,7 @@ public class SelectImpl
     @Override
     public boolean orderBy(SQLBuffer sql, boolean asc, boolean sel, Value selAs)
     {
-        return orderBy(sql, asc, (Joins) null, sel, selAs);
+        return orderBy(sql, asc, null, sel, selAs);
     }
 
     @Override
@@ -1357,7 +1400,7 @@ public class SelectImpl
      */
     boolean orderBy(String sql, boolean asc, Joins joins, boolean sel,
         boolean aliasOrder) {
-        return orderBy((Object) sql, asc, joins, sel, aliasOrder, null);
+        return orderBy(sql, asc, joins, sel, aliasOrder, null);
     }
 
     @Override
@@ -1654,7 +1697,7 @@ public class SelectImpl
 
     @Override
     public void groupBy(SQLBuffer sql) {
-        groupBy(sql, (Joins) null);
+        groupBy(sql, null);
     }
 
     @Override
@@ -1665,7 +1708,7 @@ public class SelectImpl
 
     @Override
     public void groupBy(String sql) {
-        groupBy(sql, (Joins) null);
+        groupBy(sql, null);
     }
 
     @Override
@@ -1810,7 +1853,7 @@ public class SelectImpl
                 sel._subsels = new ArrayList(_subsels.size());
                 SelectImpl sub, selSub;
                 for (int j = 0; j < _subsels.size(); j++) {
-                    sub = (SelectImpl) _subsels.get(j);
+                    sub = _subsels.get(j);
                     selSub = (SelectImpl) sub.fullClone(1);
                     selSub._parent = sel;
                     selSub._subPath = sub._subPath;
@@ -2422,46 +2465,38 @@ public class SelectImpl
     }
 
     /**
-     * Key type used for aliases.
-     */
-    private static class Key {
-
-        private final String _path;
-        private final Object _key;
-
-        public Key(String path, Object key) {
-            _path = path;
-            _key = key;
-        }
+         * Key type used for aliases.
+         */
+        private record Key(String _path, Object _key) {
 
         @Override
-        public int hashCode() {
-            return ((_path == null) ? 0  : _path.hashCode()) ^ ((_key == null) ? 0  : _key.hashCode());
-        }
+            public int hashCode() {
+                return ((_path == null) ? 0 : _path.hashCode()) ^ ((_key == null) ? 0 : _key.hashCode());
+            }
 
-        @Override
-        public boolean equals(Object other) {
-            if (other == null)
-                return false;
-            if (other == this)
-                return true;
-            if (other.getClass() != getClass())
-                return false;
-            Key k = (Key) other;
-            if (k._key == null || k._path == null || _key == null || _path == null)
-            	return false;
-            return k._path.equals(_path) && k._key.equals(_key);
-        }
+            @Override
+            public boolean equals(Object other) {
+                if (other == null)
+                    return false;
+                if (other == this)
+                    return true;
+                if (other.getClass() != getClass())
+                    return false;
+                Key k = (Key) other;
+                if (k._key == null || k._path == null || _key == null || _path == null)
+                    return false;
+                return k._path.equals(_path) && k._key.equals(_key);
+            }
 
-        @Override
-        public String toString() {
-            return _path + "|" + _key;
-        }
+            @Override
+            public String toString() {
+                return _path + "|" + _key;
+            }
 
-        Object getKey() {
-            return _key;
+            Object getKey() {
+                return _key;
+            }
         }
-    }
 
     /**
      * A {@link Result} implementation wrapped around this select.
@@ -2713,7 +2748,7 @@ public class SelectImpl
                 return alias + "_" + col;
             }
             alias = SelectImpl.toAlias(_sel.getTableIndex(col.getTable(), pj, false));
-            return (alias == null) ? null : alias + "." + _sel._dict.getNamingUtil().toDBName(col.toString());
+            return (alias == null) ? null : alias + "." + _sel._dict.toDBName(DBIdentifier.newColumn(col.toString()));
         }
 
         ////////////////////////////
@@ -2826,47 +2861,28 @@ public class SelectImpl
         public void moveJoinsToParent() {
         }
 
-        private static final class CachedColumnAliasKey {
-            private final Column col;
-            private final PathJoins pjs;
-
-            public CachedColumnAliasKey(Column c, PathJoins p) {
-                col = c;
-                pjs = p;
-            }
+        private record CachedColumnAliasKey(Column col, PathJoins pjs) {
 
             @Override
-            public int hashCode() {
-                final int prime = 31;
-                int result = 1;
-                result = prime * result + ((col == null) ? 0 : col.hashCode());
-                result = prime * result + ((pjs == null) ? 0 : pjs.hashCode());
-                return result;
-            }
+                    public boolean equals(Object obj) {
+                        if (this == obj)
+                            return true;
+                        if (obj == null)
+                            return false;
+                        if (getClass() != obj.getClass())
+                            return false;
+                        CachedColumnAliasKey other = (CachedColumnAliasKey) obj;
+                        if (col == null) {
+                            if (other.col != null)
+                                return false;
+                        } else if (!col.equals(other.col))
+                            return false;
+                        if (pjs == null) {
+                            return other.pjs == null;
+                        } else return pjs.equals(other.pjs);
+                    }
 
-            @Override
-            public boolean equals(Object obj) {
-                if (this == obj)
-                    return true;
-                if (obj == null)
-                    return false;
-                if (getClass() != obj.getClass())
-                    return false;
-                CachedColumnAliasKey other = (CachedColumnAliasKey) obj;
-                if (col == null) {
-                    if (other.col != null)
-                        return false;
-                } else if (!col.equals(other.col))
-                    return false;
-                if (pjs == null) {
-                    if (other.pjs != null)
-                        return false;
-                } else if (!pjs.equals(other.pjs))
-                    return false;
-                return true;
-            }
-
-        }
+                }
     }
 
     /**
@@ -3111,8 +3127,7 @@ public class SelectImpl
                 } else if (this.path == null && this.correlatedVar != null && _sel._dict.isImplicitJoin()) {
                     String str = this.var;
                     for(Object o : _sel._parent._aliases.keySet()){
-                        if (o instanceof Key) {
-                            Key k = (Key) o;
+                        if (o instanceof Key k) {
                             if (this.correlatedVar.equals(k._path)) {
                                 str = this.correlatedVar;
                                 break;
@@ -3258,7 +3273,7 @@ public class SelectImpl
                return;
             }
 
-            Object aliases[] = _sel._aliases.values().toArray();
+            Object[] aliases = _sel._aliases.values().toArray();
             boolean found1 = false;
             boolean found2 = false;
 
@@ -3270,11 +3285,10 @@ public class SelectImpl
                     found2 = true;
             }
 
-            if (found1 && found2)
-                return;
+            if (found1 && found2) {
+            }
             else if (!found1 && !found2) {
                 j.setIsNotMyJoin();
-                return;
             }
             else {
                 j.setCorrelated();
@@ -3302,7 +3316,7 @@ public class SelectImpl
         private void addJoinsToParent(SelectImpl parent, Join join) {
             if (parent._aliases == null)
                 return;
-            Object aliases[] = parent._aliases.values().toArray();
+            Object[] aliases = parent._aliases.values().toArray();
             boolean found1 = false;
             boolean found2 = false;
 

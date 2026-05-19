@@ -28,7 +28,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.security.AccessController;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.jar.JarEntry;
@@ -37,8 +36,6 @@ import java.util.jar.JarOutputStream;
 import jakarta.persistence.spi.PersistenceProvider;
 import jakarta.persistence.spi.PersistenceProviderResolver;
 import jakarta.persistence.spi.PersistenceProviderResolverHolder;
-
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 
 import junit.framework.TestCase;
 
@@ -96,29 +93,24 @@ public class TestPersistenceProviderResolver extends TestCase {
         String[] contents = new String[]{dummyProvider1};
         buildFile("testPersistenceProviderResolver1", contents);
         buildTargetJar(targetJar1);
-        tempLoader = new TempUrlLoader(new URL[]{targetJar1.toURI().toURL(), classesDirUrl}
-            ,originalLoader);
-        AccessController.doPrivileged(J2DoPrivHelper
-            .setContextClassLoaderAction(tempLoader));
+        tempLoader = new TempUrlLoader(new URL[]{targetJar1.toURI().toURL(), classesDirUrl}, originalLoader);
+        Thread.currentThread().setContextClassLoader(tempLoader);
 
         List<String> providerNames = new LinkedList<>();
         providerNames.add(openjpaProvider);
         providerNames.add(dummyProvider1);
         checkProviders(providerNames);
 
-        AccessController.doPrivileged(J2DoPrivHelper
-            .setContextClassLoaderAction(originalLoader));
+        Thread.currentThread().setContextClassLoader(originalLoader);
     }
 
     public void testDefaultMultipleProviders() throws Exception {
         String[] contents = new String[]{dummyProvider1, dummyProvider2};
         buildFile("testPersistenceProviderResolver2", contents);
         buildTargetJar(targetJar2);
-        tempLoader = new TempUrlLoader(new URL[]{targetJar2.toURI().toURL(), classesDirUrl}
-            ,originalLoader);
+        tempLoader = new TempUrlLoader(new URL[]{targetJar2.toURI().toURL(), classesDirUrl}, originalLoader);
 
-        AccessController.doPrivileged(J2DoPrivHelper
-            .setContextClassLoaderAction(tempLoader));
+        Thread.currentThread().setContextClassLoader(tempLoader);
 
         List<String> providerNames = new LinkedList<>();
         providerNames.add(openjpaProvider);
@@ -127,8 +119,7 @@ public class TestPersistenceProviderResolver extends TestCase {
         checkProviders(providerNames);
 
 
-        AccessController.doPrivileged(J2DoPrivHelper
-            .setContextClassLoaderAction(originalLoader));
+        Thread.currentThread().setContextClassLoader(originalLoader);
     }
 
     public void testClearCachedProviders() {

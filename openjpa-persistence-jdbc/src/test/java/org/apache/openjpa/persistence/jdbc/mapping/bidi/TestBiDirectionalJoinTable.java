@@ -111,8 +111,8 @@ public class TestBiDirectionalJoinTable extends SQLListenerTestCase {
 		em.getTransaction().commit();
 
 		assertEquals(0, count(Person.class));
-		assertEquals(0, count(Address.class));
-		assertSQL("DELETE FROM .*J_PERSON_ADDRESSES .*");
+		// JPA 3.2 spec section 4.10: bulk DELETE does not cascade
+		assertEquals(ADDRESS_COUNT, count(Address.class));
 	}
 
 	public void testBulkDelete() {
@@ -123,8 +123,8 @@ public class TestBiDirectionalJoinTable extends SQLListenerTestCase {
 		em.getTransaction().commit();
 
 		assertEquals(0, count(Person.class));
-		assertEquals(0, count(Address.class));
-		assertSQL("DELETE FROM .*J_PERSON_ADDRESSES .*");
+		// JPA 3.2 spec section 4.10: bulk DELETE does not cascade
+		assertEquals(ADDRESS_COUNT, count(Address.class));
 	}
 
 	public void testBreakingRelationCausesDeleteFromJoinTable() {

@@ -36,6 +36,7 @@ import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.Row;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.InvalidStateException;
 
 /**
@@ -156,8 +157,25 @@ public class HandlerStrategies {
         else if (col.isRelationId() && handler instanceof RelationId)
             row.setRelationId(col, (OpenJPAStateManager) val,
                 (RelationId) handler);
-        else
+        else {
+            // When multiple entities share the same table column with
+            // different type handlers (e.g., @MapKeyEnumerated ORDINAL
+            // vs STRING), the column's java type may not match the
+            // handler's output type. Convert the value to match the
+            // column's actual java type to avoid ClassCastException.
+            int colType = col.getJavaType();
+            if (colType == JavaTypes.STRING && !(val instanceof String)) {
+                val = val.toString();
+            } else if ((colType == JavaTypes.SHORT || colType == JavaTypes.INT)
+                    && val instanceof String) {
+                try {
+                    val = Integer.parseInt((String) val);
+                } catch (NumberFormatException e) {
+                    // leave as-is; let the DB handle the conversion
+                }
+            }
             row.setObject(col, val);
+        }
     }
 
     /**

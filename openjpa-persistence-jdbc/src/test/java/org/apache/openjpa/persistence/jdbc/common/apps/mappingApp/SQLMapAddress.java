@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.jdbc.common.apps.mappingApp;
 
 import java.io.Serializable;
+import java.util.logging.Logger;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.ColumnResult;
@@ -124,6 +125,7 @@ import jakarta.persistence.Table;
 @Table(name = "SQLMAP_ADDRESS")
 public class SQLMapAddress implements Serializable {
 	
+	private static final Logger logger = Logger.getLogger(SQLMapAddress.class.getCanonicalName());
     private static final long serialVersionUID = 1L;
     private int    id;
 	private String street;
@@ -181,7 +183,7 @@ public class SQLMapAddress implements Serializable {
 
 	@PostLoad
 	protected void inform() {
-		System.out.println("Loaded" + this);
+		logger.fine("Loaded" + this);
 	}
 
 }

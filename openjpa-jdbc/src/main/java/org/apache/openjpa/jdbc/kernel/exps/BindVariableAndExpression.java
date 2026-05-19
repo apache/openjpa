@@ -55,10 +55,16 @@ class BindVariableAndExpression
     @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf) {
+        BinaryOpExpState bstate = (BinaryOpExpState) state;
+        // Append discriminator condition from TREAT (if any)
+        if (_bind.hasTreatDiscriminator()) {
+            _bind.appendTreatDiscriminator(sel, bstate.state1, buf);
+            buf.append(" AND ");
+        }
         boolean or = _exp instanceof OrExpression;
         if (or)
             buf.append("(");
-        _exp.appendTo(sel, ctx, ((BinaryOpExpState) state).state2, buf);
+        _exp.appendTo(sel, ctx, bstate.state2, buf);
         if (or)
             buf.append(")");
     }

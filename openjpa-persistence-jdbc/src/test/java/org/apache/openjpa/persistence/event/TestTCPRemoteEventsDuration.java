@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.event;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import jakarta.persistence.EntityManager;
 
@@ -36,8 +37,9 @@ import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.test.AllowFailure;
 
 @AllowFailure(message="surefire excluded")
-public class TestTCPRemoteEventsDuration
-    extends AbstractTestCase {
+public class TestTCPRemoteEventsDuration extends AbstractTestCase {
+	
+	private static final Logger logger = Logger.getLogger(TestTCPRemoteEventsDuration.class.getCanonicalName());
 
     public TestTCPRemoteEventsDuration(String s) {
         super(s, "eventcactusapp");
@@ -84,8 +86,8 @@ public class TestTCPRemoteEventsDuration
             .getRemoteCommitEventManager().
             addListener(listenerAtReceiver);
 
-        System.out.println("-------------------");
-        System.out.println("3 PMFs created, 1 as standalone, and 2 acting " +
+        logger.fine("-------------------");
+        logger.fine("3 PMFs created, 1 as standalone, and 2 acting " +
             "as a cluster using ports 5636 and 6636");
         // This call is a "throw away" run to seed caches, etc.
         doTransactions(pmSingle, NUM_OBJECTS);
@@ -126,13 +128,13 @@ public class TestTCPRemoteEventsDuration
         timeThreaded.stop();
         double benchmarkCluster = timeThreaded.getDurationAsSeconds();
 
-        System.out.println("For " + NUM_OBJECTS + " objects, and " +
+        logger.fine("For " + NUM_OBJECTS + " objects, and " +
             NUM_CONCURRENT + " concurrent threads, the receiving pmf of the " +
             "cluster received :" +
             listenerAtReceiver.totalAddedClasses + " claases adds, " +
             listenerAtReceiver.totalDeleted + " deletes, " +
             listenerAtReceiver.totalUpdated + " updates");
-        System.out.println(
+        logger.fine(
             "\nSingle pmf - " + benchmarkSingle +
                 "(s).\n Clustered pmfs (one worker thread) -"
                 + benchmarkClusterOneThread +

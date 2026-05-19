@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.query;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -27,6 +28,8 @@ import jakarta.persistence.Query;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
 
 public class Test1x1OrderByResultCollection extends SingleEMTestCase {
+	
+	private static final Logger logger = Logger.getLogger(Test1x1OrderByResultCollection.class.getCanonicalName());
 
     @Override
     public void setUp() {
@@ -133,12 +136,12 @@ public class Test1x1OrderByResultCollection extends SingleEMTestCase {
     }
 
    public void printResults(String heading, List<Hardware> results) {
-        System.out.println(heading + ": collection size= " + ((results == null) ? "0" : results.size()));
+        logger.fine(heading + ": collection size= " + ((results == null) ? "0" : results.size()));
         if (results != null) {
            for (Hardware hw : results) {
                Person to = hw.getTechOwner();
                    String n = (to == null) ? "technical-owner-is-null" : to.getName();
-               System.out.println("    id=" + hw.getId() + " TechnicalOwner=" + n);
+               logger.fine("    id=" + hw.getId() + " TechnicalOwner=" + n);
            }
         }
    }

@@ -25,8 +25,8 @@ jobs:
       - name: Setup Java JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
-          java-version: 11
+          distribution: 'temurin'
+          java-version: 17
       - name: 'Cache Maven packages'
         uses: actions/cache@v4
         with:
@@ -34,6 +34,6 @@ jobs:
           key: 'cache'
           restore-keys: 'cache'
       - name: 'Build with Maven'
-        run: mvn -B install --file pom.xml
+        run: mvn -Ptest-h2-2 -B clean install --file pom.xml
       - name: 'Remove Snapshots Before Caching'
         run: find ~/.m2 -name '*SNAPSHOT' | xargs rm -Rf

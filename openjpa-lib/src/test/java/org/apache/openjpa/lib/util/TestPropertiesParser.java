@@ -33,8 +33,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.openjpa.lib.util.FormatPreservingProperties.
-        DuplicateKeyException;
+import org.apache.openjpa.lib.util.FormatPreservingProperties.DuplicateKeyException;
 
 import org.junit.Test;
 
@@ -169,7 +168,7 @@ public class TestPropertiesParser {
      */
     private void testSpecialChars(boolean formattingProps, boolean value)
         throws Throwable {
-        List valueList = new ArrayList(Arrays.asList(new String[]{
+        List<String> valueList = new ArrayList<>(Arrays.asList(new String[]{
             "xxyy", "xx\\yy", "xx" + LS + "yy", "xx\\nyy", "xx\tyy", "xx\\tyy",
             "xx\ryy", "xx\\ryy", "xx\fyy", "xx\\fyy", "xx\r" + LS + "\\\t\r\t"
             + LS + "yy",
@@ -344,10 +343,8 @@ public class TestPropertiesParser {
         String props = "foo=bar" + LS + "baz=quux";
         String props2 = "a=b" + LS + "c=d";
         Properties vanilla = new Properties();
-        vanilla.load(new BufferedInputStream
-            (new StringBufferInputStream(props)));
-        vanilla.load(new BufferedInputStream
-            (new StringBufferInputStream(props2)));
+        vanilla.load(new BufferedInputStream(new StringBufferInputStream(props)));
+        vanilla.load(new BufferedInputStream(new StringBufferInputStream(props2)));
 
         Properties p = new FormatPreservingProperties();
         p.load(new BufferedInputStream(new StringBufferInputStream(props)));

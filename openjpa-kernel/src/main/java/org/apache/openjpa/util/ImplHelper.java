@@ -227,6 +227,8 @@ public class ImplHelper {
      */
     public static boolean isManagedType(OpenJPAConfiguration conf, Class type) {
         return (PersistenceCapable.class.isAssignableFrom(type)
+            // JPA 3.2: records are embeddable without enhancement
+            || (type != null && type.isRecord())
             || (type != null
                 && (conf == null || conf.getRuntimeUnenhancedClassesConstant()
                     == RuntimeUnenhancedClassesModes.SUPPORTED)
@@ -329,5 +331,28 @@ public class ImplHelper {
             return ((ManagedInstanceProvider) o).getManagedInstance();
         else
             return o;
+    }
+
+    /**
+     * Returns the entity class for the given object, unwrapping any
+     * runtime-generated pcsubclass proxy. For runtime-enhanced entities,
+     * {@code obj.getClass()} returns the generated subclass (e.g.
+     * {@code Order$pcsubclass}), but for {@code equals()}/{@code hashCode()}
+     * comparisons the original entity class should be used.
+     *
+     * @param obj the object whose entity class to determine
+     * @return the original entity class (superclass of pcsubclass), or
+     *         the object's actual class if it is not a pcsubclass
+     * @since 4.2.0
+     */
+    public static Class<?> getEntityClass(Object obj) {
+        if (obj == null) {
+            return null;
+        }
+        Class<?> cls = obj.getClass();
+        if (cls.getName().contains("$pcsubclass")) {
+            return cls.getSuperclass();
+        }
+        return cls;
     }
 }

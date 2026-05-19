@@ -19,8 +19,6 @@
 package org.apache.openjpa.jdbc.meta;
 
 import java.lang.reflect.Modifier;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.HashMap;
@@ -46,6 +44,8 @@ import org.apache.openjpa.jdbc.meta.strats.HandlerFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.HandlerHandlerMapTableFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.HandlerRelationMapTableFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.ImmutableValueHandler;
+import org.apache.openjpa.jdbc.meta.strats.InstantVersionStrategy;
+import org.apache.openjpa.jdbc.meta.strats.LocalDateTimeVersionStrategy;
 import org.apache.openjpa.jdbc.meta.strats.LobFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.MaxEmbeddedBlobFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.MaxEmbeddedByteArrayFieldStrategy;
@@ -556,19 +556,12 @@ public class MappingRepository extends MetaDataRepository {
             strat = VerticalClassStrategy.class;
         try {
             if (strat == null)
-                strat = JavaTypes.classForName(name, cls,
-                    AccessController.doPrivileged(
-                        J2DoPrivHelper.getClassLoaderAction(
-                            ClassStrategy.class)), false);
-            ClassStrategy strategy =
-                (ClassStrategy) AccessController.doPrivileged(
-                    J2DoPrivHelper.newInstanceAction(strat));
+                strat = JavaTypes.classForName(name, cls, ClassStrategy.class.getClassLoader(), false);
+            ClassStrategy strategy = (ClassStrategy) J2DoPrivHelper.newInstance(strat);
             Configurations.configureInstance(strategy, getConfiguration(),
                 props);
             return strategy;
         } catch (Exception e) {
-            if (e instanceof PrivilegedActionException)
-                e = ((PrivilegedActionException) e).getException();
             throw new MetaDataException(_loc.get("bad-cls-strategy",
                 cls, name), e);
         }
@@ -590,13 +583,9 @@ public class MappingRepository extends MetaDataRepository {
         String props = Configurations.getProperties(name);
         name = Configurations.getClassName(name);
         try {
-            Class<?> c = JavaTypes.classForName(name, field,
-                AccessController.doPrivileged(
-                    J2DoPrivHelper.getClassLoaderAction(FieldStrategy.class)), false);
+            Class<?> c = JavaTypes.classForName(name, field, FieldStrategy.class.getClassLoader(), false);
             if (FieldStrategy.class.isAssignableFrom(c)) {
-                FieldStrategy strat = (FieldStrategy)
-                    AccessController.doPrivileged(
-                        J2DoPrivHelper.newInstanceAction(c));
+                FieldStrategy strat = (FieldStrategy) J2DoPrivHelper.newInstance(c);
                 Configurations.configureInstance(strat, getConfiguration(),
                     props);
                 return strat;
@@ -604,16 +593,13 @@ public class MappingRepository extends MetaDataRepository {
 
             // must be named handler
             if (installHandlers) {
-                ValueHandler vh = (ValueHandler) AccessController.doPrivileged(
-                    J2DoPrivHelper.newInstanceAction(c));
+                ValueHandler vh = (ValueHandler) J2DoPrivHelper.newInstance(c);
                 Configurations.configureInstance(vh, getConfiguration(),
                     props);
                 field.setHandler(vh);
             }
             return new HandlerFieldStrategy();
         } catch (Exception e) {
-            if (e instanceof PrivilegedActionException)
-                e = ((PrivilegedActionException) e).getException();
             throw new MetaDataException(_loc.get("bad-field-strategy",
                 field, name), e);
         }
@@ -663,19 +649,12 @@ public class MappingRepository extends MetaDataRepository {
         try {
             if (strat == null)
                 strat = JavaTypes.classForName(name,
-                    discrim.getClassMapping(),
-                    AccessController.doPrivileged(
-                        J2DoPrivHelper.getClassLoaderAction(
-                            DiscriminatorStrategy.class)), false);
-            DiscriminatorStrategy strategy = (DiscriminatorStrategy)
-                AccessController.doPrivileged(
-                    J2DoPrivHelper.newInstanceAction(strat));
+                    discrim.getClassMapping(), DiscriminatorStrategy.class.getClassLoader(), false);
+            DiscriminatorStrategy strategy = (DiscriminatorStrategy) J2DoPrivHelper.newInstance(strat);
             Configurations.configureInstance(strategy, getConfiguration(),
                 props);
             return strategy;
         } catch (Exception e) {
-            if (e instanceof PrivilegedActionException)
-                e = ((PrivilegedActionException) e).getException();
             throw new MetaDataException(_loc.get("bad-discrim-strategy",
                 discrim.getClassMapping(), name), e);
         }
@@ -725,14 +704,14 @@ public class MappingRepository extends MetaDataRepository {
             strat = NanoPrecisionTimestampVersionStrategy.class;
         else if (StateComparisonVersionStrategy.ALIAS.equals(name))
             strat = StateComparisonVersionStrategy.class;
+        else if (LocalDateTimeVersionStrategy.ALIAS.equals(name))
+            strat = LocalDateTimeVersionStrategy.class;
+        else if (InstantVersionStrategy.ALIAS.equals(name))
+            strat = InstantVersionStrategy.class;
 
         try {
             if (strat == null)
-                strat = JavaTypes.classForName(name,
-                    version.getClassMapping(),
-                    AccessController.doPrivileged(
-                        J2DoPrivHelper.getClassLoaderAction(
-                            VersionStrategy.class)), false);
+                strat = JavaTypes.classForName(name, version.getClassMapping(), VersionStrategy.class.getClassLoader(), false);
         } catch (Exception e) {
             throw new MetaDataException(_loc.get("bad-version-strategy",
                 version.getClassMapping(), name), e);
@@ -747,15 +726,11 @@ public class MappingRepository extends MetaDataRepository {
     protected VersionStrategy instantiateVersionStrategy(Class<?> strat,
         Version version, String props) {
         try {
-            VersionStrategy strategy = (VersionStrategy)
-                AccessController.doPrivileged(
-                    J2DoPrivHelper.newInstanceAction(strat));
+            VersionStrategy strategy = (VersionStrategy) J2DoPrivHelper.newInstance(strat);
             Configurations.configureInstance(strategy, getConfiguration(),
                 props);
             return strategy;
         } catch (Exception e) {
-            if (e instanceof PrivilegedActionException)
-                e = ((PrivilegedActionException) e).getException();
             throw new MetaDataException(_loc.get("bad-version-strategy",
                 version.getClassMapping(), strat + ""), e);
         }
@@ -846,12 +821,41 @@ public class MappingRepository extends MetaDataRepository {
             NoneClassStrategy.getInstance())
             return NoneFieldStrategy.getInstance();
 
+        // For @EmbeddedId fields that contain a non-@Embeddable @IdClass
+        // type with @MapsId columns: the FK columns from @MapsId provide
+        // the column mapping, so skip normal handler/BLOB strategy.
+        // This handles JPA 2.4.1.3 ex2b: @EmbeddedId with @MapsId
+        // where the embedded field type is a plain @IdClass (not @Embeddable).
+        if (field.getDefiningMetaData().getEmbeddingMetaData() != null
+            && !isEmbeddableType(field.getDeclaredType())
+            && field.getDeclaredTypeCode() == JavaTypes.OBJECT
+            && hasMapsIdColumnsOnField(field)) {
+            return NoneFieldStrategy.getInstance();
+        }
+
         // check for named handler first
         ValueHandler handler = namedHandler(field);
         if (handler != null) {
             if (installHandlers)
                 field.setHandler(handler);
             return new HandlerFieldStrategy();
+        }
+
+        // check for JPA @Convert / AttributeConverter (non-collection fields)
+        // Arrays (e.g. char[]) with an explicit converter are also handled.
+        if (field.getConverter() != null) {
+            int tc = field.getDeclaredTypeCode();
+            if (tc != JavaTypes.COLLECTION && tc != JavaTypes.MAP) {
+                Class<?> dbType = field.getConverterDatabaseType();
+                if (dbType != null && dbType != Object.class) {
+                    if (installHandlers) {
+                        field.setHandler(
+                            new org.apache.openjpa.jdbc.meta.strats
+                                .ConverterValueHandler(dbType));
+                    }
+                    return new HandlerFieldStrategy();
+                }
+            }
         }
 
         // check for an explicitly mapped strategy
@@ -935,6 +939,65 @@ public class MappingRepository extends MetaDataRepository {
     }
 
     /**
+     * Check if a FieldMapping has mapsIdColumns set on its ValueInfo.
+     * This is more reliable than hasMapsIdCols() during strategy resolution
+     * because the columns may be set before the hasMapsIdCols flag.
+     */
+    private static boolean hasMapsIdColumnsOnField(FieldMapping field) {
+        List<Column> cols = field.getValueInfo().getMapsIdColumns();
+        if (cols != null && !cols.isEmpty()) {
+            return true;
+        }
+        // Also check via the owning entity's @MapsId relationship
+        return isMapsIdTarget(field);
+    }
+
+    /**
+     * Checks whether a field in an embedded mapping is the target of a @MapsId
+     * annotation on the owning entity. Walks up the embedding chain to find
+     * the owning entity and checks for a @MapsId field whose value matches
+     * this field's name.
+     */
+    private static boolean isMapsIdTarget(FieldMapping field) {
+        ClassMetaData embeddedMeta = field.getDefiningMetaData();
+        if (embeddedMeta == null || embeddedMeta.getEmbeddingMetaData() == null)
+            return false;
+        FieldMetaData embeddingField = embeddedMeta.getEmbeddingMetaData()
+            .getFieldMetaData();
+        if (embeddingField == null)
+            return false;
+        ClassMetaData ownerMeta = embeddingField.getDefiningMetaData();
+        if (ownerMeta == null)
+            return false;
+        String fieldName = field.getName();
+        FieldMetaData[] ownerFields = ownerMeta.getFields();
+        for (FieldMetaData of : ownerFields) {
+            if (of.isMappedById()
+                && fieldName.equals(of.getMappedByIdValue())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks whether a class has an @Embeddable annotation via reflection.
+     * Uses annotation simple name to avoid compile-time dependency on
+     * jakarta.persistence.
+     */
+    private static boolean isEmbeddableType(Class<?> type) {
+        if (type == null) {
+            return false;
+        }
+        for (java.lang.annotation.Annotation ann : type.getAnnotations()) {
+            if ("Embeddable".equals(ann.annotationType().getSimpleName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Return the built-in strategy for the field's type, or null if none.
      */
     protected FieldStrategy defaultTypeStrategy(FieldMapping field,
@@ -966,6 +1029,16 @@ public class MappingRepository extends MetaDataRepository {
             case JavaTypes.COLLECTION:
                 ValueMapping elem = field.getElementMapping();
                 ValueHandler ehandler = namedHandler(elem);
+                if (ehandler == null && field.getConverter() != null) {
+                    // Element collection with @Convert: use converter handler
+                    Class<?> dbType = field.getConverterDatabaseType();
+                    if (dbType != null && dbType != Object.class) {
+                        ehandler =
+                            new org.apache.openjpa.jdbc.meta.strats
+                                .ConverterElementHandler(
+                                    field.getConverter(), dbType);
+                    }
+                }
                 if (ehandler == null)
                     ehandler = defaultHandler(elem);
                 if (ehandler != null)
@@ -1250,18 +1323,12 @@ public class MappingRepository extends MetaDataRepository {
         String props = Configurations.getProperties(name);
         name = Configurations.getClassName(name);
         try {
-            Class<?> c = JavaTypes.classForName(name, val,
-                AccessController.doPrivileged(
-                    J2DoPrivHelper.getClassLoaderAction(FieldStrategy.class)),false);
-            Object o = AccessController.doPrivileged(
-                J2DoPrivHelper.newInstanceAction(c));
+            Class<?> c = JavaTypes.classForName(name, val, FieldStrategy.class.getClassLoader(), false);
+            Object o = J2DoPrivHelper.newInstance(c);
             Configurations.configureInstance(o, getConfiguration(), props);
             return o;
         } catch (Exception e) {
-            if (e instanceof PrivilegedActionException)
-                e = ((PrivilegedActionException) e).getException();
-            throw new MetaDataException(_loc.get("bad-mapped-strategy",
-                val, name), e);
+            throw new MetaDataException(_loc.get("bad-mapped-strategy", val, name), e);
         }
     }
 
@@ -1277,20 +1344,15 @@ public class MappingRepository extends MetaDataRepository {
         String props = Configurations.getProperties(name);
         name = Configurations.getClassName(name);
         try {
-            Class<?> c = JavaTypes.classForName(name, val,
-                AccessController.doPrivileged(
-                    J2DoPrivHelper.getClassLoaderAction(ValueHandler.class)),false);
+            Class<?> c = JavaTypes.classForName(name, val, ValueHandler.class.getClassLoader(), false);
             if (ValueHandler.class.isAssignableFrom(c)) {
-                ValueHandler vh = (ValueHandler) AccessController.doPrivileged(
-                    J2DoPrivHelper.newInstanceAction(c));
+                ValueHandler vh = (ValueHandler) J2DoPrivHelper.newInstance(c);
                 Configurations.configureInstance(vh, getConfiguration(),
                     props);
                 return vh;
             }
             return null; // named field strategy
         } catch (Exception e) {
-            if (e instanceof PrivilegedActionException)
-                e = ((PrivilegedActionException) e).getException();
             throw new MetaDataException(_loc.get("bad-value-handler",
                 val, name), e);
         }
@@ -1360,6 +1422,8 @@ public class MappingRepository extends MetaDataRepository {
             case JavaTypes.LOCAL_DATETIME:
             case JavaTypes.OFFSET_TIME:
             case JavaTypes.OFFSET_DATETIME:
+            case JavaTypes.INSTANT:
+            case JavaTypes.YEAR:
             case JavaTypes.UUID_OBJ:
                 return ImmutableValueHandler.getInstance();
             case JavaTypes.STRING:
@@ -1518,6 +1582,10 @@ public class MappingRepository extends MetaDataRepository {
             case JavaTypes.DATE:
             case JavaTypes.CALENDAR:
                 return new NanoPrecisionTimestampVersionStrategy();
+            case JavaTypes.LOCAL_DATETIME:
+                return new LocalDateTimeVersionStrategy();
+            case JavaTypes.INSTANT:
+                return new InstantVersionStrategy();
             case JavaTypes.BYTE:
             case JavaTypes.INT:
             case JavaTypes.LONG:
