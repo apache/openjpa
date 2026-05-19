@@ -848,10 +848,9 @@ public class PostgresDictionary extends DBDictionary {
                 // The create method is valid in versions previous to 8.3
                 // in 8.3 this method is deprecated, use createLO
                 int oid = lom.create();
-                LargeObject lo = lom.open(oid, LargeObjectManager.WRITE);
-                OutputStream os = lo.getOutputStream();
-                copy((InputStream)ob, os);
-                lo.close();
+                try (LargeObject lo = lom.open(oid, LargeObjectManager.WRITE); OutputStream os = lo.getOutputStream()) {
+                    copy((InputStream)ob, os);
+                }
                 row.setInt(col, oid);
             } catch (IOException ioe) {
                 throw new StoreException(ioe);
@@ -884,26 +883,22 @@ public class PostgresDictionary extends DBDictionary {
                 conn.setAutoCommit(false);
                 LargeObjectManager lom = getLargeObjectManager(conn);
                 if (ob != null) {
-                    LargeObject lo = lom.open(oid, LargeObjectManager.WRITE);
-                    OutputStream os = lo.getOutputStream();
-                    long size = copy((InputStream) ob, os);
-                    lo.truncate((int) size);
-                    lo.close();
+                    try (LargeObject lo = lom.open(oid, LargeObjectManager.WRITE); OutputStream os = lo.getOutputStream()) {
+                        long size = copy((InputStream) ob, os);
+                        lo.truncate((int) size);
+                    }
                 } else {
                     lom.delete(oid);
                     row.setInt(col, -1);
                 }
-            } else {
-                if (ob != null) {
-                    conn.setAutoCommit(false);
-                    LargeObjectManager lom = getLargeObjectManager(conn);
-                    oid = lom.create();
-                    LargeObject lo = lom.open(oid, LargeObjectManager.WRITE);
-                    OutputStream os = lo.getOutputStream();
+            } else if (ob != null) {
+                conn.setAutoCommit(false);
+                LargeObjectManager lom = getLargeObjectManager(conn);
+                oid = lom.create();
+                try (LargeObject lo = lom.open(oid, LargeObjectManager.WRITE); OutputStream os = lo.getOutputStream()) {
                     copy((InputStream)ob, os);
-                    lo.close();
-                    row.setInt(col, oid);
                 }
+                row.setInt(col, oid);
             }
 
         } catch (IOException ioe) {
