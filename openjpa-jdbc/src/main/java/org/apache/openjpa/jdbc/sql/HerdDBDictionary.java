@@ -31,6 +31,10 @@ public class HerdDBDictionary
         databaseProductName = "HerdDB";
         schemaCase = SCHEMA_CASE_LOWER;
         delimitedCase = SCHEMA_CASE_LOWER;
+        // OPENJPA-2837 with useSchemaName + delimiters TableJDBCSeq has serious problems
+        // in HerdDB the schema is mapped to a TableSpace and not a "database", not a big deal to have it disabled by default
+        // users can enabled it explictly in the PersistenceUnit configuraiton
+        useSchemaName = false;
 
         supportsCascadeUpdateAction = false;
         supportsDeferredConstraints = false;
