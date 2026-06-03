@@ -1063,7 +1063,7 @@ public class AnnotationPersistenceMappingParser
      * Parse the given index.
      */
     private void parseIndex(MappingInfo info, Index idx) {
-    parseIndex(info, idx.name(), idx.enabled(), idx.unique(), idx.columnNames());
+        parseIndex(info, idx.name(), idx.enabled(), idx.unique(), idx.columnNames());
     }
 
     /**
@@ -1090,11 +1090,12 @@ public class AnnotationPersistenceMappingParser
             idx.setIdentifier(DBIdentifier.newConstraint(name, delimit()));
         idx.setUnique(unique);
 
-        if (columnNames != null) for (String columnName : columnNames) {
-            org.apache.openjpa.jdbc.schema.Column column =
-                    new org.apache.openjpa.jdbc.schema.Column();
-            column.setIdentifier(DBIdentifier.newColumn(columnName, delimit()));
-            idx.addColumn(column);
+        if (columnNames != null) {
+            for (String columnName : columnNames) {
+                Column column = new Column();
+                column.setIdentifier(DBIdentifier.newColumn(columnName, delimit()));
+                idx.addColumn(column);
+            }
         }
 
         info.setIndex(idx);
