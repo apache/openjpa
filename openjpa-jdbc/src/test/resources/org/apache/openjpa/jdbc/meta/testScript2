@@ -1,0 +1,3 @@
+-- Selects all German customers
+SELECT * FROM Customers
+WHERE Country = 'Germany';

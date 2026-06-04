@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.net.URI;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -38,6 +39,8 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 
 import javax.sql.DataSource;
 
@@ -529,59 +532,87 @@ public class SchemaTool {
         }
     }
 
+    private BufferedReader getScriptReader() throws IOException {
+        BufferedReader reader = null;
+        if (_scriptReader != null) {
+            reader = (_scriptReader instanceof BufferedReader br) ? br : new BufferedReader(_scriptReader);
+        } else {
+            URL url = null;
+            // Try file: URI or absolute path first
+            if (_scriptToExecute.startsWith("file:")) {
+                try {
+                    url = new URI(_scriptToExecute).toURL();
+                } catch (Exception e) {
+                    // fall through to classloader lookup
+                }
+            } else {
+                File f = new File(_scriptToExecute);
+                if (f.isAbsolute() && f.exists()) {
+                    url = f.toURI().toURL();
+                }
+            }
+            // Fall back to classloader resource lookup
+            if (url == null) {
+                url = _conf.getClassResolverInstance()
+                    .getClassLoader(SchemaTool.class, null)
+                    .getResource(_scriptToExecute);
+            }
+            if (url == null) {
+                _log.error(_loc.get("generating-execute-script-not-found", _scriptToExecute));
+                return null;
+            }
+            _log.info(_loc.get("generating-execute-script", _scriptToExecute));
+            reader = new BufferedReader(new InputStreamReader(url.openStream()));
+        }
+        return reader;
+    }
+
     protected void executeScript() throws SQLException {
-        if (_scriptReader == null && _scriptToExecute == null) {
+        if (_scriptReader == null && StringUtil.isBlank(_scriptToExecute)) {
             _log.warn(_loc.get("generating-execute-script-not-defined"));
             return;
         }
 
-        BufferedReader reader = null;
-        try {
-            if (_scriptReader != null) {
-                reader = (_scriptReader instanceof BufferedReader)
-                    ? (BufferedReader) _scriptReader
-                    : new BufferedReader(_scriptReader);
-            } else {
-                URL url = null;
-                // Try file: URI or absolute path first
-                if (_scriptToExecute.startsWith("file:")) {
-                    try {
-                        url = new java.net.URI(_scriptToExecute).toURL();
-                    } catch (Exception e) {
-                        // fall through to classloader lookup
-                    }
-                } else {
-                    java.io.File f = new java.io.File(_scriptToExecute);
-                    if (f.isAbsolute() && f.exists()) {
-                        url = f.toURI().toURL();
-                    }
-                }
-                // Fall back to classloader resource lookup
-                if (url == null) {
-                    url = _conf.getClassResolverInstance()
-                        .getClassLoader(SchemaTool.class, null)
-                        .getResource(_scriptToExecute);
-                }
-                if (url == null) {
-                    _log.error(_loc.get("generating-execute-script-not-found",
-                        _scriptToExecute));
-                    return;
-                }
-                _log.info(_loc.get("generating-execute-script",
-                    _scriptToExecute));
-                reader = new BufferedReader(
-                    new InputStreamReader(url.openStream()));
+        try (BufferedReader reader = getScriptReader()) {
+            if (reader == null) {
+                return;
             }
             String line;
             List<String> script = new ArrayList<>();
             StringBuilder stmt = new StringBuilder();
+            AtomicBoolean insideMultilineComments = new AtomicBoolean(false);
+            Function<String, String> stripComments = (str) -> {
+                boolean inside = insideMultilineComments.get();
+                while (true) {
+                    int multiStartIdx = str.indexOf("/*");
+                    if (!inside && multiStartIdx > -1) {
+                        inside = true;
+                    }
+                    int multiEndIdx = str.indexOf("*/");
+                    if (inside) {
+                        int cutStart = multiStartIdx > -1 ? multiStartIdx : 0;
+                        if (multiEndIdx > -1) {
+                            inside = false;
+                            str = str.substring(cutStart, multiEndIdx);
+                        } else {
+                            str = str.substring(0, cutStart);
+                        }
+                    }
+                    if (multiStartIdx < 0 && multiEndIdx < 0) {
+                        break;
+                    }
+                }
+                insideMultilineComments.set(inside);
+                return str;
+            };
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
                 // Skip full-line comments
-                if (line.startsWith("--") || line.startsWith("/*")
-                        || line.startsWith("//") || line.isEmpty()) {
+                if (line.startsWith("--") || line.startsWith("//") || line.isEmpty()) {
                     continue;
                 }
+                // search for start of multilineComments
+                line = stripComments.apply(line);
                 // Strip inline -- comments
                 int dashIdx = line.indexOf("--");
                 if (dashIdx > 0) {
@@ -612,14 +643,6 @@ public class SchemaTool {
             executeSQL(script.toArray(new String[script.size()]));
         } catch (IOException e) {
             _log.error(e.getMessage(), e);
-        } finally {
-            try {
-                if (reader != null) {
-                    reader.close();
-                }
-            } catch (IOException e) {
-                _log.error(e.getMessage(), e);
-            }
         }
     }
 
@@ -1118,18 +1141,21 @@ public class SchemaTool {
             for (Schema schema : schemas) {
                 tabs = schema.getTables();
                 for (Table tab : tabs) {
-                    if (!isDroppable(tab))
+                    if (!isDroppable(tab)) {
                         continue;
+                    }
                     cols = tab.getColumns();
                     dbTable = db.findTable(tab);
                     for (Column column : cols) {
-                        col = null;
-                        if (dbTable != null)
-                            col = dbTable.getColumn(column.getIdentifier());
-                        if (dbTable == null || col == null)
+                        col = dbTable == null ? null : dbTable.getColumn(column.getIdentifier());
+                        if (dbTable == null || col == null) {
                             continue;
+                        }
 
-                        if (dropColumn(column)) {
+                        if (dbTable.getColumns().length == 1) {
+                            // last column, we should drop whole table
+                            dropTable(dbTable);
+                        } else if (dropColumn(column)) {
                             dbTable.removeColumn(col);
                         }
                     }
