@@ -48,7 +48,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class TestSnakeCaseDDL {
-	
+
 	private static final Logger logger = Logger.getLogger(TestSnakeCaseDDL.class.getCanonicalName());
 
     @Test
@@ -82,8 +82,9 @@ public class TestSnakeCaseDDL {
                     .getTables(null, null, "%", null)) {
                 while (tables.next()) {
                     final String table = tables.getString(3);
-                    if (table.toUpperCase(Locale.ROOT).startsWith("SNAKE")) {
-                        createdTables.put(table.toUpperCase(Locale.ROOT), table);
+                    final String upper = table.toUpperCase(Locale.ENGLISH);
+                    if (upper.startsWith("SNAKE")) {
+                        createdTables.put(upper, table);
                     }
                 }
             }
@@ -132,7 +133,7 @@ public class TestSnakeCaseDDL {
                     em.close();
                 }
             }
-            final String tableName = createdTables.get("SnakeCaseDDLMy1Entity".toUpperCase(Locale.ROOT));
+            final String tableName = createdTables.get("SnakeCaseDDLMy1Entity".toUpperCase(Locale.ENGLISH));
             try (final Connection connection = ds.getConnection();
                  final Statement statement = connection.createStatement();
                  final ResultSet rs = statement.executeQuery("select foo_bar, this_field from \"" + tableName + "\"")) {

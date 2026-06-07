@@ -321,7 +321,7 @@ public class DBDictionary
     public int maxEmbeddedBlobSize = -1;
     public int maxEmbeddedClobSize = -1;
     public int inClauseLimit = -1;
-    
+
     /**
      * Attention, while this is named datePrecision it actually only get used for Timestamp handling!
      * @see StateManagerImpl#roundTimestamp(Timestamp, int)
@@ -502,10 +502,10 @@ public class DBDictionary
     private String conversionKey = null;
 
     public boolean supportsUuidType = false;
-    
+
     public boolean supportsUnsizedCharOnCast = true;
-    
-    public String integerCastTypeName = integerTypeName; 
+
+    public String integerCastTypeName = integerTypeName;
 
     // Naming utility and naming rules
     private DBIdentifierUtil namingUtil = null;
@@ -638,6 +638,10 @@ public class DBDictionary
 
         DBIdentifierRule columnNamingRule = new ColumnIdentifierRule(invalidColumnWordSet);
         namingRules.put(columnNamingRule.getName(), columnNamingRule);
+        // restoring default "empty" cfg
+        IdentifierRule rule = Normalizer.getNamingConfiguration().getDefaultIdentifierRule();
+        rule.setDelimitReservedWords(false);
+        rule.setReservedWords(Set.of());
     }
 
     //////////////////////
@@ -2063,7 +2067,7 @@ public class DBDictionary
             return appendSize(col, autoAssignTypeName);
 
         if (col.getJavaType() == JavaTypes.UUID_OBJ) {
-            if (supportsUuidType) 
+            if (supportsUuidType)
                 return appendSize(col, uuidTypeName);
             else {
                 return appendSize(col, getTypeName(Types.VARCHAR));
@@ -3270,7 +3274,7 @@ public class DBDictionary
         }
         buf.append(")");
     }
-    
+
     public void replace(SQLBuffer buf, FilterValue from, FilterValue subs, FilterValue replacement) {
     	buf.append(replaceFunctionName).append("(");
     	from.appendTo(buf);
@@ -3280,7 +3284,7 @@ public class DBDictionary
     	replacement.appendTo(buf);
     	buf.append(")");
     }
-    
+
     public void left(SQLBuffer buf, FilterValue str, FilterValue length) {
     	buf.append(leftFunctionName).append("(");
     	str.appendTo(buf);
@@ -5298,7 +5302,9 @@ public class DBDictionary
             selectWordSet.addAll(Arrays.asList(StringUtil.split(selectWords.toUpperCase(Locale.ENGLISH), ",", 0)));
 
         if (invalidColumnWordSet.isEmpty()) {
-            invalidColumnWordSet.addAll(loadFromResource("sql-invalid-column-names.rsrc"));
+            Collection<String> invalidColumns = loadFromResource("sql-invalid-column-names.rsrc");
+            invalidColumnWordSet.addAll(invalidColumns);
+            namingRules.get(DBIdentifierType.COLUMN.name()).setReservedWords(invalidColumns);
         }
 
         // initialize the error codes
@@ -5578,11 +5584,10 @@ public class DBDictionary
     }
 
     /**
-         * Used by some mappings to represent data that has already been
-         * serialized so that we don't have to serialize multiple times.
-         */
-        public record SerializedData(byte[] bytes) {
-
+     * Used by some mappings to represent data that has already been
+     * serialized so that we don't have to serialize multiple times.
+     */
+    public record SerializedData(byte[] bytes) {
     }
 
     /**

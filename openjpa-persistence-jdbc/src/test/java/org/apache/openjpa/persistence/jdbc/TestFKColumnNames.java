@@ -38,7 +38,7 @@ public class TestFKColumnNames extends AbstractPersistenceTestCase {
         return col.getIdentifier().getName()
                 .replace(cfg.getLeadingDelimiter(), "")
                 .replace(cfg.getTrailingDelimiter(), "")
-                .toUpperCase(Locale.ROOT);
+                .toUpperCase(Locale.ENGLISH);
     }
 
     /**
