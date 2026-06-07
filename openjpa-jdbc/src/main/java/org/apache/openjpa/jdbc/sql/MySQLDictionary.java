@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
@@ -41,6 +42,7 @@ import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.lib.identifier.IdentifierRule;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.util.ExceptionInfo;
 import org.apache.openjpa.util.StoreException;
@@ -129,7 +131,7 @@ public class MySQLDictionary
             "AUTO_INCREMENT", "BINARY", "BLOB", "CHANGE", "ENUM", "INFILE",
             "INT1", "INT2", "INT4", "FLOAT1", "FLOAT2", "FLOAT4", "LOAD",
             "MEDIUMINT", "OUTFILE", "REPLACE", "STARTING", "TEXT", "UNSIGNED",
-            "ZEROFILL", "INDEX",
+            "ZEROFILL", "INDEX", "LIBRARY"
         }));
 
         // reservedWordSet subset that CANNOT be used as valid column names
@@ -269,6 +271,14 @@ public class MySQLDictionary
         int maj = Integer.parseInt(arr[0]);
         int min = Integer.parseInt(arr[1]);
         return new int[]{maj, min};
+    }
+
+    @Override
+    protected void configureNamingRules() {
+        super.configureNamingRules();
+        IdentifierRule rule = Normalizer.getNamingConfiguration().getDefaultIdentifierRule();
+        rule.setDelimitReservedWords(true);
+        rule.setReservedWords(reservedWordSet);
     }
 
     @Override
@@ -477,8 +487,8 @@ public class MySQLDictionary
         if (state == ExceptionInfo.GENERAL && ex.getErrorCode() == 0 && ex.getSQLState() == null) {
             // look at the nested MySQL exception for more details
             SQLException sqle = ex.getNextException();
-            if (sqle != null 
-            		&& (sqle.toString().startsWith("com.mysql.jdbc.exceptions.MySQLTimeoutException") || 
+            if (sqle != null
+            		&& (sqle.toString().startsWith("com.mysql.jdbc.exceptions.MySQLTimeoutException") ||
             				sqle.toString().startsWith("com.mysql.cj.jdbc.exceptions.MySQLTimeoutException"))) {
                 if (conf != null && conf.getLockTimeout() != -1) {
                     state = StoreException.LOCK;

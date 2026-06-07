@@ -19,10 +19,12 @@
 package org.apache.openjpa.jdbc.meta;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
@@ -39,20 +41,20 @@ public class TestSchemaTool {
     @Parameters(name = "{index}: {0} -> {1}")
     public static Collection<Object[]> data() {
       return Arrays.asList(new Object[][] {
-          {"", 0},
-          {" ", 0},
-          {"org/apache/openjpa/jdbc/meta/testScript1", 0},
-          {"org/apache/openjpa/jdbc/meta/testScript2", 1},
-          {"org/apache/openjpa/jdbc/meta/testScript3", 1},
-          {"org/apache/openjpa/jdbc/meta/testScript4", 0},
-          {"org/apache/openjpa/jdbc/meta/testScriptMulti1", 1},
-          {"org/apache/openjpa/jdbc/meta/testScriptMulti2", 0},
+          {"", List.of()},
+          {" ", List.of()},
+          {"org/apache/openjpa/jdbc/meta/testScript1", List.of()},
+          {"org/apache/openjpa/jdbc/meta/testScript2", List.of("SELECT * FROM Customers WHERE Country = 'Germany'")},
+          {"org/apache/openjpa/jdbc/meta/testScript3", List.of("SELECT * FROM Customers")},
+          {"org/apache/openjpa/jdbc/meta/testScript4", List.of()},
+          {"org/apache/openjpa/jdbc/meta/testScriptMulti1", List.of("SELECT * FROM MyTable")},
+          {"org/apache/openjpa/jdbc/meta/testScriptMulti2", List.of()},
       });
     }
     @Parameter(0)
     public String sqlScript;
     @Parameter(1)
-    public Integer resultingLines;
+    public List<String> expected;
 
     @Test
     public void testExecuteScript() throws Exception {
@@ -75,6 +77,12 @@ public class TestSchemaTool {
         };
         tool.setScriptToExecute(sqlScript);
         tool.run();
-        assertEquals(resultingLines.intValue(), sqlToRun.size());
+        if (expected.size() != sqlToRun.size()) {
+            fail("Expected list wasn't found: \r\n expected" + expected
+            + "\r\n actual: \r\n" + sqlToRun);
+        }
+        for (int i = 0; i < expected.size(); ++i) {
+            assertEquals(expected.get(i), sqlToRun.get(i));
+        }
     }
 }

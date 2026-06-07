@@ -20,7 +20,12 @@ package org.apache.openjpa.persistence.jdbc;
 
 import jakarta.persistence.Persistence;
 
+import java.util.Locale;
+
+import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
+import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.lib.identifier.IdentifierConfiguration;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
@@ -28,7 +33,13 @@ import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
  * Testcase that verifies the names for Foreign Key columns is as expected.
  */
 public class TestFKColumnNames extends AbstractPersistenceTestCase {
-
+    private String getName(Column col) {
+        IdentifierConfiguration cfg = Normalizer.getNamingConfiguration();
+        return col.getIdentifier().getName()
+                .replace(cfg.getLeadingDelimiter(), "")
+                .replace(cfg.getTrailingDelimiter(), "")
+                .toUpperCase(Locale.ENGLISH);
+    }
 
     /**
      * <P>
@@ -48,11 +59,11 @@ public class TestFKColumnNames extends AbstractPersistenceTestCase {
                 (MappingRepository) emf.getConfiguration()
                         .getMetaDataRepositoryInstance();
 
-        assertEquals("SELECT_ID", repos.getMapping(FKColumnNamesInner1Entity.class, null, true)
-                .getFieldMapping("select").getColumns()[0].getName());
+        assertEquals("SELECT_ID", getName(repos.getMapping(FKColumnNamesInner1Entity.class, null, true)
+                .getFieldMapping("select").getColumns()[0]));
 
-        assertEquals("FROM_ID", repos.getMapping(FKColumnNamesInner2Entity.class, null, true)
-                .getFieldMapping("from").getColumns()[0].getName());
+        assertEquals("FROM_ID", getName(repos.getMapping(FKColumnNamesInner2Entity.class, null, true)
+                .getFieldMapping("from").getColumns()[0]));
         closeEMF(emf);
     }
 

@@ -17,9 +17,12 @@
  specific language governing permissions and limitations
  under the License.
 -->
-<project name="OpenJPA">
-    <bannerLeft>
-        <name>OpenJPA</name>
+<site xmlns="http://maven.apache.org/SITE/2.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/SITE/2.0.0 https://maven.apache.org/xsd/site-2.0.0.xsd"
+        name="Apache OpenJPA">
+    <bannerLeft href="https://openjpa.apache.org/">
+        <image src="https://openjpa.apache.org/images/openjpa-logo.png" alt="OpenJPA Logo"/>
     </bannerLeft>
     <publishDate format="dd MMM yyyy HH:mm z"/>
     <body>
@@ -30,8 +33,7 @@
         </menu>
 
         <menu name="Community">
-            <item name="Issue Tracker"
-                href="https://issues.apache.org/jira/browse/OPENJPA"/>
+            <item name="Issue Tracker" href="https://issues.apache.org/jira/browse/OPENJPA"/>
         </menu>
 
         <menu ref="parent"/>
@@ -45,4 +47,4 @@
         <artifactId>maven-fluido-skin</artifactId>
         <version>2.1.0</version>
     </skin>
-</project>
+</site>

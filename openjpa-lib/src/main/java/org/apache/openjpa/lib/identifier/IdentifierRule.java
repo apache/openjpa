@@ -18,8 +18,11 @@
  */
 package org.apache.openjpa.lib.identifier;
 
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.openjpa.lib.util.StringUtil;
 
@@ -122,8 +125,10 @@ public class IdentifierRule {
         return _onlyLettersDigitsUnderscores;
     }
 
-    public void setReservedWords(Set<String> reservedWords) {
-        _reservedWords = reservedWords;
+    public void setReservedWords(Collection<String> reservedWords) {
+        _reservedWords = reservedWords.stream()
+                .map(w -> w.toUpperCase(Locale.ENGLISH))
+                .collect(Collectors.toSet());
     }
 
     public Set<String> getReservedWords() {
@@ -202,6 +207,6 @@ public class IdentifierRule {
     }
 
     public boolean isReservedWord(String identifier) {
-        return _reservedWords.contains(identifier);
+        return _reservedWords.contains(identifier.toUpperCase(Locale.ENGLISH));
     }
 }

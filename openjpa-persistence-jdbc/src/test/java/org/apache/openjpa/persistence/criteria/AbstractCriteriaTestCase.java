@@ -53,7 +53,7 @@ import junit.framework.TestCase;
  * @version $Rev$ $Date$
  */
 public abstract class AbstractCriteriaTestCase extends TestCase {
-	
+
 	private static final Logger logger = Logger.getLogger(AbstractCriteriaTestCase.class.getCanonicalName());
 
     protected abstract SQLAuditor getAuditor();
@@ -156,6 +156,13 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
         executeAndCompareSQL(jpql, cQ, jQ, expectedSQL);
     }
 
+    protected boolean same(String expected, String sql) {
+        return sql.equalsIgnoreCase(expected) ||
+                sql.replace(dict.getLeadingDelimiter(), "")
+                    .replace(dict.getTrailingDelimiter(), "")
+                    .equalsIgnoreCase(expected);
+    }
+
     /**
      * Execute the two given queries. The first query originated from a JPQL string must be well-formed. The second
      * query originated from a Criteria is being tested.
@@ -194,19 +201,20 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
             return;
 
         for (int i = 0; i < jSQL.size(); i++) {
-            if (!jSQL.get(i).equalsIgnoreCase(cSQL.get(i))) {
+            boolean eq = same(cSQL.get(i), jSQL.get(i));
+            if (!eq) {
                 printSQL("Target SQL for JPQL", jSQL);
                 printSQL("Target SQL for CriteriaQuery", cSQL);
-                assertTrue(i + "-th SQL for JPQL and CriteriaQuery for " + jpql + " is different\r\n" +
-                        "JPQL = [" + jSQL.get(i) + "]\r\n" +
-                        "CSQL = [" + cSQL.get(i) + "]\r\n",
-                        jSQL.get(i).equalsIgnoreCase(cSQL.get(i)));
             }
+            assertTrue(i + "-th SQL for JPQL and CriteriaQuery for " + jpql + " is different\r\n" +
+                    "JPQL = [" + jSQL.get(i) + "]\r\n" +
+                    "CSQL = [" + cSQL.get(i) + "]\r\n",
+                    eq);
         }
 
         if (expectedSQL != null) {
             assertTrue("SQL for JPQL " + jpql + " is different than expecetd " + expectedSQL,
-                    jSQL.get(0).equalsIgnoreCase(expectedSQL));
+                    same(expectedSQL, jSQL.get(0)));
 
         }
     }
@@ -227,12 +235,12 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
             return;
 
         for (int i = 0; i < jSQL.size(); i++) {
-            if (!jSQL.get(i).equalsIgnoreCase(expectedSQL)) {
+            boolean eq = same(expectedSQL, jSQL.get(i));
+            if (!eq) {
                 printSQL("SQL for JPQL", jSQL.get(i));
                 printSQL("Expected SQL", expectedSQL);
-                assertTrue(i + "-th SQL for JPQL: " + jSQL.get(i) + " are different than Expected SQL " + expectedSQL,
-                    expectedSQL.equalsIgnoreCase(jSQL.get(i)));
             }
+            assertTrue(i + "-th SQL for JPQL: " + jSQL.get(i) + " are different than Expected SQL " + expectedSQL, eq);
         }
     }
 
@@ -246,18 +254,20 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
             fail(w.toString());
         }
 
-        if (!(dict instanceof DerbyDictionary || dict instanceof MySQLDictionary || dict instanceof MariaDBDictionary))
+        if (!(dict instanceof DerbyDictionary || dict instanceof MySQLDictionary || dict instanceof MariaDBDictionary)) {
             return;
+        }
 
         String jSql = jSQL.get(0).trim();
-        if (jSql.indexOf("optimize for 1 row") != -1)
+        if (jSql.indexOf("optimize for 1 row") != -1) {
             jSql = jSql.substring(0, jSql.indexOf("optimize for 1 row")).trim();
-
-        if (!jSql.equalsIgnoreCase(expectedSQL)) {
-            printSQL("SQL for JPQL", jSql);
-            assertTrue("SQL for JPQL " + jSql + " is different than expecetd " + expectedSQL,
-                    expectedSQL.equalsIgnoreCase(jSql));
         }
+
+        boolean eq = same(expectedSQL, jSql);
+        if (!eq) {
+            printSQL("SQL for JPQL", jSql);
+        }
+        assertTrue("SQL for JPQL " + jSql + " is different than expecetd " + expectedSQL, eq);
     }
 
     void executeExpectFail(CriteriaQuery<?> c, String jpql) {
