@@ -19,7 +19,9 @@
 package org.apache.openjpa.lib.identifier;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.openjpa.lib.util.StringUtil;
 
@@ -123,7 +125,9 @@ public class IdentifierRule {
     }
 
     public void setReservedWords(Set<String> reservedWords) {
-        _reservedWords = reservedWords;
+        _reservedWords = reservedWords.stream()
+                .map(w -> w.toUpperCase(Locale.ROOT))
+                .collect(Collectors.toSet());
     }
 
     public Set<String> getReservedWords() {
@@ -202,6 +206,6 @@ public class IdentifierRule {
     }
 
     public boolean isReservedWord(String identifier) {
-        return _reservedWords.contains(identifier);
+        return _reservedWords.contains(identifier.toUpperCase(Locale.ROOT));
     }
 }
