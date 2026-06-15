@@ -22,6 +22,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.UUID;
 
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 import org.junit.Test;
@@ -107,6 +109,11 @@ public class TestJDBCSchemaManager extends AbstractPersistenceTestCase {
 	@Test
 	public void testValidate() {
 		EntityManagerFactory emf = createEMF(UUIDEntity.class, EntityBoolChar.class, DROP_TABLES);
+		DBDictionary dict = getDbDictionary(emf);
+		if (dict instanceof MySQLDictionary) {
+			// MySQL uses tinyint as boolean and it is valid in this context
+			return;
+		}
 		EntityManager em = emf.createEntityManager();
 
 		em.getTransaction().begin();
