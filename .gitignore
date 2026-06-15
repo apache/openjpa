@@ -16,3 +16,6 @@ CLAUDE.md
 tck-dev
 docker-compose.yml
 pgdata
+openjpa-xmlstore/jdbc*
+scripts/.report/
+

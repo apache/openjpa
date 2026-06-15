@@ -383,9 +383,7 @@ public class InformixDictionary
        // Informix will automatically create a unique index for the
        // primary key, so don't create another index again
        PrimaryKey pk = table.getPrimaryKey();
-       if (pk != null && idx.columnsMatch(pk.getColumns()))
-           return false;
-       return true;
+       return pk == null || !idx.columnsMatch(pk.getColumns());
     }
 
     public boolean useJCC() {

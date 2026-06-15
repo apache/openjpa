@@ -720,7 +720,7 @@
                 <!-- default settings for local docker -->
                 <docker.external.mariadb.port>3306</docker.external.mariadb.port>
                 <openjpa.mariadb.dbname>openjpatst</openjpa.mariadb.dbname>
-                <openjpa.mariadb.url>jdbc:mariadb://localhost:${docker.external.mariadb.port}/${openjpa.mariadb.dbname}</openjpa.mariadb.url>
+                <openjpa.mariadb.url>jdbc:mariadb://localhost:${docker.external.mariadb.port}/${openjpa.mariadb.dbname}?&amp;allowPublicKeyRetrieval=true</openjpa.mariadb.url>
                 <openjpa.mariadb.username>root</openjpa.mariadb.username>
                 <openjpa.mariadb.password>openjpatst</openjpa.mariadb.password>
 
@@ -1570,14 +1570,16 @@
                 <oracle.artifactid>ojdbc8</oracle.artifactid>
                 <oracle.version>19.3.0.0</oracle.version>
 
-                <oracle.server.version>latest</oracle.server.version>
+                <oracle.server.version>18.4.0-xe</oracle.server.version>
                 <docker.external.oracle.port>1521</docker.external.oracle.port>
 
                 <connection.driver.name>oracle.jdbc.driver.OracleDriver</connection.driver.name>
                 <openjpa.oracle.database>openjpatst</openjpa.oracle.database>
-                <openjpa.oracle.username>openjpatst</openjpa.oracle.username>
+                <!-- 'C##' required to bypass 'ORA-65096: invalid common user or role name' -->
+                <!-- NOTE: this username should be in sync with src/test/sql/oracle-docker/init.sql -->
+                <openjpa.oracle.username>C##openjpatst</openjpa.oracle.username>
                 <openjpa.oracle.password>openjpatst</openjpa.oracle.password>
-                <openjpa.oracle.SID>xe</openjpa.oracle.SID>
+                <openjpa.oracle.SID>XE</openjpa.oracle.SID>
                 <openjpa.oracle.url>jdbc:oracle:thin:@localhost:${docker.external.oracle.port}:${openjpa.oracle.SID}</openjpa.oracle.url>
 
                 <connection.url>${openjpa.oracle.url}</connection.url>
@@ -1607,24 +1609,41 @@
                         <groupId>io.fabric8</groupId>
                         <artifactId>docker-maven-plugin</artifactId>
                         <configuration>
+                            <keepContainer>false</keepContainer>
+                            <removeVolumes>true</removeVolumes>
                             <images>
                                 <image>
-                                    <!--<name>oracledb19c/oracle.19.3.0-ee:oracle19.3.0-ee</name>-->
-                                    <name>oracleinanutshell/oracle-xe-11g</name>
-                                    <!--<name>pvargacl/oracle-xe-18.4.0:latest</name>-->
+                                    <name>container-registry.oracle.com/database/express:${oracle.server.version}</name>
                                     <run>
+                                        <env>
+                                            <ORACLE_PWD>${openjpa.oracle.password}</ORACLE_PWD>
+                                        </env>
                                         <volumes>
                                             <bind>
-                                                <volume>${project.basedir}/src/test/sql/oracle-docker:/docker-entrypoint-initdb.d/</volume>
+                                                <volume>${project.basedir}/src/test/sql/oracle-docker:/docker-entrypoint-initdb.d/setup/</volume>
+                                                <!-- NOTE this folder MUST exist and have correct permissions!!!! -->
+                                                <volume>${project.basedir}/openjpa-xmlstore/jdbc_oradata:/opt/oracle/oradata</volume>
                                             </bind>
                                         </volumes>
                                         <ports>
                                             <port>${docker.external.oracle.port}:1521</port>
+                                            <port>5500:5500</port>
                                         </ports>
+                                        <wait>
+                                            <log>DATABASE IS READY TO USE</log>
+                                            <time>3600000</time>
+                                        </wait>
                                     </run>
                                 </image>
                             </images>
                         </configuration>
+                        <dependencies>
+                            <dependency>
+                                <groupId>com.google.guava</groupId>
+                                <artifactId>guava</artifactId>
+                                <version>33.2.1-jre</version>
+                            </dependency>
+                        </dependencies>
                     </plugin>
                 </plugins>
             </build>
@@ -2007,7 +2026,7 @@
                 <plugin>
                     <groupId>io.fabric8</groupId>
                     <artifactId>docker-maven-plugin</artifactId>
-                    <version>0.45.1</version>
+                    <version>0.48.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -2073,7 +2092,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-antrun-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>

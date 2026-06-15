@@ -1596,7 +1596,7 @@ public class OracleDictionary
         }
         return super.getIsNotNullSQL(colAlias, colType);
     }
-    
+
     @Override
     public void left(SQLBuffer buf, FilterValue str, FilterValue length) {
     	buf.append(leftFunctionName).append("(");
@@ -1636,5 +1636,14 @@ public class OracleDictionary
             start.appendTo(buf);
         }
         buf.append(")");
+    }
+
+    // required to avoid ORA-01408: such column list already indexed
+    @Override
+    public boolean needsToCreateIndex(Index idx, Table table) {
+       // Oracle will automatically create a unique index for the
+       // primary key, so don't create another index again
+       PrimaryKey pk = table.getPrimaryKey();
+       return pk == null || !idx.columnsMatch(pk.getColumns());
     }
 }
