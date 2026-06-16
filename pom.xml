@@ -1622,7 +1622,7 @@
                                             <bind>
                                                 <volume>${project.basedir}/src/test/sql/oracle-docker:/docker-entrypoint-initdb.d/setup/</volume>
                                                 <!-- NOTE this folder MUST exist and have correct permissions!!!! -->
-                                                <volume>${project.basedir}/openjpa-xmlstore/jdbc_oradata:/opt/oracle/oradata</volume>
+                                                <volume>${project.basedir}/../jdbc_oradata:/opt/oracle/oradata</volume>
                                             </bind>
                                         </volumes>
                                         <ports>
