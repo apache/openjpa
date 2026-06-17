@@ -1,167 +1,177 @@
-#!/usr/bin/env bash
-#
-# Licensed to the Apache Software Foundation (ASF) under one or more
-# contributor license agreements.  See the NOTICE file distributed with
-# this work for additional information regarding copyright ownership.
-# The ASF licenses this file to you under the Apache License, Version 2.0
-# (the "License"); you may not use this file except in compliance with
-# the License.  You may obtain a copy of the License at:
-#
-#   http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
-# implied.  See the License for the specific language governing
-# permissions and limitations under the License.
-#
-# Build OpenJPA against one or more dockerised databases and collect
-# Surefire/Failsafe reports. Mirrors what the Ubuntu build host runs.
-#
-# Usage:
-#   scripts/run-build-matrix.sh                  # run the full matrix
-#   scripts/run-build-matrix.sh pg17 mariadb     # run a subset
-#
-# Output layout (per flavor):
-#   builds/<flavor>/...                          # copied surefire reports
-#   build-log-<flavor>-<yyyymmdd>.txt            # console log
-#
-# Pin TZ=UTC so the JVM and any wall-clock-sensitive tests agree with
-# the Postgres/MariaDB/MySQL session (all of which default to UTC in
-# the stock docker images). Set TZ in the environment before invoking
-# this script to override.
+#!/bin/bash
 
-set -u -o pipefail
-
-export TZ="${TZ:-UTC}"
-
-PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-BUILDS_DIR="${BUILDS_DIR:-$PROJECT_ROOT/builds}"
-LOG_DIR="${LOG_DIR:-$PROJECT_ROOT}"
-MVN_TIMEOUT="${MVN_TIMEOUT:-300m}"
-DB_READY_WAIT="${DB_READY_WAIT:-30}"
-WIPE_M2="${WIPE_M2:-0}"   # 1 = rm -rf ~/.m2/repository before each run
-
-declare -A COMPOSE_FILES=(
-    [pg17]="$PROJECT_ROOT/docker-compose-test-pg17.yml"
-    [pg18]="$PROJECT_ROOT/docker-compose-test-pg18.yml"
-    [mariadb]="$PROJECT_ROOT/docker-compose-test-mariadb.yml"
-    [mysql]="$PROJECT_ROOT/docker-compose-test-mysql.yml"
+SCRIPT_ROOT=$(cd -- $(dirname "${0}") && pwd)
+PROJECT_ROOT="$(cd "${SCRIPT_ROOT}/.." && pwd)"
+declare -A FULL_DB_LIST=(
+	[h2-2]=embedded
+	[derby]=embedded
+	[hsqldb]=embedded
+	[mysql]=docker
+	[mariadb]=docker
+	[postgresql]=docker
+	[mssql]=docker
+	[herddb]=docker
+	[oracle]=docker
 )
-
-declare -A MVN_PROFILES=(
-    [pg17]="test-postgresql-docker"
-    [pg18]="test-postgresql-docker"
-    [mariadb]="test-mariadb-docker"
-    [mysql]="test-mysql-docker"
+declare -A VERSIONS=(
+	[mysql]='8.0 8.4.8 9.4.0'
+	[postgresql]='11 16 18'
 )
+MATRIX=${!FULL_DB_LIST[@]}
+REPORT_DIR=.report
+START_WITH=''
 
-declare -A MVN_EXTRA_ARGS=(
-    [pg17]=""
-    [pg18]=""
-    [mariadb]=""
-    [mysql]="-Ddocker.skip=true -Ddocker.external.mysql.port=3307"
-)
-
-run_flavor() {
-    local flavor="$1"
-    local compose="${COMPOSE_FILES[$flavor]:-}"
-    local profile="${MVN_PROFILES[$flavor]:-}"
-    local extra="${MVN_EXTRA_ARGS[$flavor]:-}"
-
-    if [[ -z "$compose" || ! -f "$compose" ]]; then
-        echo "!!! unknown or missing compose file for flavor '$flavor' — skipping" >&2
-        return 2
-    fi
-
-    local stamp; stamp="$(date +%Y%m%d)"
-    local log="$LOG_DIR/build-log-${flavor}-${stamp}.txt"
-    local collect="$BUILDS_DIR/$flavor"
-    mkdir -p "$collect"
-
-    (
-        echo "===== OpenJPA install build against $flavor ====="
-        echo "start:   $(date -Iseconds)"
-        echo "host:    $(hostname)"
-        echo "TZ:      $TZ"
-        echo "java:    $(java -version 2>&1 | head -n1)"
-        echo "maven:   $(mvn --version | head -n1)"
-        echo "compose: $compose"
-        echo "profile: $profile"
-        echo "timeout: $MVN_TIMEOUT"
-        echo
-
-        echo "----- tearing down any previous DB containers -----"
-        docker compose -f "$compose" down -v --remove-orphans || true
-
-        echo "----- starting $flavor container -----"
-        docker compose -f "$compose" up -d
-
-        echo "----- waiting ${DB_READY_WAIT}s for DB to become ready -----"
-        sleep "$DB_READY_WAIT"
-
-        if [[ "$WIPE_M2" == "1" ]]; then
-            echo "----- wiping ~/.m2/repository -----"
-            rm -rf "$HOME/.m2/repository"
-        fi
-
-        mvn_cmd=(mvn clean install "-P$profile" -fae)
-        [[ -n "$extra" ]] && mvn_cmd+=($extra)
-
-        echo "----- running: ${mvn_cmd[*]} (timeout $MVN_TIMEOUT) -----"
-        (cd "$PROJECT_ROOT" && timeout "$MVN_TIMEOUT" "${mvn_cmd[@]}")
-        rc=$?
-
-        if [[ $rc -eq 0 ]]; then
-            echo
-            echo "===== BUILD OK for $flavor ====="
-        else
-            echo
-            echo "===== BUILD FAILED for $flavor with exit code $rc ====="
-        fi
-
-        echo "----- collecting surefire/failsafe reports into $collect -----"
-        count=0
-        while IFS= read -r -d '' report; do
-            rel="${report#$PROJECT_ROOT/}"
-            dest="$collect/$rel"
-            mkdir -p "$(dirname "$dest")"
-            cp "$report" "$dest"
-            count=$((count + 1))
-        done < <(find "$PROJECT_ROOT" \
-                    -type d \( -name surefire-reports -o -name failsafe-reports \) \
-                    -prune -print0 \
-                | while IFS= read -r -d '' dir; do
-                    find "$dir" -type f -print0
-                  done)
-        echo "  collected $count files"
-
-        echo "----- tearing down $flavor container -----"
-        docker compose -f "$compose" down -v --remove-orphans || true
-
-        # Some xmlstore tests stamp the JDBC URL into a literal directory name
-        # (e.g. "openjpa-xmlstore/jdbc:mariadb:/") instead of using target/.
-        # Sweep those up so they don't show up as untracked between runs.
-        echo "----- cleaning stray jdbc: artifact dirs -----"
-        find "$PROJECT_ROOT" -maxdepth 3 -type d -name 'jdbc:*' -print -exec rm -rf {} + 2>/dev/null || true
-
-        echo "end: $(date -Iseconds)"
-        exit $rc
-    ) >"$log" 2>&1
-    return $?
+usage() {
+	echo "usage ${0} [-s|--start-with DB_ALIAS] [-r|--report-dir DIR] [-m|--matrix user_matrix] [-h|--help]"
+	echo -e "\t-s|--start-with DB_ALIAS -- option to skip some databases in the begininning (continue from) [def: '${START_WITH}']"
+	echo -e "\t-r|--report-dir DIR -- the folder with report and logs (will be autocreated) [def: '${REPORT_DIR}']"
+	echo -e "\t-m|--matrix user_matrix -- test matrix in the format 'db1:ver1,ver2;db2;db3:ver3;...' [def db list: ${MATRIX[@]}]"
+	echo -e "\ti.e DB delimiter is ';', in case version(s) should be specified it MUST follow after ':' and have ',' as delimiter"
+	echo -e "\texample: '-m=oracle' or '--matrix=oracle;mysql:8.0' or '--matrix postgresql:16,18;mysql:9.4.0'"
+	echo -e "\t-h|--help -- this help message"
 }
 
-FLAVORS=("$@")
-if [[ ${#FLAVORS[@]} -eq 0 ]]; then
-    FLAVORS=(mariadb mysql pg17 pg18)
+user_matrix=''
+
+while [[ $# -gt 0 ]]; do
+	case ${1} in
+		-s=*|--start-with=*)
+			START_WITH="${1#*=}"
+			shift
+			;;
+		-s|--start-with)
+			START_WITH="${2}"
+			shift 2
+			;;
+		-r=*|--report-dir=*)
+			REPORT_DIR="${1#*=}"
+			shift
+			;;
+		-r|--report-dir)
+			REPORT_DIR="${2}"
+			shift 2
+			;;
+		-m=*|--matrix=*)
+			user_matrix="${1#*=}"
+			shift
+			;;
+		-m|--matrix)
+			user_matrix="${2}"
+			shift 2
+			;;
+		-h|--help)
+			usage
+			exit 0
+			shift
+			;;
+		*)
+			echo "Unknown option ${1}"
+			usage
+			exit 1
+			;;
+	esac
+done
+
+if [[ -n "${user_matrix}" ]]; then
+	MATRIX=()
+	IFS=';' read -r -a dbvers <<< "${user_matrix}"
+	for dbver in ${dbvers[@]}; do
+		if [[ -z "${dbver}" ]]; then
+			continue
+		fi
+		IFS=':' read -r -a db_vers <<< "${dbver}"
+		if [[ ${#db_vers[@]} == 1 ]]; then
+			db=${db_vers[0]}
+			vers=''
+		else
+			db=${db_vers[0]}
+			vers=${db_vers[1]}
+		fi
+		MATRIX+=(${db})
+		if [[ -n "${vers}" ]]; then
+			VERSIONS+=([${db}]=$(echo -n "${vers}" | sed -r 's/[,]/ /g'))
+		fi
+	done
 fi
 
-overall_rc=0
-for flavor in "${FLAVORS[@]}"; do
-    run_flavor "$flavor"
-    rc=$?
-    if [[ $rc -ne 0 ]]; then
-        overall_rc=$rc
-    fi
+REPORT_DIR="${SCRIPT_ROOT}/${REPORT_DIR}"
+REPORT_FILE="${REPORT_DIR}/report.txt"
+if [[ -d "${REPORT_DIR}" ]]; then
+	rm -rf "${REPORT_DIR}"/*
+else
+	mkdir -p "${REPORT_DIR}"
+fi
+echo "" > "${REPORT_FILE}"
+
+do_test() {
+	local profile=${1}
+	local log=${2}
+	local -n params=${3}
+	local status=Failed
+	rm -rf openjpa-xmlstore/jdbc:*
+
+	if [[ "${profile}" == *docker ]]; then
+		set -x
+		mvn -N -P${profile} "${params[@]}" docker:start
+		local retCode=$?
+		set +x
+		if [[ ${retCode} != 0 ]]; then
+			echo "Failed -- ${log} (can't start docker)" |tee -a ${REPORT_FILE}
+			return 1
+		fi
+	fi
+	set -x
+	mvn clean install -P${profile} "${params[@]}" -Drat.skip &> ${REPORT_DIR}/build_${log}.log
+	local retCode=$?
+	set +x
+	if [[ ${retCode} == 0 ]]; then
+		status=Passed
+	fi
+	if [[ "${profile}" == *docker ]]; then
+		set -x
+		mvn -N -P${profile} "${params[@]}" docker:stop
+		set +x
+	fi
+	echo "${status} -- ${log}" |tee -a ${REPORT_FILE}
+	echo "         ----------------- "
+}
+
+test_profile() {
+	local mode=${1}
+	local profile=${2}
+	if [[ -n "${START_WITH}" ]]; then
+		if [[ "${profile}" == "${START_WITH}" ]]; then
+			START_WITH=""
+		else
+			echo "Skipping ${profile} ..."
+			continue
+		fi
+	fi
+	prof="test-${profile}"
+	if [[ "${mode}" == "docker" ]]; then
+		prof="${prof}-docker"
+	fi
+	local versions="${VERSIONS[${profile}]}"
+	if [[ -n "${versions}" ]]; then
+		for ver in ${versions}; do
+			par=(-D${profile}.server.version=${ver})
+			do_test ${prof} "${profile}_${ver}" par
+		done
+	else
+		par=()
+		do_test ${prof} ${profile} par
+	fi
+}
+
+cd "${PROJECT_ROOT}"
+
+if [[ "${MATRIX[@]}" =~ 'oracle' ]]; then
+	mkdir -p "../jdbc_oradata"
+	chmod a+rwx "../jdbc_oradata"
+
+	echo -e "\033[0;31mIMPORTANT!\033[0m It will be impossible to clean-up \033[0;31m'../jdbc_oradata'\033[0m please perform manual deletion with sudo";
+fi
+
+for profile in ${MATRIX[@]}; do
+	test_profile "${FULL_DB_LIST[${profile}]}" "${profile}"
 done
-exit "$overall_rc"

@@ -1143,6 +1143,7 @@
                 <dbcp.maxIdle>5</dbcp.maxIdle>
                 <dbcp.minIdle>1</dbcp.minIdle>
 
+                <herddb.server.version>latest</herddb.server.version>
             </properties>
 
             <build>
@@ -1153,7 +1154,7 @@
                         <configuration>
                             <images>
                                 <image>
-                                    <name>herddb/herddb:latest</name>
+                                    <name>herddb/herddb:${herddb.server.version}</name>
                                     <run>
                                         <ports>
                                             <port>7000:7000</port>
