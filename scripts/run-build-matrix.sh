@@ -17,17 +17,22 @@ declare -A VERSIONS=(
 	[mysql]='8.0 8.4.8 9.4.0'
 	[postgresql]='11 16 18'
 )
+COLOR_RED="\033[1;31m"
+COLOR_GREEN="\033[1;32m"
+COLOR_RESET="\033[0m"
 MATRIX=${!FULL_DB_LIST[@]}
 REPORT_DIR=.report
 START_WITH=''
+OFFLINE=
 
 usage() {
-	echo "usage ${0} [-s|--start-with DB_ALIAS] [-r|--report-dir DIR] [-m|--matrix user_matrix] [-h|--help]"
+	echo "usage ${0} [-s|--start-with DB_ALIAS] [-r|--report-dir DIR] [-m|--matrix user_matrix] [-o|--offline] [-h|--help]"
 	echo -e "\t-s|--start-with DB_ALIAS -- option to skip some databases in the begininning (continue from) [def: '${START_WITH}']"
 	echo -e "\t-r|--report-dir DIR -- the folder with report and logs (will be autocreated) [def: '${REPORT_DIR}']"
 	echo -e "\t-m|--matrix user_matrix -- test matrix in the format 'db1:ver1,ver2;db2;db3:ver3;...' [def db list: ${MATRIX[@]}]"
 	echo -e "\ti.e DB delimiter is ';', in case version(s) should be specified it MUST follow after ':' and have ',' as delimiter"
 	echo -e "\texample: '-m=oracle' or '--matrix=oracle;mysql:8.0' or '--matrix postgresql:16,18;mysql:9.4.0'"
+	echo -e "\t-o|--offline -- will run tests in offline mode"
 	echo -e "\t-h|--help -- this help message"
 }
 
@@ -58,6 +63,10 @@ while [[ $# -gt 0 ]]; do
 		-m|--matrix)
 			user_matrix="${2}"
 			shift 2
+			;;
+		-o|--offline)
+			OFFLINE=-o
+			shift
 			;;
 		-h|--help)
 			usage
@@ -107,12 +116,12 @@ do_test() {
 	local profile=${1}
 	local log=${2}
 	local -n params=${3}
-	local status=Failed
+	local status="${COLOR_RED}Failed${COLOR_RESET}"
 	rm -rf openjpa-xmlstore/jdbc:*
 
 	if [[ "${profile}" == *docker ]]; then
 		set -x
-		mvn -N -P${profile} "${params[@]}" docker:start
+		mvn -N -P${profile} "${params[@]}" docker:start -Ddocker.showLogs
 		local retCode=$?
 		set +x
 		if [[ ${retCode} != 0 ]]; then
@@ -121,18 +130,19 @@ do_test() {
 		fi
 	fi
 	set -x
-	mvn clean install -P${profile} "${params[@]}" -Drat.skip &> ${REPORT_DIR}/build_${log}.log
+	mvn clean install -P${profile} "${params[@]}" -Drat.skip ${OFFLINE} &> ${REPORT_DIR}/build_${log}.log
 	local retCode=$?
 	set +x
 	if [[ ${retCode} == 0 ]]; then
-		status=Passed
+		status="${COLOR_GREEN}Passed${COLOR_RESET}"
 	fi
 	if [[ "${profile}" == *docker ]]; then
 		set -x
-		mvn -N -P${profile} "${params[@]}" docker:stop
+		mvn -N -P${profile} "${params[@]}" docker:stop -Ddocker.showLogs
 		set +x
 	fi
-	echo "${status} -- ${log}" |tee -a ${REPORT_FILE}
+	echo -e "${status} -- ${log}"
+	echo "${status} -- ${log}" >> ${REPORT_FILE}
 	echo "         ----------------- "
 }
 
@@ -169,7 +179,7 @@ if [[ "${MATRIX[@]}" =~ 'oracle' ]]; then
 	mkdir -p "../jdbc_oradata"
 	chmod a+rwx "../jdbc_oradata"
 
-	echo -e "\033[0;31mIMPORTANT!\033[0m It will be impossible to clean-up \033[0;31m'../jdbc_oradata'\033[0m please perform manual deletion with sudo";
+	echo -e "${COLOR_RED}IMPORTANT!${COLOR_RESET} It will be impossible to clean-up ${COLOR_RED}'../../jdbc_oradata'${COLOR_RESET} please perform manual deletion with sudo";
 fi
 
 for profile in ${MATRIX[@]}; do

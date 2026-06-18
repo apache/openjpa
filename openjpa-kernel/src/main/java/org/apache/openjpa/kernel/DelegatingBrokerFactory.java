@@ -41,7 +41,7 @@ import org.apache.openjpa.util.RuntimeExceptionTranslator;
 public class DelegatingBrokerFactory
     implements BrokerFactory {
 
-    
+
     private static final long serialVersionUID = 1L;
     private final BrokerFactory _factory;
     private final DelegatingBrokerFactory _del;
@@ -241,8 +241,8 @@ public class DelegatingBrokerFactory
             _factory.unlock();
         } catch (RuntimeException re) {
             throw translate(re);
-		}
-	}
+        }
+    }
 
     @Override
     public void assertOpen() {
@@ -261,41 +261,40 @@ public class DelegatingBrokerFactory
             throw translate(re);
         }
     }
-    
-	@Override
-	public void createPersistenceStructure(boolean createSchemas) {
-		try {
-			_factory.createPersistenceStructure(createSchemas);
-		} catch (RuntimeException re) {
-			throw translate(re);
-		}
-	}
 
-	@Override
-	public void dropPersistenceStrucuture(boolean dropSchemas) {
-		try {
-			_factory.dropPersistenceStrucuture(dropSchemas);
-		} catch (RuntimeException re) {
-			throw translate(re);
-		}
-	}
+    @Override
+    public void createPersistenceStructure(boolean createSchemas) {
+        try {
+            _factory.createPersistenceStructure(createSchemas);
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
 
-	@Override
-	public void validatePersistenceStruture() throws Exception {
-		try {
-			_factory.validatePersistenceStruture();
-		} catch (MetaDataException mde) {
-			throw new IllegalStateException(mde.getLocalizedMessage(), (OpenJPAException) mde);
-		}
-	}
+    @Override
+    public void dropPersistenceStrucuture(boolean dropSchemas) {
+        try {
+            _factory.dropPersistenceStrucuture(dropSchemas);
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
 
-	@Override
-	public void truncateData() {
-		try {
-			_factory.truncateData();
-		} catch (RuntimeException re) {
-			throw translate(re);
-		}
-	}
-	
+    @Override
+    public void validatePersistenceStruture() throws Exception {
+        try {
+            _factory.validatePersistenceStruture();
+        } catch (MetaDataException mde) {
+            throw new IllegalStateException(mde.getLocalizedMessage(), (OpenJPAException) mde);
+        }
+    }
+
+    @Override
+    public void truncateData() {
+        try {
+            _factory.truncateData();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
 }

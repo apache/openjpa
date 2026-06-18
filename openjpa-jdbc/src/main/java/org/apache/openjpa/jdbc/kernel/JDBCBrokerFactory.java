@@ -166,44 +166,44 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
             unlock();
         }
     }
-    
+
     @Override
     public void createPersistenceStructure(boolean createSchemas) {
-    	JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
-    	Broker broker = super.newBrokerImpl(conf.getConnectionUserName(), conf.getConnectionPassword());
-    	String baseAction = createSchemas ? "createDB, add": MappingTool.ACTION_ADD;
-    	synchronizeMappings(broker.getClassLoader(), conf, String.format("buildSchema(ForeignKeys=true,schemaAction='%s')", baseAction));
+        JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
+        Broker broker = super.newBrokerImpl(conf.getConnectionUserName(), conf.getConnectionPassword());
+        String baseAction = createSchemas ? "createDB, add": MappingTool.ACTION_ADD;
+        synchronizeMappings(broker.getClassLoader(), conf, String.format("buildSchema(ForeignKeys=true,schemaAction='%s')", baseAction));
     }
-    
+
     @Override
     public void dropPersistenceStrucuture(boolean dropSchemas) {
-    	JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
-    	Broker broker = super.newBrokerImpl(conf.getConnectionUserName(), conf.getConnectionPassword());
-    	String baseAction = dropSchemas ? "drop, dropDB": MappingTool.ACTION_DROP;
-    	synchronizeMappings(broker.getClassLoader(), conf, String.format("buildSchema(ForeignKeys=true,schemaAction='%s')", baseAction));
+        JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
+        Broker broker = super.newBrokerImpl(conf.getConnectionUserName(), conf.getConnectionPassword());
+        String baseAction = dropSchemas ? "drop, dropDB": MappingTool.ACTION_DROP;
+        synchronizeMappings(broker.getClassLoader(), conf, String.format("buildSchema(ForeignKeys=true,schemaAction='%s')", baseAction));
     }
-    
+
     @Override
     public void validatePersistenceStruture() throws Exception {
-    	JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
-    	Broker broker = super.newBrokerImpl(conf.getConnectionUserName(), conf.getConnectionPassword());
-    	synchronizeMappings(broker.getClassLoader(), conf, "validate(ForeignKeys=true)");
+        JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
+        Broker broker = super.newBrokerImpl(conf.getConnectionUserName(), conf.getConnectionPassword());
+        synchronizeMappings(broker.getClassLoader(), conf, "validate(ForeignKeys=true)");
     }
-    
+
     @Override
     public void truncateData() {
-    	JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
-    	Broker broker = super.newBrokerImpl(conf.getConnectionUserName(), conf.getConnectionPassword());
-    	String baseAction = "refresh,deleteTableContents";
-    	synchronizeMappings(broker.getClassLoader(), conf, String.format("buildSchema(ForeignKeys=true,schemaAction='%s')", baseAction));
+        JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
+        Broker broker = super.newBrokerImpl(conf.getConnectionUserName(), conf.getConnectionPassword());
+        String baseAction = "refresh,deleteTableContents";
+        synchronizeMappings(broker.getClassLoader(), conf, String.format("buildSchema(ForeignKeys=true,schemaAction='%s')", baseAction));
     }
-    
+
     protected boolean synchronizeMappings(ClassLoader loader, JDBCConfiguration conf) {
-    	mapSchemaGenerationToSynchronizeMappings(conf);
-    	String action = conf.getSynchronizeMappings();
-    	return synchronizeMappings(loader, conf, action);
+        mapSchemaGenerationToSynchronizeMappings(conf);
+        String action = conf.getSynchronizeMappings();
+        return synchronizeMappings(loader, conf, action);
     }
-    	
+
     /**
      * Synchronize the mappings of the classes listed in the configuration.
      */

@@ -56,6 +56,7 @@ import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.ForeignKey.FKMapKey;
 import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
+import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.lib.jdbc.DelegatingDatabaseMetaData;
@@ -195,7 +196,7 @@ public class OracleDictionary
         supportsSelectEndIndex = true;
 
         systemSchemaSet.addAll(Arrays.asList(new String[]{
-            "CTXSYS", "MDSYS", "SYS", "SYSTEM", "WKSYS", "WMSYS", "XDB",
+            "AUDSYS", "CTXSYS", "MDSYS", "SYS", "SYSTEM", "WKSYS", "WMSYS", "XDB",
         }));
 
         supportsXMLColumn = true;
@@ -274,6 +275,7 @@ public class OracleDictionary
         oracleClob_isEmptyLob_Method = getMethodByReflection("oracle.sql.CLOB", "isEmptyLob");
 
         indexPhysicalForeignKeys = true; // Oracle does not automatically create an index for a foreign key so we will
+        supportsUnsizedCharOnCast = false;
     }
 
     private Method getMethodByReflection(String className, String methodName, Class<?>... paramTypes) {
@@ -1236,24 +1238,29 @@ public class OracleDictionary
     }
 
     @Override
-    public boolean isSystemSequence(String name, String schema,
-        boolean targetSchema) {
-        return isSystemSequence(DBIdentifier.newSequence(name),
-            DBIdentifier.newSchema(schema), targetSchema);
+    public boolean isDroppable(Sequence seq) {
+        return !isSystemSequence(seq.getIdentifier(), seq.getSchema().getIdentifier(), false);
     }
 
     @Override
-    public boolean isSystemSequence(DBIdentifier name, DBIdentifier schema,
-        boolean targetSchema) {
-        if (super.isSystemSequence(name, schema, targetSchema))
-            return true;
+    public boolean isSystemSequence(String name, String schema, boolean targetSchema) {
+        return isSystemSequence(DBIdentifier.newSequence(name), DBIdentifier.newSchema(schema), targetSchema);
+    }
 
+    @Override
+    public boolean isSystemSequence(DBIdentifier name, DBIdentifier schema, boolean targetSchema) {
+        if (super.isSystemSequence(name, schema, targetSchema)) {
+            return true;
+        }
+
+        if (DBIdentifier.isNull(name)) {
+            return false;
+        }
         // filter out generated sequences used for auto-assign
-        String strName = DBIdentifier.isNull(name) ? "" : name.getName();
-        return (autoAssignSequenceName != null
-            && strName.equalsIgnoreCase(autoAssignSequenceName))
-            || (autoAssignSequenceName == null
-            && strName.toUpperCase(Locale.ENGLISH).startsWith("ST_"));
+        // to avoid ORA-32794: cannot drop a system-generated sequence
+        String strName = name.getName().toUpperCase(Locale.ENGLISH).replace("\"", "");
+        return (autoAssignSequenceName != null && strName.equalsIgnoreCase(autoAssignSequenceName))
+                || (autoAssignSequenceName == null && (strName.startsWith("ST_") || strName.startsWith("ISEQ$$_")));
     }
 
     @Override
@@ -1414,7 +1421,7 @@ public class OracleDictionary
         if (EMPTY_BLOB != null)
             return EMPTY_BLOB;
 
-	if (oracleBlob_empty_lob_Method == null)
+        if (oracleBlob_empty_lob_Method == null)
             return null;
 
         try {

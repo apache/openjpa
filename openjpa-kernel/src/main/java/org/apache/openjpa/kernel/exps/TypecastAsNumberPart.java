@@ -24,7 +24,6 @@ package org.apache.openjpa.kernel.exps;
  * @since 4.2.0
  */
 public enum TypecastAsNumberPart {
-
     /**
      * Integer
      */
@@ -41,5 +40,4 @@ public enum TypecastAsNumberPart {
      * DOUBLE
      */
     DOUBLE;
-    
 }

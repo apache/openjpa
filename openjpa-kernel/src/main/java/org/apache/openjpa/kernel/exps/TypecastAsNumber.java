@@ -18,27 +18,13 @@
  */
 package org.apache.openjpa.kernel.exps;
 
-import java.sql.Date;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.temporal.ChronoField;
-import java.time.temporal.Temporal;
-
 import org.apache.openjpa.kernel.StoreContext;
 
 /**
  * Extract the part value of a temporal type
  *
  */
-class TypecastAsNumber
-    extends Val {
-
-    
+class TypecastAsNumber extends Val {
     private static final long serialVersionUID = 1L;
     private final Class<? extends Number> _targetType;
     private final Val _val;
@@ -53,17 +39,17 @@ class TypecastAsNumber
 
     @Override
     public Class getType() {
-    	if (_targetType == Integer.class) {
-    		return int.class;
-    	} else if (_targetType == Long.class) {
-    		return long.class;
-    	} else if (_targetType == Float.class) {
-    		return float.class;
-    	} else if (_targetType == Double.class) {
-    		return double.class;
-    	} else {
-    		return _targetType;
-    	}
+        if (_targetType == Integer.class) {
+            return int.class;
+        } else if (_targetType == Long.class) {
+            return long.class;
+        } else if (_targetType == Float.class) {
+            return float.class;
+        } else if (_targetType == Double.class) {
+            return double.class;
+        } else {
+            return _targetType;
+        }
     }
 
     @Override
@@ -77,29 +63,29 @@ class TypecastAsNumber
         Object r = _val.eval(candidate, orig, ctx, params);
         Class<?> clazz = r.getClass();
         if (_targetType == Integer.class) {
-        	if (r instanceof String s) {
-        		return Integer.valueOf(s);
-        	} else if (clazz.isAssignableFrom(Number.class)) {
-        		return ((Number) r).intValue();
-        	}
+            if (r instanceof String s) {
+                return Integer.valueOf(s);
+            } else if (clazz.isAssignableFrom(Number.class)) {
+                return ((Number) r).intValue();
+            }
         } else if (_targetType == Long.class) {
-        	if (r instanceof String s) {
-        		return Long.valueOf(s);
-        	} else if (clazz.isAssignableFrom(Number.class)) {
-        		return ((Number) r).longValue();
-        	}
+            if (r instanceof String s) {
+                return Long.valueOf(s);
+            } else if (clazz.isAssignableFrom(Number.class)) {
+                return ((Number) r).longValue();
+            }
         } else if (_targetType == Float.class) {
-        	if (r instanceof String s) {
-        		return Float.valueOf(s);
-        	} else if (clazz.isAssignableFrom(Number.class)) {
-        		return ((Number) r).floatValue();
-        	}
+            if (r instanceof String s) {
+                return Float.valueOf(s);
+            } else if (clazz.isAssignableFrom(Number.class)) {
+                return ((Number) r).floatValue();
+            }
         } else if (_targetType == Double.class) {
-        	if (r instanceof String s) {
-        		return Double.valueOf(s);
-        	} else if (clazz.isAssignableFrom(Number.class)) {
-        		return ((Number) r).doubleValue();
-        	}
+            if (r instanceof String s) {
+                return Double.valueOf(s);
+            } else if (clazz.isAssignableFrom(Number.class)) {
+                return ((Number) r).doubleValue();
+            }
         }
         throw new IllegalArgumentException();
     }
@@ -110,6 +96,4 @@ class TypecastAsNumber
         _val.acceptVisit(visitor);
         visitor.exit(this);
     }
-
 }
-

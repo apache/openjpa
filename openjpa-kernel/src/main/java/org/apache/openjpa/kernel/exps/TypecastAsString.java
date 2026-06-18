@@ -34,10 +34,7 @@ import org.apache.openjpa.kernel.StoreContext;
  * Casts a given value as string
  *
  */
-class TypecastAsString
-    extends Val {
-
-    
+class TypecastAsString extends Val {
     private static final long serialVersionUID = 1L;
     private final Val _val;
 
@@ -50,7 +47,7 @@ class TypecastAsString
 
     @Override
     public Class getType() {
-    	return String.class;
+        return String.class;
     }
 
     @Override
@@ -78,9 +75,9 @@ class TypecastAsString
         } else if (LocalDate.class.isAssignableFrom(clazz)) {
             return ((LocalDate) r).format(DateTimeFormatter.ISO_LOCAL_DATE);
         } else if (Number.class.isAssignableFrom(clazz)) {
-        	return String.valueOf((Number) r);
+            return String.valueOf((Number) r);
         } else if (Boolean.class.isAssignableFrom(clazz)) {
-        	return String.valueOf((Boolean) r);
+            return String.valueOf((Boolean) r);
         }
         throw new IllegalArgumentException();
     }
@@ -91,6 +88,4 @@ class TypecastAsString
         _val.acceptVisit(visitor);
         visitor.exit(this);
     }
-
 }
-

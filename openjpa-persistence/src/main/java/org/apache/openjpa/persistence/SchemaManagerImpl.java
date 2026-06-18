@@ -32,37 +32,35 @@ import jakarta.persistence.SchemaValidationException;
  * @since 4.2.0
  */
 public class SchemaManagerImpl implements SchemaManager {
-	
-	private BrokerFactory _factory;
-	
-	public SchemaManagerImpl(BrokerFactory factory) {
-		_factory = factory;
-	}
+    private BrokerFactory _factory;
 
-	@Override
-	public void create(boolean createSchemas) {
-		_factory.createPersistenceStructure(createSchemas);
-	}
+    public SchemaManagerImpl(BrokerFactory factory) {
+        _factory = factory;
+    }
 
-	@Override
-	public void drop(boolean dropSchemas) {
-		_factory.dropPersistenceStrucuture(dropSchemas);
-	}
+    @Override
+    public void create(boolean createSchemas) {
+        _factory.createPersistenceStructure(createSchemas);
+    }
 
-	@Override
-	public void validate() throws SchemaValidationException {
-		try {
-			_factory.validatePersistenceStruture();
-		} catch (Exception ex) {
-			throw new SchemaValidationException(
-					String.format("Schema could not be validated: %s", ex.getLocalizedMessage()), 
-					(Exception) ex);
-		}
-	}
+    @Override
+    public void drop(boolean dropSchemas) {
+        _factory.dropPersistenceStrucuture(dropSchemas);
+    }
 
-	@Override
-	public void truncate() {
-		_factory.truncateData();;
-	}
+    @Override
+    public void validate() throws SchemaValidationException {
+        try {
+            _factory.validatePersistenceStruture();
+        } catch (Exception ex) {
+            throw new SchemaValidationException(
+                    String.format("Schema could not be validated: %s", ex.getLocalizedMessage()),
+                    (Exception) ex);
+        }
+    }
 
+    @Override
+    public void truncate() {
+        _factory.truncateData();;
+    }
 }

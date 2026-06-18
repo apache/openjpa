@@ -28,15 +28,14 @@ import jakarta.persistence.Id;
 
 @Entity
 public class UUIDEntity {
-	
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	@Column(name = "id_")
 	private UUID id;
-	
+
 	@Column(name = "value_")
 	private String value;
-	
+
 	public UUIDEntity() {
 	}
 
@@ -55,5 +54,4 @@ public class UUIDEntity {
 	public void setValue(String value) {
 		this.value = value;
 	}
-	
 }

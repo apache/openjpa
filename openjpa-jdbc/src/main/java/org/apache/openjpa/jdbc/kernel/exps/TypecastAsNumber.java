@@ -27,7 +27,6 @@ import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Filters;
-import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 import org.apache.openjpa.meta.ClassMetaData;
 
@@ -36,9 +35,7 @@ import org.apache.openjpa.meta.ClassMetaData;
  *
  * @since 4.2.0
  */
-public class TypecastAsNumber
-    extends AbstractVal {
-
+public class TypecastAsNumber extends AbstractVal {
     private static final long serialVersionUID = 1L;
     private final Val _val;
     private final Class<? extends Number> _targetType;
@@ -68,17 +65,17 @@ public class TypecastAsNumber
 
     @Override
     public Class getType() {
-    	if (_targetType == Integer.class) {
-    		return int.class;
-    	} else if (_targetType == Long.class) {
-    		return long.class;
-    	} else if (_targetType == Float.class) {
-    		return float.class;
-    	} else if (_targetType == Double.class) {
-    		return double.class;
-    	} else {
-    		return _targetType;
-    	}
+        if (_targetType == Integer.class) {
+            return int.class;
+        } else if (_targetType == Long.class) {
+            return long.class;
+        } else if (_targetType == Float.class) {
+            return float.class;
+        } else if (_targetType == Double.class) {
+            return double.class;
+        } else {
+            return _targetType;
+        }
     }
 
     @Override
@@ -94,9 +91,7 @@ public class TypecastAsNumber
     /**
      * Expression state.
      */
-    private static class ExtractTypecastToNumberExpState
-        extends ExpState {
-
+    private static class ExtractTypecastToNumberExpState extends ExpState {
         public final ExpState valueState;
 
         public ExtractTypecastToNumberExpState(Joins joins, ExpState valueState) {
@@ -106,8 +101,7 @@ public class TypecastAsNumber
     }
 
     @Override
-    public void select(Select sel, ExpContext ctx, ExpState state,
-        boolean pks) {
+    public void select(Select sel, ExpContext ctx, ExpState state, boolean pks) {
         sel.select(newSQLBuffer(sel, ctx, state), this);
     }
 
@@ -136,15 +130,12 @@ public class TypecastAsNumber
     }
 
     @Override
-    public Object load(ExpContext ctx, ExpState state, Result res)
-        throws SQLException {
-        return Filters.convert(res.getObject(this,
-            JavaSQLTypes.JDBC_DEFAULT, null), getType());
+    public Object load(ExpContext ctx, ExpState state, Result res) throws SQLException {
+        return Filters.convert(res.getObject(this, JavaSQLTypes.JDBC_DEFAULT, null), getType());
     }
 
     @Override
-    public void calculateValue(Select sel, ExpContext ctx, ExpState state,
-        Val other, ExpState otherState) {
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state, Val other, ExpState otherState) {
         ExtractTypecastToNumberExpState etnstate = (ExtractTypecastToNumberExpState) state;
         _val.calculateValue(sel, ctx, etnstate.valueState, null, null);
     }
@@ -155,8 +146,7 @@ public class TypecastAsNumber
     }
 
     @Override
-    public void appendTo(Select sel, ExpContext ctx, ExpState state,
-        SQLBuffer sql, int index) {
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, SQLBuffer sql, int index) {
         DBDictionary dict = ctx.store.getDBDictionary();
         String func = dict.castFunction;
 
@@ -185,17 +175,23 @@ public class TypecastAsNumber
     public int getId() {
         return Val.EXTRACTDTF_VAL;
     }
-    
+
+    private static String sanitize(String type) {
+        final int idx = type.indexOf('{');
+        return idx < 0 ? type : type.substring(0, idx);
+    }
+
     private String getDbNumberTargetTypeName(DBDictionary dict) {
-    	if (getType() == int.class) {
-    		return dict.integerCastTypeName;
-    	} else if (getType() == long.class) {
-    		return dict.decimalTypeName;
-    	} else if (getType() == float.class) {
-    		return dict.floatTypeName;
-    	} else {
-    		return dict.doubleTypeName;
-    	}
+        String type;
+        if (getType() == int.class) {
+            type = dict.integerCastTypeName;
+        } else if (getType() == long.class) {
+            type = dict.decimalTypeName;
+        } else if (getType() == float.class) {
+            type = dict.floatTypeName;
+        } else {
+            type = dict.doubleTypeName;
+        }
+        return sanitize(type);
     }
 }
-

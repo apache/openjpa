@@ -35,9 +35,7 @@ import org.apache.openjpa.meta.ClassMetaData;
  *
  * @since 4.2.0
  */
-public class TypecastAsString
-    extends AbstractVal {
-
+public class TypecastAsString extends AbstractVal {
     private static final long serialVersionUID = 1L;
     private final Val _val;
     private ClassMetaData _meta = null;
@@ -81,9 +79,7 @@ public class TypecastAsString
     /**
      * Expression state.
      */
-    private static class TypecastAsStringExpState
-        extends ExpState {
-
+    private static class TypecastAsStringExpState extends ExpState {
         public final ExpState valueState;
 
         public TypecastAsStringExpState(Joins joins, ExpState valueState) {
@@ -93,14 +89,13 @@ public class TypecastAsString
     }
 
     @Override
-    public void select(Select sel, ExpContext ctx, ExpState state,
-        boolean pks) {
+    public void select(Select sel, ExpContext ctx, ExpState state, boolean pks) {
         sel.select(newSQLBuffer(sel, ctx, state), this);
     }
 
     @Override
     public void selectColumns(Select sel, ExpContext ctx, ExpState state, boolean pks) {
-    	TypecastAsStringExpState casstate = (TypecastAsStringExpState) state;
+        TypecastAsStringExpState casstate = (TypecastAsStringExpState) state;
         _val.selectColumns(sel, ctx, casstate.valueState, true);
     }
 
@@ -110,8 +105,7 @@ public class TypecastAsString
     }
 
     @Override
-    public void orderBy(Select sel, ExpContext ctx, ExpState state,
-        boolean asc) {
+    public void orderBy(Select sel, ExpContext ctx, ExpState state, boolean asc) {
         sel.orderBy(newSQLBuffer(sel, ctx, state), asc, false, getSelectAs());
     }
 
@@ -123,16 +117,13 @@ public class TypecastAsString
     }
 
     @Override
-    public Object load(ExpContext ctx, ExpState state, Result res)
-        throws SQLException {
-        return Filters.convert(res.getObject(this,
-            JavaSQLTypes.JDBC_DEFAULT, null), getType());
+    public Object load(ExpContext ctx, ExpState state, Result res) throws SQLException {
+        return Filters.convert(res.getObject(this, JavaSQLTypes.JDBC_DEFAULT, null), getType());
     }
 
     @Override
-    public void calculateValue(Select sel, ExpContext ctx, ExpState state,
-        Val other, ExpState otherState) {
-    	TypecastAsStringExpState casstate = (TypecastAsStringExpState) state;
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state, Val other, ExpState otherState) {
+        TypecastAsStringExpState casstate = (TypecastAsStringExpState) state;
         _val.calculateValue(sel, ctx, casstate.valueState, null, null);
     }
 
@@ -158,9 +149,9 @@ public class TypecastAsString
         _val.appendTo(sel, ctx, casstate.valueState, sql, 0);
         sql.append(part2);
         if (dict.supportsUnsizedCharOnCast) {
-        	sql.append(dict.varcharTypeName);
+            sql.append(dict.varcharTypeName);
         } else {
-        	sql.append(dict.charTypeName + "(" + dict.characterColumnSize + ")");
+            sql.append(dict.charTypeName + "(" + dict.characterColumnSize + ")");
         }
         sql.append(part3);
     }
@@ -177,4 +168,3 @@ public class TypecastAsString
         return Val.EXTRACTDTF_VAL;
     }
 }
-

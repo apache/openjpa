@@ -1102,11 +1102,9 @@ public class SchemaTool {
                         if (dbTable == null || fk == null)
                             continue;
 
-                        if (dropForeignKey(foreignKey))
-                            if (dbTable != null)
-                                dbTable.removeForeignKey(fk);
-                            else
-                                _log.warn(_loc.get("drop-fk", foreignKey, tab));
+                        if (dropForeignKey(foreignKey) && dbTable != null) {
+                            dbTable.removeForeignKey(fk);
+                        }
                     }
                 }
             }
@@ -1177,9 +1175,9 @@ public class SchemaTool {
      * Return true if the sequence is droppable.
      */
     protected boolean isDroppable(Sequence seq) {
-        return _openjpaTables
-            || (!DBIdentifier.toUpper(seq.getIdentifier()).getName().startsWith("OPENJPA_")
-            && !DBIdentifier.toUpper(seq.getIdentifier()).getName().startsWith("JDO_")); // legacy
+        return _openjpaTables || (!DBIdentifier.toUpper(seq.getIdentifier()).getName().startsWith("OPENJPA_")
+                && _dict.isDroppable(seq)
+                && !DBIdentifier.toUpper(seq.getIdentifier()).getName().startsWith("JDO_")); // legacy
     }
 
     /**

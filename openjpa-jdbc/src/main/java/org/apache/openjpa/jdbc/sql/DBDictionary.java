@@ -4472,6 +4472,15 @@ public class DBDictionary
     }
 
     /**
+     * Subclasses can override this method to implement custom logic
+     * @param seq - Sequence to check
+     * @return true if Sequence can be deleted, false otherwise
+     */
+    public boolean isDroppable(Sequence seq) {
+        return true;
+    }
+
+    /**
      * This method is used to filter system sequences from database metadata.
      * Return true if the given sequence represents a system sequence that
      * should not appear in the schema definition. Returns true if system
