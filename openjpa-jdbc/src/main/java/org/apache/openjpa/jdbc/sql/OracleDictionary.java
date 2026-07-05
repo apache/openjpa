@@ -252,6 +252,7 @@ public class OracleDictionary
 
         substringFunctionName = "SUBSTR";
         leftFunctionName = substringFunctionName;
+        rightFunctionName = substringFunctionName;
         super.setBatchLimit(defaultBatchLimit);
         selectWordSet.add("WITH");
         reportsSuccessNoInfoOnBatchUpdates = true;
@@ -1621,11 +1622,10 @@ public class OracleDictionary
     public void right(SQLBuffer buf, FilterValue str, FilterValue length) {
     	buf.append(rightFunctionName).append("(");
     	str.appendTo(buf);
-    	buf.append(", ");
+    	buf.append(", -");
     	if (length.getValue() instanceof Number) {
     		buf.append(Long.toString(toLong(length)));
     	} else {
-    		buf.append("-");
     		length.appendTo(buf);
     	}
     	buf.append(")");
