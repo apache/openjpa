@@ -1604,6 +1604,15 @@ public class OracleDictionary
         }
         return super.getIsNotNullSQL(colAlias, colType);
     }
+    
+    @Override
+    public void mathFunction(SQLBuffer buf, String op, FilterValue lhs, FilterValue rhs) {
+    	if ("CEILING".equals(op)) {
+    		super.mathFunction(buf, "CEIL", lhs, rhs);
+    	} else {
+    		super.mathFunction(buf, op, lhs, rhs);
+    	}
+    }
 
     @Override
     public void left(SQLBuffer buf, FilterValue str, FilterValue length) {
