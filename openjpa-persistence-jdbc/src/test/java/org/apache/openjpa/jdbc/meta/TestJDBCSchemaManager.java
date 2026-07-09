@@ -128,7 +128,7 @@ public class TestJDBCSchemaManager extends AbstractPersistenceTestCase {
             // is silently coerced to VARCHAR by MappingInfo.mergeColumn (the numeric<->varchar
             // tolerance added for @MapKeyEnumerated), so validate() wouldn't detect the drift.
             // BLOB is genuinely incompatible with the String -> VARCHAR mapping on every Oracle version.
-            stmt.executeUpdate("ALTER TABLE UUIDEntity ADD " + (dict instanceof OracleDictionary ? "" : "COLUMN") + " value_ BLOB");
+            stmt.executeUpdate("ALTER TABLE UUIDEntity ADD " + (dict instanceof OracleDictionary ? "" : "COLUMN") + " value_ " + dict.blobTypeName);
             Long n = (Long) em
                     .createNativeQuery("SELECT COUNT(1) FROM UUIDEntity WHERE id_ = ? AND value_ IS NULL", Long.class)
                     .setParameter(1, ue1.getId())

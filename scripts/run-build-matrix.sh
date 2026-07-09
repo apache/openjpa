@@ -21,19 +21,25 @@ COLOR_RED="\033[1;31m"
 COLOR_GREEN="\033[1;32m"
 COLOR_RESET="\033[0m"
 MATRIX=${!FULL_DB_LIST[@]}
+EXCLUDE=''
 REPORT_DIR=.report
 START_WITH=''
+declare -a JPROPS=()
 OFFLINE=
 
 usage() {
-	echo "usage ${0} [-s|--start-with DB_ALIAS] [-r|--report-dir DIR] [-m|--matrix user_matrix] [-o|--offline] [-h|--help]"
+	echo "usage ${0} [-s|--start-with DB_ALIAS] [-r|--report-dir DIR] [-m|--matrix user_matrix] [-e|--exclude exclude_list] [-o|--offline] [-h|--help]"
 	echo -e "\t-s|--start-with DB_ALIAS -- option to skip some databases in the begininning (continue from) [def: '${START_WITH}']"
 	echo -e "\t-r|--report-dir DIR -- the folder with report and logs (will be autocreated) [def: '${REPORT_DIR}']"
 	echo -e "\t-m|--matrix user_matrix -- test matrix in the format 'db1:ver1,ver2;db2;db3:ver3;...' [def db list: ${MATRIX[@]}]"
 	echo -e "\ti.e DB delimiter is ';', in case version(s) should be specified it MUST follow after ':' and have ',' as delimiter"
-	echo -e "\texample: '-m=oracle' or '--matrix=oracle;mysql:8.0' or '--matrix postgresql:16,18;mysql:9.4.0'"
+	echo -e "\texample: \"-m=oracle\" or \"--matrix='oracle;mysql:8.0'\" or \"--matrix 'postgresql:16,18;mysql:9.4.0'\""
+	echo -e "\t-e|--exclude exclude_list -- exclude DBs from run 'db1;db2;db3;...' [def exclude list: ${EXCLUDE}]"
 	echo -e "\t-o|--offline -- will run tests in offline mode"
 	echo -e "\t-h|--help -- this help message"
+	echo
+	echo -e "\tPlease NOTE: lists for [-m|--matrix user_matrix] [-e|--exclude exclude_list] params should be 'singel_quoted'"
+	echo -e "\tPlease NOTE: additional build parameters can be passed via '-D*' for ex. '-Ddocker.cpus=4' ..."
 }
 
 user_matrix=''
@@ -64,6 +70,14 @@ while [[ $# -gt 0 ]]; do
 			user_matrix="${2}"
 			shift 2
 			;;
+		-e=*|--exclude=*)
+			EXCLUDE="${1#*=}"
+			shift
+			;;
+		-e|--exclude)
+			EXCLUDE="${2}"
+			shift 2
+			;;
 		-o|--offline)
 			OFFLINE=-o
 			shift
@@ -73,6 +87,10 @@ while [[ $# -gt 0 ]]; do
 			exit 0
 			shift
 			;;
+		-D*)
+			JPROPS+=("${1}")
+			shift
+			;;
 		*)
 			echo "Unknown option ${1}"
 			usage
@@ -80,6 +98,26 @@ while [[ $# -gt 0 ]]; do
 			;;
 	esac
 done
+
+stopAll() {
+	for profile in ${MATRIX[@]}; do
+		if [[ "${FULL_DB_LIST[${profile}]}" == "docker" ]]; then
+			local sversions="${VERSIONS[${profile}]}"
+			local prof=test-${profile}-docker
+			if [[ -n "${sversions}" ]]; then
+				for ver in ${sversions}; do
+					mvn -N -P${prof} -D${profile}.server.version=${ver} docker:stop -Ddocker.showLogs
+				done
+			else
+				mvn -N -P${prof} docker:stop -Ddocker.showLogs
+			fi
+		fi
+	done
+}
+
+cd "${PROJECT_ROOT}"
+
+stopAll
 
 if [[ -n "${user_matrix}" ]]; then
 	MATRIX=()
@@ -102,6 +140,8 @@ if [[ -n "${user_matrix}" ]]; then
 		fi
 	done
 fi
+
+stopAll
 
 REPORT_DIR="${SCRIPT_ROOT}/${REPORT_DIR}"
 REPORT_FILE="${REPORT_DIR}/report.txt"
@@ -130,7 +170,7 @@ do_test() {
 		fi
 	fi
 	set -x
-	mvn clean install -P${profile} "${params[@]}" -Drat.skip ${OFFLINE} &> ${REPORT_DIR}/build_${log}.log
+	mvn clean install -P${profile} "${params[@]}" "${JPROPS[@]}" -Drat.skip ${OFFLINE} &> ${REPORT_DIR}/build_${log}.log
 	local retCode=$?
 	set +x
 	if [[ ${retCode} == 0 ]]; then
@@ -173,8 +213,6 @@ test_profile() {
 	fi
 }
 
-cd "${PROJECT_ROOT}"
-
 if [[ "${MATRIX[@]}" =~ 'oracle' ]]; then
 	mkdir -p "../jdbc_oradata"
 	chmod a+rwx "../jdbc_oradata"
@@ -183,5 +221,10 @@ if [[ "${MATRIX[@]}" =~ 'oracle' ]]; then
 fi
 
 for profile in ${MATRIX[@]}; do
+	if [[ "${EXCLUDE}" == *"${profile}"* ]]; then
+		echo -e "${COLOR_RED}${profile} is in the EXCLUDE list${COLOR_RESET} ... skipping"
+		continue
+	fi
 	test_profile "${FULL_DB_LIST[${profile}]}" "${profile}"
 done
+
