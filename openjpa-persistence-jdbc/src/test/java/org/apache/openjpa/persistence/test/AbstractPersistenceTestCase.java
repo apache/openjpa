@@ -62,12 +62,13 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
     public static final String RETAIN_DATA = "Retain data after test run";
     private boolean retainDataOnTearDown;
     protected boolean _fresh = false;
+    private Object testsDisabledLock = new Object();
     private Boolean testsDisabled = Boolean.FALSE;
 
     public static final String ALLOW_FAILURE_LOG = "log";
     public static final String ALLOW_FAILURE_IGNORE = "ignore";
     public static final String ALLOW_FAILURE_SYS_PROP = "tests.openjpa.allowfailure";
-    
+
     private static final Logger logger = Logger.getLogger(AbstractPersistenceTestCase.class.getCanonicalName());
 
     private static String allowFailureConfig = System.getProperty(ALLOW_FAILURE_SYS_PROP, ALLOW_FAILURE_IGNORE);
@@ -677,13 +678,13 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
     }
 
     protected void setTestsDisabled(boolean disable) {
-        synchronized (testsDisabled) {
+        synchronized (testsDisabledLock) {
             testsDisabled = disable;
         }
     }
 
     protected boolean isTestsDisabled() {
-        synchronized (testsDisabled) {
+        synchronized (testsDisabledLock) {
             return testsDisabled;
         }
     }

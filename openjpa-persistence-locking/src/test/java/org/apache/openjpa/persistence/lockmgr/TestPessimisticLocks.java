@@ -142,7 +142,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         // find the Employee em1 just locked; should block and throw a PessimisticLockException
         try {
             em2.find(Employee.class, lockedId, LockModeType.PESSIMISTIC_READ, hints);
-            fail("Unexcpected find succeeded. Should throw a PessimisticLockException.");
+            fail("Unexpected find succeeded. Should throw a PessimisticLockException.");
         } catch (Throwable e) {
             assertError(e, PessimisticLockException.class, LockTimeoutException.class);
         } finally {
@@ -208,7 +208,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         // PessimisticLockException
         try {
             em2.find(Employee.class, 2, LockModeType.PESSIMISTIC_READ, map);
-            fail("Unexcpected find succeeded. Should throw a PessimisticLockException.");
+            fail("Unexpected find succeeded. Should throw a PessimisticLockException.");
         } catch (Exception e) {
             assertError(e, PessimisticLockException.class, LockTimeoutException.class);
         } finally {
@@ -300,7 +300,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         query.setHint("jakarta.persistence.query.timeout", lockWaitTime);
         try {
             List<Employee> q = query.getResultList();
-            fail("Unexcpected find succeeded. Should throw a PessimisticLockException.");
+            fail("Unexpected find succeeded. Should throw a PessimisticLockException.");
         } catch (Exception e) {
             assertError(e, PessimisticLockException.class, QueryTimeoutException.class);
         } finally {
@@ -360,7 +360,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         query.setHint("jakarta.persistence.query.timeout", lockWaitTime);
         try {
             List<?> q = query.getResultList();
-            fail("Unexcpected find succeeded. Should throw a PessimisticLockException.");
+            fail("Unexpected find succeeded. Should throw a PessimisticLockException.");
         } catch (Exception e) {
             assertError(e, PessimisticLockException.class, QueryTimeoutException.class);
         } finally {
