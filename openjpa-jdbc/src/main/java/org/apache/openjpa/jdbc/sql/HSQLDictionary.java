@@ -75,7 +75,7 @@ public class HSQLDictionary extends DBDictionary {
         trimTrailingFunction = "RTRIM({0})";
         trimBothFunction = "LTRIM(RTRIM({0}))";
 
-        supportsSelectForUpdate = false;
+        supportsQueryTimeout = false;
         supportsSelectStartIndex = true;
         supportsSelectEndIndex = true;
         supportsDeferredConstraints = false;

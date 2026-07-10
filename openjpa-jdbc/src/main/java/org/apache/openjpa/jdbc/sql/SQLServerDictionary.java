@@ -40,6 +40,7 @@ import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
@@ -516,5 +517,18 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
         String replacement = "IIF(" + expr + " IS NULL, 0, 1) " + nullSort + ", "
                 + expr + " " + direction;
         ordering.replaceSqlString(termStart, termDirEnd, replacement);
+    }
+
+    public String toJDBCEscapedDateTimeLiteral(String escape, int parseType) {
+        // SQL Server interprets ODBC's {t '...'} as datetime,
+        // which has no implicit conversion to TIME -> err
+        if (parseType == Literal.TYPE_TIME) {
+            int start = escape.indexOf('\'');
+            int end = escape.lastIndexOf('\'');
+            if (start >= 0 && end > start) {
+                return "CAST(" + escape.substring(start, end + 1) + " AS TIME)";
+            }
+        }
+        return escape;
     }
 }

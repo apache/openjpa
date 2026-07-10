@@ -6239,6 +6239,10 @@ public class DBDictionary
         }
     }
 
+    public String toJDBCEscapedDateTimeLiteral(String escape, int parseType) {
+        return escape; // default: passthrough
+    }
+
     protected boolean isUsingRange(long start, long end) {
 		return isUsingOffset(start) || isUsingLimit(end);
 	}
