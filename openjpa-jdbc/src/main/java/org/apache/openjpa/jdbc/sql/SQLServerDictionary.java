@@ -40,6 +40,7 @@ import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.StoreException;
@@ -466,5 +467,55 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
         } else {
             super.appendSelectRange(buf, start, end, subselect);
         }
+    }
+
+    /**
+     * MSSQLServer do not support ANSI SQL {@code NULLS FIRST} / {@code NULLS LAST}.
+     * Emulate via an auxiliary {@code IIF(&lt;expr&gt; IS NULL, 0, 1)} sort key.
+     * <p>
+     * MSSQLServer's default NULL ordering places NULLs before non-NULLs when sorting
+     * ASC and after non-NULLs when sorting DESC. When the requested precedence
+     * already matches that default, nothing extra is emitted. Otherwise the
+     * last order term {@code &lt;expr&gt; ASC|DESC} is rewritten to
+     * {@code IIF(&lt;expr&gt; IS NULL, 0, 1) &lt;sort&gt;, &lt;expr&gt; ASC|DESC}.
+     */
+    @Override
+    public void appendNullsPrecedence(SQLBuffer ordering, int nullPrecedence) {
+        if (nullPrecedence != QueryExpressions.NULLS_FIRST
+                && nullPrecedence != QueryExpressions.NULLS_LAST) {
+            return;
+        }
+        String sql = ordering.getSQL();
+        int lastAsc = sql.lastIndexOf(" ASC");
+        int lastDesc = sql.lastIndexOf(" DESC");
+        boolean asc;
+        int termDirStart;
+        int termDirEnd;
+        if (lastAsc > lastDesc) {
+            asc = true;
+            termDirStart = lastAsc;
+            termDirEnd = lastAsc + " ASC".length();
+        } else if (lastDesc >= 0) {
+            asc = false;
+            termDirStart = lastDesc;
+            termDirEnd = lastDesc + " DESC".length();
+        } else {
+            return;
+        }
+        boolean defaultMatches =
+                (nullPrecedence == QueryExpressions.NULLS_FIRST && asc)
+             || (nullPrecedence == QueryExpressions.NULLS_LAST && !asc);
+        if (defaultMatches) {
+            return;
+        }
+        int termStart = Math.max(sql.lastIndexOf(", ", termDirStart), -1);
+        termStart = (termStart < 0) ? 0 : termStart + 2;
+        String expr = sql.substring(termStart, termDirStart);
+        String direction = asc ? "ASC" : "DESC";
+        String nullSort = (nullPrecedence == QueryExpressions.NULLS_FIRST)
+                ? "DESC" : "ASC";
+        String replacement = "IIF(" + expr + " IS NULL, 0, 1) " + nullSort + ", "
+                + expr + " " + direction;
+        ordering.replaceSqlString(termStart, termDirEnd, replacement);
     }
 }

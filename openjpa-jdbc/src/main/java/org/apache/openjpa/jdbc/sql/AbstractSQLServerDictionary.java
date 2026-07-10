@@ -56,9 +56,10 @@ public abstract class AbstractSQLServerDictionary
         concatenateFunction = "({0}+{1})";
         supportsModOperator = true;
 
-        currentDateFunction = "GETDATE()";
-        currentTimeFunction = "GETDATE()";
+        currentDateFunction = "CONVERT(DATE, GETDATE())";
+        currentTimeFunction = "CONVERT(TIME, GETDATE())";
         currentTimestampFunction = "GETDATE()";
+        naturalLogarithmFunction = "LOG";
 
         useGetStringForClobs = true;
         useSetStringForClobs = true;

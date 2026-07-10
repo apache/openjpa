@@ -18,13 +18,16 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
+import org.apache.openjpa.jdbc.sql.SQLBuffer;
+import org.apache.openjpa.jdbc.sql.Select;
+
 /**
  * Natural logarithm (base e) value.
  */
 public class NaturalLogarithm
     extends UnaryOp {
 
-    
+
     private static final long serialVersionUID = 1L;
 
     /**
@@ -37,6 +40,27 @@ public class NaturalLogarithm
     @Override
     protected Class getType(Class c) {
         return double.class;
+    }
+
+    @Override
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, SQLBuffer sql, int index) {
+        final String operator = ctx.store.getDBDictionary().naturalLogarithmFunction;
+        sql.append(operator);
+        sql.append(getNoParen() ? " " : "(");
+        Val _val = getValue();
+        _val.appendTo(sel, ctx, state, sql, 0);
+
+        // OPENJPA-2149: If _val (Val) is an 'Arg', we need to get the Val[]
+        // from it, and the single element it contains because the
+        // 'addCastForParam' method gets the 'type' from the Val it receives.
+        // In the case where _val is an Arg, when addCastForParam gets the
+        // type, it will be getting the type of the Val (an Object) rather
+        // the type of the Arg.
+        sql.addCastForParam(operator,
+            (_val instanceof Args aVal) ? (aVal.getVals())[0] : _val);
+        if (!getNoParen()) {
+            sql.append(")");
+        }
     }
 
     @Override

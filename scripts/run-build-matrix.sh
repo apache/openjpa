@@ -182,7 +182,7 @@ do_test() {
 		set +x
 	fi
 	echo -e "${status} -- ${log}"
-	echo "${status} -- ${log}" >> ${REPORT_FILE}
+	echo -e "${status} -- ${log}" >> ${REPORT_FILE}
 	echo "         ----------------- "
 }
 

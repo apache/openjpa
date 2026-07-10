@@ -304,6 +304,7 @@ public class DBDictionary
     public String currentDateFunction = "CURRENT_DATE";
     public String currentTimeFunction = "CURRENT_TIME";
     public String currentTimestampFunction = "CURRENT_TIMESTAMP";
+    public String naturalLogarithmFunction = "LN";
     public String dropTableSQL = "DROP TABLE {0}";
     public String extractDateTimeFieldFunction = "EXTRACT({0} FROM {1})";
 
