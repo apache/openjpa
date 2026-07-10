@@ -967,9 +967,8 @@
                   * sendTimeAsDatetime=false is important to make SQLServer understand java.sql.Time parameters.
                   * Alternatively you can set the SQLServerDictionary parameter sendTimeAsString=true
                  -->
-                <openjpa.mssql.url>jdbc:sqlserver://localhost:${docker.external.mssql.port};sendTimeAsDatetime=false</openjpa.mssql.url>
+                <openjpa.mssql.url>jdbc:sqlserver://localhost:${docker.external.mssql.port};sendTimeAsDatetime=false;trustServerCertificate=true</openjpa.mssql.url>
 
-                <!--<connection.url>jdbc:postgresql://localhost/openjpa</connection.url>-->
                 <connection.url>${openjpa.mssql.url}</connection.url>
                 <connection.username>${openjpa.mssql.username}</connection.username>
                 <connection.password>${openjpa.mssql.password}</connection.password>

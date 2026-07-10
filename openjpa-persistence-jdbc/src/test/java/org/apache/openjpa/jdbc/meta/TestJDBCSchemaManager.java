@@ -25,6 +25,7 @@ import java.util.UUID;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
+import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
@@ -128,7 +129,9 @@ public class TestJDBCSchemaManager extends AbstractPersistenceTestCase {
             // is silently coerced to VARCHAR by MappingInfo.mergeColumn (the numeric<->varchar
             // tolerance added for @MapKeyEnumerated), so validate() wouldn't detect the drift.
             // BLOB is genuinely incompatible with the String -> VARCHAR mapping on every Oracle version.
-            stmt.executeUpdate("ALTER TABLE UUIDEntity ADD " + (dict instanceof OracleDictionary ? "" : "COLUMN") + " value_ " + dict.blobTypeName);
+            stmt.executeUpdate("ALTER TABLE UUIDEntity ADD "
+                    + (dict instanceof OracleDictionary || dict instanceof SQLServerDictionary ? "" : "COLUMN")
+                    + " value_ " + dict.blobTypeName);
             Long n = (Long) em
                     .createNativeQuery("SELECT COUNT(1) FROM UUIDEntity WHERE id_ = ? AND value_ IS NULL", Long.class)
                     .setParameter(1, ue1.getId())
@@ -138,6 +141,7 @@ public class TestJDBCSchemaManager extends AbstractPersistenceTestCase {
             emf.getSchemaManager().validate();
             fail("Should have thrown a SchemaValidationException");
         } catch (SQLException sex) {
+            sex.printStackTrace(); // save details for debugging
             fail("Could not change database for test.");
         } catch (SchemaValidationException ex) {
             assertTrue(ex.getMessage().startsWith("Schema could not be validated"));
