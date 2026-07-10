@@ -26,8 +26,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.time.temporal.ChronoField;
-import java.time.temporal.Temporal;
 
 import org.apache.openjpa.kernel.StoreContext;
 
@@ -38,7 +36,7 @@ import org.apache.openjpa.kernel.StoreContext;
 class ExtractDateTimePart
     extends Val {
 
-    
+
     private static final long serialVersionUID = 1L;
     private final DateTimeExtractPart _part;
     private final Val _val;

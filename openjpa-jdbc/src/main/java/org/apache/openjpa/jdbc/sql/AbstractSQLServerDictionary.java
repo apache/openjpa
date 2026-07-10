@@ -60,6 +60,7 @@ public abstract class AbstractSQLServerDictionary
         currentTimeFunction = "CONVERT(TIME, GETDATE())";
         currentTimestampFunction = "GETDATE()";
         naturalLogarithmFunction = "LOG";
+        extractDateTimeFieldFunction = "DATEPART({0}, {1})";
 
         useGetStringForClobs = true;
         useSetStringForClobs = true;

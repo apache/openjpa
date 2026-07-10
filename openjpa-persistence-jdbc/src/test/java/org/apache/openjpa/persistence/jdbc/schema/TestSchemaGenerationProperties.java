@@ -149,11 +149,12 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
         JDBCConfiguration conf = (JDBCConfiguration) getPM().getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
 
-        String createSql =
-                dict instanceof PostgresDictionary
-                        ? "org/apache/openjpa/persistence/jdbc/schema/create-postgresql.sql"
-                        : "org/apache/openjpa/persistence/jdbc/schema/create.sql";
-
+        String createSql = "org/apache/openjpa/persistence/jdbc/schema/create.sql";
+        if (dict instanceof PostgresDictionary) {
+            createSql = "org/apache/openjpa/persistence/jdbc/schema/create-postgresql.sql";
+        } else if (dict instanceof SQLServerDictionary) {
+            createSql = "org/apache/openjpa/persistence/jdbc/schema/create-mssql.sql";
+        }
 
         Map<String, String> properties = new HashMap<>();
         properties.put("jakarta.persistence.schema-generation.database.action", "create");

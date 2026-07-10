@@ -512,8 +512,7 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
         termStart = (termStart < 0) ? 0 : termStart + 2;
         String expr = sql.substring(termStart, termDirStart);
         String direction = asc ? "ASC" : "DESC";
-        String nullSort = (nullPrecedence == QueryExpressions.NULLS_FIRST)
-                ? "DESC" : "ASC";
+        String nullSort = (nullPrecedence == QueryExpressions.NULLS_FIRST) ? "ASC" : "DESC";
         String replacement = "IIF(" + expr + " IS NULL, 0, 1) " + nullSort + ", "
                 + expr + " " + direction;
         ordering.replaceSqlString(termStart, termDirEnd, replacement);
