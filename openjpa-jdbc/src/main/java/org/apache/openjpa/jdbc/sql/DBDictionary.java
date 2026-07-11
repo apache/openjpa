@@ -107,6 +107,7 @@ import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.kernel.StateManagerImpl;
+import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.kernel.exps.Path;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.lib.conf.Configurable;
@@ -6241,6 +6242,10 @@ public class DBDictionary
 
     public String toJDBCEscapedDateTimeLiteral(String escape, int parseType) {
         return escape; // default: passthrough
+    }
+
+    public String getExtractField(DateTimeExtractField extField) {
+        return extField.name();
     }
 
     protected boolean isUsingRange(long start, long end) {

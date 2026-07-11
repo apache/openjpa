@@ -34,6 +34,7 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
+import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.OpenJPAException;
@@ -403,14 +404,18 @@ public class HSQLDictionary extends DBDictionary {
     }
 
     @Override
-    public OpenJPAException newStoreException(String msg, SQLException[] causes,
-        Object failed) {
+    public OpenJPAException newStoreException(String msg, SQLException[] causes, Object failed) {
         OpenJPAException ke = super.newStoreException(msg, causes, failed);
-        if (ke instanceof ReferentialIntegrityException
-            && causes[0].getErrorCode() == -violation_of_unique_index_or_constraint) {
-            ((ReferentialIntegrityException) ke).setIntegrityViolation
-                (ReferentialIntegrityException.IV_UNIQUE);
+        if (ke instanceof ReferentialIntegrityException rie
+                && causes[0].getErrorCode() == -violation_of_unique_index_or_constraint)
+        {
+            rie.setIntegrityViolation(ReferentialIntegrityException.IV_UNIQUE);
         }
         return ke;
+    }
+
+    @Override
+    public String getExtractField(DateTimeExtractField extField) {
+        return DateTimeExtractField.WEEK == extField ? "WEEK_OF_YEAR" : extField.name();
     }
 }
