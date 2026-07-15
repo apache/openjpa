@@ -152,6 +152,8 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
         String createSql = "org/apache/openjpa/persistence/jdbc/schema/create.sql";
         if (dict instanceof PostgresDictionary) {
             createSql = "org/apache/openjpa/persistence/jdbc/schema/create-postgresql.sql";
+        } else if (dict instanceof OracleDictionary) {
+        	createSql = "org/apache/openjpa/persistence/jdbc/schema/create-oracle.sql";
         } else if (dict instanceof SQLServerDictionary) {
             createSql = "org/apache/openjpa/persistence/jdbc/schema/create-mssql.sql";
         }
