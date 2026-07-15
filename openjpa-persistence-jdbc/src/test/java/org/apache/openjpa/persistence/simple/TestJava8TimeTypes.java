@@ -48,7 +48,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
 
     @Override
     public void setUp() {
-        setUp(CLEAR_TABLES, Java8TimeTypes.class);
+        setUp(CLEAR_TABLES, Java8TimeTypes.class, "openjpa.Log", "SQL=TRACE,Tests=TRACE");
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

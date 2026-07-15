@@ -444,10 +444,10 @@
 
         <!-- profile for testing with an embedded h2 2.x DB -->
         <profile>
-            <id>test-h2-2</id>
+            <id>test-h2</id>
             <activation>
                 <property>
-                    <name>test-h2-2</name>
+                    <name>test-h2</name>
                 </property>
             </activation>
             <properties>

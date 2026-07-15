@@ -3349,17 +3349,17 @@ public class DBDictionary
      * @param lhs the left hand side of the math function
      * @param rhs the right hand side of the math function
      */
-    public void mathFunction(SQLBuffer buf, String op, FilterValue lhs,
-        FilterValue rhs) {
+    public void mathFunction(SQLBuffer buf, String op, FilterValue lhs, FilterValue rhs) {
         boolean castlhs = false;
         boolean castrhs = false;
-        Class lc = Filters.wrap(lhs.getType());
-        Class rc = Filters.wrap(rhs.getType());
+        Class<?> lc = Filters.wrap(lhs.getType());
+        Class<?> rc = Filters.wrap(rhs.getType());
         int type = 0;
-        if (requiresCastForMathFunctions && (lc != rc
-            || (lhs.isConstant() || rhs.isConstant()))) {
-            Class c = Filters.promote(lc, rc);
+        int rtype = 0;
+        if (requiresCastForMathFunctions && (lc != rc || (lhs.isConstant() || rhs.isConstant()))) {
+            Class<?> c = Filters.promote(lc, rc);
             type = getJDBCType(JavaTypes.getTypeCode(c), false);
+            rtype = type;
             if (type != Types.VARBINARY && type != Types.BLOB) {
                 castlhs = (lhs.isConstant() && rhs.isConstant()) || lc != c;
                 castrhs = (lhs.isConstant() && rhs.isConstant()) || rc != c;
@@ -3369,29 +3369,39 @@ public class DBDictionary
         boolean mod = "MOD".equals(op);
         boolean power = "POWER".equals(op);
         boolean round = "ROUND".equals(op);
+        if (round && castrhs) {
+            // the second argument of ROUND is an integer scale; casting it to
+            // the promoted numeric type of the first argument produces e.g.
+            // ROUND(x, CAST(? AS DOUBLE)), which databases reject
+            rtype = Types.INTEGER;
+        }
         if (mod || power || round) {
-            if (supportsModOperator && mod)
+            if (supportsModOperator && mod) {
                 op = "%";
-            else
+            } else {
                 buf.append(op);
+            }
         }
 
         buf.append("(");
 
-        if (castlhs)
+        if (castlhs) {
             appendCast(buf, lhs, type);
-        else
+        } else {
             lhs.appendTo(buf);
+        }
 
-        if ((mod && !supportsModOperator) || power || round)
+        if ((mod && !supportsModOperator) || power || round) {
             buf.append(", ");
-        else
+        } else {
             buf.append(" ").append(op).append(" ");
+        }
 
-        if (castrhs)
-            appendCast(buf, rhs, type);
-        else
+        if (castrhs) {
+            appendCast(buf, rhs, rtype);
+        } else {
             rhs.appendTo(buf);
+        }
 
         buf.append(")");
     }

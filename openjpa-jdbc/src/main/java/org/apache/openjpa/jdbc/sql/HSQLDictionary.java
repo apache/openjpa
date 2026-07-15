@@ -376,6 +376,19 @@ public class HSQLDictionary extends DBDictionary {
     }
 
     @Override
+    protected void appendLength(SQLBuffer buf, int type) {
+        // HSQLDB gives CAST(x AS NUMERIC) without precision and scale a scale
+        // of 0 and silently truncates all fractional digits, so casts written
+        // for requiresCastForMathFunctions / requiresCastForComparisons would
+        // corrupt decimal values; always spell out precision and scale.
+        if (type == Types.NUMERIC || type == Types.DECIMAL) {
+            buf.append("(128,32)");
+        } else {
+            super.appendLength(buf, type);
+        }
+    }
+
+    @Override
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
         FilterValue start) {
         buf.append("LOCATE(");
