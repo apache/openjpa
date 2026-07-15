@@ -389,8 +389,9 @@ public class Filters {
                 } catch (IllegalArgumentException e) {
 
                 }
-            } else if (o instanceof String && type.isEnum()) {
-                return Enum.valueOf((Class<Enum>)type, o.toString());
+            } else if (o instanceof String str && type.isEnum()) {
+                // Enum value might be righ-padded with spaces as it happens in HSQL
+                return Enum.valueOf((Class<Enum>)type, str.endsWith(" ") ? str.trim() : str);
             }
         }
         if (!num) {

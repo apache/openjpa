@@ -58,6 +58,7 @@ public class TestHSQLSequence extends SQLListenerTestCase {
 
         super.setUp(HSQLEmployee.class, HSQLEmployee2.class, DROP_TABLES,
                 "openjpa.ConnectionFactoryProperties", "PrintParameters=true"
+                //, "openjpa.Log", "SQL=TRACE,Tests=TRACE"
                 );
         assertNotNull(emf);
 
@@ -75,7 +76,11 @@ public class TestHSQLSequence extends SQLListenerTestCase {
                 String schemaQualifier = (String)os[0];
                 String schemaName = (String)os[1];
                 if ("PUBLIC".equals(schemaQualifier) && !schemaName.equals("HEMP_SEQ")) {
-                    q = em.createNativeQuery("DROP SEQUENCE " + schemaName);
+                    String schema = schemaName;
+                    if (schemaName.contains(" ")) {
+                        schema = dict.leadingDelimiter + schemaName + dict.trailingDelimiter;
+                    }
+                    q = em.createNativeQuery("DROP SEQUENCE " + schema);
                     q.executeUpdate();
                 }
             }
