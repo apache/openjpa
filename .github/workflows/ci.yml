@@ -20,13 +20,19 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [17, 21]
+        profile: [test-derby, test-h2]
+    name: build (Java ${{ matrix.java }}, ${{ matrix.profile }})
     steps:
       - uses: actions/checkout@v7
       - name: Setup Java JDK
         uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
-          java-version: 17
+          java-version: ${{ matrix.java }}
       - name: 'Cache Maven packages'
         uses: actions/cache@v5
         with:
@@ -34,6 +40,6 @@ jobs:
           key: 'cache'
           restore-keys: 'cache'
       - name: 'Build with Maven'
-        run: mvn -B clean install --file pom.xml
+        run: mvn -P${{ matrix.profile }} -B clean install --file pom.xml
       - name: 'Remove snapshots before caching'
         run: find ~/.m2 -name '*SNAPSHOT' | xargs rm -Rf
