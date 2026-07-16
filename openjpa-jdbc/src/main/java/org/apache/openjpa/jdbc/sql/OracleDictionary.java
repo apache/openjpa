@@ -220,6 +220,7 @@ public class OracleDictionary
         datePrecision = MICRO;
 
         varcharTypeName = "VARCHAR2{0}";
+        typecastToStringTypeName = "VARCHAR";
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
             "LONG RAW", "RAW", "LONG", "REF",
         }));

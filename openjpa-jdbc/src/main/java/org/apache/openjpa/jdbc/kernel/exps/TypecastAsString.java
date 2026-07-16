@@ -151,7 +151,7 @@ public class TypecastAsString extends AbstractVal {
         if (dict.supportsUnsizedCharOnCast) {
             sql.append(dict.varcharTypeName);
         } else {
-            sql.append(dict.charTypeName + "(" + dict.characterColumnSize + ")");
+            sql.append(dict.typecastToStringTypeName + "(" + dict.characterColumnSize + ")");
         }
         sql.append(part3);
     }

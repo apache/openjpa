@@ -408,6 +408,7 @@ public class DBDictionary
     public String xmlTypeEncoding = "UTF-8";
     public String uuidTypeName = "UUID";
     public String getStringVal = "";
+    public String typecastToStringTypeName = "CHAR";
 
     // schema metadata
     public boolean useSchemaName = true;
