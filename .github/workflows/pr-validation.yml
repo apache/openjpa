@@ -27,7 +27,8 @@ jobs:
       fail-fast: false
       matrix:
         java: [17, 21]
-    name: build (Java ${{ matrix.java }})
+        profile: [test-derby, test-h2]
+    name: build (Java ${{ matrix.java }}, ${{ matrix.profile }})
     steps:
       - uses: actions/checkout@v7
       - name: Setup Java JDK
@@ -42,6 +43,6 @@ jobs:
           key: 'cache'
           restore-keys: 'cache'
       - name: 'Build with Maven'
-        run: mvn -Ptest-h2 -B clean install --file pom.xml
+        run: mvn -P${{ matrix.profile }} -B clean install --file pom.xml
       - name: 'Remove Snapshots Before Caching'
         run: find ~/.m2 -name '*SNAPSHOT' | xargs rm -Rf
