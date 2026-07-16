@@ -681,6 +681,11 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractTimeFromInstant() {
+    	DBDictionary dict = getDbDictionary(getEmf());
+    	if (dict instanceof OracleDictionary) {
+    		// Oracle has no TIME data type
+    		return;
+    	}
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT(TIME FROM {ts '2005-03-21 01:32:21'}) = {t '01:32:21'}";
@@ -693,6 +698,10 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractDateFromLocalDateTime() {
+    	if (getDbDictionary(getEmf()) instanceof OracleDictionary) {
+    		// Oracle does not support TIME data type
+    		return;
+    	}
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT(DATE FROM LOCAL DATETIME) > {d '2025-01-10'}";
@@ -705,6 +714,11 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractTimeFromLocalTime() {
+    	DBDictionary dict = getDbDictionary(getEmf());
+    	if (dict instanceof OracleDictionary) {
+    		// Oracle has no TIME data type
+    		return;
+    	}
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT(TIME FROM LOCAL TIME) = {t '01:32:20'}";
@@ -755,8 +769,10 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractQUARTER() {
-        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
+    	DBDictionary dict = getDbDictionary(getEmf());
+        if (dict instanceof DerbyDictionary || dict instanceof OracleDictionary) {
             // Derby does not support EXTRACT
+        	// Oracle does not support EXTRACT(QUARTER)
             return;
         }
         EntityManager em = currentEntityManager();
@@ -787,8 +803,10 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractWEEK() {
-        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
+    	DBDictionary dict = getDbDictionary(getEmf());
+        if (dict instanceof DerbyDictionary || dict instanceof OracleDictionary) {
             // Derby does not support EXTRACT
+        	// Oracle does not support EXTRACT(WEEK) (https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/EXTRACT-datetime.html)
             return;
         }
         EntityManager em = currentEntityManager();
@@ -873,8 +891,10 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractHourFromLocalTime() {
-        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
+    	DBDictionary dict = getDbDictionary(getEmf());
+        if (dict instanceof DerbyDictionary || dict instanceof OracleDictionary) {
             // Derby does not support EXTRACT
+        	// Oracle does not have TIME data type
             return;
         }
         EntityManager em = currentEntityManager();

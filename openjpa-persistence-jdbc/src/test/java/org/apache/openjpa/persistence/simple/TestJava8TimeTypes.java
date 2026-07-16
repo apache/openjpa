@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 import jakarta.persistence.EntityManager;
@@ -263,6 +265,12 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
 
     public void testGetCurrentLocalTime() {
+    	DBDictionary dict = getDbDictionary(emf);
+    	if (dict instanceof OracleDictionary) {
+    		// Oracle has no TIME data type
+    		return;
+    	}
+    	
         EntityManager em = emf.createEntityManager();
         final TypedQuery<Java8TimeTypes> qry = em.createQuery(
             "select j from Java8TimeTypes AS j where j.localTimeField < LOCAL TIME OR j.localTimeField >= LOCAL TIME", Java8TimeTypes.class);
