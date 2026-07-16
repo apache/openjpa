@@ -20,13 +20,18 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [17, 21]
+    name: build (Java ${{ matrix.java }})
     steps:
       - uses: actions/checkout@v7
       - name: Setup Java JDK
         uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
-          java-version: 17
+          java-version: ${{ matrix.java }}
       - name: 'Cache Maven packages'
         uses: actions/cache@v5
         with:
