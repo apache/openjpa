@@ -29,6 +29,8 @@ public class NaturalLogarithm
 
 
     private static final long serialVersionUID = 1L;
+    
+    private String operator = "LN";
 
     /**
      * Constructor. Provide the value from which the natural logarithm should be calculated.
@@ -44,28 +46,13 @@ public class NaturalLogarithm
 
     @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state, SQLBuffer sql, int index) {
-        final String operator = ctx.store.getDBDictionary().naturalLogarithmFunction;
-        sql.append(operator);
-        sql.append(getNoParen() ? " " : "(");
-        Val _val = getValue();
-        _val.appendTo(sel, ctx, state, sql, 0);
-
-        // OPENJPA-2149: If _val (Val) is an 'Arg', we need to get the Val[]
-        // from it, and the single element it contains because the
-        // 'addCastForParam' method gets the 'type' from the Val it receives.
-        // In the case where _val is an Arg, when addCastForParam gets the
-        // type, it will be getting the type of the Val (an Object) rather
-        // the type of the Arg.
-        sql.addCastForParam(operator,
-            (_val instanceof Args aVal) ? (aVal.getVals())[0] : _val);
-        if (!getNoParen()) {
-            sql.append(")");
-        }
+        this.operator = ctx.store.getDBDictionary().naturalLogarithmFunction;
+        super.appendTo(sel, ctx, state, sql, index);
     }
 
     @Override
     protected String getOperator() {
-        return "LN";
+        return operator;
     }
 
     @Override

@@ -308,6 +308,7 @@ public class DBDictionary
     public String naturalLogarithmFunction = "LN";
     public String dropTableSQL = "DROP TABLE {0}";
     public String extractDateTimeFieldFunction = "EXTRACT({0} FROM {1})";
+    public String ceilingFunction = "CEILING";
 
     // types
     public boolean storageLimitationsFatal = false;

@@ -254,6 +254,7 @@ public class OracleDictionary
         substringFunctionName = "SUBSTR";
         leftFunctionName = substringFunctionName;
         rightFunctionName = substringFunctionName;
+        ceilingFunction = "CEIL";
         super.setBatchLimit(defaultBatchLimit);
         selectWordSet.add("WITH");
         reportsSuccessNoInfoOnBatchUpdates = true;
