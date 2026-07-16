@@ -3,7 +3,7 @@
 SCRIPT_ROOT=$(cd -- $(dirname "${0}") && pwd)
 PROJECT_ROOT="$(cd "${SCRIPT_ROOT}/.." && pwd)"
 declare -A FULL_DB_LIST=(
-	[h2-2]=embedded
+	[h2]=embedded
 	[derby]=embedded
 	[hsqldb]=embedded
 	[mysql]=docker

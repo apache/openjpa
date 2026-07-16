@@ -26,6 +26,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
@@ -111,6 +112,11 @@ public class HSQLDictionary extends DBDictionary {
             "OR", "ORDER", "OUTER", "PRIMARY", "REFERENCES", "RIGHT", "ROLLUP", "SELECT", "SET", "SOME", "SUM", "TABLE", "THEN",
             "TO", "TRAILING", "TRIGGER", "UNION", "UNIQUE", "USING", "VALUES", "WHEN", "WHERE", "WITH",
         }));
+        // HSQLDB reports the tables and views of its system schemas (e.g.
+        // INFORMATION_SCHEMA.TRANSLATIONS) via DatabaseMetaData when no
+        // schema is specified; filter them out so they are not mistaken
+        // for user tables during schema reflection (OPENJPA-2940).
+        systemSchemaSet.addAll(List.of("INFORMATION_SCHEMA", "SYSTEM_LOBS"));
     }
 
     /**
@@ -180,6 +186,16 @@ public class HSQLDictionary extends DBDictionary {
 
     @Override
     public int getPreferredType(int type) {
+        if (type == Types.TIME_WITH_TIMEZONE) {
+            // HSQLDB compares TIME WITH TIME ZONE values by their UTC instant
+            // (SQL standard), but OpenJPA normalizes OffsetTime values to the
+            // JVM default offset on store and load. The stored offset therefore
+            // carries no information, while the normalization may wrap the local
+            // time around midnight, so MIN/MAX/ORDER BY on such a column return
+            // different rows than on other databases. Use a plain TIME column
+            // instead so comparisons happen on the normalized local time.
+            return Types.TIME;
+        }
         if (dbMajorVersion > 1) {
             return super.getPreferredType(type);
         }

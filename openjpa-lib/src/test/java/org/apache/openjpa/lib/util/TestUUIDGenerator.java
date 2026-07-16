@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -76,7 +77,7 @@ public class TestUUIDGenerator {
         long time = 0;
         for (int i = 0; i < 10000; i++) {
             long newTime = UUIDGenerator.getTime();
-            assertTrue(newTime != time);
+            assertNotEquals("[" + i + "] time should change", time, newTime);
             time = newTime;
         }
     }
@@ -107,5 +108,5 @@ public class TestUUIDGenerator {
         t.start();
         UUIDGenerator.createType1();
     }
-    
+
 }
