@@ -254,10 +254,14 @@ public class BatchingPreparedStatementManagerImpl extends
             row.flush(ps, _dict, _store);
         int count = executeUpdate(ps, row.getSQL(_dict), row);
         if (count != 1) {
-            // For DELETE actions, tolerate count=0 because the row may
-            // have already been removed by a database-level ON DELETE
-            // CASCADE triggered by a related row's deletion.
-            if (count == 0 && row.getAction() == Row.ACTION_DELETE) {
+            // For DELETE actions on entities without a version, tolerate
+            // count=0 because the row may have already been removed by a
+            // database-level ON DELETE CASCADE triggered by a related
+            // row's deletion. With a version the DELETE carries an
+            // optimistic condition in its WHERE clause, so count=0 must
+            // still surface as an OptimisticException.
+            if (count == 0 && row.getAction() == Row.ACTION_DELETE
+                && !hasVersion(row)) {
                 // row already gone - not an error
             } else {
                 logSQLWarnings(ps);
@@ -327,9 +331,11 @@ public class BatchingPreparedStatementManagerImpl extends
                         row.getSQL(_dict)).getMessage());
                 break;
             case 0: // no row is affected, treats it as failed
-                // case unless it's a DELETE (the row may have already
-                // been removed by a database-level ON DELETE CASCADE)
-                if (row.getAction() == Row.ACTION_DELETE) {
+                // case unless it's a DELETE of an entity without a version
+                // (the row may have already been removed by a database-level
+                // ON DELETE CASCADE; with a version, count=0 signals an
+                // optimistic conflict that must still be reported)
+                if (row.getAction() == Row.ACTION_DELETE && !hasVersion(row)) {
                     break;
                 }
                 logSQLWarnings(ps);
