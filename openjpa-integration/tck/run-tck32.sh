@@ -38,7 +38,7 @@ set -e
 
 # Check required commands
 MISSING=""
-for cmd in java mvn curl unzip python3 psql grep sed; do
+for cmd in java mvn curl unzip grep sed; do
     if ! command -v "$cmd" &>/dev/null; then
         MISSING="${MISSING}  - ${cmd}\n"
     fi
@@ -50,6 +50,9 @@ if [ -n "$MISSING" ]; then
     exit 1
 fi
 
+echo "Stopping dockerized Postgres"
+mvn -N -f ../../ -Ptest-postgresql-docker -Ddocker.stopNamePattern=postgres* docker:stop -Ddocker.showLogs
+
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 TCK_VERSION="${TCK_VERSION:-3.2.0}"
 TCK_URL="https://download.eclipse.org/jakartaee/persistence/3.2/jakarta-persistence-tck-${TCK_VERSION}.zip"
@@ -58,10 +61,14 @@ TCK_ZIP="${TCK_DIR}/jakarta-persistence-tck-${TCK_VERSION}.zip"
 TCK_HOME="${TCK_DIR}/persistence-tck"
 OPENJPA_VERSION="${OPENJPA_VERSION:-4.2.0-SNAPSHOT}"
 
-DB_HOST="${DB_HOST:-localhost:5433}"
-DB_USER="${DB_USER:-openjpa}"
-DB_PASSWORD="${DB_PASSWORD:-openjpa}"
-DB_NAME="${DB_NAME:-openjpa_tck}"
+if [[ -z "${DB_HOST}" ]]; then
+    echo "Starting dockerized Postgres"
+    mvn -N -f ../../ -Ptest-postgresql-docker -Dpostgresql.server.version=16 docker:start -Ddocker.showLogs
+fi
+DB_HOST="${DB_HOST:-localhost:5432}"
+DB_USER="${DB_USER:-postgres}"
+DB_PASSWORD="${DB_PASSWORD:-postgres}"
+DB_NAME="${DB_NAME:-openjpatst}"
 
 GF_VERSION="${GF_VERSION:-8.0.0}"
 
@@ -100,45 +107,12 @@ echo "TCK artifacts installed."
 TCK_POM="${TCK_HOME}/bin/pom.xml"
 if ! grep -q '<id>openjpa</id>' "${TCK_POM}"; then
     echo "Adding OpenJPA profile to TCK pom.xml..."
-    # Read the profile fragment
-    PROFILE_XML=$(cat "${SCRIPT_DIR}/tck32-openjpa-profile.xml" | grep -v '^<!--' | grep -v '^\-\->' | grep -v '^$' | sed '/^<!--/,/-->$/d')
 
-    # Insert before the closing </profiles> tag
-    # Use a temp file for portability
-    TEMP_POM="${TCK_POM}.tmp"
-    sed '/<\/profiles>/i\
-<!-- OpenJPA profile - auto-inserted by run-tck32.sh -->
-' "${TCK_POM}" > "${TEMP_POM}"
+    sed '/<\/profiles>/,$d' "${TCK_POM}" > temp
+    cat "${SCRIPT_DIR}/tck32-openjpa-profile.xml" >> temp
+    sed '/<\/profiles>/,$!d' "${TCK_POM}" >> temp
+    mv temp "${TCK_POM}"
 
-    # Actually, let's use python for reliable XML insertion
-    python3 -c "
-import re
-with open('${TCK_POM}', 'r') as f:
-    content = f.read()
-with open('${SCRIPT_DIR}/tck32-openjpa-profile.xml', 'r') as f:
-    profile = f.read()
-# Strip XML comments from profile (the license header)
-profile_lines = profile.split('\n')
-in_comment = False
-clean_lines = []
-for line in profile_lines:
-    if '<!--' in line and '-->' in line:
-        continue
-    if '<!--' in line:
-        in_comment = True
-        continue
-    if '-->' in line:
-        in_comment = False
-        continue
-    if not in_comment:
-        clean_lines.append(line)
-profile_clean = '\n'.join(clean_lines)
-# Insert before </profiles>
-content = content.replace('</profiles>', profile_clean + '\n    </profiles>')
-with open('${TCK_POM}', 'w') as f:
-    f.write(content)
-"
-    rm -f "${TEMP_POM}"
     echo "OpenJPA profile added."
 else
     echo "OpenJPA profile already present in TCK pom.xml."
@@ -154,7 +128,7 @@ DB_PORT="${DB_HOST##*:}"
 # Drop stale tables that may have incorrect columns from previous builds.
 # The buildSchema action is add-only and won't remove stale columns.
 echo "Dropping stale PostgreSQL tables..."
-PGPASSWORD="${DB_PASSWORD}" psql -h "${DB_HOST_ONLY}" -p "${DB_PORT}" \
+docker exec postgres-1 PGPASSWORD="${DB_PASSWORD}" psql -h "${DB_HOST_ONLY}" -p "${DB_PORT}" \
     -U "${DB_USER}" -d "${DB_NAME}" -c "
         DROP TABLE IF EXISTS \"did1bdependent\" CASCADE;
         DROP TABLE IF EXISTS \"DID1bDependent\" CASCADE;
@@ -172,7 +146,7 @@ PGPASSWORD="${DB_PASSWORD}" psql -h "${DB_HOST_ONLY}" -p "${DB_PORT}" \
 SP_DDL="${TCK_HOME}/sql/postgresql/postgresql.ddl.persistence.sprocs.sql"
 if [ -f "$SP_DDL" ]; then
     echo "Creating stored procedures on PostgreSQL..."
-    PGPASSWORD="${DB_PASSWORD}" psql -h "${DB_HOST_ONLY}" -p "${DB_PORT}" \
+    docker exec postgres-1 PGPASSWORD="${DB_PASSWORD}" psql -h "${DB_HOST_ONLY}" -p "${DB_PORT}" \
         -U "${DB_USER}" -d "${DB_NAME}" -f "$SP_DDL" 2>/dev/null || \
         echo "Warning: Failed to create stored procedures (non-fatal)"
 fi

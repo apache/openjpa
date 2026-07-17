@@ -102,15 +102,7 @@ done
 stopAll() {
 	for profile in ${MATRIX[@]}; do
 		if [[ "${FULL_DB_LIST[${profile}]}" == "docker" ]]; then
-			local sversions="${VERSIONS[${profile}]}"
-			local prof=test-${profile}-docker
-			if [[ -n "${sversions}" ]]; then
-				for ver in ${sversions}; do
-					mvn -N -P${prof} -D${profile}.server.version=${ver} docker:stop -Ddocker.showLogs
-				done
-			else
-				mvn -N -P${prof} docker:stop -Ddocker.showLogs
-			fi
+			mvn -N -Ptest-${profile}-docker -Ddocker.stopNamePattern=${profile}* docker:stop -Ddocker.showLogs
 		fi
 	done
 }
