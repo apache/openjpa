@@ -374,7 +374,7 @@ public class ValidatorImpl extends AbstractValidator {
     private ValidatorFactory getDefaultValidatorFactory() {
         ValidatorFactory factory = null;
         try {
-        	factory = Validation.buildDefaultValidatorFactory();
+            factory = Validation.buildDefaultValidatorFactory();
         } catch (jakarta.validation.ValidationException e) {
             if (_log != null && _log.isTraceEnabled())
                 _log.trace(_loc.get("factory-create-failed"), e);

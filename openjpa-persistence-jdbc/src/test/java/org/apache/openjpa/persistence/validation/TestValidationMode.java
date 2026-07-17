@@ -251,6 +251,34 @@ public class TestValidationMode extends SingleEMFTestCase {
 
     /**
      * Scenario being tested:
+     *   8) Validation mode in createEMF(Map props) can be a ValidationMode enum
+     */
+    public void testValidationMode8() {
+        getLog().trace("testValidationMode7() - Map(ValidationMode.NONE) overrides PU provided mode=callback");
+
+        // create the Map to test overrides
+        Map<String,Object> props = new HashMap<>();
+        props.put("jakarta.persistence.validation.mode", ValidationMode.CALLBACK);
+
+        // create our EMF
+        OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
+            OpenJPAPersistence.createEntityManagerFactory(
+                "simple-callback-mode",
+                "org/apache/openjpa/persistence/validation/persistence.xml",
+            props);
+        assertNotNull(emf);
+        try {
+            // verify validation mode
+            OpenJPAConfiguration conf = emf.getConfiguration();
+            assertNotNull(conf);
+            assertEquals("Validation mode", String.valueOf(ValidationMode.CALLBACK), conf.getValidationMode());
+        } finally {
+            cleanup(emf);
+        }
+    }
+
+    /**
+     * Scenario being tested:
      *   8) Life cycle event should be entity manager (Broker) specific.
      */
     public void testUniqueLifecycleManager() {

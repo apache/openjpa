@@ -88,6 +88,11 @@
             <artifactId>jakarta-regexp</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <scope>test</scope>
+        </dependency>
         <!-- Required for org.apache.openjpa.persistence.xmlmapping tests -->
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
