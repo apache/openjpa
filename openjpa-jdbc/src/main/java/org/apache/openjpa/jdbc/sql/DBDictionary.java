@@ -1551,7 +1551,6 @@ public class DBDictionary
         }
 
         Sized s;
-        Calendard c;
         switch (type) {
             case JavaTypes.BOOLEAN:
             case JavaTypes.BOOLEAN_OBJ:
@@ -1685,30 +1684,29 @@ public class DBDictionary
                 setClob(stmnt, idx, (Clob) val, col);
                 break;
             case JavaSQLTypes.SQL_DATE:
-                if (val instanceof Calendard) {
-                    c = (Calendard) val;
-                    setDate(stmnt, idx, (java.sql.Date) c.value, c.calendar,
-                        col);
-                } else
+                if (val instanceof Calendard c) {
+                    setDate(stmnt, idx, (java.sql.Date) c.value, c.calendar, col);
+                } else if (val instanceof Date d) {
+                    setDate(stmnt, idx, d, col);
+                } else {
                     setDate(stmnt, idx, (java.sql.Date) val, null, col);
+                }
                 break;
             case JavaSQLTypes.REF:
                 setRef(stmnt, idx, (Ref) val, col);
                 break;
             case JavaSQLTypes.TIME:
-                if (val instanceof Calendard) {
-                    c = (Calendard) val;
+                if (val instanceof Calendard c) {
                     setTime(stmnt, idx, (Time) c.value, c.calendar, col);
                 } else
                     setTime(stmnt, idx, (Time) val, null, col);
                 break;
             case JavaSQLTypes.TIMESTAMP:
-                if (val instanceof Calendard) {
-                    c = (Calendard) val;
-                    setTimestamp(stmnt, idx, (Timestamp) c.value, c.calendar,
-                        col);
-                } else
+                if (val instanceof Calendard c) {
+                    setTimestamp(stmnt, idx, (Timestamp) c.value, c.calendar, col);
+                } else {
                     setTimestamp(stmnt, idx, (Timestamp) val, null, col);
+                }
                 break;
             case JavaTypes.UUID_OBJ:
                 if (supportsUuidType && (col == null
