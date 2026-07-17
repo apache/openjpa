@@ -24,8 +24,8 @@
     <itemizedlist>
         <listitem>
             <para>
-<ulink url="http://www.jcp.org/en/jsr/detail?id=317">
-Java Persistence 2.0 page</ulink>
+<ulink url="https://jakarta.ee/specifications/persistence/3.2/">
+Java Persistence 3.2 page</ulink>
             </para>
         </listitem>
         <listitem>
@@ -35,7 +35,7 @@ Java Persistence 2.0 page</ulink>
         </listitem>
         <listitem>
             <para>
-<ulink url="http://download.oracle.com/javaee/6/api/index.html">
+<ulink url="https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/module-summary">
 jakarta.persistence Javadoc</ulink>
             </para>
         </listitem>
