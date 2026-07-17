@@ -443,6 +443,8 @@ public class OracleDictionary
             else if (autoAssignClause != null)
                 buf.append(" ").append(autoAssignClause);
         }
+        if (col.getOptions() != null && !col.getOptions().isEmpty())
+            buf.append(" ").append(col.getOptions());
         return buf.toString();
     }
 
