@@ -36,6 +36,11 @@
             <artifactId>openjpa</artifactId>
             <version>${openjpa.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.bval</groupId>
+            <artifactId>org.apache.bval.bundle</artifactId>
+            <version>3.0.2</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

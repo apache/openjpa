@@ -92,7 +92,7 @@
         <version.maven.surefire>3.5.2</version.maven.surefire>
 
         <xbean.version>4.30</xbean.version>
-        <bval.version>3.0.2</bval.version>
+        <bval.version>3.0.2</bval.version> <!-- openjpa-integration/tck/tck32-openjpa-profile.xml need to be in sync -->
         <log4j2.version>2.25.4</log4j2.version>
         <ant.version>1.10.15</ant.version>
 
