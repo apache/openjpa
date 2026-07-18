@@ -17,7 +17,6 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-#set -x ### !!!!!!! FIXME TODO
 
 TCK_VERSION="${TCK_VERSION:-3.2.0}"
 TCK_BASE="${TCK_VERSION:0:3}"
@@ -102,7 +101,6 @@ declare -a JPROPS=()
 
 DB_HOST_ONLY="${DB_HOST%%:*}"
 DB_PORT="${DB_HOST##*:}"
-INT_DB_PORT=${DB_PORT}
 
 TCK_DB_TYPE="${FULL_DB_LIST[${DB_TYPE}]}"
 
@@ -139,43 +137,11 @@ setProps() {
     JPROPS+=("-Dopenjpa.${DB_TYPE}.url=${DB_URL}")
 }
 
-execSql() {
-    local dockerId="${DB_TYPE:0:8}-1"
-    case ${DB_TYPE} in
-        mysql)
-            docker exec ${dockerId} mysql --host="${DB_HOST_ONLY}" --port="${INT_DB_PORT}" \
-                --password="${DB_PASSWORD}" --user="${DB_USER}" --database="${DB_NAME}" ${1} "${2}" 2>/dev/null || echo "${3}"
-            ;;
-        postgresql)
-            docker exec -e PGPASSWORD="${DB_PASSWORD}" ${dockerId} psql -h "${DB_HOST_ONLY}" \
-                -p "${INT_DB_PORT}" -U "${DB_USER}" -d "${DB_NAME}" ${1} "${2}" 2>/dev/null || echo "${3}"
-            ;;
-        mssql)
-            ;;
-        oracle)
-            ;;
-    esac
-}
-
 setProps
 
 if [[ -n "${START_DOCKER}" ]]; then
     echo "Starting dockerized ${DB_TYPE}"
     mvn -N -f ${PROJECT_ROOT} -Ptest-${DB_TYPE}-docker "${JPROPS[@]}" docker:start -Ddocker.showLogs
-    case ${DB_TYPE} in
-        mysql)
-            INT_DB_PORT=3306
-            ;;
-        postgresql)
-            INT_DB_PORT=5432
-            ;;
-        mssql)
-            INT_DB_PORT=1433
-            ;;
-        oracle)
-            INT_DB_PORT=1521
-            ;;
-    esac
 fi
 
 GF_VERSION="${GF_VERSION:-8.0.0}"
@@ -229,35 +195,12 @@ fi
 echo ""
 echo "=== Preparing ${DB_TYPE} database ==="
 
-# Drop stale tables that may have incorrect columns from previous builds.
-# The buildSchema action is add-only and won't remove stale columns.
-echo "Dropping stale ${DB_TYPE} tables..."
-
-execSql -c "
-        DROP TABLE IF EXISTS \"did1bdependent\" CASCADE;
-        DROP TABLE IF EXISTS \"DID1bDependent\" CASCADE;
-        DROP TABLE IF EXISTS \"did1bemployee\" CASCADE;
-        DROP TABLE IF EXISTS \"DID1bEmployee\" CASCADE;
-        DROP TABLE IF EXISTS \"ITEM\" CASCADE;
-        DROP TABLE IF EXISTS \"ORDER1\" CASCADE;
-        DROP TABLE IF EXISTS \"PURCHASE_ORDER\" CASCADE;
-        DROP TABLE IF EXISTS \"COFFEE\" CASCADE;
-        DROP TABLE IF EXISTS \"EMP_MAPKEYCOL\" CASCADE;
-        DROP TABLE IF EXISTS \"EMP_MAPKEYCOL2\" CASCADE;
-    " "Warning: Failed to drop stale tables (non-fatal)"
-
-# Execute stored procedure DDL if available
-SP_DDL="${TCK_HOME}/sql/${TCK_DB_TYPE}/${TCK_DB_TYPE}.ddl.persistence.sprocs.sql"
-if [[ -f "$SP_DDL" ]]; then
-    echo "Creating stored procedures on ${DB_TYPE}..."
-    execSql -f "$SP_DDL" "Warning: Failed to create stored procedures (non-fatal)"
-fi
-
 # Step 6: Run TCK
 echo ""
 echo "=== Running JPA ${TCK_BASE} TCK ==="
 echo ""
 
+#    "-Dmysql.jdbc.version=9.7.0" \
 mvn -e -f "${TCK_POM}" -P "openjpa,${TCK_DB_TYPE}" verify \
     "-Dopenjpa.version=${OPENJPA_VERSION}" \
     "-Dglassfish.container.version=${GF_VERSION}" \

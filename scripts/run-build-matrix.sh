@@ -102,7 +102,7 @@ done
 stopAll() {
 	for profile in ${MATRIX[@]}; do
 		if [[ "${FULL_DB_LIST[${profile}]}" == "docker" ]]; then
-			mvn -N -Ptest-${profile}-docker -Ddocker.stopNamePattern=${profile}* docker:stop -Ddocker.showLogs
+			mvn -N -Ptest-${profile}-docker -Ddocker.stopNamePattern=${profile:0:8}* docker:stop -Ddocker.showLogs
 		fi
 	done
 }
