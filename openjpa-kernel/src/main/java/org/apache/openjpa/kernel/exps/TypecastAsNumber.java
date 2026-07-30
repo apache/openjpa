@@ -21,7 +21,7 @@ package org.apache.openjpa.kernel.exps;
 import org.apache.openjpa.kernel.StoreContext;
 
 /**
- * Extract the part value of a temporal type
+ * Casts a value to a number
  *
  */
 class TypecastAsNumber extends Val {
@@ -61,33 +61,36 @@ class TypecastAsNumber extends Val {
         StoreContext ctx, Object[] params) {
 
         Object r = _val.eval(candidate, orig, ctx, params);
+        if (r == null) {
+        	return null;
+        }
         Class<?> clazz = r.getClass();
         if (_targetType == Integer.class) {
             if (r instanceof String s) {
                 return Integer.valueOf(s);
-            } else if (clazz.isAssignableFrom(Number.class)) {
-                return ((Number) r).intValue();
+            } else if (r instanceof Number n) {
+                return n.intValue();
             }
         } else if (_targetType == Long.class) {
             if (r instanceof String s) {
                 return Long.valueOf(s);
-            } else if (clazz.isAssignableFrom(Number.class)) {
-                return ((Number) r).longValue();
+            } else if (r instanceof Number n) {
+                return n.longValue();
             }
         } else if (_targetType == Float.class) {
             if (r instanceof String s) {
                 return Float.valueOf(s);
-            } else if (clazz.isAssignableFrom(Number.class)) {
-                return ((Number) r).floatValue();
+            } else if (r instanceof Number n) {
+                return n.floatValue();
             }
         } else if (_targetType == Double.class) {
             if (r instanceof String s) {
                 return Double.valueOf(s);
-            } else if (clazz.isAssignableFrom(Number.class)) {
-                return ((Number) r).doubleValue();
+            } else if (r instanceof Number n) {
+                return n.doubleValue();
             }
         }
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("Value is not valid for typecast: " + r);
     }
 
     @Override

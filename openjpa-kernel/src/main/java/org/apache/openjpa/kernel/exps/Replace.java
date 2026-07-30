@@ -59,9 +59,7 @@ class Replace
         String str = _orig.eval(candidate, orig, ctx, params).toString();
         String patt = _patt.eval(candidate, orig, ctx, params).toString();
         String repl = _repl.eval(candidate, orig, ctx, params).toString();
-        while (str.indexOf(patt) != -1) {
-        	str = str.replace(patt, repl);
-        }
+    	str = str.replace(patt, repl);
         return str;
     }
 

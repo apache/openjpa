@@ -59,27 +59,32 @@ class TypecastAsString extends Val {
         StoreContext ctx, Object[] params) {
 
         Object r = _val.eval(candidate, orig, ctx, params);
-        Class<?> clazz = r.getClass();
-        if (Time.class.isAssignableFrom(clazz)) {
-            return ((Time) r).toLocalTime().format(DateTimeFormatter.ISO_TIME);
-        } else if (Timestamp.class.isAssignableFrom(clazz)) {
-            return ((Timestamp) r).toLocalDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        } else if (LocalDateTime.class.isAssignableFrom(clazz)) {
-            return ((LocalDateTime) r).toLocalTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        } else if (LocalTime.class.isAssignableFrom(clazz)) {
-            return ((LocalTime) r).format(DateTimeFormatter.ISO_LOCAL_TIME);
-        } else if (Instant.class.isAssignableFrom(clazz)) {
-            return LocalDateTime.ofInstant((Instant) r, ZoneId.systemDefault()).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        } else if (Date.class.isAssignableFrom(clazz)) {
-            return LocalDateTime.ofInstant(((Date) r).toInstant(), ZoneId.systemDefault()).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        } else if (LocalDate.class.isAssignableFrom(clazz)) {
-            return ((LocalDate) r).format(DateTimeFormatter.ISO_LOCAL_DATE);
-        } else if (Number.class.isAssignableFrom(clazz)) {
-            return String.valueOf((Number) r);
-        } else if (Boolean.class.isAssignableFrom(clazz)) {
-            return String.valueOf((Boolean) r);
+        if (r == null) {
+        	return null;
         }
-        throw new IllegalArgumentException();
+        Class<?> clazz = r.getClass();
+        if (r instanceof Time t) {
+            return t.toLocalTime().format(DateTimeFormatter.ISO_TIME);
+        } else if (r instanceof Timestamp t) {
+            return t.toLocalDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        } else if (r instanceof LocalDateTime d) {
+            return d.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        } else if (r instanceof LocalTime t) {
+            return t.format(DateTimeFormatter.ISO_LOCAL_TIME);
+        } else if (r instanceof Instant i) {
+            return LocalDateTime.ofInstant(i, ZoneId.systemDefault()).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        } else if (r instanceof Date d) {
+        	return d.toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
+        } else if (r instanceof java.util.Date d) {
+            return LocalDateTime.ofInstant(d.toInstant(), ZoneId.systemDefault()).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        } else if (r instanceof LocalDate d) {
+            return d.format(DateTimeFormatter.ISO_LOCAL_DATE);
+        } else if (r instanceof Number n) {
+            return String.valueOf(n);
+        } else if (r instanceof Boolean b) {
+            return String.valueOf(b);
+        }
+        throw new IllegalArgumentException("Value is not supported for typecast: " + r);
     }
 
     @Override
