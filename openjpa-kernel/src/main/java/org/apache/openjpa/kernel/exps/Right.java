@@ -55,10 +55,21 @@ class Right
     protected Object eval(Object candidate, Object orig, StoreContext ctx, Object[] params) {
         Object str = _val.eval(candidate, orig, ctx, params);
         Object arg = _len.eval(candidate, orig, ctx, params);
+        if (str == null) {
+        	return null;
+        } else if (arg == null) {
+        	return str;
+        }
         String s = str.toString();
-        int len = ((Number) arg).intValue();
         int slen = s.length();
-        return len > slen ? s : s.substring(slen - len, slen);
+        int len = ((Number) arg).intValue();
+        boolean inv = len < 0;
+        len = inv ? -len : len;
+        if (len > slen) {
+        	return s;
+        } else {
+        	return inv ? s.substring(len, slen) : s.substring(slen - len, slen);
+        }
     }
 
     @Override

@@ -55,7 +55,21 @@ class Left
     protected Object eval(Object candidate, Object orig, StoreContext ctx, Object[] params) {
         Object str = _val.eval(candidate, orig, ctx, params);
         Object arg = _len.eval(candidate, orig, ctx, params);
-        return str.toString().substring(0, ((Number) arg).intValue());
+        if (str == null) {
+        	return null;
+        } else if (arg == null) {
+        	return str;
+        }
+        String s = str.toString();
+        int slen = s.length();
+        int len = ((Number) arg).intValue();
+        boolean inv = len < 0;
+        len = inv ? -len : len;
+        if (len > slen) {
+        	return s;
+        } else {
+        	return inv ? s.substring(0, slen - len) : s.substring(0, len);
+        }
     }
 
     @Override
@@ -65,4 +79,5 @@ class Left
         _len.acceptVisit(visitor);
         visitor.exit(this);
     }
+    
 }
