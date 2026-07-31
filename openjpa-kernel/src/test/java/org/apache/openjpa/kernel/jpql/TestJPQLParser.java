@@ -234,6 +234,20 @@ public class TestJPQLParser {
     }
     
     @Test
+    public void testReplaceAsIdentifierFunction() {
+    	try {
+    		String query = "SELECT REPLACE(u.name, 'John', u.lastName) "
+    				+ "FROM User u WHERE REPLACE(u.name, 'ohn', 'ack') = 'Jack' AND u.replace = true";
+    		JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+    		assertNotNull(node);
+    		return;
+    	} catch (ParseException ex) {
+    		ex.printStackTrace();
+    	}
+    	fail();
+    }
+
+    @Test
     public void testIdFunctionSimple() {
     	try {
     		String query = "SELECT u FROM User AS u WHERE ID(u) = :id";

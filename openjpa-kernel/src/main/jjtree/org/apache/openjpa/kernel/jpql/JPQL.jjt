@@ -1667,6 +1667,7 @@ void path_component() #IDENTIFICATIONVARIABLE :
 	| t = <TYPE>
 	| t = <CAST>
 	| t = <ID>
+	| t = <REPLACE>
 	| t = <VERSION>
 	| t = <STRING>
 	| t = <CLASS>
