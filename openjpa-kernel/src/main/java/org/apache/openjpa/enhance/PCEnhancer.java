@@ -131,6 +131,14 @@ public class PCEnhancer {
     public static final String PRE = "pc";
     public static final String ISDETACHEDSTATEDEFINITIVE = PRE + "isDetachedStateDefinitive";
 
+    /**
+     * Suffix appended to the name of dynamically-created persistence-capable
+     * subclasses.
+     *
+     * @since 4.2.0
+     */
+    public static final String PCSUBCLASS_SUFFIX = "$pcsubclass";
+
     private static final Class<?> PCTYPE = PersistenceCapable.class;
     private static final Type TYPE_PCTYPE = Type.getType(PersistenceCapable.class);
     private static final String SM = PRE + "StateManager";
@@ -332,13 +340,13 @@ public class PCEnhancer {
 
     static String toPCSubclassName(ClassNodeTracker cnt) {
         return ClassUtil.getPackageName(PCEnhancer.class) + "."
-                + cnt.getClassNode().name.replace('/', '$') + "$pcsubclass";
+                + cnt.getClassNode().name.replace('/', '$') + PCSUBCLASS_SUFFIX;
     }
 
     @Deprecated
     static String toPCSubclassName(Class cls) {
         return ClassUtil.getPackageName(PCEnhancer.class) + "."
-                + cls.getName().replace('.', '$') + "$pcsubclass";
+                + cls.getName().replace('.', '$') + PCSUBCLASS_SUFFIX;
     }
 
     /**
@@ -349,7 +357,7 @@ public class PCEnhancer {
      */
     public static boolean isPCSubclassName(String className) {
         return className.startsWith(ClassUtil.getPackageName(PCEnhancer.class))
-                && className.endsWith("$pcsubclass");
+                && className.endsWith(PCSUBCLASS_SUFFIX);
     }
 
     /**
