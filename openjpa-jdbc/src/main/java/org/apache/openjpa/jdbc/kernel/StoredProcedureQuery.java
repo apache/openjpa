@@ -169,19 +169,21 @@ public class StoredProcedureQuery extends AbstractStoreQuery {
 
         @Override
         public ResultObjectProvider executeQuery(StoreQuery q, Object[] params, Range range) {
+            Connection conn = null;
+            CallableStatement stmnt = null;
+            boolean resetAutoCommit = false;
             try {
                 DBDictionary dict = _store.getDBDictionary();
-                Connection conn = _store.getConnection();
+                conn = _store.getConnection();
 
                 // PostgreSQL requires auto-commit off for procedures
                 // that return REF_CURSOR (cursor lives within transaction)
-                boolean resetAutoCommit = false;
                 if (conn.getAutoCommit() && _proc.getOutColumns().length > 0) {
                     conn.setAutoCommit(false);
                     resetAutoCommit = true;
                 }
 
-                CallableStatement stmnt = conn.prepareCall(_proc.getCallSQL());
+                stmnt = conn.prepareCall(_proc.getCallSQL());
 
                 final StoredProcedureQuery spq = (StoredProcedureQuery) q;
                 for (Column c : spq.getProcedure().getInColumns()) {
@@ -215,10 +217,45 @@ public class StoredProcedureQuery extends AbstractStoreQuery {
                 if (cursorPositions != null) {
                     rop.setCursorOutParams(cursorPositions);
                 }
+                // A REF_CURSOR is only valid inside the transaction opened above, hence the
+                // connection is owned by the provider and released when the provider is closed.
+                rop.setConnection(conn, resetAutoCommit);
                 rop.open();
                 return rop;
             } catch (Exception e) {
+                free(conn, stmnt, resetAutoCommit);
                 throw new RuntimeException(e);
+            }
+        }
+
+        /**
+         * Releases the resources of a failed execution, restoring the auto-commit state
+         * if it had been switched off for a procedure returning a REF_CURSOR.
+         */
+        void free(Connection conn, CallableStatement stmnt, boolean resetAutoCommit) {
+            if (stmnt != null) {
+                try {
+                    stmnt.close();
+                } catch (SQLException ex) {
+
+                }
+            }
+            if (conn == null) {
+                return;
+            }
+            try {
+                if (resetAutoCommit) {
+                    conn.rollback();
+                    conn.setAutoCommit(true);
+                }
+            } catch (SQLException ex) {
+
+            } finally {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+
+                }
             }
         }
 
