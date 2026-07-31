@@ -1,36 +1,27 @@
 # OpenJPA JPA 3.2 TCK Runner
 
 This module runs the Jakarta Persistence 3.2 Technology Compatibility Kit (TCK)
-against OpenJPA using PostgreSQL.
+against OpenJPA. PostgreSQL is the default database; MySQL, MS SQL Server and
+Oracle are also supported via `DB_TYPE`.
 
 ## Prerequisites
 
 - Java 17+
 - Maven 3.x
-- PostgreSQL (via Docker or a standalone instance)
-- `psql` command-line client (for database preparation)
-- `python3`, `curl`, `unzip` (the script checks for all required commands at startup)
+- Docker (unless you point the script at an existing database with `DB_HOST`)
+- `curl`, `unzip`, `grep`, `sed` (the script checks for all required commands at startup)
 
 ## Quick Start
 
-### 1. Start PostgreSQL
+### 1. Build OpenJPA
 
 From the **project root**:
-
-```bash
-docker compose up -d
-```
-
-This starts PostgreSQL on `localhost:5433` with database `openjpa_tck`,
-user `openjpa`, password `openjpa` (see `docker-compose.yml`).
-
-### 2. Build OpenJPA
 
 ```bash
 mvn install -DskipTests
 ```
 
-### 3. Run the TCK
+### 2. Run the TCK
 
 ```bash
 cd openjpa-integration/tck
@@ -38,31 +29,42 @@ cd openjpa-integration/tck
 ```
 
 The script will:
-1. Download the JPA 3.2 TCK (cached in `target/tck32/`)
-2. Extract and patch the TCK with the OpenJPA provider profile
-3. Prepare the PostgreSQL database (drop stale tables, create stored procedures)
-4. Run all 2134 TCK tests
+1. Stop any dockerized databases left over from a previous run
+2. Start a dockerized PostgreSQL via the `test-postgresql-docker` profile
+3. Download the JPA 3.2 TCK (cached in `target/tck32/`)
+4. Extract it and patch its `pom.xml` with the OpenJPA provider profile
+5. Install the TCK artifacts into the local Maven repository
+6. Run the TCK
+
+The database container is started only when `DB_HOST` is unset. Set `DB_HOST` to
+run against a database you manage yourself.
 
 ## Configuration
 
-All settings have sensible defaults matching the `docker-compose.yml` in the
-project root. Override via environment variables:
+All settings have sensible defaults matching the dockerized database the script
+starts. Override via environment variables:
 
-| Variable           | Default              | Description                     |
-|--------------------|----------------------|---------------------------------|
-| `DB_HOST`          | `localhost:5433`     | PostgreSQL host:port            |
-| `DB_USER`          | `openjpa`            | Database user                   |
-| `DB_PASSWORD`      | `openjpa`            | Database password               |
-| `DB_NAME`          | `openjpa_tck`        | Database name                   |
-| `OPENJPA_VERSION`  | `4.2.0-SNAPSHOT`     | OpenJPA version to test         |
-| `TCK_VERSION`      | `3.2.0`              | TCK version to download         |
-| `GF_VERSION`       | `8.0.0`              | GlassFish version for runtime   |
+| Variable           | Default              | Description                          |
+|--------------------|----------------------|--------------------------------------|
+| `DB_TYPE`          | `postgresql`         | `postgresql`, `mysql`, `mssql`, `oracle` |
+| `DB_VERSION`       | `16` (postgresql)    | Database image version               |
+| `DB_HOST`          | `localhost:5555`     | Database host:port — set to skip Docker |
+| `DB_USER`          | `tcktest`            | Database user                        |
+| `DB_PASSWORD`      | `tcktest`            | Database password                    |
+| `DB_NAME`          | `tcktest`            | Database name                        |
+| `OPENJPA_VERSION`  | `4.2.0-SNAPSHOT`     | OpenJPA version to test              |
+| `TCK_VERSION`      | `3.2.0`              | TCK version to download              |
+| `GF_VERSION`       | `8.0.0`              | GlassFish version for runtime        |
 
-Example with a custom database host:
+Examples:
 
 ```bash
-DB_HOST=dbserver:5432 DB_NAME=mydb ./run-tck32.sh
+DB_VERSION=18 ./run-tck32.sh                 # PostgreSQL 18 instead of 16
+DB_TYPE=mysql ./run-tck32.sh                 # MySQL 8.4.8
+DB_HOST=dbserver:5432 DB_NAME=mydb ./run-tck32.sh   # existing database, no Docker
 ```
+
+Arguments after the script name are passed through to the TCK Maven build.
 
 ## Running a Single Test
 
@@ -74,9 +76,9 @@ cd target/tck32/persistence-tck/bin
 mvn verify -P "openjpa,postgresql" \
   -Dglassfish.container.version=8.0.0 \
   -Dopenjpa.version=4.2.0-SNAPSHOT \
-  -Djakarta.persistence.jdbc.user=openjpa \
-  -Djakarta.persistence.jdbc.password=openjpa \
-  "-Djakarta.persistence.jdbc.url=jdbc:postgresql://localhost:5433/openjpa_tck" \
+  -Djakarta.persistence.jdbc.user=tcktest \
+  -Djakarta.persistence.jdbc.password=tcktest \
+  "-Djakarta.persistence.jdbc.url=jdbc:postgresql://localhost:5555/tcktest" \
   -Dit.test='ee.jakarta.tck.persistence.core.derivedid.ex2b.Client#DIDTest'
 ```
 
@@ -99,9 +101,9 @@ cd target/tck32/persistence-tck/bin
 mvn verify -P "openjpa,postgresql" \
   -Dglassfish.container.version=8.0.0 \
   -Dopenjpa.version=4.2.0-SNAPSHOT \
-  -Djakarta.persistence.jdbc.user=openjpa \
-  -Djakarta.persistence.jdbc.password=openjpa \
-  "-Djakarta.persistence.jdbc.url=jdbc:postgresql://localhost:5433/openjpa_tck"
+  -Djakarta.persistence.jdbc.user=tcktest \
+  -Djakarta.persistence.jdbc.password=tcktest \
+  "-Djakarta.persistence.jdbc.url=jdbc:postgresql://localhost:5555/tcktest"
 ```
 
 ## Test Results
