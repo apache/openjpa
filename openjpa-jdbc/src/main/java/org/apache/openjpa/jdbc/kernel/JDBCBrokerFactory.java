@@ -176,7 +176,7 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
     }
 
     @Override
-    public void dropPersistenceStrucuture(boolean dropSchemas) {
+    public void dropPersistenceStructure(boolean dropSchemas) {
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
         Broker broker = super.newBrokerImpl(conf.getConnectionUserName(), conf.getConnectionPassword());
         String baseAction = dropSchemas ? "drop, dropDB": MappingTool.ACTION_DROP;
@@ -184,7 +184,7 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
     }
 
     @Override
-    public void validatePersistenceStruture() throws Exception {
+    public void validatePersistenceStructure() throws Exception {
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
         Broker broker = super.newBrokerImpl(conf.getConnectionUserName(), conf.getConnectionPassword());
         synchronizeMappings(broker.getClassLoader(), conf, "validate(ForeignKeys=true)");

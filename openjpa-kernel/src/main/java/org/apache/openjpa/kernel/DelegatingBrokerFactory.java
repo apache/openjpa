@@ -272,18 +272,18 @@ public class DelegatingBrokerFactory
     }
 
     @Override
-    public void dropPersistenceStrucuture(boolean dropSchemas) {
+    public void dropPersistenceStructure(boolean dropSchemas) {
         try {
-            _factory.dropPersistenceStrucuture(dropSchemas);
+            _factory.dropPersistenceStructure(dropSchemas);
         } catch (RuntimeException re) {
             throw translate(re);
         }
     }
 
     @Override
-    public void validatePersistenceStruture() throws Exception {
+    public void validatePersistenceStructure() throws Exception {
         try {
-            _factory.validatePersistenceStruture();
+            _factory.validatePersistenceStructure();
         } catch (MetaDataException mde) {
             throw new IllegalStateException(mde.getLocalizedMessage(), (OpenJPAException) mde);
         }

@@ -45,13 +45,13 @@ public class SchemaManagerImpl implements SchemaManager {
 
     @Override
     public void drop(boolean dropSchemas) {
-        _factory.dropPersistenceStrucuture(dropSchemas);
+        _factory.dropPersistenceStructure(dropSchemas);
     }
 
     @Override
     public void validate() throws SchemaValidationException {
         try {
-            _factory.validatePersistenceStruture();
+            _factory.validatePersistenceStructure();
         } catch (Exception ex) {
             throw new SchemaValidationException(
                     String.format("Schema could not be validated: %s", ex.getLocalizedMessage()),

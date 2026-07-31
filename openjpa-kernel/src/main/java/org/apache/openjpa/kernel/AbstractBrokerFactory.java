@@ -479,12 +479,12 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
     }
     
     @Override
-    public void dropPersistenceStrucuture(boolean dropSchemas) {
+    public void dropPersistenceStructure(boolean dropSchemas) {
     	throw new UnsupportedOperationException();
     }
     
     @Override
-    public void validatePersistenceStruture() throws Exception {
+    public void validatePersistenceStructure() throws Exception {
     	throw new UnsupportedOperationException();
     }
     

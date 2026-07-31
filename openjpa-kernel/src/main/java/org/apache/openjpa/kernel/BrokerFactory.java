@@ -179,7 +179,7 @@ public interface BrokerFactory
      *
      * @since 4.2.0
      */
-    void dropPersistenceStrucuture(boolean dropSchemas);
+    void dropPersistenceStructure(boolean dropSchemas);
 
     /**
      * Validates that the live database schema matches the metadata of the
@@ -188,7 +188,7 @@ public interface BrokerFactory
      *
      * @since 4.2.0
      */
-    void validatePersistenceStruture() throws Exception;
+    void validatePersistenceStructure() throws Exception;
 
     /**
      * Truncates all rows from tables managed by the persistence unit.
