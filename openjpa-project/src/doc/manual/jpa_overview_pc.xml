@@ -1164,7 +1164,7 @@ data structure.
                             lifecycle callbacks
                         </seealso>
                     </indexterm>
-<ulink url="https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/postupdate">
+<ulink url="https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/preupdate">
 <classname>PreUpdate</classname></ulink>: Methods marked with this annotation
 will be invoked just the persistent values in your objects are flushed to the
 datastore. This is equivalent to the XML element tag <literal>
