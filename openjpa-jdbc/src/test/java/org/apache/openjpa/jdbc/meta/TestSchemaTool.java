@@ -49,6 +49,7 @@ public class TestSchemaTool {
           {"org/apache/openjpa/jdbc/meta/testScript4", List.of()},
           {"org/apache/openjpa/jdbc/meta/testScriptMulti1", List.of("SELECT * FROM MyTable")},
           {"org/apache/openjpa/jdbc/meta/testScriptMulti2", List.of()},
+          {"org/apache/openjpa/jdbc/meta/testScriptCommented", List.of("SELECT * FROM Customer c  WHERE c.id = 1")}
       });
     }
     @Parameter(0)

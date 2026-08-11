@@ -593,7 +593,7 @@ public class SchemaTool {
                         int cutStart = multiStartIdx > -1 ? multiStartIdx : 0;
                         if (multiEndIdx > -1) {
                             inside = false;
-                            str = str.substring(cutStart, multiEndIdx);
+                            str = str.substring(0, cutStart) + str.substring(multiEndIdx + 2);
                         } else {
                             str = str.substring(0, cutStart);
                         }
