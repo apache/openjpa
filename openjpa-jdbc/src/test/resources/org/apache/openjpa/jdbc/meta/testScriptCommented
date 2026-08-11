@@ -1,0 +1,2 @@
+SELECT * FROM Customer c /* some comment */ WHERE c.id = 1;
+ 

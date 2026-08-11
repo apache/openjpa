@@ -54,6 +54,18 @@ public class Replace
         _subs = pattern;
         _repl = replacement;
     }
+    
+    public Val getOriginal() {
+    	return _orig;
+    }
+    
+    public Val getPattern() {
+    	return _subs;
+    }
+    
+    public Val getReplacement() {
+    	return _repl;
+    }
 
     @Override
     public ClassMetaData getMetaData() {
@@ -159,7 +171,7 @@ public class Replace
 
     @Override
     public int getId() {
-        return Val.SUBSTRING_VAL;
+        return Val.REPLACE_VAL;
     }
     
     private static class ReplaceExpState extends ExpState {

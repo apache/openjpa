@@ -158,7 +158,7 @@ public class Right
 
     @Override
     public int getId() {
-        return Val.SUBSTRING_VAL;
+        return Val.RIGHT_VAL;
     }
 }
 

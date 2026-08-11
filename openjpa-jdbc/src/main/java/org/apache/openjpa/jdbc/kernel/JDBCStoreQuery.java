@@ -817,6 +817,12 @@ public class JDBCStoreQuery
             return handleAbsVal(value, ob, params, sm);
         case Val.SQRT_VAL:
             return handleSqrtVal(value, ob, params, sm);
+        case Val.LEFT_VAL:
+        	return handleLeftVal(value, ob, params, sm);
+        case Val.RIGHT_VAL:
+        	return handleRightVal(value, ob, params, sm);
+        case Val.REPLACE_VAL:
+        	return handleReplaceVal(value, ob, params, sm);
         default:
             throw new UnsupportedException();
         }
@@ -884,6 +890,69 @@ public class JDBCStoreQuery
         int length = ((Long) arg2).intValue();
         int endIdx = startIdx + length;
         return val1.substring(startIdx, endIdx);
+    }
+    
+    private Object handleLeftVal(Object value, Object ob, Object[] params, OpenJPAStateManager sm) {
+    	org.apache.openjpa.jdbc.kernel.exps.Left leftVal= (org.apache.openjpa.jdbc.kernel.exps.Left) value;
+    	Val value1 = leftVal.getVal1();
+    	String s = (String) getValue(value1, ob, params, sm);
+    	
+    	Val value2 = leftVal.getVal2();
+    	Object arg = getValue(value2, ob, params, sm);
+    	
+    	if (s == null) {
+    		return null;
+    	} else if (arg == null) {
+    		return s;
+    	}
+
+        int slen = s.length();
+        int len = ((Number) arg).intValue();
+        boolean inv = len < 0;
+        len = inv ? -len : len;
+        if (len > slen) {
+        	return s;
+        } else {
+        	return inv ? s.substring(0, slen - len) : s.substring(0, len);
+        }
+    }
+
+    private Object handleRightVal(Object value, Object ob, Object[] params, OpenJPAStateManager sm) {
+    	org.apache.openjpa.jdbc.kernel.exps.Right rightVal= (org.apache.openjpa.jdbc.kernel.exps.Right) value;
+    	Val value1 = rightVal.getVal1();
+    	String s = (String) getValue(value1, ob, params, sm);
+    	
+    	Val value2 = rightVal.getVal2();
+    	Object arg = getValue(value2, ob, params, sm);
+
+    	if (s == null) {
+    		return null;
+    	} else if (arg == null) {
+    		return s;
+    	}
+
+        int slen = s.length();
+        int len = ((Number) arg).intValue();
+        boolean inv = len < 0;
+        len = inv ? -len : len;
+        if (len > slen) {
+        	return s;
+        } else {
+        	return inv ? s.substring(len, slen) : s.substring(slen - len, slen);
+        }
+    }
+    
+    private Object handleReplaceVal(Object value , Object ob, Object[] params, OpenJPAStateManager sm) {
+    	org.apache.openjpa.jdbc.kernel.exps.Replace replaceVal = (org.apache.openjpa.jdbc.kernel.exps.Replace) value;
+    	
+    	Val strVal = replaceVal.getOriginal();
+    	Val patternVal = replaceVal.getPattern();
+    	Val replacementVal = replaceVal.getPattern();
+    	
+    	String str = (String) getValue(strVal, ob, params, sm);
+    	String patt = (String) getValue(patternVal, ob, params, sm);
+    	String repl = (String) getValue(replacementVal, ob, params, sm);
+        return str == null ? null : str.replace(patt, repl);
     }
 
     private Object handleArgsVal(Object value, Object ob, Object[] params,

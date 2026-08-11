@@ -82,6 +82,9 @@ public interface Val
     int SIGN_VAL = 23;
     int EXTRACTDTF_VAL = 24;
     int EXTRACTDTP_VAL = 25;
+    int LEFT_VAL = 26;
+    int RIGHT_VAL = 27;
+    int REPLACE_VAL = 28;
 
     /**
      * Initialize the value. This method should recursively initialize any

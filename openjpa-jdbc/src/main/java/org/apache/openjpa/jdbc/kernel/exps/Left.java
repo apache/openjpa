@@ -158,7 +158,7 @@ public class Left
 
     @Override
     public int getId() {
-        return Val.SUBSTRING_VAL;
+        return Val.LEFT_VAL;
     }
 }
 
