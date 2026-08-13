@@ -1381,11 +1381,6 @@ public class AnnotationPersistenceMetaDataParser
      * the converter is stored as an embedded converter; otherwise it is the
      * direct converter for this field.
      */
-    /**
-     * Apply a field-level @Convert annotation. If attributeName is specified,
-     * the converter is stored as an embedded converter; otherwise it is the
-     * direct converter for this field.
-     */
     private void applyFieldConvert(FieldMetaData fmd, Convert convert) {
         if (convert.disableConversion())
             return;

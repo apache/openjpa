@@ -44,6 +44,7 @@ import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.spi.LoadState;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.kernel.AutoDetach;
 import org.apache.openjpa.kernel.Broker;
@@ -868,7 +869,11 @@ public class EntityManagerFactoryImpl
     		// causing getClass() mismatches in equals(). To ensure consistent
     		// class identity, re-find managed entities from the database so that
     		// the returned instance is a subclass (matching what find() returns).
-    		if (result != null && em.contains(result)) {
+    		// Enhanced entities implements PersistenceCapable directly according 
+    		// to OpenJPAPersistenceUtil#toPC
+    		if (result != null 
+    				&& !(result instanceof PersistenceCapable) 
+    				&& em.contains(result)) {
     			try {
     				Object id = getPersistenceUnitUtil().getIdentifier(result);
     				if (id != null) {
@@ -886,7 +891,11 @@ public class EntityManagerFactoryImpl
     		return result;
     	} catch (Exception ex) {
     		if (jtaTransaction) {
-    			broker.rollback();
+    			if (startedTransaction) {
+    				broker.rollback();
+    			} else {
+    				broker.setRollbackOnly();
+    			}
     		} else {
     			try {
     				em.getTransaction().rollback();
@@ -894,7 +903,7 @@ public class EntityManagerFactoryImpl
     				// Transaction may already be rolled back
     			}
     		}
-    		throw new UserException(ex.getMessage(), ex);
+    		throw new PersistenceException(ex.getMessage(), new Throwable[] {ex}, null, true);
     	} finally {
     		em.close();
     	}

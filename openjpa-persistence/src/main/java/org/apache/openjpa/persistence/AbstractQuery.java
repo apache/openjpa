@@ -325,7 +325,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
     @Override
     public <T> Parameter<T> getParameter(String name, Class<T> type) {
         Parameter<?> param = getParameter(name);
-        if (!param.getParameterType().isAssignableFrom(type))
+        if (!type.isAssignableFrom(param.getParameterType()))
             throw new IllegalArgumentException(param + " does not match the requested type " + type);
         return (Parameter<T>) param;
     }
