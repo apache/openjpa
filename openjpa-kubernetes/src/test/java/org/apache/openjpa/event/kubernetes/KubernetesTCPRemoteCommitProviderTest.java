@@ -31,7 +31,6 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
 import java.lang.reflect.Field;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.openjpa.event.TCPRemoteCommitProvider;
@@ -131,9 +130,7 @@ public class KubernetesTCPRemoteCommitProviderTest {
     }
 
     @Test
-    public void addresses() throws UnknownHostException, NoSuchFieldException,
-            IllegalArgumentException, IllegalAccessException, InterruptedException {
-
+    public void addresses() throws Exception {
         // prepare KubernetesTCPRemoteCommitProvider instance, inject mocked Kubernetes client
         KubernetesTCPRemoteCommitProvider rcp = new KubernetesTCPRemoteCommitProvider() {
 
@@ -144,7 +141,9 @@ public class KubernetesTCPRemoteCommitProviderTest {
         };
         rcp.setNamespace(NAMESPACE);
         rcp.setLabel(LABEL);
-        rcp.setCacheDurationMillis(500);
+        // mock will drop all IPs if test will run too long.
+        // 5 sec should be enough
+        rcp.setCacheDurationMillis(5000);
 
         // mock OpenJPA configuration
         Configuration conf = context.mock(Configuration.class);
