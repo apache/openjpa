@@ -1637,13 +1637,6 @@
                                 </image>
                             </images>
                         </configuration>
-                        <dependencies>
-                            <dependency>
-                                <groupId>com.google.guava</groupId>
-                                <artifactId>guava</artifactId>
-                                <version>33.2.1-jre</version>
-                            </dependency>
-                        </dependencies>
                     </plugin>
                 </plugins>
             </build>
