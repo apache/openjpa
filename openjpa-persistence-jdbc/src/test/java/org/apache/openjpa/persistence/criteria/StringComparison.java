@@ -24,6 +24,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Logger;
 
 /**
@@ -31,9 +32,9 @@ import java.util.logging.Logger;
  *
  */
 public class StringComparison {
-	
+
 	private static final Logger logger = Logger.getLogger(StringComparison.class.getCanonicalName());
-	
+
 	private static List<String> _reserved = Arrays.asList(new String[] {
 			"ALL", "AND", "ANY", "AS", "ASC", "AVG",
 			"BETWEEN", "BIT_LENGTH", "BY",
@@ -60,7 +61,7 @@ public class StringComparison {
 	});
 
 	private boolean isReservedWord(String s) {
-		return _reserved.contains(s.toUpperCase());
+		return _reserved.contains(s.toUpperCase(Locale.ROOT));
 	}
 
 	public List<String> tokenize(String s) throws IOException {

@@ -40,6 +40,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -209,7 +210,7 @@ public class FieldMetaData
     private transient Method _converterExtMethod;
     private transient Method _converterFactMethod;
     private transient Class _converterDbType;
-    
+
     // intermediate and impl data
     private boolean _intermediate = true;
     private Boolean _implData = Boolean.TRUE;
@@ -1189,7 +1190,7 @@ public class FieldMetaData
                         asc = true;
                     else {
                         asc = decs[i].substring(spc + 1).trim().
-                            toLowerCase().startsWith("asc");
+                            toLowerCase(Locale.ROOT).startsWith("asc");
                         decs[i] = decs[i].substring(0, spc);
                     }
                     orders[i] = getRepository().newOrder(this, decs[i], asc);

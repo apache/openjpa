@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.identifier;
 
+import java.util.Locale;
 import java.util.Objects;
 
 import org.apache.openjpa.lib.identifier.IdentifierConfiguration;
@@ -144,7 +145,7 @@ public class Normalizer {
         // Do not convert delimited names to upper case.  They may have
         // been delimited to preserve case.
         if (!isDelimited(nName)) {
-            nName = name.toUpperCase();
+            nName = name.toUpperCase(Locale.ROOT);
         }
         return nName;
     }

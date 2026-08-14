@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.simple;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.util.Locale;
 
 import jakarta.persistence.EntityManagerFactory;
 
@@ -83,7 +84,7 @@ public class TestSchemaGenAnnotations extends SingleEMFTestCase {
 
         assertTrue("Create script should exist", createFile.exists());
         String createSql = new String(Files.readAllBytes(createFile.toPath()));
-        String createUpper = createSql.toUpperCase();
+        String createUpper = createSql.toUpperCase(Locale.ROOT);
 
         assertTrue("Should contain CREATE TABLE SCHEMAGENEMP: " + createSql,
             createUpper.contains("CREATE TABLE SCHEMAGENEMP"));
@@ -109,7 +110,7 @@ public class TestSchemaGenAnnotations extends SingleEMFTestCase {
 
         // Check drop script
         String dropSql = new String(Files.readAllBytes(dropFile.toPath()));
-        String dropUpper = dropSql.toUpperCase();
+        String dropUpper = dropSql.toUpperCase(Locale.ROOT);
         assertTrue("Drop script should contain DROP TABLE SCHEMAGENEMP: " + dropSql,
             dropUpper.contains("DROP TABLE") && dropUpper.contains("SCHEMAGENEMP"));
         assertTrue("Drop script should contain DROP TABLE SCHEMAGENDEPT: " + dropSql,
@@ -140,7 +141,7 @@ public class TestSchemaGenAnnotations extends SingleEMFTestCase {
 
         assertTrue("Create script should exist", createFile.exists());
         String createSql = new String(Files.readAllBytes(createFile.toPath()));
-        String createUpper = createSql.toUpperCase();
+        String createUpper = createSql.toUpperCase(Locale.ROOT);
 
         assertTrue("Should contain CREATE TABLE SCHEMAGENSIMPLE: " + createSql,
             createUpper.contains("CREATE TABLE SCHEMAGENSIMPLE"));
@@ -159,7 +160,7 @@ public class TestSchemaGenAnnotations extends SingleEMFTestCase {
 
         // Drop script
         String dropSql = new String(Files.readAllBytes(dropFile.toPath()));
-        String dropUpper = dropSql.toUpperCase();
+        String dropUpper = dropSql.toUpperCase(Locale.ROOT);
         assertTrue("Drop should contain SCHEMAGENSIMPLE: " + dropSql,
             dropUpper.contains("SCHEMAGENSIMPLE"));
         assertTrue("Drop should contain SCHEMAGENSIMPLE_SECOND: " + dropSql,

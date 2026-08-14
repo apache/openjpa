@@ -30,6 +30,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -2176,11 +2177,11 @@ public class TestEmbeddable extends SQLListenerTestCase {
         tran.commit();
         boolean found = false;
         for (String sqlStr : sql) {
-            if (sqlStr.toUpperCase().indexOf("ITEM2_XXX") != -1) {
+            if (sqlStr.toUpperCase(Locale.ROOT).indexOf("ITEM2_XXX") != -1) {
                 found = true;
                 break;
             }
-            if (sqlStr.toUpperCase().indexOf("ITEM2_IMAGES") != -1) {
+            if (sqlStr.toUpperCase(Locale.ROOT).indexOf("ITEM2_IMAGES") != -1) {
                 found = false;
                 break;
             }
@@ -3092,7 +3093,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         tran.commit();
         boolean found = false;
         for (String sqlStr : sql) {
-            if (sqlStr.toUpperCase().indexOf("A_EMBEDS") != -1) {
+            if (sqlStr.toUpperCase(Locale.ROOT).indexOf("A_EMBEDS") != -1) {
                 found = true;
                 break;
             }
@@ -3101,7 +3102,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
 
         found = false;
         for (String sqlStr : sql) {
-            if (sqlStr.toUpperCase().indexOf("VALUE") != -1) {
+            if (sqlStr.toUpperCase(Locale.ROOT).indexOf("VALUE") != -1) {
                 found = true;
                 break;
             }

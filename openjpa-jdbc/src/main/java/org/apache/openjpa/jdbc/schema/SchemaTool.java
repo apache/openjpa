@@ -38,6 +38,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
@@ -1236,7 +1237,7 @@ public class SchemaTool {
      */
     public boolean createTable(Table table)
         throws SQLException {
-        String tableName = table.getFullIdentifier().getName().toUpperCase();
+        String tableName = table.getFullIdentifier().getName().toUpperCase(Locale.ROOT);
         if (_log.isTraceEnabled()) {
             _log.trace("createTable: " + tableName + " action=" + _action
                 + " droppedTables=" + _droppedTables);
@@ -1516,17 +1517,17 @@ public class SchemaTool {
                         statement.executeUpdate(s);
                         // Track DROP/CREATE TABLE for drop-then-rebuild flows
                         if (ACTION_EXECUTE_SCRIPT.equals(_action)) {
-                            String upper = s.toUpperCase().trim();
+                            String upper = s.toUpperCase(Locale.ROOT).trim();
                             if (upper.startsWith("DROP TABLE")) {
                                 String tableName = s.trim()
                                     .substring("DROP TABLE".length()).trim()
                                     .replaceAll("(?i)\\s*(IF EXISTS|CASCADE).*", "")
-                                    .trim().toUpperCase();
+                                    .trim().toUpperCase(Locale.ROOT);
                                 _droppedTables.add(tableName);
                             } else if (upper.startsWith("CREATE TABLE")) {
                                 String tableName = s.trim()
                                     .substring("CREATE TABLE".length()).trim()
-                                    .split("\\s*\\(")[0].trim().toUpperCase();
+                                    .split("\\s*\\(")[0].trim().toUpperCase(Locale.ROOT);
                                 _droppedTables.remove(tableName);
                             }
                         }

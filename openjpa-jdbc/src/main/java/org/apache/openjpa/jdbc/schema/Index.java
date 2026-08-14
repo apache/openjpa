@@ -19,6 +19,7 @@
 package org.apache.openjpa.jdbc.schema;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
@@ -80,7 +81,7 @@ public class Index extends LocalConstraint {
         if (descending) {
             if (_columnDesc == null)
                 _columnDesc = new HashMap<>();
-            _columnDesc.put(col.getName().toUpperCase(), Boolean.TRUE);
+            _columnDesc.put(col.getName().toUpperCase(Locale.ROOT), Boolean.TRUE);
         }
     }
 
@@ -93,7 +94,7 @@ public class Index extends LocalConstraint {
         String name = col.getIdentifier().getName();
         if (name == null)
             return false;
-        Boolean desc = _columnDesc.get(name.toUpperCase());
+        Boolean desc = _columnDesc.get(name.toUpperCase(Locale.ROOT));
         return desc != null && desc;
     }
 

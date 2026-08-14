@@ -91,6 +91,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -1970,7 +1971,7 @@ public class XMLPersistenceMetaDataParser
         String lm = _conf.getLockManager();
         boolean optimistic = _conf.getOptimistic();
         if (lm != null) {
-            lm = lm.toLowerCase();
+            lm = lm.toLowerCase(Locale.ROOT);
             if (lm.contains("pessimistic")) {
                 if (lmt == LockModeType.NONE && !optimistic) {
                     if (log != null && log.isWarnEnabled()) {

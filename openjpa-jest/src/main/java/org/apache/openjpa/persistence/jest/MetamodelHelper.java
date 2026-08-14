@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.ManagedType;
@@ -136,7 +137,7 @@ public class MetamodelHelper {
     }
 
     public static String getTagByAttributeType(Attribute<?, ?> attr) {
-        return getAttributeCategory(attr).name().replace(UNDERSCORE, DASH).toLowerCase();
+        return getAttributeCategory(attr).name().replace(UNDERSCORE, DASH).toLowerCase(Locale.ROOT);
     }
 
     /**

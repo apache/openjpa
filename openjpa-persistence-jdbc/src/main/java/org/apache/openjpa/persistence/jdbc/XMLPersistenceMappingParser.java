@@ -64,6 +64,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -1172,7 +1173,7 @@ public class XMLPersistenceMappingParser
 
         val = attrs.getValue("unique");
         if (val != null)
-            _unique.add(Enum.valueOf(UniqueFlag.class, val.toUpperCase()));
+            _unique.add(Enum.valueOf(UniqueFlag.class, val.toUpperCase(Locale.ROOT)));
         val = attrs.getValue("table");
         if (val != null) {
             if (_colTable != null && !_colTable.equals(val))
@@ -1387,7 +1388,7 @@ public class XMLPersistenceMappingParser
         MultiQueryMetaData.Parameter.Mode mode =
             MultiQueryMetaData.Parameter.Mode.IN;
         if (modeStr != null) {
-            switch (modeStr.toUpperCase()) {
+            switch (modeStr.toUpperCase(Locale.ROOT)) {
                 case "OUT":
                     mode = MultiQueryMetaData.Parameter.Mode.OUT;
                     break;

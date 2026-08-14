@@ -19,6 +19,7 @@
 package org.apache.openjpa.jdbc.identifier;
 
 import java.io.Serializable;
+import java.util.Locale;
 
 import org.apache.openjpa.lib.identifier.Identifier;
 import org.apache.openjpa.lib.identifier.IdentifierImpl;
@@ -734,7 +735,7 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
         // Do not convert delimited names to lower case.  They may have
         // been delimited to preserve case.
         if (force || !Normalizer.isDelimited(sName.getNameInternal())) {
-            sName.setNameInternal(sName.getNameInternal().toLowerCase());
+            sName.setNameInternal(sName.getNameInternal().toLowerCase(Locale.ROOT));
         }
         return sName;
     }
@@ -763,7 +764,7 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
         // been delimited to preserve case.
         if (force || !Normalizer.isDelimited(name.getNameInternal())) {
             DBIdentifier sName = name.clone();
-            sName.setNameInternal(sName.getNameInternal().toUpperCase());
+            sName.setNameInternal(sName.getNameInternal().toUpperCase(Locale.ROOT));
             return sName;
         }
         return name;
@@ -882,7 +883,7 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
         }
         String strName = Normalizer.removeDelimiters(name.getNameInternal());
         DBIdentifier sName = name.clone();
-        sName.setNameInternal(strName.toUpperCase());
+        sName.setNameInternal(strName.toUpperCase(Locale.ROOT));
         return sName;
     }
 

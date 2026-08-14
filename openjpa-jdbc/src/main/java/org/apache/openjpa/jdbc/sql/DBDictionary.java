@@ -5230,8 +5230,8 @@ public class DBDictionary
         StoredProcedure sp = findStoredProcedure(meta, catalog, schema, procedure);
         // If not found and name has uppercase chars, try lowercase
         // (databases like PostgreSQL fold unquoted identifiers to lowercase)
-        if (sp == null && !procedure.equals(procedure.toLowerCase())) {
-            sp = findStoredProcedure(meta, catalog, schema, procedure.toLowerCase());
+        if (sp == null && !procedure.equals(procedure.toLowerCase(Locale.ROOT))) {
+            sp = findStoredProcedure(meta, catalog, schema, procedure.toLowerCase(Locale.ROOT));
         }
         _procs.put(procedure, sp);
         return sp;

@@ -97,7 +97,7 @@ public class ServerLogPanel extends ScrollableTable<LogStatement>
             }
             String preamble = s.substring(0,n);
             if (preamble.equalsIgnoreCase(marker)) {
-                style = "sql-"+marker.toLowerCase();
+                style = "sql-"+marker.toLowerCase(Locale.ROOT);
                 return style;
             }
         }

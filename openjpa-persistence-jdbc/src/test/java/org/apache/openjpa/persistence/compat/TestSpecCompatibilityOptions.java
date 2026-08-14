@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import jakarta.persistence.EntityManager;
@@ -62,7 +63,7 @@ extends AbstractCachedEMFTestCase {
             String vMode = emf.getConfiguration().getValidationMode();
             assertEquals("NONE", vMode);
             Specification spec = emf.getConfiguration().getSpecificationInstance();
-            assertEquals("JPA", spec.getName().toUpperCase());
+            assertEquals("JPA", spec.getName().toUpperCase(Locale.ROOT));
             assertEquals(spec.getVersion(), 1);
         } finally {
             closeEMF(emf);
@@ -89,7 +90,7 @@ extends AbstractCachedEMFTestCase {
             String vMode = emf.getConfiguration().getValidationMode();
             assertEquals("AUTO", vMode);
             Specification spec = emf.getConfiguration().getSpecificationInstance();
-            assertEquals("JPA", spec.getName().toUpperCase());
+            assertEquals("JPA", spec.getName().toUpperCase(Locale.ROOT));
             assertEquals(spec.getVersion(), 2);
         } finally {
             closeEMF(emf);

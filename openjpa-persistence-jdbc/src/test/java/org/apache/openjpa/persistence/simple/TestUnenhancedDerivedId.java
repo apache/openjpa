@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.simple;
 
 import java.util.List;
+import java.util.Locale;
 
 import jakarta.persistence.EntityManager;
 
@@ -357,7 +358,7 @@ public class TestUnenhancedDerivedId extends SingleEMFTestCase {
         assertEquals("FK should have 1 column", 1, fkCols.length);
 
         String fkColName = fkCols[0].getIdentifier().getName()
-            .toUpperCase();
+            .toUpperCase(Locale.ROOT);
         assertEquals(
             "@MapsId FK column should use default FK naming convention "
             + "(field_name + '_' + referenced PK column name)",

@@ -23,6 +23,7 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Locale;
 
 import jpa.tools.swing.SourceCodeViewer;
 
@@ -123,7 +124,7 @@ public class SourceCodeBrowser {
 
     URI convertForWindows(URI uri) {
         String os = System.getProperty("os.name");
-        boolean windows = os.toLowerCase().indexOf("windows") != -1;
+        boolean windows = os.toLowerCase(Locale.ROOT).indexOf("windows") != -1;
         return URI.create(uri.getScheme() + (windows ? "://" : "") + uri.getRawSchemeSpecificPart());
     }
 }

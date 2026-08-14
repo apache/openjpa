@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.hugariannotation;
 
+import java.util.Locale;
+
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
@@ -53,7 +55,7 @@ public class TestHungarianNotationRemoval extends SingleEMFTestCase {
 
             assertTrue(
                     "Failed to removed Hungarian Notation, resulting column name : "
-                            + name, name.toUpperCase().startsWith("FOOBAR"));
+                            + name, name.toUpperCase(Locale.ROOT).startsWith("FOOBAR"));
         }
     }
 
@@ -79,8 +81,8 @@ public class TestHungarianNotationRemoval extends SingleEMFTestCase {
 
         for (FieldMapping fm : cm.getFieldMappings()) {
             String name = fm.getColumns()[0].getName();
-            assertTrue(name.toUpperCase().endsWith("FOOBAR"));
-            assertFalse(name.toUpperCase().startsWith("FOOBAR"));
+            assertTrue(name.toUpperCase(Locale.ROOT).endsWith("FOOBAR"));
+            assertFalse(name.toUpperCase(Locale.ROOT).startsWith("FOOBAR"));
         }
     }
     */

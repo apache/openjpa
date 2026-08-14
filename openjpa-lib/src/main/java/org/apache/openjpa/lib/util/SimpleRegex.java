@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.lib.util;
 
+import java.util.Locale;
+
 /**
  * Allows for simple regex style testing of strings. The wildcard '.'
  * is used to represent any single character, while '.*' is used to represent
@@ -38,7 +40,7 @@ public class SimpleRegex {
         // If we're case insensitive, toLowerCase the expr.  We'll toLowerCase
         // each target, too, in the matches call.
         if (caseInsensitive)
-            this.expr = expr.toLowerCase();
+            this.expr = expr.toLowerCase(Locale.ROOT);
         else
             this.expr = expr;
     }
@@ -46,7 +48,7 @@ public class SimpleRegex {
     public boolean matches(String target) {
         // If we're case insensitive, toLowerCase the target
         if (caseInsensitive)
-            target = target.toLowerCase();
+            target = target.toLowerCase(Locale.ROOT);
 
         // By default, we are not position independent("mobile"). We only
         // become position independent once we hit our first ".*".

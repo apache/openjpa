@@ -25,6 +25,7 @@ import java.lang.reflect.Modifier;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.lib.log.Log;
@@ -304,7 +305,7 @@ public abstract class AbstractMetaDataDefaults
         }
 
         if (name.length() == 1) {
-            return name.toLowerCase();
+            return name.toLowerCase(Locale.ROOT);
         }
         return Character.toLowerCase(name.charAt(0)) + name.substring(1);
     }

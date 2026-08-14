@@ -31,6 +31,7 @@ import java.time.temporal.Temporal;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -214,7 +215,7 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
     public <N extends Number> Expression<N> abs(Expression<N> x) {
         return new Expressions.Abs<>(x);
     }
-    
+
     @Override
     public <N extends Number> Expression<N> ceiling(Expression<N> x) {
     	return new Expressions.Ceiling<>(x);
@@ -1170,7 +1171,7 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 	public Expression<String> left(Expression<String> x, Expression<Integer> len) {
 		return new Expressions.Left(x, len);
 	}
-	
+
 	@Override
 	public Expression<String> right(Expression<String> x, int len) {
 		return new Expressions.Right(x, len);
@@ -1203,7 +1204,7 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 
 	@Override
 	public <N, T extends Temporal> Expression<N> extract(TemporalField<N, T> field, Expression<T> temporal) {
-		String fieldName = field.toString().toUpperCase();
+		String fieldName = field.toString().toUpperCase(Locale.ROOT);
 		DateTimeExtractField extractField = DateTimeExtractField.valueOf(fieldName);
 		@SuppressWarnings("unchecked")
 		Class<N> resultType = fieldName.equals("SECOND") ? (Class<N>) Double.class : (Class<N>) Integer.class;

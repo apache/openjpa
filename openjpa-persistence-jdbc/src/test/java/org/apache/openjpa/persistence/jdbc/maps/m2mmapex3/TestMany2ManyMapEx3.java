@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.jdbc.maps.m2mmapex3;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import jakarta.persistence.EntityManager;
@@ -146,7 +147,7 @@ public class TestMany2ManyMapEx3 extends SQLListenerTestCase {
             setCandidate(q, Employee.class);
         rs = q.getResultList();
         if (!inMemory)
-            assertTrue(sql.get(0).toUpperCase().indexOf(" GROUP BY ") != -1);
+            assertTrue(sql.get(0).toUpperCase(Locale.ROOT).indexOf(" GROUP BY ") != -1);
 
         query = "select KEY(p) as k, KEY(p).name from Employee e, " +
           " in (e.phones) p ORDER BY k";

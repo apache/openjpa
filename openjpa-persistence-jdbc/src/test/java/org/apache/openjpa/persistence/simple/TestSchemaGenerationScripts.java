@@ -25,6 +25,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -91,9 +92,9 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
         String dropSql = new String(Files.readAllBytes(dropFile.toPath()));
 
         assertTrue("Create script should contain CREATE TABLE",
-            createSql.toUpperCase().contains("CREATE TABLE"));
+            createSql.toUpperCase(Locale.ROOT).contains("CREATE TABLE"));
         assertTrue("Drop script should contain DROP",
-            dropSql.toUpperCase().contains("DROP"));
+            dropSql.toUpperCase(Locale.ROOT).contains("DROP"));
     }
 
     /**
@@ -117,7 +118,7 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
         assertTrue("Create script file should exist", createFile.exists());
         String createSql = new String(Files.readAllBytes(createFile.toPath()));
         assertTrue("Create script should contain CREATE TABLE",
-            createSql.toUpperCase().contains("CREATE TABLE"));
+            createSql.toUpperCase(Locale.ROOT).contains("CREATE TABLE"));
     }
 
     /**
@@ -176,9 +177,9 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
         String dropSql = dropWriter.toString();
 
         assertTrue("Create script should contain CREATE TABLE, got: " + createSql,
-            createSql.toUpperCase().contains("CREATE TABLE"));
+            createSql.toUpperCase(Locale.ROOT).contains("CREATE TABLE"));
         assertTrue("Drop script should contain DROP, got: " + dropSql,
-            dropSql.toUpperCase().contains("DROP"));
+            dropSql.toUpperCase(Locale.ROOT).contains("DROP"));
     }
 
     /**
@@ -204,9 +205,9 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
         String dropSql = dropWriter.toString();
 
         assertTrue("Create script should contain CREATE TABLE, got: " + createSql,
-            createSql.toUpperCase().contains("CREATE TABLE"));
+            createSql.toUpperCase(Locale.ROOT).contains("CREATE TABLE"));
         assertTrue("Drop script should contain DROP, got: " + dropSql,
-            dropSql.toUpperCase().contains("DROP"));
+            dropSql.toUpperCase(Locale.ROOT).contains("DROP"));
     }
 
     /**
@@ -240,9 +241,9 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
         String dropSql = new String(Files.readAllBytes(dropFile.toPath()));
 
         assertTrue("Create script should contain CREATE TABLE, got: " + createSql,
-            createSql.toUpperCase().contains("CREATE TABLE"));
+            createSql.toUpperCase(Locale.ROOT).contains("CREATE TABLE"));
         assertTrue("Drop script should contain DROP, got: " + dropSql,
-            dropSql.toUpperCase().contains("DROP"));
+            dropSql.toUpperCase(Locale.ROOT).contains("DROP"));
     }
 
     /**
@@ -266,7 +267,7 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
         pw.flush();
         String createSql = createWriter.toString();
         assertTrue("Create script should contain CREATE TABLE, got: " + createSql,
-            createSql.toUpperCase().contains("CREATE TABLE"));
+            createSql.toUpperCase(Locale.ROOT).contains("CREATE TABLE"));
     }
 
     /**
@@ -296,7 +297,7 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
         assertTrue("Drop script should exist", dropFile.exists());
         String createSql = new String(Files.readAllBytes(createFile.toPath()));
         assertTrue("Create script should contain CREATE TABLE",
-            createSql.toUpperCase().contains("CREATE TABLE"));
+            createSql.toUpperCase(Locale.ROOT).contains("CREATE TABLE"));
 
         // Step 2: Execute drop then create scripts via script-source
         // with file: URIs (this is what the TCK annotation tests do).
@@ -357,10 +358,10 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
         assertTrue("Drop script should exist", dropFile.exists());
         String createSql = new String(Files.readAllBytes(createFile.toPath()));
         assertTrue("Create script should contain CREATE TABLE",
-            createSql.toUpperCase().contains("CREATE TABLE"));
+            createSql.toUpperCase(Locale.ROOT).contains("CREATE TABLE"));
         String dropSql = new String(Files.readAllBytes(dropFile.toPath()));
         assertTrue("Drop script should contain DROP",
-            dropSql.toUpperCase().contains("DROP"));
+            dropSql.toUpperCase(Locale.ROOT).contains("DROP"));
 
         // Step 2: Execute drop-and-create via scripts to ensure clean state
         EntityManagerFactory emf2 = createEMF(
@@ -468,7 +469,7 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
         assertTrue("Drop script should exist", dropFile.exists());
         String dropSql = new String(Files.readAllBytes(dropFile.toPath()));
         assertTrue("Drop script should contain DROP",
-            dropSql.toUpperCase().contains("DROP"));
+            dropSql.toUpperCase(Locale.ROOT).contains("DROP"));
 
         // Step 2: Execute drop script via database.action=drop
         // Create an EM to trigger synchronizeMappings via newBrokerImpl
@@ -534,7 +535,7 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
         System.out.println(createSql);
         System.out.println("=== End ===");
 
-        String createUpper = createSql.toUpperCase();
+        String createUpper = createSql.toUpperCase(Locale.ROOT);
         assertTrue("Should contain CREATE TABLE SCHEMAGENCOURSE",
             createUpper.contains("CREATE TABLE SCHEMAGENCOURSE"));
         assertTrue("Should contain CREATE TABLE SCHEMAGENSTUDENT",
@@ -590,18 +591,18 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
         System.out.println("=== End ===");
 
         assertTrue("Create script should contain CREATE TABLE",
-            createSql.toUpperCase().contains("CREATE TABLE"));
+            createSql.toUpperCase(Locale.ROOT).contains("CREATE TABLE"));
         assertTrue("Create script should contain CREATE INDEX for IDX_VAL_DESC",
-            createSql.toUpperCase().contains("CREATE INDEX IDX_VAL_DESC"));
+            createSql.toUpperCase(Locale.ROOT).contains("CREATE INDEX IDX_VAL_DESC"));
         assertTrue("Create script should contain CREATE INDEX for IDX_MULTI",
-            createSql.toUpperCase().contains("CREATE INDEX IDX_MULTI"));
+            createSql.toUpperCase(Locale.ROOT).contains("CREATE INDEX IDX_MULTI"));
 
         String dropSql = new String(Files.readAllBytes(dropFile.toPath()));
         System.out.println("=== Index Drop Script ===");
         System.out.println(dropSql);
         System.out.println("=== End ===");
         assertTrue("Drop script should contain DROP TABLE",
-            dropSql.toUpperCase().contains("DROP TABLE"));
+            dropSql.toUpperCase(Locale.ROOT).contains("DROP TABLE"));
     }
 
     /**
@@ -643,7 +644,7 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
             + "scripts.action=drop, got empty string",
             dropSql.length() > 0);
         assertTrue("Drop script should contain DROP TABLE, got: " + dropSql,
-            dropSql.toUpperCase().contains("DROP TABLE"));
+            dropSql.toUpperCase(Locale.ROOT).contains("DROP TABLE"));
     }
 
     /**
@@ -671,7 +672,7 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
 
         assertTrue("Drop script should exist", dropFile.exists());
         String dropSql = new String(Files.readAllBytes(dropFile.toPath()));
-        String dropUpper = dropSql.toUpperCase();
+        String dropUpper = dropSql.toUpperCase(Locale.ROOT);
 
         // TCK expects either ALTER TABLE...DROP CONSTRAINT
         // or DROP TABLE...CASCADE CONSTRAINTS.
@@ -714,7 +715,7 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
 
         assertTrue("Create script should exist", createFile.exists());
         String createSql = new String(Files.readAllBytes(createFile.toPath()));
-        String createUpper = createSql.toUpperCase();
+        String createUpper = createSql.toUpperCase(Locale.ROOT);
 
         assertTrue("Create script should contain THEORDERCOLUMN. Got: "
             + createSql,
@@ -751,7 +752,7 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
         // Check create script
         assertTrue("Create script should exist", createFile.exists());
         String createSql = new String(Files.readAllBytes(createFile.toPath()));
-        String createUpper = createSql.toUpperCase();
+        String createUpper = createSql.toUpperCase(Locale.ROOT);
 
         assertTrue("Create script should contain primary table",
             createUpper.contains("CREATE TABLE SCHEMAGENSIMPLE"));
@@ -763,7 +764,7 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
         // Check drop script
         assertTrue("Drop script should exist", dropFile.exists());
         String dropSql = new String(Files.readAllBytes(dropFile.toPath()));
-        String dropUpper = dropSql.toUpperCase();
+        String dropUpper = dropSql.toUpperCase(Locale.ROOT);
 
         assertTrue("Drop script should contain DROP TABLE SCHEMAGENSIMPLE",
             dropUpper.contains("DROP TABLE SCHEMAGENSIMPLE"));

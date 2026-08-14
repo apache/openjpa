@@ -106,6 +106,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -705,7 +706,7 @@ public class AnnotationPersistenceMappingParser
             String col = rawCols[i].trim();
             int space = col.indexOf(' ');
             if (space > 0) {
-                String dir = col.substring(space + 1).trim().toUpperCase();
+                String dir = col.substring(space + 1).trim().toUpperCase(Locale.ROOT);
                 descending[i] = "DESC".equals(dir);
                 col = col.substring(0, space);
             }

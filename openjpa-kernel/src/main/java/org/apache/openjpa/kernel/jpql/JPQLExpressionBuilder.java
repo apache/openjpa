@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
@@ -1053,7 +1054,7 @@ public class JPQLExpressionBuilder
         if (bind && getDefinedVariable(id) == null)
             return createVariable(id, bind);
 
-        return super.getVariable(id.toLowerCase(), bind);
+        return super.getVariable(id.toLowerCase(Locale.ROOT), bind);
     }
 
     protected Value getDefinedVariable(String id) {
@@ -1417,7 +1418,7 @@ public class JPQLExpressionBuilder
 
             case JJTABS:
                 return factory.abs(getNumberValue(onlyChild(node)));
-                
+
             case JJTCEILING:
             	return factory.ceiling(getNumberValue(onlyChild(node)));
 
@@ -1429,13 +1430,13 @@ public class JPQLExpressionBuilder
 
             case JJTLN:
                 return factory.ln(getNumberValue(onlyChild(node)));
-            
+
             case JJTSIGN:
                 return factory.sign(getNumberValue(onlyChild(node)));
 
             case JJTPOWER:
                 return factory.power(getNumberValue(firstChild(node)), getNumberValue(secondChild(node)));
-            
+
             case JJTROUND:
                 return factory.round(getNumberValue(firstChild(node)), getNumberValue(secondChild(node)));
 
@@ -1526,7 +1527,7 @@ public class JPQLExpressionBuilder
                     setImplicitType(val3, Integer.TYPE);
 
                 return convertSubstringArguments(factory, val1, val2, val3);
-            
+
             case JJTLEFT:
             	val1 = getValue(firstChild(node));
             	child2 = secondChild(node);
@@ -1534,7 +1535,7 @@ public class JPQLExpressionBuilder
             	setImplicitType(val1, TYPE_STRING);
             	setImplicitType(val2, Integer.TYPE);
             	return factory.left(val1, val2);
-            	
+
             case JJTRIGHT:
             	val1 = getValue(firstChild(node));
             	child2 = secondChild(node);
@@ -1542,7 +1543,7 @@ public class JPQLExpressionBuilder
             	setImplicitType(val1, TYPE_STRING);
             	setImplicitType(val2, Integer.TYPE);
             	return factory.right(val1, val2);
-            	
+
             case JJTREPLACE:
             	val1 = getValue(firstChild(node));
             	val2 = getValue(secondChild(node));
@@ -1646,16 +1647,16 @@ public class JPQLExpressionBuilder
 
             case JJTMONTH:
                 return DateTimeExtractField.MONTH;
-            
+
             case JJTWEEK:
                 return DateTimeExtractField.WEEK;
-            
+
             case JJTDAY:
                 return DateTimeExtractField.DAY;
-            
+
             case JJTHOUR:
                 return DateTimeExtractField.HOUR;
-            
+
             case JJTMINUTE:
                 return DateTimeExtractField.MINUTE;
 
@@ -1664,13 +1665,13 @@ public class JPQLExpressionBuilder
 
             case JJTDATE:
                 return DateTimeExtractPart.DATE;
-            
+
             case JJTTIME:
                 return DateTimeExtractPart.TIME;
 
             case JJTEXTRACTDATETIMEFIELD:
                 return factory.getDateTimeField((DateTimeExtractField) eval(firstChild(node)), getValue(secondChild(node)));
-            
+
             case JJTEXTRACTDATETIMEPART:
                 return factory.getDateTimePart((DateTimeExtractPart) eval(firstChild(node)), getValue(secondChild(node)));
 
@@ -1694,32 +1695,32 @@ public class JPQLExpressionBuilder
 
             case JJTTIMESTAMPLITERAL:
                 return factory.newLiteral(node.text, Literal.TYPE_TIMESTAMP);
-                
+
             case JJTSTRINGCAST:
             	return factory.newTypecastAsString(getValue(onlyChild(node)));
-            	
+
             case JJTINTEGER:
             	return TypecastAsNumberPart.INTEGER;
-            	
+
             case JJTLONG:
             	return TypecastAsNumberPart.LONG;
 
             case JJTFLOAT:
             	return TypecastAsNumberPart.FLOAT;
-            
+
             case JJTDOUBLE:
             	return TypecastAsNumberPart.DOUBLE;
-            	
+
             case JJTCASTTONUMBER:
-            	return factory.newTypecastAsNumber(getValue(firstChild(node)), 
+            	return factory.newTypecastAsNumber(getValue(firstChild(node)),
             			resolveNumberTargetType((TypecastAsNumberPart) eval(secondChild(node))));
-            
+
             case JJTIDFUNCTION:
             	return factory.getNativeObjectId(getValue(firstChild(node)));
-            	
+
             case JJTVERSIONFUNCTION:
             	return factory.version(getValue(firstChild(node)));
-            	
+
             default:
                 throw parseException(EX_FATAL, "bad-tree",
                     new Object[]{ node }, null);
@@ -1765,7 +1766,7 @@ public class JPQLExpressionBuilder
         else
             return factory.substring(val1, val2);
     }
-    
+
     private void assertQueryExtensions(String clause) {
         OpenJPAConfiguration conf = resolver.getConfiguration();
         switch(conf.getCompatibilityInstance().getJPQL()) {
@@ -2001,7 +2002,7 @@ public class JPQLExpressionBuilder
             // for the candidate (we don't use variables for this)
             Value thiz = null;
             if (ctx().subquery == null ||
-                ctx().getSchema(name.toLowerCase()) == null) {
+                ctx().getSchema(name.toLowerCase(Locale.ROOT)) == null) {
                 if (ctx().subquery != null && inAssignSubselectProjection)
                     thiz = factory.newPath(ctx().subquery);
                 else
@@ -2466,7 +2467,7 @@ public class JPQLExpressionBuilder
 
     @Override
     protected void addSchemaToContext(String id, ClassMetaData meta) {
-        ctx().addSchema(id.toLowerCase(), meta);
+        ctx().addSchema(id.toLowerCase(Locale.ROOT), meta);
     }
 
     @Override
@@ -2817,29 +2818,17 @@ public class JPQLExpressionBuilder
         }
     }
 
-    private DateTimeExtractField resolveDateTimeExtractFieldType(JPQLNode node) {
-        String value = node.text;
-        try {
-            return DateTimeExtractField.valueOf(value.toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            return null;
-        }
-    }
-    
     private Class<? extends Number> resolveNumberTargetType(TypecastAsNumberPart part) {
-    	return switch (part) {
-		case INTEGER: {
-			yield Integer.class;
-		}
-		case LONG: {
-			yield Long.class;
-		}
-		case FLOAT: {
-			yield Float.class;
-		}
-		default:
-			yield Double.class;
-		};
+        return switch (part) {
+            case INTEGER:
+                yield Integer.class;
+            case LONG:
+                yield Long.class;
+            case FLOAT:
+                yield Float.class;
+            default:
+                yield Double.class;
+        };
     }
 }
 

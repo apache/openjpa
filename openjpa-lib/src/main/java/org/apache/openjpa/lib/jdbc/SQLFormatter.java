@@ -21,6 +21,7 @@ package org.apache.openjpa.lib.jdbc;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.StringTokenizer;
 
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
@@ -163,7 +164,7 @@ public class SQLFormatter {
 
     private Object prettyPrintLine(Object sqlObject) {
         String sql = sqlObject.toString().trim();
-        String lowerCaseSql = sql.toLowerCase();
+        String lowerCaseSql = sql.toLowerCase(Locale.ROOT);
 
         String[] separators;
         if (lowerCaseSql.startsWith("select"))
@@ -187,7 +188,7 @@ public class SQLFormatter {
         List<StringBuilder> clauses = new ArrayList<>();
         clauses.add(new StringBuilder());
         for (String separator : separators) {
-            end = lowerCaseSql.indexOf(" " + separator.toLowerCase(),
+            end = lowerCaseSql.indexOf(" " + separator.toLowerCase(Locale.ROOT),
                     start);
             if (end == -1)
                 break;

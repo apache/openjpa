@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -1528,7 +1529,7 @@ public class ReverseMappingTool implements MetaDataModes, Cloneable {
         String name = replaceInvalidCharacters(table.getSchemaName());
         if (_useSchema && name != null) {
             if (allUpperCase(name))
-                name = name.toLowerCase();
+                name = name.toLowerCase(Locale.ROOT);
             subs = StringUtil.split(name, "_", 0);
             for (String sub : subs) {
                 buf.append(StringUtil.capitalize(sub));
@@ -1537,7 +1538,7 @@ public class ReverseMappingTool implements MetaDataModes, Cloneable {
 
         name = replaceInvalidCharacters(table.getName());
         if (allUpperCase(name))
-            name = name.toLowerCase();
+            name = name.toLowerCase(Locale.ROOT);
         subs = StringUtil.split(name, "_", 0);
         for (int i = 0; i < subs.length; i++) {
             // make sure the name can't conflict with generated id class names;
@@ -1557,7 +1558,7 @@ public class ReverseMappingTool implements MetaDataModes, Cloneable {
     public String getFieldName(String name, ClassMapping dec) {
         name = replaceInvalidCharacters(name);
         if (allUpperCase(name))
-            name = name.toLowerCase();
+            name = name.toLowerCase(Locale.ROOT);
         else
             name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
 
@@ -2134,7 +2135,7 @@ public class ReverseMappingTool implements MetaDataModes, Cloneable {
     private class ReverseStrategyInstaller
         extends StrategyInstaller {
 
-        
+
         private static final long serialVersionUID = 1L;
 
         public ReverseStrategyInstaller(MappingRepository repos) {

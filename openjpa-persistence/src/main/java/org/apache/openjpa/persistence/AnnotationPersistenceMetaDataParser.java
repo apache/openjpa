@@ -87,6 +87,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -2111,7 +2112,7 @@ public class AnnotationPersistenceMetaDataParser
             String lm = _conf.getLockManager();
             boolean optimistic = _conf.getOptimistic();
             if (lm != null) {
-                lm = lm.toLowerCase();
+                lm = lm.toLowerCase(Locale.ROOT);
                 if (lm.contains("pessimistic")) {
                     if (lmt == LockModeType.NONE && !optimistic) {
                         if (_log.isWarnEnabled()) {

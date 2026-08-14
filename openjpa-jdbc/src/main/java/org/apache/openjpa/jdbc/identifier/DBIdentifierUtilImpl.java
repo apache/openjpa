@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.identifier;
 
+import java.util.Locale;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -305,17 +307,17 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         // actual name comparison.
         if (delimCase.equals(CASE_PRESERVE)) {
             if (nonDelimCase.equals(CASE_LOWER)) {
-                caseName = name.toLowerCase();
+                caseName = name.toLowerCase(Locale.ROOT);
             } else {
-                caseName = name.toUpperCase();
+                caseName = name.toUpperCase(Locale.ROOT);
             }
         } else if (delimCase.equals(CASE_LOWER)) {
             if (nonDelimCase.equals(CASE_UPPER)) {
-                caseName = name.toUpperCase();
+                caseName = name.toUpperCase(Locale.ROOT);
             }
         } else if (delimCase.equals(CASE_UPPER)) {
             if (nonDelimCase.equals(CASE_LOWER)) {
-                caseName = name.toLowerCase();
+                caseName = name.toLowerCase(Locale.ROOT);
             }
         }
 

@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.dynamicschema;
 
+import java.util.Locale;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -233,7 +235,7 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
             assertTrue(column.getName().length() > 0);
             assertTrue(column.getName().length() <= dict.maxColumnNameLength);
             assertFalse("Column" + column.getName(), dict.getInvalidColumnWordSet().
-                contains(column.getName().toUpperCase()));
+                contains(column.getName().toUpperCase(Locale.ROOT)));
         }
     }
 }

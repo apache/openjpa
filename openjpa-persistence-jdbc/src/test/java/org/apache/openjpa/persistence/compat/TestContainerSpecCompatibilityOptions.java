@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import jakarta.persistence.EntityManager;
@@ -76,7 +77,7 @@ public class TestContainerSpecCompatibilityOptions
         String vMode = emf1.getConfiguration().getValidationMode();
         assertEquals("NONE", vMode);
         Specification spec = emf1.getConfiguration().getSpecificationInstance();
-        assertEquals("JPA", spec.getName().toUpperCase());
+        assertEquals("JPA", spec.getName().toUpperCase(Locale.ROOT));
         assertEquals(spec.getVersion(), 1);
 
         closeEMF(emf1);
@@ -98,7 +99,7 @@ public class TestContainerSpecCompatibilityOptions
         String vMode = emf.getConfiguration().getValidationMode();
         assertEquals("AUTO", vMode);
         Specification spec = emf.getConfiguration().getSpecificationInstance();
-        assertEquals("JPA", spec.getName().toUpperCase());
+        assertEquals("JPA", spec.getName().toUpperCase(Locale.ROOT));
         assertEquals(spec.getVersion(), 2);
     }
 

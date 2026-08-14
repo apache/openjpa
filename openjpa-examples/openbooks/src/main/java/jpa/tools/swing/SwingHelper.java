@@ -24,6 +24,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
@@ -88,7 +89,7 @@ public class SwingHelper {
         case DAYS:
         case MINUTES:
         case SECONDS:
-            return unit.toString().substring(0,1).toLowerCase();
+            return unit.toString().substring(0,1).toLowerCase(Locale.ROOT);
         case MILLISECONDS:
             return "ms";
         case MICROSECONDS:

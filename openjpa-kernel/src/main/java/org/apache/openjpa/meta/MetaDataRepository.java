@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -1676,7 +1677,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     /**
      * Updates our data structures with the latest registered classes.
-     * 
+     *
      * This method is synchronized to make sure that all data structures are fully updated
      *  before other threads attempt to call this method
      */
@@ -1899,7 +1900,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     /**
      * Add the given value to the collection cached in the given map under the given key.
      */
-    private void addToCollection(Map<Class<?>, Collection<Class<?>>> map, 
+    private void addToCollection(Map<Class<?>, Collection<Class<?>>> map,
             Class<?> key, Class<?> value, boolean inheritance) {
         if (_locking) {
             synchronized (map) {
@@ -1910,7 +1911,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         }
     }
 
-    private void addToCollectionInternal(Map<Class<?>, Collection<Class<?>>> map, 
+    private void addToCollectionInternal(Map<Class<?>, Collection<Class<?>>> map,
             Class<?> key, Class<?> value, boolean inheritance) {
         Collection<Class<?>> coll = map.get(key);
         if (coll == null) {
@@ -2505,7 +2506,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      */
     private static class QueryKey implements Serializable {
 
-        
+
         private static final long serialVersionUID = 1L;
         public String clsName;
         public String name;
@@ -2607,7 +2608,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         if (conf == null)
             return false;
         Options o = Configurations.parseProperties(Configurations.getProperties(conf.getMetaDataRepository()));
-        return o.getBooleanProperty(PRELOAD_STR) || o.getBooleanProperty(PRELOAD_STR.toLowerCase());
+        return o.getBooleanProperty(PRELOAD_STR) || o.getBooleanProperty(PRELOAD_STR.toLowerCase(Locale.ROOT));
     }
 
     /**

@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import jakarta.persistence.EntityManager;
@@ -170,7 +171,7 @@ public class TestMany2ManyMapEx10 extends SQLListenerTestCase {
             setCandidate(q, Employee.class);
         rs = q.getResultList();
         if (!inMemory)
-        assertTrue(sql.get(0).toUpperCase().indexOf(" GROUP BY ") != -1);
+        assertTrue(sql.get(0).toUpperCase(Locale.ROOT).indexOf(" GROUP BY ") != -1);
 
         query = "select LENGTH(KEY(e).name) from PhoneNumber p, " +
             " in (p.emps) e where KEY(e).bDay = CURRENT_TIMESTAMP";

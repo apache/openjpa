@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_26_ex1;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -102,7 +103,7 @@ public class TestSpec10_1_26_Ex1 extends SQLListenerTestCase {
         if (inMemory)
             setCandidate(q, Department.class);
         rs = q.getResultList();
-        assertTrue(sql.get(0).toUpperCase().indexOf(">") > 0);
+        assertTrue(sql.get(0).toUpperCase(Locale.ROOT).indexOf(">") > 0);
 
         em.close();
     }

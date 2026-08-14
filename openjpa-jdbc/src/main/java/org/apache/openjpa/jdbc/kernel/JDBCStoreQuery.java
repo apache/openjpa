@@ -27,6 +27,7 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.openjpa.event.LifecycleEventManager;
@@ -87,7 +88,7 @@ import org.apache.openjpa.util.UserException;
 public class JDBCStoreQuery
     extends ExpressionStoreQuery {
 
-    
+
     private static final long serialVersionUID = 1L;
 
     private static final Table INVALID = new Table();
@@ -891,15 +892,15 @@ public class JDBCStoreQuery
         int endIdx = startIdx + length;
         return val1.substring(startIdx, endIdx);
     }
-    
+
     private Object handleLeftVal(Object value, Object ob, Object[] params, OpenJPAStateManager sm) {
     	org.apache.openjpa.jdbc.kernel.exps.Left leftVal= (org.apache.openjpa.jdbc.kernel.exps.Left) value;
     	Val value1 = leftVal.getVal1();
     	String s = (String) getValue(value1, ob, params, sm);
-    	
+
     	Val value2 = leftVal.getVal2();
     	Object arg = getValue(value2, ob, params, sm);
-    	
+
     	if (s == null) {
     		return null;
     	} else if (arg == null) {
@@ -921,7 +922,7 @@ public class JDBCStoreQuery
     	org.apache.openjpa.jdbc.kernel.exps.Right rightVal= (org.apache.openjpa.jdbc.kernel.exps.Right) value;
     	Val value1 = rightVal.getVal1();
     	String s = (String) getValue(value1, ob, params, sm);
-    	
+
     	Val value2 = rightVal.getVal2();
     	Object arg = getValue(value2, ob, params, sm);
 
@@ -941,14 +942,14 @@ public class JDBCStoreQuery
         	return inv ? s.substring(len, slen) : s.substring(slen - len, slen);
         }
     }
-    
+
     private Object handleReplaceVal(Object value , Object ob, Object[] params, OpenJPAStateManager sm) {
     	org.apache.openjpa.jdbc.kernel.exps.Replace replaceVal = (org.apache.openjpa.jdbc.kernel.exps.Replace) value;
-    	
+
     	Val strVal = replaceVal.getOriginal();
     	Val patternVal = replaceVal.getPattern();
     	Val replacementVal = replaceVal.getPattern();
-    	
+
     	String str = (String) getValue(strVal, ob, params, sm);
     	String patt = (String) getValue(patternVal, ob, params, sm);
     	String repl = (String) getValue(replacementVal, ob, params, sm);
@@ -967,7 +968,7 @@ public class JDBCStoreQuery
         org.apache.openjpa.jdbc.kernel.exps.ToLowerCase lowerVal =
             (org.apache.openjpa.jdbc.kernel.exps.ToLowerCase) value;
         Val val = lowerVal.getValue();
-        return ((String) getValue(val, ob, params, sm)).toLowerCase();
+        return ((String) getValue(val, ob, params, sm)).toLowerCase(Locale.ROOT);
     }
 
     private Object handleUpperVal(Object value, Object ob, Object[] params,
@@ -975,7 +976,7 @@ public class JDBCStoreQuery
         org.apache.openjpa.jdbc.kernel.exps.ToUpperCase upperVal =
             (org.apache.openjpa.jdbc.kernel.exps.ToUpperCase) value;
         Val val = upperVal.getValue();
-        return ((String) getValue(val, ob, params, sm)).toUpperCase();
+        return ((String) getValue(val, ob, params, sm)).toUpperCase(Locale.ROOT);
     }
 
     private Object handleLengthVal(Object value, Object ob, Object[] params,
