@@ -60,7 +60,7 @@ set -e
 
 # Check required commands
 MISSING=""
-for cmd in java mvn curl unzip grep sed; do
+for cmd in java mvn curl unzip grep sed gpg; do
     if ! command -v "$cmd" &>/dev/null; then
         MISSING="${MISSING}  - ${cmd}\n"
     fi
@@ -82,15 +82,17 @@ stopAll() {
 while [[ $# -gt 0 ]]; do
     case ${1} in
         --stop-all)
-            stopAll
             shift
+            stopAll
             ;;
 	esac
 done
 
 TCK_URL="https://download.eclipse.org/jakartaee/persistence/${TCK_BASE}/jakarta-persistence-tck-${TCK_VERSION}.zip"
+TCK_SIG_URL="${TCK_URL}.sig"
 TCK_DIR="${SCRIPT_ROOT}/target/tck32"
 TCK_ZIP="${TCK_DIR}/jakarta-persistence-tck-${TCK_VERSION}.zip"
+TCK_SIG="${TCK_ZIP}.sig"
 TCK_HOME="${TCK_DIR}/persistence-tck"
 OPENJPA_VERSION="${OPENJPA_VERSION:-4.2.0-SNAPSHOT}"
 START_DOCKER=
@@ -165,7 +167,17 @@ echo ""
 mkdir -p "${TCK_DIR}"
 if [[ ! -f "${TCK_ZIP}" ]]; then
     echo "Downloading JPA ${TCK_BASE} TCK..."
-    curl -sL -o "${TCK_ZIP}" "${TCK_URL}"
+    curl -fsL -o "${TCK_ZIP}" "${TCK_URL}"
+    curl -fsL -o "${TCK_SIG}" "${TCK_SIG_URL}"
+    for server in hkp://ipv4.pool.sks-keyservers.net:80 \
+                  hkp://ha.pool.sks-keyservers.net:80 \
+                  hkp://pgp.mit.edu:80 \
+                  hkp://keyserver.ubuntu.com:80 \
+                  hkp://keyserver.pgp.com:80 \
+    ; do
+        gpg --keyserver "$server" --recv-keys ABE05725E77C2B44 && break || echo "Trying new server..."
+    done
+    gpg --batch --verify "${TCK_SIG}" "${TCK_ZIP}"
     echo "Downloaded."
 else
     echo "TCK zip already present, skipping download."
