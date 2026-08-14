@@ -186,7 +186,7 @@ test_profile() {
 			START_WITH=""
 		else
 			echo "Skipping ${profile} ..."
-			continue
+			return 0
 		fi
 	fi
 	prof="test-${profile}"
