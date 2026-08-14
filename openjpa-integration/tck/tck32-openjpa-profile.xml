@@ -26,6 +26,7 @@
     <id>openjpa</id>
     <properties>
         <glassfish-artifact-id>glassfish</glassfish-artifact-id>
+        <!-- NOTE: [IMPORTANT] version should be kept in-sync with current OpenJPA version -->
         <openjpa.version>4.2.0-SNAPSHOT</openjpa.version>
         <jakarta.persistence.provider>org.apache.openjpa.persistence.PersistenceProviderImpl</jakarta.persistence.provider>
         <jpa.provider.implementation.specific.properties>openjpa.jdbc.SynchronizeMappings=buildSchema:openjpa.jdbc.SyncMappingsExcludeTypes=ee.jakarta.tck.persistence.core.entityManager2.DoesNotExist:openjpa.DynamicEnhancementAgent=false:openjpa.RuntimeUnenhancedClasses=supported:openjpa.Compatibility=StrictIdentityValues=true:openjpa.SpecCompliantSchemaGeneration=true:openjpa.Sequence=time${jpa.provider.implementation.specific.additional.properties}</jpa.provider.implementation.specific.properties>

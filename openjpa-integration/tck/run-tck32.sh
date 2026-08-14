@@ -43,7 +43,8 @@ declare -A VERSIONS=(
 # using DB selected.
 #
 # Usage:
-#   ./run-tck32.sh                                 # Run full TCK against postgres:16
+#   ./run-tck32.sh [--stop-all]                    # Run full TCK against postgres:16
+#       [optional] --stop-all will will stop all dockerized DB were running
 #   DB_VERSION=18 ./run-tck32.sh                   # Run full TCK against postgres:18
 #   DB_TYPE=mysql ./run-tck32.sh                   # Run full TCK against mysql:8.4.8
 #   DB_HOST=myhost:5432 ./run-tck32.sh             # Custom DB host
@@ -78,7 +79,14 @@ stopAll() {
     done
 }
 
-stopAll
+while [[ $# -gt 0 ]]; do
+    case ${1} in
+        --stop-all)
+            stopAll
+            shift
+            ;;
+	esac
+done
 
 TCK_URL="https://download.eclipse.org/jakartaee/persistence/${TCK_BASE}/jakarta-persistence-tck-${TCK_VERSION}.zip"
 TCK_DIR="${SCRIPT_ROOT}/target/tck32"
@@ -192,10 +200,7 @@ else
     echo "OpenJPA profile already present in TCK pom.xml."
 fi
 
-echo ""
-echo "=== Preparing ${DB_TYPE} database ==="
-
-# Step 6: Run TCK
+# Step 5: Run TCK
 echo ""
 echo "=== Running JPA ${TCK_BASE} TCK ==="
 echo ""

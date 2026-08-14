@@ -69,7 +69,6 @@
                         <goals>
                             <goal>unpack</goal>
                         </goals>
-                        <?m2e ignore?>
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
@@ -131,4 +130,3 @@
     </build>
 
 </project>
-

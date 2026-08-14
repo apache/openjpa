@@ -76,7 +76,6 @@
                         <goals>
                             <goal>unpack</goal>
                         </goals>
-                        <?m2e ignore?>
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
@@ -92,43 +91,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <!-- new way of using openjpa-maven-plugin to enhance classes
-            <plugin>
-                <groupId>org.apache.openjpa</groupId>
-                <artifactId>openjpa-maven-plugin</artifactId>
-                <configuration>
-                    <includes>org/apache/openjpa/integration/slf4j/*.class</includes>
-                    <excludes>org/apache/openjpa/integration/slf4j/Test*.class</excludes>
-                    <addDefaultConstructor>true</addDefaultConstructor>
-                    <enforcePropertyRestrictions>true</enforcePropertyRestrictions>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>enhancer</id>
-                        <phase>process-test-classes</phase>
-                        <goals>
-                            <goal>test-enhance</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.openjpa</groupId>
-                        <artifactId>openjpa</artifactId>
-                        <version>${project.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-api</artifactId>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-simple</artifactId>
-                    </dependency>
-                </dependencies>
-            </plugin>
-            -->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

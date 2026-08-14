@@ -81,7 +81,6 @@
                         <goals>
                             <goal>unpack</goal>
                         </goals>
-                        <?m2e ignore?>
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
@@ -106,7 +105,6 @@
                     <includes>org/apache/openjpa/integration/jmx/*.class</includes>
                     <addDefaultConstructor>true</addDefaultConstructor>
                     <enforcePropertyRestrictions>true</enforcePropertyRestrictions>
-                    <!-- persistenceXmlFile>${project.basedir}/src/test/resources/META-INF/persistence.xml</persistenceXmlFile-->
                 </configuration>
                 <executions>
                     <execution>
