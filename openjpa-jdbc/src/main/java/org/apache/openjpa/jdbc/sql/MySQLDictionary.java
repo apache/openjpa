@@ -572,42 +572,9 @@ public class MySQLDictionary
      */
     @Override
     public void appendNullsPrecedence(SQLBuffer ordering, int nullPrecedence) {
-        if (nullPrecedence != QueryExpressions.NULLS_FIRST
-                && nullPrecedence != QueryExpressions.NULLS_LAST) {
-            return;
-        }
-        String sql = ordering.getSQL();
-        int lastAsc = sql.lastIndexOf(" ASC");
-        int lastDesc = sql.lastIndexOf(" DESC");
-        boolean asc;
-        int termDirStart;
-        int termDirEnd;
-        if (lastAsc > lastDesc) {
-            asc = true;
-            termDirStart = lastAsc;
-            termDirEnd = lastAsc + " ASC".length();
-        } else if (lastDesc >= 0) {
-            asc = false;
-            termDirStart = lastDesc;
-            termDirEnd = lastDesc + " DESC".length();
-        } else {
-            return;
-        }
-        boolean defaultMatches =
-                (nullPrecedence == QueryExpressions.NULLS_FIRST && asc)
-             || (nullPrecedence == QueryExpressions.NULLS_LAST && !asc);
-        if (defaultMatches) {
-            return;
-        }
-        int termStart = Math.max(sql.lastIndexOf(", ", termDirStart), -1);
-        termStart = (termStart < 0) ? 0 : termStart + 2;
-        String expr = sql.substring(termStart, termDirStart);
-        String direction = asc ? "ASC" : "DESC";
-        String nullSort = (nullPrecedence == QueryExpressions.NULLS_FIRST)
-                ? "DESC" : "ASC";
-        String replacement = expr + " IS NULL " + nullSort + ", "
-                + expr + " " + direction;
-        ordering.replaceSqlString(termStart, termDirEnd, replacement);
+        final String nullSort = (nullPrecedence == QueryExpressions.NULLS_FIRST) ? "DESC" : "ASC";
+        emulateNullsPrecedence(ordering, nullPrecedence,
+                expr -> expr + " IS NULL " + nullSort + ", " + expr);
     }
 }
 

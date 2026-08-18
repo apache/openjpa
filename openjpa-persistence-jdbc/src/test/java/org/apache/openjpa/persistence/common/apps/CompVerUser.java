@@ -40,7 +40,7 @@ public class CompVerUser {
     private String name;
 
     @Basic
-    private int age;
+    private Integer age;
 
     @Basic
     @Column(name = "compName", length = 50)
@@ -71,7 +71,7 @@ public class CompVerUser {
     public CompVerUser() {
     }
 
-    public CompVerUser(String name, String cName, Address address, int age) {
+    public CompVerUser(String name, String cName, Address address, Integer age) {
         this.name = name;
         this.computerName = cName;
         this.address = address;
@@ -107,11 +107,11 @@ public class CompVerUser {
         this.address = address;
     }
 
-    public int getAge() {
+    public Integer getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(Integer age) {
         this.age = age;
     }
 

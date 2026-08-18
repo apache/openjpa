@@ -31,7 +31,6 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.Version;
 
 import org.apache.openjpa.persistence.PersistentCollection;
 

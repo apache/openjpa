@@ -70,6 +70,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.function.Function;
 
 import javax.sql.DataSource;
 
@@ -3278,37 +3279,37 @@ public class DBDictionary
     }
 
     public void replace(SQLBuffer buf, FilterValue from, FilterValue subs, FilterValue replacement) {
-    	buf.append(replaceFunctionName).append("(");
-    	from.appendTo(buf);
-    	buf.append(", ");
-    	subs.appendTo(buf);
-    	buf.append(", ");
-    	replacement.appendTo(buf);
-    	buf.append(")");
+        buf.append(replaceFunctionName).append("(");
+        from.appendTo(buf);
+        buf.append(", ");
+        subs.appendTo(buf);
+        buf.append(", ");
+        replacement.appendTo(buf);
+        buf.append(")");
     }
 
     public void left(SQLBuffer buf, FilterValue str, FilterValue length) {
-    	buf.append(leftFunctionName).append("(");
-    	str.appendTo(buf);
-    	buf.append(", ");
-    	if (length.getValue() instanceof Number) {
-    		buf.append(Long.toString(toLong(length)));
-    	} else {
-    		length.appendTo(buf);
-    	}
-    	buf.append(")");
+        buf.append(leftFunctionName).append("(");
+        str.appendTo(buf);
+        buf.append(", ");
+        if (length.getValue() instanceof Number) {
+            buf.append(Long.toString(toLong(length)));
+        } else {
+            length.appendTo(buf);
+        }
+        buf.append(")");
     }
 
     public void right(SQLBuffer buf, FilterValue str, FilterValue length) {
-    	buf.append(rightFunctionName).append("(");
-    	str.appendTo(buf);
-    	buf.append(", ");
-    	if (length.getValue() instanceof Number) {
-    		buf.append(Long.toString(toLong(length)));
-    	} else {
-    		length.appendTo(buf);
-    	}
-    	buf.append(")");
+        buf.append(rightFunctionName).append("(");
+        str.appendTo(buf);
+        buf.append(", ");
+        if (length.getValue() instanceof Number) {
+            buf.append(Long.toString(toLong(length)));
+        } else {
+            length.appendTo(buf);
+        }
+        buf.append(")");
     }
 
     long toLong(FilterValue litValue) {
@@ -6259,67 +6260,101 @@ public class DBDictionary
     }
 
     protected boolean isUsingRange(long start, long end) {
-		return isUsingOffset(start) || isUsingLimit(end);
-	}
-
-	protected boolean isUsingOffset(long start) {
-		return start != 0;
-	}
-
-	protected boolean isUsingLimit(long end) {
-		return end != Long.MAX_VALUE;
-	}
-
-	protected boolean isUsingOrderBy(SQLBuffer sql) {
-		return sql != null && !sql.isEmpty();
-	}
-
-	protected boolean versionEqualOrLaterThan(int maj, int min) {
-    	return (major > maj) || (major == maj && minor >= min);
+        return isUsingOffset(start) || isUsingLimit(end);
     }
 
-	protected boolean versionEqualOrEarlierThan(int maj, int min) {
-    	return (major < maj) || (major == maj && minor <= min);
+    protected boolean isUsingOffset(long start) {
+        return start != 0;
     }
 
-	protected boolean versionLaterThan(int maj) {
-    	return (major > maj);
+    protected boolean isUsingLimit(long end) {
+        return end != Long.MAX_VALUE;
     }
 
-	/**
-	 * Gets major version of the database server.
-	 */
-	public final int getMajorVersion() {
-		return major;
-	}
+    protected boolean isUsingOrderBy(SQLBuffer sql) {
+        return sql != null && !sql.isEmpty();
+    }
 
-	/**
-	 * Sets major version of the database server.
-	 */
-	public void setMajorVersion(int maj) {
-		major = maj;
-	}
+    protected boolean versionEqualOrLaterThan(int maj, int min) {
+        return (major > maj) || (major == maj && minor >= min);
+    }
 
-	/**
-	 * Gets minor version of the database server.
-	 */
-	public final int getMinorVersion() {
-		return minor;
-	}
+    protected boolean versionEqualOrEarlierThan(int maj, int min) {
+        return (major < maj) || (major == maj && minor <= min);
+    }
 
-	/**
-	 * Sets minor version of the database server.
-	 */
-	public void setMinorVersion(int min) {
-		minor = min;
-	}
+    protected boolean versionLaterThan(int maj) {
+        return (major > maj);
+    }
+
+    /**
+     * Gets major version of the database server.
+     */
+    public final int getMajorVersion() {
+        return major;
+    }
+
+    /**
+     * Sets major version of the database server.
+     */
+    public void setMajorVersion(int maj) {
+        major = maj;
+    }
+
+    /**
+     * Gets minor version of the database server.
+     */
+    public final int getMinorVersion() {
+        return minor;
+    }
+
+    /**
+     * Sets minor version of the database server.
+     */
+    public void setMinorVersion(int min) {
+        minor = min;
+    }
 
     String nullSafe(String s) {
         return s == null ? "" : s;
     }
 
-	public int applyRange(Select select, int count) {
-		return count;
-	}
+    public int applyRange(Select select, int count) {
+        return count;
+    }
 
+    //package private for internal use
+    static void emulateNullsPrecedence(SQLBuffer ordering, int nullPrecedence, Function<String, String> replace) {
+        if (nullPrecedence != QueryExpressions.NULLS_FIRST
+                && nullPrecedence != QueryExpressions.NULLS_LAST) {
+            return;
+        }
+        String sql = ordering.getSQL();
+        int lastAsc = sql.lastIndexOf(" ASC");
+        int lastDesc = sql.lastIndexOf(" DESC");
+        boolean asc;
+        int termDirStart;
+        int termDirEnd;
+        if (lastAsc > lastDesc) {
+            asc = true;
+            termDirStart = lastAsc;
+            termDirEnd = lastAsc + " ASC".length();
+        } else if (lastDesc >= 0) {
+            asc = false;
+            termDirStart = lastDesc;
+            termDirEnd = lastDesc + " DESC".length();
+        } else {
+            return;
+        }
+        if ((nullPrecedence == QueryExpressions.NULLS_FIRST && asc)
+                || (nullPrecedence == QueryExpressions.NULLS_LAST && !asc)) {
+            return;
+        }
+        int termStart = Math.max(sql.lastIndexOf(", ", termDirStart), -1);
+        termStart = (termStart < 0) ? 0 : termStart + 2;
+        String expr = sql.substring(termStart, termDirStart);
+        String direction = asc ? "ASC" : "DESC";
+        String replacement = replace.apply(expr) + " " + direction;
+        ordering.replaceSqlString(termStart, termDirEnd, replacement);
+    }
 }

@@ -18,11 +18,14 @@
  */
 package org.apache.openjpa.persistence.jpql.functions;
 
+import static org.junit.Assert.assertArrayEquals;
+
 import java.math.BigDecimal;
 import java.sql.Time;
 import java.time.LocalTime;
 import java.time.temporal.ChronoField;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
@@ -42,7 +45,7 @@ import jakarta.persistence.EntityManager;
 
 public class TestEJBQLFunction extends AbstractTestCase {
 
-    private int userid1, userid2, userid3, userid4, userid5, userid6;
+    private int userid1, userid2, userid3, userid5;
 
     /**
      * Some databases trim the whitespace from a string upon insert. Store Shannon's name for
@@ -84,16 +87,18 @@ public class TestEJBQLFunction extends AbstractTestCase {
         em.persist(user3);
         userid3 = user3.getUserid();
         em.persist(user4);
-        userid4 = user4.getUserid();
+        user4.getUserid(); // this call is required to fix the order
         em.persist(user5);
         userid5 = user5.getUserid();
-        em.persist(user6);
-        userid6 = user6.getUserid();
+        em.persist(user6); // this call is required to fix the order
+        user6.getUserid();
 
+        em.persist(new CompVerUser("Bob", "n/a", null, null));
+        em.persist(new CompVerUser("Alice", "n/a", null, null));
         em.persist(new CompVerUser("Seetha1", "WIN", null, 66));
 
         DBDictionary dict = ((JDBCConfiguration) em.getConfiguration()).getDBDictionaryInstance();
-        if(dict instanceof SybaseDictionary) {
+        if (dict instanceof SybaseDictionary) {
             expectedShannonName = "Shannon";
         }
         DatabaseHelper.createPowerFunctionIfNecessary(em, dict);
@@ -760,7 +765,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
 
         String query = "SELECT EXTRACT(YEAR FROM {d '2025-01-23'}) - c.age FROM CompUser AS c ORDER BY c.userid";
 
-        List result = em.createQuery(query).getResultList();
+        List<Integer> result = em.createQuery(query, Integer.class).getResultList();
 
         assertNotNull(result);
         assertEquals(6, result.size());
@@ -1098,6 +1103,26 @@ public class TestEJBQLFunction extends AbstractTestCase {
         assertTrue("Expected null-country users last, got: " + fifth + ", " + sixth,
             (fifth.equals("Famzy") || fifth.equals("Shade")) &&
             (sixth.equals("Famzy") || sixth.equals("Shade")));
+
+        endEm(em);
+    }
+
+    public void testOrderByNullsLastCOALESCE() {
+        EntityManager em = currentEntityManager();
+
+        // with COALESCE `NULLS LAST` is useless, but it will help to test parsing with Mysql/MariaDB and SQLServer
+        String query = "SELECT u.name FROM CompVerUser AS u ORDER BY COALESCE(u.age, 0) ASC NULLS Last";
+        List<String> result = em.createQuery(query, String.class).getResultList();
+
+        assertNotNull(result);
+        assertEquals(3, result.size());
+        // first two results should be users with null age (Alice, Bob)
+        // The exact order between the two nulls is undefined, but they should come first
+        String first = (String) result.get(0);
+        String second = (String) result.get(1);
+        Set<String> firsts = Set.of(first, second);
+        assertTrue("Expected null-age users first, got: " + first + ", " + second,
+            firsts.contains("Alice") && firsts.contains("Bob"));
 
         endEm(em);
     }
