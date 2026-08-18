@@ -147,13 +147,13 @@ class VersionVal
 
     @Override
     public int length(Select sel, ExpContext ctx, ExpState state) {
-        return _path.length(sel, ctx, state);
+        return getColumns(state).length;
     }
 
     @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
-        _path.appendTo(sel, ctx, state, sql, index);
+        _path.appendTo(sel, state, sql, getColumns(state)[index]);
     }
 
     @Override
