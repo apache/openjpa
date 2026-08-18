@@ -2429,47 +2429,62 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      * registered, the duplicate is silently skipped.
      */
     public void addSystemListener(Object listener, String key) {
+        if (_locking) {
+            synchronized (this) {
+                addSystemListenerInternal(listener, key);
+            }
+        } else {
+            addSystemListenerInternal(listener, key);
+        }
+    }
+
+    private void addSystemListenerInternal(Object listener, String key) {
         if (key != null && !_systemListenerKeys.add(key)) {
             return;
         }
-        if (_locking) {
-            synchronized (this) {
-                LifecycleEventManager.ListenerList listeners = new LifecycleEventManager.ListenerList(_listeners);
-                listeners.add(listener);
-                _listeners = listeners;
-                _systemListenersActivated = true;
-            }
-        } else {
-            LifecycleEventManager.ListenerList listeners = new LifecycleEventManager.ListenerList(_listeners);
-            listeners.add(listener);
-            _listeners = listeners;
-            _systemListenersActivated = true;
-        }
+        LifecycleEventManager.ListenerList listeners = new LifecycleEventManager.ListenerList(_listeners);
+        listeners.add(listener);
+        _listeners = listeners;
+        _systemListenersActivated = true;
     }
 
     /**
      * Remove the given system lifecycle listener.
      */
     public boolean removeSystemListener(Object listener) {
+        return removeSystemListener(listener, null);
+    }
+
+    /**
+     * Remove the given system lifecycle listener with an optional deduplication key.
+     * This method should be used if system listeners were added with
+     * addSystemListener(Object listener, String key)
+     */
+    public boolean removeSystemListener(Object listener, String key) {
         if (_locking) {
             synchronized (this) {
-                return removeSystemListenerInternal(listener);
+                return removeSystemListenerInternal(listener, key);
             }
         } else {
-            return removeSystemListenerInternal(listener);
+            return removeSystemListenerInternal(listener, key);
         }
     }
 
-    private boolean removeSystemListenerInternal(Object listener) {
-            if (!_listeners.contains(listener))
-                return false;
+    private boolean removeSystemListenerInternal(Object listener, String key) {
+        if (key != null && !_systemListenerKeys.remove(key)) {
+            // there is no such key ...
+            return false;
+        }
+        if (!_listeners.contains(listener)) {
+            return false;
+        }
 
-            // copy to avoid issues with ListenerList and avoid unncessary
-            // locking on the list during runtime
-            LifecycleEventManager.ListenerList listeners = new LifecycleEventManager.ListenerList(_listeners);
-            listeners.remove(listener);
-            _listeners = listeners;
-            return true;
+        // copy to avoid issues with ListenerList and avoid unncessary
+        // locking on the list during runtime
+        LifecycleEventManager.ListenerList listeners = new LifecycleEventManager.ListenerList(_listeners);
+        listeners.remove(listener);
+        _listeners = listeners;
+        return true;
     }
 
     /**
