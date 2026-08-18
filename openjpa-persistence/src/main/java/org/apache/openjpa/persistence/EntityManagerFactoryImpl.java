@@ -470,7 +470,7 @@ public class EntityManagerFactoryImpl
         }
         return _metaModel;
     }
-    
+
     @Override
     public String getName() {
     	return (String) _factory.getProperties().get("openjpa.Id");
@@ -755,7 +755,7 @@ public class EntityManagerFactoryImpl
 
         return eg;
     }
-    
+
     /**
      * Get the identifier for the specified entity.  If not managed by any
      * of the em's in this PU or not persistence capable, return null.
@@ -824,12 +824,12 @@ public class EntityManagerFactoryImpl
         return (OpenJPAPersistenceUtil.isManagedBy(this, entity) &&
                 (OpenJPAPersistenceUtil.isLoaded(entity, attribute) == LoadState.LOADED));
     }
-    
+
     @Override
     public <E> boolean isLoaded(E entity, Attribute<? super E, ?> attribute) {
     	return isLoaded(entity, attribute.getName());
     }
-    
+
     @Override
     public SchemaManager getSchemaManager() {
     	if (!this.isOpen()) {
@@ -837,7 +837,7 @@ public class EntityManagerFactoryImpl
     	}
     	return new SchemaManagerImpl(_factory);
     }
-    
+
     @Override
     @SuppressWarnings("unchecked")
     public <R> R callInTransaction(Function<EntityManager, R> work) {
@@ -869,10 +869,10 @@ public class EntityManagerFactoryImpl
     		// causing getClass() mismatches in equals(). To ensure consistent
     		// class identity, re-find managed entities from the database so that
     		// the returned instance is a subclass (matching what find() returns).
-    		// Enhanced entities implements PersistenceCapable directly according 
+    		// Enhanced entities implements PersistenceCapable directly according
     		// to OpenJPAPersistenceUtil#toPC
-    		if (result != null 
-    				&& !(result instanceof PersistenceCapable) 
+    		if (result != null
+    				&& !(result instanceof PersistenceCapable)
     				&& em.contains(result)) {
     			try {
     				Object id = getPersistenceUnitUtil().getIdentifier(result);
@@ -908,7 +908,7 @@ public class EntityManagerFactoryImpl
     		em.close();
     	}
     }
-    
+
     @Override
     public void runInTransaction(Consumer<EntityManager> work) {
     	callInTransaction(em -> {
@@ -916,7 +916,7 @@ public class EntityManagerFactoryImpl
     		return null;
     	});
     }
-    
+
     @Override
     public <T> Class<? extends T> getClass(T entity) {
     	if (!OpenJPAPersistenceUtil.isManagedBy(this, entity)) {
@@ -925,28 +925,28 @@ public class EntityManagerFactoryImpl
     	}
     	return OpenJPAPersistenceUtil.getClass(this, entity);
     }
-    
+
     @Override
     public <R> Map<String, TypedQueryReference<R>> getNamedQueries(Class<R> resultType) {
     	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
     }
-    
+
     @Override
     public PersistenceUnitTransactionType getTransactionType() {
     	return "managed".equalsIgnoreCase(_factory.getConfiguration().getTransactionMode())
     			? PersistenceUnitTransactionType.JTA
     			: PersistenceUnitTransactionType.RESOURCE_LOCAL;
     }
-    
+
     @Override
     public Object getVersion(Object entity) {
-    	if (!OpenJPAPersistenceUtil.isManagedBy(this, entity)) {
-    		throw new IllegalArgumentException(_loc.get("invalid_entity_argument",
-                    "load", entity == null ? "null" : Exceptions.toString(entity)).getMessage());
-    	}
-    	return OpenJPAPersistenceUtil.getVersion(this, entity);
+        if (!OpenJPAPersistenceUtil.isManagedBy(this, entity)) {
+            throw new IllegalArgumentException(_loc.get("invalid_entity_argument",
+                    "getVersion", entity == null ? "null" : Exceptions.toString(entity)).getMessage());
+        }
+        return OpenJPAPersistenceUtil.getVersion(this, entity);
     }
-    
+
     @Override
     public boolean isInstance(Object entity, Class<?> entityClass) {
         if (entity == null || entityClass == null) {
@@ -962,7 +962,7 @@ public class EntityManagerFactoryImpl
         }
         return entityClass.isAssignableFrom(entity.getClass());
     }
-    
+
     @Override
     public void load(Object entity) {
     	if (!OpenJPAPersistenceUtil.isManagedBy(this, entity)) {
@@ -971,7 +971,7 @@ public class EntityManagerFactoryImpl
     	}
     	OpenJPAPersistenceUtil.load(this, entity);
     }
-    
+
     @Override
     public void load(Object entity, String attributeName) {
     	if (!OpenJPAPersistenceUtil.isManagedBy(this, entity)) {
@@ -980,12 +980,12 @@ public class EntityManagerFactoryImpl
     	}
     	OpenJPAPersistenceUtil.load(this, entity, attributeName);
     }
-    
+
     @Override
     public <E> void load(E entity, Attribute<? super E, ?> attribute) {
     	load(entity, attribute.getName());
     }
-    
+
     private void validateCfNameProps(OpenJPAConfiguration conf, String cfName, String cf2Name) {
         if (StringUtil.isNotEmpty(cfName) || StringUtil.isNotEmpty(cf2Name)) {
             if (conf.getDataCache() != "false" && conf.getDataCache() != null) {
@@ -1010,5 +1010,5 @@ public class EntityManagerFactoryImpl
             }
         }
     }
-    
+
 }
