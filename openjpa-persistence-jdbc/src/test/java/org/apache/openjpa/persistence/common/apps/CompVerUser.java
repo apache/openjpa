@@ -26,8 +26,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.OneToOne;
@@ -36,8 +34,7 @@ import jakarta.persistence.Version;
 import org.apache.openjpa.persistence.PersistentCollection;
 
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class CompUser {
+public class CompVerUser {
     @Basic
     @Column(length = 50)
     private String name;
@@ -68,10 +65,13 @@ public class CompUser {
     @Basic
     private CreditRating creditRating;
 
-    public CompUser() {
+    @Version
+    private int version;
+
+    public CompVerUser() {
     }
 
-    public CompUser(String name, String cName, Address address, int age) {
+    public CompVerUser(String name, String cName, Address address, int age) {
         this.name = name;
         this.computerName = cName;
         this.address = address;
@@ -149,5 +149,13 @@ public class CompUser {
 
     public void setCreditRating(CreditRating creditRating) {
         this.creditRating = creditRating;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
 }

@@ -32,6 +32,7 @@ import org.apache.openjpa.jdbc.sql.SybaseDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.common.apps.Address;
 import org.apache.openjpa.persistence.common.apps.CompUser;
+import org.apache.openjpa.persistence.common.apps.CompVerUser;
 import org.apache.openjpa.persistence.common.apps.FemaleUser;
 import org.apache.openjpa.persistence.common.apps.MaleUser;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
@@ -54,8 +55,10 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Override
-    public void setUp() {
-        deleteAll(CompUser.class);
+    public void setUp() throws Exception {
+        super.setUp(CLEAR_TABLES, CompUser.class, CompVerUser.class, MaleUser.class,
+                FemaleUser.class, Address.class
+        );
         OpenJPAEntityManagerSPI em = (OpenJPAEntityManagerSPI) currentEntityManager();
         startTx(em);
 
@@ -87,9 +90,11 @@ public class TestEJBQLFunction extends AbstractTestCase {
         em.persist(user6);
         userid6 = user6.getUserid();
 
+        em.persist(new CompVerUser("Seetha1", "WIN", null, 66));
+
         DBDictionary dict = ((JDBCConfiguration) em.getConfiguration()).getDBDictionaryInstance();
         if(dict instanceof SybaseDictionary) {
-            expectedShannonName="Shannon";
+            expectedShannonName = "Shannon";
         }
         DatabaseHelper.createPowerFunctionIfNecessary(em, dict);
         DatabaseHelper.createRoundFunctionIfNecessary(em, dict);
@@ -681,11 +686,11 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractTimeFromInstant() {
-    	DBDictionary dict = getDbDictionary(getEmf());
-    	if (dict instanceof OracleDictionary) {
-    		// Oracle has no TIME data type
-    		return;
-    	}
+        DBDictionary dict = getDbDictionary(getEmf());
+        if (dict instanceof OracleDictionary) {
+            // Oracle has no TIME data type
+            return;
+        }
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT(TIME FROM {ts '2005-03-21 01:32:21'}) = {t '01:32:21'}";
@@ -698,10 +703,10 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractDateFromLocalDateTime() {
-    	if (getDbDictionary(getEmf()) instanceof OracleDictionary) {
-    		// Oracle does not support TIME data type
-    		return;
-    	}
+        if (getDbDictionary(getEmf()) instanceof OracleDictionary) {
+            // Oracle does not support TIME data type
+            return;
+        }
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT(DATE FROM LOCAL DATETIME) > {d '2025-01-10'}";
@@ -714,11 +719,11 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractTimeFromLocalTime() {
-    	DBDictionary dict = getDbDictionary(getEmf());
-    	if (dict instanceof OracleDictionary) {
-    		// Oracle has no TIME data type
-    		return;
-    	}
+        DBDictionary dict = getDbDictionary(getEmf());
+        if (dict instanceof OracleDictionary) {
+            // Oracle has no TIME data type
+            return;
+        }
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT(TIME FROM LOCAL TIME) = {t '01:32:20'}";
@@ -769,10 +774,10 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractQUARTER() {
-    	DBDictionary dict = getDbDictionary(getEmf());
+        DBDictionary dict = getDbDictionary(getEmf());
         if (dict instanceof DerbyDictionary || dict instanceof OracleDictionary) {
             // Derby does not support EXTRACT
-        	// Oracle does not support EXTRACT(QUARTER)
+            // Oracle does not support EXTRACT(QUARTER)
             return;
         }
         EntityManager em = currentEntityManager();
@@ -803,10 +808,10 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractWEEK() {
-    	DBDictionary dict = getDbDictionary(getEmf());
+        DBDictionary dict = getDbDictionary(getEmf());
         if (dict instanceof DerbyDictionary || dict instanceof OracleDictionary) {
             // Derby does not support EXTRACT
-        	// Oracle does not support EXTRACT(WEEK) (https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/EXTRACT-datetime.html)
+            // Oracle does not support EXTRACT(WEEK) (https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/EXTRACT-datetime.html)
             return;
         }
         EntityManager em = currentEntityManager();
@@ -891,10 +896,10 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractHourFromLocalTime() {
-    	DBDictionary dict = getDbDictionary(getEmf());
+        DBDictionary dict = getDbDictionary(getEmf());
         if (dict instanceof DerbyDictionary || dict instanceof OracleDictionary) {
             // Derby does not support EXTRACT
-        	// Oracle does not have TIME data type
+            // Oracle does not have TIME data type
             return;
         }
         EntityManager em = currentEntityManager();
@@ -1126,17 +1131,17 @@ public class TestEJBQLFunction extends AbstractTestCase {
     public void testVersionFunction() {
         EntityManager em = currentEntityManager();
 
-        String query = "SELECT VERSION(u) FROM CompUser AS u WHERE u.name = :name";
-        List result = em.createQuery(query).setParameter("name", "Seetha").getResultList();
+        String query = "SELECT VERSION(u) FROM CompVerUser AS u WHERE u.name = :name";
+        List result = em.createQuery(query).setParameter("name", "Seetha1").getResultList();
 
         assertEquals(1, result.size());
         int currentVersion = (int) result.get(0);
 
-        query = "SELECT u FROM CompUser AS u WHERE u.name = :name AND version(u) = :version";
-        result = em.createQuery(query).setParameter("name", "Seetha").setParameter("version", currentVersion).getResultList();
+        query = "SELECT u FROM CompVerUser AS u WHERE u.name = :name AND version(u) = :version";
+        result = em.createQuery(query).setParameter("name", "Seetha1").setParameter("version", currentVersion).getResultList();
 
         assertEquals(1, result.size());
-        assertEquals("Seetha", ((CompUser) result.get(0)).getName());
+        assertEquals("Seetha1", ((CompVerUser) result.get(0)).getName());
 
         endEm(em);
     }
