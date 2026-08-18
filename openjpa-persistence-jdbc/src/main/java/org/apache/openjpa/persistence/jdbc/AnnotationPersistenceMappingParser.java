@@ -1736,17 +1736,8 @@ public class AnnotationPersistenceMappingParser
      * precedence over the @Enumerated strategy.
      */
     private void parseEnumerated(FieldMapping fm, Enumerated anno) {
-        Class<?> enumType = fm.isElementCollection()
-            ? fm.getElement().getDeclaredType()
-            : fm.getDeclaredType();
-        String strat;
-        if (EnumValueHandler.hasEnumeratedValue(enumType)) {
-            strat = EnumValueHandler.class.getName()
-                + "(UseEnumeratedValue=true)";
-        } else {
-            strat = EnumValueHandler.class.getName() + "(StoreOrdinal="
-                + (anno.value() == EnumType.ORDINAL) + ")";
-        }
+        String strat = EnumValueHandler.strategy(enumeratedType(fm),
+            anno.value() == EnumType.ORDINAL);
         if (fm.isElementCollection())
             fm.getElementMapping().getValueInfo().setStrategy(strat);
         else
@@ -1757,9 +1748,25 @@ public class AnnotationPersistenceMappingParser
      * Parse @MapKeyEnumerated.
      */
     private void parseMapKeyEnumerated(FieldMapping fm, MapKeyEnumerated anno) {
-        String strat = EnumValueHandler.class.getName() + "(StoreOrdinal="
-            + (anno.value() == EnumType.ORDINAL) + ")";
+        String strat = EnumValueHandler.strategy(
+            fm.getKeyMapping().getDeclaredType(), anno.value() == EnumType.ORDINAL);
         fm.getKeyMapping().getValueInfo().setStrategy(strat);
+    }
+
+    /**
+     * Return the enum type an @Enumerated declaration applies to: the element
+     * type for a container valued field, the field type itself otherwise.
+     */
+    static Class<?> enumeratedType(FieldMapping fm) {
+        Class<?> type = fm.isElementCollection()
+            ? fm.getElement().getDeclaredType()
+            : fm.getDeclaredType();
+        if (type != null && !type.isEnum() && fm.getElement() != null) {
+            Class<?> elem = fm.getElement().getDeclaredType();
+            if (elem != null && elem.isEnum())
+                type = elem;
+        }
+        return type;
     }
 
     /**
