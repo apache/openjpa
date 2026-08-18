@@ -414,9 +414,9 @@
             <id>test-derby</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
-            <property>
-                <name>test-derby</name>
-            </property>
+                <property>
+                    <name>test-derby</name>
+                </property>
             </activation>
             <dependencies>
                 <dependency>

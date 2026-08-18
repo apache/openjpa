@@ -13,6 +13,5 @@ nbactions*.xml
 
 .claude
 CLAUDE.md
-openjpa-xmlstore/jdbc*
 scripts/.report/
 

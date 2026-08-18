@@ -120,9 +120,9 @@
                 <configuration>
                     <argLine>${test.jvm.arguments}</argLine>
                     <systemPropertyVariables>
-                    	<openjpa.Log>${openjpa.Log}</openjpa.Log>
-                    	<openjpa.DynamicEnhancementAgent>false</openjpa.DynamicEnhancementAgent>
-                    	<tests.openjpa.allowfailure>${tests.openjpa.allowfailure}</tests.openjpa.allowfailure>
+                        <openjpa.Log>${openjpa.Log}</openjpa.Log>
+                        <openjpa.DynamicEnhancementAgent>false</openjpa.DynamicEnhancementAgent>
+                        <tests.openjpa.allowfailure>${tests.openjpa.allowfailure}</tests.openjpa.allowfailure>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
