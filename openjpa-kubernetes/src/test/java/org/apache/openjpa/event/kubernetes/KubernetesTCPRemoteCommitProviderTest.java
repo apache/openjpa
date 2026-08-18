@@ -32,6 +32,7 @@ import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import org.apache.openjpa.event.TCPRemoteCommitProvider;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -53,7 +54,8 @@ public class KubernetesTCPRemoteCommitProviderTest {
 
         Field _addresses = TCPRemoteCommitProvider.class.getDeclaredField("_addresses");
         _addresses.setAccessible(true);
-        Iterable<? extends Object> addresses = (Iterable<? extends Object>) _addresses.get(rcp);
+        // copy original list to avoid ConcurrentModificationException
+        List<? extends Object> addresses = new ArrayList<>((Collection<? extends Object>) _addresses.get(rcp));
 
         List<String> result = new ArrayList<>();
         for (Object address : addresses) {
