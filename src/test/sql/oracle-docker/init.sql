@@ -21,12 +21,5 @@
 -- See the 'test-oracle-docker' Maven Profile
 -- ***********************************************************
 
--- 'C##' required to bypass 'ORA-65096: invalid common user or role name'
-CREATE USER C##openjpatst IDENTIFIED BY openjpatst;
-GRANT CONNECT, RESOURCE, DBA TO C##openjpatst;
-GRANT CREATE SESSION TO C##openjpatst;
-GRANT ALL PRIVILEGES TO C##openjpatst;
-GRANT UNLIMITED TABLESPACE TO C##openjpatst;
-
 -- to avoid ORA-12519, TNS:no appropriate service handler found
 alter system set processes=250 scope=spfile;

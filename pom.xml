@@ -1570,17 +1570,14 @@
                 <oracle.artifactid>ojdbc8</oracle.artifactid>
                 <oracle.version>19.3.0.0</oracle.version>
 
-                <oracle.server.version>18.4.0-xe</oracle.server.version>
+                <oracle.server.version>18.4.0</oracle.server.version>
                 <docker.external.oracle.port>1521</docker.external.oracle.port>
 
                 <connection.driver.name>oracle.jdbc.driver.OracleDriver</connection.driver.name>
                 <openjpa.oracle.database>openjpatst</openjpa.oracle.database>
-                <!-- 'C##' required to bypass 'ORA-65096: invalid common user or role name' -->
-                <!-- NOTE: this username should be in sync with src/test/sql/oracle-docker/init.sql -->
-                <openjpa.oracle.username>C##openjpatst</openjpa.oracle.username>
+                <openjpa.oracle.username>openjpatst</openjpa.oracle.username>
                 <openjpa.oracle.password>openjpatst</openjpa.oracle.password>
-                <openjpa.oracle.SID>XE</openjpa.oracle.SID>
-                <openjpa.oracle.url>jdbc:oracle:thin:@localhost:${docker.external.oracle.port}:${openjpa.oracle.SID}</openjpa.oracle.url>
+                <openjpa.oracle.url>jdbc:oracle:thin:@localhost:${docker.external.oracle.port}/${openjpa.oracle.database}</openjpa.oracle.url>
 
                 <connection.url>${openjpa.oracle.url}</connection.url>
                 <connection.username>${openjpa.oracle.username}</connection.username>
@@ -1602,7 +1599,6 @@
                 </dependency>
             </dependencies>
 
-
             <build>
                 <plugins>
                     <plugin>
@@ -1613,16 +1609,17 @@
                             <removeVolumes>true</removeVolumes>
                             <images>
                                 <image>
-                                    <name>container-registry.oracle.com/database/express:${oracle.server.version}</name>
+                                    <name>gvenzl/oracle-xe:${oracle.server.version}</name>
                                     <run>
                                         <env>
-                                            <ORACLE_PWD>${openjpa.oracle.password}</ORACLE_PWD>
+                                            <ORACLE_PASSWORD>${openjpa.oracle.password}</ORACLE_PASSWORD>
+                                            <ORACLE_DATABASE>${openjpa.oracle.database}</ORACLE_DATABASE>
+                                            <APP_USER>${openjpa.oracle.username}</APP_USER>
+                                            <APP_USER_PASSWORD>${openjpa.oracle.password}</APP_USER_PASSWORD>
                                         </env>
                                         <volumes>
                                             <bind>
-                                                <volume>${project.basedir}/src/test/sql/oracle-docker:/docker-entrypoint-initdb.d/setup/</volume>
-                                                <!-- NOTE this folder MUST exist and have correct permissions!!!! -->
-                                                <volume>${project.basedir}/../jdbc_oradata:/opt/oracle/oradata</volume>
+                                                <volume>${project.basedir}/src/test/sql/oracle-docker:/docker-entrypoint-initdb.d/</volume>
                                             </bind>
                                         </volumes>
                                         <ports>

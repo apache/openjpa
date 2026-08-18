@@ -167,7 +167,6 @@ do_test() {
 	local log=${2}
 	local -n params=${3}
 	local status="${COLOR_RED}Failed${COLOR_RESET}"
-	rm -rf openjpa-xmlstore/jdbc:*
 
 	if [[ "${profile}" == *docker ]]; then
 		set -x
@@ -222,13 +221,6 @@ test_profile() {
 		do_test ${prof} ${profile} par
 	fi
 }
-
-if [[ "${MATRIX[@]}" =~ 'oracle' ]]; then
-	mkdir -p "../jdbc_oradata"
-	chmod a+rwx "../jdbc_oradata"
-
-	echo -e "${COLOR_RED}IMPORTANT!${COLOR_RESET} It will be impossible to clean-up ${COLOR_RED}'../../jdbc_oradata'${COLOR_RESET} please perform manual deletion with sudo";
-fi
 
 for profile in ${MATRIX[@]}; do
 	if [[ "${EXCLUDE}" == *"${profile}"* ]]; then
