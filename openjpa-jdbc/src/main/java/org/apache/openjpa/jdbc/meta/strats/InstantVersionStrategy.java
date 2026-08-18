@@ -30,9 +30,7 @@ import org.apache.openjpa.meta.JavaTypes;
  *
  * @since 4.2.0
  */
-public class InstantVersionStrategy
-    extends ColumnVersionStrategy {
-
+public class InstantVersionStrategy extends ColumnVersionStrategy {
     private static final long serialVersionUID = 1L;
     public static final String ALIAS = "version-instant";
 
@@ -52,12 +50,12 @@ public class InstantVersionStrategy
     }
 
     @Override
-    public Map<Column, String> getBulkUpdateValues() {
+    public Map<Column, Object> getBulkUpdateValues() {
         Column[] cols = vers.getColumns();
-        Map<Column, String> map = new HashMap<>(cols.length);
+        Map<Column, Object> map = new HashMap<>(cols.length);
         Object d = nextVersion(null);
         for (Column col : cols) {
-            map.put(col, d.toString());
+            map.put(col, d);
         }
         return map;
     }
