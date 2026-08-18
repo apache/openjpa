@@ -32,6 +32,7 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.jdbc.sql.SybaseDictionary;
+import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.common.apps.Address;
 import org.apache.openjpa.persistence.common.apps.CompUser;
@@ -1168,7 +1169,138 @@ public class TestEJBQLFunction extends AbstractTestCase {
         assertEquals(1, result.size());
         assertEquals("Seetha1", ((CompVerUser) result.get(0)).getName());
 
+        // a version that no row carries must match nothing. Without this the test
+        // would still pass if version(u) were compared against another column,
+        // such as the primary key, that happens to hold the same value
+        result = em.createQuery(query).setParameter("name", "Seetha1")
+            .setParameter("version", currentVersion + 1).getResultList();
+
+        assertEquals(0, result.size());
+
         endEm(em);
+    }
+
+    public void testVersionFunctionOnOrderBy() {
+        // give the three CompVerUser rows distinct versions, in an order that
+        // deliberately differs from the order of their primary keys. They are
+        // persisted as Bob, Alice, Seetha1, so ordering by the version column
+        // must yield Seetha1, Bob, Alice
+        bumpVersion("Alice", 2);
+        bumpVersion("Bob", 1);
+
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT u.name, VERSION(u) FROM CompVerUser AS u ORDER BY VERSION(u)";
+        List result = em.createQuery(query).getResultList();
+
+        assertEquals(3, result.size());
+        assertEquals("Seetha1", ((Object[]) result.get(0))[0]);
+        assertEquals("Bob", ((Object[]) result.get(1))[0]);
+        assertEquals("Alice", ((Object[]) result.get(2))[0]);
+
+        assertVersionsOrdered(result, true);
+
+        endEm(em);
+    }
+
+    public void testVersionFunctionOnOrderByDescending() {
+        bumpVersion("Alice", 2);
+        bumpVersion("Bob", 1);
+
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT u.name, VERSION(u) FROM CompVerUser AS u ORDER BY VERSION(u) DESC";
+        List result = em.createQuery(query).getResultList();
+
+        assertEquals(3, result.size());
+        assertEquals("Alice", ((Object[]) result.get(0))[0]);
+        assertEquals("Bob", ((Object[]) result.get(1))[0]);
+        assertEquals("Seetha1", ((Object[]) result.get(2))[0]);
+
+        assertVersionsOrdered(result, false);
+
+        endEm(em);
+    }
+
+    public void testVersionFunctionOnOrderByAmongOtherOrderings() {
+        // Alice and Bob end up on the same version, so the secondary ordering
+        // by name decides between them
+        bumpVersion("Alice", 1);
+        bumpVersion("Bob", 1);
+
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT u.name FROM CompVerUser AS u ORDER BY VERSION(u) DESC, u.name ASC";
+        List result = em.createQuery(query).getResultList();
+
+        assertEquals(3, result.size());
+        assertEquals("Alice", result.get(0));
+        assertEquals("Bob", result.get(1));
+        assertEquals("Seetha1", result.get(2));
+
+        endEm(em);
+    }
+
+    public void testVersionFunctionOnUnversionedEntity() {
+        EntityManager em = currentEntityManager();
+
+        // CompUser has no version field and no version columns, so there is
+        // nothing for VERSION() to order by
+        String query = "SELECT u FROM CompUser AS u ORDER BY VERSION(u)";
+
+        try {
+            em.createQuery(query).getResultList();
+            fail("Did not get ArgumentException for VERSION() on an unversioned type");
+        } catch (ArgumentException ae) {
+            String msg = String.valueOf(ae.getMessage());
+            assertTrue("the message does not name the unversioned type: " + msg,
+                msg.contains(CompUser.class.getName()));
+            assertTrue("the message does not mention the missing version: " + msg,
+                msg.contains("version"));
+            for (Throwable c = ae; c != null && c != c.getCause(); c = c.getCause()) {
+                assertFalse("VERSION() on an unversioned type must not fail with a "
+                    + "NullPointerException: " + c, c instanceof NullPointerException);
+            }
+        }
+
+        endEm(em);
+    }
+
+    /**
+     * Increment the version of the named CompVerUser the given number of times,
+     * each time in its own transaction.
+     */
+    private void bumpVersion(String name, int times) {
+        for (int i = 0; i < times; i++) {
+            EntityManager em = currentEntityManager();
+            startTx(em);
+
+            CompVerUser user = (CompVerUser) em.createQuery(
+                "SELECT u FROM CompVerUser AS u WHERE u.name = :name")
+                .setParameter("name", name).getSingleResult();
+            user.setAge(user.getAge() == null ? 1 : user.getAge() + 1);
+
+            endTx(em);
+            endEm(em);
+        }
+    }
+
+    /**
+     * Assert that the version values in the second position of each result row
+     * are strictly ascending or strictly descending.
+     */
+    private void assertVersionsOrdered(List result, boolean asc) {
+        for (int i = 1; i < result.size(); i++) {
+            int previous = ((Number) ((Object[]) result.get(i - 1))[1]).intValue();
+            int current = ((Number) ((Object[]) result.get(i))[1]).intValue();
+            if (asc) {
+                assertTrue("versions are not ascending: " + previous + ", " + current,
+                    previous < current);
+            } else {
+                assertTrue("versions are not descending: " + previous + ", " + current,
+                    previous > current);
+            }
+        }
     }
 
     public void testUnionProjection() {

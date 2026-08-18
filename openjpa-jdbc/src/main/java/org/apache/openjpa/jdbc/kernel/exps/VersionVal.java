@@ -58,10 +58,12 @@ class VersionVal
     }
 
     /**
-     * Return the version column.
+     * Return the version columns. Note that these are the columns of the
+     * version strategy, which are not necessarily the columns of a version
+     * field: some strategies map version columns without a version field.
      */
     public Column[] getColumns(ExpState state) {
-        return _path.getClassMapping(state).getVersionFieldMapping().getColumns();
+        return _path.getClassMapping(state).getVersion().getColumns();
     }
 
     @Override
@@ -97,6 +99,12 @@ class VersionVal
         ClassMapping cls = _path.getClassMapping(state);
         if (cls == null || cls.getEmbeddingMapping() != null)
             throw new UserException(_loc.get("bad-getobjectid", _path.getFieldMapping(state)));
+
+        // types that are not versioned have no version columns to select,
+        // group, order or compare by; fail with a meaningful message rather
+        // than a NullPointerException further down the line
+        if (cls.getVersion() == null || cls.getVersion().getColumns().length == 0)
+            throw new UserException(_loc.get("no-version-field", cls));
         return state;
     }
 
@@ -124,13 +132,15 @@ class VersionVal
 
     @Override
     public void groupBy(Select sel, ExpContext ctx, ExpState state) {
-        _path.groupBy(sel, ctx, state);
+        sel.setSchemaAlias(_path.getSchemaAlias());
+        sel.groupBy(getColumns(state), sel.outer(((PathExpState) state).joins));
     }
 
     @Override
     public void orderBy(Select sel, ExpContext ctx, ExpState state,
         boolean asc) {
-        _path.orderBy(sel, ctx, state, asc);
+        sel.setSchemaAlias(_path.getSchemaAlias());
+        sel.orderBy(getColumns(state), asc, sel.outer(((PathExpState) state).joins), false);
     }
 
     @Override
