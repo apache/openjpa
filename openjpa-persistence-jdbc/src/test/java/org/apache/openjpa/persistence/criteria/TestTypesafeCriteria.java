@@ -54,6 +54,7 @@ import jakarta.persistence.metamodel.Metamodel;
 import org.apache.openjpa.jdbc.sql.AbstractSQLServerDictionary;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
+import org.apache.openjpa.jdbc.sql.H2Dictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.common.utils.DatabaseHelper;
 import org.apache.openjpa.persistence.test.AllowFailure;
@@ -1903,11 +1904,13 @@ public class TestTypesafeCriteria extends CriteriaTest {
 
     public void testCriteriaExceptAll() {
         DBDictionary dict = getDictionary();
-        if (dict instanceof OracleDictionary && dict.getMajorVersion() < 21) {
+        if (dict instanceof H2Dictionary
+                || (dict instanceof OracleDictionary && dict.getMajorVersion() < 21))
+        {
             // @AllowFailure
             // Orcale supports `EXCEPT ALL` since 21c
             getEntityManagerFactory().getConfiguration().getLog("test").warn(
-                "SKIPPING testCriteriaExceptAll() for Oracle v" + dict.getMajorVersion());
+                "SKIPPING testCriteriaExceptAll() for " + dict.getClass().getSimpleName() + " v" + dict.getMajorVersion());
             return;
         }
         CriteriaQuery<String> q1 = cb.createQuery(String.class);
