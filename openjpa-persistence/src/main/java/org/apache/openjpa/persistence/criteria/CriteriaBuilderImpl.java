@@ -20,7 +20,6 @@ package org.apache.openjpa.persistence.criteria;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.nio.channels.UnsupportedAddressTypeException;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -100,7 +99,6 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
      * @param criteria a CriteriaQuery, CriteriaDelete, or CriteriaUpdate
      * @return a snapshot copy that is isolated from future changes to the original
      */
-    @SuppressWarnings("unchecked")
     public static Object snapshotQuery(Object criteria) {
         if (criteria instanceof CriteriaQueryImpl<?>) {
             return ((CriteriaQueryImpl<?>) criteria).snapshot();
@@ -1211,45 +1209,44 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 		return new Expressions.ExtractField<>(resultType, extractField, temporal);
 	}
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T> CriteriaSelect<T> union(CriteriaSelect<? extends T> left, CriteriaSelect<? extends T> right) {
-		return new CriteriaSelectImpl<>(QueryExpressions.SET_OP_UNION,
-			left, right, getResultClass(left));
-	}
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T> CriteriaSelect<T> unionAll(CriteriaSelect<? extends T> left, CriteriaSelect<? extends T> right) {
-		return new CriteriaSelectImpl<>(QueryExpressions.SET_OP_UNION_ALL,
-			left, right, getResultClass(left));
-	}
+    @Override
+    public <T> CriteriaSelect<T> union(CriteriaSelect<? extends T> left, CriteriaSelect<? extends T> right) {
+        return new CriteriaSelectImpl<>(QueryExpressions.SET_OP_UNION,
+                left, right, getResultClass(left));
+    }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T> CriteriaSelect<T> intersect(CriteriaSelect<? super T> left, CriteriaSelect<? super T> right) {
-		return new CriteriaSelectImpl<>(QueryExpressions.SET_OP_INTERSECT,
-			left, right, (Class<T>) getResultClass(left));
-	}
+    @Override
+    public <T> CriteriaSelect<T> unionAll(CriteriaSelect<? extends T> left, CriteriaSelect<? extends T> right) {
+        return new CriteriaSelectImpl<>(QueryExpressions.SET_OP_UNION_ALL,
+                left, right, getResultClass(left));
+    }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T> CriteriaSelect<T> intersectAll(CriteriaSelect<? super T> left, CriteriaSelect<? super T> right) {
-		return new CriteriaSelectImpl<>(QueryExpressions.SET_OP_INTERSECT_ALL,
-			left, right, (Class<T>) getResultClass(left));
-	}
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> CriteriaSelect<T> intersect(CriteriaSelect<? super T> left, CriteriaSelect<? super T> right) {
+        return new CriteriaSelectImpl<>(QueryExpressions.SET_OP_INTERSECT,
+                left, right, (Class<T>) getResultClass(left));
+    }
 
-	@Override
-	public <T> CriteriaSelect<T> except(CriteriaSelect<T> left, CriteriaSelect<?> right) {
-		return new CriteriaSelectImpl<>(QueryExpressions.SET_OP_EXCEPT,
-			left, right, getResultClass(left));
-	}
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> CriteriaSelect<T> intersectAll(CriteriaSelect<? super T> left, CriteriaSelect<? super T> right) {
+        return new CriteriaSelectImpl<>(QueryExpressions.SET_OP_INTERSECT_ALL,
+                left, right, (Class<T>) getResultClass(left));
+    }
 
-	@Override
-	public <T> CriteriaSelect<T> exceptAll(CriteriaSelect<T> left, CriteriaSelect<?> right) {
-		return new CriteriaSelectImpl<>(QueryExpressions.SET_OP_EXCEPT_ALL,
-			left, right, getResultClass(left));
-	}
+    @Override
+    public <T> CriteriaSelect<T> except(CriteriaSelect<T> left, CriteriaSelect<?> right) {
+        return new CriteriaSelectImpl<>(QueryExpressions.SET_OP_EXCEPT,
+                left, right, getResultClass(left));
+    }
+
+    @Override
+    public <T> CriteriaSelect<T> exceptAll(CriteriaSelect<T> left, CriteriaSelect<?> right) {
+        return new CriteriaSelectImpl<>(QueryExpressions.SET_OP_EXCEPT_ALL,
+                left, right, getResultClass(left));
+    }
 
 	@SuppressWarnings("unchecked")
 	private <T> Class<T> getResultClass(CriteriaSelect<? extends T> select) {

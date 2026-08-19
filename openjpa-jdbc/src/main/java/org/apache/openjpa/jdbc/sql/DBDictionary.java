@@ -310,6 +310,7 @@ public class DBDictionary
     public String dropTableSQL = "DROP TABLE {0}";
     public String extractDateTimeFieldFunction = "EXTRACT({0} FROM {1})";
     public String ceilingFunction = "CEILING";
+    public String exceptFunction = "EXCEPT";
 
     // types
     public boolean storageLimitationsFatal = false;

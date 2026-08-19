@@ -301,24 +301,25 @@ public class OracleDictionary
     }
 
     @Override
-    public void connectedConfiguration(Connection conn)
-        throws SQLException {
+    public void connectedConfiguration(Connection conn) throws SQLException {
         super.connectedConfiguration(conn);
         if (driverVendor == null) {
             DatabaseMetaData meta = conn.getMetaData();
             String url = (meta.getURL() == null) ? "" : meta.getURL();
             String driverName = meta.getDriverName();
             String metadataClassName;
-            if (meta instanceof DelegatingDatabaseMetaData)
+            if (meta instanceof DelegatingDatabaseMetaData) {
                 metadataClassName = ((DelegatingDatabaseMetaData) meta).
                     getInnermostDelegate().getClass().getName();
-            else
+            } else {
                 metadataClassName = meta.getClass().getName();
+            }
 
             // check both the driver class name and the URL for known patterns
             if (metadataClassName.startsWith("oracle.")
-                || url.indexOf("jdbc:oracle:") != -1
-                || "Oracle JDBC driver".equals(driverName)) {
+                    || url.indexOf("jdbc:oracle:") != -1
+                    || "Oracle JDBC driver".equals(driverName))
+            {
                 int jdbcMajor = meta.getDriverMajorVersion();
                 int jdbcMinor = meta.getDriverMinorVersion();
                 driverVendor = VENDOR_ORACLE + jdbcMajor + jdbcMinor;
@@ -349,12 +350,17 @@ public class OracleDictionary
                 // or ".getClobVal()" suffix. eg. t0.xmlcol.getClobVal()
                 getStringVal = ".getClobVal()";
             } else if (metadataClassName.startsWith("com.ddtek.")
-                || url.indexOf("jdbc:datadirect:oracle:") != -1
-                || "Oracle".equals(driverName)) {
+                    || url.indexOf("jdbc:datadirect:oracle:") != -1
+                    || "Oracle".equals(driverName))
+            {
                 driverVendor = VENDOR_DATADIRECT + meta.getDriverMajorVersion()
                     + meta.getDriverMinorVersion();
-            } else
+            } else {
                 driverVendor = VENDOR_OTHER;
+            }
+        }
+        if (getMajorVersion() < 21) {
+            exceptFunction = "MINUS";
         }
         cacheDriverBehavior(driverVendor);
         guessJDBCVersion(conn);
@@ -1608,7 +1614,7 @@ public class OracleDictionary
         }
         return super.getIsNotNullSQL(colAlias, colType);
     }
-    
+
     @Override
     public void mathFunction(SQLBuffer buf, String op, FilterValue lhs, FilterValue rhs) {
     	if ("CEILING".equals(op)) {

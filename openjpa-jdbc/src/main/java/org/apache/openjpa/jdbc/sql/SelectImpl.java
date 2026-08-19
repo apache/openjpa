@@ -1256,10 +1256,10 @@ public class SelectImpl
                 keyword = " INTERSECT ALL ";
                 break;
             case QueryExpressions.SET_OP_EXCEPT:
-                keyword = " EXCEPT ";
+                keyword = " " + _dict.exceptFunction + " ";
                 break;
             case QueryExpressions.SET_OP_EXCEPT_ALL:
-                keyword = " EXCEPT ALL ";
+                keyword = " " + _dict.exceptFunction + " ALL ";
                 break;
             default:
                 return;

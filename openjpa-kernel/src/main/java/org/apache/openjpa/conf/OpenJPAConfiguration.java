@@ -128,7 +128,7 @@ public interface OpenJPAConfiguration
             "openjpa.option.ApplicationIdentity";
 
     /**
-     * Option for runtimes that support application identity.
+     * Option for runtimes that support datastore identity.
      */
     String OPTION_ID_DATASTORE =
             "openjpa.option.DatastoreIdentity";

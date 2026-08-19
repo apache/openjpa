@@ -21,7 +21,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.LockTimeoutException;
 import jakarta.persistence.PessimisticLockException;
-import jakarta.persistence.PessimisticLockScope;
 import jakarta.persistence.Query;
 import jakarta.persistence.QueryTimeoutException;
 import jakarta.persistence.Timeout;

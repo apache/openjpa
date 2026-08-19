@@ -52,6 +52,7 @@ import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.Metamodel;
 
 import org.apache.openjpa.jdbc.sql.AbstractSQLServerDictionary;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.common.utils.DatabaseHelper;
@@ -68,8 +69,7 @@ import org.apache.openjpa.persistence.test.AllowFailure;
  *
  */
 public class TestTypesafeCriteria extends CriteriaTest {
-	
-	private static final Logger logger = Logger.getLogger(TestTypesafeCriteria.class.getCanonicalName());
+    private static final Logger logger = Logger.getLogger(TestTypesafeCriteria.class.getCanonicalName());
     private static final String TRUE_JPQL = "SELECT p FROM Person p WHERE 1=1";
     private static final String FALSE_JPQL = "SELECT p FROM Person p WHERE 1<>1";
 
@@ -1789,7 +1789,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
 
         assertEquivalence(cq, jpql);
     }
-    
+
     public void testLeft() {
     	if (getDictionary() instanceof DerbyDictionary) {
     		// TODO Derby DB does not support LEFT, RIGHT or REPLACE functions
@@ -1801,12 +1801,12 @@ public class TestTypesafeCriteria extends CriteriaTest {
         p.setName("John Fitzgerald Doe");
         em.persist(p);
         em.getTransaction().commit();
-    	
+
     	CriteriaQuery<Person> cq = cb.createQuery(Person.class);
     	Root<Person> c = cq.from(Person.class);
     	cq.where(cb.equal(cb.left(c.get("name"), 4), "John"));
     	em.createQuery(cq).getResultList();
-    	
+
     	assertEquivalence(cq, jpql);
     }
 
@@ -1826,10 +1826,10 @@ public class TestTypesafeCriteria extends CriteriaTest {
     	Root<Person> c = cq.from(Person.class);
     	cq.where(cb.equal(cb.right(c.get("name"), 3), "Doe"));
     	em.createQuery(cq).getResultList();
-    	
+
     	assertEquivalence(cq, jpql);
     }
-    
+
     public void testReplace() {
     	if (getDictionary() instanceof DerbyDictionary) {
     		// TODO Derby DB does not support LEFT, RIGHT or REPLACE functions
@@ -1898,6 +1898,29 @@ public class TestTypesafeCriteria extends CriteriaTest {
             .where(cb.gt(r2.<Integer>get("age"), 30));
 
         jakarta.persistence.criteria.CriteriaSelect<String> except = cb.except(q1, q2);
+        assertNotNull(em.createQuery(except).getResultList());
+    }
+
+    public void testCriteriaExceptAll() {
+        DBDictionary dict = getDictionary();
+        if (dict instanceof OracleDictionary && dict.getMajorVersion() < 21) {
+            // @AllowFailure
+            // Orcale supports `EXCEPT ALL` since 21c
+            getEntityManagerFactory().getConfiguration().getLog("test").warn(
+                "SKIPPING testCriteriaExceptAll() for Oracle v" + dict.getMajorVersion());
+            return;
+        }
+        CriteriaQuery<String> q1 = cb.createQuery(String.class);
+        Root<CompUser> r1 = q1.from(CompUser.class);
+        q1.select(r1.<String>get("name"))
+            .where(cb.gt(r1.<Integer>get("age"), 20));
+
+        CriteriaQuery<String> q2 = cb.createQuery(String.class);
+        Root<CompUser> r2 = q2.from(CompUser.class);
+        q2.select(r2.<String>get("name"))
+            .where(cb.gt(r2.<Integer>get("age"), 30));
+
+        jakarta.persistence.criteria.CriteriaSelect<String> except = cb.exceptAll(q1, q2);
         assertNotNull(em.createQuery(except).getResultList());
     }
 
