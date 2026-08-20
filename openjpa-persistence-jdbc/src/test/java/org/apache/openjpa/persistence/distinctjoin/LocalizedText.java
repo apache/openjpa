@@ -28,6 +28,7 @@ import jakarta.persistence.Lob;
  */
 @Embeddable
 public class LocalizedText {
+	
     @Lob
     String textEn;
 
@@ -35,7 +36,6 @@ public class LocalizedText {
     String textDe;
 
     public LocalizedText() {
-        System.out.println("Just for having a debug breakpoint...");
     }
 
 

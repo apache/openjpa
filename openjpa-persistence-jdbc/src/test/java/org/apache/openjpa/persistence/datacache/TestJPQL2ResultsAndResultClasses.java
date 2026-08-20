@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import jakarta.persistence.EntityManagerFactory;
 
@@ -40,8 +41,9 @@ import org.apache.openjpa.persistence.datacache.common.apps.
 import org.apache.openjpa.persistence.test.AllowFailure;
 
 @AllowFailure(message="surefire excluded")
-public class TestJPQL2ResultsAndResultClasses
-    extends AbstractTestCase {
+public class TestJPQL2ResultsAndResultClasses extends AbstractTestCase {
+	
+	private static final Logger logger = Logger.getLogger(TestJPQL2ResultsAndResultClasses.class.getCanonicalName());
 
     public TestJPQL2ResultsAndResultClasses(String test) {
         super(test, "datacachecactusapp");
@@ -65,8 +67,7 @@ public class TestJPQL2ResultsAndResultClasses
         try {
             broker.begin();
         } catch (Exception e) {
-            System.out.println(
-                "Exception in TestJPQL2ResultsAndResultClasses setup : \n" +
+            logger.fine( "Exception in TestJPQL2ResultsAndResultClasses setup : \n" +
                     getStackTrace(e));
         }
 

@@ -74,7 +74,7 @@ public Query createQuery(String jpql);
 </programlisting>
             <para>
 The
-<ulink url="http://download.oracle.com/javaee/6/api/javax/persistence/EntityManager.html">
+<ulink url="https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/entitymanager">
 <methodname>EntityManager.createQuery</methodname></ulink> method creates a
 <classname>Query</classname> instance from a given JPQL string.
             </para>
@@ -83,7 +83,7 @@ public List getResultList();
 </programlisting>
             <para>
 Invoking
-<ulink url="http://download.oracle.com/javaee/6/api/javax/persistence/Query.html#getResultList()">
+<ulink url="https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/query#getResultList()">
 <methodname>Query.getResultList</methodname></ulink> executes the query and
 returns a <classname>List</classname> containing the matching objects. The
 following example executes our <classname>Magazine</classname> query above:
@@ -2984,6 +2984,9 @@ and subtraction
                             </para>
                         </listitem>
                         <listitem>
+                            <para>String concatenation (||)</para>
+                        </listitem>
+                        <listitem>
                             <para>
 Comparison operators: =, &gt;, &gt;=, &lt;, &lt;=, &lt;&gt; (not equal), [
 <literal>NOT</literal> ] <literal>BETWEEN</literal>, [ <literal>NOT</literal> ]
@@ -3526,7 +3529,9 @@ of the functional expression is unknown.
 CONCAT(string_primary, string_primary) | SUBSTRING(string_primary,
 simple_arithmetic_expression[, simple_arithmetic_expression]) |
 TRIM([[trim_specification] [trim_character] FROM] string_primary) |
-LOWER(string_primary) | UPPER(string_primary)
+LOWER(string_primary) | UPPER(string_primary) | 
+REPLACE(string_expression, string_expression, string_expression) | 
+LEFT(string_expression, arithmetic_expression) | RIGHT(string_expression, arithmetic_expression)
                                 </para>
                             </listitem>
                             <listitem>
@@ -3753,6 +3758,28 @@ For the following field type identifiers, EXTRACT returns a part of the datetime
 It is illegal to pass a datetime argument which does not have the given part to EXTRACT.
                 </para>
                 </section>
+            </section>
+            <section id="jpa_langref_typecasts_expressions">
+                <title>Typecasts</title>
+                <para>
+The CAST function converts an expression of one type to an expression of a different type.
+<itemizedlist>
+    <listitem>
+string_cast_function::=
+    CAST(scalar_expression AS STRING)
+</listitem>
+<listitem>
+arithmetic_cast_function::=
+    CAST(string_expression AS {INTEGER | LONG | FLOAT | DOUBLE})
+</listitem>
+</itemizedlist>
+                </para>
+                <para>
+Examples
+                </para>
+<programlisting>
+UPDATE Invoice AS inv SET inv.description = CONCAT('Price ', CAST(inv.price AS STRING))
+</programlisting>
             </section>
             <section id="jpa_langref_case_expressions">
                 <title>
@@ -4770,8 +4797,28 @@ QL_statement ::= select_statement | update_statement | delete_statement
                 </listitem>
                 <listitem>
                     <para>
-select_statement ::= select_clause from_clause [where_clause] [groupby_clause]
-[having_clause] [orderby_clause]
+select_statement ::= union
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+union ::= intersection | union {UNION [ALL] | EXCEPT [ALL]} intersection
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+intersection ::= query_expression | intersection INTERSECT [ALL] query_expression
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+query_expression ::= select_query | (union)
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+select_query ::= [select_clause] from_clause [where_clause] [groupby_clause]
+    [having_clause] [orderby_clause]
                     </para>
                 </listitem>
                 <listitem>
@@ -5245,6 +5292,7 @@ arithmetic_primary ::=
     aggregate_expression |
     case_expression |
     function_invocation |
+    arithmetic_cast_function |
     (subquery)
                     </para>
                 </listitem>
@@ -5258,6 +5306,8 @@ string_expression ::=
     aggregate_expression |
     case_expression |
     function_invocation |
+    string_cast_function |
+    string_expression || string_expression |
     (subquery)
                     </para>
                 </listitem>
@@ -5324,6 +5374,12 @@ input_parameter)
                 </listitem>
                 <listitem>
                     <para>
+arithmetic_cast_function::=
+    CAST(string_expression AS {INTEGER | LONG | FLOAT | DOUBLE})
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
 functions_returning_numerics ::= <literal>LENGTH</literal> (string_primary)|
 <literal>LOCATE</literal> (string_primary,string_primary [,
 arithmetic_expression]) | <literal>ABS</literal>
@@ -5354,12 +5410,19 @@ extract_datetime_part
                 </listitem>
                 <listitem>
                     <para>
+string_cast_function::=
+    CAST(scalar_expression AS STRING)
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
 functions_returning_strings ::= <literal>CONCAT</literal> (string_expression,
 string_expression) | <literal>SUBSTRING</literal> (string_expression,
 arithmetic_expression[,arithmetic_expression])| <literal>TRIM
 </literal> ([[trim_specification] [trim_character] <literal>FROM</literal> ]
 string_expression) | <literal>LOWER</literal> (string_expression) | <literal>UPPER
-</literal> (string_expression)
+</literal> (string_expression)<literal>REPLACE</literal>(string_expression, string_expression, string_expression) |
+<literal>LEFT</literal>(string_expression, arithmetic_expression) | <literal>RIGHT</literal>(string_expression, arithmetic_expression)
                     </para>
                 </listitem>
                 <listitem>

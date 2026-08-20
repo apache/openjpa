@@ -78,7 +78,7 @@ public class TestProviderUtil extends SingleEMFTestCase{
     private void verifyIsLoadedEagerState(LoadState state) {
         ProviderUtil pu = getProviderUtil();
         EntityManager em = emf.createEntityManager();
-        EagerEntity ee = createEagerEntity(true);
+        Eager ee = createEagerEntity(true);
 
         // Vfy LoadState is unknown for the unmanaged entity
         assertEquals(LoadState.UNKNOWN, pu.isLoaded(ee));
@@ -179,7 +179,7 @@ public class TestProviderUtil extends SingleEMFTestCase{
     public void testIsApplicationLoaded() {
         ProviderUtil pu = getProviderUtil();
         EntityManager em = emf.createEntityManager();
-        EagerEntity ee = createEagerEntity(true);
+        Eager ee = createEagerEntity(true);
 
         em.getTransaction().begin();
         em.persist(ee);
@@ -208,7 +208,7 @@ public class TestProviderUtil extends SingleEMFTestCase{
     public void testIsLoadedUnknown() {
         ProviderUtil pu = getProviderUtil();
 
-        EagerEntity ee = new EagerEntity();
+        Eager ee = new EagerEntity();
 
         assertEquals(LoadState.UNKNOWN, pu.isLoaded(ee));
         assertEquals(LoadState.UNKNOWN, pu.isLoadedWithReference(ee,

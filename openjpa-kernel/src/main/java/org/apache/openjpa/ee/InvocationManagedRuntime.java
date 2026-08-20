@@ -66,10 +66,9 @@ public class InvocationManagedRuntime extends AbstractManagedRuntime
         if (_method == null) {
             ClassLoader loader = _conf.getClassResolverInstance().
                 getClassLoader(getClass(), null);
-            _method = Class.forName(_clazz, true, loader)
-                .getMethod(_methodName, null);
+            _method = Class.forName(_clazz, true, loader).getMethod(_methodName);
         }
-        return (TransactionManager) _method.invoke(null, null);
+        return (TransactionManager) _method.invoke(null);
     }
 
     @Override

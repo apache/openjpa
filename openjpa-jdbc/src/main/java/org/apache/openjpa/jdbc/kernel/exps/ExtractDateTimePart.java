@@ -23,7 +23,6 @@ import java.sql.SQLException;
 import java.sql.Time;
 
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
-import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;

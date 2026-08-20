@@ -160,7 +160,7 @@ public class TestStateImage
 
         // have to load via query or extent where we're selecting the vertical
         // field in the initial SELECT
-        OpenJPAQuery q1 = pm1.createNativeQuery("",StateImagePC2.class);
+        OpenJPAQuery q1 = (OpenJPAQuery) pm1.createNativeQuery("",StateImagePC2.class);
         //FIXME  jthomas
         //q1.setOrdering("intField ascending");
         StateImagePC2 pc1 =
@@ -168,7 +168,7 @@ public class TestStateImage
             iterator().next();
         q1.closeAll();
 
-        OpenJPAQuery q2 = pm2.createNativeQuery("",StateImagePC2.class);
+        OpenJPAQuery q2 = (OpenJPAQuery) pm2.createNativeQuery("",StateImagePC2.class);
         //FIXME jthomas
         //q2.setOrdering("intField ascending");
         StateImagePC2 pc2 =

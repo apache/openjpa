@@ -333,9 +333,13 @@ public class SelectConstructor
 
         // build ordering clauses before select so that any eager join
         // ordering gets applied after query ordering
-        for (int i = 0; i < exps.ordering.length; i++)
+        for (int i = 0; i < exps.ordering.length; i++) {
             ((Val) exps.ordering[i]).orderBy(sel, ctx, state.ordering[i],
                 exps.ascending[i]);
+            if (exps.nullPrecedence.length > i
+                && exps.nullPrecedence[i] != QueryExpressions.NULLS_DEFAULT)
+                sel.appendNullsPrecedence(exps.nullPrecedence[i]);
+        }
 
         // if no result string set, select matching objects like normal
         if (exps.projections.length == 0 && sel.getParent() == null) {

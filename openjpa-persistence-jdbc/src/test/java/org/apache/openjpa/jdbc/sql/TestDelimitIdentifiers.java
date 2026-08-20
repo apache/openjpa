@@ -32,7 +32,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-
+import java.util.logging.Logger;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -52,6 +52,8 @@ public class TestDelimitIdentifiers {
             setSupportsDelimitedIdentifiers(true);
         }
     }
+    
+    private static final Logger logger = Logger.getLogger(TestDelimitIdentifiers.class.getCanonicalName());
 
     @Test
     public void testDelimitIdentifiers() throws SQLException {
@@ -63,7 +65,7 @@ public class TestDelimitIdentifiers {
         }
         catch (Exception e) {
             // all fine
-            System.out.println("Skipping Derby specific test because Derby cannot be found in ClassPath");
+            logger.finest("Skipping Derby specific test because Derby cannot be found in ClassPath");
             return;
         }
 

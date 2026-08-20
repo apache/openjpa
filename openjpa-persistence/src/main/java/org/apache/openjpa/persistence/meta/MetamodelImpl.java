@@ -26,7 +26,6 @@ import static jakarta.persistence.metamodel.Type.PersistenceType.MAPPED_SUPERCLA
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
-import java.security.AccessController;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -56,6 +55,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.meta.Members.Member;
+import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.InternalException;
 
 /**
@@ -87,7 +87,13 @@ public class MetamodelImpl implements Metamodel, Resolver {
                 continue;
             }
 
-        	ClassMetaData meta = repos.getMetaData(cls, null, true);
+        	ClassMetaData meta = repos.getMetaData(cls, null, false);
+            if (meta == null) {
+                // Skip non-entity classes (e.g. exceptions, ID classes,
+                // listeners) that are listed in persistence.xml <class>
+                // elements but have no JPA metadata.
+                continue;
+            }
             PersistenceType type = getPersistenceType(meta);
             switch (type) {
             case ENTITY:
@@ -119,10 +125,27 @@ public class MetamodelImpl implements Metamodel, Resolver {
      */
     @Override
     public <X> EmbeddableType<X> embeddable(Class<X> clazz) {
-        return (EmbeddableType<X>)find(clazz, _embeddables, EMBEDDABLE, false);
+        EmbeddableType<X> result =
+            (EmbeddableType<X>)find(clazz, _embeddables, EMBEDDABLE, false);
+        if (result == null) {
+            throw new IllegalArgumentException(
+                _loc.get("type-not-embeddable",
+                    clazz == null ? "null" : clazz.getName()).getMessage());
+        }
+        return result;
     }
 
-    /**
+	@Override
+	public EntityType<?> entity(String entityName) {
+		return getEntityValuesOnly()
+				.parallelStream()
+				.filter(et -> et.getName().contentEquals(entityName))
+				.findFirst()
+				.orElseThrow(() -> new IllegalArgumentException(_loc.get("invalid_entity_argument",
+	                    "load", entityName == null ? "null" : Exceptions.toString(entityName)).getMessage()));
+	}
+
+	/**
      *  Return the metamodel entity type representing the entity.
      *  @param cls  the type of the represented entity
      *  @return the metamodel entity type
@@ -130,7 +153,14 @@ public class MetamodelImpl implements Metamodel, Resolver {
      */
     @Override
     public <X> EntityType<X> entity(Class<X> clazz) {
-        return (EntityType<X>) find(clazz, _entities, ENTITY, false);
+        EntityType<X> result =
+            (EntityType<X>) find(clazz, _entities, ENTITY, false);
+        if (result == null) {
+            throw new IllegalArgumentException(
+                _loc.get("type-not-entity",
+                    clazz == null ? "null" : clazz.getName()).getMessage());
+        }
+        return result;
     }
 
     public <X> EntityType<X> entityImpl(Class<X> clazz) {
@@ -339,7 +369,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
 
         ParameterizedType mfType = null;
         Attribute<? super X, ?> f = null;
-        Field[] mfields = AccessController.doPrivileged(J2DoPrivHelper.getDeclaredFieldsAction(mcls));
+        Field[] mfields = mcls.getDeclaredFields();
         for (Field mf : mfields) {
             try {
                 mfType = getParameterizedType(mf); // metamodel type
@@ -455,4 +485,5 @@ public class MetamodelImpl implements Metamodel, Resolver {
     public QueryContext getQueryContext() {
         throw new UnsupportedOperationException();
     }
+
 }

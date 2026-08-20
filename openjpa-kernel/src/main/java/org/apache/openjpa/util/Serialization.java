@@ -27,13 +27,10 @@ import java.io.ObjectOutputStream;
 import java.io.ObjectStreamClass;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.MultiClassLoader;
 
@@ -104,13 +101,7 @@ public class Serialization {
             throws IOException {
             super(delegate);
             _ctx = ctx;
-            AccessController.doPrivileged(new PrivilegedAction() {
-                @Override
-                public Object run() {
-                    enableReplaceObject(true);
-                    return null;
-                }
-            });
+            enableReplaceObject(true);
         }
 
         @Override
@@ -132,8 +123,7 @@ public class Serialization {
         protected Class resolveClass(ObjectStreamClass desc)
             throws IOException, ClassNotFoundException {
             String name = BlacklistClassResolver.DEFAULT.check(desc.getName());
-            MultiClassLoader loader = AccessController
-                .doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
+            MultiClassLoader loader = new MultiClassLoader();
             addContextClassLoaders(loader);
             loader.addClassLoader(getClass().getClassLoader());
             loader.addClassLoader(MultiClassLoader.SYSTEM_LOADER);
@@ -141,8 +131,7 @@ public class Serialization {
         }
 
         protected void addContextClassLoaders(MultiClassLoader loader) {
-            loader.addClassLoader(AccessController.doPrivileged(
-                J2DoPrivHelper.getContextClassLoaderAction()));
+            loader.addClassLoader(Thread.currentThread().getContextClassLoader());
         }
     }
 
@@ -163,13 +152,7 @@ public class Serialization {
             throws IOException {
             super(delegate);
             _ctx = ctx;
-            AccessController.doPrivileged(new PrivilegedAction() {
-                @Override
-                public Object run() {
-                    enableResolveObject(true);
-                    return null;
-                }
-            });
+            enableResolveObject(true);
         }
 
         @Override

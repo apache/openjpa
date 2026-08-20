@@ -24,11 +24,13 @@ import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -99,6 +101,10 @@ public class JavaTypes {
 
     public static final int UUID_OBJ = 38;
 
+    // JPA 3.2 additional java.time types
+    public static final int INSTANT = 39;
+    public static final int YEAR = 40;
+
 
     private static final Localizer _loc = Localizer.forPackage(JavaTypes.class);
 
@@ -135,6 +141,10 @@ public class JavaTypes {
         _typeCodes.put(OffsetDateTime.class, OFFSET_DATETIME);
 
         _typeCodes.put(UUID.class, UUID_OBJ);
+
+        // JPA 3.2 additional java.time types
+        _typeCodes.put(Instant.class, INSTANT);
+        _typeCodes.put(Year.class, YEAR);
     }
 
     /**

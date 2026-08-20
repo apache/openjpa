@@ -23,10 +23,8 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.lang.reflect.Method;
-import java.security.AccessController;
 import java.util.Arrays;
 
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.UserException;
 
@@ -85,12 +83,11 @@ public class MethodLifecycleCallbacks
     @Override
     public void makeCallback(Object obj, Object arg, int eventType)
         throws Exception {
-        if (!_callback.isAccessible())
-            AccessController.doPrivileged(J2DoPrivHelper.setAccessibleAction(
-                _callback, true));
+        if (!_callback.canAccess(obj))
+        	_callback.setAccessible(true);
 
         if (_arg)
-            _callback.invoke(obj, new Object[]{ arg });
+            _callback.invoke(obj, arg);
         else
             _callback.invoke(obj, (Object[]) null);
     }
@@ -107,8 +104,7 @@ public class MethodLifecycleCallbacks
     protected static Method getMethod(Class cls, String method, Class[] args) {
         Class currentClass = cls;
         do {
-            Method[] methods = (Method[]) AccessController.doPrivileged(
-                J2DoPrivHelper.getDeclaredMethodsAction(currentClass));
+            Method[] methods = currentClass.getDeclaredMethods();
             for (Method value : methods) {
                 if (!method.equals(value.getName()))
                     continue;
@@ -137,7 +133,9 @@ public class MethodLifecycleCallbacks
             return false;
 
         for (int i = 0; i < from.length; i++) {
-            if (from[i] != null && !from[i].isAssignableFrom(to[i]))
+            if (from[i] != null && to[i] != null
+                && !from[i].isAssignableFrom(to[i])
+                && !to[i].isAssignableFrom(from[i]))
                 return false;
         }
 

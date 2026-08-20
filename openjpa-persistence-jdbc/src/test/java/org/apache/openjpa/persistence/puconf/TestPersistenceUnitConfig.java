@@ -106,5 +106,35 @@ public class TestPersistenceUnitConfig extends PersistenceTestCase {
             }
         }
     }
+    
+    public void testCreateEMFWithCustomInjectScope() {
+    	EntityManagerFactory emf = null;
+    	try {
+    		emf = createEmf("PUTest-New-Scope");
+    	} catch (Throwable t) {
+    		fail(t.getMessage());
+    	} finally {
+    		if (emf != null) {
+    			try {
+    				emf.close();
+    			} catch (Throwable e) {}
+    		}
+    	}
+    }
+
+    public void testCreateEMFWithCustomQualifiers() {
+    	EntityManagerFactory emf = null;
+    	try {
+    		emf = createEmf("PUTest-Qualifiers");
+    	} catch (Throwable t) {
+    		fail(t.getMessage());
+    	} finally {
+    		if (emf != null) {
+    			try {
+    				emf.close();
+    			} catch (Throwable e) {}
+    		}
+    	}
+    }
 
 }

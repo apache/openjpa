@@ -55,29 +55,34 @@ public class ClassRedefiner {
             return;
 
         Instrumentation inst = null;
-        ClassFileTransformer t = null;
         try {
             inst = InstrumentationFactory.getInstrumentation(log);
-
-            Class<?>[] array = classes.keySet().toArray(new Class[classes.size()]);
             log.trace(_loc.get("retransform-types", classes.keySet()));
 
-            t = new ClassFileTransformer() {
-                @Override
-                public byte[] transform(ClassLoader loader, String clsName,
-                    Class<?> classBeingRedefined, ProtectionDomain pd,
-                    byte[] classfileBuffer) {
-                    return classes.get(classBeingRedefined);
-                }
-            };
-
-            inst.addTransformer(t, true);
-            inst.retransformClasses(array);
-        } catch (Exception e) {
+            // Use redefineClasses instead of retransformClasses to
+            // bypass any registered ClassFileTransformers (e.g.
+            // PCClassFileTransformer) that might produce incompatible
+            // bytecode for classes with non-standard field types.
+            java.lang.instrument.ClassDefinition[] defs =
+                new java.lang.instrument.ClassDefinition[classes.size()];
+            int i = 0;
+            for (Map.Entry<Class<?>, byte[]> entry : classes.entrySet()) {
+                defs[i++] = new java.lang.instrument.ClassDefinition(
+                    entry.getKey(), entry.getValue());
+            }
+            inst.redefineClasses(defs);
+        } catch (UnsupportedOperationException e) {
             throw new InternalException(e);
-        } finally {
-            if (inst != null && t != null)
-                inst.removeTransformer(t);
+        } catch (Throwable e) {
+            // redefineClasses may fail with VerifyError (an Error,
+            // not Exception) when the enhanced bytecode references
+            // types not visible to the class's loader, or when the
+            // redefined schema doesn't match. Fall back to
+            // subclass-based enhancement which is already set up
+            // by ManagedClassSubclasser.
+            if (log.isInfoEnabled())
+                log.info("redefineClasses failed (" + e
+                    + "), falling back to subclass enhancement");
         }
     }
 

@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import jakarta.persistence.EntityManager;
 
@@ -81,6 +82,8 @@ import junit.framework.AssertionFailedError;
  * ### should add 1..1 relation test ### app id compound key test
  */
 public abstract class CacheTest extends AbstractTestCase {
+	
+	private static final Logger logger = Logger.getLogger(CacheTest.class.getCanonicalName());
 
     private static String ORIG_NAME = "origName";
 
@@ -401,8 +404,7 @@ public abstract class CacheTest extends AbstractTestCase {
 
         cache = aMeta.getDataCache();
         assertEquals(defaultCache, cache);
-        System.out.println("******DataCacheName:"
-            + aChild2Meta.getDataCacheName());
+        logger.fine("******DataCacheName:" + aChild2Meta.getDataCacheName());
         assertNull(aChild2Meta.getDataCache());
 
         assertNull(bMeta.getDataCache());
@@ -1712,8 +1714,7 @@ public abstract class CacheTest extends AbstractTestCase {
                 c.doassertTrue(c.factory.createEntityManager(), NEW_NAME,
                         ORIG_AGE);
             }
-            System.out.println(count + " iterations in "
-                    + (System.currentTimeMillis() - start) + " millis");
+            logger.fine(count + " iterations in " + (System.currentTimeMillis() - start) + " millis");
             c.tearDown();
         }
     }

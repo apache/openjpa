@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.jdbc.schema;
 
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 
 /**
@@ -30,6 +34,7 @@ import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 public class Index extends LocalConstraint {
     private static final long serialVersionUID = 1L;
     private boolean _unique = false;
+    private Map<String, Boolean> _columnDesc = null;
 
     /**
      * Default constructor.
@@ -65,6 +70,32 @@ public class Index extends LocalConstraint {
      */
     public void setUnique(boolean unique) {
         _unique = unique;
+    }
+
+    /**
+     * Set the sort direction for a column in this index.
+     * @param col the column identifier
+     * @param descending true for DESC, false for ASC (default)
+     */
+    public void setColumnSortDirection(DBIdentifier col, boolean descending) {
+        if (descending) {
+            if (_columnDesc == null)
+                _columnDesc = new HashMap<>();
+            _columnDesc.put(col.getName().toUpperCase(Locale.ROOT), Boolean.TRUE);
+        }
+    }
+
+    /**
+     * Whether the given column is sorted in descending order.
+     */
+    public boolean isColumnDescending(Column col) {
+        if (_columnDesc == null)
+            return false;
+        String name = col.getIdentifier().getName();
+        if (name == null)
+            return false;
+        Boolean desc = _columnDesc.get(name.toUpperCase(Locale.ROOT));
+        return desc != null && desc;
     }
 
     @Override

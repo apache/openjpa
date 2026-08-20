@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.jdbc.maps.m2mmapex8;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import jakarta.persistence.EntityManager;
@@ -124,7 +125,7 @@ public class TestMany2ManyMapEx8 extends SQLListenerTestCase {
             setCandidate(q, PhoneNumber.class);
         rs = q.getResultList();
         if (!inMemory)
-            assertTrue(sql.get(0).toUpperCase().indexOf("LIKE") > 0);
+            assertTrue(sql.get(0).toUpperCase(Locale.ROOT).indexOf("LIKE") > 0);
 
         em.close();
     }

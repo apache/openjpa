@@ -601,7 +601,7 @@ public abstract class MappingInfo implements Serializable {
         _io = null;
         Column col;
         for (int i = 0; i < tmplates.length; i++) {
-            col = (given.isEmpty()) ? null : (Column) given.get(i);
+            col = (given.isEmpty()) ? null : given.get(i);
             cols[i] = mergeColumn(context, prefix, tmplates[i], true, col,
                 table, adapt, fill);
             setIOFromColumnFlags(col, i);
@@ -717,12 +717,15 @@ public abstract class MappingInfo implements Serializable {
         }
 
         boolean ttype = true;
+        boolean keepExistingType = false;
         int otype = type;
         String typeName = tmplate.getTypeName();
         Boolean notNull = null;
         if (tmplate.isNotNullExplicit())
             notNull = (tmplate.isNotNull()) ? Boolean.TRUE : Boolean.FALSE;
         int decimals = tmplate.getDecimalDigits();
+        int secondPrecision = tmplate.getSecondPrecision();
+        String options = tmplate.getOptions();
         String defStr = tmplate.getDefaultString();
         boolean autoAssign = tmplate.isAutoAssigned();
         boolean relationId = tmplate.isRelationId();
@@ -747,6 +750,10 @@ public abstract class MappingInfo implements Serializable {
             if (given.getSize() > 0)
                 size = given.getSize();
             decimals = given.getDecimalDigits();
+            if (given.getSecondPrecision() >= 0)
+                secondPrecision = given.getSecondPrecision();
+            if (given.getOptions() != null)
+                options = given.getOptions();
 
             // leave this info as the template defaults unless the user
             // explicitly turns it on in the given column
@@ -774,33 +781,66 @@ public abstract class MappingInfo implements Serializable {
             col.setType(type);
         } else if ((compat || !ttype) &&
                 !col.isCompatible(type, typeName, size, decimals)) {
-            // if existing column isn't compatible with desired type, die if
-            // can't adapt, else warn and change the existing column type
-            Message msg = _loc.get(prefix + "-bad-col", context,
-                Schemas.getJDBCName(type), col.getDescription());
-            if (!adapt && !dict.disableSchemaFactoryColumnTypeErrors)
-                throw new MetaDataException(msg);
-            Log log = repos.getLog();
-            if (log.isWarnEnabled())
-                log.warn(msg);
+            // When multiple mappings share the same column with different
+            // enum types (ORDINAL=SMALLINT vs STRING=VARCHAR), always
+            // resolve to VARCHAR since it can hold both ordinal numbers
+            // as strings and enum name strings.
+            int existingType = col.getType();
+            boolean isExistingVarchar = existingType == Types.VARCHAR
+                    || existingType == Types.CHAR
+                    || existingType == Types.LONGVARCHAR;
+            boolean isNewVarchar = type == Types.VARCHAR
+                    || type == Types.CHAR
+                    || type == Types.LONGVARCHAR;
 
-            col.setType(type);
+            if (isExistingVarchar && isNumericType(type)) {
+                // Existing VARCHAR, new wants numeric: keep VARCHAR
+                keepExistingType = true;
+            } else if (isNumericType(existingType) && isNewVarchar) {
+                // Existing numeric, new wants VARCHAR: upgrade to VARCHAR
+                col.setType(type);
+                col.setJavaType(JavaTypes.STRING);
+                if (size > 0) {
+                    col.setSize(size);
+                }
+                keepExistingType = true;
+            } else {
+                Message msg = _loc.get(prefix + "-bad-col", context,
+                    Schemas.getJDBCName(type), col.getDescription());
+                if (!adapt && !dict.disableSchemaFactoryColumnTypeErrors)
+                    throw new MetaDataException(msg);
+                Log log = repos.getLog();
+                if (log.isWarnEnabled())
+                    log.warn(msg);
+                col.setType(type);
+            }
         } else if (given != null && given.getType() != Types.OTHER) {
             // as long as types are compatible, set column to expected type
             col.setType(type);
         }
 
         // always set the java type and autoassign to expected values, even on
-        // an existing column, since we don't get this from the DB
-        if (compat)
+        // an existing column, since we don't get this from the DB.
+        // When we preserved the existing VARCHAR type above, also preserve
+        // its java type (STRING) so that handlers can store data correctly.
+        if (compat && !keepExistingType)
             col.setJavaType(tmplate.getJavaType());
         else if (col.getJavaType() == JavaTypes.OBJECT) {
             if (given != null && given.getJavaType() != JavaTypes.OBJECT)
                 col.setJavaType(given.getJavaType());
-            else
-                col.setJavaType(JavaTypes.getTypeCode
+            else {
+                int derivedType = JavaTypes.getTypeCode
                     (Schemas.getJavaType(col.getType(), col.getSize(),
-                        col.getDecimalDigits())));
+                        col.getDecimalDigits()));
+                // If the SQL type couldn't determine a specific Java type
+                // (e.g., Types.OTHER for UUID), use the template's Java type
+                if (derivedType == JavaTypes.OBJECT
+                        && tmplate.getJavaType() != JavaTypes.OBJECT) {
+                    col.setJavaType(tmplate.getJavaType());
+                } else {
+                    col.setJavaType(derivedType);
+                }
+            }
         }
         col.setAutoAssigned(autoAssign);
         col.setRelationId(relationId);
@@ -813,6 +853,13 @@ public abstract class MappingInfo implements Serializable {
             col.setDefaultString(defStr);
         if (notNull != null)
             col.setNotNull(notNull);
+
+        // secondPrecision and options are always set regardless of adapt mode,
+        // as they're needed at runtime for SQL generation
+        if (secondPrecision >= 0)
+            col.setSecondPrecision(secondPrecision);
+        if (options != null)
+            col.setOptions(options);
 
         // add other details if adapting
         if (adapt) {
@@ -829,6 +876,52 @@ public abstract class MappingInfo implements Serializable {
         if (tmplate.isXML())
             col.setXML(tmplate.isXML());
         return col;
+    }
+
+    /**
+     * Return true if the given SQL type is a numeric type.
+     */
+    private static boolean isNumericType(int type) {
+        switch (type) {
+            case Types.BIT:
+            case Types.TINYINT:
+            case Types.SMALLINT:
+            case Types.INTEGER:
+            case Types.BIGINT:
+            case Types.FLOAT:
+            case Types.REAL:
+            case Types.DOUBLE:
+            case Types.NUMERIC:
+            case Types.DECIMAL:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Return true if the given JavaTypes code is a numeric type.
+     */
+    private static boolean isNumericJavaType(int javaType) {
+        switch (javaType) {
+            case JavaTypes.BYTE:
+            case JavaTypes.BYTE_OBJ:
+            case JavaTypes.SHORT:
+            case JavaTypes.SHORT_OBJ:
+            case JavaTypes.INT:
+            case JavaTypes.INT_OBJ:
+            case JavaTypes.LONG:
+            case JavaTypes.LONG_OBJ:
+            case JavaTypes.FLOAT:
+            case JavaTypes.FLOAT_OBJ:
+            case JavaTypes.DOUBLE:
+            case JavaTypes.DOUBLE_OBJ:
+            case JavaTypes.BIGINTEGER:
+            case JavaTypes.BIGDECIMAL:
+                return true;
+            default:
+                return false;
+        }
     }
 
     /**
@@ -962,6 +1055,13 @@ public abstract class MappingInfo implements Serializable {
         Index idx = table.addIndex(name);
         idx.setUnique(unq);
         idx.setColumns(cols);
+        // Copy per-column sort direction from template
+        if (tmplate != null) {
+            for (Column col : cols) {
+                if (tmplate.isColumnDescending(col))
+                    idx.setColumnSortDirection(col.getIdentifier(), true);
+            }
+        }
         return idx;
     }
 
@@ -1450,9 +1550,9 @@ public abstract class MappingInfo implements Serializable {
                 constant = true;
                 try {
                     if (targetNameStr.indexOf('.') == -1)
-                        target = new Integer(targetNameStr);
+                        target = Integer.valueOf(targetNameStr);
                     else
-                        target = new Double(targetNameStr);
+                        target = Double.valueOf(targetNameStr);
                 } catch (RuntimeException re) {
                     throw new MetaDataException(_loc.get(prefix
                         + "-bad-fkconst", context, targetName, name));
@@ -1770,8 +1870,7 @@ public abstract class MappingInfo implements Serializable {
         if (target != null) {
             if (target == NULL)
                 copy.setTargetIdentifier(DBIdentifier.newColumn("null"));
-            else if (target instanceof Column) {
-                Column tcol = (Column) target;
+            else if (target instanceof Column tcol) {
                 if ((!inverse && tcol.getTable() != targetTable)
                     || (inverse && tcol.getTable() != colTable))
                     copy.setTargetIdentifier(
@@ -1791,6 +1890,8 @@ public abstract class MappingInfo implements Serializable {
             copy.setSize(col.getSize());
         if (col.getDecimalDigits() != 0)
             copy.setDecimalDigits(col.getDecimalDigits());
+        if (col.getSecondPrecision() >= 0)
+            copy.setSecondPrecision(col.getSecondPrecision());
         if (col.getDefaultString() != null)
             copy.setDefaultString(col.getDefaultString());
         if (col.isNotNull() && !col.isPrimaryKey()

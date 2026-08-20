@@ -30,7 +30,9 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.enhance.RecordPersistenceCapable;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueMetaData;
@@ -84,9 +86,11 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
                 proxy = checkProxy(fmd);
                 if (proxy == null) {
                     proxy = (Proxy) _sm.newFieldProxy(field);
-                    ((Date) proxy).setTime(((Date) objval).getTime());
-                    if (proxy instanceof Timestamp && objval instanceof Timestamp)
-                        ((Timestamp) proxy).setNanos(((Timestamp) objval).getNanos());
+                    Date dateVal = (objval instanceof Calendar)
+                        ? ((Calendar) objval).getTime() : (Date) objval;
+                    ((Date) proxy).setTime(dateVal.getTime());
+                    if (proxy instanceof Timestamp && dateVal instanceof Timestamp)
+                        ((Timestamp) proxy).setNanos(((Timestamp) dateVal).getNanos());
                     ret = true;
                 }
                 break;
@@ -96,7 +100,9 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
                 proxy = checkProxy(fmd);
                 if (proxy == null) {
                     proxy = (Proxy) _sm.newFieldProxy(field);
-                    ((Calendar) proxy).setTime(((Calendar) objval).getTime());
+                    Date calSrc = (objval instanceof Date)
+                        ? (Date) objval : ((Calendar) objval).getTime();
+                    ((Calendar) proxy).setTime(calSrc);
                     ret = true;
                 } else {
                     Object init = fmd.getInitializer();
@@ -162,10 +168,9 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
      * This method will skim out Calendar instances that were proxied before we knew if they need to be proxied.
      */
     private Proxy checkProxy(FieldMetaData fmd) {
-        if (!(objval instanceof Proxy))
+        if (!(objval instanceof Proxy proxy))
             return null;
 
-        Proxy proxy = (Proxy) objval;
         if (proxy.getOwner() == null || Proxies.isOwner(proxy, _sm, field)) {
             if (fmd.getProxyType().isAssignableFrom(proxy.getClass())
                     || (fmd.isLRS() && (objval instanceof LRSProxy))) {
@@ -188,8 +193,7 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
             case JavaTypes.MAP:
             case JavaTypes.DATE:
             case JavaTypes.OBJECT:
-                if (objval instanceof Proxy) {
-                    Proxy proxy = (Proxy) objval;
+                if (objval instanceof Proxy proxy) {
                     proxy.setOwner(null, -1);
                     if (proxy.getChangeTracker() != null)
                         proxy.getChangeTracker().stopTracking();
@@ -789,18 +793,42 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
                 return; // allow but ignore
             }
 
+            // If the object is not manageable (e.g. unenhanced original reference)
+            // but its class is a known entity type, treat it as detached. This
+            // handles the case where an entity was persisted in a prior transaction
+            // and the original (unenhanced) reference is used in a relationship
+            // with cascade=NONE (e.g. @JoinColumn(insertable=false, updatable=false)).
+            if (!ImplHelper.isManageable(obj)) {
+                ClassMetaData meta = _broker.getConfiguration()
+                    .getMetaDataRepositoryInstance()
+                    .getCachedMetaData(obj.getClass());
+                if (meta != null) {
+                    return; // known entity type, treat as detached
+                }
+            }
+
             sm = _broker.getStateManager(obj);
             if (sm == null || !sm.isPersistent()) {
-                if (((StoreContext)_broker).getAllowReferenceToSiblingContext()
+                if (_broker.getAllowReferenceToSiblingContext()
                  && ImplHelper.isManageable(obj)
                  && ((PersistenceCapable)obj).pcGetStateManager() != null) {
                     return;
-                } else {
-                    throw new InvalidStateException(_loc.get("cant-cascade-persist",
-                            vmd.toString(), Exceptions.toString(obj),
-                            sm == null ? " unmanaged" : sm.getPCState().getClass().getSimpleName()))
-                    .setFailedObject(obj);
                 }
+
+                // If the object is manageable (e.g. subclass-redefined) but
+                // has no state manager in this context, it may be a detached
+                // entity whose SM was cleared after a prior transaction
+                // committed. Do a DB lookup to confirm it was previously
+                // persisted (detached) vs. truly transient.
+                if (sm == null && ImplHelper.isManageable(obj)
+                    && _broker.isDetached(obj, true)) {
+                    return; // confirmed detached via DB lookup
+                }
+
+                throw new InvalidStateException(_loc.get("cant-cascade-persist",
+                        vmd.toString(), Exceptions.toString(obj),
+                        sm == null ? " unmanaged" : sm.getPCState().getClass().getSimpleName()))
+                .setFailedObject(obj);
             }
         } else {
             if (vmd.getCascadePersist() == ValueMetaData.CASCADE_IMMEDIATE) {
@@ -915,7 +943,16 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
     private Object embed(ValueMetaData vmd, Object obj) {
         if (obj == null)
             return null;
-        return _broker.embed(obj, null, _sm, vmd).getManagedInstance();
+        final OpenJPAStateManager sm = _broker.embed(obj, null, _sm, vmd);
+        final Object managed = sm.getManagedInstance();
+        // JPA 3.2: for record embeddables, the enhanced owner field expects
+        // the actual record type, not the RecordPersistenceCapable wrapper.
+        // Return the original object (which is the raw record) so the
+        // enhanced pcReplaceField can cast it to the declared record type.
+        if (managed instanceof RecordPersistenceCapable) {
+            return obj;
+        }
+        return managed;
     }
 
     /**

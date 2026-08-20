@@ -28,6 +28,7 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.XMLMetaData;
 import org.apache.openjpa.util.ImplHelper;
 
@@ -65,7 +66,20 @@ public class CandidatePath
         if (last instanceof Class)
             return (Class) last;
         FieldMetaData fmd = ((Traversal) last).field;
-        return fmd.getDeclaredType();
+        switch (fmd.getDeclaredTypeCode()) {
+            case JavaTypes.COLLECTION:
+            case JavaTypes.MAP:
+                return fmd.getElement().getDeclaredType();
+            case JavaTypes.ARRAY:
+                if (fmd.getDeclaredType() == byte[].class
+                    || fmd.getDeclaredType() == Byte[].class
+                    || fmd.getDeclaredType() == char[].class
+                    || fmd.getDeclaredType() == Character[].class)
+                    return fmd.getDeclaredType();
+                return fmd.getElement().getDeclaredType();
+            default:
+                return fmd.getDeclaredType();
+        }
     }
 
     protected Class getCandidateType() {

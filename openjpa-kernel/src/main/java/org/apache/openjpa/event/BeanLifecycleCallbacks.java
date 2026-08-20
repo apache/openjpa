@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
@@ -63,23 +61,17 @@ public class BeanLifecycleCallbacks
 
     private Object newListener(Class<?> cls) {
         try {
-            return AccessController.doPrivileged(
-                J2DoPrivHelper.newInstanceAction(cls));
+            return J2DoPrivHelper.newInstance(cls);
         } catch (Throwable t) {
-            if (t instanceof PrivilegedActionException)
-                t = ((PrivilegedActionException) t).getException();
-            throw new UserException(_loc.get("bean-constructor",
-                cls.getName()), t);
+            throw new UserException(_loc.get("bean-constructor", cls.getName()), t);
         }
     }
 
     @Override
-    public void makeCallback(Object obj, Object rel, int eventType)
-        throws Exception {
+    public void makeCallback(Object obj, Object rel, int eventType) throws Exception {
         Method callback = getCallbackMethod();
-        if (!callback.isAccessible())
-            AccessController.doPrivileged(J2DoPrivHelper.setAccessibleAction(
-                callback, true));
+        if (!callback.canAccess(_listener))
+            callback.setAccessible(true);
         if (requiresArgument())
             callback.invoke(_listener, new Object[]{ obj, rel });
         else

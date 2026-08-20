@@ -20,9 +20,13 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.util.Map;
 
+import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.meta.Discriminator;
+import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.exps.ExpressionVisitor;
+import org.apache.openjpa.meta.ClassMetaData;
 
 /**
  * Binds a variable to a value. Typically, the {@link #initialize} and
@@ -61,10 +65,55 @@ class BindVariableExpression
         return _var.initialize(sel, ctx, 0);
     }
 
+    /**
+     * Returns true if this variable was narrowed via TREAT to a subclass
+     * and needs a discriminator condition.
+     */
+    boolean hasTreatDiscriminator() {
+        ClassMetaData varMeta = _var.getMetaData();
+        if (varMeta instanceof ClassMapping varMapping) {
+            ClassMapping sup = varMapping;
+            while (sup.getMappedPCSuperclassMapping() != null) {
+                sup = sup.getMappedPCSuperclassMapping();
+            }
+            if (sup != varMapping) {
+                Discriminator disc = sup.getDiscriminator();
+                if (disc != null) {
+                    Column[] cols = disc.getColumns();
+                    Object discVal = varMapping.getDiscriminator() != null
+                        ? varMapping.getDiscriminator().getValue() : null;
+                    return cols != null && cols.length > 0 && discVal != null;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Appends the discriminator condition for TREAT-narrowed variables.
+     */
+    void appendTreatDiscriminator(Select sel, ExpState state, SQLBuffer buf) {
+        ClassMapping varMapping = (ClassMapping) _var.getMetaData();
+        ClassMapping sup = varMapping;
+        while (sup.getMappedPCSuperclassMapping() != null) {
+            sup = sup.getMappedPCSuperclassMapping();
+        }
+        Discriminator disc = sup.getDiscriminator();
+        Column[] cols = disc.getColumns();
+        Object discVal = varMapping.getDiscriminator().getValue();
+        buf.append(sel.getColumnAlias(cols[0], state.joins));
+        buf.append(" = ");
+        buf.appendValue(discVal, cols[0]);
+    }
+
     @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf) {
-        buf.append("1 = 1");
+        if (hasTreatDiscriminator()) {
+            appendTreatDiscriminator(sel, state, buf);
+        } else {
+            buf.append("1 = 1");
+        }
     }
 
     @Override

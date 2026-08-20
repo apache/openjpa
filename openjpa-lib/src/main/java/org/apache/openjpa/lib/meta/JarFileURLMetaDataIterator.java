@@ -24,15 +24,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 
 /**
  * Iterator over all metadata resources in a given resource addressed by a jar:file URL.
@@ -55,23 +51,19 @@ public class JarFileURLMetaDataIterator implements MetaDataIterator, MetaDataFil
             JarURLConnection jarURLConn = (JarURLConnection) url.openConnection();
             jarURLConn.setDefaultUseCaches(false);
 
-            try {
-                _jarFile = AccessController.doPrivileged(J2DoPrivHelper.getJarFileAction(jarURLConn));
-                _jarTargetEntry = AccessController.doPrivileged(J2DoPrivHelper.getJarEntryAction(jarURLConn));
+        	_jarFile = jarURLConn.getJarFile();
+        	_jarTargetEntry = jarURLConn.getJarEntry();
 
-                if (_jarTargetEntry.isDirectory()) {
-                    Enumeration<JarEntry> jarEntryEnum = _jarFile.entries();
-                    while (jarEntryEnum.hasMoreElements()) {
-                        JarEntry jarEntry = jarEntryEnum.nextElement();
-                        if (jarEntry.getName().startsWith(_jarTargetEntry.getName())) {
-                            _entryList.add(jarEntry);
-                        }
+            if (_jarTargetEntry.isDirectory()) {
+                Enumeration<JarEntry> jarEntryEnum = _jarFile.entries();
+                while (jarEntryEnum.hasMoreElements()) {
+                    JarEntry jarEntry = jarEntryEnum.nextElement();
+                    if (jarEntry.getName().startsWith(_jarTargetEntry.getName())) {
+                        _entryList.add(jarEntry);
                     }
-                } else {
-                    _entryList.add(_jarTargetEntry);
                 }
-            } catch (PrivilegedActionException pae) {
-                throw (IOException) pae.getException();
+            } else {
+                _entryList.add(_jarTargetEntry);
             }
         }
 

@@ -590,16 +590,12 @@ public class DB2Dictionary
     private String appendExtendedExceptionMsg(String msg, SQLException sqle){
        final String GETSQLCA ="getSqlca";
        try {
-            Method sqlcaM2 = sqle.getNextException().getClass()
-                             .getMethod(GETSQLCA,null);
+            Method sqlcaM2 = sqle.getNextException().getClass().getMethod(GETSQLCA);
             Object sqlca = sqlcaM2.invoke(sqle.getNextException(),
                                           new Object[] {});
-            Method  getSqlErrpMethd = sqlca.getClass().
-            getMethod("getSqlErrp", null);
-            Method  getSqlWarnMethd = sqlca.getClass().
-            getMethod("getSqlWarn", null);
-            Method  getSqlErrdMethd = sqlca.getClass().
-            getMethod("getSqlErrd", null);
+            Method  getSqlErrpMethd = sqlca.getClass().getMethod("getSqlErrp");
+            Method  getSqlWarnMethd = sqlca.getClass().getMethod("getSqlWarn");
+            Method  getSqlErrdMethd = sqlca.getClass().getMethod("getSqlErrd");
             StringBuilder errdStr = new StringBuilder();
 
             int[] errds = (int[]) getSqlErrdMethd.invoke(sqlca, new Object[]{});

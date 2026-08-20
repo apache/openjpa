@@ -35,7 +35,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 
+import org.apache.openjpa.enhance.ManagedInstanceProvider;
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.enhance.RecordPersistenceCapable;
 import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
@@ -114,7 +116,30 @@ public class EmbedFieldStrategy
 
         // before we map the null indicator column, we need to make sure our
         // value is mapped so we can tell whether the column is synthetic
-        field.getValueMapping().resolve(MetaDataModes.MODE_META | MetaDataModes.MODE_MAPPING);
+        java.util.Map<String, Class> embConvs = field.getEmbeddedConverters();
+        if (embConvs != null && !embConvs.isEmpty()) {
+            // Apply embedded converters from @Converts on this field.
+            // Resolve META first to create/copy embedded fields.
+            field.getValueMapping().resolve(MetaDataModes.MODE_META);
+            // Set converters on the embedded fields before MAPPING
+            // resolve so strategies and column types are correct.
+            ClassMapping embMapping = field.getEmbeddedMapping();
+            if (embMapping != null) {
+                for (java.util.Map.Entry<String, Class> entry
+                        : embConvs.entrySet()) {
+                    FieldMapping embField =
+                        embMapping.getFieldMapping(entry.getKey());
+                    if (embField != null
+                            && embField.getConverter() == null) {
+                        embField.setConverter(entry.getValue());
+                    }
+                }
+            }
+            field.getValueMapping().resolve(MetaDataModes.MODE_MAPPING);
+        } else {
+            field.getValueMapping().resolve(
+                MetaDataModes.MODE_META | MetaDataModes.MODE_MAPPING);
+        }
         Column col = vinfo.getNullIndicatorColumn(field, field.getName(),
             field.getTable(), adapt);
         if (col != null) {
@@ -443,7 +468,12 @@ public class EmbedFieldStrategy
         //### was not selected after all
         StoreContext ctx = store.getContext();
         OpenJPAStateManager em = ctx.embed(null, null, sm, field);
-        sm.storeObject(field.getIndex(), em.getManagedInstance());
+        final boolean isRecord = em.getMetaData().isRecord();
+        // JPA 3.2: don't store a premature record instance; records are
+        // immutable and must be materialized after all fields are loaded
+        if (!isRecord) {
+            sm.storeObject(field.getIndex(), em.getManagedInstance());
+        }
         boolean needsLoad = loadFields(em, store, fetch, res);
 
         // After loading everything from result, load the rest of the
@@ -452,6 +482,17 @@ public class EmbedFieldStrategy
             fetch.requiresFetch(field.getFieldMetaData()) ==
                 FetchConfiguration.FETCH_LOAD) {
           em.load(fetch);
+        }
+
+        // JPA 3.2: for record embeddables, materialize the actual record
+        // instance now that all fields have been loaded
+        if (isRecord) {
+            final Object pc = em.getPersistenceCapable();
+            if (pc instanceof RecordPersistenceCapable) {
+                final Object record =
+                        ((RecordPersistenceCapable) pc).materialize();
+                sm.storeObject(field.getIndex(), record);
+            }
         }
     }
 

@@ -18,12 +18,9 @@
  */
 package org.apache.openjpa.util;
 
-import java.security.AccessController;
-
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.kernel.DetachedStateManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 
@@ -51,11 +48,9 @@ public class Proxies {
     public static void assertAllowedType(Object value, Class allowed) {
         if (value != null && allowed != null && !allowed.isInstance(value)) {
             throw new UserException(_loc.get("bad-elem-type", new Object[]{
-                AccessController.doPrivileged(
-                    J2DoPrivHelper.getClassLoaderAction(allowed)),
+                allowed.getClassLoader(),
                 allowed,
-                AccessController.doPrivileged(
-                    J2DoPrivHelper.getClassLoaderAction(value.getClass())),
+                value.getClass().getClassLoader(),
                 value.getClass()
             }));
         }

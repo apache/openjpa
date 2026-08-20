@@ -31,15 +31,18 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.lib.identifier.IdentifierRule;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.util.ExceptionInfo;
 import org.apache.openjpa.util.StoreException;
@@ -128,7 +131,7 @@ public class MySQLDictionary
             "AUTO_INCREMENT", "BINARY", "BLOB", "CHANGE", "ENUM", "INFILE",
             "INT1", "INT2", "INT4", "FLOAT1", "FLOAT2", "FLOAT4", "LOAD",
             "MEDIUMINT", "OUTFILE", "REPLACE", "STARTING", "TEXT", "UNSIGNED",
-            "ZEROFILL", "INDEX",
+            "ZEROFILL", "INDEX", "LIBRARY"
         }));
 
         // reservedWordSet subset that CANNOT be used as valid column names
@@ -155,7 +158,7 @@ public class MySQLDictionary
             "SQLEXCEPTION", "SQLSTATE", "SQLWARNING", "SSL", "STARTING", "STRAIGHT_JOIN", "TABLE", "TERMINATED", "THEN", "TINYBLOB",
             "TINYINT", "TINYTEXT", "TO", "TRAILING", "TRIGGER", "TRUE", "UNDO", "UNION", "UNIQUE", "UNLOCK", "UNSIGNED", "UPDATE",
             "USAGE", "USE", "USING", "UTC_DATE", "UTC_TIME", "UTC_TIMESTAMP", "VALUES", "VARBINARY", "VARCHAR", "VARCHARACTER",
-            "VARYING", "WHEN", "WHERE", "WHILE", "WITH", "WRITE", "XOR", "YEAR_MONTH", "ZEROFILL",
+            "VARYING", "WHEN", "WHERE", "WHILE", "WITH", "WRITE", "XOR", "YEAR_MONTH", "ZEROFILL", "NTILE",
             // end generated.
             // the following keywords used to be defined as reserved words in the past, but now seem to work
             // we still add them for compat reasons
@@ -175,6 +178,8 @@ public class MySQLDictionary
         fixedSizeTypeNameSet.remove("NUMERIC");
 
         dateFractionDigits = 0;
+        supportsUnsizedCharOnCast = false;
+        integerCastTypeName = "SIGNED";
     }
 
     @Override
@@ -214,6 +219,14 @@ public class MySQLDictionary
             timestampTypeName = "DATETIME{0}";
             fixedSizeTypeNameSet.remove(timestampTypeName);
             fractionalTypeNameSet.add(timestampTypeName);
+
+            // Request microsecond precision for temporal columns so @Version
+            // Instant/LocalDateTime can detect concurrent updates within a
+            // single whole second. Matches PostgreSQL/Derby defaults.
+            dateFractionDigits = 6;
+
+            timeTypeName = "TIME{0}";
+            fractionalTypeNameSet.add(timeTypeName);
         }
 
         if (metaData.getDriverMajorVersion() < 5) {
@@ -258,6 +271,14 @@ public class MySQLDictionary
         int maj = Integer.parseInt(arr[0]);
         int min = Integer.parseInt(arr[1]);
         return new int[]{maj, min};
+    }
+
+    @Override
+    protected void configureNamingRules() {
+        super.configureNamingRules();
+        IdentifierRule rule = Normalizer.getNamingConfiguration().getDefaultIdentifierRule();
+        rule.setDelimitReservedWords(true);
+        rule.setReservedWords(reservedWordSet);
     }
 
     @Override
@@ -466,7 +487,9 @@ public class MySQLDictionary
         if (state == ExceptionInfo.GENERAL && ex.getErrorCode() == 0 && ex.getSQLState() == null) {
             // look at the nested MySQL exception for more details
             SQLException sqle = ex.getNextException();
-            if (sqle != null && sqle.toString().startsWith("com.mysql.jdbc.exceptions.MySQLTimeoutException")) {
+            if (sqle != null
+            		&& (sqle.toString().startsWith("com.mysql.jdbc.exceptions.MySQLTimeoutException") ||
+            				sqle.toString().startsWith("com.mysql.cj.jdbc.exceptions.MySQLTimeoutException"))) {
                 if (conf != null && conf.getLockTimeout() != -1) {
                     state = StoreException.LOCK;
                 } else {
@@ -535,6 +558,23 @@ public class MySQLDictionary
             start.appendTo(buf);
         }
         buf.append(")");
+    }
+
+    /**
+     * MySQL / MariaDB do not support ANSI SQL {@code NULLS FIRST} / {@code NULLS LAST}.
+     * Emulate via an auxiliary {@code &lt;expr&gt; IS NULL} sort key.
+     * <p>
+     * MySQL's default NULL ordering places NULLs before non-NULLs when sorting
+     * ASC and after non-NULLs when sorting DESC. When the requested precedence
+     * already matches that default, nothing extra is emitted. Otherwise the
+     * last order term {@code &lt;expr&gt; ASC|DESC} is rewritten to
+     * {@code &lt;expr&gt; IS NULL &lt;sort&gt;, &lt;expr&gt; ASC|DESC}.
+     */
+    @Override
+    public void appendNullsPrecedence(SQLBuffer ordering, int nullPrecedence) {
+        final String nullSort = (nullPrecedence == QueryExpressions.NULLS_FIRST) ? "DESC" : "ASC";
+        emulateNullsPrecedence(ordering, nullPrecedence,
+                expr -> expr + " IS NULL " + nullSort + ", " + expr);
     }
 }
 

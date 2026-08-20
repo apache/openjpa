@@ -18,9 +18,6 @@
  */
 package org.apache.openjpa.util;
 
-import java.security.AccessController;
-
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.MultiClassLoader;
 
 /**
@@ -40,24 +37,20 @@ public class ClassResolverImpl
         // class (the bootstrap loader is the parent of the system loader)
         ClassLoader contextLoader = null;
         if (contextClass != null) {
-            contextLoader = AccessController.doPrivileged(
-                J2DoPrivHelper.getClassLoaderAction(contextClass));
+            contextLoader = contextClass.getClassLoader();
             if (contextLoader == null)
-                contextLoader = AccessController.doPrivileged(
-                    J2DoPrivHelper.getSystemClassLoaderAction());
+                contextLoader = ClassLoader.getSystemClassLoader();
         }
 
         // if there is only one unique loader, just return it
-        ClassLoader threadLoader = AccessController.doPrivileged(
-            J2DoPrivHelper.getContextClassLoaderAction());
+        ClassLoader threadLoader = Thread.currentThread().getContextClassLoader();
         if ((contextLoader == null || contextLoader == threadLoader)
             && (envLoader == null || envLoader == threadLoader))
             return threadLoader;
 
         // construct a multi class loader that will delegate in the order
         // described in section 12.5 of the spec
-        MultiClassLoader loader = AccessController
-            .doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
+        MultiClassLoader loader = new MultiClassLoader();
         if (contextLoader != null)
             loader.addClassLoader(contextLoader);
         loader.addClassLoader(threadLoader);

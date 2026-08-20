@@ -24,14 +24,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 
 /**
  * Iterator over all metadata resources in a given zip file.
@@ -57,12 +53,7 @@ public class ZipFileMetaDataIterator
         } else {
             URLConnection con = url.openConnection();
             con.setDefaultUseCaches(false);
-            try {
-                _file = (ZipFile) AccessController.doPrivileged(
-                    J2DoPrivHelper.getContentAction(con));
-            } catch (PrivilegedActionException pae) {
-                 throw (IOException) pae.getException();
-            }
+            _file = (ZipFile) con.getContent();
         }
         _filter = filter;
         _entries = (_file == null) ? null : _file.entries();

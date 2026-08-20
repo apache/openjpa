@@ -305,7 +305,7 @@ public class TestEdit extends CriteriaTest {
         try {
             em.createQuery(c);
             fail(message);
-        } catch (IllegalStateException e) {
+        } catch (IllegalArgumentException e) {
             // good
         }
     }

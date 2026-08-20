@@ -37,22 +37,31 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import jakarta.persistence.CacheRetrieveMode;
 import jakarta.persistence.CacheStoreMode;
+import jakarta.persistence.ConnectionConsumer;
+import jakarta.persistence.ConnectionFunction;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.FindOption;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.LockModeType;
+import jakarta.persistence.LockOption;
 import jakarta.persistence.PessimisticLockScope;
 import jakarta.persistence.Query;
+import jakarta.persistence.RefreshOption;
 import jakarta.persistence.StoredProcedureQuery;
+import jakarta.persistence.Timeout;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.TypedQuery;
+import jakarta.persistence.TypedQueryReference;
 import jakarta.persistence.criteria.CriteriaDelete;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaSelect;
 import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.criteria.ParameterExpression;
 import jakarta.persistence.metamodel.Metamodel;
@@ -65,6 +74,7 @@ import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Broker;
+import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.DataCacheRetrieveMode;
 import org.apache.openjpa.kernel.DataCacheStoreMode;
 import org.apache.openjpa.kernel.DelegatingBroker;
@@ -88,6 +98,8 @@ import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.MultiQueryMetaData;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
+import org.apache.openjpa.persistence.meta.MetamodelImpl;
+import org.apache.openjpa.persistence.criteria.CriteriaBuilderImpl;
 import org.apache.openjpa.persistence.criteria.OpenJPACriteriaBuilder;
 import org.apache.openjpa.persistence.criteria.OpenJPACriteriaQuery;
 import org.apache.openjpa.persistence.validation.ValidationUtils;
@@ -118,10 +130,11 @@ public class EntityManagerImpl
 
     private DelegatingBroker _broker;
     private EntityManagerFactoryImpl _emf;
-    private Map<FetchConfiguration,FetchPlan> _plans = new IdentityHashMap<>(1);
+    private final Map<FetchConfiguration,FetchPlan> _plans = new IdentityHashMap<>(1);
     protected RuntimeExceptionTranslator _ret = PersistenceExceptions.getRollbackTranslator(this);
     private boolean _convertPositionalParams = false;
     private boolean _isJoinedToTransaction;
+    private boolean _closedMethodCall;
     private Map<String, Object> properties;
 
     public EntityManagerImpl() {
@@ -145,6 +158,40 @@ public class EntityManagerImpl
     }
 
     /**
+     * Translate the given exception, marking the transaction for
+     * rollback if active per JPA spec section 3.3.7.1.
+     */
+    RuntimeException translateException(RuntimeException re) {
+        RuntimeException ex = PersistenceExceptions.toPersistenceException(re);
+        if (!(ex instanceof NonUniqueResultException)
+            && !(ex instanceof NoResultException)
+            && !(ex instanceof LockTimeoutException)
+            && !(ex instanceof QueryTimeoutException)) {
+            try {
+                if ((isOpen() || _closedMethodCall) && _broker.isActive()) {
+                    _broker.setRollbackOnly(ex);
+                }
+            } catch (Exception ignore) {
+                // best effort
+            } finally {
+                _closedMethodCall = false;
+            }
+        }
+        return ex;
+    }
+
+    /**
+     * Translate a checked exception via PersistenceExceptions, then
+     * mark the transaction for rollback per JPA spec section 3.3.7.1.
+     */
+    RuntimeException translateException(Exception e) {
+        if (e instanceof RuntimeException) {
+            return translateException((RuntimeException) e);
+        }
+        return translateException(PersistenceExceptions.toPersistenceException(e));
+    }
+
+    /**
      * Broker delegate.
      */
     public Broker getBroker() {
@@ -153,6 +200,11 @@ public class EntityManagerImpl
 
     @Override
     public OpenJPAEntityManagerFactory getEntityManagerFactory() {
+        try {
+            assertNotCloseInvoked();
+        } catch (RuntimeException re) {
+            throw translateException(re);
+        }
         return _emf;
     }
 
@@ -564,22 +616,95 @@ public class EntityManagerImpl
         _broker.setLifecycleListenerCallbackMode(callbackMode);
     }
 
+    /**
+     * Validates that the given primary key value is of the correct type for the
+     * given entity class. Throws IllegalArgumentException if the entity class
+     * is not a managed entity, if the PK is null, or if the PK type does not
+     * match the entity's declared primary key type.
+     *
+     * @param cls the entity class
+     * @param oid the primary key value
+     * @param methodName the calling method name for error messages
+     */
+    private void validatePrimaryKey(Class<?> cls, Object oid, String methodName) {
+        MetaDataRepository repo = _broker.getConfiguration()
+            .getMetaDataRepositoryInstance();
+        ClassMetaData meta = repo.getMetaData(cls, null, false);
+        if (meta == null) {
+            throw new IllegalArgumentException(
+                _loc.get("not-entity", cls).getMessage());
+        }
+        if (oid == null) {
+            throw new IllegalArgumentException(
+                _loc.get("null-pk", cls).getMessage());
+        }
+        // For application identity with OpenJPA single-field identity,
+        // validate the PK value type matches the declared PK field type
+        if (meta.getIdentityType() == ClassMetaData.ID_APPLICATION
+            && meta.isOpenJPAIdentity()) {
+            FieldMetaData[] pkFields = meta.getPrimaryKeyFields();
+            if (pkFields.length == 1) {
+                Class<?> expectedType =
+                    Filters.wrap(pkFields[0].getDeclaredType());
+                Class<?> actualType = Filters.wrap(oid.getClass());
+                if (!expectedType.isAssignableFrom(actualType)
+                    && !isNumericCompatible(expectedType, actualType)) {
+                    throw new IllegalArgumentException(
+                        _loc.get("bad-pk-type", cls,
+                            expectedType.getName(),
+                            actualType.getName()).getMessage());
+                }
+            }
+        } else if (meta.getIdentityType() == ClassMetaData.ID_APPLICATION) {
+            // Composite PK: the oid must be assignable to the ID class
+            // or be a stringified form or Object[] (handled by newObjectId)
+            Class<?> idClass = meta.getObjectIdType();
+            if (idClass != null
+                && !ImplHelper.isAssignable(idClass, oid.getClass())
+                && !(oid instanceof String)
+                && !(oid instanceof Object[])) {
+                throw new IllegalArgumentException(
+                    _loc.get("bad-pk-type", cls,
+                        idClass.getName(),
+                        oid.getClass().getName()).getMessage());
+            }
+        }
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getReference(Class<T> cls, Object oid) {
         assertNotCloseInvoked();
-        oid = _broker.newObjectId(cls, oid);
-        return (T) _broker.find(oid, false, this);
+        try {
+            validatePrimaryKey(cls, oid, "getReference");
+            oid = _broker.newObjectId(cls, oid);
+            return (T) _broker.find(oid, false, this);
+        } catch (jakarta.persistence.EntityNotFoundException enfe) {
+            throw enfe;
+        } catch (RuntimeException re) {
+            throw translateException(re);
+        } catch (Exception e) {
+            // Per JPA spec, getReference() should throw EntityNotFoundException
+            // if the entity does not exist in the database. With runtime-enhanced
+            // (unenhanced) entities, the broker may eagerly load the entity to
+            // determine the concrete subclass type, and throw ObjectNotFoundException
+            // immediately rather than returning a hollow proxy.
+            throw new jakarta.persistence.EntityNotFoundException(
+                e.getMessage());
+        }
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T> T find(Class<T> cls, Object oid) {
         assertNotCloseInvoked();
-        if (oid == null)
-        	return null;
-        oid = _broker.newObjectId(cls, oid);
-        return (T) _broker.find(oid, true, this);
+        try {
+            validateFindArguments(cls, oid);
+            oid = _broker.newObjectId(cls, oid);
+            return (T) _broker.find(oid, true, this);
+        } catch (RuntimeException re) {
+            throw translateException(re);
+        }
     }
 
     @Override
@@ -592,20 +717,143 @@ public class EntityManagerImpl
         Map<String, Object> properties){
         return find(cls, oid, null, properties);
     }
+    
+	@Override
+	public <T> T find(Class<T> cls, Object oid, FindOption... options) {
+		Map<String, Object> props = new HashMap<>();
+		LockModeType mode = null;
+		for (FindOption opt: options) {
+			if (opt instanceof LockModeType lmt) {
+				mode = lmt;
+			} else if (opt instanceof CacheRetrieveMode crm) {
+				props.put(JPAProperties.CACHE_RETRIEVE_MODE, crm);
+			} else if (opt instanceof CacheStoreMode csm) {
+				props.put(JPAProperties.CACHE_STORE_MODE, csm);
+			} else if (opt instanceof PessimisticLockScope pls) {
+				props.put(JPAProperties.LOCK_SCOPE, pls);
+			} else if (opt instanceof Timeout timeout) {
+				props.put(JPAProperties.LOCK_TIMEOUT, timeout.milliseconds());
+			}
+			// open to custom options
+		}
+		return find(cls, oid, mode, props);
+	}
 
     @Override
     @SuppressWarnings("unchecked")
     public <T> T find(Class<T> cls, Object oid, LockModeType mode, Map<String, Object> properties) {
         assertNotCloseInvoked();
-        properties = cloneProperties(properties);
-        configureCurrentCacheModes(pushFetchPlan(), properties);
-        configureCurrentFetchPlan(getFetchPlan(), properties, mode, true);
         try {
-            oid = _broker.newObjectId(cls, oid);
-            return (T) _broker.find(oid, true, this);
-        } finally {
-            popFetchPlan();
+            validateFindArguments(cls, oid);
+            properties = cloneProperties(properties);
+            configureCurrentCacheModes(pushFetchPlan(), properties);
+            configureCurrentFetchPlan(getFetchPlan(), properties, mode, true);
+            try {
+                oid = _broker.newObjectId(cls, oid);
+                return (T) _broker.find(oid, true, this);
+            } finally {
+                popFetchPlan();
+            }
+        } catch (RuntimeException re) {
+            throw translateException(re);
         }
+    }
+
+    /**
+     * Validates find/getReference arguments per JPA spec: class must be
+     * an entity, PK must not be null, and PK type must be compatible.
+     */
+    private void validateFindArguments(Class<?> cls, Object oid) {
+        if (oid == null) {
+            throw new IllegalArgumentException(
+                _loc.get("null-pk", cls).getMessage());
+        }
+        // Verify cls is a known entity
+        MetaDataRepository repos = _broker.getConfiguration()
+            .getMetaDataRepositoryInstance();
+        ClassMetaData meta = repos.getMetaData(cls,
+            _broker.getClassLoader(), false);
+        if (meta == null) {
+            throw new IllegalArgumentException(
+                "Class \"" + cls.getName()
+                + "\" is not a known entity type.");
+        }
+        validatePrimaryKeyType(cls, oid);
+    }
+
+    /**
+     * Validates that the given primary key value is type-compatible with
+     * the entity's declared primary key type. Per JPA spec, find() must
+     * throw IllegalArgumentException if the PK type is not valid.
+     */
+    private void validatePrimaryKeyType(Class<?> cls, Object oid) {
+        // OpenJPA identity objects (IntId, LongId, etc.) are already valid
+        // internal identity values — newObjectId() handles them directly.
+        if (oid instanceof org.apache.openjpa.util.OpenJPAId) {
+            return;
+        }
+        MetaDataRepository repos = _broker.getConfiguration()
+            .getMetaDataRepositoryInstance();
+        ClassMetaData meta = repos.getMetaData(cls,
+            _broker.getClassLoader(), false);
+        if (meta == null) {
+            return;
+        }
+        if (meta.getIdentityType() == ClassMetaData.ID_APPLICATION) {
+            if (meta.isOpenJPAIdentity()) {
+                // single-field PK: check that the value type is compatible
+                FieldMetaData pkField = meta.getPrimaryKeyFields()[0];
+                Class<?> pkType = pkField.getDeclaredType();
+                // Skip validation for derived identity (@Id @ManyToOne/@OneToOne)
+                // where the PK field type is an entity and the passed value
+                // is the related entity's PK, not the entity itself
+                if (pkField.getDeclaredTypeMetaData() != null) {
+                    return;
+                }
+                if (pkType.isPrimitive()) {
+                    pkType = Filters.wrap(pkType);
+                }
+                if (!pkType.isInstance(oid)
+                    && !isNumericCompatible(pkType, oid.getClass())) {
+                    throw new IllegalArgumentException(
+                        _loc.get("bad-pk-type", cls.getName(),
+                            pkType.getName(), oid.getClass().getName())
+                            .getMessage());
+                }
+            }
+            // For compound PK or IdClass, let newObjectId() handle validation
+            // since the value may be the IdClass, a stringified form, or
+            // a related entity's PK (derived identity)
+        }
+    }
+
+    private static final Class<?>[] NUMERIC_WIDENING_ORDER = {
+        Byte.class, Short.class, Integer.class, Long.class,
+        Float.class, Double.class, java.math.BigInteger.class,
+        java.math.BigDecimal.class
+    };
+
+    private static boolean isNumericCompatible(Class<?> target, Class<?> value) {
+        if (!Number.class.isAssignableFrom(target)
+            || !Number.class.isAssignableFrom(value)) {
+            return false;
+        }
+        // Allow widening (e.g. Integer → Long) but not narrowing
+        int targetIdx = numericIndex(target);
+        int valueIdx = numericIndex(value);
+        if (targetIdx < 0 || valueIdx < 0) {
+            return false;
+        }
+        return valueIdx <= targetIdx;
+    }
+
+    private static int numericIndex(Class<?> cls) {
+        for (int i = 0; i < NUMERIC_WIDENING_ORDER.length; i++) {
+            if (NUMERIC_WIDENING_ORDER[i] == cls) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     @Override
@@ -676,12 +924,14 @@ public class EntityManagerImpl
 
     @Override
     public boolean isJoinedToTransaction() {
+        assertNotCloseInvoked();
         return isActive() && _isJoinedToTransaction;
     }
 
     @Override
     public void begin() {
         _broker.begin();
+        _isJoinedToTransaction = true;
     }
 
     @Override
@@ -690,8 +940,7 @@ public class EntityManagerImpl
             _broker.commit();
         } catch (RollbackException | IllegalStateException e) {
             throw e;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
         	// Per JPA 2.0 spec, if the exception was due to a JSR-303
             // constraint violation, the ConstraintViolationException should be
             // thrown.  Since JSR-303 is optional, the cast to RuntimeException
@@ -711,12 +960,15 @@ public class EntityManagerImpl
             }
 
             throw new RollbackException(e).setFailedObject(failedObject);
+        } finally {
+            _isJoinedToTransaction = false;
         }
     }
 
     @Override
     public void rollback() {
         _broker.rollback();
+        _isJoinedToTransaction = false;
     }
 
     @Override
@@ -740,7 +992,7 @@ public class EntityManagerImpl
 
     @Override
     public boolean getRollbackOnly() {
-        if (!isActive())
+        if (!_broker.isActive())
             throw new IllegalStateException(_loc.get("no-transaction")
                 .getMessage());
 
@@ -809,7 +1061,11 @@ public class EntityManagerImpl
 
     @Override
     public boolean isActive() {
-        return isOpen() && _broker.isActive();
+        try {
+            return _broker.isActive();
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
@@ -830,8 +1086,8 @@ public class EntityManagerImpl
         OpenJPAStateManager sm = _broker.getStateManager(entity);
         if (sm == null
             && !ImplHelper.isManagedType(getConfiguration(), entity.getClass()))
-            throw new ArgumentException(_loc.get("not-entity",
-                entity.getClass()), null, null, true);
+            throw _ret.translate(new ArgumentException(_loc.get("not-entity",
+                entity.getClass()), null, null, true));
         return sm != null && !sm.isDeleted();
     }
 
@@ -1191,7 +1447,7 @@ public class EntityManagerImpl
             }
             return newQueryImpl(q, null).setId(qid);
         } catch (RuntimeException re) {
-            throw PersistenceExceptions.toPersistenceException(re);
+            throw translateException(re);
         }
     }
 
@@ -1238,9 +1494,22 @@ public class EntityManagerImpl
             Object[] values = meta.getHintValues();
             for (int i = 0; i < hints.length; i++)
                 q.setHint(hints[i], values[i]);
+
+            // Restore JPA-level properties from addNamedQuery (JPA 3.2)
+            if (meta.getFlushType() != -1) {
+                q.setFlushMode(fromFlushBeforeQueries(meta.getFlushType()));
+            }
+            if (meta.getMaxResults() != -1) {
+                q.setMaxResults(meta.getMaxResults());
+            }
+            if (meta.getLockMode() != null) {
+                q.setLockMode(jakarta.persistence.LockModeType.valueOf(
+                    meta.getLockMode()));
+            }
+
             return q;
         } catch (RuntimeException re) {
-            throw PersistenceExceptions.toPersistenceException(re);
+            throw translateException(re);
         }
     }
 
@@ -1268,16 +1537,25 @@ public class EntityManagerImpl
 
     @Override
     public StoredProcedureQuery createNamedStoredProcedureQuery(String name) {
-        QueryMetaData meta = getQueryMetadata(name);
-        if (!MultiQueryMetaData.class.isInstance(meta)) {
-            throw new RuntimeException(name + " is not an identifier for a Stored Procedure Query");
+        assertNotCloseInvoked();
+        try {
+            QueryMetaData meta = getQueryMetadata(name);
+            if (!(meta instanceof MultiQueryMetaData)) {
+                throw new RuntimeException(name + " is not an identifier for a Stored Procedure Query");
+            }
+            return newProcedure(((MultiQueryMetaData) meta).getProcedureName(), (MultiQueryMetaData) meta);
+        } catch (RuntimeException re) {
+            throw translateException(re);
         }
-        return newProcedure(((MultiQueryMetaData)meta).getProcedureName(), (MultiQueryMetaData)meta);
     }
 
     @Override
     public StoredProcedureQuery createStoredProcedureQuery(String procedureName) {
-        return newProcedure(procedureName, null);
+        try {
+            return newProcedure(procedureName, null);
+        } catch (PersistenceException pe) {
+            throw new IllegalArgumentException(pe.getMessage(), pe);
+        }
     }
 
     @Override
@@ -1287,7 +1565,11 @@ public class EntityManagerImpl
         for (Class<?> res : resultClasses) {
             meta.addComponent(res);
         }
-        return newProcedure(procedureName, meta);
+        try {
+            return newProcedure(procedureName, meta);
+        } catch (PersistenceException pe) {
+            throw new IllegalArgumentException(pe.getMessage(), pe);
+        }
     }
 
     @Override
@@ -1439,8 +1721,12 @@ public class EntityManagerImpl
 
     @Override
     public Object getDelegate() {
-        _broker.assertOpen();
-        assertNotCloseInvoked();
+        try {
+            _broker.assertOpen();
+            assertNotCloseInvoked();
+        } catch (RuntimeException re) {
+            throw translateException(re);
+        }
         return this;
     }
 
@@ -1671,9 +1957,25 @@ public class EntityManagerImpl
      * delegate the pending operation to it.
      */
     protected void assertNotCloseInvoked() {
-        if (!_broker.isClosed() && _broker.isCloseInvoked())
+        if (_broker.isClosed() || _broker.isCloseInvoked()) {
+            _closedMethodCall = true;
             throw new InvalidStateException(_loc.get("close-invoked"), null,
                 null, true);
+        }
+    }
+
+    /**
+     * Mark the transaction for rollback if active. Called before throwing
+     * exceptions from EM methods per JPA spec section 3.3.7.1.
+     */
+    public void markRollbackOnException(RuntimeException ex) {
+        try {
+            if (_broker.isActive()) {
+                _broker.setRollbackOnly(ex);
+            }
+        } catch (Exception ignore) {
+            // broker may be closed
+        }
     }
 
     /**
@@ -1683,8 +1985,8 @@ public class EntityManagerImpl
     void assertValidAttchedEntity(String call, Object entity) {
         OpenJPAStateManager sm = _broker.getStateManager(entity);
         if (sm == null || !sm.isPersistent() || sm.isDetached() || (call.equals(REFRESH) && sm.isDeleted())) {
-            throw new IllegalArgumentException(_loc.get("invalid_entity_argument",
-                call, entity == null ? "null" : Exceptions.toString(entity)).getMessage());
+            throw translateException(new IllegalArgumentException(_loc.get("invalid_entity_argument",
+                call, entity == null ? "null" : Exceptions.toString(entity)).getMessage()));
         }
     }
 
@@ -1819,7 +2121,7 @@ public class EntityManagerImpl
 
     private static class BrokerBytesInputStream extends ObjectInputStream {
 
-        private OpenJPAConfiguration conf;
+        private final OpenJPAConfiguration conf;
 
         BrokerBytesInputStream(byte[] bytes, OpenJPAConfiguration conf)
             throws IOException {
@@ -1866,7 +2168,7 @@ public class EntityManagerImpl
                     }
                     component = primitiveType(cname.charAt(dcount));
                 }
-                int dim[] = new int[dcount];
+                int[] dim = new int[dcount];
                 for (int i=0; i<dcount; i++) {
                     dim[i]=0;
                 }
@@ -1911,6 +2213,14 @@ public class EntityManagerImpl
         if (entity == null)
             throw new IllegalArgumentException(_loc.get("null-detach").getMessage());
         assertNotCloseInvoked();
+        // Per JPA spec, detach should throw IAE if the argument is not an entity
+        ClassMetaData meta = _broker.getConfiguration()
+            .getMetaDataRepositoryInstance()
+            .getMetaData(entity.getClass(), null, false);
+        if (meta == null) {
+            throw translateException(new IllegalArgumentException(
+                _loc.get("not-entity", entity.getClass()).getMessage()));
+        }
         _broker.detach(entity, this);
     }
 
@@ -1920,27 +2230,79 @@ public class EntityManagerImpl
      */
     @Override
     public <T> TypedQuery<T> createQuery(CriteriaQuery<T> criteriaQuery) {
-        ((OpenJPACriteriaQuery<T>)criteriaQuery).compile();
+        assertNotCloseInvoked();
+        try {
+            ((OpenJPACriteriaQuery<T>) criteriaQuery).compile();
 
-        org.apache.openjpa.kernel.Query kernelQuery =_broker.newQuery(OpenJPACriteriaBuilder.LANG_CRITERIA, criteriaQuery);
+            // Snapshot the CriteriaQuery state so that subsequent modifications
+            // to the original CriteriaQuery do not affect this query (JPA spec).
+            Object snapshot = CriteriaBuilderImpl.snapshotQuery(criteriaQuery);
 
-        QueryImpl<T> facadeQuery = newQueryImpl(kernelQuery, null).setId(criteriaQuery.toString());
-        Set<ParameterExpression<?>> params = criteriaQuery.getParameters();
+            org.apache.openjpa.kernel.Query kernelQuery = _broker.newQuery(OpenJPACriteriaBuilder.LANG_CRITERIA,
+                snapshot);
 
-        for (ParameterExpression<?> param : params) {
-            facadeQuery.declareParameter(param, param);
+            QueryImpl<T> facadeQuery = newQueryImpl(kernelQuery, null).setId(criteriaQuery.toString());
+            Set<ParameterExpression<?>> params = criteriaQuery.getParameters();
+
+            for (ParameterExpression<?> param : params) {
+                facadeQuery.declareParameter(param, param);
+            }
+            return facadeQuery;
+        } catch (IllegalStateException ise) {
+            // Per JPA spec, createQuery(CriteriaQuery) throws IAE for invalid criteria
+            IllegalArgumentException iae = new IllegalArgumentException(ise.getMessage(), ise);
+            markRollbackOnException(iae);
+            throw iae;
+        } catch (RuntimeException re) {
+            markRollbackOnException(re);
+            throw translateException(re);
         }
-        return facadeQuery;
     }
 
     @Override
     public Query createQuery(CriteriaUpdate updateQuery) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        assertNotCloseInvoked();
+        try {
+            // Snapshot the CriteriaUpdate state so that subsequent modifications
+            // to the original CriteriaUpdate do not affect this query (JPA spec).
+            Object snapshot = CriteriaBuilderImpl.snapshotQuery(updateQuery);
+
+            org.apache.openjpa.kernel.Query kernelQuery =
+                _broker.newQuery(OpenJPACriteriaBuilder.LANG_CRITERIA, snapshot);
+
+            QueryImpl<?> facadeQuery = newQueryImpl(kernelQuery, null).setId(updateQuery.toString());
+            Set<ParameterExpression<?>> params = updateQuery.getParameters();
+            for (ParameterExpression<?> param : params) {
+                facadeQuery.declareParameter(param, param);
+            }
+            return facadeQuery;
+        } catch (RuntimeException re) {
+            markRollbackOnException(re);
+            throw translateException(re);
+        }
     }
 
     @Override
     public Query createQuery(CriteriaDelete deleteQuery) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        assertNotCloseInvoked();
+        try {
+            // Snapshot the CriteriaDelete state so that subsequent modifications
+            // to the original CriteriaDelete do not affect this query (JPA spec).
+            Object snapshot = CriteriaBuilderImpl.snapshotQuery(deleteQuery);
+
+            org.apache.openjpa.kernel.Query kernelQuery =
+                _broker.newQuery(OpenJPACriteriaBuilder.LANG_CRITERIA, snapshot);
+
+            QueryImpl<?> facadeQuery = newQueryImpl(kernelQuery, null).setId(deleteQuery.toString());
+            Set<ParameterExpression<?>> params = deleteQuery.getParameters();
+            for (ParameterExpression<?> param : params) {
+                facadeQuery.declareParameter(param, param);
+            }
+            return facadeQuery;
+        } catch (RuntimeException re) {
+            markRollbackOnException(re);
+            throw translateException(re);
+        }
     }
 
     @Override
@@ -1991,6 +2353,11 @@ public class EntityManagerImpl
 
     @Override
     public OpenJPACriteriaBuilder getCriteriaBuilder() {
+        try {
+            assertNotCloseInvoked();
+        } catch (RuntimeException re) {
+            throw translateException(re);
+        }
         return _emf.getCriteriaBuilder();
     }
 
@@ -2017,7 +2384,7 @@ public class EntityManagerImpl
             // Only call getConnection() once we are certain that is the type that we need to unwrap.
             if (cls.isAssignableFrom(Connection.class)) {
                 Object o = getConnection();
-                if(Connection.class.isInstance(o)){
+                if(o instanceof Connection){
                     return (T) o;
                 }else{
                     // Try and cleanup if  aren't going to return the connection back to the caller.
@@ -2059,7 +2426,7 @@ public class EntityManagerImpl
             for (Map.Entry<String, Object> entry : properties.entrySet()) {
                 String key = entry.getKey();
                 Object value = entry.getValue();
-                if (key.equals("jakarta.persistence.lock.scope")) {
+                if (key.equals(JPAProperties.LOCK_SCOPE)) {
                     fetch.setLockScope((PessimisticLockScope)value);
                 } else
                     fetch.setHint(key, value);
@@ -2093,42 +2460,68 @@ public class EntityManagerImpl
         CacheRetrieveMode rMode = JPAProperties.getEnumValue(CacheRetrieveMode.class,
                 JPAProperties.CACHE_RETRIEVE_MODE, properties);
         if (rMode != null) {
-            fetch.setCacheRetrieveMode(JPAProperties.convertToKernelValue(DataCacheRetrieveMode.class,
-                    JPAProperties.CACHE_RETRIEVE_MODE, rMode));
+        	fetch.setCacheRetrieveMode(DataCacheRetrieveMode.valueOf(rMode.toString().trim().toUpperCase(Locale.ENGLISH)));
             properties.remove(JPAProperties.CACHE_RETRIEVE_MODE);
         }
         CacheStoreMode sMode = JPAProperties.getEnumValue(CacheStoreMode.class,
                 JPAProperties.CACHE_STORE_MODE, properties);
         if (sMode != null) {
-            fetch.setCacheStoreMode(JPAProperties.convertToKernelValue(DataCacheStoreMode.class,
-                    JPAProperties.CACHE_STORE_MODE, sMode));
+            fetch.setCacheStoreMode(DataCacheStoreMode.valueOf(sMode.toString().trim().toUpperCase(Locale.ENGLISH)));
             properties.remove(JPAProperties.CACHE_STORE_MODE);
         }
     }
 
     @Override
     public Metamodel getMetamodel() {
+        try {
+            assertNotCloseInvoked();
+        } catch (RuntimeException re) {
+            throw translateException(re);
+        }
         return _emf.getMetamodel();
     }
 
     @Override
     public <T> EntityGraph<T> createEntityGraph(Class<T> rootType) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        assertNotCloseInvoked();
+        MetamodelImpl mm = _emf.getMetamodel();
+        if (mm.entity(rootType) == null) {
+            throw new IllegalArgumentException(
+                rootType.getName() + " is not a managed entity type");
+        }
+        return new EntityGraphImpl<>(rootType, mm);
     }
 
     @Override
     public EntityGraph<?> createEntityGraph(String graphName) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        assertNotCloseInvoked();
+        EntityGraphImpl<?> named = _emf.getEntityGraphImpl(graphName);
+        if (named == null) {
+            return null;
+        }
+        return named.copy();
     }
 
     @Override
-    public EntityGraph<?>   getEntityGraph(String graphName) {
-        throw new UnsupportedOperationException("JPA 2.1");
+    public EntityGraph<?> getEntityGraph(String graphName) {
+        assertNotCloseInvoked();
+        EntityGraphImpl<?> eg = _emf.getEntityGraphImpl(graphName);
+        if (eg == null) {
+            throw new IllegalArgumentException(
+                "No EntityGraph found with name: " + graphName);
+        }
+        return eg;
     }
 
     @Override
     public <T> List<EntityGraph<? super T>> getEntityGraphs(Class<T> entityClass) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        assertNotCloseInvoked();
+        MetamodelImpl mm = _emf.getMetamodel();
+        if (mm.entity(entityClass) == null) {
+            throw new IllegalArgumentException(
+                entityClass.getName() + " is not a managed entity type");
+        }
+        return _emf.getEntityGraphsForType(entityClass);
     }
 
     /**
@@ -2142,6 +2535,7 @@ public class EntityManagerImpl
      */
     @Override
     public void setProperty(String prop, Object value) {
+        assertNotCloseInvoked();
         properties = null;
         if (!setKernelProperty(this, prop, value)) {
             if (!setKernelProperty(this.getFetchPlan(), prop, value)) {
@@ -2208,11 +2602,10 @@ public class EntityManagerImpl
     Object convertUserValue(String key, Object value, Class<?> targetType) {
         if (JPAProperties.isValidKey(key))
             return JPAProperties.convertToKernelValue(targetType, key, value);
-        if (value instanceof String) {
+        if (value instanceof String val) {
             if ("null".equals(value)) {
                 return null;
             } else {
-                String val = (String) value;
                 int parenIndex = val.indexOf('(');
                 if (!String.class.equals(targetType) && (parenIndex > 0)) {
                     val = val.substring(0, parenIndex);
@@ -2246,4 +2639,215 @@ public class EntityManagerImpl
         }
         return meta;
     }
+
+	@Override
+	public <T> T find(EntityGraph<T> entityGraph, Object primaryKey, FindOption... options) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T getReference(T entity) {
+		assertNotCloseInvoked();
+		if (entity == null) {
+			throw new IllegalArgumentException("entity is null");
+		}
+		// JPA 3.2: getReference(entity) extracts the entity class and PK,
+		// then delegates to getReference(Class, Object) for lazy loading
+		Class<T> entityClass = (Class<T>) entity.getClass();
+		ClassMetaData meta = _broker.getConfiguration()
+			.getMetaDataRepositoryInstance()
+			.getMetaData(entityClass, null, false);
+		if (meta == null) {
+			throw new IllegalArgumentException(
+				_loc.get("not-entity", entityClass).getMessage());
+		}
+		// Extract the primary key value from the entity instance
+		FieldMetaData[] pkFields = meta.getPrimaryKeyFields();
+		Object pk = null;
+		if (pkFields.length == 1) {
+			FieldMetaData pkField = pkFields[0];
+			if (pkField.getBackingMember() instanceof Method) {
+				try {
+					pk = ((Method) pkField.getBackingMember()).invoke(entity);
+				} catch (Exception e) {
+					throw new IllegalArgumentException("Cannot extract PK from entity", e);
+				}
+			} else if (pkField.getBackingMember() instanceof Field f) {
+				try {
+                    f.setAccessible(true);
+					pk = f.get(entity);
+				} catch (Exception e) {
+					throw new IllegalArgumentException("Cannot extract PK from entity", e);
+				}
+			}
+		}
+		return getReference(entityClass, pk);
+	}
+
+	@Override
+	public void lock(Object entity, LockModeType lockMode, LockOption... options) {
+		Map<String, Object> properties = null;
+		if (options != null) {
+			properties = new HashMap<>();
+			for (LockOption option : options) {
+				if (option instanceof Timeout) {
+					properties.put("jakarta.persistence.lock.timeout", ((Timeout) option).milliseconds());
+				} else if (option instanceof PessimisticLockScope) {
+					properties.put("jakarta.persistence.lock.scope", option);
+				}
+			}
+		}
+		lock(entity, lockMode, properties);
+	}
+
+	@Override
+	public void refresh(Object entity, RefreshOption... options) {
+		LockModeType lockMode = null;
+		Map<String, Object> properties = null;
+		if (options != null) {
+			properties = new HashMap<>();
+			for (RefreshOption option : options) {
+				if (option instanceof Timeout) {
+					properties.put("jakarta.persistence.lock.timeout", ((Timeout) option).milliseconds());
+				} else if (option instanceof PessimisticLockScope) {
+					properties.put("jakarta.persistence.lock.scope", option);
+				} else if (option instanceof LockModeType) {
+					lockMode = (LockModeType) option;
+				} else if (option instanceof CacheStoreMode) {
+					properties.put("jakarta.persistence.cache.storeMode", option);
+				}
+			}
+		}
+		refresh(entity, lockMode, properties);
+	}
+
+	@Override
+	public CacheRetrieveMode getCacheRetrieveMode() {
+    	return getFetchPlan().getCacheRetrieveMode() == DataCacheRetrieveMode.USE ? CacheRetrieveMode.USE : CacheRetrieveMode.BYPASS;
+	}
+
+	@Override
+	public void setCacheRetrieveMode(CacheRetrieveMode cacheRetrieveMode) {
+    	getFetchPlan().setCacheRetrieveMode(cacheRetrieveMode == CacheRetrieveMode.USE
+    			? DataCacheRetrieveMode.USE : DataCacheRetrieveMode.BYPASS);
+	}
+
+	@Override
+	public void setCacheStoreMode(CacheStoreMode cacheStoreMode) {
+		DataCacheStoreMode storeMode = switch (cacheStoreMode) {
+			case USE: yield DataCacheStoreMode.USE;
+			case REFRESH: yield DataCacheStoreMode.REFRESH;
+			default: yield DataCacheStoreMode.BYPASS;
+		};
+		getFetchPlan().setCacheStoreMode(storeMode);
+	}
+
+	@Override
+	public CacheStoreMode getCacheStoreMode() {
+    	return switch (getFetchPlan().getCacheStoreMode()) {
+	    	case USE: yield CacheStoreMode.USE;
+	    	case REFRESH: yield CacheStoreMode.REFRESH;
+	    	default: yield CacheStoreMode.BYPASS;
+    	};
+	}
+
+	@Override
+	public <T> TypedQuery<T> createQuery(CriteriaSelect<T> selectQuery) {
+		if (selectQuery instanceof CriteriaQuery) {
+			return createQuery((CriteriaQuery<T>) selectQuery);
+		}
+
+		org.apache.openjpa.persistence.criteria.CriteriaSelectImpl<T> setOp =
+			(org.apache.openjpa.persistence.criteria.CriteriaSelectImpl<T>) selectQuery;
+		setOp.compile();
+
+		org.apache.openjpa.kernel.Query kernelQuery =
+			_broker.newQuery(OpenJPACriteriaBuilder.LANG_CRITERIA, setOp);
+
+		QueryImpl<T> facadeQuery = newQueryImpl(kernelQuery, null)
+			.setId(selectQuery.toString());
+		Set<ParameterExpression<?>> params = setOp.getParameters();
+		for (ParameterExpression<?> param : params) {
+			facadeQuery.declareParameter(param, param);
+		}
+		return facadeQuery;
+	}
+
+	@Override
+	public <T> TypedQuery<T> createQuery(TypedQueryReference<T> reference) {
+    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <C> void runWithConnection(ConnectionConsumer<C> action) {
+		assertNotCloseInvoked();
+		C connection = (C) getConnection();
+		boolean txActive = _broker.isActive();
+		try {
+			action.accept(connection);
+		} catch (Exception e) {
+			throw PersistenceExceptions.toPersistenceException(e);
+		} finally {
+			// Per JPA 3.2, the connection passed to runWithConnection is on
+			// loan to the user code; its lifecycle is owned by the EM/broker
+			// when a transaction is active. Closing the user-facing wrapper
+			// during an active transaction can cause some JDBC drivers (e.g.
+			// MariaDB Connector/J) to discard pending work on the underlying
+			// connection. Only close when no transaction is active (i.e. a
+			// free-standing connection was borrowed).
+			if (!txActive && connection instanceof AutoCloseable) {
+				try {
+					((AutoCloseable) connection).close();
+				} catch (Exception e) {
+					// ignore close exceptions
+				}
+			}
+		}
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <C, T> T callWithConnection(ConnectionFunction<C, T> function) {
+		assertNotCloseInvoked();
+		C connection = (C) getConnection();
+		boolean txActive = _broker.isActive();
+		try {
+			return function.apply(connection);
+		} catch (Exception e) {
+			throw PersistenceExceptions.toPersistenceException(e);
+		} finally {
+			// Per JPA 3.2, the connection passed to callWithConnection is on
+			// loan to the user code; its lifecycle is owned by the EM/broker
+			// when a transaction is active. Closing the user-facing wrapper
+			// during an active transaction can cause some JDBC drivers (e.g.
+			// MariaDB Connector/J) to discard pending work on the underlying
+			// connection. Only close when no transaction is active (i.e. a
+			// free-standing connection was borrowed).
+			if (!txActive && connection instanceof AutoCloseable) {
+				try {
+					((AutoCloseable) connection).close();
+				} catch (Exception e2) {
+					// ignore close exceptions
+				}
+			}
+		}
+	}
+
+	@Override
+	public void setTimeout(Integer timeout) {
+		assertNotCloseInvoked();
+		if (timeout != null) {
+			getFetchPlan().setQueryTimeout(timeout);
+		}
+	}
+
+	@Override
+	public Integer getTimeout() {
+		assertNotCloseInvoked();
+		int timeout = getFetchPlan().getQueryTimeout();
+		return timeout > 0 ? timeout : null;
+	}
+	
 }

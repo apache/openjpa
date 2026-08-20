@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jakarta.persistence.CacheRetrieveMode;
+import jakarta.persistence.CacheStoreMode;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.NoResultException;
@@ -67,6 +69,7 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
     private final MultiQueryMetaData _meta;
     private QueryResultCallback _callback;
     private boolean _declaredParams; // mainly a flag for now (null or not)
+    private boolean _updateCountConsumed; // true after executeUpdate() returns
 
     /**
      * Construct a query for executing a Stored Procedure.
@@ -104,17 +107,27 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
 
     private void buildParametersIfNeeded() {
         if (!_declaredParams) {
+            if (_meta == null) {
+                _declaredParams = true;
+                return;
+            }
+            int positionCounter = 1;
             for (MultiQueryMetaData.Parameter entry : _meta.getParameters()) {
                 final Object key;
                 final Parameter<?> param;
-                if (entry.getName() == null) {
-                    key = entry.getPosition();
-                    param = new ParameterImpl(entry.getPosition(), entry.getType());
+                String name = entry.getName();
+                if (name == null || name.isEmpty()) {
+                    // No name specified — use position (1-based).
+                    // If metadata has explicit position, use it; otherwise auto-assign.
+                    int pos = entry.getPosition() > 0 ? entry.getPosition() : positionCounter;
+                    key = pos;
+                    param = new ParameterImpl(pos, entry.getType());
                 } else {
-                    key = entry.getName();
-                    param = new ParameterImpl(entry.getName(), entry.getType());
+                    key = name;
+                    param = new ParameterImpl(name, entry.getType());
                 }
                 _delegate.declareParameter(key, param);
+                positionCounter++;
             }
             _declaredParams = true;
         }
@@ -161,6 +174,8 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
             RuntimeExceptionTranslator trans = PersistenceExceptions
                     .getRollbackTranslator(_delegate.getEntityManager());
             return new DelegatingResultList(result, trans).iterator().next();
+        } catch (NoResultException | NonUniqueResultException ex) {
+            throw ex;
         } catch (Exception ex) {
             throw new jakarta.persistence.PersistenceException(ex);
         }
@@ -174,12 +189,21 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
     @Override
     public int getUpdateCount() {
         assertExecuted();
+        if (_updateCountConsumed) {
+            return -1;
+        }
         return _callback.getUpdateCount();
     }
 
     @Override
     public int executeUpdate() {
+        EntityManagerImpl em = (EntityManagerImpl) _delegate.getEntityManager();
+        if (!em.isActive()) {
+            throw new jakarta.persistence.TransactionRequiredException(
+                "executeUpdate requires an active transaction");
+        }
         execute();
+        _updateCountConsumed = true;
         return _callback.getUpdateCount();
     }
 
@@ -203,7 +227,20 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
 
     @Override
     public <T> T getParameterValue(Parameter<T> param) {
-        // TODO JPA 2.1 Method
+        // Verify that the Parameter object actually belongs to this query,
+        // not just one that shares the same position/name from a different query.
+        buildParametersIfNeeded();
+        boolean found = false;
+        for (Parameter<?> qp : _delegate.getParameters()) {
+            if (qp == param) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            throw new IllegalArgumentException(
+                "Parameter does not belong to this query");
+        }
         return _delegate.getParameterValue(param);
     }
 
@@ -252,11 +289,48 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
 
     @Override
     public Object getOutputParameterValue(int position) {
+        // Validate that the position corresponds to a registered parameter.
+        // For named parameters, map 1-based position to declaration order.
+        buildParametersIfNeeded();
+        Set<Parameter<?>> params = _delegate.getParameters();
+        boolean found = false;
+        for (Parameter<?> p : params) {
+            if (p.getPosition() != null && p.getPosition().intValue() == position) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            // Named parameters: accept positional access if position is
+            // within the valid range (1-based declaration order)
+            if (position >= 1 && position <= params.size()) {
+                found = true;
+            }
+        }
+        if (!found) {
+            throw new IllegalArgumentException(
+                "Parameter position " + position
+                    + " does not correspond to a parameter of the query");
+        }
         return _callback == null ? null : _callback.getOut(position);
     }
 
     @Override
     public Object getOutputParameterValue(String parameterName) {
+        // Validate that the name corresponds to a registered parameter
+        buildParametersIfNeeded();
+        boolean found = false;
+        for (Parameter<?> p : _delegate.getParameters()) {
+            if (parameterName.equals(p.getName())) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            throw new IllegalArgumentException(
+                "Parameter name '" + parameterName
+                    + "' does not correspond to a parameter of the query");
+        }
         return _callback == null ? null : _callback.getOut(parameterName);
     }
 
@@ -317,7 +391,7 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
     @Override
     public Object getParameterValue(int position) {
         buildParametersIfNeeded();
-        return _delegate.getParameter(position);
+        return _delegate.getParameterValue(position);
     }
 
     @Override
@@ -328,14 +402,14 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
 
     @Override
     public jakarta.persistence.Query setLockMode(LockModeType lockMode) {
-        // TODO JPA 2.1 Method
-        return _delegate.setLockMode(lockMode);
+        throw new IllegalStateException(
+            "setLockMode is not supported for StoredProcedureQuery");
     }
 
     @Override
     public LockModeType getLockMode() {
-        // TODO JPA 2.1 Method
-        return _delegate.getLockMode();
+        throw new IllegalStateException(
+            "getLockMode is not supported for StoredProcedureQuery");
     }
 
     @Override
@@ -419,4 +493,73 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
     public String toString() {
         return _name;
     }
+
+	@Override
+	public CacheRetrieveMode getCacheRetrieveMode() {
+		Object val = getHints().get(JPAProperties.CACHE_RETRIEVE_MODE);
+		if (val instanceof CacheRetrieveMode) {
+			return (CacheRetrieveMode) val;
+		}
+		return CacheRetrieveMode.USE;
+	}
+
+	@Override
+	public CacheStoreMode getCacheStoreMode() {
+		Object val = getHints().get(JPAProperties.CACHE_STORE_MODE);
+		if (val instanceof CacheStoreMode) {
+			return (CacheStoreMode) val;
+		}
+		return CacheStoreMode.USE;
+	}
+
+	@Override
+	public StoredProcedureQuery setCacheRetrieveMode(CacheRetrieveMode cacheRetrieveMode) {
+		setHint(JPAProperties.CACHE_RETRIEVE_MODE, cacheRetrieveMode);
+		return this;
+	}
+
+	@Override
+	public StoredProcedureQuery setCacheStoreMode(CacheStoreMode cacheStoreMode) {
+		setHint(JPAProperties.CACHE_STORE_MODE, cacheStoreMode);
+		return this;
+	}
+
+	@Override
+	public StoredProcedureQuery setTimeout(Integer timeout) {
+		setHint(JPAProperties.QUERY_TIMEOUT, timeout);
+		return this;
+	}
+
+	@Override
+	public Integer getTimeout() {
+		Object val = getHints().get(JPAProperties.QUERY_TIMEOUT);
+		if (val instanceof Integer) {
+			return (Integer) val;
+		}
+		if (val instanceof Number) {
+			return ((Number) val).intValue();
+		}
+		return null;
+	}
+	
+	@Override
+	public Object getSingleResultOrNull() {
+		execute();
+		try {
+			ResultList result = (ResultList) _callback.callback();
+			if (result == null || result.isEmpty())
+				return null;
+			if (result.size() > 1)
+				throw new NonUniqueResultException(_loc.get("non-unique-result",
+						_name, result.size()).getMessage());
+			RuntimeExceptionTranslator trans = PersistenceExceptions
+					.getRollbackTranslator(_delegate.getEntityManager());
+			return new DelegatingResultList(result, trans).iterator().next();
+		} catch (NonUniqueResultException nure) {
+			throw nure;
+		} catch (Exception ex) {
+			throw new jakarta.persistence.PersistenceException(ex);
+		}
+	}
+	
 }

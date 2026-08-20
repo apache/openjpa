@@ -21,6 +21,8 @@ package org.apache.openjpa.jdbc.kernel.exps;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import org.apache.openjpa.jdbc.sql.SQLBuffer;
+import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Filters;
 
 /**
@@ -31,6 +33,8 @@ public class Ceiling
 
     
     private static final long serialVersionUID = 1L;
+    
+    private String operator = "CEILING";
 
     /**
      * Constructor. Provide the value to operate on.
@@ -55,7 +59,13 @@ public class Ceiling
 
     @Override
     protected String getOperator() {
-        return "CEILING";
+        return operator;
+    }
+    
+    @Override
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, SQLBuffer sql, int index) {
+    	operator = ctx.store.getDBDictionary().ceilingFunction;
+    	super.appendTo(sel, ctx, state, sql, index);
     }
 
     @Override

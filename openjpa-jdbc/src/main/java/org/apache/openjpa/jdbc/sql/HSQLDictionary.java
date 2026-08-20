@@ -26,6 +26,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
@@ -34,6 +35,7 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
+import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.OpenJPAException;
@@ -75,7 +77,7 @@ public class HSQLDictionary extends DBDictionary {
         trimTrailingFunction = "RTRIM({0})";
         trimBothFunction = "LTRIM(RTRIM({0}))";
 
-        supportsSelectForUpdate = false;
+        supportsQueryTimeout = false;
         supportsSelectStartIndex = true;
         supportsSelectEndIndex = true;
         supportsDeferredConstraints = false;
@@ -110,6 +112,11 @@ public class HSQLDictionary extends DBDictionary {
             "OR", "ORDER", "OUTER", "PRIMARY", "REFERENCES", "RIGHT", "ROLLUP", "SELECT", "SET", "SOME", "SUM", "TABLE", "THEN",
             "TO", "TRAILING", "TRIGGER", "UNION", "UNIQUE", "USING", "VALUES", "WHEN", "WHERE", "WITH",
         }));
+        // HSQLDB reports the tables and views of its system schemas (e.g.
+        // INFORMATION_SCHEMA.TRANSLATIONS) via DatabaseMetaData when no
+        // schema is specified; filter them out so they are not mistaken
+        // for user tables during schema reflection (OPENJPA-2940).
+        systemSchemaSet.addAll(List.of("INFORMATION_SCHEMA", "SYSTEM_LOBS"));
     }
 
     /**
@@ -179,6 +186,16 @@ public class HSQLDictionary extends DBDictionary {
 
     @Override
     public int getPreferredType(int type) {
+        if (type == Types.TIME_WITH_TIMEZONE) {
+            // HSQLDB compares TIME WITH TIME ZONE values by their UTC instant
+            // (SQL standard), but OpenJPA normalizes OffsetTime values to the
+            // JVM default offset on store and load. The stored offset therefore
+            // carries no information, while the normalization may wrap the local
+            // time around midnight, so MIN/MAX/ORDER BY on such a column return
+            // different rows than on other databases. Use a plain TIME column
+            // instead so comparisons happen on the normalized local time.
+            return Types.TIME;
+        }
         if (dbMajorVersion > 1) {
             return super.getPreferredType(type);
         }
@@ -375,6 +392,19 @@ public class HSQLDictionary extends DBDictionary {
     }
 
     @Override
+    protected void appendLength(SQLBuffer buf, int type) {
+        // HSQLDB gives CAST(x AS NUMERIC) without precision and scale a scale
+        // of 0 and silently truncates all fractional digits, so casts written
+        // for requiresCastForMathFunctions / requiresCastForComparisons would
+        // corrupt decimal values; always spell out precision and scale.
+        if (type == Types.NUMERIC || type == Types.DECIMAL) {
+            buf.append("(128,32)");
+        } else {
+            super.appendLength(buf, type);
+        }
+    }
+
+    @Override
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
         FilterValue start) {
         buf.append("LOCATE(");
@@ -403,14 +433,18 @@ public class HSQLDictionary extends DBDictionary {
     }
 
     @Override
-    public OpenJPAException newStoreException(String msg, SQLException[] causes,
-        Object failed) {
+    public OpenJPAException newStoreException(String msg, SQLException[] causes, Object failed) {
         OpenJPAException ke = super.newStoreException(msg, causes, failed);
-        if (ke instanceof ReferentialIntegrityException
-            && causes[0].getErrorCode() == -violation_of_unique_index_or_constraint) {
-            ((ReferentialIntegrityException) ke).setIntegrityViolation
-                (ReferentialIntegrityException.IV_UNIQUE);
+        if (ke instanceof ReferentialIntegrityException rie
+                && causes[0].getErrorCode() == -violation_of_unique_index_or_constraint)
+        {
+            rie.setIntegrityViolation(ReferentialIntegrityException.IV_UNIQUE);
         }
         return ke;
+    }
+
+    @Override
+    public String getExtractField(DateTimeExtractField extField) {
+        return DateTimeExtractField.WEEK == extField ? "WEEK_OF_YEAR" : extField.name();
     }
 }

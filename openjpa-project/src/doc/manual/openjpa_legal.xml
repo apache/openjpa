@@ -43,7 +43,7 @@ The Apache OpenJPA website can be found at:
 Apache OpenJPA is released under the <ulink url="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache Software License Version 2.0</ulink>
         </para>
         <para>
-Apache OpenJPA includes the persistence and orm schemas from the JPA specifications and elects to include this software in this distribution under the <ulink url="https://glassfish.dev.java.net/public/CDDL+GPL.html">CDDL license.</ulink>
+Apache OpenJPA includes the persistence and orm schemas from the JPA specifications and elects to include this software in this distribution under the <ulink url="https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#eclipse-foundation-specification-license-v1-1">EFSL 1.1  license.</ulink>
         </para>
     </section>
 
@@ -74,7 +74,7 @@ The openjpa-all aggregate JAR includes software developed by the:
     Apache Geronimo project (JMS 1.1, JTA 1.1 and JPA 2.0 spec APIs)
                 </para></listitem>
                 <listitem><para>
-    JCP JSR-317 JPA 2.0 schemas
+    JPA 3.2 schemas
                 </para></listitem>
             </itemizedlist>
         </para>
@@ -87,19 +87,19 @@ The openjpa-all aggregate JAR includes software developed by the:
         <section id="openjpa_legal_copyright_apache">
             <title>Apache</title>
             <para>
-Copyright (C) 2006,2011 The Apache Software Foundation.
+Copyright (C) 2006,2026 The Apache Software Foundation.
             </para>
             <para>
 Apache, OpenJPA and the Apache feather logo are trademarks of Apache Software Foundation.
             </para>
         </section>
         <section id="openjpa_legal_copyright_sun">
-            <title>Sun</title>
+            <title>Eclipse</title>
             <para>
 OpenJPA includes the persistence and orm schemas from the JPA specifications.
             </para>
             <para>
-Copyright 2005-2009 Sun Microsystems, Inc. All rights reserved.
+Copyright (c) [2024] Eclipse Foundation AISBL <ulink url="https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#eclipse-foundation-specification-license-v1-1">EFSL 1.1</ulink>
             </para>
             <para>
 OpenJPA elects to include this software in this distribution under the CDDL license.

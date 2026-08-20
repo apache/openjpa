@@ -89,6 +89,9 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         // vector
         _delayMethods.add(stringMethodName("addElement", new Class<?>[] {Object.class}));
         _delayMethods.add(stringMethodName("removeElement", new Class<?>[] {Object.class}));
+        // Java 21 SequencedCollection: addFirst/addLast delegate to add(Object)
+        _delayMethods.add(stringMethodName("addFirst", new Class<?>[] {Object.class}));
+        _delayMethods.add(stringMethodName("addLast", new Class<?>[] {Object.class}));
 
         // non-trigger methods
         _ignoreMethods = new HashSet<>();
@@ -117,6 +120,14 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         _ignoreMethods.add("forEach:java.util.function.Consumer");
         _ignoreMethods.add("replaceAll:java.util.function.UnaryOperator");
         _ignoreMethods.add("sort:java.util.Comparator");
+
+        // Java 21 SequencedCollection: reversed() returns a view that lazily
+        // delegates back to the original collection.  Our proxy overrides
+        // reversed() with a concrete return type, but on Java 21 the JVM also
+        // exposes the parent's reversed() (returning SequencedSet/SequencedCollection)
+        // which creates a lightweight view without triggering an immediate load.
+        // The view WILL trigger load when actually used (iterator, size, etc.).
+        _ignoreMethods.add(stringMethodName("reversed", null));
     }
 
     public static String stringMethodName(Method m) {
@@ -807,6 +818,9 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * Determines whether a proxy method should be invoked
      */
     private boolean excludeMethod(Method m) {
+        if (java.lang.reflect.Modifier.isStatic(m.getModifiers())) {
+            return true;
+        }
         if(_ignoreInterfaces.contains(m.getDeclaringClass())) {
             return true;
         }

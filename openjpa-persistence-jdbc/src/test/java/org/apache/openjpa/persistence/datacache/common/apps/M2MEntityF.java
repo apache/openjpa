@@ -37,21 +37,22 @@ public class M2MEntityF  {
 	public M2MEntityF() {
 		entitye = new HashMap<>();
 	}
+	
 	public Map<String, M2MEntityE> getEntityE() {
 		return entitye;
 	}
+	
 	public int getId() {
 		return id;
 	}
+	
 	public void setId(int id) {
 		this.id = id;
 	}
+
 	@Override
     public String toString(){
 		return "EntityF:"+id;
-	}
-	public void print(){
-		System.out.println("EntityF id="+id+" entitye="+ entitye);
 	}
 
 }

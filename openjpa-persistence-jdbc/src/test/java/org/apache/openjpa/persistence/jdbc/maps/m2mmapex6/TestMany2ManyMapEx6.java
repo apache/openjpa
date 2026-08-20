@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import jakarta.persistence.EntityManager;
@@ -127,7 +128,7 @@ public class TestMany2ManyMapEx6 extends SQLListenerTestCase {
             setCandidate(q, PhoneNumber.class);
         rs = q.getResultList();
         if (!inMemory)
-            assertTrue(sql.get(0).toUpperCase().indexOf(" GROUP BY ") != -1);
+            assertTrue(sql.get(0).toUpperCase(Locale.ROOT).indexOf(" GROUP BY ") != -1);
 
         em.close();
     }

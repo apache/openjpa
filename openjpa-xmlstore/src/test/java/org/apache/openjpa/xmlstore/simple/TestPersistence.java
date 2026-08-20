@@ -22,6 +22,10 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.Map;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
@@ -49,7 +53,9 @@ public class TestPersistence extends AbstractPersistenceTestCase {
     }
 
     public void testCreateEntityManager() {
-        OpenJPAEntityManagerFactorySPI emf = createNamedEMF("xmlstore-simple");
+        OpenJPAEntityManagerFactorySPI emf = createNamedOpenJPAEMF(
+                "xmlstore-simple",
+                "META-INF/persistence.xml", Map.of());
         try {
             EntityManager em = emf.createEntityManager();
 
@@ -71,8 +77,10 @@ public class TestPersistence extends AbstractPersistenceTestCase {
     }
 
     public void testQuery() {
-        OpenJPAEntityManagerFactorySPI emf = createNamedEMF("xmlstore-simple",
-            CLEAR_TABLES, AllFieldTypes.class);
+        OpenJPAEntityManagerFactorySPI emf = createNamedOpenJPAEMF(
+                "xmlstore-simple",
+                "META-INF/persistence.xml",
+                getPropertiesMap(CLEAR_TABLES, AllFieldTypes.class));
         try {
             EntityManager em = emf.createEntityManager();
             em.getTransaction().begin();
@@ -88,6 +96,15 @@ public class TestPersistence extends AbstractPersistenceTestCase {
             assertEquals(1, em.createQuery
                 ("select x from AllFieldTypes x where x.stringField = 'foo'").
                 getResultList().size());
+            assertEquals(1, em.createQuery
+                    ("select x from AllFieldTypes x where LEFT(x.stringField, 2) = 'fo'").
+                    getResultList().size());
+            assertEquals(1, em.createQuery
+                    ("select x from AllFieldTypes x where RIGHT(x.stringField, 2) = 'oo'").
+                    getResultList().size());
+            assertEquals(1, em.createQuery
+                    ("select x from AllFieldTypes x where REPLACE(x.stringField, 'o', 'oo') = 'foooo'").
+                    getResultList().size());
             assertEquals(0, em.createQuery
                 ("select x from AllFieldTypes x where x.stringField = 'bar'").
                 getResultList().size());
@@ -95,15 +112,43 @@ public class TestPersistence extends AbstractPersistenceTestCase {
                 ("select x from AllFieldTypes x where x.intField >= 10").
                 getResultList().size());
             em.getTransaction().rollback();
+
+            em.getTransaction().begin();
+            aft = em.createQuery("SELECT x FROM AllFieldTypes AS x where x.stringField = 'foo'", AllFieldTypes.class).getSingleResult();
+            aft.setStringField("34");
+            aft.setIntField(34);
+            Date dt = java.util.Date.from(LocalDate.of(1969, 7, 20).atStartOfDay()
+                      .atZone(ZoneId.systemDefault())
+                      .toInstant());
+            aft.setDateField(dt);
+            em.persist(aft);
+            em.getTransaction().commit();
             em.close();
+
+            em = emf.createEntityManager();
+            em.getTransaction().begin();
+            assertEquals(1,
+                    em.createQuery("select x from AllFieldTypes x where CAST(x.stringField AS INTEGER) = x.intField")
+                    .getResultList().size());
+            assertEquals(1,
+                    em.createQuery("select x from AllFieldTypes x where CAST(x.intField AS STRING) = x.stringField")
+                    .getResultList().size());
+            assertEquals("1969-07-20T00:00:00",
+                    em.createQuery("select CAST(x.dateField AS STRING) from AllFieldTypes x where x.stringField = '34'")
+                    .getSingleResult());
+            em.getTransaction().rollback();
+            em.close();
+
         } finally {
             closeEMF(emf);
         }
     }
 
     public void testNewDeleteNew() {
-        OpenJPAEntityManagerFactorySPI emf = createNamedEMF("xmlstore-simple",
-            CLEAR_TABLES, Place.class);
+        OpenJPAEntityManagerFactorySPI emf = createNamedOpenJPAEMF(
+                "xmlstore-simple",
+                "META-INF/persistence.xml",
+                getPropertiesMap(CLEAR_TABLES, Place.class));
         try {
             EntityManager em = emf.createEntityManager();
 
@@ -145,6 +190,4 @@ public class TestPersistence extends AbstractPersistenceTestCase {
             closeEMF(emf);
         }
     }
-
 }
-

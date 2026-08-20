@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import jakarta.persistence.EntityManager;
@@ -62,7 +63,7 @@ extends AbstractCachedEMFTestCase {
             String vMode = emf.getConfiguration().getValidationMode();
             assertEquals("NONE", vMode);
             Specification spec = emf.getConfiguration().getSpecificationInstance();
-            assertEquals("JPA", spec.getName().toUpperCase());
+            assertEquals("JPA", spec.getName().toUpperCase(Locale.ROOT));
             assertEquals(spec.getVersion(), 1);
         } finally {
             closeEMF(emf);
@@ -89,7 +90,7 @@ extends AbstractCachedEMFTestCase {
             String vMode = emf.getConfiguration().getValidationMode();
             assertEquals("AUTO", vMode);
             Specification spec = emf.getConfiguration().getSpecificationInstance();
-            assertEquals("JPA", spec.getName().toUpperCase());
+            assertEquals("JPA", spec.getName().toUpperCase(Locale.ROOT));
             assertEquals(spec.getVersion(), 2);
         } finally {
             closeEMF(emf);
@@ -411,11 +412,10 @@ extends AbstractCachedEMFTestCase {
             em.getTransaction().begin();
             em.getTransaction().commit();
 
-            // on some databases KEY is a forbidden name for columns.
-            String keyColumn = getDbDictionary(emf).getInvalidColumnWordSet().contains("KEY")
-                            ? "KEY0"
-                            : "KEY";
-            assertSQLFragnments(sql, "CREATE TABLE C_U1M_Map_FK", "Uni1MFK_ID", keyColumn);
+            // JPA 3.2 spec 11.1.35: default map key column name is the
+            // concatenation of the field name + "_KEY" (was "KEY"/"KEY0" before).
+            // Field Uni_1ToM_Map_FK.entityCs -> column "entityCs_KEY"
+            assertSQLFragnments(sql, "CREATE TABLE C_U1M_Map_FK", "Uni1MFK_ID", "entityCs_KEY");
 
             assertSQLFragnments(sql, "CREATE TABLE Bi1M_Map_JT_C", "B_ID", "C_ID");
             assertSQLFragnments(sql, "CREATE TABLE C_U1M_Map_RelKey_FK", "Uni1MFK_ID");

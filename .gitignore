@@ -11,3 +11,7 @@ nbactions*.xml
 .checkstyle
 .vscode
 
+.claude
+CLAUDE.md
+scripts/.report/
+

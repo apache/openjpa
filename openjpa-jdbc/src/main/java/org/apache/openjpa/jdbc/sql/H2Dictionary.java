@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
@@ -154,6 +155,11 @@ public class H2Dictionary extends DBDictionary {
             "YEAR",
             "_ROWID_");
 
+    private final static List<String> V2_META_TABLES_NAMES = Arrays
+    		.asList("INFORMATION_SCHEMA.INDEXES", "INFORMATION_SCHEMA.INDEX_COLUMNS", "INFORMATION_SCHEMA.INFORMATION_SCHEMA_CATALOG_NAME",
+    				"INFORMATION_SCHEMA.ROLES", "INFORMATION_SCHEMA.SESSIONS", "INFORMATION_SCHEMA.SESSION_STATE",
+    				"INFORMATION_SCHEMA.SETTINGS", "INFORMATION_SCHEMA.USERS");
+
     public H2Dictionary() {
         platform = "H2";
         validationSQL = "CALL 1";
@@ -261,6 +267,8 @@ public class H2Dictionary extends DBDictionary {
             reservedWordSet.addAll(V2_KEYWORDS);
             invalidColumnWordSet.clear();
             invalidColumnWordSet.addAll(V2_KEYWORDS);
+            getDefaultIdentifierRule().setReservedWords(reservedWordSet);
+            getIdentifierRules().get(DBIdentifierType.COLUMN.name()).setReservedWords(invalidColumnWordSet);
         }
     }
 
@@ -482,4 +490,17 @@ public class H2Dictionary extends DBDictionary {
         }
         return super.isFatalException(subtype, ex);
     }
+
+    @Override
+    public String[] getDeleteTableContentsSQL(Table[] tables, Connection conn) {
+    	if (versionLaterThan(1)) {
+	    	List<Table> tbs = Arrays.asList(tables).stream()
+	    			.filter(tb -> !V2_META_TABLES_NAMES.contains(tb.getFullIdentifier().toString()))
+	    			.toList();
+	    	return super.getDeleteTableContentsSQL(tbs.toArray(new Table[] {}), conn);
+    	} else {
+    		return super.getDeleteTableContentsSQL(tables, conn);
+    	}
+    }
+
 }

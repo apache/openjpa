@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.abstractstore;
 
-import java.security.AccessController;
 import java.util.Map;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -29,7 +28,6 @@ import org.apache.openjpa.kernel.StoreManager;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.conf.ProductDerivations;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.UserException;
 
@@ -138,9 +136,7 @@ public class AbstractStoreBrokerFactory
     private static AbstractStoreManager createStoreManager(String cls,
         String props) {
         AbstractStoreManager store =
-            (AbstractStoreManager) Configurations.newInstance(cls,
-                AccessController.doPrivileged(J2DoPrivHelper
-                    .getClassLoaderAction(AbstractStoreManager.class)));
+            (AbstractStoreManager) Configurations.newInstance(cls, AbstractStoreManager.class.getClassLoader());
         Configurations.configureInstance(store, null, props,
             PROP_ABSTRACT_STORE);
         if (store == null)

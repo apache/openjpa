@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.query;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
 
@@ -53,7 +54,7 @@ class AliasContext {
 	public String setAlias(ExpressionImpl path) {
 		if (_aliases.containsKey(path))
 			return _aliases.get(path);
-        String alias = path.getAliasHint(this).substring(0,1).toLowerCase();
+        String alias = path.getAliasHint(this).substring(0,1).toLowerCase(Locale.ROOT);
 		int i = 2;
 		while (_aliases.containsValue(alias)) {
 			alias = alias.substring(0,1) + i;

@@ -19,6 +19,8 @@
 package org.apache.openjpa.jdbc.schema;
 
 import java.sql.Types;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.util.Date;
 import java.util.Locale;
 
@@ -119,6 +121,10 @@ public class Schemas {
                 return "time";
             case Types.TIMESTAMP:
                 return "timestamp";
+            case Types.TIMESTAMP_WITH_TIMEZONE:
+                return "timestamp_with_timezone";
+            case Types.TIME_WITH_TIMEZONE:
+                return "time_with_timezone";
             case Types.TINYINT:
                 return "tinyint";
             case Types.VARBINARY:
@@ -184,6 +190,10 @@ public class Schemas {
             return Types.TIME;
         if ("timestamp".equalsIgnoreCase(name))
             return Types.TIMESTAMP;
+        if ("timestamp_with_timezone".equalsIgnoreCase(name))
+            return Types.TIMESTAMP_WITH_TIMEZONE;
+        if ("time_with_timezone".equalsIgnoreCase(name))
+            return Types.TIME_WITH_TIMEZONE;
         if ("tinyint".equalsIgnoreCase(name))
             return Types.TINYINT;
         if ("varbinary".equalsIgnoreCase(name))
@@ -236,6 +246,10 @@ public class Schemas {
             case Types.TIME:
             case Types.TIMESTAMP:
                 return Date.class;
+            case Types.TIMESTAMP_WITH_TIMEZONE:
+                return OffsetDateTime.class;
+            case Types.TIME_WITH_TIMEZONE:
+                return OffsetTime.class;
             default:
                 return Object.class;
         }

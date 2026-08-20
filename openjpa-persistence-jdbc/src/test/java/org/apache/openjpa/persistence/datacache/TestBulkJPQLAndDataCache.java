@@ -119,9 +119,18 @@ public class TestBulkJPQLAndDataCache
         em.getTransaction().commit();
         em.close();
 
+        // JPA 3.2 spec section 4.10: bulk DELETE does not cascade to
+        // related entities. The parent is deleted but the child remains.
         em = emf.createEntityManager();
         assertEquals(0, em.createQuery("SELECT o FROM CascadeParent o").
             getResultList().size());
+        assertEquals(1, em.createQuery("SELECT o FROM CascadeChild o").
+            getResultList().size());
+
+        // Explicitly clean up the orphaned child
+        em.getTransaction().begin();
+        em.createQuery("DELETE FROM CascadeChild o").executeUpdate();
+        em.getTransaction().commit();
         assertEquals(0, em.createQuery("SELECT o FROM CascadeChild o").
             getResultList().size());
         em.close();

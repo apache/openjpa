@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.util;
 import java.util.List;
 
 import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -28,9 +29,10 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Transient;
+import jakarta.persistence.Version;
 
 @Entity
-public class EagerEntity {
+public class EagerEntity implements Eager {
 
     @Id
     private int id;
@@ -49,55 +51,81 @@ public class EagerEntity {
 
     @OneToMany(fetch=FetchType.EAGER)
     private List<EagerEntity> eagerSelf;
+    
+    @Version
+    @Column(name = "version_")
+    private Integer version;
 
     @Transient
     private String transField;
 
-    public void setId(int id) {
+    @Override
+	public void setId(int id) {
         this.id = id;
     }
 
-    public int getId() {
+    @Override
+	public int getId() {
         return id;
     }
 
-    public void setName(String name) {
+    @Override
+	public void setName(String name) {
         this.name = name;
     }
 
-    public String getName() {
+    @Override
+	public String getName() {
         return name;
     }
 
-    public void setEagerEmbed(EagerEmbed eagerEmbed) {
+    @Override
+	public void setEagerEmbed(EagerEmbed eagerEmbed) {
         this.eagerEmbed = eagerEmbed;
     }
 
-    public EagerEmbed getEagerEmbed() {
+    @Override
+	public EagerEmbed getEagerEmbed() {
         return eagerEmbed;
     }
 
-    public void setTransField(String transField) {
+    @Override
+	public void setTransField(String transField) {
         this.transField = transField;
     }
 
-    public String getTransField() {
+    @Override
+	public String getTransField() {
         return transField;
     }
 
-    public void setEagerEmbedColl(List<EagerEmbed> eagerEmbedColl) {
+    @Override
+	public void setEagerEmbedColl(List<EagerEmbed> eagerEmbedColl) {
         this.eagerEmbedColl = eagerEmbedColl;
     }
 
-    public List<EagerEmbed> getEagerEmbedColl() {
+    @Override
+	public List<EagerEmbed> getEagerEmbedColl() {
         return eagerEmbedColl;
     }
 
-    public void setEagerEmbedRel(EagerEmbedRel eagerEmbedRel) {
+    @Override
+	public void setEagerEmbedRel(EagerEmbedRel eagerEmbedRel) {
         this.eagerEmbedRel = eagerEmbedRel;
     }
 
-    public EagerEmbedRel getEagerEmbedRel() {
+    @Override
+	public EagerEmbedRel getEagerEmbedRel() {
         return eagerEmbedRel;
     }
+
+	@Override
+	public Integer getVersion() {
+		return version;
+	}
+
+	@Override
+	public void setVersion(Integer version) {
+		this.version = version;
+	}
 }

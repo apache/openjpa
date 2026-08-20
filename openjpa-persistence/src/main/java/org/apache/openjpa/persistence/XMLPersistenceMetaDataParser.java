@@ -91,6 +91,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -171,7 +172,7 @@ public class XMLPersistenceMetaDataParser
     protected static final String ELEM_DELIM_IDS = "delimited-identifiers";
 
     // The following is needed for input into the delimitString() method
-    protected static enum localDBIdentifiers {
+    protected enum localDBIdentifiers {
         SEQUENCE_GEN_SEQ_NAME,
         SEQUENCE_GEN_SCHEMA
     }
@@ -287,7 +288,7 @@ public class XMLPersistenceMetaDataParser
 
     protected Class<?> _cls = null;
     // List of classes currently being parsed
-    private ArrayList<Class<?>> _parseList = new ArrayList<>();
+    private final ArrayList<Class<?>> _parseList = new ArrayList<>();
     private int _fieldPos = 0;
     private int _clsPos = 0;
     private int _access = AccessCode.UNKNOWN;
@@ -310,6 +311,7 @@ public class XMLPersistenceMetaDataParser
     private static final String ORM_XSD_2_2 = "orm_2_2.xsd";
     private static final String ORM_XSD_3_0 = "orm_3_0.xsd";
     private static final String ORM_XSD_3_1 = "orm_3_1.xsd";
+    private static final String ORM_XSD_3_2 = "orm_3_2.xsd";
 
     /**
      * Constructor; supply configuration.
@@ -600,6 +602,10 @@ public class XMLPersistenceMetaDataParser
                 || (_schemaLocation != null && _schemaLocation.indexOf(ORM_XSD_3_1) > -1)) {
             ormxsd = "orm_3_1.xsd.rsrc";
             useExtendedSchema = false;
+        } else if (XMLVersionParser.VERSION_3_2.equals(_ormVersion)
+                || (_schemaLocation != null && _schemaLocation.indexOf(ORM_XSD_3_2) > -1)) {
+            ormxsd = "orm_3_2.xsd.rsrc";
+            useExtendedSchema = false;
         }
 
         List<InputStream> schema = new ArrayList<>();
@@ -794,7 +800,7 @@ public class XMLPersistenceMetaDataParser
     @Override
     protected boolean startClassElement(String name, Attributes attrs)
         throws SAXException {
-        Object tag = (Object) _elems.get(name);
+        Object tag = _elems.get(name);
         boolean ret = false;
         if (tag == null) {
             if (isMappingOverrideMode())
@@ -906,8 +912,7 @@ public class XMLPersistenceMetaDataParser
                 default:
                     warnUnsupportedTag(name);
             }
-        } else if (tag instanceof PersistenceStrategy) {
-            PersistenceStrategy ps = (PersistenceStrategy) tag;
+        } else if (tag instanceof PersistenceStrategy ps) {
             if (_openjpaNamespace > 0) {
                 if (ps == PERS
                     || ps == PERS_COLL
@@ -997,8 +1002,7 @@ public class XMLPersistenceMetaDataParser
                     endReferencedFetchGroup();
                     break;
             }
-        } else if (tag instanceof PersistenceStrategy) {
-            PersistenceStrategy ps = (PersistenceStrategy) tag;
+        } else if (tag instanceof PersistenceStrategy ps) {
             if (_openjpaNamespace > 0) {
                 endExtendedStrategy(ps);
             }
@@ -1343,9 +1347,6 @@ public class XMLPersistenceMetaDataParser
         } catch (Throwable t) {
             throw getException(_loc.get("invalid-id-class", meta, cls), t);
         }
-        if (!Serializable.class.isAssignableFrom(idCls)) {
-        	_conf.getConfigurationLog().warn(_loc.get("id-class-not-serializable", idCls, _cls));
-        }
         meta.setObjectIdType(idCls, true);
         return true;
     }
@@ -1492,7 +1493,7 @@ public class XMLPersistenceMetaDataParser
             && meta.getDescribedType() != Object.class) {
             Member member = _repos.getMetaDataFactory().getDefaults()
      	        .getMemberByProperty(meta, name, fldAccess, false);
-            Class<?> type = Field.class.isInstance(member) ?
+            Class<?> type = member instanceof Field ?
                 ((Field)member).getType() : ((Method)member).getReturnType();
 
             if (field == null) {
@@ -1712,7 +1713,7 @@ public class XMLPersistenceMetaDataParser
     protected void parseOneToOne(FieldMetaData fmd, Attributes attrs)
         throws SAXException {
         String val = attrs.getValue("fetch");
-        boolean dfg = (val != null && val.equals("LAZY")) ? false : true;
+        boolean dfg = val == null || !val.equals("LAZY");
 
         // We need to toggle the DFG explicit flag here because this is used for an optimization when selecting an
         // Entity with lazy fields.
@@ -1739,7 +1740,7 @@ public class XMLPersistenceMetaDataParser
     protected void parseManyToOne(FieldMetaData fmd, Attributes attrs)
         throws SAXException {
         String val = attrs.getValue("fetch");
-        boolean dfg = (val != null && val.equals("LAZY")) ? false : true;
+        boolean dfg = val == null || !val.equals("LAZY");
 
         // We need to toggle the DFG explicit flag here because this is used for an optimization when selecting an
         // Entity with lazy fields.
@@ -1970,7 +1971,7 @@ public class XMLPersistenceMetaDataParser
         String lm = _conf.getLockManager();
         boolean optimistic = _conf.getOptimistic();
         if (lm != null) {
-            lm = lm.toLowerCase();
+            lm = lm.toLowerCase(Locale.ROOT);
             if (lm.contains("pessimistic")) {
                 if (lmt == LockModeType.NONE && !optimistic) {
                     if (log != null && log.isWarnEnabled()) {
@@ -2161,8 +2162,9 @@ public class XMLPersistenceMetaDataParser
         // should be in endEntityListeners I think to merge callbacks
         // into a single listener.  But then the user cannot remove.
         if (currentElement() == null && _callbacks != null) {
+            String key = _listener != null ? _listener.getName() : null;
             _repos.addSystemListener(new PersistenceListenerAdapter
-                (_callbacks));
+                (_callbacks), key);
             _callbacks = null;
         }
         _listener = null;
@@ -2218,6 +2220,32 @@ public class XMLPersistenceMetaDataParser
             }
             if (_callbacks[event] == null)
                 _callbacks[event] = new ArrayList<>(3);
+
+            // JPA spec: XML callback declarations override annotation-based
+            // callbacks for the same method. Remove any annotation-parsed
+            // callback that targets the same method to prevent duplicates.
+            if (_listener != null && _callbacks[event] != null) {
+                Method xmlMethod = ((BeanLifecycleCallbacks) adapter)
+                    .getCallbackMethod();
+                int sizeBefore = _callbacks[event].size();
+                _callbacks[event].removeIf(existing -> {
+                    if (existing instanceof MethodLifecycleCallbacks) {
+                        Method existingMethod = ((MethodLifecycleCallbacks)
+                            existing).getCallbackMethod();
+                        return existingMethod.getName().equals(
+                            xmlMethod.getName())
+                            && existingMethod.getDeclaringClass().equals(
+                                xmlMethod.getDeclaringClass());
+                    }
+                    return false;
+                });
+                // Adjust _highs count for removed annotation-parsed callbacks
+                // since they were counted in startEntityListener
+                if (!system && _highs != null) {
+                    _highs[event] -= (sizeBefore - _callbacks[event].size());
+                }
+            }
+
             _callbacks[event].add(adapter);
             if (!system && _listener != null)
                 _highs[event]++;
@@ -2250,9 +2278,8 @@ public class XMLPersistenceMetaDataParser
         for (int event : LifecycleEvent.ALL_EVENTS) {
             if (_callbacks[event] == null)
                 continue;
-            meta.setDeclaredCallbacks(event, (LifecycleCallbacks[])
-                _callbacks[event].toArray
-                    (new LifecycleCallbacks[_callbacks[event].size()]),
+            meta.setDeclaredCallbacks(event, _callbacks[event].toArray
+                (new LifecycleCallbacks[_callbacks[event].size()]),
                 _highs[event]);
         }
         _callbacks = null;
@@ -2315,12 +2342,10 @@ public class XMLPersistenceMetaDataParser
         ArrayList<MetaDataContext> fmds = _embeddables.get(embedType);
         if (fmds != null && fmds.size() > 0) {
             for (MetaDataContext md : fmds) {
-                if (md instanceof FieldMetaData) {
-                    FieldMetaData fmd = (FieldMetaData)md;
+                if (md instanceof FieldMetaData fmd) {
                     fmd.addEmbeddedMetaData(access);
                 }
-                else if (md instanceof ValueMetaData) {
-                    ValueMetaData vmd = (ValueMetaData)md;
+                else if (md instanceof ValueMetaData vmd) {
                     vmd.addEmbeddedMetaData(access);
                 }
             }
@@ -2440,10 +2465,7 @@ public class XMLPersistenceMetaDataParser
             return true;
         }
 
-        if (getLineNum() != meta.getLineNumber()) {
-            return true;
-        }
-        return false;
+        return getLineNum() != meta.getLineNumber();
     }
 
     /**
@@ -2455,10 +2477,7 @@ public class XMLPersistenceMetaDataParser
         if(! Objects.equals(getSourceName(), meta.getSourceName())) {
             return true;
         }
-        if(getLineNum() != meta.getLineNumber()) {
-            return true;
-        }
-        return false;
+        return getLineNum() != meta.getLineNumber();
 
     }
 
@@ -2492,12 +2511,11 @@ public class XMLPersistenceMetaDataParser
     private boolean startDataCache(Attributes attrs)
             throws SAXException {
         String enabledStr = attrs.getValue("enabled");
-        boolean enabled = (Boolean) (StringUtil.isEmpty(enabledStr) ? true :
-            Boolean.parseBoolean(enabledStr));
+        boolean enabled = StringUtil.isEmpty(enabledStr) || Boolean.parseBoolean(enabledStr);
 
         String timeoutStr = attrs.getValue("timeout");
-        int timeout = (Integer) (StringUtil.isEmpty(timeoutStr) ? Integer.MIN_VALUE :
-            Integer.parseInt(timeoutStr));
+        int timeout = StringUtil.isEmpty(timeoutStr) ? Integer.MIN_VALUE :
+            Integer.parseInt(timeoutStr);
 
         String name = attrs.getValue("name");
         name = StringUtil.isEmpty(name) ? "" : name;

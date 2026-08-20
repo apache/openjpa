@@ -120,4 +120,93 @@ class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
         return new StringBuilder(_entity.getName()).append(" ").append(asValue(q));
     }
 
+    /**
+     * A root that represents a type-narrowed (treated) view of another root.
+     * Used to implement {@code CriteriaBuilder.treat(Root, Class)}.
+     * The treated root uses the subclass entity type for attribute resolution
+     * but delegates path generation to the original root.
+     *
+     * @param <T> the target (subclass) type
+     */
+    static class TreatedRoot<T> extends RootImpl<T> {
+        private final RootImpl<?> _original;
+
+        TreatedRoot(Types.Entity<T> targetEntity, RootImpl<?> original) {
+            super(targetEntity);
+            _original = original;
+        }
+
+        /**
+         * Returns the original (untreated) root.
+         */
+        RootImpl<?> getOriginal() {
+            return _original;
+        }
+
+        /**
+         * No-op: the original root is already registered in the query context.
+         */
+        @Override
+        public void addToContext(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
+            // Do nothing - the original root is already in context
+        }
+
+        /**
+         * Returns the target (subclass) type that this treated root narrows to.
+         */
+        Class<T> getTreatedType() {
+            return getJavaType();
+        }
+
+        /**
+         * Produce a kernel path that uses the original root's alias but carries the subclass metadata.
+         * Also registers this treated root on the query so that a type-restriction
+         * predicate (discriminator check) can be added during query compilation.
+         */
+        @Override
+        public Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> c) {
+            // Register this treated root for discriminator filtering
+            c.addTreatedRoot(this);
+
+            // Get the alias of the original root, not the treated root
+            String alias = c.getAlias(_original);
+            SubqueryImpl<?> subquery = c.getDelegator();
+            Path var = null;
+            Value val = null;
+            if (c.ctx() != null && !alias.equalsIgnoreCase(c.ctx().schemaAlias)
+                && (val = c.getRegisteredRootVariable(_original)) != null) {
+                var = factory.newPath(val);
+            } else if (inSubquery(subquery)) {
+                Subquery subQ = subquery.getSubQ();
+                var = factory.newPath(subQ);
+            } else {
+                var = factory.newPath();
+                var.setSchemaAlias(alias);
+            }
+            Types.Entity<T> entity = (Types.Entity<T>) getModel();
+            var.setMetaData(entity.meta);
+            return var;
+        }
+
+        @Override
+        public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
+            ExpressionFactory factory, CriteriaQueryImpl<?> c) {
+            Value path = toValue(factory, c);
+            Types.Entity<T> entity = (Types.Entity<T>) getModel();
+            Value var = factory.newBoundVariable(c.getAlias(_original),
+                 entity.meta.getDescribedType());
+            return factory.bindVariable(var, path);
+        }
+
+        @Override
+        public StringBuilder asValue(AliasContext q) {
+            return _original.asValue(q);
+        }
+
+        @Override
+        public StringBuilder asVariable(AliasContext q) {
+            return new StringBuilder(getModel().getName()).append(" ").append(asValue(q));
+        }
+    }
+
 }

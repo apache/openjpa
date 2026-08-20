@@ -28,6 +28,9 @@ import jakarta.jms.TopicConnection;
 import jakarta.jms.TopicConnectionFactory;
 import jakarta.jms.TopicSession;
 import jakarta.jms.TopicSubscriber;
+
+import java.util.logging.Logger;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 
@@ -38,8 +41,9 @@ import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
  * So named to prevent the autobuild from running this -- we don't
  * have a JMS provider up and running in the autobuild currently.
  */
-public class JMSRemoteEventsTest
-    extends RemoteEventBase {
+public class JMSRemoteEventsTest extends RemoteEventBase {
+	
+	private static final Logger logger = Logger.getLogger(JMSRemoteEventsTest.class.getCanonicalName());
 
     public JMSRemoteEventsTest(String s) {
         super(s);
@@ -87,14 +91,14 @@ public class JMSRemoteEventsTest
             try {
                 if (m instanceof ObjectMessage) {
                     ObjectMessage om = (ObjectMessage) m;
-                    System.out.println("received object: " + om.getObject());
+                    logger.fine("received object: " + om.getObject());
                 } else {
-                    System.out.println("received bad message: " + m);
+                	logger.fine("received bad message: " + m);
                 }
             }
             catch (JMSException e) {
-                System.out.println("Exception while processing message");
-                e.printStackTrace(System.out);
+            	logger.fine("Exception while processing message");
+                e.printStackTrace(System.err);
             }
         }
     }

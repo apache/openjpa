@@ -175,7 +175,7 @@ public class TestMultiTableMappings
 
     public void testVerticalQueryModeQueries() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
-        OpenJPAQuery<MultiA> q = pm.createNativeQuery("",MultiA.class);
+        OpenJPAQuery<MultiA> q = (OpenJPAQuery<MultiA>) pm.createNativeQuery("",MultiA.class);
         ((JDBCFetchPlan) q.getFetchPlan()).setSubclassFetchMode(FetchMode.PARALLEL);
         // we need ordering; otherwise kodo is smart enough to only run first
         // select until its results are exhausted

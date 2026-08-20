@@ -210,10 +210,9 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
                 @Override
                 public void run() {
                     EntityManager em = getEntityManagerFactory().createEntityManager();
-                    em.setProperty(RETRIEVE_MODE_PROP, CacheRetrieveMode.USE);
                     for (Class<?> cls : getExpectedInCache()) {
                         assertCached(getEntityManagerFactory().getCache(), cls, 1, true);
-                        assertNotNull(em.find(cls, 1));
+                        assertNotNull(em.find(cls, 1, CacheRetrieveMode.USE));
                     }
                     em.close();
                 }
@@ -222,10 +221,9 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
                 @Override
                 public void run() {
                     EntityManager em = getEntityManagerFactory().createEntityManager();
-                    em.setProperty(RETRIEVE_MODE_PROP, CacheRetrieveMode.USE);
                     for (Class<?> cls : getExpectedNotInCache()) {
                         assertCached(getEntityManagerFactory().getCache(), cls, 1, false);
-                        assertNotNull(em.find(cls, 1));
+                        assertNotNull(em.find(cls, 1, CacheRetrieveMode.USE));
                     }
                     em.close();
                 }

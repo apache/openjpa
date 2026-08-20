@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.test;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import junit.framework.AssertionFailedError;
 
@@ -33,6 +34,8 @@ import junit.framework.AssertionFailedError;
  */
 public abstract class CombinatorialPersistenceTestCase
 	extends SQLListenerTestCase {
+	
+	private static final Logger logger = Logger.getLogger(CombinatorialPersistenceTestCase.class.getCanonicalName());
 
 	protected static CombinatorialTestHelper helper;
 
@@ -68,15 +71,15 @@ public abstract class CombinatorialPersistenceTestCase
 
     	if (testResult.errorCount() + testResult.failureCount() > 0) {
     		if (!failures.isEmpty())
-                System.err.println(failures.size() + " assertion failures");
+                logger.warning(failures.size() + " assertion failures");
     		for (String o : failures.keySet()) {
-    			System.err.println("Combination:\r\n" + o);
+    			logger.warning("Combination:\r\n" + o);
     			failures.get(o).printStackTrace();
     		}
     		if (!errors.isEmpty())
-    			System.err.println(errors.size() + " errors");
+    			logger.warning(errors.size() + " errors");
     		for (String o : errors.keySet()) {
-    			System.err.println("Combination:\r\n" + o);
+    			logger.warning("Combination:\r\n" + o);
     			errors.get(o).printStackTrace();
     		}
             throw new Throwable(getName() + ": "

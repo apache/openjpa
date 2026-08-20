@@ -69,7 +69,7 @@ public class TestRangeQuery extends
         for (int i = 0; i < results.size(); i++) {
             EagerOuterJoinPC pc = (EagerOuterJoinPC) results.get(i);
             assertEquals(String.valueOf(i + 5), pc.getName());
-            System.err.println("Row " + i + " " + pc.getName());
+            // System.err.println("Row " + i + " " + pc.getName());
         }
         assertEquals(5, results.size());
         q.closeAll();

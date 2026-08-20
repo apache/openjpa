@@ -530,4 +530,47 @@ public class DelayedTreeSetProxy extends TreeSet implements ProxyCollection, Del
         }
         return super.hashCode();
     }
+
+    // Java 21 SequencedCollection/SequencedSet methods.
+    // Not declared as @Override since they don't exist in Java 17's TreeSet,
+    // but at runtime on Java 21+ the JVM matches these to
+    // SequencedSet/SortedSet default methods.
+
+    public Object getFirst() {
+        return first();
+    }
+
+    public Object getLast() {
+        return last();
+    }
+
+    public void addFirst(Object e) {
+        add(e);
+    }
+
+    public void addLast(Object e) {
+        add(e);
+    }
+
+    public Object removeFirst() {
+        if (!_directAccess && isDelayLoad()) {
+            load();
+        }
+        Object first = super.first();
+        remove(first);
+        return first;
+    }
+
+    public Object removeLast() {
+        if (!_directAccess && isDelayLoad()) {
+            load();
+        }
+        Object last = super.last();
+        remove(last);
+        return last;
+    }
+
+    public NavigableSet reversed() {
+        return descendingSet();
+    }
 }

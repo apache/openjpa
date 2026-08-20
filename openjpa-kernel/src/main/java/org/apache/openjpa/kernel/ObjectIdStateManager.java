@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.io.ObjectOutput;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.BitSet;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
@@ -850,12 +848,8 @@ public class ObjectIdStateManager
     private void setValue(int field, Object val, boolean forceInst) {
         if (_oid == null && forceInst) {
             try {
-                _oid = AccessController.doPrivileged(
-                    J2DoPrivHelper.newInstanceAction(
-                        getMetaData().getDescribedType()));
+                _oid = J2DoPrivHelper.newInstance(getMetaData().getDescribedType());
             } catch (Exception e) {
-                if (e instanceof PrivilegedActionException)
-                    e = ((PrivilegedActionException) e).getException();
                 throw new GeneralException(e);
             }
         } else if (_oid == null)

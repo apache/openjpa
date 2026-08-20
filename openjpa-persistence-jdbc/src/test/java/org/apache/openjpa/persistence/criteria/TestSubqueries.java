@@ -687,8 +687,9 @@ public class TestSubqueries extends CriteriaTest {
         em.createQuery("delete from Customer c where c.name = 'Capricorn'").executeUpdate();
 
         em.flush();
-        if (!txActive) {
-            em.getTransaction().commit();
+        em.getTransaction().commit();
+        if (txActive) {
+            em.getTransaction().begin();
         }
     }
 

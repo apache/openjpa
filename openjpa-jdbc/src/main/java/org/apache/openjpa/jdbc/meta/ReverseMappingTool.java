@@ -26,8 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -37,6 +35,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -80,7 +79,6 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.CodeFormat;
 import org.apache.openjpa.lib.util.Files;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.StringUtil;
@@ -1531,7 +1529,7 @@ public class ReverseMappingTool implements MetaDataModes, Cloneable {
         String name = replaceInvalidCharacters(table.getSchemaName());
         if (_useSchema && name != null) {
             if (allUpperCase(name))
-                name = name.toLowerCase();
+                name = name.toLowerCase(Locale.ROOT);
             subs = StringUtil.split(name, "_", 0);
             for (String sub : subs) {
                 buf.append(StringUtil.capitalize(sub));
@@ -1540,7 +1538,7 @@ public class ReverseMappingTool implements MetaDataModes, Cloneable {
 
         name = replaceInvalidCharacters(table.getName());
         if (allUpperCase(name))
-            name = name.toLowerCase();
+            name = name.toLowerCase(Locale.ROOT);
         subs = StringUtil.split(name, "_", 0);
         for (int i = 0; i < subs.length; i++) {
             // make sure the name can't conflict with generated id class names;
@@ -1560,7 +1558,7 @@ public class ReverseMappingTool implements MetaDataModes, Cloneable {
     public String getFieldName(String name, ClassMapping dec) {
         name = replaceInvalidCharacters(name);
         if (allUpperCase(name))
-            name = name.toLowerCase();
+            name = name.toLowerCase(Locale.ROOT);
         else
             name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
 
@@ -1976,15 +1974,8 @@ public class ReverseMappingTool implements MetaDataModes, Cloneable {
         File customFile = Files.getFile
             (opts.removeProperty("customizerProperties", "cp", null), null);
         Properties customProps = new Properties();
-        if (customFile != null && AccessController.doPrivileged(
-                J2DoPrivHelper.existsAction(customFile))) {
-            FileInputStream fis = null;
-            try {
-                fis = AccessController.doPrivileged(
-                    J2DoPrivHelper.newFileInputStreamAction(customFile));
-            } catch (PrivilegedActionException pae) {
-                 throw (FileNotFoundException) pae.getException();
-            }
+        if (customFile != null && customFile.exists()) {
+            FileInputStream fis = new FileInputStream(customFile);
             customProps.load(fis);
         }
 
@@ -2144,7 +2135,7 @@ public class ReverseMappingTool implements MetaDataModes, Cloneable {
     private class ReverseStrategyInstaller
         extends StrategyInstaller {
 
-        
+
         private static final long serialVersionUID = 1L;
 
         public ReverseStrategyInstaller(MappingRepository repos) {

@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.graph;
 import java.sql.Date;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
@@ -47,6 +48,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *
  */
 public class TestPersistentGraph extends SingleEMFTestCase {
+	
+	private static final Logger logger = Logger.getLogger(TestPersistentGraph.class.getCanonicalName());
+	
     private static enum Emotion {
         LOVES, HATES, KNOWS
     }
@@ -99,14 +103,14 @@ public class TestPersistentGraph extends SingleEMFTestCase {
     }
 
     private void printMapping(FieldMapping fm) {
-        System.err.println("Field :" + fm.getName());
-        System.err.println("Type :" + fm.getTypeCode() + " " + fm.getType());
-        System.err.println("Type (declared):" + fm.getDeclaredTypeCode() + " " + fm.getDeclaredType());
-        System.err.println("Type Override :" + fm.getTypeOverride());
-        System.err.println("Key type  :" + fm.getKey().getType());
-        System.err.println("Key declared type  :" + fm.getKey().getDeclaredType());
-        System.err.println("Element type  :" + fm.getElement().getType());
-        System.err.println("Element declared type  :" + fm.getElement().getDeclaredType());
+    	logger.fine("Field :" + fm.getName());
+    	logger.fine("Type :" + fm.getTypeCode() + " " + fm.getType());
+    	logger.fine("Type (declared):" + fm.getDeclaredTypeCode() + " " + fm.getDeclaredType());
+    	logger.fine("Type Override :" + fm.getTypeOverride());
+    	logger.fine("Key type  :" + fm.getKey().getType());
+    	logger.fine("Key declared type  :" + fm.getKey().getDeclaredType());
+    	logger.fine("Element type  :" + fm.getElement().getType());
+    	logger.fine("Element declared type  :" + fm.getElement().getDeclaredType());
     }
 
     FieldMapping getFieldMapping(Class<?> pcClass, String field) {
@@ -157,7 +161,7 @@ public class TestPersistentGraph extends SingleEMFTestCase {
         assertNotNull("No metadata found for " + cls.getName() + "." + field + " Fields are "
                 + Arrays.toString(cmd.getFieldNames()), fmd);
         FieldStrategy strategy = ((FieldMapping) fmd).getStrategy();
-        System.err.println(cls.getName() + "." + field + ":" + strategy.getClass().getSimpleName());
+        logger.fine(cls.getName() + "." + field + ":" + strategy.getClass().getSimpleName());
         return strategy;
     }
 

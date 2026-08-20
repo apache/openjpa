@@ -18,30 +18,35 @@
  */
 package org.apache.openjpa.persistence.jpql.functions;
 
+import static org.junit.Assert.assertArrayEquals;
+
 import java.math.BigDecimal;
 import java.sql.Time;
 import java.time.LocalTime;
 import java.time.temporal.ChronoField;
 import java.util.List;
-
-import jakarta.persistence.EntityManager;
+import java.util.Set;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.jdbc.sql.SybaseDictionary;
+import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.common.apps.Address;
 import org.apache.openjpa.persistence.common.apps.CompUser;
+import org.apache.openjpa.persistence.common.apps.CompVerUser;
 import org.apache.openjpa.persistence.common.apps.FemaleUser;
 import org.apache.openjpa.persistence.common.apps.MaleUser;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.common.utils.DatabaseHelper;
 
+import jakarta.persistence.EntityManager;
+
 public class TestEJBQLFunction extends AbstractTestCase {
 
-    private int userid1, userid2, userid3, userid4, userid5, userid6;
+    private int userid1, userid2, userid3, userid5;
 
     /**
      * Some databases trim the whitespace from a string upon insert. Store Shannon's name for
@@ -54,8 +59,10 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Override
-    public void setUp() {
-        deleteAll(CompUser.class);
+    public void setUp() throws Exception {
+        super.setUp(CLEAR_TABLES, CompUser.class, CompVerUser.class, MaleUser.class,
+                FemaleUser.class, Address.class
+        );
         OpenJPAEntityManagerSPI em = (OpenJPAEntityManagerSPI) currentEntityManager();
         startTx(em);
 
@@ -81,15 +88,19 @@ public class TestEJBQLFunction extends AbstractTestCase {
         em.persist(user3);
         userid3 = user3.getUserid();
         em.persist(user4);
-        userid4 = user4.getUserid();
+        user4.getUserid(); // this call is required to fix the order
         em.persist(user5);
         userid5 = user5.getUserid();
-        em.persist(user6);
-        userid6 = user6.getUserid();
+        em.persist(user6); // this call is required to fix the order
+        user6.getUserid();
+
+        em.persist(new CompVerUser("Bob", "n/a", null, null));
+        em.persist(new CompVerUser("Alice", "n/a", null, null));
+        em.persist(new CompVerUser("Seetha1", "WIN", null, 66));
 
         DBDictionary dict = ((JDBCConfiguration) em.getConfiguration()).getDBDictionaryInstance();
-        if(dict instanceof SybaseDictionary) {
-            expectedShannonName="Shannon";
+        if (dict instanceof SybaseDictionary) {
+            expectedShannonName = "Shannon";
         }
         DatabaseHelper.createPowerFunctionIfNecessary(em, dict);
         DatabaseHelper.createRoundFunctionIfNecessary(em, dict);
@@ -340,6 +351,36 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    public void testLeft() {
+        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
+            // Derby does not support LEFT
+            return;
+        }
+        EntityManager em = currentEntityManager();
+        String query = "SELECT LEFT(u.name, 3) FROM CompUser AS u WHERE LEFT(u.address.streetAd, 2) = '43'";
+        List result = em.createQuery(query).getResultList();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("See", (String) result.get(0));
+        endEm(em);
+    }
+
+    public void testRight() {
+        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
+            // Derby does not support LEFT
+            return;
+        }
+        EntityManager em = currentEntityManager();
+        String query = "SELECT RIGHT(u.name, 3) FROM CompUser AS u WHERE right(u.address.streetAd, 4) = 'some'";
+        List result = em.createQuery(query).getResultList();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("tha", (String) result.get(0));
+        endEm(em);
+    }
+
     public void testArithmFunc() {
         EntityManager em = currentEntityManager();
         startTx(em);
@@ -511,7 +552,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
 
         endEm(em);
     }
-    
+
     public void testCEILINGFunc() {
         EntityManager em = currentEntityManager();
 
@@ -591,7 +632,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals(1000L, result.get(0));
+        assertEquals(1000, ((Number) result.get(0)).intValue());
 
         endEm(em);
     }
@@ -651,9 +692,14 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractTimeFromInstant() {
+        DBDictionary dict = getDbDictionary(getEmf());
+        if (dict instanceof OracleDictionary) {
+            // Oracle has no TIME data type
+            return;
+        }
         EntityManager em = currentEntityManager();
 
-        String query = "SELECT c FROM CompUser AS c WHERE EXTRACT(TIME FROM {ts '2005-03-21 01:32:20'}) = {t '01:32:20'}";
+        String query = "SELECT c FROM CompUser AS c WHERE EXTRACT(TIME FROM {ts '2005-03-21 01:32:21'}) = {t '01:32:21'}";
 
         List<CompUser> result = em.createQuery(query, CompUser.class).getResultList();
 
@@ -663,6 +709,10 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractDateFromLocalDateTime() {
+        if (getDbDictionary(getEmf()) instanceof OracleDictionary) {
+            // Oracle does not support TIME data type
+            return;
+        }
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT(DATE FROM LOCAL DATETIME) > {d '2025-01-10'}";
@@ -675,6 +725,11 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractTimeFromLocalTime() {
+        DBDictionary dict = getDbDictionary(getEmf());
+        if (dict instanceof OracleDictionary) {
+            // Oracle has no TIME data type
+            return;
+        }
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT(TIME FROM LOCAL TIME) = {t '01:32:20'}";
@@ -709,9 +764,9 @@ public class TestEJBQLFunction extends AbstractTestCase {
         }
         EntityManager em = currentEntityManager();
 
-        String query = "SELECT EXTRACT(YEAR FROM {d '2025-01-23'}) - c.age FROM CompUser AS c";
+        String query = "SELECT EXTRACT(YEAR FROM {d '2025-01-23'}) - c.age FROM CompUser AS c ORDER BY c.userid";
 
-        List result = em.createQuery(query).getResultList();
+        List<Integer> result = em.createQuery(query, Integer.class).getResultList();
 
         assertNotNull(result);
         assertEquals(6, result.size());
@@ -725,8 +780,10 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractQUARTER() {
-        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
+        DBDictionary dict = getDbDictionary(getEmf());
+        if (dict instanceof DerbyDictionary || dict instanceof OracleDictionary) {
             // Derby does not support EXTRACT
+            // Oracle does not support EXTRACT(QUARTER)
             return;
         }
         EntityManager em = currentEntityManager();
@@ -757,8 +814,10 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractWEEK() {
-        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
+        DBDictionary dict = getDbDictionary(getEmf());
+        if (dict instanceof DerbyDictionary || dict instanceof OracleDictionary) {
             // Derby does not support EXTRACT
+            // Oracle does not support EXTRACT(WEEK) (https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/EXTRACT-datetime.html)
             return;
         }
         EntityManager em = currentEntityManager();
@@ -843,13 +902,15 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractHourFromLocalTime() {
-        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
+        DBDictionary dict = getDbDictionary(getEmf());
+        if (dict instanceof DerbyDictionary || dict instanceof OracleDictionary) {
             // Derby does not support EXTRACT
+            // Oracle does not have TIME data type
             return;
         }
         EntityManager em = currentEntityManager();
         String query = "SELECT CURRENT_TIME, (EXTRACT(HOUR FROM LOCAL TIME) - c.age) FROM CompUser as c WHERE c.age = 23";
-        
+
         List result = em.createQuery(query).getResultList();
 
         assertEquals(1, result.size());
@@ -858,8 +919,569 @@ public class TestEJBQLFunction extends AbstractTestCase {
         Time time = (Time) ret[0];
         LocalTime serverTime = time.toLocalTime();
         int expected = serverTime.get(ChronoField.HOUR_OF_DAY) - 23;
-        
+
         assertEquals(expected, (int) ret[1]);
+
+        endEm(em);
+    }
+
+    public void testTypecastAsString() {
+        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
+            // Derby does not support CAST from integer to VARCHAR
+            return;
+        }
+        EntityManager em = currentEntityManager();
+        String query = "SELECT u FROM CompUser AS u WHERE CAST(u.age AS STRING) = '23'";
+
+        List result = em.createQuery(query).getResultList();
+
+        assertEquals(1, result.size());
+
+        endEm(em);
+    }
+
+    public void testTypecastAsStringOnSelect() {
+        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
+            // Derby does not support CAST from integer to VARCHAR
+            return;
+        }
+        EntityManager em = currentEntityManager();
+        String query = "SELECT CAST(u.age AS STRING) FROM CompUser AS u WHERE u.age = 23";
+
+        List result = em.createQuery(query).getResultList();
+
+        assertEquals(1, result.size());
+        assertEquals("23", result.get(0));
+
+        endEm(em);
+    }
+
+    public void testTypecastAsInteger() {
+        EntityManager em = currentEntityManager();
+        String query = "SELECT u FROM CompUser AS u WHERE CAST(u.address.zipcode as integer) = :value";
+
+        List result = em.createQuery(query).setParameter("value", 94104).getResultList();
+
+        assertEquals(1, result.size());
+        assertEquals("Seetha", ((CompUser) result.get(0)).getName());
+
+        endEm(em);
+
+    }
+
+    public void testTypecastAsLong() {
+        EntityManager em = currentEntityManager();
+        String query = "SELECT u FROM CompUser AS u WHERE CAST(u.address.zipcode as LONG) = :value";
+
+        List result = em.createQuery(query).setParameter("value", 94104l).getResultList();
+
+        assertEquals(1, result.size());
+        assertEquals("Seetha", ((CompUser) result.get(0)).getName());
+
+        endEm(em);
+
+    }
+
+    public void testTypecastAsFloat() {
+        EntityManager em = currentEntityManager();
+        String query = "SELECT u FROM CompUser AS u WHERE CAST(u.age as float) = :value";
+
+        List result = em.createQuery(query).setParameter("value", 29f).getResultList();
+
+        assertEquals(1, result.size());
+        assertEquals("Famzy", ((CompUser) result.get(0)).getName());
+
+        endEm(em);
+
+    }
+
+    public void testTypecastAsDouble() {
+        EntityManager em = currentEntityManager();
+        String query = "SELECT CAST(u.age as double) FROM CompUser AS u WHERE CAST(u.age as double) = :value";
+
+        List result = em.createQuery(query).setParameter("value", 29.0d).getResultList();
+
+        assertEquals(1, result.size());
+        assertEquals(29d, ((double) result.get(0)));
+
+        endEm(em);
+
+    }
+
+    public void testReplace() {
+        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
+            // Derby does not support REPLACE function
+            return;
+        }
+        EntityManager em = currentEntityManager();
+        String query = "SELECT replace(u.name, '_J', 'J') FROM CompUser AS u WHERE REPLACE(u.address.city, 'cester', 'st') = :value";
+
+        List result = em.createQuery(query).setParameter("value", "Worst").getResultList();
+
+        assertEquals(1, result.size());
+        assertEquals("Jacob", (String) result.get(0));
+
+        endEm(em);
+    }
+
+    public void testStringConcatOperator() {
+        EntityManager em = currentEntityManager();
+
+        // test || in SELECT - concatenate name and computerName
+        String query = "SELECT u.name || ' uses ' || u.computerName FROM CompUser AS u WHERE u.name = 'Seetha'";
+        List result = em.createQuery(query).getResultList();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("Seetha uses MAC", (String) result.get(0));
+
+        endEm(em);
+    }
+
+    public void testStringConcatOperatorInWhere() {
+        EntityManager em = currentEntityManager();
+
+        // test || in WHERE clause
+        String query = "SELECT u.name FROM CompUser AS u WHERE u.name || u.computerName = :value";
+        List result = em.createQuery(query).setParameter("value", "SeethaMAC").getResultList();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("Seetha", (String) result.get(0));
+
+        endEm(em);
+    }
+
+    public void testStringConcatOperatorInUpdate() {
+        EntityManager em = currentEntityManager();
+        startTx(em);
+
+        // test || in UPDATE SET
+        String query = "UPDATE CompUser e SET e.computerName = e.computerName || '_v2' WHERE e.name = 'Ugo'";
+        int result = em.createQuery(query).executeUpdate();
+        assertEquals(1, result);
+
+        CompUser user = em.find(CompUser.class, userid3);
+        em.refresh(user);
+        assertEquals("PC_v2", user.getComputerName());
+
+        endTx(em);
+        endEm(em);
+    }
+
+    public void testOrderByNullsFirst() {
+        EntityManager em = currentEntityManager();
+
+        // address.country is null for users 5 and 6 - NULLS FIRST should put them first
+        String query = "SELECT u.name FROM CompUser AS u ORDER BY u.address.country ASC NULLS FIRST";
+        List result = em.createQuery(query).getResultList();
+
+        assertNotNull(result);
+        assertEquals(6, result.size());
+        // first two results should be users with null country (Famzy, Shade)
+        // The exact order between the two nulls is undefined, but they should come first
+        String first = (String) result.get(0);
+        String second = (String) result.get(1);
+        assertTrue("Expected null-country users first, got: " + first + ", " + second,
+            (first.equals("Famzy") || first.equals("Shade")) &&
+            (second.equals("Famzy") || second.equals("Shade")));
+
+        endEm(em);
+    }
+
+    public void testOrderByNullsLast() {
+        EntityManager em = currentEntityManager();
+
+        // NULLS LAST should put null-country users at the end
+        String query = "SELECT u.name FROM CompUser AS u ORDER BY u.address.country ASC NULLS LAST";
+        List result = em.createQuery(query).getResultList();
+
+        assertNotNull(result);
+        assertEquals(6, result.size());
+        // last two results should be users with null country
+        String fifth = (String) result.get(4);
+        String sixth = (String) result.get(5);
+        assertTrue("Expected null-country users last, got: " + fifth + ", " + sixth,
+            (fifth.equals("Famzy") || fifth.equals("Shade")) &&
+            (sixth.equals("Famzy") || sixth.equals("Shade")));
+
+        endEm(em);
+    }
+
+    public void testOrderByNullsLastCOALESCE() {
+        EntityManager em = currentEntityManager();
+
+        // with COALESCE `NULLS LAST` is useless, but it will help to test parsing with Mysql/MariaDB and SQLServer
+        String query = "SELECT u.name FROM CompVerUser AS u ORDER BY COALESCE(u.age, 0) ASC NULLS Last";
+        List<String> result = em.createQuery(query, String.class).getResultList();
+
+        assertNotNull(result);
+        assertEquals(3, result.size());
+        // first two results should be users with null age (Alice, Bob)
+        // The exact order between the two nulls is undefined, but they should come first
+        String first = (String) result.get(0);
+        String second = (String) result.get(1);
+        Set<String> firsts = Set.of(first, second);
+        assertTrue("Expected null-age users first, got: " + first + ", " + second,
+            firsts.contains("Alice") && firsts.contains("Bob"));
+
+        endEm(em);
+    }
+
+    public void testIdFunction() {
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT ID(u) FROM CompUser AS u WHERE u.name = :name";
+
+        List result = em.createQuery(query, Integer.class).setParameter("name", "Seetha").getResultList();
+
+        assertEquals(1, result.size());
+        assertEquals(userid1, result.get(0));
+
+        endEm(em);
+    }
+
+    public void testIdFunctionOnWhere() {
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT u.name FROM CompUser AS u WHERE id(u)= :code";
+
+        List result = em.createQuery(query).setParameter("code", userid1).getResultList();
+
+        assertEquals(1, result.size());
+        assertEquals("Seetha", (String) result.get(0));
+
+        endEm(em);
+    }
+
+    public void testVersionFunction() {
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT VERSION(u) FROM CompVerUser AS u WHERE u.name = :name";
+        List result = em.createQuery(query).setParameter("name", "Seetha1").getResultList();
+
+        assertEquals(1, result.size());
+        int currentVersion = (int) result.get(0);
+
+        query = "SELECT u FROM CompVerUser AS u WHERE u.name = :name AND version(u) = :version";
+        result = em.createQuery(query).setParameter("name", "Seetha1").setParameter("version", currentVersion).getResultList();
+
+        assertEquals(1, result.size());
+        assertEquals("Seetha1", ((CompVerUser) result.get(0)).getName());
+
+        // a version that no row carries must match nothing. Without this the test
+        // would still pass if version(u) were compared against another column,
+        // such as the primary key, that happens to hold the same value
+        result = em.createQuery(query).setParameter("name", "Seetha1")
+            .setParameter("version", currentVersion + 1).getResultList();
+
+        assertEquals(0, result.size());
+
+        endEm(em);
+    }
+
+    public void testVersionFunctionOnOrderBy() {
+        // give the three CompVerUser rows distinct versions, in an order that
+        // deliberately differs from the order of their primary keys. They are
+        // persisted as Bob, Alice, Seetha1, so ordering by the version column
+        // must yield Seetha1, Bob, Alice
+        bumpVersion("Alice", 2);
+        bumpVersion("Bob", 1);
+
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT u.name, VERSION(u) FROM CompVerUser AS u ORDER BY VERSION(u)";
+        List result = em.createQuery(query).getResultList();
+
+        assertEquals(3, result.size());
+        assertEquals("Seetha1", ((Object[]) result.get(0))[0]);
+        assertEquals("Bob", ((Object[]) result.get(1))[0]);
+        assertEquals("Alice", ((Object[]) result.get(2))[0]);
+
+        assertVersionsOrdered(result, true);
+
+        endEm(em);
+    }
+
+    public void testVersionFunctionOnOrderByDescending() {
+        bumpVersion("Alice", 2);
+        bumpVersion("Bob", 1);
+
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT u.name, VERSION(u) FROM CompVerUser AS u ORDER BY VERSION(u) DESC";
+        List result = em.createQuery(query).getResultList();
+
+        assertEquals(3, result.size());
+        assertEquals("Alice", ((Object[]) result.get(0))[0]);
+        assertEquals("Bob", ((Object[]) result.get(1))[0]);
+        assertEquals("Seetha1", ((Object[]) result.get(2))[0]);
+
+        assertVersionsOrdered(result, false);
+
+        endEm(em);
+    }
+
+    public void testVersionFunctionOnOrderByAmongOtherOrderings() {
+        // Alice and Bob end up on the same version, so the secondary ordering
+        // by name decides between them
+        bumpVersion("Alice", 1);
+        bumpVersion("Bob", 1);
+
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT u.name FROM CompVerUser AS u ORDER BY VERSION(u) DESC, u.name ASC";
+        List result = em.createQuery(query).getResultList();
+
+        assertEquals(3, result.size());
+        assertEquals("Alice", result.get(0));
+        assertEquals("Bob", result.get(1));
+        assertEquals("Seetha1", result.get(2));
+
+        endEm(em);
+    }
+
+    public void testVersionFunctionOnUnversionedEntity() {
+        EntityManager em = currentEntityManager();
+
+        // CompUser has no version field and no version columns, so there is
+        // nothing for VERSION() to order by
+        String query = "SELECT u FROM CompUser AS u ORDER BY VERSION(u)";
+
+        try {
+            em.createQuery(query).getResultList();
+            fail("Did not get ArgumentException for VERSION() on an unversioned type");
+        } catch (ArgumentException ae) {
+            String msg = String.valueOf(ae.getMessage());
+            assertTrue("the message does not name the unversioned type: " + msg,
+                msg.contains(CompUser.class.getName()));
+            assertTrue("the message does not mention the missing version: " + msg,
+                msg.contains("version"));
+            for (Throwable c = ae; c != null && c != c.getCause(); c = c.getCause()) {
+                assertFalse("VERSION() on an unversioned type must not fail with a "
+                    + "NullPointerException: " + c, c instanceof NullPointerException);
+            }
+        }
+
+        endEm(em);
+    }
+
+    /**
+     * Increment the version of the named CompVerUser the given number of times,
+     * each time in its own transaction.
+     */
+    private void bumpVersion(String name, int times) {
+        for (int i = 0; i < times; i++) {
+            EntityManager em = currentEntityManager();
+            startTx(em);
+
+            CompVerUser user = (CompVerUser) em.createQuery(
+                "SELECT u FROM CompVerUser AS u WHERE u.name = :name")
+                .setParameter("name", name).getSingleResult();
+            user.setAge(user.getAge() == null ? 1 : user.getAge() + 1);
+
+            endTx(em);
+            endEm(em);
+        }
+    }
+
+    /**
+     * Assert that the version values in the second position of each result row
+     * are strictly ascending or strictly descending.
+     */
+    private void assertVersionsOrdered(List result, boolean asc) {
+        for (int i = 1; i < result.size(); i++) {
+            int previous = ((Number) ((Object[]) result.get(i - 1))[1]).intValue();
+            int current = ((Number) ((Object[]) result.get(i))[1]).intValue();
+            if (asc) {
+                assertTrue("versions are not ascending: " + previous + ", " + current,
+                    previous < current);
+            } else {
+                assertTrue("versions are not descending: " + previous + ", " + current,
+                    previous > current);
+            }
+        }
+    }
+
+    public void testUnionProjection() {
+        EntityManager em = currentEntityManager();
+
+        String query =
+            "SELECT u.name FROM CompUser u WHERE u.age > 30"
+            + " UNION"
+            + " SELECT u.name FROM CompUser u"
+            + " WHERE u.name = 'Ugo'";
+        List result = em.createQuery(query).getResultList();
+
+        assertNotNull(result);
+        // Seetha(36), Shannon(36) from first, Ugo from second
+        // UNION removes duplicates
+        assertEquals(3, result.size());
+
+        // Results may be scalar Strings or Object[] arrays
+        java.util.Set<String> names = new java.util.HashSet<>();
+        for (Object o : result) {
+            if (o instanceof Object[]) {
+                names.add(String.valueOf(((Object[]) o)[0]));
+            } else {
+                names.add(String.valueOf(o));
+            }
+        }
+        assertTrue("Expected Seetha: " + names,
+            names.contains("Seetha"));
+        assertTrue("Expected Ugo: " + names,
+            names.contains("Ugo"));
+
+        endEm(em);
+    }
+
+    public void testUnionAllProjection() {
+        EntityManager em = currentEntityManager();
+
+        String query =
+            "SELECT u.name FROM CompUser u WHERE u.age > 25"
+            + " UNION ALL"
+            + " SELECT u.name FROM CompUser u"
+            + " WHERE u.age > 30";
+        List result = em.createQuery(query).getResultList();
+
+        assertNotNull(result);
+        // age>25: Seetha(36), Shannon(36), Famzy(29) = 3
+        // age>30: Seetha(36), Shannon(36) = 2
+        // UNION ALL keeps duplicates = 5 total
+        assertEquals("UNION ALL result count", 5, result.size());
+
+        endEm(em);
+    }
+
+    public void testExceptProjection() {
+        EntityManager em = currentEntityManager();
+
+        // age > 20: Seetha(36), Shannon(36), Famzy(29), Shade(23)
+        // age > 30: Seetha(36), Shannon(36)
+        // EXCEPT: Famzy(29), Shade(23)
+        String query =
+            "SELECT u.name FROM CompUser u WHERE u.age > 20"
+            + " EXCEPT"
+            + " SELECT u.name FROM CompUser u"
+            + " WHERE u.age > 30";
+        List result = em.createQuery(query).getResultList();
+
+        assertNotNull(result);
+        assertEquals("EXCEPT result count", 2, result.size());
+
+        java.util.Set<String> names = new java.util.HashSet<>();
+        for (Object o : result) {
+            if (o instanceof Object[]) {
+                names.add(String.valueOf(((Object[]) o)[0]));
+            } else {
+                names.add(String.valueOf(o));
+            }
+        }
+        assertTrue("Expected Famzy: " + names,
+            names.contains("Famzy"));
+        assertTrue("Expected Shade: " + names,
+            names.contains("Shade"));
+
+        endEm(em);
+    }
+
+    public void testIntersectProjection() {
+        EntityManager em = currentEntityManager();
+
+        // age > 20: Seetha(36), Shannon(36), Famzy(29), Shade(23)
+        // age > 30: Seetha(36), Shannon(36)
+        // INTERSECT: Seetha(36), Shannon(36)
+        String query =
+            "SELECT u.name FROM CompUser u WHERE u.age > 20"
+            + " INTERSECT"
+            + " SELECT u.name FROM CompUser u"
+            + " WHERE u.age > 30";
+        List result = em.createQuery(query).getResultList();
+
+        assertNotNull(result);
+        assertEquals("INTERSECT result count", 2, result.size());
+
+        endEm(em);
+    }
+
+    public void testScalarOrderBy() {
+        EntityManager em = currentEntityManager();
+
+        // JPA 3.2: scalar expressions in ORDER BY
+        String query =
+            "SELECT u.name FROM CompUser u"
+            + " ORDER BY LENGTH(u.name) DESC";
+        List result = em.createQuery(query).getResultList();
+
+        assertNotNull(result);
+        assertEquals(6, result.size());
+
+        // Verify ordering: longest names first
+        int prevLen = Integer.MAX_VALUE;
+        for (Object o : result) {
+            String name;
+            if (o instanceof Object[])
+                name = String.valueOf(((Object[]) o)[0]);
+            else
+                name = String.valueOf(o);
+            assertTrue(
+                "Expected descending length order but '"
+                + name + "' (len=" + name.length()
+                + ") came after length " + prevLen,
+                name.length() <= prevLen);
+            prevLen = name.length();
+        }
+
+        endEm(em);
+    }
+
+    public void testOptionalSelectClause() {
+        EntityManager em = currentEntityManager();
+
+        // JPA 3.2: SELECT clause is optional, defaults to SELECT this
+        String query = "FROM CompUser u WHERE u.age > 30";
+        List result = em.createQuery(query).getResultList();
+
+        assertNotNull(result);
+        // Seetha(36), Shannon(36)
+        assertEquals(2, result.size());
+        assertTrue(result.get(0) instanceof CompUser);
+
+        endEm(em);
+    }
+
+    public void testOptionalIdentificationVariable() {
+        EntityManager em = currentEntityManager();
+
+        // JPA 3.2: identification variable is optional,
+        // implicit "this" variable is available
+        String query =
+            "SELECT this FROM CompUser"
+            + " WHERE this.age > 30";
+        List result = em.createQuery(query).getResultList();
+
+        assertNotNull(result);
+        // Seetha(36), Shannon(36)
+        assertEquals(2, result.size());
+        assertTrue(result.get(0) instanceof CompUser);
+
+        endEm(em);
+    }
+
+    public void testOptionalSelectAndIdentificationVariable() {
+        EntityManager em = currentEntityManager();
+
+        // JPA 3.2: both SELECT clause and identification
+        // variable are optional
+        String query =
+            "FROM CompUser WHERE this.age > 30";
+        List result = em.createQuery(query).getResultList();
+
+        assertNotNull(result);
+        // Seetha(36), Shannon(36)
+        assertEquals(2, result.size());
+        assertTrue(result.get(0) instanceof CompUser);
 
         endEm(em);
     }

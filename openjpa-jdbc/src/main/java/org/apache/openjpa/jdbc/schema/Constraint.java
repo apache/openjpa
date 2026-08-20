@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.schema;
 
+import java.util.Locale;
+
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
 
@@ -247,7 +249,7 @@ public abstract class Constraint extends ReferenceCounter {
 
         String name = getClass().getName();
         name = name.substring(name.lastIndexOf('.') + 1);
-        return "<" + name.toLowerCase() + ">";
+        return "<" + name.toLowerCase(Locale.ROOT) + ">";
     }
 
     @Override

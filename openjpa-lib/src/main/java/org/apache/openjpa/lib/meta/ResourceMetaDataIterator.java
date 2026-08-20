@@ -23,14 +23,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.MultiClassLoader;
 
 /**
@@ -56,24 +53,18 @@ public class ResourceMetaDataIterator implements MetaDataIterator {
     public ResourceMetaDataIterator(String rsrc, ClassLoader loader)
         throws IOException {
         if (loader == null) {
-            MultiClassLoader multi = AccessController
-                .doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
+            MultiClassLoader multi = new MultiClassLoader();
             multi.addClassLoader(MultiClassLoader.SYSTEM_LOADER);
             multi.addClassLoader(MultiClassLoader.THREAD_LOADER);
             multi.addClassLoader(getClass().getClassLoader());
             loader = multi;
         }
 
-        try {
-            Enumeration<URL> e = AccessController.doPrivileged(
-                J2DoPrivHelper.getResourcesAction(loader, rsrc));
-            while (e.hasMoreElements()) {
-                if (_urls == null)
-                    _urls = new ArrayList<>(3);
-                _urls.add(e.nextElement());
-            }
-        } catch (PrivilegedActionException pae) {
-            throw (IOException) pae.getException();
+        Enumeration<URL> e = loader.getResources(rsrc);
+        while (e.hasMoreElements()) {
+            if (_urls == null)
+                _urls = new ArrayList<>(3);
+            _urls.add(e.nextElement());
         }
     }
 
@@ -93,12 +84,7 @@ public class ResourceMetaDataIterator implements MetaDataIterator {
     public InputStream getInputStream() throws IOException {
         if (_url == -1 || _url >= _urls.size())
             throw new IllegalStateException();
-        try {
-            return AccessController.doPrivileged(
-                J2DoPrivHelper.openStreamAction(_urls.get(_url)));
-        } catch (PrivilegedActionException pae) {
-            throw (IOException) pae.getException();
-        }
+        return _urls.get(_url).openStream();
     }
 
     @Override
@@ -106,8 +92,7 @@ public class ResourceMetaDataIterator implements MetaDataIterator {
         if (_url == -1 || _url >= _urls.size())
             throw new IllegalStateException();
         File file = new File(URLDecoder.decode((_urls.get(_url)).getFile()));
-        return (AccessController.doPrivileged(
-                J2DoPrivHelper.existsAction(file))) ? file :null;
+        return file.exists() ? file :null;
     }
 
     @Override

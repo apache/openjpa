@@ -55,6 +55,7 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -481,7 +482,7 @@ public class XMLFormatter implements ObjectFormatter<Document> {
 
     private void encodeManagedType(ManagedType<?> type, Element parent) {
         Document doc = parent.getOwnerDocument();
-        Element root = doc.createElement(type.getPersistenceType().toString().toLowerCase());
+        Element root = doc.createElement(type.getPersistenceType().toString().toLowerCase(Locale.ROOT));
         parent.appendChild(root);
         root.setAttribute(ATTR_NAME, type.getJavaType().getSimpleName());
         List<Attribute<?,?>> attributes = MetamodelHelper.getAttributesInOrder(type);

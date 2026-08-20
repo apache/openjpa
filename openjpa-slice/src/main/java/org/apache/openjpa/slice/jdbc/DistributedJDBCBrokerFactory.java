@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.slice.jdbc;
 
-import java.security.AccessController;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +28,6 @@ import org.apache.openjpa.jdbc.kernel.JDBCBrokerFactory;
 import org.apache.openjpa.kernel.Bootstrap;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.slice.DistributedBroker;
 import org.apache.openjpa.slice.DistributedBrokerFactory;
@@ -100,7 +98,7 @@ public class DistributedJDBCBrokerFactory extends JDBCBrokerFactory
 	@Override
     public Slice addSlice(String name, Map properties) {
 	    Slice slice = ((DistributedJDBCConfigurationImpl)getConfiguration()).addSlice(name, properties);
-        ClassLoader loader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
         synchronizeMappings(loader, (JDBCConfiguration)slice.getConfiguration());
         Collection<Broker> brokers = getOpenBrokers();
         for (Broker broker : brokers) {

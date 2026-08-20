@@ -21,20 +21,15 @@ package org.apache.openjpa.lib.meta;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 
 /**
@@ -93,8 +88,7 @@ public class FileMetaDataIterator implements MetaDataIterator {
             if (filter.matches(rsrc))
                 metas.add(file);
             else {
-                File[] files = (File[]) AccessController
-                    .doPrivileged(J2DoPrivHelper.listFilesAction(file));
+                File[] files = (File[]) file.listFiles();
                 if (files != null)
                     for (File value : files) {
                         scanned = scan(value, filter, rsrc, metas, scanned);
@@ -115,14 +109,8 @@ public class FileMetaDataIterator implements MetaDataIterator {
             throw new NoSuchElementException();
 
         _file = _itr.next();
-        try {
-            File f = AccessController.doPrivileged(J2DoPrivHelper
-                .getAbsoluteFileAction(_file));
-            return AccessController.doPrivileged(
-                J2DoPrivHelper.toURLAction(f));
-        } catch (PrivilegedActionException pae) {
-            throw (MalformedURLException) pae.getException();
-        }
+        File f = _file.getAbsoluteFile();
+        return f.toURI().toURL();
     }
 
     @Override
@@ -130,13 +118,8 @@ public class FileMetaDataIterator implements MetaDataIterator {
         if (_file == null)
             throw new IllegalStateException();
         FileInputStream fis = null;
-        try {
-            fis = AccessController.doPrivileged(
-                J2DoPrivHelper.newFileInputStreamAction(_file));
-            return fis;
-        } catch (PrivilegedActionException pae) {
-            throw (FileNotFoundException) pae.getException();
-        }
+        fis = new FileInputStream(_file);
+        return fis;
     }
 
     @Override
@@ -165,15 +148,9 @@ public class FileMetaDataIterator implements MetaDataIterator {
 
         @Override
         public byte[] getContent() throws IOException {
-            long len = AccessController.doPrivileged(
-                    J2DoPrivHelper.lengthAction(_file));
+            long len = _file.length();
             FileInputStream fin = null;
-            try {
-                fin = AccessController.doPrivileged(
-                    J2DoPrivHelper.newFileInputStreamAction(_file));
-            } catch (PrivilegedActionException pae) {
-                 throw (FileNotFoundException) pae.getException();
-            }
+            fin = new FileInputStream(_file);
             try {
                 byte[] content;
                 if (len <= 0 || len > Integer.MAX_VALUE) {

@@ -27,8 +27,9 @@
         </primary>
     </indexterm>
     <para>
-OpenJPA is Apache's implementation of Java Persistence 2.2 API
-(JSR-338 JPA 2.2) specification for the transparent persistence of Java objects.
+OpenJPA is Apache's implementation of 
+<ulink url="https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2">Java Persistence 3.2 API</ulink> 
+specification for the transparent persistence of Java objects.
 This document provides an overview of the JPA standard and technical
 details on the use of OpenJPA.
     </para>

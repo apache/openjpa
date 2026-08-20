@@ -19,8 +19,6 @@
 package org.apache.openjpa.meta;
 
 import java.io.Serializable;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -29,6 +27,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -48,7 +47,6 @@ import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.Closeable;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.MultiClassLoader;
 import org.apache.openjpa.lib.util.Options;
@@ -110,20 +108,21 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     private SequenceMetaData _sysSeq = null;
     // cache of parsed metadata, oid class to class, and interface class
     // to metadatas
-    private Map<Class<?>, ClassMetaData> _metas = new HashMap<>();
-    private Map<String, ClassMetaData> _metaStringMap = new ConcurrentHashMap<>();
+    private final Map<Class<?>, ClassMetaData> _metas = new HashMap<>();
+    private final Map<String, ClassMetaData> _metaStringMap = new ConcurrentHashMap<>();
     private Map<Class<?>, Class<?>> _oids = Collections.synchronizedMap(new HashMap<>());
     private Map<Class<?>, Collection<Class<?>>> _impls =
         Collections.synchronizedMap(new HashMap<>());
     private Map<Class<?>, Class<?>> _ifaces = Collections.synchronizedMap(new HashMap<>());
-    private Map<String, QueryMetaData> _queries = new HashMap<>();
-    private Map<String, SequenceMetaData> _seqs = new HashMap<>();
+    private final Map<String, QueryMetaData> _queries = new HashMap<>();
+    private final Map<String, EntityGraphMetaData> _entityGraphs = new HashMap<>();
+    private final Map<String, SequenceMetaData> _seqs = new HashMap<>();
     private Map<String, List<Class<?>>> _aliases = Collections.synchronizedMap(new HashMap<>());
     private Map<Class<?>, NonPersistentMetaData> _pawares =
         Collections.synchronizedMap(new HashMap<>());
     private Map<Class<?>, NonPersistentMetaData> _nonMapped =
         Collections.synchronizedMap(new HashMap<>());
-    private Map<Class<?>, Class<?>> _metamodel = Collections.synchronizedMap(new HashMap<>());
+    private final Map<Class<?>, Class<?>> _metamodel = Collections.synchronizedMap(new HashMap<>());
 
     // map of classes to lists of their subclasses
     private Map<Class<?>, Collection<Class<?>>> _subs =
@@ -153,6 +152,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     // system listeners
     private LifecycleEventManager.ListenerList _listeners = new LifecycleEventManager.ListenerList(3);
+    private final Set<String> _systemListenerKeys = new HashSet<>();
     private boolean _systemListenersActivated = false;
 
     protected boolean _preload = false;
@@ -169,6 +169,11 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     // we should skip these types for the enhancement
     private Collection<Class<?>> _typesWithoutEnhancement;
+
+    // Map of entity attribute type -> auto-apply converter class
+    // Populated by scanning @Converter(autoApply=true) classes
+    private final Map<Class<?>, Class<?>> _autoApplyConverters =
+        Collections.synchronizedMap(new HashMap<>());
 
     /**
      * Default constructor. Configure via {@link Configurable}.
@@ -323,10 +328,9 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         }
 
 
-        MultiClassLoader multi = AccessController.doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
-        multi.addClassLoader(AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction()));
-        multi.addClassLoader(AccessController.doPrivileged(J2DoPrivHelper
-            .getClassLoaderAction(MetaDataRepository.class)));
+        MultiClassLoader multi = new MultiClassLoader();
+        multi.addClassLoader(Thread.currentThread().getContextClassLoader());
+        multi.addClassLoader(MetaDataRepository.class.getClassLoader());
         // If a ClassLoader was passed into Persistence.createContainerEntityManagerFactory on the PersistenceUnitInfo
         // we need to add that loader to the chain of classloaders
         ClassResolver resolver = _conf.getClassResolverInstance();
@@ -348,12 +352,12 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         List<Class<?>> loaded = new ArrayList<>();
         for (String c : classes) {
             try {
-                Class<?> cls = AccessController.doPrivileged((J2DoPrivHelper.getForNameAction(c, true, multi)));
+            	Class<?> cls = Class.forName(c, true, multi);
                 loaded.add(cls);
                 // This call may be unnecessary?
                 _factory.load(cls, MODE_ALL, multi);
-            } catch (PrivilegedActionException pae) {
-                throw new MetaDataException(_loc.get("repos-initializeEager-error"), pae);
+            } catch (ClassNotFoundException e) {
+                throw new MetaDataException(_loc.get("repos-initializeEager-error"), e);
             }
         }
         resolveAll(multi);
@@ -572,8 +576,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             // class never registers itself with the system
             if ((_validate & VALIDATE_RUNTIME) != 0) {
                 try {
-                    Class.forName(cls.getName(), true, AccessController.doPrivileged(J2DoPrivHelper
-                        .getClassLoaderAction(cls)));
+                    Class.forName(cls.getName(), true, cls.getClassLoader());
                 } catch (Throwable t) {
                 }
             }
@@ -1023,14 +1026,14 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     }
 
     public FieldMetaData getOrderByField(ClassMetaData meta, String orderBy) {
-        FieldMetaData field = meta.getField(orderBy);
+        FieldMetaData field = findFieldByName(meta, orderBy);
         if (field != null)
             return field;
         int dotIdx = orderBy.indexOf(".");
         if (dotIdx == -1)
             return null;
         String fieldName = orderBy.substring(0, dotIdx);
-        FieldMetaData field1 = meta.getField(fieldName);
+        FieldMetaData field1 = findFieldByName(meta, fieldName);
         if (field1 == null)
             return null;
         ClassMetaData meta1 = field1.getEmbeddedMetaData();
@@ -1038,6 +1041,28 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             return null;
         String mappedBy1 = orderBy.substring(dotIdx + 1);
         return getOrderByField(meta1, mappedBy1);
+    }
+
+    /**
+     * Find a field by name, falling back to case-insensitive matching
+     * and backing member name matching when exact lookup fails.
+     * This handles cases where @OrderBy uses field names that differ
+     * in case from the property names stored in metadata (e.g. "zipcode"
+     * vs "zipCode" for embeddable access type).
+     */
+    private FieldMetaData findFieldByName(ClassMetaData meta, String name) {
+        FieldMetaData field = meta.getField(name);
+        if (field != null)
+            return field;
+        // try case-insensitive match and backing member name match
+        for (FieldMetaData fmd : meta.getFields()) {
+            if (fmd.getName().equalsIgnoreCase(name))
+                return fmd;
+            if (fmd.getBackingMember() != null
+                && fmd.getBackingMember().getName().equalsIgnoreCase(name))
+                return fmd;
+        }
+        return null;
     }
 
     /**
@@ -1217,7 +1242,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         if (_log.isTraceEnabled())
             _log.trace(_loc.get("resolve-identity", oidClass));
 
-        ClassLoader cl = AccessController.doPrivileged(J2DoPrivHelper.getClassLoaderAction(oidClass));
+        ClassLoader cl = oidClass.getClassLoader();
         String className;
         while (oidClass != null && oidClass != Object.class) {
             className = oidClass.getName();
@@ -1466,6 +1491,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             _subs.clear();
             _impls.clear();
             _queries.clear();
+            _entityGraphs.clear();
             _seqs.clear();
             _registered.clear();
             _factory.clear();
@@ -1651,7 +1677,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     /**
      * Updates our data structures with the latest registered classes.
-     * 
+     *
      * This method is synchronized to make sure that all data structures are fully updated
      *  before other threads attempt to call this method
      */
@@ -1685,8 +1711,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             if (_filterRegisteredClasses) {
                 Log log = (_conf == null) ? null : _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
                 ClassLoader loadCL = (envLoader != null) ?
-                        envLoader :
-                        AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
+                        envLoader : Thread.currentThread().getContextClassLoader();
 
                 try {
                     Class<?> classFromAppClassLoader = Class.forName(aClass.getName(), true, loadCL);
@@ -1875,7 +1900,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     /**
      * Add the given value to the collection cached in the given map under the given key.
      */
-    private void addToCollection(Map<Class<?>, Collection<Class<?>>> map, 
+    private void addToCollection(Map<Class<?>, Collection<Class<?>>> map,
             Class<?> key, Class<?> value, boolean inheritance) {
         if (_locking) {
             synchronized (map) {
@@ -1886,7 +1911,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         }
     }
 
-    private void addToCollectionInternal(Map<Class<?>, Collection<Class<?>>> map, 
+    private void addToCollectionInternal(Map<Class<?>, Collection<Class<?>>> map,
             Class<?> key, Class<?> value, boolean inheritance) {
         Collection<Class<?>> coll = map.get(key);
         if (coll == null) {
@@ -1935,8 +1960,8 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             return _metamodel.get(entity);
         String m2 = _factory.getMetaModelClassName(entity.getName());
         try {
-            ClassLoader loader = AccessController.doPrivileged(J2DoPrivHelper.getClassLoaderAction(entity));
-            Class<?> m2cls = AccessController.doPrivileged(J2DoPrivHelper.getForNameAction(m2, true, loader));
+            ClassLoader loader = entity.getClassLoader();
+            Class<?> m2cls = Class.forName(m2, true, loader);
             _metamodel.put(entity, m2cls);
             return m2cls;
         } catch (Throwable t) {
@@ -2191,6 +2216,36 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         return key;
     }
 
+    // /////////////////////////
+    // Entity graph metadata
+    // /////////////////////////
+
+    /**
+     * Add entity graph metadata parsed from annotations.
+     */
+    public void addEntityGraphMetaData(String name, EntityGraphMetaData meta) {
+        if (_locking) {
+            synchronized (this) {
+                _entityGraphs.put(name, meta);
+            }
+        } else {
+            _entityGraphs.put(name, meta);
+        }
+    }
+
+    /**
+     * Return all entity graph metadata.
+     */
+    public Collection<EntityGraphMetaData> getEntityGraphMetaDatas() {
+        if (_locking) {
+            synchronized (this) {
+                return new ArrayList<>(_entityGraphs.values());
+            }
+        } else {
+            return new ArrayList<>(_entityGraphs.values());
+        }
+    }
+
     // ///////////////////
     // Sequence metadata
     // ///////////////////
@@ -2365,46 +2420,71 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      * Add the given system lifecycle listener.
      */
     public void addSystemListener(Object listener) {
+        addSystemListener(listener, null);
+    }
+
+    /**
+     * Add a system lifecycle listener with an optional deduplication key.
+     * If a key is provided and a listener with the same key was already
+     * registered, the duplicate is silently skipped.
+     */
+    public void addSystemListener(Object listener, String key) {
         if (_locking) {
             synchronized (this) {
-                // copy to avoid issues with ListenerList and avoid unncessary
-                // locking on the list during runtime
-                LifecycleEventManager.ListenerList listeners = new LifecycleEventManager.ListenerList(_listeners);
-                listeners.add(listener);
-                _listeners = listeners;
-                _systemListenersActivated = true;
+                addSystemListenerInternal(listener, key);
             }
         } else {
-            LifecycleEventManager.ListenerList listeners = new LifecycleEventManager.ListenerList(_listeners);
-            listeners.add(listener);
-            _listeners = listeners;
-            _systemListenersActivated = true;
+            addSystemListenerInternal(listener, key);
         }
+    }
+
+    private void addSystemListenerInternal(Object listener, String key) {
+        if (key != null && !_systemListenerKeys.add(key)) {
+            return;
+        }
+        LifecycleEventManager.ListenerList listeners = new LifecycleEventManager.ListenerList(_listeners);
+        listeners.add(listener);
+        _listeners = listeners;
+        _systemListenersActivated = true;
     }
 
     /**
      * Remove the given system lifecycle listener.
      */
     public boolean removeSystemListener(Object listener) {
+        return removeSystemListener(listener, null);
+    }
+
+    /**
+     * Remove the given system lifecycle listener with an optional deduplication key.
+     * This method should be used if system listeners were added with
+     * addSystemListener(Object listener, String key)
+     */
+    public boolean removeSystemListener(Object listener, String key) {
         if (_locking) {
             synchronized (this) {
-                return removeSystemListenerInternal(listener);
+                return removeSystemListenerInternal(listener, key);
             }
         } else {
-            return removeSystemListenerInternal(listener);
+            return removeSystemListenerInternal(listener, key);
         }
     }
 
-    private boolean removeSystemListenerInternal(Object listener) {
-            if (!_listeners.contains(listener))
-                return false;
+    private boolean removeSystemListenerInternal(Object listener, String key) {
+        if (key != null && !_systemListenerKeys.remove(key)) {
+            // there is no such key ...
+            return false;
+        }
+        if (!_listeners.contains(listener)) {
+            return false;
+        }
 
-            // copy to avoid issues with ListenerList and avoid unncessary
-            // locking on the list during runtime
-            LifecycleEventManager.ListenerList listeners = new LifecycleEventManager.ListenerList(_listeners);
-            listeners.remove(listener);
-            _listeners = listeners;
-            return true;
+        // copy to avoid issues with ListenerList and avoid unncessary
+        // locking on the list during runtime
+        LifecycleEventManager.ListenerList listeners = new LifecycleEventManager.ListenerList(_listeners);
+        listeners.remove(listener);
+        _listeners = listeners;
+        return true;
     }
 
     /**
@@ -2441,7 +2521,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      */
     private static class QueryKey implements Serializable {
 
-        
+
         private static final long serialVersionUID = 1L;
         public String clsName;
         public String name;
@@ -2457,10 +2537,9 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         public boolean equals(Object obj) {
             if (obj == this)
                 return true;
-            if (!(obj instanceof QueryKey))
+            if (!(obj instanceof QueryKey qk))
                 return false;
 
-            QueryKey qk = (QueryKey) obj;
             return Objects.equals(clsName, qk.clsName) && Objects.equals(name, qk.name);
         }
     }
@@ -2544,10 +2623,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         if (conf == null)
             return false;
         Options o = Configurations.parseProperties(Configurations.getProperties(conf.getMetaDataRepository()));
-        if (o.getBooleanProperty(PRELOAD_STR) || o.getBooleanProperty(PRELOAD_STR.toLowerCase())) {
-            return true;
-        }
-        return false;
+        return o.getBooleanProperty(PRELOAD_STR) || o.getBooleanProperty(PRELOAD_STR.toLowerCase(Locale.ROOT));
     }
 
     /**
@@ -2583,5 +2659,32 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             }
         }
         return cmd;
+    }
+
+    /**
+     * Register an auto-apply converter. The converter will be automatically
+     * applied to fields whose type matches the converter's entity attribute type.
+     *
+     * @param entityAttributeType the Java type that the converter handles
+     * @param converterClass the converter class
+     */
+    public void addAutoApplyConverter(Class<?> entityAttributeType,
+        Class<?> converterClass) {
+        _autoApplyConverters.put(entityAttributeType, converterClass);
+    }
+
+    /**
+     * Return the auto-apply converter for the given entity attribute type,
+     * or null if none.
+     */
+    public Class<?> getAutoApplyConverter(Class<?> entityAttributeType) {
+        return _autoApplyConverters.get(entityAttributeType);
+    }
+
+    /**
+     * Return all registered auto-apply converters.
+     */
+    public Map<Class<?>, Class<?>> getAutoApplyConverters() {
+        return _autoApplyConverters;
     }
 }

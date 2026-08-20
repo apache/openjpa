@@ -46,7 +46,7 @@ public class TestToOneLazyXmlOverride extends SQLListenerTestCase {
             em.clear();
             resetSQL();
 
-            em.find(XmlOverrideToOneEntity.class, x.getId());
+            em.find(XmlOverrideToOneEntity.class, (int) x.getId());
 
             assertTrue(sql.size() == 1);
             String lastSql = sql.get(0);

@@ -232,20 +232,19 @@ public class TestMappedByKeyMaps
         pm.close();
 
         pm = (OpenJPAEntityManager)currentEntityManager();
-        OpenJPAQuery q = pm.createNativeQuery("stringField == 'h2'",
-                HelperPC.class);
+        OpenJPAQuery q = (OpenJPAQuery) pm.createNativeQuery("stringField == 'h2'", HelperPC.class);
         //FIXME jthomas
         //q.setUnique(true);
         HelperPC h2 = (HelperPC) q.getSingleResult();
 
-        q = pm.createNativeQuery("helpers.containsKey ('h2')",pc.getClass());
+        q = (OpenJPAQuery) pm.createNativeQuery("helpers.containsKey ('h2')",pc.getClass());
         //FIXME jthomas
         //q.setUnique(true);
         pc = (MappedByMapPC) q.getSingleResult();
         assertEquals(3, pc.getHelpers().size());
         assertEquals(h2, pc.getHelpers().get("h2"));
 
-        q = pm.createNativeQuery("helpers.containsValue (:h2)",pc.getClass());
+        q = (OpenJPAQuery) pm.createNativeQuery("helpers.containsValue (:h2)",pc.getClass());
         //FIXME  jthomas
         //q.setUnique(true);
         pc = (MappedByMapPC) q.getSingleResult();

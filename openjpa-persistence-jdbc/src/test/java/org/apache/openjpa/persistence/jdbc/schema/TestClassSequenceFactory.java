@@ -32,6 +32,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -71,7 +72,7 @@ public class TestClassSequenceFactory extends BaseJDBCTest{
         if (!adjustConfiguration(conf))
             return;
 
-        String driver = conf.getConnectionDriverName().toLowerCase();
+        String driver = conf.getConnectionDriverName().toLowerCase(Locale.ROOT);
         String [] sql = null;
 
         if (driver.indexOf("oracle") >= 0) {
@@ -164,7 +165,7 @@ public class TestClassSequenceFactory extends BaseJDBCTest{
         String driver = conf.getConnectionDriverName();
         if (driver == null)
             return false;
-        driver = driver.toLowerCase();
+        driver = driver.toLowerCase(Locale.ROOT);
         if (driver.indexOf("oracle") >= 0) {
             conf.setSequence(ClassTableJDBCSeq.class.getName());
             return true;

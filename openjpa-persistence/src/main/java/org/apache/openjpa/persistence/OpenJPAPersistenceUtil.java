@@ -34,8 +34,33 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.ImplHelper;
+import org.apache.openjpa.util.OpenJPAId;
 
+/**
+ *
+ */
 public class OpenJPAPersistenceUtil {
+
+    /**
+     * Resolves an entity object to its PersistenceCapable representation.
+     * Handles both enhanced entities (which directly implement PersistenceCapable)
+     * and unenhanced entities (which are wrapped via ReflectingPersistenceCapable).
+     *
+     * @param entity the entity object
+     * @param emf optional entity manager factory for configuration context
+     * @return the PersistenceCapable wrapper, or null if not resolvable
+     */
+    private static PersistenceCapable toPC(Object entity, OpenJPAEntityManagerFactory emf) {
+        if (entity == null) {
+            return null;
+        }
+        if (entity instanceof PersistenceCapable) {
+            return (PersistenceCapable) entity;
+        }
+        // For unenhanced entities, look up or create the wrapper
+        Object ctx = (emf != null) ? emf.getConfiguration() : null;
+        return ImplHelper.toPersistenceCapable(entity, ctx);
+    }
 
     /**
      * Returns the identifier of the persistent entity.
@@ -57,19 +82,44 @@ public class OpenJPAPersistenceUtil {
     public static Object getIdentifier(OpenJPAEntityManagerFactory emf,
         Object entity) {
 
-        if (entity instanceof PersistenceCapable) {
-            PersistenceCapable pc = (PersistenceCapable)entity;
+        PersistenceCapable pc = toPC(entity, emf);
+        if (pc != null) {
             // Per contract, if not managed by the owning emf, return null.
             if (emf != null) {
-                if (!isManagedBy(emf, pc)) {
+                if (!isManagedBy(emf, entity)) {
                     return null;
                 }
             }
             StateManager sm = pc.pcGetStateManager();
 
-            if (sm != null && sm instanceof OpenJPAStateManager) {
-                OpenJPAStateManager osm = (OpenJPAStateManager)sm;
-                return osm.getObjectId();
+            if (sm != null && sm instanceof OpenJPAStateManager osm) {
+                Object oid = osm.getObjectId();
+                // Unwrap OpenJPA internal ID types to return the raw ID value
+                if (oid instanceof OpenJPAId) {
+                    return ((OpenJPAId) oid).getIdObject();
+                }
+                return oid;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get version of a persistent entity managed by one of the
+     * entity managers of the specified entity manager factory.
+     *
+     * @param emf the entity manager factory presumed to contain the given entity
+     * @param entity the entity whose version is desired
+     * @return the version of the entity, or null if it does not have a version field
+     * or if it was not persisted yet.
+     *
+     */
+    public static Object getVersion(OpenJPAEntityManagerFactory emf, Object entity) {
+        PersistenceCapable pc = toPC(entity, emf);
+        if (pc != null) {
+            StateManager sm = pc.pcGetStateManager();
+            if (sm != null && sm instanceof OpenJPAStateManager osm) {
+                return osm.getVersion();
             }
         }
         return null;
@@ -79,8 +129,8 @@ public class OpenJPAPersistenceUtil {
      * Determines whether the specified state manager is managed by an open
      * broker within the persistence unit of the provided EMF instance.
      * @param emf OpenJPAEntityManagerFactory
-     * @param sm StateManager
-     * @return true if this state manager is managed by a broker within
+     * @param entity the entity to check
+     * @return true if this entity is managed by a broker within
      * this persistence unit.
      */
     public static boolean isManagedBy(OpenJPAEntityManagerFactory emf, Object entity) {
@@ -88,22 +138,60 @@ public class OpenJPAPersistenceUtil {
         if (emf == null || !emf.isOpen() || !ImplHelper.isManageable(entity)) {
             return false;
         }
+        // Resolve to PersistenceCapable (handles unenhanced entities)
+        PersistenceCapable pc = toPC(entity, emf);
+        if (pc == null) {
+            return false;
+        }
         // Assert the context is a broker
-        PersistenceCapable pc = (PersistenceCapable)entity;
-        if (!(pc.pcGetGenericContext() instanceof Broker)) {
+        if (!(pc.pcGetGenericContext() instanceof Broker broker)) {
             return false;
         }
         // Assert the broker is available and open
-        Broker broker = (Broker)pc.pcGetGenericContext();
         if (broker == null || broker.isClosed()) {
             return false;
         }
         // Assert the emf associated with the PC is the same as the provided emf
         OpenJPAEntityManagerFactory eemf = JPAFacadeHelper.toEntityManagerFactory(broker.getBrokerFactory());
-        if (eemf == emf && eemf.isOpen()) {
-            return true;
+        return eemf == emf && eemf.isOpen();
+    }
+
+    /**
+     * Loads the given entity from it's entity manager if it is managed.
+     *
+     * @param emf the entity manager factory that contains the manager of the entity
+     * @param entity the entity that must be loaded
+     */
+    public static void load(OpenJPAEntityManagerFactory emf, Object entity) {
+        if (isManagedBy(emf, entity)) {
+            PersistenceCapable pc = toPC(entity, emf);
+            if (pc != null && pc.pcGetGenericContext() instanceof Broker broker && !broker.isClosed()) {
+                JPAFacadeHelper.toEntityManager(broker).refresh(entity);
+            }
         }
-        return false;
+    }
+
+    /**
+     * Loads the given entity attribute from it's entity manager if it is managed.
+     *
+     * @param emf the entity manager factory that contains the manager of the entity
+     * @param entity the entity whose attribute has to be loaded
+     * @param attributeName the attribute to be loaded
+     */
+    public static void load(OpenJPAEntityManagerFactory emf, Object entity, String attributeName) {
+        if (entity == null || !isManagedBy(emf, entity)) {
+            return;
+        }
+        PersistenceCapable pc = toPC(entity, emf);
+        if (pc != null) {
+            StateManager sm = pc.pcGetStateManager();
+            FieldMetaData field = null;
+            if (sm != null
+                    && sm instanceof OpenJPAStateManager osm
+                    && (field = osm.getMetaData().getField(attributeName)) != null) {
+                sm.accessingField(field.getIndex());
+            }
+        }
     }
 
     /**
@@ -125,9 +213,9 @@ public class OpenJPAPersistenceUtil {
             return LoadState.UNKNOWN;
         }
 
-        // If the object has a state manager, call it directly.
-        if (obj instanceof PersistenceCapable) {
-            PersistenceCapable pc = (PersistenceCapable)obj;
+        // Resolve to PersistenceCapable (handles unenhanced entities)
+        PersistenceCapable pc = toPC(obj, null);
+        if (pc != null) {
             StateManager sm = pc.pcGetStateManager();
             if (sm != null && sm instanceof OpenJPAStateManager) {
                 return isLoaded((OpenJPAStateManager)sm, attr, null);
@@ -136,6 +224,20 @@ public class OpenJPAPersistenceUtil {
         return LoadState.UNKNOWN;
     }
 
+    @SuppressWarnings("unchecked")
+    public static <T> Class<T> getClass(OpenJPAEntityManagerFactory emf, Object entity) {
+        if (entity != null) {
+            PersistenceCapable pc = toPC(entity, emf);
+            if (pc != null) {
+                StateManager sm = pc.pcGetStateManager();
+                if (sm != null && sm instanceof OpenJPAStateManager osm) {
+                    return (Class<T>) osm.getMetaData().getDescribedType();
+                }
+            }
+        }
+        return null;
+    }
+    
     private static LoadState isLoaded(OpenJPAStateManager sm, String attr,
         HashSet<OpenJPAStateManager> pcs) {
         boolean isLoaded = true;
@@ -313,11 +415,10 @@ public class OpenJPAPersistenceUtil {
     }
 
     private static OpenJPAStateManager getStateManager(Object obj) {
-        if (obj == null || !(obj instanceof PersistenceCapable)) {
+        if (obj == null || !(obj instanceof PersistenceCapable pc)) {
             return null;
         }
 
-        PersistenceCapable pc = (PersistenceCapable)obj;
         StateManager sm = pc.pcGetStateManager();
         if (sm == null || !(sm instanceof OpenJPAStateManager)) {
             return null;

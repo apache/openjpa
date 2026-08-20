@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_26_ex2;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -102,7 +103,7 @@ public class TestSpec10_1_26_Ex2 extends SQLListenerTestCase {
             setCandidate(q, Department.class);
         rs = q.getResultList();
         if (!inMemory)
-            assertTrue(sql.get(0).toUpperCase().indexOf(" GROUP BY ") != -1);
+            assertTrue(sql.get(0).toUpperCase(Locale.ROOT).indexOf(" GROUP BY ") != -1);
 
         em.close();
     }

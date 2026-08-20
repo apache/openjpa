@@ -140,6 +140,11 @@ public class PCSubclassValidator {
         // just considers accessor methods for now.
         FieldMetaData[] fmds = meta.getFields();
         for (FieldMetaData fmd : fmds) {
+            // Skip fields that use field access — they don't need
+            // getter/setter interception for dirty tracking
+            if (AccessCode.isField(fmd.getAccessType())) {
+                continue;
+            }
             Method getter = getBackingMember(fmd);
             if (getter == null) {
                 addError(loc.get("subclasser-no-getter",
@@ -177,13 +182,33 @@ public class PCSubclassValidator {
         }
 
         Method getter = Reflection.findGetter(meta.getDescribedType(), fmd.getName(), false);
-        if (getter != null) {
+        if (getter != null && !AccessCode.isField(fmd.getAccessType())) {
             fmd.backingMember(getter);
         }
         return getter;
     }
 
     private Method setterForField(FieldMetaData fmd) {
+        // If the backing member is a getter method, derive setter name from it
+        // to preserve the original case (e.g. getdescription -> setdescription)
+        Member backingMember = fmd.getBackingMember();
+        if (backingMember instanceof Method) {
+            String getterName = backingMember.getName();
+            String setterName = null;
+            if (getterName.startsWith("get")) {
+                setterName = "set" + getterName.substring(3);
+            } else if (getterName.startsWith("is")) {
+                setterName = "set" + getterName.substring(2);
+            }
+            if (setterName != null) {
+                try {
+                    return fmd.getDeclaringType().getDeclaredMethod(
+                        setterName, fmd.getDeclaredType());
+                } catch (NoSuchMethodException e) {
+                    // fall through to capitalize approach
+                }
+            }
+        }
         try {
             return fmd.getDeclaringType().getDeclaredMethod("set" + StringUtil.capitalize(fmd.getName()), fmd.getDeclaredType());
         }

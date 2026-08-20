@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.embed.lazy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import jakarta.persistence.EntityManager;
@@ -138,13 +139,13 @@ public class TestLazyEmbeddable extends AbstractPersistenceTestCase {
     private boolean selectContains(String table, List<String> sql, String...cols) {
         boolean foundSelect = false;
         for (String s: sql) {
-            String stmt = s.toUpperCase();
+            String stmt = s.toUpperCase(Locale.ROOT);
             if (!stmt.startsWith("SELECT") && !stmt.contains(table)) {
                 continue;
             }
             foundSelect = true;
             for (String col : cols) {
-                String ucol = col.toUpperCase();
+                String ucol = col.toUpperCase(Locale.ROOT);
                 if (!stmt.contains(ucol)) {
                    return false;
                 }

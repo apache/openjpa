@@ -19,7 +19,6 @@
 package org.apache.openjpa.datacache;
 
 import java.lang.reflect.Array;
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,7 +28,6 @@ import java.util.Set;
 
 import org.apache.openjpa.lib.conf.PluginListValue;
 import org.apache.openjpa.lib.conf.Value;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.UserException;
 
@@ -86,10 +84,9 @@ public class PartitionedDataCache extends ConcurrentDataCache {
      */
     public void setPartitionType(String type) throws Exception {
         Value value = conf.getValue("DataCache");
-        ClassLoader ctxLoader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
+        ClassLoader ctxLoader = Thread.currentThread().getContextClassLoader();
         ClassLoader loader = conf.getClassResolverInstance().getClassLoader(null, ctxLoader);
-        _type = (Class<? extends DataCache>) AccessController.doPrivileged(
-                J2DoPrivHelper.getForNameAction(value.unalias(type), true, loader));
+        _type = (Class<? extends DataCache>) Class.forName(value.unalias(type), true, loader);
     }
 
     /**

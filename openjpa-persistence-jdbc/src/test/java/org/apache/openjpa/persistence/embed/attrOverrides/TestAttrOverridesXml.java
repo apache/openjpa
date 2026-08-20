@@ -146,7 +146,7 @@ public class TestAttrOverridesXml extends SQLListenerTestCase {
     public void findObj1() {
         EntityManager em = emf.createEntityManager();
         CustomerXml p = em.find(CustomerXml.class, 1);
-        Assert.assertEquals(p.getId(), new Integer(1));
+        Assert.assertEquals(p.getId(), Integer.valueOf(1));
         Assert.assertEquals(p.getAddress().getCity(), "city_1");
         Assert.assertEquals(p.getAddress().getStreet(), "street_1");
         Assert.assertEquals(p.getAddress().getState(), "state_1");

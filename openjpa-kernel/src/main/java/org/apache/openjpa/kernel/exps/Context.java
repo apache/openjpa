@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.openjpa.kernel.jpql.JPQLExpressionBuilder.ParsedJPQL;
@@ -34,7 +35,7 @@ import org.apache.openjpa.meta.ClassMetaData;
  */
 public class Context implements Serializable {
 
-    
+
     private static final long serialVersionUID = 1L;
     public final ParsedJPQL parsed;
     public ClassMetaData meta;
@@ -146,7 +147,7 @@ public class Context implements Serializable {
     }
 
     public void addVariable(String id, Value var) {
-        variables.put(id.toLowerCase(), var);
+        variables.put(id.toLowerCase(Locale.ROOT), var);
     }
 
     public Map<String,Value> getVariables() {
@@ -158,12 +159,12 @@ public class Context implements Serializable {
     }
 
     public void addSchema(String id, ClassMetaData meta) {
-        schemas.put(id.toLowerCase(), meta);
+        schemas.put(id.toLowerCase(Locale.ROOT), meta);
     }
 
     public ClassMetaData getSchema(String id) {
         if (id != null)
-            return schemas.get(id.toLowerCase());
+            return schemas.get(id.toLowerCase(Locale.ROOT));
         return null;
     }
 
@@ -180,7 +181,7 @@ public class Context implements Serializable {
      */
     public Value getVariable(String alias) {
         Value variable = alias == null ? null
-            : variables.get(alias.toLowerCase());
+            : variables.get(alias.toLowerCase(Locale.ROOT));
         return variable;
     }
 

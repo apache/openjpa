@@ -33,9 +33,12 @@ import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Fetch;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Nulls;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Selection;
+import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.PluralAttribute;
 import jakarta.persistence.metamodel.Type.PersistenceType;
 
 import org.apache.openjpa.kernel.FillStrategy;
@@ -43,6 +46,7 @@ import org.apache.openjpa.kernel.QueryOperations;
 import org.apache.openjpa.kernel.ResultShape;
 import org.apache.openjpa.kernel.exps.AbstractExpressionBuilder;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
+import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -90,8 +94,14 @@ class CriteriaExpressionBuilder {
         for (Root<?> root : q.getRoots()) {
             metas.add(((AbstractManagedType<?>)root.getModel()).meta);
             for (Join<?,?> join : root.getJoins()) {
-                Class<?> cls = join.getAttribute().getJavaType();
-                if (join.getAttribute().isAssociation()) {
+                Attribute<?,?> attr = join.getAttribute();
+                Class<?> cls = attr.getJavaType();
+                // For plural attributes (Collection/List/Set/Map), use the
+                // element/value type for metadata lookup, not the collection type
+                if (attr instanceof PluralAttribute) {
+                    cls = ((PluralAttribute<?,?,?>)attr).getElementType().getJavaType();
+                }
+                if (attr.isAssociation()) {
                     ClassMetaData meta = metamodel.getRepository().getMetaData(cls, null, true);
                     PersistenceType type = MetamodelImpl.getPersistenceType(meta);
                     if (type == PersistenceType.ENTITY || type == PersistenceType.EMBEDDABLE)
@@ -133,6 +143,7 @@ class CriteriaExpressionBuilder {
         exps.orderingClauses = new String[ordercount];
         exps.orderingAliases = new String[ordercount];
         exps.ascending = new boolean[ordercount];
+        exps.nullPrecedence = new int[ordercount];
         for (int i = 0; i < ordercount; i++) {
             OrderImpl order = (OrderImpl)orders.get(i);
             ExpressionImpl<?> expr = order.getExpression();
@@ -143,6 +154,13 @@ class CriteriaExpressionBuilder {
             exps.orderingClauses[i] = "";
             val.setAlias(alias);
             exps.ascending[i] = order.isAscending();
+            Nulls nulls = order.getNullPrecedence();
+            if (nulls == Nulls.FIRST)
+                exps.nullPrecedence[i] = QueryExpressions.NULLS_FIRST;
+            else if (nulls == Nulls.LAST)
+                exps.nullPrecedence[i] = QueryExpressions.NULLS_LAST;
+            else
+                exps.nullPrecedence[i] = QueryExpressions.NULLS_DEFAULT;
             exp2Vals.put(expr, val);
         }
         return exp2Vals;
@@ -214,6 +232,25 @@ class CriteriaExpressionBuilder {
         if (where != null) {
             filter = Expressions.and(factory, where.toKernelExpression(factory, q), filter);
         }
+
+        // Add type-restriction predicates for any treated roots used in the query.
+        // TREAT(root as SubType) implies that only instances of SubType should be included.
+        Set<RootImpl.TreatedRoot<?>> treatedRoots = q.getTreatedRoots();
+        if (treatedRoots != null) {
+            for (RootImpl.TreatedRoot<?> treated : treatedRoots) {
+                Value originalPath = treated.getOriginal().toValue(factory, q);
+                Value typeExpr = factory.type(originalPath);
+                Class<?> targetType = treated.getTreatedType();
+                Value typeLiteral = factory.newTypeLiteral(targetType, Literal.TYPE_CLASS);
+                ClassMetaData targetMeta = q.getMetamodel().getRepository()
+                    .getMetaData(targetType, null, true);
+                typeLiteral.setMetaData(targetMeta);
+                org.apache.openjpa.kernel.exps.Expression typeCheck =
+                    factory.equal(typeExpr, typeLiteral);
+                filter = Expressions.and(factory, typeCheck, filter);
+            }
+        }
+
         if (filter == null) {
             filter = factory.emptyExpression();
         }

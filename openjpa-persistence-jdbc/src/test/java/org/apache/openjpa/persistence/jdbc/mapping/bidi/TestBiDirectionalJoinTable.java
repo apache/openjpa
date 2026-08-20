@@ -23,6 +23,8 @@ import java.util.Set;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 /**
@@ -111,8 +113,8 @@ public class TestBiDirectionalJoinTable extends SQLListenerTestCase {
 		em.getTransaction().commit();
 
 		assertEquals(0, count(Person.class));
-		assertEquals(0, count(Address.class));
-		assertSQL("DELETE FROM .*J_PERSON_ADDRESSES .*");
+		// JPA 3.2 spec section 4.10: bulk DELETE does not cascade
+		assertEquals(ADDRESS_COUNT, count(Address.class));
 	}
 
 	public void testBulkDelete() {
@@ -123,8 +125,8 @@ public class TestBiDirectionalJoinTable extends SQLListenerTestCase {
 		em.getTransaction().commit();
 
 		assertEquals(0, count(Person.class));
-		assertEquals(0, count(Address.class));
-		assertSQL("DELETE FROM .*J_PERSON_ADDRESSES .*");
+		// JPA 3.2 spec section 4.10: bulk DELETE does not cascade
+		assertEquals(ADDRESS_COUNT, count(Address.class));
 	}
 
 	public void testBreakingRelationCausesDeleteFromJoinTable() {
@@ -163,7 +165,16 @@ public class TestBiDirectionalJoinTable extends SQLListenerTestCase {
 		}
 		em.persist(person);
 		em.getTransaction().commit();
-		assertEquals(1+2*ADDRESS_COUNT, sql.size());
+		DBDictionary dict = getDbDictionary(emf);
+		int size = sql.size();
+		if (dict instanceof OracleDictionary) {
+			// Oracle uses prepared statements with multiple inserts or deletes, so the number
+			// of SQL statements is either 3 or 4, depending on the order of execution
+			assertTrue("Should be 3 or 4", size == 3 || size == 4);
+		} else {
+			int expected = 1 + 2 * ADDRESS_COUNT;
+			assertEquals(expected, size);
+		}
 	}
 
 }

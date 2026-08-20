@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.kernel;
 
 
 import java.sql.CallableStatement;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -45,6 +46,12 @@ public class XROP implements BatchedResultObjectProvider {
     private final JDBCStore store;
     // Result of first execution
     private boolean executionResult;
+    // OUT parameter indices that may hold REF_CURSOR result sets
+    private int[] _cursorOutParams;
+    // Connection used by the statement, released when this provider is closed
+    private Connection _conn;
+    // Whether auto-commit was switched off to keep a REF_CURSOR open
+    private boolean _resetAutoCommit;
 
     public XROP(List<QueryResultMapping> mappings, List<Class<?>> classes,
                 JDBCStore store, JDBCFetchConfiguration fetch,
@@ -54,6 +61,30 @@ public class XROP implements BatchedResultObjectProvider {
         this.stmt = stmt;
         this.fetch = fetch;
         this.store = store;
+    }
+
+    /**
+     * Set OUT parameter positions (1-based) that may contain REF_CURSOR
+     * result sets. Used on PostgreSQL where cursors are returned as OUT
+     * parameters rather than via getResultSet().
+     *
+     * @since 4.2.0
+     */
+    public void setCursorOutParams(int[] positions) {
+        _cursorOutParams = positions;
+    }
+
+    /**
+     * Hands over the connection used by the underlying statement. The connection is
+     * kept open as long as this provider is in use, because a REF_CURSOR is only valid
+     * within the transaction that produced it. It is released by {@link #close()},
+     * which also restores the auto-commit state if it had been switched off.
+     *
+     * @since 4.2.0
+     */
+    public void setConnection(Connection conn, boolean resetAutoCommit) {
+        _conn = conn;
+        _resetAutoCommit = resetAutoCommit;
     }
 
     /**
@@ -71,6 +102,22 @@ public class XROP implements BatchedResultObjectProvider {
     @Override
     public void open() throws Exception {
         executionResult = stmt.execute();
+        // On PostgreSQL, REF_CURSOR procedures return false from execute()
+        // but the result set is available from OUT parameters.
+        // Check if any OUT param actually holds a ResultSet.
+        if (!executionResult && _cursorOutParams != null) {
+            for (int pos : _cursorOutParams) {
+                try {
+                    Object out = stmt.getObject(pos);
+                    if (out instanceof ResultSet) {
+                        executionResult = true;
+                        break;
+                    }
+                } catch (SQLException e) {
+                    // ignore
+                }
+            }
+        }
     }
 
     /**
@@ -84,6 +131,20 @@ public class XROP implements BatchedResultObjectProvider {
     @Override
     public ResultObjectProvider getResultObject() throws Exception {
         ResultSet rs = stmt.getResultSet();
+        // On PostgreSQL, REF_CURSOR results come from OUT parameters
+        if (rs == null && _cursorOutParams != null) {
+            for (int pos : _cursorOutParams) {
+                try {
+                    Object out = stmt.getObject(pos);
+                    if (out instanceof ResultSet) {
+                        rs = (ResultSet) out;
+                        break;
+                    }
+                } catch (SQLException e) {
+                    // ignore — parameter may not be a cursor
+                }
+            }
+        }
         if (rs == null)
             return null;
 
@@ -111,11 +172,27 @@ public class XROP implements BatchedResultObjectProvider {
 
 
     /**
-     * Closes the underlying statement.
+     * Closes the underlying statement and releases the connection, committing and
+     * restoring auto-commit if it had been switched off to keep a REF_CURSOR open.
      */
     @Override
     public void close() throws Exception {
-        stmt.close();
+        try {
+            stmt.close();
+        } finally {
+            Connection conn = _conn;
+            if (conn != null) {
+                _conn = null;
+                try {
+                    if (_resetAutoCommit) {
+                        conn.commit();
+                        conn.setAutoCommit(true);
+                    }
+                } finally {
+                    conn.close();
+                }
+            }
+        }
     }
 
     /**

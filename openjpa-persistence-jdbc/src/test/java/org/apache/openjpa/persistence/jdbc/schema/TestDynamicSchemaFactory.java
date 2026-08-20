@@ -28,6 +28,7 @@
 package org.apache.openjpa.persistence.jdbc.schema;
 
 import java.sql.Types;
+import java.util.Locale;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
@@ -64,7 +65,7 @@ public class TestDynamicSchemaFactory
 
     public void testClassMapping() {
         Table table = _mapping.getTable();
-        assertEquals("MAPPINGTEST1", table.getName().toUpperCase());
+        assertEquals("MAPPINGTEST1", table.getName().toUpperCase(Locale.ROOT));
         assertEquals(1, table.getPrimaryKey().getColumns().length);
         int type = table.getPrimaryKey().getColumns()[0].getType();
         assertEquals(Schemas.getJDBCName(type), Types.INTEGER, type);
@@ -74,13 +75,13 @@ public class TestDynamicSchemaFactory
         Version vers = _mapping.getVersion();
         assertNotNull(vers);
         assertEquals("MAPPINGTEST1", vers.getColumns()[0].getTable().
-            getName().toUpperCase());
+            getName().toUpperCase(Locale.ROOT));
         assertEquals(Types.INTEGER, vers.getColumns()[0].getType());
 
         Discriminator cls = _mapping.getDiscriminator();
         assertNotNull(cls);
         assertEquals("MAPPINGTEST1", cls.getColumns()[0].getTable().
-            getName().toUpperCase());
+            getName().toUpperCase(Locale.ROOT));
         assertEquals(Types.VARCHAR, cls.getColumns()[0].getType());
     }
 

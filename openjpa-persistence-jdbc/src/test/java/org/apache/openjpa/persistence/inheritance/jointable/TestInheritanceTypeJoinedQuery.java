@@ -250,7 +250,7 @@ public class TestInheritanceTypeJoinedQuery  extends SQLListenerTestCase {
         q = em.createQuery(qS);
         q.setParameter(1, contractor);
         for (Object[] aResult: (List <Object[]>) q.getResultList()) {
-            System.out.println(((Department)aResult[0]).getOID() + ", " + ((Contractor)aResult[1]).getOID());
+            //System.out.println(((Department)aResult[0]).getOID() + ", " + ((Contractor)aResult[1]).getOID());
             assertTrue(contractor.equals(aResult[1]));
         }
 
@@ -259,7 +259,7 @@ public class TestInheritanceTypeJoinedQuery  extends SQLListenerTestCase {
         q = em.createQuery(qS);
         q.setParameter(1, contractor);
         for (Object[] aResult: (List <Object[]>) q.getResultList()) {
-            System.out.println(((Contractor)aResult[0]).getOID() + ", " + ((Department)aResult[1]).getOID());
+            //System.out.println(((Contractor)aResult[0]).getOID() + ", " + ((Department)aResult[1]).getOID());
             assertTrue(contractor.equals(aResult[0]));
         }
 

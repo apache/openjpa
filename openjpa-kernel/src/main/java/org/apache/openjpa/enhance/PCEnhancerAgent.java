@@ -19,7 +19,6 @@
 package org.apache.openjpa.enhance;
 
 import java.lang.instrument.Instrumentation;
-import java.security.AccessController;
 import java.util.List;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -27,9 +26,8 @@ import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Options;
-import org.apache.openjpa.util.ClassResolver;
+import org.apache.openjpa.lib.util.TemporaryClassLoader;
 
 /**
  * <p>
@@ -167,18 +165,8 @@ public class PCEnhancerAgent {
     		conf.setConnectionDriverName(null);
     		conf.setConnectionFactoryName(null);
     		// set single class resolver
-    		final ClassLoader tmpLoader = AccessController
-    		    .doPrivileged(J2DoPrivHelper
-    		    .newTemporaryClassLoaderAction(AccessController
-    		    .doPrivileged(J2DoPrivHelper.getContextClassLoaderAction())
-    		    ));
-    		conf.setClassResolver(new ClassResolver() {
-    		    @Override
-                public ClassLoader getClassLoader(Class context,
-                    ClassLoader env) {
-    		        return tmpLoader;
-    		    }
-    		});
+    		final ClassLoader tmpLoader = new TemporaryClassLoader(Thread.currentThread().getContextClassLoader());
+    		conf.setClassResolver((ctx, env) -> tmpLoader);
     		conf.setReadOnly(Configuration.INIT_STATE_FREEZING);
     		conf.instantiateAll(); // avoid threading issues
 

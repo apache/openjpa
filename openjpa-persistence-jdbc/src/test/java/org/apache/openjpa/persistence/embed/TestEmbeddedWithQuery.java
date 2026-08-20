@@ -58,9 +58,9 @@ public class TestEmbeddedWithQuery extends SingleEMFTestCase {
             EParent pFind = pList.get(0);
 
             assertNotNull(pFind);
-            assertEquals(pFind.getIdParent(), new Integer(1));
+            assertEquals(pFind.getIdParent(), Integer.valueOf(1));
             assertNotNull(pFind.getChildTo());
-            assertEquals(pFind.getChildTo().getIdChild(), new Long(10));
+            assertEquals(pFind.getChildTo().getIdChild(), Long.valueOf(10));
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -87,9 +87,9 @@ public class TestEmbeddedWithQuery extends SingleEMFTestCase {
             EParent pFind = pList.get(0);
 
             assertNotNull(pFind);
-            assertEquals(pFind.getIdParent(), new Integer(1));
+            assertEquals(pFind.getIdParent(), Integer.valueOf(1));
             assertNotNull(pFind.getChildTo());
-            assertEquals(pFind.getChildTo().getIdChild(), new Long(10));
+            assertEquals(pFind.getChildTo().getIdChild(), Long.valueOf(10));
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();

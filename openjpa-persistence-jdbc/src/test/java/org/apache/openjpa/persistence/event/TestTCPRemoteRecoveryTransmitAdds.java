@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.event;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import jakarta.persistence.EntityManager;
 
@@ -36,8 +37,9 @@ import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.test.AllowFailure;
 
 @AllowFailure(message="surefire excluded")
-public class TestTCPRemoteRecoveryTransmitAdds
-    extends AbstractTestCase {
+public class TestTCPRemoteRecoveryTransmitAdds extends AbstractTestCase {
+	
+	private static final Logger logger = Logger.getLogger(TestTCPRemoteRecoveryTransmitAdds.class.getCanonicalName());
 
     public TestTCPRemoteRecoveryTransmitAdds(String s) {
         super(s, "eventcactusapp");
@@ -85,14 +87,10 @@ public class TestTCPRemoteRecoveryTransmitAdds
 
         EntityManager pmSender = pmfSender.createEntityManager();
 
-        System.out.println("-------------------");
-        System.out.println("2 PMFs created, acting as a cluster using ports " +
-            "5636 and 6636");
-        System.out.println("Testing scenario where receiver is failed, then " +
-            "recovered ");
-        System.out.println("after two timeouts all the while with the " +
-            "sending pm continuing");
-        System.out.println("to send.");
+        logger.fine("-------------------");
+        logger.fine("2 PMFs created, acting as a cluster using ports 5636 and 6636");
+        logger.fine("Testing scenario where receiver is failed, then recovered after two timeouts "
+        		+ "all the while with the sending pm continuing to send.");
 
         // Perform a set of transactions. Events will be communicated
         performAddsModifiesDeletes(pmSender, NUM_OBJECTS);
@@ -100,7 +98,7 @@ public class TestTCPRemoteRecoveryTransmitAdds
         // Wait for a bit so the receiver can get the event.
         pause(3);
         // Now Fail the receiver in the cluster
-        System.out.println("About to close the receiving pmf.");
+        logger.fine("About to close the receiving pmf.");
         pmfReceiver.close();
         // Wait for a bit longer so the listener's threads all
         // get closed out.
@@ -109,7 +107,7 @@ public class TestTCPRemoteRecoveryTransmitAdds
         assertEquals(NUM_OBJECTS, listenerAtReceiver.totalDeleted);
         assertEquals(NUM_OBJECTS, listenerAtReceiver.totalUpdated);
 
-        System.out.println("You should now see 1 WARN triggered as the " +
+        logger.fine("You should now see 1 WARN triggered as the " +
             "sender-pmf tries to send.");
         // Perform second set of transactions. This will trigger a single
         // log WARN as the pmf won't be able to communciate events to the
@@ -119,8 +117,7 @@ public class TestTCPRemoteRecoveryTransmitAdds
         // Wait for a recoverytime, try transactions again, this will
         // trigger an INFO
         pause(15.1);
-        System.out.println("Waited for a while. Should see 1 INFO for next " +
-            "transaction.");
+        logger.fine("Waited for a while. Should see 1 INFO for next transaction.");
 
         // This will trigger a single log INFO
         performAddsModifiesDeletes(pmSender, NUM_OBJECTS);
@@ -137,7 +134,7 @@ public class TestTCPRemoteRecoveryTransmitAdds
         // resume being delivered.
         // -----
 
-        System.out.println("Recovering receiver pmf.");
+        logger.fine("Recovering receiver pmf.");
         // Recreate the listener pmf of the cluster.
         pmfReceiver = createDistinctFactory(
             TCPRemoteCommitProvider.class,
@@ -151,8 +148,7 @@ public class TestTCPRemoteRecoveryTransmitAdds
         assertEquals(NUM_OBJECTS, listenerAtReceiver.totalDeleted);
         assertEquals(NUM_OBJECTS, listenerAtReceiver.totalUpdated);
 
-        System.out.println("Now waiting a recoverytime so that the sender");
-        System.out.println("will resume trying to connect to the receiver.");
+        logger.fine("Now waiting a recoverytime so that the sender will resume trying to connect to the receiver.");
         pause(15.1);
 
         // These events should get communicated.
@@ -188,15 +184,11 @@ public class TestTCPRemoteRecoveryTransmitAdds
 
         EntityManager pmSender = pmfSender.createEntityManager();
 
-        System.out.println("-------------------");
-        System.out.println("2 PMFs created, acting as a cluster using ports " +
-            "5637 and 6637");
-        System.out.println("Testing scenario where sender fails and then " +
-            "later recovers.");
-        System.out.println("All the while the receiving pm stays up and " +
-            "should receive");
-        System.out.println("Events (both before and after the sender's " +
-            "failure).");
+        logger.fine("-------------------");
+        logger.fine("2 PMFs created, acting as a cluster using ports 5637 and 6637");
+        logger.fine("Testing scenario where sender fails and then later recovers.");
+        logger.fine("All the while the receiving pm stays up and should receive");
+        logger.fine("Events (both before and after the sender's failure).");
 
         // Perform a set of transactions. Events in the cluster will be
         // communicated
@@ -206,14 +198,14 @@ public class TestTCPRemoteRecoveryTransmitAdds
         // their Event messages to the receiver PMF.
         pause(2.1);
         // Fail the Sender in our cluster
-        System.out.println("Sender pmf closed.");
+        logger.fine("Sender pmf closed.");
         pmSender.close();
         pmfSender.close();
 
         // Wait for a while, try again, this will let close exception propagate
         pause(4.1);
-        System.out.println("Waited for a while.");
-        System.out.println("Recovering the sender pmf.");
+        logger.fine("Waited for a while.");
+        logger.fine("Recovering the sender pmf.");
 
         pmfSender = createDistinctFactory(
             TCPRemoteCommitProvider.class,

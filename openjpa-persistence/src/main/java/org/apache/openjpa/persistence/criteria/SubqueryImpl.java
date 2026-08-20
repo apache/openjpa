@@ -32,6 +32,7 @@ import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.ListJoin;
 import jakarta.persistence.criteria.MapJoin;
+import jakarta.persistence.criteria.ParameterExpression;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.SetJoin;
@@ -404,4 +405,61 @@ class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
     public StringBuilder asVariable(AliasContext q) {
         return asValue(q);
     }
+
+	@Override
+	public <U> Subquery<U> subquery(EntityType<U> type) {
+		return subquery(type.getJavaType());
+	}
+
+	@Override
+	public Set<ParameterExpression<?>> getParameters() {
+		return _delegate.getParameters();
+	}
+
+	@Override
+	public Predicate equalTo(Expression<?> value) {
+		return new Expressions.Equal(this, value);
+	}
+
+	@Override
+	public Predicate equalTo(Object value) {
+		return new Expressions.Equal(this, value);
+	}
+
+	@Override
+	public Predicate notEqualTo(Expression<?> value) {
+		return new Expressions.NotEqual(this, value);
+	}
+
+	@Override
+	public Predicate notEqualTo(Object value) {
+		return new Expressions.NotEqual(this, value);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <X> Expression<X> cast(Class<X> type) {
+		return ((ExpressionImpl<T>) this).cast(type);
+	}
+
+	@Override
+	public Subquery<T> where(List<Predicate> restrictions) {
+		if (restrictions == null) {
+			_delegate.where((Predicate[]) null);
+		} else {
+			_delegate.where(restrictions.toArray(new Predicate[0]));
+		}
+		return this;
+	}
+
+	@Override
+	public Subquery<T> having(List<Predicate> restrictions) {
+		if (restrictions == null) {
+			_delegate.having((Predicate[]) null);
+		} else {
+			_delegate.having(restrictions.toArray(new Predicate[0]));
+		}
+		return this;
+	}
+
 }

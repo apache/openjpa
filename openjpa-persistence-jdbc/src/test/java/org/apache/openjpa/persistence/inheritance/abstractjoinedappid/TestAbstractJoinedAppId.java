@@ -78,7 +78,7 @@ public class TestAbstractJoinedAppId
         assertEquals(1, supers.size());
         Superclass s = (Superclass) supers.iterator().next();
         assertTrue(s instanceof Subclass);
-        assertEquals(new Integer(99), s.getId());
+        assertEquals(Integer.valueOf(99), s.getId());
         assertEquals("supattr", s.getAttr1());
         assertEquals("subattr", ((Subclass) s).getAttr2());
         em.close();

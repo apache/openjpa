@@ -38,7 +38,7 @@
         </see>
     </indexterm>
     <para>
-    JPA 2.0 specification introduces a new API to define queries dynamically
+    JPA 2.0 specification introduced a new API to define queries dynamically
     via construction of an object-based
     <classname>jakarta.persistence.CriteriaQuery</classname> instance, rather
     than string-based approach used in JPQL (Java Persistence Query Language).
@@ -130,7 +130,7 @@ List result = query.getResultList();
     </para>
 
     <para>
-    <ulink url="http://www.ibm.com/developerworks/java/library/j-typesafejpa/">A developerworks article</ulink>
+    <ulink url="https://developer.ibm.com/articles/j-typesafejpa/">A developerworks article</ulink>
     explains details and further usage of Criteria API and its OpenJPA extensions.
     </para>
     </section>

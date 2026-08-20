@@ -49,7 +49,7 @@ class GetObjectId
     private static final Localizer _loc = Localizer.forPackage
         (GetObjectId.class);
 
-    private final PCPath _path;
+    protected final PCPath _path;
     private ClassMetaData _meta = null;
 
     /**

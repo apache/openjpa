@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.jdbc.common.apps.mappingApp;
 
 import java.io.Serializable;
+import java.util.logging.Logger;
 
 import jakarta.persistence.ColumnResult;
 import jakarta.persistence.Entity;
@@ -48,6 +49,7 @@ import jakarta.persistence.Table;
 public class SQLMapOrder implements Serializable {
 	
     private static final long serialVersionUID = 1L;
+    private static final Logger logger = Logger.getLogger(SQLMapOrder.class.getCanonicalName());
 
     @Id
 	int id;
@@ -91,6 +93,6 @@ public class SQLMapOrder implements Serializable {
 	}
 	@PostLoad
 	protected void inform() {
-		System.out.println("Loaded" + this);
+		logger.fine("Loaded" + this);
 	}
 }

@@ -92,7 +92,10 @@ public class ManagedClassSubclasser {
         if (conf.getRuntimeUnenhancedClassesConstant() != RuntimeUnenhancedClassesModes.SUPPORTED) {
             Collection<Class<?>> unenhanced = new ArrayList<>();
             for (Class<?> cls : classes)
-                if (!PersistenceCapable.class.isAssignableFrom(cls))
+                // JPA 3.2: records cannot be enhanced; they are handled
+                // via RecordPersistenceCapable at runtime
+                if (!PersistenceCapable.class.isAssignableFrom(cls)
+                        && !cls.isRecord())
                     unenhanced.add(cls);
             if (unenhanced.size() > 0) {
                 if (PCEnhancerAgent.getLoadSuccessful()) {
@@ -157,7 +160,11 @@ public class ManagedClassSubclasser {
             // reconfiguration at the end of this method.
             ClassMetaData meta = enhancer.getMetaData();
             if (meta == null) {
-                throw new MetaDataException(_loc.get("no-meta", cls)).setFatal(true);
+                // non-entity classes (DTOs, listeners, ID classes) may be
+                // listed in persistence.xml <class> elements; skip them
+                if (log.isWarnEnabled())
+                    log.warn(_loc.get("no-meta", cls));
+                continue;
             }
             configureMetaData(meta, conf, redefine, false);
 
@@ -327,5 +334,65 @@ public class ManagedClassSubclasser {
     private static void setDetachedState(ClassMetaData meta) {
         if (ClassMetaData.SYNTHETIC.equals(meta.getDetachedState()))
             meta.setDetachedState(null);
+    }
+
+    /**
+     * For @Embeddable classes, exclude fields whose declared type is an
+     * unknown Object (e.g. a plain @IdClass POJO) that has no PC metadata.
+     * Such fields cannot be enhanced or mapped in an embedded context.
+     * The actual column mapping is provided by the @MapsId FK relationship
+     * on the owning entity.
+     */
+    private static void excludeUnmappableEmbeddableFields(
+            ClassMetaData meta, OpenJPAConfiguration conf) {
+        Log log = conf.getLog(OpenJPAConfiguration.LOG_ENHANCE);
+        if (!meta.isEmbeddable()) {
+            if (log.isTraceEnabled()) {
+                log.trace("excludeUnmappableEmbeddableFields: skipping non-embeddable "
+                    + meta.getDescribedType().getName());
+            }
+            return;
+        }
+
+        if (log.isTraceEnabled()) {
+            log.trace("excludeUnmappableEmbeddableFields: checking embeddable "
+                + meta.getDescribedType().getName());
+        }
+
+        FieldMetaData[] fmds = meta.getDeclaredFields();
+        boolean changed = false;
+        for (FieldMetaData fmd : fmds) {
+            if (log.isTraceEnabled()) {
+                log.trace("  field: " + fmd.getName()
+                    + " typeCode=" + fmd.getDeclaredTypeCode()
+                    + " type=" + fmd.getDeclaredType().getName());
+            }
+            if (fmd.getDeclaredTypeCode() != JavaTypes.OBJECT) {
+                continue;
+            }
+            // Check if the type has PC metadata (entity or embeddable)
+            Class<?> type = fmd.getDeclaredType();
+            ClassMetaData typeMeta = conf.getMetaDataRepositoryInstance()
+                .getMetaData(type, meta.getEnvClassLoader(), false);
+            if (typeMeta != null) {
+                if (log.isTraceEnabled()) {
+                    log.trace("  -> has metadata, keeping");
+                }
+                continue; // known PC type, leave it alone
+            }
+            // The field's type is an unknown Object (e.g. plain @IdClass).
+            // Mark it as unmanaged so it won't be enhanced or mapped.
+            if (log.isTraceEnabled()) {
+                log.trace("  -> no metadata, excluding field " + fmd.getName());
+            }
+            fmd.setManagement(FieldMetaData.MANAGE_NONE);
+            changed = true;
+        }
+        if (changed) {
+            // Force rebuild of the cached field arrays.
+            FieldMetaData dummy = meta.addDeclaredField(
+                "__pcEnhancerDummy__", Object.class);
+            meta.removeDeclaredField(dummy);
+        }
     }
 }

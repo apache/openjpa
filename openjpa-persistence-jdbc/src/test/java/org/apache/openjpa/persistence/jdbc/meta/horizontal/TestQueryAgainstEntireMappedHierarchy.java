@@ -27,6 +27,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta.horizontal;
 
+import java.util.Locale;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.jdbc.common.apps.HorizD;
 import org.apache.openjpa.persistence.jdbc.common.apps.HorizJ;
@@ -78,7 +80,7 @@ public class TestQueryAgainstEntireMappedHierarchy
         //FIXME jthomas
         //pm.newQuery(HorizD.class).execute();
         String lastStatement = (String) sql.get(sql.size() - 1);
-        assertTrue(lastStatement.toLowerCase().indexOf("in (") == -1);
+        assertTrue(lastStatement.toLowerCase(Locale.ROOT).indexOf("in (") == -1);
         pm.close();
     }
 

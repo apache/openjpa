@@ -30,6 +30,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -115,9 +116,9 @@ public class TestEmbeddable extends SQLListenerTestCase {
         for (String s : query) {
             try {
                 rs = em.createQuery(s).getResultList();
-            }
-            catch (ArgumentException e) {
-                System.out.println(e.getMessage()); // as expected : Group by embeddable field is not allowed
+                fail("Group by embeddable field should not be allowed");
+            } catch (ArgumentException e) {
+                // as expected : Group by embeddable field is not allowed System.out.println(e.getMessage());
             }
         }
         em.close();
@@ -143,9 +144,9 @@ public class TestEmbeddable extends SQLListenerTestCase {
             case 1:
                 try {
                     rs = em.createQuery(query[i]).setParameter(1, name).getResultList();
+                    fail("Comparing embeddables should not be allowed");
                 } catch(ArgumentException e) {
-                    // as expected : compare embeddable is not allowed
-                    System.out.println(e.getMessage());
+                    // as expected : compare embeddable is not allowed System.out.println(e.getMessage());
                 }
                 break;
             }
@@ -2176,11 +2177,11 @@ public class TestEmbeddable extends SQLListenerTestCase {
         tran.commit();
         boolean found = false;
         for (String sqlStr : sql) {
-            if (sqlStr.toUpperCase().indexOf("ITEM2_XXX") != -1) {
+            if (sqlStr.toUpperCase(Locale.ROOT).indexOf("ITEM2_XXX") != -1) {
                 found = true;
                 break;
             }
-            if (sqlStr.toUpperCase().indexOf("ITEM2_IMAGES") != -1) {
+            if (sqlStr.toUpperCase(Locale.ROOT).indexOf("ITEM2_IMAGES") != -1) {
                 found = false;
                 break;
             }
@@ -2775,17 +2776,17 @@ public class TestEmbeddable extends SQLListenerTestCase {
      * To run this method on Oracle requires the user to have the authority
      * to create triggers.  ex.  GRANT CREATE TRIGGER TO "SCOTT"
      */
-    public void createEmbeddableContainingRelationWithGeneratedKey()
-        throws IOException, SQLException {
+    public void createEmbeddableContainingRelationWithGeneratedKey() throws IOException, SQLException {
+        final String BOB_NAME = "Bob's books!";
+        final String JIM_NAME = "Jim's books!";
+        final String MIKE_NAME = "Mike's books!";
         OpenJPAEntityManagerSPI ojem = emf.createEntityManager();
         EntityManager em = ojem;
-        JDBCConfiguration conf = (JDBCConfiguration) ojem.getConfiguration();
-        EntityTransaction tran = em.getTransaction();
 
         Book b = new Book(1590596455);
-        Seller bob = new Seller("Bob's books!");
-        Seller jim = new Seller("Jim's books!");
-        Seller mike = new Seller("Mikes's books!");
+        Seller bob = new Seller(BOB_NAME);
+        Seller jim = new Seller(JIM_NAME);
+        Seller mike = new Seller(MIKE_NAME);
         b.addListing(new Listing(bob , 44.15));
         b.addListing(new Listing(jim , 34.15));
         b.addListing(new Listing(mike , 14.15));
@@ -2796,10 +2797,13 @@ public class TestEmbeddable extends SQLListenerTestCase {
         em.clear();
         Book b2 = em.find(Book.class, id);
         Set<Listing> listings = b2.getListings();
+        assertEquals("There should be exactly 3 listings", 3, listings.size());
         for (Listing listing : listings) {
             Seller seller = listing.getSeller();
             assertNotNull(seller);
-            assertTrue(seller.getId() != 0);
+            // In HSQL DB Id can be 0, so `seller.getId() != 0` will fail
+            assertTrue("Unknown seller: " + seller, BOB_NAME.equals(seller.getName()) ||
+                    JIM_NAME.equals(seller.getName()) || MIKE_NAME.equals(seller.getName()));
         }
         em.close();
     }
@@ -3089,7 +3093,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         tran.commit();
         boolean found = false;
         for (String sqlStr : sql) {
-            if (sqlStr.toUpperCase().indexOf("A_EMBEDS") != -1) {
+            if (sqlStr.toUpperCase(Locale.ROOT).indexOf("A_EMBEDS") != -1) {
                 found = true;
                 break;
             }
@@ -3098,7 +3102,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
 
         found = false;
         for (String sqlStr : sql) {
-            if (sqlStr.toUpperCase().indexOf("VALUE") != -1) {
+            if (sqlStr.toUpperCase(Locale.ROOT).indexOf("VALUE") != -1) {
                 found = true;
                 break;
             }

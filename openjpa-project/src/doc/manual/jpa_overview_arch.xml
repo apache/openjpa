@@ -299,7 +299,7 @@ appropriate, most notably <classname>IllegalArgumentException</classname>s and
 <classname>IllegalStateException</classname>s. The specification also provides
 a few JPA-specific exceptions in the <literal>jakarta.persistence</literal>
 package. These exceptions should be self-explanatory. See the
-<ulink url="http://download.oracle.com/javaee/6/api/">Javadoc</ulink> for
+<ulink url="https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/module-summary.html">Javadoc</ulink> for
 additional details on JPA exceptions.
         </para>
         <note>

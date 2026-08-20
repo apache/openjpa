@@ -17,12 +17,15 @@
 package org.apache.openjpa.lib.util;
 
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
 public class ClassUtilTest {
+	
+	private static final Logger logger = Logger.getLogger(ClassUtilTest.class.getCanonicalName());
 
     @Test
     public void testToClass() {
@@ -52,7 +55,7 @@ public class ClassUtilTest {
         toClass("does.not.Exist");
     }
 
-    private Class toClass(String clazz) {
+    private Class<?> toClass(String clazz) {
         return ClassUtil.toClass(clazz, false, this.getClass().getClassLoader());
     }
 
@@ -96,7 +99,7 @@ public class ClassUtilTest {
         }
 
         long stop = System.nanoTime();
-        System.out.println("took: " + TimeUnit.NANOSECONDS.toMillis(stop - start));
+        logger.fine("took: " + TimeUnit.NANOSECONDS.toMillis(stop - start));
     }
 
     @Test

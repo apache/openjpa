@@ -38,6 +38,7 @@
                 <exclude>**/*.log</exclude>
                 <exclude>**/.*</exclude>
                 <exclude>**/.*/**</exclude>
+                <exclude>openjpa-xmlstore/jdbc*/**</exclude>
             </excludes>
         </fileSet>
 

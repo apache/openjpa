@@ -27,7 +27,7 @@
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>
-        <version>4.1.2-SNAPSHOT</version>
+        <version>4.2.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>openjpa-slice</artifactId>
@@ -82,8 +82,8 @@
             </activation>
             <dependencies>
                 <dependency>
-                    <groupId>mysql</groupId>
-                    <artifactId>mysql-connector-java</artifactId>
+                    <groupId>com.mysql</groupId>
+                    <artifactId>mysql-connector-j</artifactId>
                     <version>${mysql.connector.version}</version>
                     <scope>test</scope>
                 </dependency>
@@ -139,16 +139,10 @@
                         <exclude>org/apache/openjpa/**/*.*.class</exclude>
 
                     </excludes>
-                    <systemProperties>
-                        <property>
-                            <name>openjpa.Log</name>
-                            <value>${openjpa.Log}</value>
-                        </property>
-                        <property>
-                            <name>derby.stream.error.file</name>
-                            <value>target/derby.log</value>
-                        </property>
-                    </systemProperties>
+                    <systemPropertyVariables>
+                    	<openjpa.Log>${openjpa.Log}</openjpa.Log>
+                    	<derby.stream.error.file>target/derby.log</derby.stream.error.file>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
         </plugins>

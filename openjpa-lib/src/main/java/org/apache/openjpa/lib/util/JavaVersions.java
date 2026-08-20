@@ -22,7 +22,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.security.AccessController;
 
 /**
  * Utilities for dealing with different Java specification versions.
@@ -41,8 +40,7 @@ public class JavaVersions {
     private static final Class<?>[] EMPTY_CLASSES = new Class[0];
 
     static {
-        String specVersion = AccessController.doPrivileged(
-            J2DoPrivHelper.getPropertyAction("java.specification.version"));
+        String specVersion = System.getProperty("java.specification.version");
         if ("1.2".equals(specVersion))
             VERSION = 2;
         else if ("1.3".equals(specVersion))

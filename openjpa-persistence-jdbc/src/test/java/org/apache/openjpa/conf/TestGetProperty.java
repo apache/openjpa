@@ -60,6 +60,10 @@ public class TestGetProperty extends TestCase {
             fail(e.getMessage());
         }
     }
+    
+    public void testGetPersistenceUnitName() {
+    	assertEquals("test", emf.getName());
+    }
 
     class Test extends Thread {
         EntityManager em;

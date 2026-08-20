@@ -25,46 +25,34 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="SL_EMD")
+@Table(name = "SL_EMD")
 public class Seller {
-	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
-	private String name;
+    private String name;
 
-	public Seller(){
+    public Seller() {}
 
-	}
-
-	public Seller(String n){
-		name=n;
-	}
-/*
-    public Seller(String n, int id){
-        name=n;
-        this.id = id;
+    public Seller(String n) {
+        name = n;
     }
-*/
+
     public int getId() {
-	    return id;
-	}
-/*
-	public void setId(int id) {
-	    this.id = id;
-	}
-*/
-	public String getName() {
-	    return name;
-	}
+        return id;
+    }
 
-	public void setName(String name) {
-	    this.name = name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	@Override
-    public String toString(){
-		return "Seller id: " + id + " name: " + name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
+    @Override
+    public String toString() {
+        return "Seller id: " + id + " name: " + name;
+    }
 }

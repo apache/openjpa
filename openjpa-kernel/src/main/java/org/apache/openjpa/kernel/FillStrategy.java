@@ -49,7 +49,7 @@ public interface FillStrategy<T> {
      *
      * @param <T> must be an array type.
      */
-    public static class Array<T> implements FillStrategy<T> {
+    class Array<T> implements FillStrategy<T> {
         private final Class<?> cls;
         public Array(Class<T> arrayCls) {
             if (arrayCls == null || !arrayCls.isArray())
@@ -71,7 +71,7 @@ public interface FillStrategy<T> {
      *
      * The instance is a created by the no-argument constructor of the declaring class of the given method.
      */
-    public static class Map<T> implements FillStrategy<T> {
+    class Map<T> implements FillStrategy<T> {
         private final Method putMethod;
 
         public Map(Method put) {
@@ -102,7 +102,7 @@ public interface FillStrategy<T> {
     /**
      * Construct and populate an instance by the given constructor and arguments.
      */
-    public static class NewInstance<T> implements FillStrategy<T> {
+    class NewInstance<T> implements FillStrategy<T> {
         private Constructor<? extends T> cons;
         private Class<T> cls;
 
@@ -122,13 +122,23 @@ public interface FillStrategy<T> {
             try {
                 return cls.getConstructor(types);
             } catch (Exception e) {
+                // Try with unwrapped (primitive) types for exact match
+                try {
+                    Class<?>[] unwrapped = new Class<?>[types.length];
+                    for (int i = 0; i < types.length; i++) {
+                        unwrapped[i] = Filters.unwrap(types[i]);
+                    }
+                    return cls.getConstructor(unwrapped);
+                } catch (Exception e2) {
+                    // fall through to fuzzy matching
+                }
                 Constructor<?>[] constructors = cls.getConstructors();
                 for (Constructor<?> cons : constructors) {
                     Class<?>[] paramTypes = cons.getParameterTypes();
                     boolean match = false;
                     if (paramTypes.length == types.length) {
                         for (int i = 0; i < paramTypes.length; i++) {
-                            match = paramTypes[i].isAssignableFrom(Filters.wrap(types[i]));
+                            match = Filters.wrap(paramTypes[i]).isAssignableFrom(Filters.wrap(types[i]));
                             if (!match)
                                 break;
                             }
@@ -163,7 +173,7 @@ public interface FillStrategy<T> {
      * Create and populate a bean by invoking setter methods identified by alias name with each array
      * element value as argument.
      */
-    public static class Bean<T> implements FillStrategy<T> {
+    class Bean<T> implements FillStrategy<T> {
         private final Class<T> cls;
         private Method[] setters;
 
@@ -202,7 +212,7 @@ public interface FillStrategy<T> {
     /**
      * Populate an instance by simply assigning the 0-th element of the input values.
      */
-    public static class Assign<T> implements FillStrategy<T> {
+    class Assign<T> implements FillStrategy<T> {
         @Override
         public T fill(Object[] values, Class<?>[] types, String[] aliases) {
             try {
@@ -219,7 +229,7 @@ public interface FillStrategy<T> {
      * If the first argument of the given put method is integer then fill the values
      * by index else fill the values with alias key.
      */
-    public static class Factory<T> implements FillStrategy<T> {
+    class Factory<T> implements FillStrategy<T> {
         final ObjectFactory<T> factory;
         final Method putMethod;
         final boolean isArray;

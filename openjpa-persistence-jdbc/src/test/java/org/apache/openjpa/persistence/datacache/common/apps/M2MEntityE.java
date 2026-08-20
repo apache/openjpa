@@ -42,18 +42,18 @@ public class M2MEntityE  {
 	public Map<Integer,M2MEntityF> getEntityF() {
 		return entityf;
 	}
+	
 	public int getId() {
 		return id;
 	}
+	
 	public void setId(int id) {
 		this.id = id;
 	}
+
 	@Override
     public String toString(){
 		return "EntityE:"+id;
-	}
-	public void print(){
-		System.out.println("EntityD id="+id+" entityc="+ entityf);
 	}
 
 	public String getName() {

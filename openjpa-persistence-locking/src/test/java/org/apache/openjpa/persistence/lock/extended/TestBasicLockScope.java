@@ -1035,7 +1035,6 @@ public class TestBasicLockScope extends LockScopeTestCase {
     private void commonElementCollectionEagerLock(String testName, int id0, boolean extended) {
         final String table1Name = "LSEEleColEgr";
         final String table2Name = "LSEEleColEgr_collection";
-//        final String table2Name_oracle = table2Name;//.toUpperCase().substring(0, Math.min(table2Name.length(), 30));
         final String joinTables = table1Name + ".*JOIN.*" + table2Name;
         getLog().info("** " + testName + "()");
         String scope = extended ? "Extended" : "Normal";

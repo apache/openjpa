@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.meta.strats;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -243,7 +244,8 @@ public class RelationRelationMapTableFieldStrategy
         } else if (field.isBiMTo1JT() || mapped == null) {
             field.mapJoin(adapt, true);
             mapTypeJoin(val, DBIdentifier.newColumn("value"), adapt);
-            keyName = dict.getValidColumnName(DBIdentifier.newColumn("key"), field.getTable());
+            // JPA 3.2 spec 11.1.35: default map key column name is <field_name>_KEY
+            keyName = DBIdentifier.newColumn(field.getName() + "_KEY");
         }
         mapTypeJoin(key, keyName, adapt);
 

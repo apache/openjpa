@@ -19,7 +19,6 @@
 package org.apache.openjpa.lib.ant;
 
 import java.io.File;
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +28,6 @@ import org.apache.openjpa.lib.conf.ConfigurationImpl;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.conf.ProductDerivations;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.MultiClassLoader;
 import org.apache.openjpa.lib.util.StringUtil;
@@ -193,11 +191,9 @@ public abstract class AbstractTask extends MatchingTask {
     }
 
     private MultiClassLoader getConfigPropertiesResourceLoader() {
-        MultiClassLoader loader = AccessController
-                .doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
+        MultiClassLoader loader = new MultiClassLoader();
         loader.addClassLoader(getClassLoader());
-        loader.addClassLoader(AccessController.doPrivileged(
-                J2DoPrivHelper.getClassLoaderAction(_conf.getClass())));
+        loader.addClassLoader(_conf.getClass().getClassLoader());
         return loader;
     }
 
@@ -209,11 +205,9 @@ public abstract class AbstractTask extends MatchingTask {
             String[] dsFiles = ds.getIncludedFiles();
             for (String dsFile : dsFiles) {
                 File f = new File(dsFile);
-                if (!AccessController.doPrivileged(J2DoPrivHelper
-                        .isFileAction(f)))
+                if (!f.isFile())
                     f = new File(ds.getBasedir(), dsFile);
-                files.add(AccessController.doPrivileged(
-                        J2DoPrivHelper.getAbsolutePathAction(f)));
+                files.add(f.getAbsolutePath());
             }
         }
         return (String[]) files.toArray(new String[files.size()]);

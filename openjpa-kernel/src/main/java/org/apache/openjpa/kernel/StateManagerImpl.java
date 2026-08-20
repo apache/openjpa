@@ -391,9 +391,15 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         // sets and give it an opportunity to make a state snapshot.
         if (!isIntercepting()) {
             saveFields(true);
-            if (!isNew())
-                RedefinitionHelper.assignLazyLoadProxies(this);
         }
+        // Assign lazy-loading proxies for collection/map fields that are
+        // currently null.  Skip for truly enhanced entities (bytecode-level
+        // GETFIELD interception handles lazy loading).  For unenhanced
+        // pcsubclass entities, only getter/setter calls are intercepted by
+        // the subclass — direct field access (e.g. in toString()) bypasses
+        // that, so the proxy prevents NPE on unloaded collections.
+        if (!isNew() && !getMetaData().isIntercepting())
+            RedefinitionHelper.assignLazyLoadProxies(this);
     }
 
     /**
@@ -408,10 +414,8 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         if (getMetaData().isIntercepting())
             return true;
         // TODO:JRB Intercepting
-        if (AccessCode.isProperty(getMetaData().getAccessType())
-            && _pc instanceof DynamicPersistenceCapable)
-            return true;
-        return false;
+        return AccessCode.isProperty(getMetaData().getAccessType())
+                && _pc instanceof DynamicPersistenceCapable;
     }
 
     /**
@@ -985,9 +989,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             return false;
         if (isDeleted())
             return false;
-        if (isNew() && !isFlushed())
-            return false;
-        return true;
+        return !isNew() || isFlushed();
     }
 
     @Override
@@ -1425,7 +1427,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     }
 
     public boolean getDereferencedEmbedDependent() {
-        return ((_flags & FLAG_EMBED_DEREF) == 0 ? false : true);
+        return ((_flags & FLAG_EMBED_DEREF) != 0);
     }
 
     ///////////
@@ -1802,10 +1804,10 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
 
             if (isEmbedded()) {
                 if (isEmbeddedNotUpdatable())
-                    throw new UserException(_loc.get
-                        ("cant-update-embed-in-query-result")).setFailedObject
-                        (getManagedInstance());
-                else
+                    // JPA spec: embeddable objects returned from query
+                    // projections are not managed; allow free modification
+                    return Boolean.FALSE;
+                else if (!_owner.isDeleted())
                     // notify owner of change
                     _owner.dirty(_ownerIndex, Boolean.TRUE, loadFetchGroup);
             }
@@ -2164,9 +2166,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
                             //    return;
                             //else {
                                 if (curVal != null && newVal != null &&
-                                    curVal instanceof PersistenceCapable && newVal instanceof PersistenceCapable) {
-                                    PersistenceCapable curPc = (PersistenceCapable) curVal;
-                                    PersistenceCapable newPc = (PersistenceCapable) newVal;
+                                        curVal instanceof PersistenceCapable curPc && newVal instanceof PersistenceCapable newPc) {
                                     if (curPc.pcFetchObjectId().equals(newPc.pcFetchObjectId()))
                                         return;
 
@@ -2908,9 +2908,9 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
                 break;
             case JavaTypes.UUID_OBJ:
                 if (val instanceof String) {
-                    fm.storeObjectField(field, (UUID) UUID.fromString((String) val));
+                    fm.storeObjectField(field, UUID.fromString((String) val));
                 } else if (val instanceof UUID) {
-                    fm.storeObjectField(field, (UUID) val);
+                    fm.storeObjectField(field, val);
                 }
                 break;
             default:

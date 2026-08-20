@@ -65,6 +65,7 @@ public class ClassMappingInfo
     private String _className = Object.class.getName();
     private DBIdentifier _tableName = DBIdentifier.NULL;
     private DBIdentifier _schemaName = DBIdentifier.NULL;
+    private String _tableOptions = null;
     private boolean _joined = false;
     private Map<DBIdentifier, List<Column>> _seconds = null;
     private String _subStrat = null;
@@ -78,6 +79,9 @@ public class ClassMappingInfo
     private Map<DBIdentifier,List<Unique>> _uniques;
 
     private Map<DBIdentifier,List<Index>> _indices = new HashMap<>();
+
+    // Foreign keys for secondary tables, indexed by secondary table name
+    private Map<DBIdentifier, ForeignKey> _secondaryForeignKeys = null;
     /**
      * The described class name.
      */
@@ -130,6 +134,14 @@ public class ClassMappingInfo
 
     public void setTableIdentifier(DBIdentifier table) {
         _tableName = table;
+    }
+
+    public String getTableOptions() {
+        return _tableOptions;
+    }
+
+    public void setTableOptions(String options) {
+        _tableOptions = options;
     }
 
     /**
@@ -306,6 +318,24 @@ public class ClassMappingInfo
     }
 
     /**
+     * Get the foreign key template for a secondary table, or null if none.
+     */
+    public ForeignKey getSecondaryTableForeignKey(DBIdentifier tableName) {
+        if (_secondaryForeignKeys == null || DBIdentifier.isNull(tableName))
+            return null;
+        return _secondaryForeignKeys.get(tableName);
+    }
+
+    /**
+     * Set the foreign key template for a secondary table.
+     */
+    public void setSecondaryTableForeignKey(DBIdentifier tableName, ForeignKey fk) {
+        if (_secondaryForeignKeys == null)
+            _secondaryForeignKeys = new HashMap<>();
+        _secondaryForeignKeys.put(tableName, fk);
+    }
+
+    /**
      * Return the named table for the given class.
      * @deprecated
      */
@@ -338,6 +368,8 @@ public class ClassMappingInfo
         t.setComment(cls.getTypeAlias() == null
             ? cls.getDescribedType().getName()
             : cls.getTypeAlias());
+        if (_tableOptions != null)
+            t.setOptions(_tableOptions);
         return t;
     }
 

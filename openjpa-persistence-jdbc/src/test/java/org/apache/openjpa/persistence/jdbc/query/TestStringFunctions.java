@@ -110,7 +110,7 @@ public class TestStringFunctions
     }
 
     private void assertMatch(String filter) {
-        OpenJPAQuery q = _pm.createNativeQuery(filter,QueryTest1.class);
+        OpenJPAQuery q = (OpenJPAQuery) _pm.createNativeQuery(filter,QueryTest1.class);
         Collection res = (Collection) q.getCandidateCollection();
         assertEquals(1, res.size());
         assertEquals(_match, res.iterator().next());

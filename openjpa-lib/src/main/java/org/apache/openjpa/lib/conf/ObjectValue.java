@@ -18,11 +18,9 @@
  */
 package org.apache.openjpa.lib.conf;
 
-import java.security.AccessController;
 import java.util.Objects;
 
 import org.apache.openjpa.lib.util.collections.AbstractReferenceMap.ReferenceStrength;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 
@@ -114,11 +112,9 @@ public class ObjectValue extends Value {
             boolean fatal) {
         ClassLoader cl = (ClassLoader) _classloaderCache.get(type);
         if (cl == null) {
-            cl = AccessController.doPrivileged(
-                J2DoPrivHelper.getClassLoaderAction(type));
+            cl = type.getClassLoader();
             if (cl == null) {  // System classloader is returned as null
-                cl = AccessController.doPrivileged(
-                    J2DoPrivHelper.getSystemClassLoaderAction());
+                cl = ClassLoader.getSystemClassLoader();
             }
             _classloaderCache.put(type, cl);
         }

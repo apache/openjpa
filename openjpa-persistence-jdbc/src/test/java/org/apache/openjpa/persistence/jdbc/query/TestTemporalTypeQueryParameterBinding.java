@@ -49,7 +49,9 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
     private  static long T2 = T1 + 2000;
     private  static long T3 = T1 + 3000;
 
-    private static Date     VALUE_DATE     = new Date(T1);
+    // Use java.sql.Date so the date column stores date-only values,
+    // matching the behavior of TemporalType.DATE parameter binding (JPA 3.2).
+    private static java.sql.Date VALUE_DATE = new java.sql.Date(T1);
     private static Time     VALUE_TIME     = new Time(T2);
     private static Timestamp VALUE_TSTAMP   = new Timestamp(T3);
 

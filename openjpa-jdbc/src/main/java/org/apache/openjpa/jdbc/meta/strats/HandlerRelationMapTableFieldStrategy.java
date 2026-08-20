@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.meta.strats;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -47,6 +48,7 @@ import org.apache.openjpa.jdbc.sql.Union;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.ChangeTracker;
 import org.apache.openjpa.util.MetaDataException;
@@ -197,9 +199,8 @@ public class HandlerRelationMapTableFieldStrategy
             val.mapConstraints("value", adapt);
         }
         _kio = new ColumnIO();
-        DBDictionary dict = field.getMappingRepository().getDBDictionary();
-        _kcols = HandlerStrategies.map(key,
-            dict.getValidColumnName(DBIdentifier.newColumn("key"), field.getTable()).getName(), _kio, adapt);
+        // JPA 3.2 spec 11.1.35: default map key column name is <field_name>_KEY
+        _kcols = HandlerStrategies.map(key, field.getName() + "_KEY", _kio, adapt);
 
         field.mapPrimaryKey(adapt);
     }
@@ -222,8 +223,32 @@ public class HandlerRelationMapTableFieldStrategy
         if (map == null || map.isEmpty())
             return;
 
-        if (!field.isBiMTo1JT() && field.getMappedBy() != null)
+        if (!field.isBiMTo1JT() && field.getMappedBy() != null) {
+            // For @ManyToMany(mappedBy), the owning side manages the join
+            // table — skip key column writes from the inverse side.
+            if (field.getAssociationType() == FieldMetaData.MANY_TO_MANY)
+                return;
+            // For @OneToMany(mappedBy) maps with @MapKeyColumn, write the
+            // key column to the value entity's table via UPDATE.
+            if (_kcols != null && _kcols.length > 0) {
+                ValueMapping key = field.getKeyMapping();
+                StoreContext ctx = store.getContext();
+                for (Object o : map.entrySet()) {
+                    Map.Entry entry = (Map.Entry) o;
+                    OpenJPAStateManager valsm = RelationStrategies.getStateManager(
+                        entry.getValue(), ctx);
+                    if (valsm != null) {
+                        Row row = rm.getRow(field.getElementMapping()
+                            .getDeclaredTypeMapping().getTable(),
+                            Row.ACTION_UPDATE, valsm, true);
+                        row.wherePrimaryKey(valsm);
+                        HandlerStrategies.set(key, entry.getKey(), store, row,
+                            _kcols, _kio, true);
+                    }
+                }
+            }
             return;
+        }
 
         Row row = null;
         if (!field.isUni1ToMFK()) {
@@ -276,8 +301,16 @@ public class HandlerRelationMapTableFieldStrategy
     @Override
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
-        if (field.getMappedBy() != null && !field.isBiMTo1JT())
+        if (field.getMappedBy() != null && !field.isBiMTo1JT()) {
+            // For mappedBy maps with @MapKeyColumn, update key columns
+            if (_kcols != null && _kcols.length > 0) {
+                Map map = (Map) sm.fetchObject(field.getIndex());
+                if (map != null && !map.isEmpty()) {
+                    insert(sm, store, rm, map);
+                }
+            }
             return;
+        }
 
         Map map = (Map) sm.fetchObject(field.getIndex());
         ChangeTracker ct = null;
@@ -465,7 +498,9 @@ public class HandlerRelationMapTableFieldStrategy
             return;
         if (field.isUni1ToMFK()) {
             Map mapObj = (Map)sm.fetchObject(field.getIndex());
-            updateSetNull(sm, store, rm, mapObj.keySet());
+            if (mapObj != null) {
+                updateSetNull(sm, store, rm, mapObj.keySet());
+            }
             return;
         }
 

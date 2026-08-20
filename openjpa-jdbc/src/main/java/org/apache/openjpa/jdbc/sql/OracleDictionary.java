@@ -23,7 +23,6 @@ import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.security.AccessController;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Connection;
@@ -57,11 +56,11 @@ import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.ForeignKey.FKMapKey;
 import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
+import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.lib.jdbc.DelegatingDatabaseMetaData;
 import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.StoreException;
@@ -197,7 +196,7 @@ public class OracleDictionary
         supportsSelectEndIndex = true;
 
         systemSchemaSet.addAll(Arrays.asList(new String[]{
-            "CTXSYS", "MDSYS", "SYS", "SYSTEM", "WKSYS", "WMSYS", "XDB",
+            "AUDSYS", "CTXSYS", "MDSYS", "SYS", "SYSTEM", "WKSYS", "WMSYS", "XDB",
         }));
 
         supportsXMLColumn = true;
@@ -221,6 +220,7 @@ public class OracleDictionary
         datePrecision = MICRO;
 
         varcharTypeName = "VARCHAR2{0}";
+        typecastToStringTypeName = "VARCHAR";
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
             "LONG RAW", "RAW", "LONG", "REF",
         }));
@@ -252,6 +252,9 @@ public class OracleDictionary
         }));
 
         substringFunctionName = "SUBSTR";
+        leftFunctionName = substringFunctionName;
+        rightFunctionName = substringFunctionName;
+        ceilingFunction = "CEIL";
         super.setBatchLimit(defaultBatchLimit);
         selectWordSet.add("WITH");
         reportsSuccessNoInfoOnBatchUpdates = true;
@@ -275,13 +278,12 @@ public class OracleDictionary
         oracleClob_isEmptyLob_Method = getMethodByReflection("oracle.sql.CLOB", "isEmptyLob");
 
         indexPhysicalForeignKeys = true; // Oracle does not automatically create an index for a foreign key so we will
+        supportsUnsizedCharOnCast = false;
     }
 
     private Method getMethodByReflection(String className, String methodName, Class<?>... paramTypes) {
         try {
-            return Class.forName(className,true,
-                    AccessController.doPrivileged(J2DoPrivHelper
-                            .getContextClassLoaderAction())).
+            return Class.forName(className, true, Thread.currentThread().getContextClassLoader()).
                     getMethod(methodName, paramTypes);
         }
         catch (Exception e) {
@@ -299,24 +301,25 @@ public class OracleDictionary
     }
 
     @Override
-    public void connectedConfiguration(Connection conn)
-        throws SQLException {
+    public void connectedConfiguration(Connection conn) throws SQLException {
         super.connectedConfiguration(conn);
         if (driverVendor == null) {
             DatabaseMetaData meta = conn.getMetaData();
             String url = (meta.getURL() == null) ? "" : meta.getURL();
             String driverName = meta.getDriverName();
             String metadataClassName;
-            if (meta instanceof DelegatingDatabaseMetaData)
+            if (meta instanceof DelegatingDatabaseMetaData) {
                 metadataClassName = ((DelegatingDatabaseMetaData) meta).
                     getInnermostDelegate().getClass().getName();
-            else
+            } else {
                 metadataClassName = meta.getClass().getName();
+            }
 
             // check both the driver class name and the URL for known patterns
             if (metadataClassName.startsWith("oracle.")
-                || url.indexOf("jdbc:oracle:") != -1
-                || "Oracle JDBC driver".equals(driverName)) {
+                    || url.indexOf("jdbc:oracle:") != -1
+                    || "Oracle JDBC driver".equals(driverName))
+            {
                 int jdbcMajor = meta.getDriverMajorVersion();
                 int jdbcMinor = meta.getDriverMinorVersion();
                 driverVendor = VENDOR_ORACLE + jdbcMajor + jdbcMinor;
@@ -347,12 +350,17 @@ public class OracleDictionary
                 // or ".getClobVal()" suffix. eg. t0.xmlcol.getClobVal()
                 getStringVal = ".getClobVal()";
             } else if (metadataClassName.startsWith("com.ddtek.")
-                || url.indexOf("jdbc:datadirect:oracle:") != -1
-                || "Oracle".equals(driverName)) {
+                    || url.indexOf("jdbc:datadirect:oracle:") != -1
+                    || "Oracle".equals(driverName))
+            {
                 driverVendor = VENDOR_DATADIRECT + meta.getDriverMajorVersion()
                     + meta.getDriverMinorVersion();
-            } else
+            } else {
                 driverVendor = VENDOR_OTHER;
+            }
+        }
+        if (getMajorVersion() < 21) {
+            exceptFunction = "MINUS";
         }
         cacheDriverBehavior(driverVendor);
         guessJDBCVersion(conn);
@@ -441,6 +449,8 @@ public class OracleDictionary
             else if (autoAssignClause != null)
                 buf.append(" ").append(autoAssignClause);
         }
+        if (col.getOptions() != null && !col.getOptions().isEmpty())
+            buf.append(" ").append(col.getOptions());
         return buf.toString();
     }
 
@@ -1239,24 +1249,29 @@ public class OracleDictionary
     }
 
     @Override
-    public boolean isSystemSequence(String name, String schema,
-        boolean targetSchema) {
-        return isSystemSequence(DBIdentifier.newSequence(name),
-            DBIdentifier.newSchema(schema), targetSchema);
+    public boolean isDroppable(Sequence seq) {
+        return !isSystemSequence(seq.getIdentifier(), seq.getSchema().getIdentifier(), false);
     }
 
     @Override
-    public boolean isSystemSequence(DBIdentifier name, DBIdentifier schema,
-        boolean targetSchema) {
-        if (super.isSystemSequence(name, schema, targetSchema))
-            return true;
+    public boolean isSystemSequence(String name, String schema, boolean targetSchema) {
+        return isSystemSequence(DBIdentifier.newSequence(name), DBIdentifier.newSchema(schema), targetSchema);
+    }
 
+    @Override
+    public boolean isSystemSequence(DBIdentifier name, DBIdentifier schema, boolean targetSchema) {
+        if (super.isSystemSequence(name, schema, targetSchema)) {
+            return true;
+        }
+
+        if (DBIdentifier.isNull(name)) {
+            return false;
+        }
         // filter out generated sequences used for auto-assign
-        String strName = DBIdentifier.isNull(name) ? "" : name.getName();
-        return (autoAssignSequenceName != null
-            && strName.equalsIgnoreCase(autoAssignSequenceName))
-            || (autoAssignSequenceName == null
-            && strName.toUpperCase(Locale.ENGLISH).startsWith("ST_"));
+        // to avoid ORA-32794: cannot drop a system-generated sequence
+        String strName = name.getName().toUpperCase(Locale.ENGLISH).replace("\"", "");
+        return (autoAssignSequenceName != null && strName.equalsIgnoreCase(autoAssignSequenceName))
+                || (autoAssignSequenceName == null && (strName.startsWith("ST_") || strName.startsWith("ISEQ$$_")));
     }
 
     @Override
@@ -1417,7 +1432,7 @@ public class OracleDictionary
         if (EMPTY_BLOB != null)
             return EMPTY_BLOB;
 
-	if (oracleBlob_empty_lob_Method == null)
+        if (oracleBlob_empty_lob_Method == null)
             return null;
 
         try {
@@ -1601,6 +1616,41 @@ public class OracleDictionary
     }
 
     @Override
+    public void mathFunction(SQLBuffer buf, String op, FilterValue lhs, FilterValue rhs) {
+    	if ("CEILING".equals(op)) {
+    		super.mathFunction(buf, "CEIL", lhs, rhs);
+    	} else {
+    		super.mathFunction(buf, op, lhs, rhs);
+    	}
+    }
+
+    @Override
+    public void left(SQLBuffer buf, FilterValue str, FilterValue length) {
+    	buf.append(leftFunctionName).append("(");
+    	str.appendTo(buf);
+    	buf.append(", ").append(Long.toString(0l)).append(", ");
+    	if (length.getValue() instanceof Number) {
+    		buf.append(Long.toString(toLong(length)));
+    	} else {
+    		length.appendTo(buf);
+    	}
+    	buf.append(")");
+    }
+
+    @Override
+    public void right(SQLBuffer buf, FilterValue str, FilterValue length) {
+    	buf.append(rightFunctionName).append("(");
+    	str.appendTo(buf);
+    	buf.append(", -");
+    	if (length.getValue() instanceof Number) {
+    		buf.append(Long.toString(toLong(length)));
+    	} else {
+    		length.appendTo(buf);
+    	}
+    	buf.append(")");
+    }
+
+    @Override
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
         FilterValue start) {
         buf.append("INSTR(");
@@ -1612,5 +1662,14 @@ public class OracleDictionary
             start.appendTo(buf);
         }
         buf.append(")");
+    }
+
+    // required to avoid ORA-01408: such column list already indexed
+    @Override
+    public boolean needsToCreateIndex(Index idx, Table table) {
+       // Oracle will automatically create a unique index for the
+       // primary key, so don't create another index again
+       PrimaryKey pk = table.getPrimaryKey();
+       return pk == null || !idx.columnsMatch(pk.getColumns());
     }
 }

@@ -34,6 +34,8 @@ import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
+import org.apache.openjpa.jdbc.meta.Version;
+import org.apache.openjpa.jdbc.meta.strats.NoneVersionStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.Row;
@@ -120,14 +122,25 @@ public class PreparedStatementManagerImpl
         try {
             int count = executeUpdate(stmnt, sql, row);
             if (count != 1) {
-                logSQLWarnings(stmnt);
-                Object failed = row.getFailedObject();
-                if (failed != null)
-                    _exceptions.add(new OptimisticException(failed));
-                else if (row.getAction() == Row.ACTION_INSERT)
-                    throw new SQLException(_loc.get(
-                        "update-failed-no-failed-obj", String.valueOf(count),
-                        sql).getMessage());
+                // For DELETE actions on entities without a version, tolerate
+                // count=0 because the row may have already been removed by a
+                // database-level ON DELETE CASCADE triggered by a related
+                // row's deletion. With a version the DELETE carries an
+                // optimistic condition in its WHERE clause, so count=0 must
+                // still surface as an OptimisticException.
+                if (count == 0 && row.getAction() == Row.ACTION_DELETE
+                    && !hasVersion(row)) {
+                    // row already gone - not an error
+                } else {
+                    logSQLWarnings(stmnt);
+                    Object failed = row.getFailedObject();
+                    if (failed != null)
+                        _exceptions.add(new OptimisticException(failed));
+                    else if (row.getAction() == Row.ACTION_INSERT)
+                        throw new SQLException(_loc.get(
+                            "update-failed-no-failed-obj",
+                            String.valueOf(count), sql).getMessage());
+                }
             }
             if (autoAssignColNames != null)
                 populateAutoAssignCols(stmnt, autoAssign, autoAssignColNames,
@@ -152,6 +165,22 @@ public class PreparedStatementManagerImpl
                 }
             }
         }
+    }
+
+    /**
+     * Whether the entity the given row belongs to uses version-based
+     * optimistic locking. For versioned entities an update count of 0
+     * signals a concurrent modification that must surface as an
+     * {@link OptimisticException}; without a version there is no
+     * optimistic signal to honor.
+     */
+    protected boolean hasVersion(RowImpl row) {
+        OpenJPAStateManager sm = row.getPrimaryKey();
+        if (sm == null || !(sm.getMetaData() instanceof ClassMapping))
+            return false;
+        Version version = ((ClassMapping) sm.getMetaData()).getVersion();
+        return version != null
+            && version.getStrategy() != NoneVersionStrategy.getInstance();
     }
 
     private boolean hasGeneratedKey(ClassMapping meta) {

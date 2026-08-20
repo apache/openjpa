@@ -508,11 +508,17 @@ public class SourceCode {
         private final Class owner;
         protected boolean isTransient;
         protected boolean isVolatile;
+        protected String initialValue;
 
         Field(Class owner, String name, ClassName type) {
             super(name, type);
             this.owner = owner;
             makePrivate();
+        }
+
+        public Field setInitialValue(String value) {
+            this.initialValue = value;
+            return this;
         }
 
         /**
@@ -559,7 +565,11 @@ public class SourceCode {
             if (isTransient) out.print("transient ");
             out.print(type);
             writeList(out, BLANK, params, PARAMS_DELIMITER, false);
-            out.println(SPACE + name + SEMICOLON);
+            if (initialValue != null) {
+                out.println(SPACE + name + " = " + initialValue + SEMICOLON);
+            } else {
+                out.println(SPACE + name + SEMICOLON);
+            }
         }
 
         @Override

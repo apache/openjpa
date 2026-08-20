@@ -77,7 +77,7 @@ public class AccessCode {
 	public static int EXPLICIT  = 2 << 2;
 	public static int MIXED     = 2 << 3;
 
-	private static Localizer _loc = Localizer.forPackage(AccessCode.class);
+	private static final Localizer _loc = Localizer.forPackage(AccessCode.class);
 
 	/**
 	 * Affirms if the given code is valid.
@@ -90,7 +90,7 @@ public class AccessCode {
 		 && code <= (MIXED|EXPLICIT|PROPERTY)
          && !(isProperty(code) && isField(code)) // both 1 & 2 can not be set
 		 && (isProperty(code) || isField(code) || isUnknown(code))
-		 && ((isMixed(code) && isExplicit(code)) || !isMixed(code));
+		 && (!isMixed(code) || isExplicit(code));
 	}
 
 	public static boolean isValidFieldCode(int code) {
@@ -162,7 +162,9 @@ public class AccessCode {
 	 * access style.
 	 */
 	public static boolean isCompatibleSuper(int subCode, int superCode) {
-		if (isEmpty(superCode))
+		if (isEmpty(superCode) || isUnknown(superCode))
+			return true;
+		if (isUnknown(subCode))
 			return true;
 		if (isValidClassCode(subCode) && isValidClassCode(superCode)) {
 			if (isExplicit(subCode))

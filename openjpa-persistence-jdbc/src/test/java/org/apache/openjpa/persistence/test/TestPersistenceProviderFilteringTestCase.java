@@ -24,6 +24,7 @@ import org.apache.openjpa.persistence.entity.EntityB;
 import org.apache.openjpa.persistence.entity.EntityC;
 
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceConfiguration;
 import jakarta.persistence.spi.PersistenceProvider;
 import jakarta.persistence.spi.PersistenceUnitInfo;
 import jakarta.persistence.spi.ProviderUtil;
@@ -93,5 +94,10 @@ public class TestPersistenceProviderFilteringTestCase extends SQLListenerTestCas
         @Override public ProviderUtil getProviderUtil() {
             return null;
         }
+
+		@Override
+		public EntityManagerFactory createEntityManagerFactory(PersistenceConfiguration configuration) {
+			return null;
+		}
     }
 }

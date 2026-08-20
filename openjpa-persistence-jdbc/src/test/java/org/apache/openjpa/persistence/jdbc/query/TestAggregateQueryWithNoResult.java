@@ -54,7 +54,7 @@ public class TestAggregateQueryWithNoResult extends SingleEMFTestCase {
         Long result = (Long)em.createQuery(jpql).getSingleResult();
 
         assertNotNull(result);
-        assertEquals(result, new Long(0));
+        assertEquals(result, Long.valueOf(0));
     }
 
     public void testAvgWithNoResult() {
@@ -63,7 +63,7 @@ public class TestAggregateQueryWithNoResult extends SingleEMFTestCase {
         Integer result = (Integer)em.createQuery(jpql).getSingleResult();
 
         assertNotNull(result);
-        assertEquals(result, new Integer(0));
+        assertEquals(result, Integer.valueOf(0));
     }
 
     public void testCountWithNoResult() {
@@ -72,7 +72,7 @@ public class TestAggregateQueryWithNoResult extends SingleEMFTestCase {
         Long result = (Long)em.createQuery(jpql).getSingleResult();
 
         assertNotNull(result);
-        assertEquals(result, new Long(0));
+        assertEquals(result, Long.valueOf(0));
     }
 
     public void testMaxWithNoResult() {
@@ -81,7 +81,7 @@ public class TestAggregateQueryWithNoResult extends SingleEMFTestCase {
         Integer result = (Integer)em.createQuery(jpql).getSingleResult();
 
         assertNotNull(result);
-        assertEquals(result, new Integer(0));
+        assertEquals(result, Integer.valueOf(0));
     }
 
     public void testMinWithNoResult() {
@@ -90,6 +90,6 @@ public class TestAggregateQueryWithNoResult extends SingleEMFTestCase {
         Integer result = (Integer)em.createQuery(jpql).getSingleResult();
 
         assertNotNull(result);
-        assertEquals(result, new Integer(0));
+        assertEquals(result, Integer.valueOf(0));
     }
 }

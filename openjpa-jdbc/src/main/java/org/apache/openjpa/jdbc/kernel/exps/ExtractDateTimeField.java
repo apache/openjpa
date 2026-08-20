@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
-import java.lang.Math;
 import java.sql.SQLException;
 
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
@@ -36,9 +35,7 @@ import org.apache.openjpa.meta.ClassMetaData;
  * Returns the temporal field of a given date or time.
  *
  */
-public class ExtractDateTimeField
-    extends AbstractVal {
-
+public class ExtractDateTimeField extends AbstractVal {
     private static final long serialVersionUID = 1L;
     private final Val _val;
     private final DateTimeExtractField _field;
@@ -84,9 +81,7 @@ public class ExtractDateTimeField
     /**
      * Expression state.
      */
-    private static class ExtractDateTimeFieldExpState
-        extends ExpState {
-
+    private static class ExtractDateTimeFieldExpState extends ExpState {
         public final ExpState valueState;
 
         public ExtractDateTimeFieldExpState(Joins joins, ExpState valueState) {
@@ -158,7 +153,7 @@ public class ExtractDateTimeField
 
         ExtractDateTimeFieldExpState edtstate = (ExtractDateTimeFieldExpState) state;
         sql.append(part1);
-        sql.append(_field.name());
+        sql.append(dict.getExtractField(_field));
         sql.append(part2);
         _val.appendTo(sel, ctx, edtstate.valueState, sql, 0);
         sql.append(part3);

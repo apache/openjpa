@@ -18,14 +18,19 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
+import org.apache.openjpa.jdbc.sql.SQLBuffer;
+import org.apache.openjpa.jdbc.sql.Select;
+
 /**
  * Natural logarithm (base e) value.
  */
 public class NaturalLogarithm
     extends UnaryOp {
 
-    
+
     private static final long serialVersionUID = 1L;
+    
+    private String operator = "LN";
 
     /**
      * Constructor. Provide the value from which the natural logarithm should be calculated.
@@ -40,8 +45,14 @@ public class NaturalLogarithm
     }
 
     @Override
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, SQLBuffer sql, int index) {
+        this.operator = ctx.store.getDBDictionary().naturalLogarithmFunction;
+        super.appendTo(sel, ctx, state, sql, index);
+    }
+
+    @Override
     protected String getOperator() {
-        return "LN";
+        return operator;
     }
 
     @Override

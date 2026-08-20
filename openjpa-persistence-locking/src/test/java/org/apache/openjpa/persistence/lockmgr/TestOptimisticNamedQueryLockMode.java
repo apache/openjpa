@@ -22,6 +22,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.Query;
 
+import java.util.Locale;
+
 import org.apache.openjpa.persistence.FetchPlan;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
@@ -127,12 +129,12 @@ public class TestOptimisticNamedQueryLockMode extends SQLListenerTestCase {
     void assertClausePresentInSQL(String clause, Query q) {
         q.getResultList();
         String last = getLastSQL();
-        assertTrue(clause + " is not present in " + last, last.toUpperCase().indexOf(clause) != -1);
+        assertTrue(clause + " is not present in " + last, last.toUpperCase(Locale.ROOT).indexOf(clause) != -1);
     }
 
     void assertClauseAbsentInSQL(String clause, Query q) {
         q.getResultList();
         String last = getLastSQL();
-        assertTrue(clause + " is not absent in " + last, last.toUpperCase().indexOf(clause) == -1);
+        assertTrue(clause + " is not absent in " + last, last.toUpperCase(Locale.ROOT).indexOf(clause) == -1);
     }
 }

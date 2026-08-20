@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.kernel;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Array;
@@ -31,6 +32,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
@@ -94,21 +96,147 @@ class MappedQueryResultObjectProvider
         throws SQLException {
         QueryResultMapping.PCResult[] pcs = _map.getPCResults();
         Object[] cols = _map.getColumnResults();
+        QueryResultMapping.ConstructorResultInfo[] constructors =
+            _map.getConstructorResults();
 
         // single object cases
-        if (pcs.length == 0 && cols.length == 1)
-            return _mres.getObject(cols[0], JavaSQLTypes.JDBC_DEFAULT, null);
-        if (pcs.length == 1 && cols.length == 0)
-            return _mres.load(pcs[0], _store, _fetch);
+        if (constructors.length == 0) {
+            if (pcs.length == 0 && cols.length == 1)
+                return _mres.getObject(cols[0], JavaSQLTypes.JDBC_DEFAULT, null);
+            if (pcs.length == 1 && cols.length == 0)
+                return _mres.load(pcs[0], _store, _fetch);
+        }
+
+        // single constructor result with no other mappings
+        if (constructors.length == 1 && pcs.length == 0 && cols.length == 0)
+            return constructFromResult(constructors[0]);
 
         // multiple objects
-        Object[] ret = new Object[pcs.length + cols.length];
+        Object[] ret = new Object[pcs.length + cols.length
+            + constructors.length];
         for (int i = 0; i < pcs.length; i++)
             ret[i] = _mres.load(pcs[i], _store, _fetch);
         for (int i = 0; i < cols.length; i++)
             ret[pcs.length + i] = _mres.getObject(cols[i],
                 JavaSQLTypes.JDBC_DEFAULT, null);
+        for (int i = 0; i < constructors.length; i++)
+            ret[pcs.length + cols.length + i] =
+                constructFromResult(constructors[i]);
         return ret;
+    }
+
+    /**
+     * Construct an object from SQL result columns using the given
+     * constructor result mapping.
+     */
+    private Object constructFromResult(
+        QueryResultMapping.ConstructorResultInfo crInfo) throws SQLException {
+        List<QueryResultMapping.ColumnInfo> columns = crInfo.getColumns();
+        Class<?>[] paramTypes = new Class<?>[columns.size()];
+        Object[] args = new Object[columns.size()];
+
+        for (int i = 0; i < columns.size(); i++) {
+            QueryResultMapping.ColumnInfo col = columns.get(i);
+            Class<?> type = col.getType();
+            paramTypes[i] = type;
+            Object val = _mres.getObject(col.getName(),
+                JavaSQLTypes.JDBC_DEFAULT, null);
+            if (val != null && type != void.class && type != Object.class) {
+                args[i] = convertValue(val, type);
+            } else {
+                args[i] = val;
+            }
+        }
+
+        try {
+            Constructor<?> cons = crInfo.getTargetClass()
+                .getConstructor(paramTypes);
+            return cons.newInstance(args);
+        } catch (NoSuchMethodException e) {
+            // try to find a compatible constructor
+            return constructWithCompatible(crInfo.getTargetClass(), args);
+        } catch (Exception e) {
+            throw new StoreException(e);
+        }
+    }
+
+    /**
+     * Try to find and invoke a compatible constructor when exact type
+     * matching fails.
+     */
+    private Object constructWithCompatible(Class<?> cls, Object[] args)
+        throws SQLException {
+        for (Constructor<?> cons : cls.getConstructors()) {
+            Class<?>[] types = cons.getParameterTypes();
+            if (types.length != args.length)
+                continue;
+            boolean match = true;
+            for (int i = 0; i < types.length; i++) {
+                if (args[i] != null && !types[i].isAssignableFrom(
+                    args[i].getClass())
+                    && !isAssignablePrimitive(types[i], args[i].getClass())) {
+                    match = false;
+                    break;
+                }
+            }
+            if (match) {
+                try {
+                    return cons.newInstance(args);
+                } catch (Exception e) {
+                    throw new StoreException(e);
+                }
+            }
+        }
+        throw new StoreException(
+            new NoSuchMethodException("No compatible constructor found for "
+                + cls.getName() + " with " + args.length + " arguments"));
+    }
+
+    /**
+     * Check if a primitive type is assignable from a wrapper type.
+     */
+    private static boolean isAssignablePrimitive(Class<?> target,
+        Class<?> source) {
+        if (!target.isPrimitive()) return false;
+        if (target == int.class) return source == Integer.class;
+        if (target == long.class) return source == Long.class;
+        if (target == double.class) return source == Double.class;
+        if (target == float.class) return source == Float.class;
+        if (target == boolean.class) return source == Boolean.class;
+        if (target == short.class) return source == Short.class;
+        if (target == byte.class) return source == Byte.class;
+        if (target == char.class) return source == Character.class;
+        return false;
+    }
+
+    /**
+     * Convert a value to the target type for constructor parameter matching.
+     */
+    private static Object convertValue(Object val, Class<?> type) {
+        if (type.isInstance(val))
+            return val;
+        if (val instanceof Number) {
+            Number num = (Number) val;
+            if (type == Integer.class || type == int.class)
+                return num.intValue();
+            if (type == Long.class || type == long.class)
+                return num.longValue();
+            if (type == Double.class || type == double.class)
+                return num.doubleValue();
+            if (type == Float.class || type == float.class)
+                return num.floatValue();
+            if (type == Short.class || type == short.class)
+                return num.shortValue();
+            if (type == Byte.class || type == byte.class)
+                return num.byteValue();
+            if (type == BigDecimal.class)
+                return new BigDecimal(num.toString());
+            if (type == BigInteger.class)
+                return BigInteger.valueOf(num.longValue());
+        }
+        if (type == String.class)
+            return val.toString();
+        return val;
     }
 
     @Override

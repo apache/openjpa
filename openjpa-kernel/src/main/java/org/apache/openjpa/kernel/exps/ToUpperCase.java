@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.kernel.exps;
 
+import java.util.Locale;
+
 import org.apache.openjpa.kernel.StoreContext;
 
 /**
@@ -25,10 +27,7 @@ import org.apache.openjpa.kernel.StoreContext;
  *
  * @author Abe White
  */
-class ToUpperCase
-    extends Val {
-
-    
+class ToUpperCase extends Val {
     private static final long serialVersionUID = 1L;
     private final Val _val;
 
@@ -51,8 +50,7 @@ class ToUpperCase
     @Override
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
-        return _val.eval(candidate, orig, ctx, params).toString().
-            toUpperCase();
+        return _val.eval(candidate, orig, ctx, params).toString().toUpperCase(Locale.ROOT);
     }
 
     @Override

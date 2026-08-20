@@ -70,7 +70,7 @@ public class TestUseSchemaElement extends /*TestCase*/ SingleEMFTestCase {
             em.getTransaction().commit();
         } catch (Throwable t) {
             em.getTransaction().rollback();
-            System.out.println(t.toString());
+            // System.out.println(t.toString());
         }
 
         ReverseMappingTool.Flags flags = new ReverseMappingTool.Flags();

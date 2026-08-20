@@ -483,4 +483,42 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
     public boolean isDetached() {
         return _detached;
     }
+
+    // Java 21 SequencedCollection methods.
+    // Not declared as @Override since they don't exist in Java 17's ArrayList,
+    // but at runtime on Java 21+ the JVM matches these to
+    // SequencedCollection/List default methods.
+
+    public Object getFirst() {
+        return get(0);
+    }
+
+    public Object getLast() {
+        return get(size() - 1);
+    }
+
+    public void addFirst(Object e) {
+        add(e);
+    }
+
+    public void addLast(Object e) {
+        add(e);
+    }
+
+    public Object removeFirst() {
+        return remove(0);
+    }
+
+    public Object removeLast() {
+        return remove(size() - 1);
+    }
+
+    public List reversed() {
+        if (!_directAccess && isDelayLoad()) {
+            load();
+        }
+        List copy = new java.util.ArrayList(this);
+        java.util.Collections.reverse(copy);
+        return java.util.Collections.unmodifiableList(copy);
+    }
 }

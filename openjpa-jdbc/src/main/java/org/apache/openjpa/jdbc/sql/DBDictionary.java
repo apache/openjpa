@@ -45,11 +45,13 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.text.MessageFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
+import java.time.Year;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,6 +70,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.function.Function;
 
 import javax.sql.DataSource;
 
@@ -105,7 +108,9 @@ import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.kernel.StateManagerImpl;
+import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.kernel.exps.Path;
+import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.identifier.IdentifierConfiguration;
@@ -295,11 +300,17 @@ public class DBDictionary
     public String concatenateFunction = "({0}||{1})";
     public String concatenateDelimiter = "'OPENJPATOKEN'";
     public String substringFunctionName = "SUBSTRING";
+    public String replaceFunctionName = "REPLACE";
+    public String leftFunctionName = "LEFT";
+    public String rightFunctionName = "RIGHT";
     public String currentDateFunction = "CURRENT_DATE";
     public String currentTimeFunction = "CURRENT_TIME";
     public String currentTimestampFunction = "CURRENT_TIMESTAMP";
+    public String naturalLogarithmFunction = "LN";
     public String dropTableSQL = "DROP TABLE {0}";
     public String extractDateTimeFieldFunction = "EXTRACT({0} FROM {1})";
+    public String ceilingFunction = "CEILING";
+    public String exceptFunction = "EXCEPT";
 
     // types
     public boolean storageLimitationsFatal = false;
@@ -400,6 +411,7 @@ public class DBDictionary
     public String xmlTypeEncoding = "UTF-8";
     public String uuidTypeName = "UUID";
     public String getStringVal = "";
+    public String typecastToStringTypeName = "CHAR";
 
     // schema metadata
     public boolean useSchemaName = true;
@@ -497,9 +509,13 @@ public class DBDictionary
 
     public boolean supportsUuidType = false;
 
+    public boolean supportsUnsizedCharOnCast = true;
+
+    public String integerCastTypeName = integerTypeName;
+
     // Naming utility and naming rules
     private DBIdentifierUtil namingUtil = null;
-    private Map<String, IdentifierRule> namingRules = new HashMap<>();
+    private final Map<String, IdentifierRule> namingRules = new HashMap<>();
     private IdentifierRule defaultNamingRule = null;  // cached for performance
 
     /**
@@ -524,12 +540,10 @@ public class DBDictionary
     protected ProxyManager _proxyManager;
 
     public DBDictionary() {
-        fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
-            "BIGINT", "BIT", "BLOB", "CLOB", "DATE", "DECIMAL", "DISTINCT",
-            "DOUBLE", "FLOAT", "INTEGER", "JAVA_OBJECT", "NULL", "NUMERIC",
-            "OTHER", "REAL", "REF", "SMALLINT", "STRUCT", "TIME", "TIMESTAMP",
-            "TINYINT",
-        }));
+        fixedSizeTypeNameSet.addAll(Arrays.asList("BIGINT", "BIT", "BLOB", "CLOB", "DATE", "DECIMAL", "DISTINCT",
+                "DOUBLE", "FLOAT", "INTEGER", "JAVA_OBJECT", "NULL", "NUMERIC",
+                "OTHER", "REAL", "REF", "SMALLINT", "STRUCT", "TIME", "TIMESTAMP",
+                "TINYINT"));
 
         // initialize the set of reserved SQL92 words from resource
         reservedWordSet.addAll(loadFromResource("sql-keywords.rsrc"));
@@ -597,7 +611,7 @@ public class DBDictionary
 
             // Auto-detect generated keys retrieval support unless user specified it.
             if (supportsGetGeneratedKeys == null) {
-                supportsGetGeneratedKeys =  (isJDBC3) ? metaData.supportsGetGeneratedKeys() : false;
+                supportsGetGeneratedKeys = isJDBC3 && metaData.supportsGetGeneratedKeys();
             }
             if (log.isInfoEnabled()) {
                 log.info(_loc.get("dict-info", new Object[] {
@@ -630,6 +644,10 @@ public class DBDictionary
 
         DBIdentifierRule columnNamingRule = new ColumnIdentifierRule(invalidColumnWordSet);
         namingRules.put(columnNamingRule.getName(), columnNamingRule);
+        // restoring default "empty" cfg
+        IdentifierRule rule = Normalizer.getNamingConfiguration().getDefaultIdentifierRule();
+        rule.setDelimitReservedWords(false);
+        rule.setReservedWords(Set.of());
     }
 
     //////////////////////
@@ -870,6 +888,24 @@ public class DBDictionary
     public OffsetDateTime getOffsetDateTime(ResultSet rs, int column) throws SQLException {
         Timestamp tst = rs.getTimestamp(column);
         return tst != null ? tst.toLocalDateTime().atZone(ZoneId.systemDefault()).toOffsetDateTime() : null;
+    }
+
+    /**
+     * Retrieve the specified column of the SQL ResultSet to the proper
+     * {@link Instant} java type.
+     */
+    public Instant getInstant(ResultSet rs, int column) throws SQLException {
+        Timestamp tst = rs.getTimestamp(column);
+        return tst != null ? tst.toInstant() : null;
+    }
+
+    /**
+     * Retrieve the specified column of the SQL ResultSet to the proper
+     * {@link Year} java type.
+     */
+    public Year getYear(ResultSet rs, int column) throws SQLException {
+        int val = rs.getInt(column);
+        return rs.wasNull() ? null : Year.of(val);
     }
 
     private ProxyManager getProxyManager() {
@@ -1337,6 +1373,22 @@ public class DBDictionary
     }
 
     /**
+     * Set the given Instant value as a parameter to the statement.
+     */
+    public void setInstant(PreparedStatement stmnt, int idx, Instant val, Column col)
+            throws SQLException {
+        setTimestamp(stmnt, idx, Timestamp.from(val), null, col);
+    }
+
+    /**
+     * Set the given Year value as a parameter to the statement.
+     */
+    public void setYear(PreparedStatement stmnt, int idx, Year val, Column col)
+            throws SQLException {
+        setInt(stmnt, idx, val.getValue(), col);
+    }
+
+    /**
      * Set the given value as a parameter to the statement.
      */
     public void setDouble(PreparedStatement stmnt, int idx, double val, Column col)
@@ -1501,7 +1553,6 @@ public class DBDictionary
         }
 
         Sized s;
-        Calendard c;
         switch (type) {
             case JavaTypes.BOOLEAN:
             case JavaTypes.BOOLEAN_OBJ:
@@ -1550,10 +1601,20 @@ public class DBDictionary
                 setBlobObject(stmnt, idx, val, col, store);
                 break;
             case JavaTypes.DATE:
-                setDate(stmnt, idx, (Date) val, col);
+                if (val instanceof Date) {
+                    setDate(stmnt, idx, (Date) val, col);
+                } else if (val instanceof Calendar) {
+                    setDate(stmnt, idx, ((Calendar) val).getTime(), col);
+                }
                 break;
             case JavaTypes.CALENDAR:
-                setCalendar(stmnt, idx, (Calendar) val, col);
+                if (val instanceof Calendar) {
+                    setCalendar(stmnt, idx, (Calendar) val, col);
+                } else if (val instanceof Date) {
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime((Date) val);
+                    setCalendar(stmnt, idx, cal, col);
+                }
                 break;
             case JavaTypes.LOCAL_DATE:
                 setLocalDate(stmnt, idx, (LocalDate) val, col);
@@ -1570,11 +1631,29 @@ public class DBDictionary
             case JavaTypes.OFFSET_DATETIME:
                 setOffsetDateTime(stmnt, idx, (OffsetDateTime) val, col);
                 break;
+            case JavaTypes.INSTANT:
+                setInstant(stmnt, idx, (Instant) val, col);
+                break;
+            case JavaTypes.YEAR:
+                setYear(stmnt, idx, (Year) val, col);
+                break;
             case JavaTypes.BIGDECIMAL:
-                setBigDecimal(stmnt, idx, (BigDecimal) val, col);
+                if (val instanceof BigDecimal) {
+                    setBigDecimal(stmnt, idx, (BigDecimal) val, col);
+                } else if (val instanceof BigInteger) {
+                    setBigDecimal(stmnt, idx, new BigDecimal((BigInteger) val), col);
+                } else {
+                    setBigDecimal(stmnt, idx, new BigDecimal(val.toString()), col);
+                }
                 break;
             case JavaTypes.BIGINTEGER:
-                setBigInteger(stmnt, idx, (BigInteger) val, col);
+                if (val instanceof BigInteger) {
+                    setBigInteger(stmnt, idx, (BigInteger) val, col);
+                } else if (val instanceof BigDecimal) {
+                    setBigInteger(stmnt, idx, ((BigDecimal) val).toBigInteger(), col);
+                } else {
+                    setBigInteger(stmnt, idx, new BigInteger(val.toString()), col);
+                }
                 break;
             case JavaTypes.NUMBER:
                 setNumber(stmnt, idx, (Number) val, col);
@@ -1607,33 +1686,38 @@ public class DBDictionary
                 setClob(stmnt, idx, (Clob) val, col);
                 break;
             case JavaSQLTypes.SQL_DATE:
-                if (val instanceof Calendard) {
-                    c = (Calendard) val;
-                    setDate(stmnt, idx, (java.sql.Date) c.value, c.calendar,
-                        col);
-                } else
+                if (val instanceof Calendard c) {
+                    setDate(stmnt, idx, (java.sql.Date) c.value, c.calendar, col);
+                } else if (val instanceof Date d) {
+                    setDate(stmnt, idx, d, col);
+                } else {
                     setDate(stmnt, idx, (java.sql.Date) val, null, col);
+                }
                 break;
             case JavaSQLTypes.REF:
                 setRef(stmnt, idx, (Ref) val, col);
                 break;
             case JavaSQLTypes.TIME:
-                if (val instanceof Calendard) {
-                    c = (Calendard) val;
+                if (val instanceof Calendard c) {
                     setTime(stmnt, idx, (Time) c.value, c.calendar, col);
                 } else
                     setTime(stmnt, idx, (Time) val, null, col);
                 break;
             case JavaSQLTypes.TIMESTAMP:
-                if (val instanceof Calendard) {
-                    c = (Calendard) val;
-                    setTimestamp(stmnt, idx, (Timestamp) c.value, c.calendar,
-                        col);
-                } else
+                if (val instanceof Calendard c) {
+                    setTimestamp(stmnt, idx, (Timestamp) c.value, c.calendar, col);
+                } else {
                     setTimestamp(stmnt, idx, (Timestamp) val, null, col);
+                }
                 break;
             case JavaTypes.UUID_OBJ:
-                setObject(stmnt, idx, val, Types.OTHER, col);
+                if (supportsUuidType && (col == null
+                        || col.getType() == Types.OTHER
+                        || col.getType() == 0)) {
+                    setObject(stmnt, idx, val, Types.OTHER, col);
+                } else {
+                    setString(stmnt, idx, val.toString(), col);
+                }
                 break;
             default:
                 if (col != null && (col.getType() == Types.BLOB
@@ -1648,8 +1732,7 @@ public class DBDictionary
      * Set a completely unknown parameter into a prepared statement.
      */
     public void setUnknown(PreparedStatement stmt, int idx, Object val, Column col) throws SQLException {
-        if (val instanceof Object[]) {
-            Object[] valArray = (Object[])val;
+        if (val instanceof Object[] valArray) {
             for (Object object : valArray) {
                 setUnknown(stmt, idx, col, object);
             }
@@ -1737,13 +1820,21 @@ public class DBDictionary
         else if (val instanceof OffsetDateTime) {
             setOffsetDateTime(stmnt, idx, (OffsetDateTime) val, col);
         }
+        else if (val instanceof Instant) {
+            setInstant(stmnt, idx, (Instant) val, col);
+        }
+        else if (val instanceof Year) {
+            setYear(stmnt, idx, (Year) val, col);
+        }
         else if (val instanceof Reader)
             setCharacterStream(stmnt, idx, (Reader) val,
                 (sized == null) ? 0 : sized.size, col);
-        else if (val instanceof UUID && supportsUuidType)
+        else if (val instanceof UUID && supportsUuidType
+                && (col == null || col.getType() == Types.OTHER
+                    || col.getType() == 0))
             setObject(stmnt, idx, (UUID) val, Types.OTHER, col);
-        else if (val instanceof UUID && !supportsUuidType) 
-            setString(stmnt, idx, ((UUID) val).toString(), col);
+        else if (val instanceof UUID)
+            setString(stmnt, idx, val.toString(), col);
         else
             throw new UserException(_loc.get("bad-param", val.getClass()));
     }
@@ -1857,6 +1948,10 @@ public class DBDictionary
                 case JavaSQLTypes.ASCII_STREAM:
                 case JavaSQLTypes.CHAR_STREAM:
                     return getPreferredType(Types.CLOB);
+                case JavaTypes.UUID_OBJ:
+                    if (supportsUuidType)
+                        return getPreferredType(Types.OTHER);
+                    return getPreferredType(Types.VARCHAR);
                 default:
                     return getPreferredType(Types.BLOB);
             }
@@ -1929,6 +2024,14 @@ public class DBDictionary
                 return getPreferredType(Types.TIME_WITH_TIMEZONE);
             case JavaTypes.OFFSET_DATETIME:
                 return getPreferredType(Types.TIMESTAMP_WITH_TIMEZONE);
+            case JavaTypes.INSTANT:
+                return getPreferredType(Types.TIMESTAMP);
+            case JavaTypes.YEAR:
+                return getPreferredType(Types.INTEGER);
+            case JavaTypes.UUID_OBJ:
+                if (supportsUuidType)
+                    return getPreferredType(Types.OTHER);
+                return getPreferredType(Types.VARCHAR);
             case JavaSQLTypes.SQL_ARRAY:
                 return getPreferredType(Types.ARRAY);
             case JavaSQLTypes.BINARY_STREAM:
@@ -1968,7 +2071,7 @@ public class DBDictionary
             return appendSize(col, autoAssignTypeName);
 
         if (col.getJavaType() == JavaTypes.UUID_OBJ) {
-            if (supportsUuidType) 
+            if (supportsUuidType)
                 return appendSize(col, uuidTypeName);
             else {
                 return appendSize(col, getTypeName(Types.VARCHAR));
@@ -2086,9 +2189,12 @@ public class DBDictionary
 
         if (colSize<=0  && fractionalTypeNameSet.contains(upperCaseTypeName)){
             // special handling for types with fractions
-            // Attention! We abuse @Column(scale=n)
-            // One can disable all fractions with @Column(scale=-1)
-            if (col.getDecimalDigits() != 0) { // the default
+            // JPA 3.2 @Column(secondPrecision=n) is the standard way
+            // Legacy: @Column(scale=n) also works, scale=-1 disables fractions
+            if (col.getSecondPrecision() >= 0) {
+                colSize = col.getSecondPrecision();
+            }
+            else if (col.getDecimalDigits() != 0) { // the default
                 colSize = col.getDecimalDigits() == -1 ? 0 : col.getDecimalDigits();
             }
             else {
@@ -2574,7 +2680,7 @@ public class DBDictionary
             sql.addAll(Arrays.asList(constraintSQL));
         }
 
-        return (String[]) sql.toArray(new String[sql.size()]);
+        return sql.toArray(new String[sql.size()]);
     }
 
     /**
@@ -2595,9 +2701,16 @@ public class DBDictionary
         else
             from = getFrom(sel, update);
         SQLBuffer where = getWhere(sel, update);
-        return toSelect(select, fetch, from, where, sel.getGrouping(),
-            sel.getHaving(), ordering, sel.isDistinct(), forUpdate,
+        SQLBuffer buf = toSelect(select, fetch, from, where,
+            sel.getGrouping(), sel.getHaving(), ordering,
+            sel.isDistinct(), forUpdate,
             sel.getStartIndex(), sel.getEndIndex(), sel);
+
+        SQLBuffer setOpBuf = sel.getSetOperatorBuffer();
+        if (setOpBuf != null)
+            buf.append(setOpBuf);
+
+        return buf;
     }
 
     /**
@@ -2865,6 +2978,27 @@ public class DBDictionary
         return toOperation(getSelectOperation(fetch), selects, from, where,
             group, having, order, distinct, start, end,
             getForUpdateClause(fetch, forUpdate, null));
+    }
+
+    /**
+     * Append the SQL representation of a JPA {@code NULLS FIRST} / {@code NULLS LAST}
+     * precedence to an {@code ORDER BY} buffer whose last appended term is
+     * already {@code &lt;expr&gt; ASC} or {@code &lt;expr&gt; DESC}.
+     * <p>
+     * Default implementation emits ANSI SQL {@code NULLS FIRST} / {@code NULLS LAST}.
+     * Dialects that do not support the ANSI syntax should override this method
+     * to emulate the behavior (e.g. using {@code &lt;expr&gt; IS NULL} as an
+     * auxiliary sort key).
+     *
+     * @param ordering the in-progress ORDER BY buffer
+     * @param nullPrecedence {@link QueryExpressions#NULLS_FIRST} or
+     *                       {@link QueryExpressions#NULLS_LAST}
+     */
+    public void appendNullsPrecedence(SQLBuffer ordering, int nullPrecedence) {
+        if (nullPrecedence == QueryExpressions.NULLS_FIRST)
+            ordering.append(" NULLS FIRST");
+        else if (nullPrecedence == QueryExpressions.NULLS_LAST)
+            ordering.append(" NULLS LAST");
     }
 
     /**
@@ -3145,6 +3279,40 @@ public class DBDictionary
         buf.append(")");
     }
 
+    public void replace(SQLBuffer buf, FilterValue from, FilterValue subs, FilterValue replacement) {
+        buf.append(replaceFunctionName).append("(");
+        from.appendTo(buf);
+        buf.append(", ");
+        subs.appendTo(buf);
+        buf.append(", ");
+        replacement.appendTo(buf);
+        buf.append(")");
+    }
+
+    public void left(SQLBuffer buf, FilterValue str, FilterValue length) {
+        buf.append(leftFunctionName).append("(");
+        str.appendTo(buf);
+        buf.append(", ");
+        if (length.getValue() instanceof Number) {
+            buf.append(Long.toString(toLong(length)));
+        } else {
+            length.appendTo(buf);
+        }
+        buf.append(")");
+    }
+
+    public void right(SQLBuffer buf, FilterValue str, FilterValue length) {
+        buf.append(rightFunctionName).append("(");
+        str.appendTo(buf);
+        buf.append(", ");
+        if (length.getValue() instanceof Number) {
+            buf.append(Long.toString(toLong(length)));
+        } else {
+            length.appendTo(buf);
+        }
+        buf.append(")");
+    }
+
     long toLong(FilterValue litValue) {
         return ((Number) litValue.getValue()).longValue();
     }
@@ -3183,17 +3351,17 @@ public class DBDictionary
      * @param lhs the left hand side of the math function
      * @param rhs the right hand side of the math function
      */
-    public void mathFunction(SQLBuffer buf, String op, FilterValue lhs,
-        FilterValue rhs) {
+    public void mathFunction(SQLBuffer buf, String op, FilterValue lhs, FilterValue rhs) {
         boolean castlhs = false;
         boolean castrhs = false;
-        Class lc = Filters.wrap(lhs.getType());
-        Class rc = Filters.wrap(rhs.getType());
+        Class<?> lc = Filters.wrap(lhs.getType());
+        Class<?> rc = Filters.wrap(rhs.getType());
         int type = 0;
-        if (requiresCastForMathFunctions && (lc != rc
-            || (lhs.isConstant() || rhs.isConstant()))) {
-            Class c = Filters.promote(lc, rc);
+        int rtype = 0;
+        if (requiresCastForMathFunctions && (lc != rc || (lhs.isConstant() || rhs.isConstant()))) {
+            Class<?> c = Filters.promote(lc, rc);
             type = getJDBCType(JavaTypes.getTypeCode(c), false);
+            rtype = type;
             if (type != Types.VARBINARY && type != Types.BLOB) {
                 castlhs = (lhs.isConstant() && rhs.isConstant()) || lc != c;
                 castrhs = (lhs.isConstant() && rhs.isConstant()) || rc != c;
@@ -3203,29 +3371,39 @@ public class DBDictionary
         boolean mod = "MOD".equals(op);
         boolean power = "POWER".equals(op);
         boolean round = "ROUND".equals(op);
+        if (round && castrhs) {
+            // the second argument of ROUND is an integer scale; casting it to
+            // the promoted numeric type of the first argument produces e.g.
+            // ROUND(x, CAST(? AS DOUBLE)), which databases reject
+            rtype = Types.INTEGER;
+        }
         if (mod || power || round) {
-            if (supportsModOperator && mod)
+            if (supportsModOperator && mod) {
                 op = "%";
-            else
+            } else {
                 buf.append(op);
+            }
         }
 
         buf.append("(");
 
-        if (castlhs)
+        if (castlhs) {
             appendCast(buf, lhs, type);
-        else
+        } else {
             lhs.appendTo(buf);
+        }
 
-        if ((mod && !supportsModOperator) || power || round)
+        if ((mod && !supportsModOperator) || power || round) {
             buf.append(", ");
-        else
+        } else {
             buf.append(" ").append(op).append(" ");
+        }
 
-        if (castrhs)
-            appendCast(buf, rhs, type);
-        else
+        if (castrhs) {
+            appendCast(buf, rhs, rtype);
+        } else {
             rhs.appendTo(buf);
+        }
 
         buf.append(")");
     }
@@ -3731,13 +3909,7 @@ public class DBDictionary
             checkNameLength(getFullIdentifier(table, false), maxTableNameLength, "long-table-name",
                 tableLengthIncludesSchema);
         buf.append("CREATE TABLE ").append(tableName);
-        if (supportsComments && table.hasComment()) {
-            buf.append(" ");
-            comment(buf, table.getComment());
-            buf.append("\n    (");
-        } else {
-            buf.append(" (");
-        }
+        buf.append(" (");
 
         // do this before getting the columns so we know how to handle
         // the last comma
@@ -3772,8 +3944,10 @@ public class DBDictionary
             }
         }
 
-        buf.append(endBuf.toString());
+        buf.append(endBuf);
         buf.append(")");
+        if (table.getOptions() != null && !table.getOptions().isEmpty())
+            buf.append(" ").append(table.getOptions());
         return new String[]{ buf.toString() };
     }
 
@@ -3791,8 +3965,7 @@ public class DBDictionary
      * <code>DROP TABLE &lt;table name&gt;</code> by default.
      */
     public String[] getDropTableSQL(Table table) {
-        String drop = MessageFormat.format(dropTableSQL, new Object[]{
-            getFullName(table, false) });
+        String drop = MessageFormat.format(dropTableSQL, getFullName(table, false));
         return new String[]{ drop };
     }
 
@@ -3871,8 +4044,16 @@ public class DBDictionary
 
         buf.append("INDEX ").append(indexName);
         buf.append(" ON ").append(getFullName(index.getTable(), false));
-        buf.append(" (").append(namingUtil.appendColumns(index.getColumns())).
-            append(")");
+        buf.append(" (");
+        Column[] cols = index.getColumns();
+        for (int i = 0; i < cols.length; i++) {
+            if (i > 0)
+                buf.append(", ");
+            buf.append(toDBName(cols[i].getIdentifier()));
+            if (index.isColumnDescending(cols[i]))
+                buf.append(" DESC");
+        }
+        buf.append(")");
 
         return new String[]{ buf.toString() };
     }
@@ -4005,6 +4186,8 @@ public class DBDictionary
             else if (autoAssignClause != null)
                 buf.append(" ").append(autoAssignClause);
         }
+        if (col.getOptions() != null && !col.getOptions().isEmpty())
+            buf.append(" ").append(col.getOptions());
         return buf.toString();
     }
 
@@ -4050,7 +4233,10 @@ public class DBDictionary
             return null;
         if (fk.getColumns().length > 0 && !supportsForeignKeysComposite)
             return null;
-        if (fk.getDeleteAction() == ForeignKey.ACTION_NONE)
+        // Skip logical FKs (ACTION_NONE) unless they have an explicit name
+        // from a JPA @ForeignKey annotation, which signals a physical constraint.
+        if (fk.getDeleteAction() == ForeignKey.ACTION_NONE
+            && DBIdentifier.isNull(fk.getIdentifier()))
             return null;
         if (fk.isDeferred() && !supportsDeferredForeignKeyConstraints())
             return null;
@@ -4297,6 +4483,15 @@ public class DBDictionary
     public boolean isSystemSequence(String name, String schema, boolean targetSchema) {
         return isSystemSequence(DBIdentifier.newSequence(name),
             DBIdentifier.newSchema(schema), targetSchema);
+    }
+
+    /**
+     * Subclasses can override this method to implement custom logic
+     * @param seq - Sequence to check
+     * @return true if Sequence can be deleted, false otherwise
+     */
+    public boolean isDroppable(Sequence seq) {
+        return true;
     }
 
     /**
@@ -4799,7 +4994,7 @@ public class DBDictionary
                 }
                 importedKeyList.add(nfk);
             }
-            return (ForeignKey[]) importedKeyList.toArray
+            return importedKeyList.toArray
                 (new ForeignKey[importedKeyList.size()]);
         }
     }
@@ -5004,10 +5199,8 @@ public class DBDictionary
     }
 
     protected String getGenKeySeqName(String query, Column col) {
-        return MessageFormat.format(query, new Object[]{
-                toDBName(col.getIdentifier()), getFullName(col.getTable(), false),
-                getGeneratedKeySequenceName(col),
-            });
+        return MessageFormat.format(query, toDBName(col.getIdentifier()), getFullName(col.getTable(), false),
+                getGeneratedKeySequenceName(col));
     }
 
     /**
@@ -5036,6 +5229,18 @@ public class DBDictionary
         if (_procs.containsKey(procedure)) {
             return _procs.get(procedure);
         }
+        StoredProcedure sp = findStoredProcedure(meta, catalog, schema, procedure);
+        // If not found and name has uppercase chars, try lowercase
+        // (databases like PostgreSQL fold unquoted identifiers to lowercase)
+        if (sp == null && !procedure.equals(procedure.toLowerCase(Locale.ROOT))) {
+            sp = findStoredProcedure(meta, catalog, schema, procedure.toLowerCase(Locale.ROOT));
+        }
+        _procs.put(procedure, sp);
+        return sp;
+    }
+
+    private StoredProcedure findStoredProcedure(DatabaseMetaData meta, DBIdentifier catalog, DBIdentifier schema,
+                                                String procedure) throws SQLException {
         ResultSet rs = meta.getProcedureColumns(
                 getCatalogNameForMetadata(catalog),
                 getSchemaNameForMetadata(schema),
@@ -5056,7 +5261,6 @@ public class DBDictionary
                 sp.setName(procedure);
             }
         }
-        _procs.put(procedure, sp);
         return sp;
     }
 
@@ -5088,9 +5292,7 @@ public class DBDictionary
 
         // the generic dbdictionary is not considered a supported dict; all
         // other concrete dictionaries are
-        if (c == DBDictionary.class)
-            return false;
-        return true;
+        return c != DBDictionary.class;
     }
 
     @Override
@@ -5123,7 +5325,9 @@ public class DBDictionary
             selectWordSet.addAll(Arrays.asList(StringUtil.split(selectWords.toUpperCase(Locale.ENGLISH), ",", 0)));
 
         if (invalidColumnWordSet.isEmpty()) {
-            invalidColumnWordSet.addAll(loadFromResource("sql-invalid-column-names.rsrc"));
+            Collection<String> invalidColumns = loadFromResource("sql-invalid-column-names.rsrc");
+            invalidColumnWordSet.addAll(invalidColumns);
+            namingRules.get(DBIdentifierType.COLUMN.name()).setReservedWords(invalidColumns);
         }
 
         // initialize the error codes
@@ -5406,13 +5610,7 @@ public class DBDictionary
      * Used by some mappings to represent data that has already been
      * serialized so that we don't have to serialize multiple times.
      */
-    public static class SerializedData {
-
-        public final byte[] bytes;
-
-        public SerializedData(byte[] bytes) {
-            this.bytes = bytes;
-        }
+    public record SerializedData(byte[] bytes) {
     }
 
     /**
@@ -5805,7 +6003,7 @@ public class DBDictionary
      */
     @Override
     public boolean getSupportsDelimitedIdentifiers() {
-        return (supportsDelimitedIdentifiers == null ? false : supportsDelimitedIdentifiers);
+        return (supportsDelimitedIdentifiers != null && supportsDelimitedIdentifiers);
     }
 
     /**
@@ -6054,68 +6252,110 @@ public class DBDictionary
         }
     }
 
+    public String toJDBCEscapedDateTimeLiteral(String escape, int parseType) {
+        return escape; // default: passthrough
+    }
+
+    public String getExtractField(DateTimeExtractField extField) {
+        return extField.name();
+    }
+
     protected boolean isUsingRange(long start, long end) {
-		return isUsingOffset(start) || isUsingLimit(end);
-	}
-
-	protected boolean isUsingOffset(long start) {
-		return start != 0;
-	}
-
-	protected boolean isUsingLimit(long end) {
-		return end != Long.MAX_VALUE;
-	}
-
-	protected boolean isUsingOrderBy(SQLBuffer sql) {
-		return sql != null && !sql.isEmpty();
-	}
-
-	protected boolean versionEqualOrLaterThan(int maj, int min) {
-    	return (major > maj) || (major == maj && minor >= min);
+        return isUsingOffset(start) || isUsingLimit(end);
     }
 
-	protected boolean versionEqualOrEarlierThan(int maj, int min) {
-    	return (major < maj) || (major == maj && minor <= min);
+    protected boolean isUsingOffset(long start) {
+        return start != 0;
     }
 
-	protected boolean versionLaterThan(int maj) {
-    	return (major > maj);
+    protected boolean isUsingLimit(long end) {
+        return end != Long.MAX_VALUE;
     }
 
-	/**
-	 * Gets major version of the database server.
-	 */
-	public final int getMajorVersion() {
-		return major;
-	}
+    protected boolean isUsingOrderBy(SQLBuffer sql) {
+        return sql != null && !sql.isEmpty();
+    }
 
-	/**
-	 * Sets major version of the database server.
-	 */
-	public void setMajorVersion(int maj) {
-		major = maj;
-	}
+    protected boolean versionEqualOrLaterThan(int maj, int min) {
+        return (major > maj) || (major == maj && minor >= min);
+    }
 
-	/**
-	 * Gets minor version of the database server.
-	 */
-	public final int getMinorVersion() {
-		return minor;
-	}
+    protected boolean versionEqualOrEarlierThan(int maj, int min) {
+        return (major < maj) || (major == maj && minor <= min);
+    }
 
-	/**
-	 * Sets minor version of the database server.
-	 */
-	public void setMinorVersion(int min) {
-		minor = min;
-	}
+    protected boolean versionLaterThan(int maj) {
+        return (major > maj);
+    }
+
+    /**
+     * Gets major version of the database server.
+     */
+    public final int getMajorVersion() {
+        return major;
+    }
+
+    /**
+     * Sets major version of the database server.
+     */
+    public void setMajorVersion(int maj) {
+        major = maj;
+    }
+
+    /**
+     * Gets minor version of the database server.
+     */
+    public final int getMinorVersion() {
+        return minor;
+    }
+
+    /**
+     * Sets minor version of the database server.
+     */
+    public void setMinorVersion(int min) {
+        minor = min;
+    }
 
     String nullSafe(String s) {
         return s == null ? "" : s;
     }
 
-	public int applyRange(Select select, int count) {
-		return count;
-	}
+    public int applyRange(Select select, int count) {
+        return count;
+    }
 
+    //package private for internal use
+    static void emulateNullsPrecedence(SQLBuffer ordering, int nullPrecedence, Function<String, String> replace) {
+        if (nullPrecedence != QueryExpressions.NULLS_FIRST
+                && nullPrecedence != QueryExpressions.NULLS_LAST) {
+            return;
+        }
+        String sql = ordering.getSQL();
+        int lastAsc = sql.lastIndexOf(" ASC");
+        int lastDesc = sql.lastIndexOf(" DESC");
+        boolean asc;
+        int termDirStart;
+        int termDirEnd;
+        if (lastAsc > lastDesc) {
+            asc = true;
+            termDirStart = lastAsc;
+            termDirEnd = lastAsc + " ASC".length();
+        } else if (lastDesc >= 0) {
+            asc = false;
+            termDirStart = lastDesc;
+            termDirEnd = lastDesc + " DESC".length();
+        } else {
+            return;
+        }
+        if ((nullPrecedence == QueryExpressions.NULLS_FIRST && asc)
+                || (nullPrecedence == QueryExpressions.NULLS_LAST && !asc)) {
+            return;
+        }
+        int termStart = Math.max(sql.lastIndexOf(", ", termDirStart), -1);
+        termStart = (termStart < 0) ? 0 : termStart + 2;
+        String expr = sql.substring(termStart, termDirStart);
+        String direction = asc ? "ASC" : "DESC";
+        String replacement = replace.apply(expr) + " " + direction;
+        ordering.replaceSqlString(termStart, termDirEnd, replacement);
+    }
 }

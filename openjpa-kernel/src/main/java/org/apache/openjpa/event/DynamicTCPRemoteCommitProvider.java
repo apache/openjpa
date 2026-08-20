@@ -20,12 +20,10 @@ package org.apache.openjpa.event;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.security.AccessController;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 
 public abstract class DynamicTCPRemoteCommitProvider extends TCPRemoteCommitProvider {
 
@@ -73,7 +71,7 @@ public abstract class DynamicTCPRemoteCommitProvider extends TCPRemoteCommitProv
                 String localhostAddress = InetAddress.getLocalHost().getHostAddress();
 
                 for (String dynamic : dynamicAddresses) {
-                    InetAddress tmpAddress = AccessController.doPrivileged(J2DoPrivHelper.getByNameAction(dynamic));
+                    InetAddress tmpAddress = InetAddress.getByName(dynamic);
 
                     if (localhostAddress.equals(dynamic)) {
                         // This string matches the hostname for for ourselves, we

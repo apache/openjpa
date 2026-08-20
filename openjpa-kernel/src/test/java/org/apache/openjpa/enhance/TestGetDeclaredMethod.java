@@ -43,9 +43,9 @@ public class TestGetDeclaredMethod {
 
     @Test
     public void testMostDerived() throws NoSuchMethodException {
-        Method impl = Impl.class.getDeclaredMethod("getObject", null);
-        Method iface = Iface.class.getDeclaredMethod("getObject", null);
-        Method other = Other.class.getDeclaredMethod("getObject", null);
+        Method impl = Impl.class.getDeclaredMethod("getObject");
+        Method iface = Iface.class.getDeclaredMethod("getObject");
+        Method other = Other.class.getDeclaredMethod("getObject");
         assertEquals(Impl.class, Reflection.mostDerived(impl, iface)
             .getDeclaringClass());
         assertEquals(Impl.class, Reflection.mostDerived(iface, impl)

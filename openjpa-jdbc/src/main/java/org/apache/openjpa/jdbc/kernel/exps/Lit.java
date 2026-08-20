@@ -30,11 +30,7 @@ import org.apache.openjpa.kernel.exps.Literal;
  *
  * @author Abe White
  */
-public class Lit
-    extends Const
-    implements Literal {
-
-    
+public class Lit extends Const implements Literal {
     private static final long serialVersionUID = 1L;
     private Object _val;
     private int _ptype;
@@ -46,9 +42,7 @@ public class Lit
     public Lit(Object val, int ptype) {
         _val = val;
         _ptype = ptype;
-        if (_ptype == Literal.TYPE_DATE || _ptype == Literal.TYPE_TIME ||
-            _ptype == Literal.TYPE_TIMESTAMP)
-            _isRaw = true;
+        _isRaw = _ptype == Literal.TYPE_DATE || _ptype == Literal.TYPE_TIME || _ptype == Literal.TYPE_TIMESTAMP;
     }
 
     @Override
@@ -100,9 +94,7 @@ public class Lit
     /**
      * Expression state.
      */
-    private static class LitExpState
-        extends ConstExpState {
-
+    private static class LitExpState extends ConstExpState {
         public Object sqlValue;
         public int otherLength;
     }
@@ -114,8 +106,9 @@ public class Lit
         if (other != null) {
             lstate.sqlValue = other.toDataStoreValue(sel, ctx, otherState,_val);
             lstate.otherLength = other.length(sel, ctx, otherState);
-        } else
+        } else {
             lstate.sqlValue = _val;
+        }
     }
 
     @Override
@@ -125,40 +118,41 @@ public class Lit
             sql.appendValue(((Object[]) lstate.sqlValue)[index], lstate.getColumn(index));
             // OPENJPA-2631:  Return so as not to go into sql.appendValue a second time below.
             return;
-        } else if (_isRaw) {
+        }
+        if (_isRaw) {
             int parseType = getParseType();
-            if (parseType == Literal.TYPE_SQ_STRING || parseType == Literal.TYPE_STRING) {
-                lstate.sqlValue = new Raw("'" + _val.toString() + "'");
-            } else if (parseType == Literal.TYPE_BOOLEAN) {
-                Boolean boolVal = (Boolean)_val;
-                Object dbRepresentation = ctx.store.getDBDictionary().getBooleanRepresentation().getRepresentation(boolVal);
-                if (dbRepresentation instanceof String) {
-                    lstate.sqlValue = new Raw("'" + dbRepresentation.toString() + "'");
-                } else if (dbRepresentation instanceof Boolean ||
-                           dbRepresentation instanceof Integer) {
-                    lstate.sqlValue = new Raw(dbRepresentation.toString());
-                } else {
-                    // continue without Raw
-                    lstate.sqlValue = _val;
-                }
-            } else if (parseType == Literal.TYPE_ENUM) {
-                StringBuilder value = new StringBuilder();
-                boolean isOrdinal = false;
-                if (lstate.sqlValue instanceof Integer)
-                    isOrdinal = true;
-                if (!isOrdinal)
-                    value.append("'");
-                value.append(lstate.sqlValue);
-                if (!isOrdinal)
-                    value.append("'");
-                lstate.sqlValue = new Raw(value.toString());
-            } else if (parseType == Literal.TYPE_DATE || parseType == Literal.TYPE_TIME ||
-                parseType == Literal.TYPE_TIMESTAMP) {
-                lstate.sqlValue = new Raw(_val.toString());
-            } else if (parseType == Literal.TYPE_NUMBER) {
-                lstate.sqlValue = new Raw(_val.toString());
-            } else {
-                lstate.sqlValue = new Raw(_val instanceof String ? "'"+_val+"'" : _val.toString());
+            switch (parseType) {
+                case Literal.TYPE_SQ_STRING:
+                case Literal.TYPE_STRING:
+                    lstate.sqlValue = new Raw("'" + _val + "'");
+                    break;
+                case Literal.TYPE_BOOLEAN:
+                    Boolean boolVal = (Boolean)_val;
+                    Object dbRepresentation = ctx.store.getDBDictionary().getBooleanRepresentation().getRepresentation(boolVal);
+                    if (dbRepresentation instanceof String) {
+                        lstate.sqlValue = new Raw("'" + dbRepresentation.toString() + "'");
+                    } else if (dbRepresentation instanceof Boolean || dbRepresentation instanceof Integer) {
+                        lstate.sqlValue = new Raw(dbRepresentation.toString());
+                    } else {
+                        // continue without Raw
+                        lstate.sqlValue = _val;
+                    }
+                    break;
+                case Literal.TYPE_ENUM:
+                    String delim = lstate.sqlValue instanceof Integer ? "" : "'";
+                    lstate.sqlValue = new Raw(delim + lstate.sqlValue + delim);
+                    break;
+                case Literal.TYPE_DATE:
+                case Literal.TYPE_TIME:
+                case Literal.TYPE_TIMESTAMP:
+                    lstate.sqlValue = new Raw(ctx.store.getDBDictionary().toJDBCEscapedDateTimeLiteral(_val.toString(), parseType));
+                    break;
+                case Literal.TYPE_NUMBER:
+                    lstate.sqlValue = new Raw(_val.toString());
+                    break;
+                default:
+                    lstate.sqlValue = new Raw(_val instanceof String ? "'" + _val + "'" : _val.toString());
+                    break;
             }
         }
         Object useLiteral = ctx.fetch.getHint(QueryHints.HINT_USE_LITERAL_IN_SQL);

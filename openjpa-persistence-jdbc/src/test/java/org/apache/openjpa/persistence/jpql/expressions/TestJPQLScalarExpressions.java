@@ -209,7 +209,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
         assertEquals("the result is not female", "Female", result3[1]);
         assertEquals("the name is not shannon", expectedShannonName, result3[0]);
         result3 = (Object[]) rs3.get(2);
-        assertEquals("the result is not male", "Male", result3[1]);
+        assertEquals("the result is not male", "Male", ("" + result3[1]).trim()); // Male can be padded with spaces
         assertEquals("the name is not seetha", "Seetha", result3[0]);
 
         // boolean literal in case expression

@@ -47,8 +47,7 @@ public class TestMemberProvider {
     @Test
     public void testMethod()
         throws NoSuchMethodException, IOException, ClassNotFoundException {
-        MemberProvider b = new MemberProvider(
-            getClass().getDeclaredMethod("testMethod", null));
+        MemberProvider b = new MemberProvider(getClass().getDeclaredMethod("testMethod"));
         MemberProvider b2 = roundtrip(b);
         assertEquals(b.getMember(), b2.getMember());
     }

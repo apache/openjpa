@@ -19,13 +19,14 @@
 package org.apache.openjpa.lib.identifier;
 
 import java.io.Serializable;
+import java.util.Locale;
 
 /**
  * Base identifer implementation.
  */
 public class IdentifierImpl implements Identifier, Serializable {
 
-    
+
     private static final long serialVersionUID = 1L;
     private String _name = null;
     private boolean nameDelimited = false;
@@ -64,7 +65,7 @@ public class IdentifierImpl implements Identifier, Serializable {
         if (_name == null) {
             return super.hashCode();
         }
-        return _name.toUpperCase().hashCode();
+        return _name.toUpperCase(Locale.ROOT).hashCode();
     }
 
     @Override

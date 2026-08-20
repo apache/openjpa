@@ -58,6 +58,7 @@ public class TestHSQLSequence extends SQLListenerTestCase {
 
         super.setUp(HSQLEmployee.class, HSQLEmployee2.class, DROP_TABLES,
                 "openjpa.ConnectionFactoryProperties", "PrintParameters=true"
+                //, "openjpa.Log", "SQL=TRACE,Tests=TRACE"
                 );
         assertNotNull(emf);
 
@@ -68,15 +69,18 @@ public class TestHSQLSequence extends SQLListenerTestCase {
             em = emf.createEntityManager();
             // Drop all sequences to eliminate non-consecutive "SELECT NEXT VALUE FOR ..."
             assertNotNull(em);
-            Query q = em.createNativeQuery(
-                    "SELECT SEQUENCE_SCHEMA, SEQUENCE_NAME FROM INFORMATION_SCHEMA.SYSTEM_SEQUENCES");
+            Query q = em.createNativeQuery("SELECT SEQUENCE_SCHEMA, SEQUENCE_NAME FROM INFORMATION_SCHEMA.SYSTEM_SEQUENCES");
             List<Object[]> rs = q.getResultList();
             em.getTransaction().begin();
             for(Object[] os : rs) {
                 String schemaQualifier = (String)os[0];
                 String schemaName = (String)os[1];
-                if( "PUBLIC".equals(schemaQualifier) && !schemaName.equals("HEMP_SEQ")) {
-                    q = em.createNativeQuery("DROP SEQUENCE " + schemaName);
+                if ("PUBLIC".equals(schemaQualifier) && !schemaName.equals("HEMP_SEQ")) {
+                    String schema = schemaName;
+                    if (schemaName.contains(" ")) {
+                        schema = dict.leadingDelimiter + schemaName + dict.trailingDelimiter;
+                    }
+                    q = em.createNativeQuery("DROP SEQUENCE " + schema);
                     q.executeUpdate();
                 }
             }

@@ -20,6 +20,8 @@ package org.apache.openjpa.persistence.jdbc.kernel;
 
 import jakarta.persistence.EntityManager;
 
+import java.util.Locale;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.jdbc.sqlcache.Address;
@@ -63,7 +65,7 @@ public class TestUpdateWithSubSelect extends SQLListenerTestCase {
           .executeUpdate();
         em.getTransaction().commit();
         assertEquals(1,sql.size());
-        String sqlString = sql.get(0).toUpperCase().trim();
+        String sqlString = sql.get(0).toUpperCase(Locale.ROOT).trim();
         assertTrue(sqlString.startsWith("UPDATE"));
         // assert JOIN condition
         assertTrue(sqlString.indexOf("T0.ADDRESS_ID = T1.ID") != -1);

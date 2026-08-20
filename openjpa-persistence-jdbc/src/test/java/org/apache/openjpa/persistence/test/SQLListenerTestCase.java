@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.jdbc.JDBCListener;
 
 /**
@@ -57,9 +58,17 @@ public abstract class SQLListenerTestCase
      * @param sqlExp the SQL expression. E.g., "SELECT FOO .*"
      */
     public void assertSQL(String sqlExp) {
+        DBDictionary dict = getDBDictionary();
         for (String statement : sql) {
-            if (statement.matches(sqlExp))
+            if (statement.matches(sqlExp)) {
                 return;
+            }
+            String noDelims = statement
+                    .replace(dict.getLeadingDelimiter(), "")
+                    .replace(dict.getTrailingDelimiter(), "");
+            if (noDelims.matches(sqlExp)) {
+                return;
+            }
         }
 
         fail("Expected regular expression\r\n <" + sqlExp

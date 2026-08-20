@@ -24,8 +24,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.net.URI;
 import java.net.URL;
-import java.security.AccessController;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -33,11 +33,15 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 
 import javax.sql.DataSource;
 
@@ -52,7 +56,6 @@ import org.apache.openjpa.lib.jdbc.DelegatingDataSource;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.MetaDataSerializer;
 import org.apache.openjpa.lib.util.Files;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.StringUtil;
@@ -101,6 +104,21 @@ public class SchemaTool {
 
     protected static final Localizer _loc = Localizer.forPackage(SchemaTool.class);
 
+    // Tables dropped by script execution during JPA schema generation.
+    // Only active when SpecCompliantSchemaGeneration is enabled (TCK mode).
+    // Prevents buildSchema/add from re-creating tables that were explicitly
+    // dropped by schema gen scripts within the same schema generation flow.
+    private static final java.util.Set<String> _droppedTables =
+        java.util.Collections.synchronizedSet(new java.util.HashSet<>());
+
+    /**
+     * Clear the dropped tables tracking set. Called at the start of each
+     * schema generation flow to prevent cross-EMF contamination.
+     */
+    public static void clearDroppedTables() {
+        _droppedTables.clear();
+    }
+
     protected final JDBCConfiguration _conf;
     protected final DataSource _ds;
     protected final Log _log;
@@ -121,6 +139,7 @@ public class SchemaTool {
     protected boolean _fullDB = false;
     protected String _sqlTerminator = ";";
     protected String _scriptToExecute = null;
+    protected java.io.Reader _scriptReader = null;
 
     /**
      * Default constructor. Tools constructed this way will not have an
@@ -343,6 +362,14 @@ public class SchemaTool {
     }
 
     /**
+     * Sets a Reader to use as the script source instead of a resource path.
+     * When set, this takes precedence over {@link #setScriptToExecute}.
+     */
+    public void setScriptReader(java.io.Reader scriptReader) {
+        _scriptReader = scriptReader;
+    }
+
+    /**
      * Return the schema group the tool will act on.
      */
     public SchemaGroup getSchemaGroup() {
@@ -406,7 +433,11 @@ public class SchemaTool {
      */
     protected void drop()
         throws SQLException {
-        drop(getDBSchemaGroup(false), assertSchemaGroup());
+        // When writing to a script file, don't consider database state
+        // so that FK constraint drops are always generated regardless
+        // of whether the tables currently exist in the DB.
+        boolean considerDb = (_writer == null);
+        drop(getDBSchemaGroup(false), assertSchemaGroup(), considerDb);
     }
 
     /**
@@ -479,12 +510,17 @@ public class SchemaTool {
         Collection<Table> tables = new LinkedHashSet<>();
         for (Schema schema : schemas) {
             Table[] ts = schema.getTables();
-            for (Table t : ts) {
-                tables.add(t);
-            }
+            Collections.addAll(tables, ts);
         }
         Table[] tableArray = tables.toArray(new Table[tables.size()]);
         Connection conn = _ds.getConnection();
+        // Truncate is a best-effort operation: the repo SchemaGroup may
+        // declare tables the dialect never actually created (e.g.
+        // OPENJPA_SEQUENCE_TABLE on dialects that prefer native sequences,
+        // or tables in other schemas). Log missing-table errors instead of
+        // aborting.
+        boolean savedIgnore = _ignoreErrs;
+        _ignoreErrs = true;
         try {
             String[] sql = _conf.getDBDictionaryInstance()
                 .getDeleteTableContentsSQL(tableArray, conn);
@@ -492,58 +528,122 @@ public class SchemaTool {
                 _log.warn(_loc.get("delete-table-contents"));
             }
         } finally {
+            _ignoreErrs = savedIgnore;
             closeConnection(conn);
         }
     }
 
+    private BufferedReader getScriptReader() throws IOException {
+        BufferedReader reader = null;
+        if (_scriptReader != null) {
+            reader = (_scriptReader instanceof BufferedReader br) ? br : new BufferedReader(_scriptReader);
+        } else {
+            URL url = null;
+            // Try file: URI or absolute path first
+            if (_scriptToExecute.startsWith("file:")) {
+                try {
+                    url = new URI(_scriptToExecute).toURL();
+                } catch (Exception e) {
+                    // fall through to classloader lookup
+                }
+            } else {
+                File f = new File(_scriptToExecute);
+                if (f.isAbsolute() && f.exists()) {
+                    url = f.toURI().toURL();
+                }
+            }
+            // Fall back to classloader resource lookup
+            if (url == null) {
+                url = _conf.getClassResolverInstance()
+                    .getClassLoader(SchemaTool.class, null)
+                    .getResource(_scriptToExecute);
+            }
+            if (url == null) {
+                _log.error(_loc.get("generating-execute-script-not-found", _scriptToExecute));
+                return null;
+            }
+            _log.info(_loc.get("generating-execute-script", _scriptToExecute));
+            reader = new BufferedReader(new InputStreamReader(url.openStream()));
+        }
+        return reader;
+    }
+
     protected void executeScript() throws SQLException {
-        if (_scriptToExecute == null) {
+        if (_scriptReader == null && StringUtil.isBlank(_scriptToExecute)) {
             _log.warn(_loc.get("generating-execute-script-not-defined"));
             return;
         }
 
-        URL url = AccessController.doPrivileged(
-                J2DoPrivHelper.getResourceAction(_conf.getClassResolverInstance().
-                        getClassLoader(SchemaTool.class, null), _scriptToExecute));
-
-        if (url == null) {
-            _log.error(_loc.get("generating-execute-script-not-found", _scriptToExecute));
-            return;
-        }
-
-        _log.info(_loc.get("generating-execute-script", _scriptToExecute));
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new InputStreamReader(url.openStream()));
-            String sql;
+        try (BufferedReader reader = getScriptReader()) {
+            if (reader == null) {
+                return;
+            }
+            String line;
             List<String> script = new ArrayList<>();
-            while ((sql = reader.readLine()) != null) {
-                sql = sql.trim();
-                if (sql.startsWith("--") || sql.startsWith("/*") || sql.startsWith("//")) {
+            StringBuilder stmt = new StringBuilder();
+            AtomicBoolean insideMultilineComments = new AtomicBoolean(false);
+            Function<String, String> stripComments = (str) -> {
+                boolean inside = insideMultilineComments.get();
+                while (true) {
+                    int multiStartIdx = str.indexOf("/*");
+                    if (!inside && multiStartIdx > -1) {
+                        inside = true;
+                    }
+                    int multiEndIdx = str.indexOf("*/");
+                    if (inside) {
+                        int cutStart = multiStartIdx > -1 ? multiStartIdx : 0;
+                        if (multiEndIdx > -1) {
+                            inside = false;
+                            str = str.substring(0, cutStart) + str.substring(multiEndIdx + 2);
+                        } else {
+                            str = str.substring(0, cutStart);
+                        }
+                    }
+                    if (multiStartIdx < 0 && multiEndIdx < 0) {
+                        break;
+                    }
+                }
+                insideMultilineComments.set(inside);
+                return str;
+            };
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                // Skip full-line comments
+                if (line.startsWith("--") || line.startsWith("//") || line.isEmpty()) {
                     continue;
                 }
-
-                int semiColonPosition = sql.indexOf(";"); // ';' can be in string, don't blindly drop it
-                if (sql.endsWith(";")) {
-                    sql = sql.substring(0, sql.length() - 1);
+                // search for start of multilineComments
+                line = stripComments.apply(line);
+                // Strip inline -- comments
+                int dashIdx = line.indexOf("--");
+                if (dashIdx > 0) {
+                    line = line.substring(0, dashIdx).trim();
                 }
-                if (sql.isEmpty()) {
+                if (line.isEmpty()) {
                     continue;
                 }
-                script.add(sql);
+                // Accumulate lines into statements, split on ;
+                if (line.endsWith(";")) {
+                    stmt.append(' ')
+                        .append(line, 0, line.length() - 1);
+                    String sql = stmt.toString().trim();
+                    if (!sql.isEmpty()) {
+                        script.add(sql);
+                    }
+                    stmt.setLength(0);
+                } else {
+                    stmt.append(' ').append(line);
+                }
+            }
+            // Handle final statement without trailing ;
+            String last = stmt.toString().trim();
+            if (!last.isEmpty()) {
+                script.add(last);
             }
 
             executeSQL(script.toArray(new String[script.size()]));
         } catch (IOException e) {
             _log.error(e.getMessage(), e);
-        } finally {
-            try {
-                if (reader != null) {
-                    reader.close();
-                }
-            } catch (IOException e) {
-                _log.error(e.getMessage(), e);
-            }
         }
     }
 
@@ -742,7 +842,13 @@ public class SchemaTool {
                     dbTable = db.findTable(value, tab.getQualifiedPath());
                 }
                 for (ForeignKey foreignKey : fks) {
-                    if (!foreignKey.isLogical() && dbTable != null) {
+                    // Include physical FKs, and also named logical FKs
+                    // when writing to a script (e.g. @SecondaryTable FK)
+                    boolean include = !foreignKey.isLogical()
+                        || (_writer != null
+                            && !DBIdentifier.isNull(
+                                foreignKey.getIdentifier()));
+                    if (include && dbTable != null) {
                         fk = findForeignKey(dbTable, foreignKey);
                         if (fk == null) {
                             if (addForeignKey(foreignKey))
@@ -753,6 +859,10 @@ public class SchemaTool {
                         }
                         else if (!foreignKey.equalsForeignKey(fk))
                             _log.warn(_loc.get("bad-fk", fk, dbTable));
+                    }
+                    // Script mode: add named FK even without dbTable
+                    else if (include && _writer != null && dbTable == null) {
+                        addForeignKey(foreignKey);
                     }
                 }
             }
@@ -971,20 +1081,31 @@ public class SchemaTool {
                     fks = tab.getForeignKeys();
                     dbTable = db.findTable(tab);
                     for (ForeignKey foreignKey : fks) {
-                        if (foreignKey.isLogical())
-                            continue;
+                        // Skip logical FKs, but include named logical
+                        // FKs when writing to a script (e.g. @SecondaryTable)
+                        if (foreignKey.isLogical()) {
+                            if (_writer == null || DBIdentifier.isNull(
+                                    foreignKey.getIdentifier()))
+                                continue;
+                        }
 
                         fk = null;
                         if (dbTable != null)
                             fk = findForeignKey(dbTable, foreignKey);
+                        // When writing to a script, always generate FK drops
+                        // from metadata regardless of DB state
+                        if (_writer != null) {
+                            dropForeignKey(foreignKey);
+                            if (fk != null && dbTable != null)
+                                dbTable.removeForeignKey(fk);
+                            continue;
+                        }
                         if (dbTable == null || fk == null)
                             continue;
 
-                        if (dropForeignKey(foreignKey))
-                            if (dbTable != null)
-                                dbTable.removeForeignKey(fk);
-                            else
-                                _log.warn(_loc.get("drop-fk", foreignKey, tab));
+                        if (dropForeignKey(foreignKey) && dbTable != null) {
+                            dbTable.removeForeignKey(fk);
+                        }
                     }
                 }
             }
@@ -994,15 +1115,17 @@ public class SchemaTool {
             for (Table drop : drops) {
                 tab = drop;
                 dbTable = db.findTable(tab);
-                if (dbTable == null)
+                if (dbTable == null && _writer == null)
                     continue;
 
-                fks = db.findExportedForeignKeys(dbTable.getPrimaryKey());
-                for (ForeignKey foreignKey : fks) {
-                    if (dropForeignKey(foreignKey))
-                        dbTable.removeForeignKey(foreignKey);
-                    else
-                        _log.warn(_loc.get("drop-fk", foreignKey, dbTable));
+                if (dbTable != null) {
+                    fks = db.findExportedForeignKeys(dbTable.getPrimaryKey());
+                    for (ForeignKey foreignKey : fks) {
+                        if (dropForeignKey(foreignKey))
+                            dbTable.removeForeignKey(foreignKey);
+                        else
+                            _log.warn(_loc.get("drop-fk", foreignKey, dbTable));
+                    }
                 }
             }
         }
@@ -1017,18 +1140,21 @@ public class SchemaTool {
             for (Schema schema : schemas) {
                 tabs = schema.getTables();
                 for (Table tab : tabs) {
-                    if (!isDroppable(tab))
+                    if (!isDroppable(tab)) {
                         continue;
+                    }
                     cols = tab.getColumns();
                     dbTable = db.findTable(tab);
                     for (Column column : cols) {
-                        col = null;
-                        if (dbTable != null)
-                            col = dbTable.getColumn(column.getIdentifier());
-                        if (dbTable == null || col == null)
+                        col = dbTable == null ? null : dbTable.getColumn(column.getIdentifier());
+                        if (dbTable == null || col == null) {
                             continue;
+                        }
 
-                        if (dropColumn(column)) {
+                        if (dbTable.getColumns().length == 1) {
+                            // last column, we should drop whole table
+                            dropTable(dbTable);
+                        } else if (dropColumn(column)) {
                             dbTable.removeColumn(col);
                         }
                     }
@@ -1050,9 +1176,9 @@ public class SchemaTool {
      * Return true if the sequence is droppable.
      */
     protected boolean isDroppable(Sequence seq) {
-        return _openjpaTables
-            || (!DBIdentifier.toUpper(seq.getIdentifier()).getName().startsWith("OPENJPA_")
-            && !DBIdentifier.toUpper(seq.getIdentifier()).getName().startsWith("JDO_")); // legacy
+        return _openjpaTables || (!DBIdentifier.toUpper(seq.getIdentifier()).getName().startsWith("OPENJPA_")
+                && _dict.isDroppable(seq)
+                && !DBIdentifier.toUpper(seq.getIdentifier()).getName().startsWith("JDO_")); // legacy
     }
 
     /**
@@ -1111,6 +1237,17 @@ public class SchemaTool {
      */
     public boolean createTable(Table table)
         throws SQLException {
+        String tableName = table.getFullIdentifier().getName().toUpperCase(Locale.ROOT);
+        if (_log.isTraceEnabled()) {
+            _log.trace("createTable: " + tableName + " action=" + _action
+                + " droppedTables=" + _droppedTables);
+        }
+        if (ACTION_ADD.equals(_action)
+                && (_conf.isSpecCompliantSchemaGeneration()
+                    ? _droppedTables.contains(tableName)
+                    : _droppedTables.remove(tableName))) {
+            return false;
+        }
         return executeSQL(_dict.getCreateTableSQL(table, _db));
     }
 
@@ -1372,7 +1509,31 @@ public class SchemaTool {
                         }
 
                         statement = conn.createStatement();
+                        if (_log.isTraceEnabled()) {
+                            _log.trace("Executing DDL: " + s
+                                + " [autoCommit=" + conn.getAutoCommit()
+                                + ", conn=" + conn.getClass().getName() + "]");
+                        }
                         statement.executeUpdate(s);
+                        // Track DROP/CREATE TABLE for drop-then-rebuild flows
+                        if (ACTION_EXECUTE_SCRIPT.equals(_action)) {
+                            String upper = s.toUpperCase(Locale.ROOT).trim();
+                            if (upper.startsWith("DROP TABLE")) {
+                                String tableName = s.trim()
+                                    .substring("DROP TABLE".length()).trim()
+                                    .replaceAll("(?i)\\s*(IF EXISTS|CASCADE).*", "")
+                                    .trim().toUpperCase(Locale.ROOT);
+                                _droppedTables.add(tableName);
+                            } else if (upper.startsWith("CREATE TABLE")) {
+                                String tableName = s.trim()
+                                    .substring("CREATE TABLE".length()).trim()
+                                    .split("\\s*\\(")[0].trim().toUpperCase(Locale.ROOT);
+                                _droppedTables.remove(tableName);
+                            }
+                        }
+                        if (_log.isTraceEnabled()) {
+                            _log.trace("DDL executed successfully: " + s);
+                        }
 
                         // some connections seem to require an explicit
                         // commit for DDL statements, even when autocommit
@@ -1382,10 +1543,16 @@ public class SchemaTool {
                             conn.commit();
                         }
                         catch (Exception e) {
+                            if (_log.isTraceEnabled()) {
+                                _log.trace("commit after DDL: " + e.getMessage());
+                            }
                         }
                     }
                     catch (SQLException se) {
                         err = true;
+                        if (_log.isTraceEnabled()) {
+                            _log.trace("DDL failed: " + se.getMessage());
+                        }
                         handleException(se);
                     }
                     finally {

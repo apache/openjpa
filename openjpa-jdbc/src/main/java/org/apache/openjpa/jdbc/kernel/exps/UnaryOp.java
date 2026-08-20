@@ -37,7 +37,7 @@ import org.apache.openjpa.meta.JavaTypes;
 abstract class UnaryOp
     extends AbstractVal {
 
-    
+
     private static final long serialVersionUID = 1L;
     private final Val _val;
     private ClassMetaData _meta = null;
@@ -161,8 +161,7 @@ abstract class UnaryOp
     }
 
     @Override
-    public void appendTo(Select sel, ExpContext ctx, ExpState state,
-        SQLBuffer sql, int index) {
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, SQLBuffer sql, int index) {
         sql.append(getOperator());
         sql.append(_noParen ? " " : "(");
         _val.appendTo(sel, ctx, state, sql, 0);
@@ -174,10 +173,10 @@ abstract class UnaryOp
         // type, it will be getting the type of the Val (an Object) rather
         // the type of the Arg.
         sql.addCastForParam(getOperator(),
-            (_val instanceof Args) ? (((Args) _val).getVals())[0]
-                                   : _val);
-        if (!_noParen)
+            (_val instanceof Args aVal) ? (aVal.getVals())[0] : _val);
+        if (!_noParen) {
             sql.append(")");
+        }
     }
 
     /**

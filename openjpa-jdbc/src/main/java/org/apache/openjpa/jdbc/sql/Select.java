@@ -511,6 +511,25 @@ public interface Select
     boolean orderBy(String sql, boolean asc, Joins joins, boolean sel);
 
     /**
+     * Append NULLS FIRST or NULLS LAST to the most recent ORDER BY entry.
+     */
+    void appendNullsPrecedence(int nullPrecedence);
+
+    /**
+     * Append a set operator (UNION, INTERSECT, EXCEPT) with the SQL
+     * of another select.
+     *
+     * @param setOpType one of QueryExpressions.SET_OP_* constants
+     * @param sql the SQL of the other select to combine
+     */
+    void addSetOperatorSQL(int setOpType, SQLBuffer sql);
+
+    /**
+     * Return any set operator SQL appended to this select, or null.
+     */
+    SQLBuffer getSetOperatorBuffer();
+
+    /**
      * Add where conditions setting the mapping's primary key to the given
      * oid values. If the given mapping does not use oid values for its
      * primary key, we will recursively join to its superclass until we find

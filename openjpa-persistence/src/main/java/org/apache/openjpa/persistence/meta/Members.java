@@ -31,6 +31,7 @@ import jakarta.persistence.metamodel.SetAttribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.Type;
 
+import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 
@@ -118,7 +119,18 @@ public class Members {
          */
         @Override
         public final boolean isAssociation() {
-            return fmd.isDeclaredTypePC();
+            // Check if the attribute references an entity type (not embeddable).
+            // For singular attributes, check the declared type.
+            // For plural attributes, check the element type.
+            ClassMetaData typeMetaData = fmd.isDeclaredTypePC()
+                ? fmd.getDeclaredTypeMetaData()
+                : fmd.getElement().isDeclaredTypePC()
+                    ? fmd.getElement().getDeclaredTypeMetaData()
+                    : null;
+            if (typeMetaData == null)
+                return false;
+            // Embeddable types are not associations per JPA spec
+            return !typeMetaData.isEmbeddable();
         }
 
         /**
@@ -198,7 +210,7 @@ public class Members {
          */
         @Override
         public BindableType getBindableType() {
-            return fmd.isDeclaredTypePC()
+            return isAssociation()
                 ? BindableType.ENTITY_TYPE
                 : BindableType.SINGULAR_ATTRIBUTE;
         }
@@ -213,7 +225,7 @@ public class Members {
         @Override
         @SuppressWarnings("unchecked")
         public Class<T> getBindableJavaType() {
-            return fmd.getElement().getDeclaredType();
+            return fmd.getDeclaredType();
         }
 
         /**

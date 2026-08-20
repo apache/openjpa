@@ -63,9 +63,9 @@ public class TestPreparedQueryCacheExclusion extends TestCase {
 		assertNotNull(cache.isExcluded("c"));
 		assertNull(cache.isExcluded("d"));
 
-		List<PreparedQueryCache.Exclusion> exclusions = cache.getExcludes();
-		for (PreparedQueryCache.Exclusion e : exclusions)
-		    System.err.println(e);
+//		List<PreparedQueryCache.Exclusion> exclusions = cache.getExcludes();
+//		for (PreparedQueryCache.Exclusion e : exclusions)
+//		    System.err.println(e);
 	}
 
 	public void testCachePopulationSetUp() {

@@ -49,7 +49,7 @@ public class ReflectingPersistenceCapable
 
     
     private static final long serialVersionUID = 1L;
-    private Object o;
+    private final Object o;
     private StateManager sm;
 
     // this will be reconstituted in readObject()
@@ -99,8 +99,7 @@ public class ReflectingPersistenceCapable
         Object value = getValue(i, o);
         switch (meta.getField(i).getDeclaredTypeCode()) {
             case JavaTypes.BOOLEAN:
-                sm.providedBooleanField(this, i, value == null ? false :
-                        (Boolean) value);
+                sm.providedBooleanField(this, i, value != null && (Boolean) value);
                 break;
             case JavaTypes.BYTE:
                 sm.providedByteField(this, i, value == null ? 0 :
@@ -297,8 +296,20 @@ public class ReflectingPersistenceCapable
     public Object pcNewObjectIdInstance() {
         FieldMetaData[] pkFields = meta.getPrimaryKeyFields();
         Object[] pks = new Object[pkFields.length];
-        for (int i = 0; i < pkFields.length; i++)
-            pks[i] = getValue(pkFields[i].getIndex(), o);
+        for (int i = 0; i < pkFields.length; i++) {
+            Object val = getValue(pkFields[i].getIndex(), o);
+            // For derived identity (@MapsId/@Id @ManyToOne), a PK field value
+            // may be a related entity. Extract the related entity's raw ID value
+            // (unwrapped from OpenJPAId/ObjectId) so it matches the IdClass field type.
+            pks[i] = getRelatedEntityIdForIdClass(pkFields[i], val);
+        }
+
+        // For non-OpenJPA identity (IdClass), construct the OID directly
+        // via reflection to avoid going through PCRegistry.copyKeyFieldsToObjectId()
+        // which uses enhanced bytecode that may inconsistently handle ObjectId wrapping.
+        if (!meta.isOpenJPAIdentity()) {
+            return buildIdClassOidViaReflection(pkFields, pks);
+        }
         return ApplicationIds.fromPKValues(pks, meta);
     }
 
@@ -318,6 +329,9 @@ public class ReflectingPersistenceCapable
         FieldMetaData[] pks = meta.getPrimaryKeyFields();
         for (FieldMetaData pk : pks) {
             Object val = getValue(pk.getIndex(), o);
+            // For derived identity (@MapsId) with an IdClass, the IdClass field
+            // expects the related entity's ID, not the entity object itself.
+            val = getRelatedEntityIdForIdClass(pk, val);
             Field f = Reflection.findField(target.getClass(), pk.getName(),
                     true);
             Reflection.set(target, f, val);
@@ -418,5 +432,126 @@ public class ReflectingPersistenceCapable
         Class type = (Class) in.readObject();
         pcSubclassInstance = PCRegistry.newInstance(type, null, false);
         ImplHelper.registerPersistenceCapable(this);
+    }
+
+    /**
+     * Build the OID for a non-OpenJPA identity (IdClass) type directly via
+     * reflection, bypassing PCRegistry.copyKeyFieldsToObjectId(). This avoids
+     * issues where enhanced bytecode inconsistently handles ObjectId wrapping
+     * for derived identity fields (depending on whether metadata was fully
+     * resolved at enhancement time).
+     */
+    private Object buildIdClassOidViaReflection(FieldMetaData[] pkFields, Object[] pks) {
+        Class<?> oidType = meta.getObjectIdType();
+        if (oidType == null) {
+            // Fallback to fromPKValues if no object id type
+            return ApplicationIds.fromPKValues(pks, meta);
+        }
+        try {
+            Object oidInstance = oidType.getConstructor().newInstance();
+            for (int i = 0; i < pkFields.length; i++) {
+                Field f = Reflection.findField(oidType, pkFields[i].getName(), true);
+                Reflection.set(oidInstance, f, pks[i]);
+            }
+            // Wrap in ObjectId if the identity type is shared
+            if (meta.isObjectIdTypeShared()) {
+                return new ObjectId(meta.getDescribedType(), oidInstance);
+            }
+            return oidInstance;
+        } catch (Exception e) {
+            // Fallback to fromPKValues on any error
+            return ApplicationIds.fromPKValues(pks, meta);
+        }
+    }
+
+    /**
+     * For derived identity (@MapsId) with single-field identity: if the PK field
+     * is a relationship to another entity, extract that entity's object ID.
+     * For non-relationship PK fields, return the value unchanged.
+     */
+    private Object getRelatedEntityId(FieldMetaData pk, Object val) {
+        if (val == null) {
+            return null;
+        }
+        // Check if this PK field maps to another entity (derived identity)
+        if (pk.getDeclaredTypeMetaData() != null) {
+            // The PK field value is a related entity; extract its object ID
+            return ApplicationIds.getRelatedObjectId(val);
+        }
+        return val;
+    }
+
+    /**
+     * For derived identity (@MapsId) with an IdClass: if the PK field is a
+     * relationship to another entity, extract the related entity's ID value
+     * suitable for setting into the IdClass field.
+     * For non-relationship PK fields, return the value unchanged.
+     */
+    private Object getRelatedEntityIdForIdClass(FieldMetaData pk, Object val) {
+        if (val == null) {
+            return null;
+        }
+        // Check if this PK field maps to another entity (derived identity)
+        ClassMetaData relatedMeta = pk.getDeclaredTypeMetaData();
+        if (relatedMeta != null) {
+            Object relatedOid = ApplicationIds.getRelatedObjectId(val);
+            if (relatedOid == null) {
+                // The related entity is unenhanced and not yet in the instance map.
+                // Extract its PK value(s) directly via reflection.
+                return extractRelatedIdViaReflection(relatedMeta, val);
+            }
+            // For OpenJPA identity types, unwrap to the raw id value
+            if (relatedOid instanceof org.apache.openjpa.util.OpenJPAId) {
+                return ((org.apache.openjpa.util.OpenJPAId) relatedOid).getIdObject();
+            }
+            // For IdClass-based identity wrapped in ObjectId, unwrap
+            if (relatedOid instanceof ObjectId) {
+                return ((ObjectId) relatedOid).getId();
+            }
+            return relatedOid;
+        }
+        return val;
+    }
+
+    /**
+     * Extract the primary key value from an unenhanced related entity using
+     * reflection on its metadata. For single-field identity, returns the raw
+     * PK value. For EmbeddedId, returns the embedded id object.
+     * For IdClass with multiple fields, constructs the IdClass via reflection.
+     */
+    private Object extractRelatedIdViaReflection(ClassMetaData relatedMeta, Object relatedEntity) {
+        FieldMetaData[] relPkFields = relatedMeta.getPrimaryKeyFields();
+        if (relPkFields.length == 0) {
+            return relatedEntity;
+        }
+
+        // Single PK field: return the raw value directly
+        if (relPkFields.length == 1) {
+            FieldMetaData pkField = relPkFields[0];
+            Field f = Reflection.findField(relatedMeta.getDescribedType(), pkField.getName(), true);
+            Object pkVal = Reflection.get(relatedEntity, f);
+            // For EmbeddedId, return the embedded object directly
+            // For simple types (long, String, etc.), return the value
+            return pkVal;
+        }
+
+        // Multiple PK fields: construct the IdClass
+        Class<?> oidType = relatedMeta.getObjectIdType();
+        if (oidType == null) {
+            return relatedEntity;
+        }
+        try {
+            Object idClassInstance = oidType.getConstructor().newInstance();
+            for (FieldMetaData pkField : relPkFields) {
+                Field entityField = Reflection.findField(relatedMeta.getDescribedType(), pkField.getName(), true);
+                Object fieldVal = Reflection.get(relatedEntity, entityField);
+                Field idField = Reflection.findField(oidType, pkField.getName(), true);
+                Reflection.set(idClassInstance, idField, fieldVal);
+            }
+            return idClassInstance;
+        } catch (Exception e) {
+            // If we can't construct the IdClass, fall back to returning the entity
+            return relatedEntity;
+        }
     }
 }

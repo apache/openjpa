@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.kernel.exps;
 
+import java.util.Locale;
+
 import org.apache.openjpa.kernel.StoreContext;
 
 /**
@@ -28,7 +30,7 @@ import org.apache.openjpa.kernel.StoreContext;
 class ToLowerCase
     extends Val {
 
-    
+
     private static final long serialVersionUID = 1L;
     private final Val _val;
 
@@ -51,7 +53,7 @@ class ToLowerCase
     @Override
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
-        return _val.eval(candidate, orig, ctx, params).toString().toLowerCase();
+        return _val.eval(candidate, orig, ctx, params).toString().toLowerCase(Locale.ROOT);
     }
 
     @Override

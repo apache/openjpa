@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_26_ex3;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -115,7 +116,7 @@ public class TestSpec10_1_26_Ex3 extends SQLListenerTestCase {
             setCandidate(q, Department.class);
         rs = q.getResultList();
         if (!inMemory)
-            assertTrue(sql.get(0).toUpperCase().indexOf(" GROUP BY ") != -1);
+            assertTrue(sql.get(0).toUpperCase(Locale.ROOT).indexOf(" GROUP BY ") != -1);
 
         query = "select KEY(e) from Department d, " +
             " in (d.emps) e where VALUE(e).department.deptId = 1" +

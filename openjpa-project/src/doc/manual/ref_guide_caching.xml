@@ -889,7 +889,7 @@ public void evictAll();
 </programlisting>
             <para>
 For JPA queries with parameters, set the desired parameter values into the
-<ulink url="http://download.oracle.com/javaee/6/api/javax/persistence/Query.html">
+<ulink url="https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/query">
 <classname>Query</classname></ulink> instance before calling the above methods.
             </para>
             <example id="ref_guide_cache_query_classchange">
@@ -933,7 +933,7 @@ public void unpin(Query q);
 </programlisting>
             <para>
 For JPA queries with parameters, set the desired parameter values into the
-<ulink url="http://download.oracle.com/javaee/6/api/javax/persistence/Query.html">
+<ulink url="https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/query">
 <classname>Query</classname></ulink> instance before calling the above methods.
             </para>
             <para>

@@ -21,12 +21,17 @@ package org.apache.openjpa.persistence.spring;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 
+import java.util.logging.Logger;
+
 import org.apache.openjpa.persistence.models.library.Book;
 import org.apache.openjpa.persistence.models.library.Borrower;
 import org.apache.openjpa.persistence.models.library.Subject;
 import org.apache.openjpa.persistence.models.library.Volunteer;
 
 public class LibTestingService {
+	
+	private static final Logger logger = Logger.getLogger(LibTestingService.class.getCanonicalName());
+	
     private EntityManager em;
 
     public LibTestingService() {
@@ -121,8 +126,8 @@ public class LibTestingService {
             // commit the transaction
             tx.commit();
         } catch (RuntimeException e) {
-            System.err.println("Unable to repopulate the database");
-            System.err.println("Caught exception: " + e.getMessage());
+            logger.warning("Unable to repopulate the database");
+            logger.warning("Caught exception: " + e.getMessage());
             e.printStackTrace(System.err);
             throw e;
         } finally {

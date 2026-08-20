@@ -133,10 +133,12 @@ public class TestEJBDeleteUpdateImpl extends AbstractTestCase {
 
         assertEquals(1, delEntity);
 
+        endTx(em);
+        endEm(em);
+
+        em = currentEntityManager();
         RuntimeTest1 del = em.find(RuntimeTest1.class, 1);
         assertNull(del);
-
-        endTx(em);
         endEm(em);
     }
 

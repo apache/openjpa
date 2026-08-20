@@ -30,10 +30,7 @@ import org.apache.openjpa.jdbc.schema.Column;
  *
  * @author Abe White
  */
-public class TimestampVersionStrategy
-    extends ColumnVersionStrategy {
-
-    
+public class TimestampVersionStrategy extends ColumnVersionStrategy {
     private static final long serialVersionUID = 1L;
     public static final String ALIAS = "timestamp";
 
@@ -53,9 +50,9 @@ public class TimestampVersionStrategy
     }
 
     @Override
-    public Map getBulkUpdateValues() {
+    public Map<Column, Object> getBulkUpdateValues() {
         Column[] cols = vers.getColumns();
-        Map map = new HashMap(cols.length);
+        Map<Column, Object> map = new HashMap<>(cols.length);
         Object d = nextVersion(null);
         for (Column col : cols) {
             map.put(col, d);

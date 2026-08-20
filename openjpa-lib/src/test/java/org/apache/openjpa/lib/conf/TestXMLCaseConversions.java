@@ -22,13 +22,15 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-
 public class TestXMLCaseConversions {
+	
+	private static final Logger logger = Logger.getLogger(TestXMLCaseConversions.class.getCanonicalName());
 
     @Test
     public void testToXMLName() {
@@ -55,13 +57,13 @@ public class TestXMLCaseConversions {
     }
 
     public static void main(String[] args) throws IOException {
-        BufferedReader r = new BufferedReader (new FileReader(new File(
-                args[0])));
-        while (true) {
-            String s = r.readLine();
-            if (s == null)
-                break;
-            System.out.println(s + ": " + ConfigurationImpl.toXMLName(s));
-        }
+    	try (BufferedReader r = new BufferedReader (new FileReader(new File(args[0])))) {
+    		while (true) {
+    			String s = r.readLine();
+    			if (s == null)
+    				break;
+    			logger.fine(() -> String.format("%s: %s", s, ConfigurationImpl.toXMLName(s)));
+    		}
+    	}
     }
 }

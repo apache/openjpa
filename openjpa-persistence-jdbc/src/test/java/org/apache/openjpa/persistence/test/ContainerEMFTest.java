@@ -20,8 +20,6 @@ package org.apache.openjpa.persistence.test;
 
 import java.io.IOException;
 import java.net.URL;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -30,7 +28,6 @@ import java.util.Map;
 
 import jakarta.persistence.spi.PersistenceUnitInfo;
 
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.PersistenceProductDerivation;
 import org.apache.openjpa.persistence.PersistenceProviderImpl;
@@ -131,13 +128,8 @@ public abstract class ContainerEMFTest extends SingleEMFTestCase {
     // Build a resource URL for the given resource
     private static URL getResourceURL(String rsrc) throws IOException {
         Enumeration<URL> urls = null;
-        try {
-            ClassLoader cl = ContainerEMFTest.class.getClassLoader();
-            urls = AccessController.doPrivileged(
-                J2DoPrivHelper.getResourcesAction(cl, rsrc));
-        } catch (PrivilegedActionException pae) {
-            throw (IOException) pae.getException();
-        }
+        ClassLoader cl = ContainerEMFTest.class.getClassLoader();
+        urls = cl.getResources(rsrc);
         return Collections.list(urls).get(0);
     }
 

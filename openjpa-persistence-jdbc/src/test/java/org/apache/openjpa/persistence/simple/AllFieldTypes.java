@@ -32,8 +32,11 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 
@@ -95,6 +98,9 @@ public class AllFieldTypes {
     private LocalDateTime localDateTimeField;
     private OffsetTime offsetTimeField;
     private OffsetDateTime offsetDateTimeField;
+    
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID uniqueId;
 
 
     public void setShortField(short shortField) {
@@ -417,5 +423,14 @@ public class AllFieldTypes {
     public void setOffsetDateTimeField(OffsetDateTime offsetDateTimeField) {
         this.offsetDateTimeField = offsetDateTimeField;
     }
+
+	public UUID getUniqueId() {
+		return uniqueId;
+	}
+
+	public void setUniqueId(UUID uniqueId) {
+		this.uniqueId = uniqueId;
+	}
+    
 }
 

@@ -63,8 +63,13 @@ public class QueryMetaData
     private int _lineNum;
     private int _colNum;
     private String _srcName;
-    private boolean _convertPositionalParametersToNamed;
+    private final boolean _convertPositionalParametersToNamed;
     private OrderedMap<Object,Class<?>> _paramTypes;
+
+    // JPA 3.2 addNamedQuery properties
+    private int _maxResults = -1; // -1 means not set
+    private int _flushType = -1; // FlushBeforeQueries constant, -1 means not set
+    private String _lockMode; // LockModeType name, null means not set
 
     /**
      * Construct with the given name.
@@ -231,6 +236,50 @@ public class QueryMetaData
         _candidate = query.getCandidateType();
         _res = query.getResultType();
         _query = query.getQueryString();
+    }
+
+    /**
+     * Return the max results for this query, or -1 if not set.
+     */
+    public int getMaxResults() {
+        return _maxResults;
+    }
+
+    /**
+     * Set the max results for this query. -1 means not set.
+     */
+    public void setMaxResults(int maxResults) {
+        _maxResults = maxResults;
+    }
+
+    /**
+     * Return the flush type for this query, or -1 if not set.
+     * This is a FlushBeforeQueries constant from FetchConfiguration.
+     */
+    public int getFlushType() {
+        return _flushType;
+    }
+
+    /**
+     * Set the flush type for this query.
+     * This is a FlushBeforeQueries constant from FetchConfiguration.
+     */
+    public void setFlushType(int flushType) {
+        _flushType = flushType;
+    }
+
+    /**
+     * Return the lock mode name for this query, or null if not set.
+     */
+    public String getLockMode() {
+        return _lockMode;
+    }
+
+    /**
+     * Set the lock mode name for this query.
+     */
+    public void setLockMode(String lockMode) {
+        _lockMode = lockMode;
     }
 
     /**

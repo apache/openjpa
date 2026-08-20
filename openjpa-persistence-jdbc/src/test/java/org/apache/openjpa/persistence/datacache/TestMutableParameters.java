@@ -105,7 +105,7 @@ public class TestMutableParameters
             new Object[]{ d });
         c = (Collection) q.execute(new Object[]{ d });
 
-        assertFalse(new Integer(initialSize).equals(c.size()));
+        assertFalse(Integer.valueOf(initialSize).equals(c.size()));
     }
 
     //FIXME Seetha Nov 10,2006

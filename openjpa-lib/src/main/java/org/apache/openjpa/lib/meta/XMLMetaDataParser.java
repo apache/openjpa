@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -37,7 +36,6 @@ import java.util.Set;
 import javax.xml.parsers.SAXParser;
 
 import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.lib.xml.Commentable;
@@ -305,8 +303,7 @@ public abstract class XMLMetaDataParser extends DefaultHandler
     public void parse(File file) throws IOException {
         if (file == null)
             return;
-        if (!AccessController.doPrivileged(J2DoPrivHelper
-                .isDirectoryAction(file)))
+        if (!file.isDirectory())
             parse(new FileMetaDataIterator(file));
         else {
             String suff = (_suffix == null) ? "" : _suffix;
@@ -395,10 +392,9 @@ public abstract class XMLMetaDataParser extends DefaultHandler
 
             try {
                 if (overrideCL) {
-                    oldLoader =
-                        (ClassLoader) AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
+                    oldLoader = (ClassLoader) Thread.currentThread().getContextClassLoader();
                     newLoader = XMLMetaDataParser.class.getClassLoader();
-                    AccessController.doPrivileged(J2DoPrivHelper.setContextClassLoaderAction(newLoader));
+                    Thread.currentThread().setContextClassLoader(newLoader);
 
                     if (_log != null && _log.isTraceEnabled()) {
                         _log.trace(_loc.get("override-contextclassloader-begin", oldLoader, newLoader));
@@ -441,7 +437,7 @@ public abstract class XMLMetaDataParser extends DefaultHandler
                         if (_log != null && _log.isTraceEnabled()) {
                             _log.trace(_loc.get("override-contextclassloader-end", newLoader, oldLoader));
                         }
-                        AccessController.doPrivileged(J2DoPrivHelper.setContextClassLoaderAction(oldLoader));
+                        Thread.currentThread().setContextClassLoader(oldLoader);
                     } catch (Throwable t) {
                         if (_log != null && _log.isWarnEnabled()) {
                             _log.warn(_loc.get("restore-contextclassloader-failed"));
@@ -727,8 +723,7 @@ public abstract class XMLMetaDataParser extends DefaultHandler
         if (_loader != null)
             return _loader;
         if (_curLoader == null)
-            _curLoader = AccessController.doPrivileged(
-                J2DoPrivHelper.getContextClassLoaderAction());
+            _curLoader = Thread.currentThread().getContextClassLoader();
         return _curLoader;
     }
 

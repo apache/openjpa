@@ -21,14 +21,11 @@ package org.apache.openjpa.lib.meta;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -38,7 +35,6 @@ import java.util.Map;
 
 import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.Files;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.xbean.asm9.ClassReader;
 import org.apache.xbean.asm9.ClassVisitor;
@@ -216,8 +212,7 @@ public class ClassArgParser {
                 return new String[]{ getFromClassFile(file) };
             if (arg.endsWith(".java"))
                 return new String[]{ getFromJavaFile(file) };
-            if (AccessController.doPrivileged(
-                    J2DoPrivHelper.existsAction(file))) {
+            if (file.exists()) {
                 Collection<String> col = getFromMetaDataFile(file);
                 return col.toArray(new String[col.size()]);
             }
@@ -302,10 +297,8 @@ public class ClassArgParser {
     private String getFromClassFile(File file) throws IOException {
         FileInputStream fin = null;
         try {
-            fin = AccessController.doPrivileged(J2DoPrivHelper.newFileInputStreamAction(file));
+            fin = new FileInputStream(file);
             return getNameFromClass(fin);
-        } catch (PrivilegedActionException pae) {
-            throw (FileNotFoundException) pae.getException();
         } finally {
             if (fin != null) {
                 try {

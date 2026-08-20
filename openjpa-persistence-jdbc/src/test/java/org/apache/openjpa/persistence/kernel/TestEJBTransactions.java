@@ -84,11 +84,9 @@ public class TestEJBTransactions extends AbstractTestCase {
         try {
             // second commit
             endTx(pm);
-        }
-        catch (Exception e) {
+            fail("Should have thrown an exception here because transactions cannot be commited twice.");
+        } catch (Exception e) {
             // good: we should be throwing an exception here
-            System.out.println("Exception should be thrown here..." +
-                "Transactions cannot be committed twice...");
         }
     }
 
@@ -109,11 +107,9 @@ public class TestEJBTransactions extends AbstractTestCase {
         try {
             // second rollback
             t.rollback();
-        }
-        catch (Exception e) {
+            fail("Should have thrown exception because transactions cannot be rolled back twice.");
+        } catch (Exception e) {
             // good: we should be throwing an exception here
-            System.out.println("Exception should be thrown here..." +
-                "Transactions cannot be rolled back twice...");
         }
     }
 }

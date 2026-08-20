@@ -33,13 +33,13 @@
     <artifactId>openjpa-parent</artifactId>
     <packaging>pom</packaging>
     <name>OpenJPA Parent POM</name>
-    <description>Apache OpenJPA implementation of Jakarta JPA 3.1</description>
+    <description>Apache OpenJPA implementation of Jakarta JPA 3.2</description>
 
-    <version>4.1.2-SNAPSHOT</version>
+    <version>4.2.0-SNAPSHOT</version>
 
     <properties>
-        <java.class.version>11</java.class.version>
-        <java.testclass.version>11</java.testclass.version>
+        <java.class.version>17</java.class.version>
+        <java.testclass.version>17</java.testclass.version>
 
         <doclint>none</doclint>
 
@@ -76,12 +76,12 @@
         <createSource>none</createSource>
         <createSources>false</createSources>
         <!-- common JDBC driver versions -->
-        <derby.version>10.15.2.0</derby.version>
+        <derby.version>10.16.1.1</derby.version>
         <hsqldb.version>2.7.4</hsqldb.version>
-        <mysql.connector.version>5.1.49</mysql.connector.version>
-        <mariadb.connector.version>2.7.2</mariadb.connector.version>
-        <postgresql.connector.version>42.7.12</postgresql.connector.version>
-        <mssql.connector.version>12.8.2.jre11</mssql.connector.version>
+        <mysql.connector.version>9.7.0</mysql.connector.version>
+        <mariadb.connector.version>3.5.8</mariadb.connector.version>
+        <postgresql.connector.version>42.7.11</postgresql.connector.version>
+        <mssql.connector.version>13.4.0.jre11</mssql.connector.version>
 
         <!-- other common versions -->
         <kubernetes-client.version>6.13.3</kubernetes-client.version>
@@ -91,7 +91,7 @@
         <javadoc.additionalparam />
         <version.maven.surefire>3.5.2</version.maven.surefire>
 
-        <xbean.version>4.28</xbean.version>
+        <xbean.version>4.30</xbean.version>
         <bval.version>3.0.2</bval.version>
         <log4j2.version>2.25.4</log4j2.version>
         <ant.version>1.10.15</ant.version>
@@ -101,7 +101,7 @@
         <pool2.version>2.12.1</pool2.version>
 
         <jakarta.annotation-api.version>2.1.1</jakarta.annotation-api.version>
-        <jakarta.persistence-api.version>3.1.0</jakarta.persistence-api.version>
+        <jakarta.persistence-api.version>3.2.0</jakarta.persistence-api.version>
         <jakarta.transaction-api.version>2.0.1</jakarta.transaction-api.version>
         <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
         <jakarta.jms-api.version>3.1.0</jakarta.jms-api.version>
@@ -414,9 +414,9 @@
             <id>test-derby</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
-            <property>
-                <name>test-derby</name>
-            </property>
+                <property>
+                    <name>test-derby</name>
+                </property>
             </activation>
             <dependencies>
                 <dependency>
@@ -442,7 +442,7 @@
             </properties>
         </profile>
 
-        <!-- profile for testing with an embedded h2 DB -->
+        <!-- profile for testing with an embedded h2 2.x DB -->
         <profile>
             <id>test-h2</id>
             <activation>
@@ -454,33 +454,6 @@
                 <h2.version>2.3.232</h2.version>
                 <connection.driver.name>org.h2.Driver</connection.driver.name>
                 <connection.url>jdbc:h2:./target/database/openjpa-h2-database</connection.url>
-                <connection.username />
-                <connection.password />
-                <!-- TCK specific properties -->
-                <tck.db.name>h2mem</tck.db.name>
-            </properties>
-
-            <dependencies>
-                <dependency>
-                    <groupId>com.h2database</groupId>
-                    <artifactId>h2</artifactId>
-                    <version>${h2.version}</version>
-                </dependency>
-            </dependencies>
-        </profile>
-
-        <!-- profile for testing with an embedded h2 2.x DB -->
-        <profile>
-            <id>test-h2-2</id>
-            <activation>
-                <property>
-                    <name>test-h2-2</name>
-                </property>
-            </activation>
-            <properties>
-                <h2.version>2.1.214</h2.version>
-                <connection.driver.name>org.h2.Driver</connection.driver.name>
-                <connection.url>jdbc:h2:./target/database/openjpa-h2-database;MODE=STRICT</connection.url>
                 <connection.username />
                 <connection.password />
                 <!-- TCK specific properties -->
@@ -610,14 +583,14 @@
             </activation>
             <dependencies>
                 <dependency>
-                    <groupId>mysql</groupId>
-                    <artifactId>mysql-connector-java</artifactId>
+                    <groupId>com.mysql</groupId>
+                    <artifactId>mysql-connector-j</artifactId>
                     <version>${mysql.connector.version}</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
             <properties>
-                <connection.driver.name>com.mysql.jdbc.Driver</connection.driver.name>
+                <connection.driver.name>com.mysql.cj.jdbc.Driver</connection.driver.name>
                 <!--<connection.url>jdbc:mysql://localhost/OPENJPA</connection.url>-->
                 <connection.url>${openjpa.mysql.url}</connection.url>
                 <connection.username>${openjpa.mysql.username}</connection.username>
@@ -639,19 +612,19 @@
             </activation>
             <dependencies>
                 <dependency>
-                    <groupId>mysql</groupId>
-                    <artifactId>mysql-connector-java</artifactId>
+                    <groupId>com.mysql</groupId>
+                    <artifactId>mysql-connector-j</artifactId>
                     <version>${mysql.connector.version}</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
             <properties>
-                <connection.driver.name>com.mysql.jdbc.Driver</connection.driver.name>
+                <connection.driver.name>com.mysql.cj.jdbc.Driver</connection.driver.name>
 
                 <!-- default settings for local docker -->
                 <docker.external.mysql.port>3306</docker.external.mysql.port>
                 <openjpa.mysql.dbname>openjpatst</openjpa.mysql.dbname>
-                <openjpa.mysql.url>jdbc:mysql://localhost:${docker.external.mysql.port}/${openjpa.mysql.dbname}?useSSL=false</openjpa.mysql.url>
+                <openjpa.mysql.url>jdbc:mysql://localhost:${docker.external.mysql.port}/${openjpa.mysql.dbname}?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;transformedBitIsBoolean=true</openjpa.mysql.url>
                 <openjpa.mysql.username>openjpatst</openjpa.mysql.username>
                 <openjpa.mysql.password>openjpatst</openjpa.mysql.password>
 
@@ -665,7 +638,7 @@
                 <dbcp.maxIdle>5</dbcp.maxIdle>
                 <dbcp.minIdle>0</dbcp.minIdle>
 
-                <mysql.server.version>5.7</mysql.server.version>
+                <mysql.server.version>8.0</mysql.server.version>
             </properties>
 
             <build>
@@ -676,12 +649,13 @@
                         <configuration>
                             <images>
                                 <image>
-                                    <name>mysql/mysql-server:${mysql.server.version}</name>
+                                    <name>mysql:${mysql.server.version}</name>
                                     <run>
                                         <env>
                                             <MYSQL_DATABASE>${openjpa.mysql.dbname}</MYSQL_DATABASE>
                                             <MYSQL_USER>${connection.username}</MYSQL_USER>
                                             <MYSQL_PASSWORD>${connection.password}</MYSQL_PASSWORD>
+                                            <MYSQL_RANDOM_ROOT_PASSWORD>yes</MYSQL_RANDOM_ROOT_PASSWORD>
                                         </env>
                                         <ports>
                                             <port>${docker.external.mysql.port}:3306</port>
@@ -746,7 +720,7 @@
                 <!-- default settings for local docker -->
                 <docker.external.mariadb.port>3306</docker.external.mariadb.port>
                 <openjpa.mariadb.dbname>openjpatst</openjpa.mariadb.dbname>
-                <openjpa.mariadb.url>jdbc:mariadb://localhost:${docker.external.mariadb.port}/${openjpa.mariadb.dbname}</openjpa.mariadb.url>
+                <openjpa.mariadb.url>jdbc:mariadb://localhost:${docker.external.mariadb.port}/${openjpa.mariadb.dbname}?&amp;allowPublicKeyRetrieval=true</openjpa.mariadb.url>
                 <openjpa.mariadb.username>root</openjpa.mariadb.username>
                 <openjpa.mariadb.password>openjpatst</openjpa.mariadb.password>
 
@@ -760,7 +734,7 @@
                 <dbcp.maxIdle>5</dbcp.maxIdle>
                 <dbcp.minIdle>0</dbcp.minIdle>
 
-                <mariadb.server.version>10.5</mariadb.server.version>
+                <mariadb.server.version>11.8</mariadb.server.version>
             </properties>
 
             <build>
@@ -771,7 +745,7 @@
                         <configuration>
                             <images>
                                 <image>
-                                    <name>mariadb/server:${mariadb.server.version}</name>
+                                    <name>mariadb:${mariadb.server.version}</name>
                                     <run>
                                         <env>
                                             <!-- mariadb still uses the old mysql env variables -->
@@ -993,9 +967,8 @@
                   * sendTimeAsDatetime=false is important to make SQLServer understand java.sql.Time parameters.
                   * Alternatively you can set the SQLServerDictionary parameter sendTimeAsString=true
                  -->
-                <openjpa.mssql.url>jdbc:sqlserver://localhost:${docker.external.mssql.port};sendTimeAsDatetime=false</openjpa.mssql.url>
+                <openjpa.mssql.url>jdbc:sqlserver://localhost:${docker.external.mssql.port};sendTimeAsDatetime=false;trustServerCertificate=true</openjpa.mssql.url>
 
-                <!--<connection.url>jdbc:postgresql://localhost/openjpa</connection.url>-->
                 <connection.url>${openjpa.mssql.url}</connection.url>
                 <connection.username>${openjpa.mssql.username}</connection.username>
                 <connection.password>${openjpa.mssql.password}</connection.password>
@@ -1169,6 +1142,7 @@
                 <dbcp.maxIdle>5</dbcp.maxIdle>
                 <dbcp.minIdle>1</dbcp.minIdle>
 
+                <herddb.server.version>latest</herddb.server.version>
             </properties>
 
             <build>
@@ -1179,7 +1153,7 @@
                         <configuration>
                             <images>
                                 <image>
-                                    <name>herddb/herddb:latest</name>
+                                    <name>herddb/herddb:${herddb.server.version}</name>
                                     <run>
                                         <ports>
                                             <port>7000:7000</port>
@@ -1596,15 +1570,14 @@
                 <oracle.artifactid>ojdbc8</oracle.artifactid>
                 <oracle.version>19.3.0.0</oracle.version>
 
-                <oracle.server.version>latest</oracle.server.version>
+                <oracle.server.version>18.4.0</oracle.server.version>
                 <docker.external.oracle.port>1521</docker.external.oracle.port>
 
                 <connection.driver.name>oracle.jdbc.driver.OracleDriver</connection.driver.name>
                 <openjpa.oracle.database>openjpatst</openjpa.oracle.database>
                 <openjpa.oracle.username>openjpatst</openjpa.oracle.username>
                 <openjpa.oracle.password>openjpatst</openjpa.oracle.password>
-                <openjpa.oracle.SID>xe</openjpa.oracle.SID>
-                <openjpa.oracle.url>jdbc:oracle:thin:@localhost:${docker.external.oracle.port}:${openjpa.oracle.SID}</openjpa.oracle.url>
+                <openjpa.oracle.url>jdbc:oracle:thin:@localhost:${docker.external.oracle.port}/${openjpa.oracle.database}</openjpa.oracle.url>
 
                 <connection.url>${openjpa.oracle.url}</connection.url>
                 <connection.username>${openjpa.oracle.username}</connection.username>
@@ -1626,19 +1599,24 @@
                 </dependency>
             </dependencies>
 
-
             <build>
                 <plugins>
                     <plugin>
                         <groupId>io.fabric8</groupId>
                         <artifactId>docker-maven-plugin</artifactId>
                         <configuration>
+                            <keepContainer>false</keepContainer>
+                            <removeVolumes>true</removeVolumes>
                             <images>
                                 <image>
-                                    <!--<name>oracledb19c/oracle.19.3.0-ee:oracle19.3.0-ee</name>-->
-                                    <name>oracleinanutshell/oracle-xe-11g</name>
-                                    <!--<name>pvargacl/oracle-xe-18.4.0:latest</name>-->
+                                    <name>gvenzl/oracle-xe:${oracle.server.version}</name>
                                     <run>
+                                        <env>
+                                            <ORACLE_PASSWORD>${openjpa.oracle.password}</ORACLE_PASSWORD>
+                                            <ORACLE_DATABASE>${openjpa.oracle.database}</ORACLE_DATABASE>
+                                            <APP_USER>${openjpa.oracle.username}</APP_USER>
+                                            <APP_USER_PASSWORD>${openjpa.oracle.password}</APP_USER_PASSWORD>
+                                        </env>
                                         <volumes>
                                             <bind>
                                                 <volume>${project.basedir}/src/test/sql/oracle-docker:/docker-entrypoint-initdb.d/</volume>
@@ -1646,7 +1624,12 @@
                                         </volumes>
                                         <ports>
                                             <port>${docker.external.oracle.port}:1521</port>
+                                            <port>5500:5500</port>
                                         </ports>
+                                        <wait>
+                                            <log>DATABASE IS READY TO USE</log>
+                                            <time>3600000</time>
+                                        </wait>
                                     </run>
                                 </image>
                             </images>
@@ -1816,8 +1799,8 @@
                 <version>${derby.version}</version>
             </dependency>
             <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-java</artifactId>
+                <groupId>com.mysql</groupId>
+                <artifactId>mysql-connector-j</artifactId>
                 <version>${mysql.connector.version}</version>
             </dependency>
             <dependency>
@@ -1826,14 +1809,14 @@
                 <version>${dbcp2.version}</version>
             </dependency>
             <dependency>
-                <groupId>javax.xml.bind</groupId>
-                <artifactId>jaxb-api</artifactId>
-                <version>2.2.1</version>
+                <groupId>jakarta.xml.bind</groupId>
+                <artifactId>jakarta.xml.bind-api</artifactId>
+                <version>4.0.2</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.xml.bind</groupId>
                 <artifactId>jaxb-impl</artifactId>
-                <version>2.2.1</version>
+                <version>4.0.5</version>
             </dependency>
             <dependency>
                 <groupId>org.hsqldb</groupId>
@@ -1974,66 +1957,27 @@
                                  are not test cases per OpenJPA standards -->
                             <exclude>org/apache/openjpa/**/*$*.class</exclude>
                         </excludes>
-                    <systemProperties>
-                        <property>
-                            <name>openjpa.Log</name>
-                            <value>${openjpa.Log}</value>
-                        </property>
-                        <property>
-                            <name>openjpa.DynamicEnhancementAgent</name>
-                            <value>${openjpa.DynamicEnhancementAgent}</value>
-                        </property>
-                        <property>
-                            <name>openjpa.ConnectionDriverName</name>
-                            <value>${connection.driver.name}</value>
-                        </property>
-                        <property>
-                            <name>openjpa.ConnectionURL</name>
-                            <value>${connection.url}</value>
-                        </property>
-                        <property>
-                            <name>openjpa.ConnectionUserName</name>
-                            <value>${connection.username}</value>
-                        </property>
-                        <property>
-                            <name>openjpa.ConnectionPassword</name>
-                            <value>${connection.password}</value>
-                        </property>
-                        <property>
-                            <name>openjpa.jdbc.DBDictionary</name>
-                            <value>${jdbc.DBDictionary}</value>
-                        </property>
-                        <property>
-                            <name>derby.stream.error.file</name>
-                            <value>target/derby.log</value>
-                        </property>
-                        <property>
-                            <name>derby.locks.deadlockTimeout</name>
-                            <value>${derby.locks.deadlockTimeout}</value>
-                        </property>
-                        <property>
-                            <name>derby.locks.waitTimeout</name>
-                            <value>${derby.locks.waitTimeout}</value>
-                        </property>
-                        <property>
-                            <name>openjpa.ConnectionProperties</name>
-                            <value>${dbcp.args}</value>
-                        </property>
-                        <property>
-                            <name>tests.openjpa.allowfailure</name>
-                            <value>${tests.openjpa.allowfailure}</value>
-                        </property>
-                        <property>
-                            <name>openjpa.jdbc.DriverDataSource</name>
-                            <value>${tests.openjpa.driverDataSource}</value>
-                        </property>
-                    </systemProperties>
+                        <systemPropertyVariables>
+                            <openjpa.Log>${openjpa.Log}</openjpa.Log>
+                            <openjpa.DynamicEnhancementAgent>${openjpa.DynamicEnhancementAgent}</openjpa.DynamicEnhancementAgent>
+                            <openjpa.ConnectionDriverName>${connection.driver.name}</openjpa.ConnectionDriverName>
+                            <openjpa.ConnectionURL>${connection.url}</openjpa.ConnectionURL>
+                            <openjpa.ConnectionUserName>${connection.username}</openjpa.ConnectionUserName>
+                            <openjpa.ConnectionPassword>${connection.password}</openjpa.ConnectionPassword>
+                            <openjpa.jdbc.DBDictionary>${jdbc.DBDictionary}</openjpa.jdbc.DBDictionary>
+                            <derby.stream.error.file>target/derby.log</derby.stream.error.file>
+                            <derby.locks.deadlockTimeout>${derby.locks.deadlockTimeout}</derby.locks.deadlockTimeout>
+                            <derby.locks.waitTimeout>${derby.locks.waitTimeout}</derby.locks.waitTimeout>
+                            <openjpa.ConnectionProperties>${dbcp.args}</openjpa.ConnectionProperties>
+                            <tests.openjpa.allowfailure>${tests.openjpa.allowfailure}</tests.openjpa.allowfailure>
+                            <openjpa.jdbc.DriverDataSource>${tests.openjpa.driverDataSource}</openjpa.jdbc.DriverDataSource>
+                        </systemPropertyVariables>
                     </configuration>
                 </plugin>
                 <plugin>
                     <groupId>io.fabric8</groupId>
                     <artifactId>docker-maven-plugin</artifactId>
-                    <version>0.45.1</version>
+                    <version>0.48.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -2099,7 +2043,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-antrun-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -2212,6 +2156,7 @@
                             <failsOnError>true</failsOnError>
                             <consoleOutput>true</consoleOutput>
                             <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                            <excludeGeneratedSources>true</excludeGeneratedSources>
                             <excludes>**/*_.java</excludes>
                             <logViolationsToConsole>true</logViolationsToConsole>
                             <checkstyleRules>

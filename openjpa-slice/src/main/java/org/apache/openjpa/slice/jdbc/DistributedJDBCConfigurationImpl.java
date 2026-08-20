@@ -19,7 +19,6 @@
 package org.apache.openjpa.slice.jdbc;
 
 import java.lang.reflect.Method;
-import java.security.AccessController;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -142,9 +141,7 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
     private void setDiagnosticContext(OpenJPAConfiguration conf) {
         LogFactory logFactory = conf.getLogFactory();
         try {
-            Method setter = AccessController.doPrivileged(J2DoPrivHelper.
-                    getDeclaredMethodAction(logFactory.getClass(),
-                    "setDiagnosticContext", new Class[]{String.class}));
+        	Method setter = logFactory.getClass().getDeclaredMethod("setDiagnosticContext", new Class[]{String.class});
             setter.invoke(logFactory, conf.getId());
         } catch (Throwable t) {
             // no contextual logging

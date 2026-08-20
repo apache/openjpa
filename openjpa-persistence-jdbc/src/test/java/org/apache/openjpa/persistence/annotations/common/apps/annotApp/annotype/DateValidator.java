@@ -16,28 +16,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package
-    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
+package org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
+
+import java.util.logging.Logger;
 
 import jakarta.persistence.PostPersist;
 import jakarta.persistence.PrePersist;
 
-public class DateValidator
-{
+public class DateValidator {
+	
+	private static final Logger logger = Logger.getLogger(DateValidator.class.getCanonicalName());
+	
 	@PrePersist
-	public void prePersist(Schedule sched)
-	{
-		if(sched.getStartDate() == null)
-		{
-			System.out.println("Date cannot be null");
+	public void prePersist(Schedule sched) {
+		if(sched.getStartDate() == null) {
+			logger.severe("Date cannot be null");
 			throw new NullPointerException();
 		}
 	}
 
 	@PostPersist
-	public void postPersist(Schedule sched)
-	{
-        System.out.println("Schedule " + sched
-                + " is successfully persisted: DateValidator.class");
+	public void postPersist(Schedule sched)	{
+        logger.fine(() -> String.format("Schedule %s is successfully persisted: DateValidator.class", sched));
 	}
+	
 }

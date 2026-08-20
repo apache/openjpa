@@ -33,17 +33,11 @@ public class TestMerge extends SQLListenerTestCase {
     }
 
     public void testMergeManagedParent() {
-        System.out.println("Running testMergeManagedParent()...");
-
-        System.out.println();
-        System.out.println("Exercising em #1...");
         EntityManager em = emf.createEntityManager();
         ParentPK pk = new ParentPK(1);
         pk.setKey1("K1");
         Parent parent = em.find(Parent.class, pk);
 
-        System.out.println();
-        System.out.println("Exercising em #1...");
         EntityManager em2 = emf.createEntityManager();
         em2.getTransaction().begin();
         Parent mergedParent = em2.merge(parent);

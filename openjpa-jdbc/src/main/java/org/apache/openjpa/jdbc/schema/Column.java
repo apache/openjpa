@@ -65,6 +65,7 @@ public class Column extends ReferenceCounter {
     private int _scale     = -1;
     private int _radix     = 10;
     private int _decimals = 0;
+    private int _secondPrecision = -1;
     private String _defaultStr = null;
     private Object _default = null;
     private Boolean _notNull = null;
@@ -80,6 +81,7 @@ public class Column extends ReferenceCounter {
     private boolean _pk = false;
     private VersionStrategy _versionStrategy = null;
     private String _comment = null;
+    private String _options = null;
     private boolean _XML = false;
     private boolean _isUni1MFK = false;
     private Set<Constraint> _constraints = new HashSet<>();
@@ -390,6 +392,14 @@ public class Column extends ReferenceCounter {
         _decimals = digits;
     }
 
+    public int getSecondPrecision() {
+        return _secondPrecision;
+    }
+
+    public void setSecondPrecision(int secondPrecision) {
+        _secondPrecision = secondPrecision;
+    }
+
     public int getPrecision() {
         return _precision;
     }
@@ -447,7 +457,7 @@ public class Column extends ReferenceCounter {
                 break;
             case JavaTypes.BYTE:
             case JavaTypes.BYTE_OBJ:
-                _default = new Byte(_defaultStr);
+                _default = Byte.parseByte(_defaultStr);
                 break;
             case JavaTypes.CHAR:
             case JavaTypes.CHAR_OBJ:
@@ -455,11 +465,11 @@ public class Column extends ReferenceCounter {
                 break;
             case JavaTypes.DOUBLE:
             case JavaTypes.DOUBLE_OBJ:
-                _default = new Double(_defaultStr);
+                _default = Double.valueOf(_defaultStr);
                 break;
             case JavaTypes.FLOAT:
             case JavaTypes.FLOAT_OBJ:
-                _default = new Float(_defaultStr);
+                _default = Float.valueOf(_defaultStr);
                 break;
             case JavaTypes.INT:
             case JavaTypes.INT_OBJ:
@@ -475,7 +485,7 @@ public class Column extends ReferenceCounter {
                 break;
             case JavaTypes.SHORT:
             case JavaTypes.SHORT_OBJ:
-                _default = new Short(_defaultStr);
+                _default = Short.valueOf(_defaultStr);
                 break;
             case JavaTypes.DATE:
                 _default = new java.util.Date(_defaultStr);
@@ -771,6 +781,7 @@ public class Column extends ReferenceCounter {
                 switch (type) {
                     case Types.DATE:
                     case Types.TIMESTAMP:
+                    case Types.TIMESTAMP_WITH_TIMEZONE:
                         return true;
                     default:
                         return false;
@@ -780,6 +791,7 @@ public class Column extends ReferenceCounter {
                     case Types.DATE:
                     case Types.TIME:
                     case Types.TIMESTAMP:
+                    case Types.TIME_WITH_TIMEZONE:
                         return true;
                     default:
                         return false;
@@ -928,6 +940,14 @@ public class Column extends ReferenceCounter {
 
     public void setComment(String comment) {
         _comment = comment;
+    }
+
+    public String getOptions() {
+        return _options;
+    }
+
+    public void setOptions(String options) {
+        _options = options;
     }
 
     /**

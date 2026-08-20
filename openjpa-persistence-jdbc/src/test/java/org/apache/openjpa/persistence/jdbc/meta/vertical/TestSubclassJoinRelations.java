@@ -432,7 +432,7 @@ public class TestSubclassJoinRelations
     public void testProjections()
         throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
-        OpenJPAQuery q = pm.createNativeQuery("",Relations.class);
+        OpenJPAQuery q = (OpenJPAQuery) pm.createNativeQuery("",Relations.class);
         //FIXME jthomas
         /*
         q.setResult("base, baseSub1, baseSub1Sub2");

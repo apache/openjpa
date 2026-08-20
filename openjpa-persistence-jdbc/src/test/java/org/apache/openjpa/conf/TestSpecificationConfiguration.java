@@ -71,6 +71,61 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
         }
     }
 
+    public void testSpecificationVersionIsJPA3_0() {
+        OpenJPAEntityManagerFactorySPI emf1 = null;
+        try {
+          emf1 =
+            (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
+            createEntityManagerFactory("persistence3_0", "org/apache/openjpa/conf/META-INF/persistence-3_0-config.xml");
+
+            Specification spec = emf1.getConfiguration().getSpecificationInstance();
+            int major = spec.getVersion();
+            assertEquals(3, major);
+            assertEquals("0", spec.getMinorVersion());
+            assertTrue(spec.isSame("JPA"));
+        } finally {
+            clear(emf1);
+            closeEMF(emf1);
+        }
+    }
+
+    public void testSpecificationVersionIsJPA3_1() {
+
+        OpenJPAEntityManagerFactorySPI emf1 = null;
+        try {
+          emf1 =
+            (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
+            createEntityManagerFactory("persistence3_1", "org/apache/openjpa/conf/META-INF/persistence-3_1-config.xml");
+
+            Specification spec = emf1.getConfiguration().getSpecificationInstance();
+            int major = spec.getVersion();
+            assertEquals(3, major);
+            assertEquals("0", spec.getMinorVersion());
+            assertTrue(spec.isSame("JPA"));
+        } finally {
+            clear(emf1);
+            closeEMF(emf1);
+        }
+    }
+
+    public void testSpecificationVersionIsJPA3_2() {
+        OpenJPAEntityManagerFactorySPI emf1 = null;
+        try {
+          emf1 =
+            (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
+            createEntityManagerFactory("persistence3_2", "org/apache/openjpa/conf/META-INF/persistence-3_2-config.xml");
+
+            Specification spec = emf1.getConfiguration().getSpecificationInstance();
+            int major = spec.getVersion();
+            assertEquals(3, major);
+            assertEquals("2", spec.getMinorVersion());
+            assertTrue(spec.isSame("JPA"));
+        } finally {
+            clear(emf1);
+            closeEMF(emf1);
+        }
+    }
+
     public void testLowerVersionCanBeSet() {
         super.setUp("openjpa.Specification", "JPA 1.0");
         Specification spec = getSpecifcation();

@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import jakarta.persistence.Cache;
 import jakarta.persistence.EntityManager;
@@ -61,11 +62,14 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
     public static final String RETAIN_DATA = "Retain data after test run";
     private boolean retainDataOnTearDown;
     protected boolean _fresh = false;
+    private Object testsDisabledLock = new Object();
     private Boolean testsDisabled = Boolean.FALSE;
 
     public static final String ALLOW_FAILURE_LOG = "log";
     public static final String ALLOW_FAILURE_IGNORE = "ignore";
     public static final String ALLOW_FAILURE_SYS_PROP = "tests.openjpa.allowfailure";
+
+    private static final Logger logger = Logger.getLogger(AbstractPersistenceTestCase.class.getCanonicalName());
 
     private static String allowFailureConfig = System.getProperty(ALLOW_FAILURE_SYS_PROP, ALLOW_FAILURE_IGNORE);
     /**
@@ -236,7 +240,7 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
             emf.close();
             brc = !emf.isOpen();
             if (!brc) {
-                System.err.println("AbstractPersistenceTestCase().closeEMF() - EMF is still open.");
+                logger.warning("AbstractPersistenceTestCase().closeEMF() - EMF is still open.");
             }
         }
         return brc;
@@ -257,7 +261,7 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
         em.close();
         boolean brc = !em.isOpen();
         if (!brc) {
-            System.err.println("AbstractPersistenceTestCase().closeEM() - EM is still open.");
+            logger.warning("AbstractPersistenceTestCase().closeEM() - EM is still open.");
         }
         return brc;
     }
@@ -523,12 +527,12 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
             return;
         }
         for (int i = 0; i < tab * 4; i++) {
-            System.out.print(" ");
+            logger.warning(" ");
         }
         String sqlState =
             (t instanceof SQLException) ? "(SQLState=" + ((SQLException) t).getSQLState() + ":" + t.getMessage() + ")"
                 : "";
-        System.out.println(t.getClass().getName() + sqlState);
+        logger.warning(t.getClass().getName() + sqlState);
         if (t.getCause() == t) {
             return;
         }
@@ -560,9 +564,9 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
                     super.runBare();
                 } catch (Throwable t) {
                     if (ALLOW_FAILURE_LOG.equalsIgnoreCase(allowFailureConfig)) {
-                        System.err.println("*** FAILED (but ignored): " + this);
-                        System.err.println("***              Reason : " + allowFailureAnnotation.message());
-                        System.err.println("Stacktrace of failure");
+                        logger.warning("*** FAILED (but ignored): " + this);
+                        logger.warning("***              Reason : " + allowFailureAnnotation.message());
+                        logger.warning("Stacktrace of failure");
                         t.printStackTrace();
                     } else {
                         throw t;
@@ -674,13 +678,13 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
     }
 
     protected void setTestsDisabled(boolean disable) {
-        synchronized (testsDisabled) {
+        synchronized (testsDisabledLock) {
             testsDisabled = disable;
         }
     }
 
     protected boolean isTestsDisabled() {
-        synchronized (testsDisabled) {
+        synchronized (testsDisabledLock) {
             return testsDisabled;
         }
     }

@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.util;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -28,7 +29,7 @@ import java.util.Date;
 public final class DateId
     extends OpenJPAId {
 
-    
+
     private static final long serialVersionUID = 1L;
     private final Date key;
 
@@ -47,6 +48,10 @@ public final class DateId
 
     public DateId(Class cls, java.sql.Timestamp key) {
         this(cls, (Date) key);
+    }
+
+    public DateId(Class cls, Calendar key) {
+        this(cls, key == null ? null : key.getTime());
     }
 
     public DateId(Class cls, Date key, boolean subs) {

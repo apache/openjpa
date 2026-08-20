@@ -27,6 +27,7 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.openjpa.event.LifecycleEventManager;
@@ -75,7 +76,7 @@ import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.JavaTypes;
-import org.apache.openjpa.meta.ValueMetaData;
+
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
 
@@ -87,7 +88,7 @@ import org.apache.openjpa.util.UserException;
 public class JDBCStoreQuery
     extends ExpressionStoreQuery {
 
-    
+
     private static final long serialVersionUID = 1L;
 
     private static final Table INVALID = new Table();
@@ -108,7 +109,7 @@ public class JDBCStoreQuery
     }
 
     private final transient JDBCStore _store;
-    private static ThreadLocalContext localContext = new ThreadLocalContext();
+    private static final ThreadLocalContext localContext = new ThreadLocalContext();
 
     /**
      * Constructor. Supply store manager.
@@ -163,6 +164,12 @@ public class JDBCStoreQuery
         ClassMetaData base, ClassMetaData[] metas, boolean subclasses,
         ExpressionFactory[] facts, QueryExpressions[] exps, Object[] params,
         Range range) {
+        if (exps[0].setOperationType
+            != QueryExpressions.SET_OP_NONE) {
+            return executeSetOperatorQuery(ex, base, metas,
+                subclasses, facts, exps, params, range);
+        }
+
         Context[] ctxs = new Context[exps.length];
         for (int i = 0; i < exps.length; i++)
             ctxs[i] = exps[i].ctx();
@@ -665,13 +672,14 @@ public class JDBCStoreQuery
     /**
      * Return the table for the field if the given table hasn't been set
      * yet, or if the tables match. If the field uses a different table,
-     * returns INVALID. Also returns INVALID if field is dependent.
+     * returns INVALID.
+     *
+     * Note: cascade delete fields are no longer treated as INVALID because
+     * JPA bulk delete operations do not cascade to related entities
+     * (JPA spec section 4.10). The remaining column/table checks are
+     * sufficient to detect multi-table mappings that prevent bulk SQL DELETE.
      */
     private Table getTable(FieldMapping fm, Table table) {
-        if (fm.getCascadeDelete() != ValueMetaData.CASCADE_NONE
-            && !fm.isEmbeddedPC())
-            return INVALID;
-
         Column[] columns = fm.getColumns();
         for (int i = 0; columns != null && i < columns.length; i++) {
             if (table == null)
@@ -810,6 +818,12 @@ public class JDBCStoreQuery
             return handleAbsVal(value, ob, params, sm);
         case Val.SQRT_VAL:
             return handleSqrtVal(value, ob, params, sm);
+        case Val.LEFT_VAL:
+        	return handleLeftVal(value, ob, params, sm);
+        case Val.RIGHT_VAL:
+        	return handleRightVal(value, ob, params, sm);
+        case Val.REPLACE_VAL:
+        	return handleReplaceVal(value, ob, params, sm);
         default:
             throw new UnsupportedException();
         }
@@ -856,7 +870,7 @@ public class JDBCStoreQuery
 
         Val value2 = concatVal.getVal2();
         Object val2 = getValue(value2, ob, params, sm);
-        return new StringBuilder(100).append(val1).append(val2).toString();
+        return String.valueOf(val1) + val2;
     }
 
     private Object handleSubstringVal(Object value, Object ob, Object[] params,
@@ -879,6 +893,69 @@ public class JDBCStoreQuery
         return val1.substring(startIdx, endIdx);
     }
 
+    private Object handleLeftVal(Object value, Object ob, Object[] params, OpenJPAStateManager sm) {
+    	org.apache.openjpa.jdbc.kernel.exps.Left leftVal= (org.apache.openjpa.jdbc.kernel.exps.Left) value;
+    	Val value1 = leftVal.getVal1();
+    	String s = (String) getValue(value1, ob, params, sm);
+
+    	Val value2 = leftVal.getVal2();
+    	Object arg = getValue(value2, ob, params, sm);
+
+    	if (s == null) {
+    		return null;
+    	} else if (arg == null) {
+    		return s;
+    	}
+
+        int slen = s.length();
+        int len = ((Number) arg).intValue();
+        boolean inv = len < 0;
+        len = inv ? -len : len;
+        if (len > slen) {
+        	return s;
+        } else {
+        	return inv ? s.substring(0, slen - len) : s.substring(0, len);
+        }
+    }
+
+    private Object handleRightVal(Object value, Object ob, Object[] params, OpenJPAStateManager sm) {
+    	org.apache.openjpa.jdbc.kernel.exps.Right rightVal= (org.apache.openjpa.jdbc.kernel.exps.Right) value;
+    	Val value1 = rightVal.getVal1();
+    	String s = (String) getValue(value1, ob, params, sm);
+
+    	Val value2 = rightVal.getVal2();
+    	Object arg = getValue(value2, ob, params, sm);
+
+    	if (s == null) {
+    		return null;
+    	} else if (arg == null) {
+    		return s;
+    	}
+
+        int slen = s.length();
+        int len = ((Number) arg).intValue();
+        boolean inv = len < 0;
+        len = inv ? -len : len;
+        if (len > slen) {
+        	return s;
+        } else {
+        	return inv ? s.substring(len, slen) : s.substring(slen - len, slen);
+        }
+    }
+
+    private Object handleReplaceVal(Object value , Object ob, Object[] params, OpenJPAStateManager sm) {
+    	org.apache.openjpa.jdbc.kernel.exps.Replace replaceVal = (org.apache.openjpa.jdbc.kernel.exps.Replace) value;
+
+    	Val strVal = replaceVal.getOriginal();
+    	Val patternVal = replaceVal.getPattern();
+    	Val replacementVal = replaceVal.getPattern();
+
+    	String str = (String) getValue(strVal, ob, params, sm);
+    	String patt = (String) getValue(patternVal, ob, params, sm);
+    	String repl = (String) getValue(replacementVal, ob, params, sm);
+        return str == null ? null : str.replace(patt, repl);
+    }
+
     private Object handleArgsVal(Object value, Object ob, Object[] params,
         OpenJPAStateManager sm) {
         org.apache.openjpa.jdbc.kernel.exps.Args argsVal =
@@ -891,7 +968,7 @@ public class JDBCStoreQuery
         org.apache.openjpa.jdbc.kernel.exps.ToLowerCase lowerVal =
             (org.apache.openjpa.jdbc.kernel.exps.ToLowerCase) value;
         Val val = lowerVal.getValue();
-        return ((String) getValue(val, ob, params, sm)).toLowerCase();
+        return ((String) getValue(val, ob, params, sm)).toLowerCase(Locale.ROOT);
     }
 
     private Object handleUpperVal(Object value, Object ob, Object[] params,
@@ -899,7 +976,7 @@ public class JDBCStoreQuery
         org.apache.openjpa.jdbc.kernel.exps.ToUpperCase upperVal =
             (org.apache.openjpa.jdbc.kernel.exps.ToUpperCase) value;
         Val val = upperVal.getValue();
-        return ((String) getValue(val, ob, params, sm)).toUpperCase();
+        return ((String) getValue(val, ob, params, sm)).toUpperCase(Locale.ROOT);
     }
 
     private Object handleLengthVal(Object value, Object ob, Object[] params,
@@ -1049,6 +1126,8 @@ public class JDBCStoreQuery
         case JavaTypes.LOCALE:
         case JavaTypes.OBJECT:
         case JavaTypes.UUID_OBJ:
+        case JavaTypes.INSTANT:
+        case JavaTypes.YEAR:
         case JavaTypes.OID:
             return sm.fetchObjectField(i);
         default:
@@ -1102,6 +1181,82 @@ public class JDBCStoreQuery
             }
         }
         return null;
+    }
+
+    private ResultObjectProvider executeSetOperatorQuery(Executor ex,
+        ClassMetaData base, ClassMetaData[] metas, boolean subclasses,
+        ExpressionFactory[] facts, QueryExpressions[] exps,
+        Object[] params, Range range) {
+
+        QueryExpressions compound = exps[0];
+        List<QueryExpressions> operands = new ArrayList<>();
+        List<Integer> opTypes = new ArrayList<>();
+        flattenSetOperator(compound, operands, opTypes);
+
+        ClassMapping mapping = (ClassMapping) metas[0];
+        JDBCFetchConfiguration fetch = (JDBCFetchConfiguration)
+            ctx.getFetchConfiguration();
+        DBDictionary dict = _store.getDBDictionary();
+        int eager = EagerFetchModes.EAGER_NONE;
+
+        Select mainSel = null;
+        QueryExpressions mainExps = null;
+        QueryExpressionsState mainState = null;
+
+        for (int i = 0; i < operands.size(); i++) {
+            QueryExpressions opExps = operands.get(i);
+            QueryExpressionsState state =
+                new QueryExpressionsState();
+            opExps.state = state;
+
+            Context[] ctxs = new Context[]{ opExps.ctx() };
+            localContext.set(clone(ctxs, null));
+
+            ExpContext ectx = new ExpContext(_store, params, fetch);
+
+            JDBCExpressionFactory fact =
+                (JDBCExpressionFactory) facts[0];
+            Select sel = fact.getSelectConstructor().evaluate(
+                ectx, null, null, opExps, state);
+            fact.getSelectConstructor().select(sel, ectx, mapping,
+                subclasses, opExps, state, eager);
+
+            if (i == 0) {
+                mainSel = sel;
+                mainExps = opExps;
+                mainState = state;
+            } else {
+                SQLBuffer opSQL = dict.toSelect(
+                    sel, false, fetch);
+                mainSel.addSetOperatorSQL(
+                    opTypes.get(i), opSQL);
+            }
+        }
+
+        localContext.remove();
+
+        if (mainExps.projections.length > 0) {
+            return new ProjectionResultObjectProvider(
+                mainSel, mainExps, mainState,
+                new ExpContext(_store, params, fetch));
+        }
+        return new InstanceResultObjectProvider(
+            mainSel, mapping, _store, fetch);
+    }
+
+    private void flattenSetOperator(QueryExpressions exps,
+        List<QueryExpressions> operands, List<Integer> opTypes) {
+        if (exps.setOperationType == QueryExpressions.SET_OP_NONE) {
+            operands.add(exps);
+            opTypes.add(QueryExpressions.SET_OP_NONE);
+            return;
+        }
+
+        flattenSetOperator(exps.setOperands[0], operands, opTypes);
+        // the right operand gets this node's set operation type
+        int rightIdx = operands.size();
+        flattenSetOperator(exps.setOperands[1], operands, opTypes);
+        opTypes.set(rightIdx, exps.setOperationType);
     }
 
     private static Context[] clone(Context[] orig, Context parent) {

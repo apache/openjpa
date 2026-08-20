@@ -114,6 +114,17 @@ public class FullClassStrategy
         if (cls.getIdentityType() == ClassMetaData.ID_DATASTORE)
             cls.setJoinable(cls.getPrimaryKeyColumns()[0],
                 new IdentityJoinable(cls));
+
+        // create secondary tables declared via @SecondaryTable
+        DBIdentifier[] secTableNames = info.getSecondaryTableIdentifiers();
+        if (secTableNames != null) {
+            for (DBIdentifier secTableName : secTableNames) {
+                if (DBIdentifier.isNull(secTableName))
+                    continue;
+                // getTable creates the table in the schema if it doesn't exist
+                info.getTable(cls, secTableName, adapt);
+            }
+        }
     }
 
     @Override

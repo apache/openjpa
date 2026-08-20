@@ -34,9 +34,11 @@ import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.strats.NoneClassStrategy;
 import org.apache.openjpa.jdbc.meta.strats.VerticalClassStrategy;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
+import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Schemas;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.sql.Joins;
@@ -908,6 +910,137 @@ public class ClassMapping
         // the columns be resolved
         _info.getUniques(this, true);
         _info.getIndices(this, true);
+
+        // resolve secondary tables — ensure all @SecondaryTable-declared tables
+        // exist in the schema with their PK join columns and FK constraints,
+        // even when no fields are mapped to them
+        resolveSecondaryTables();
+    }
+
+    /**
+     * Ensures that secondary tables declared via @SecondaryTable are created
+     * in the given repository's schema group with PK join columns and FK
+     * constraints. This is used by MappingTool to ensure secondary tables
+     * exist in the current schema group even when metadata is cached from
+     * a previous EMF.
+     */
+    public void ensureSecondaryTables(MappingRepository targetRepos) {
+        resolveSecondaryTables(targetRepos);
+    }
+
+    /**
+     * Ensures that secondary tables declared via @SecondaryTable are created
+     * in the schema with PK join columns and foreign key constraints.
+     */
+    private void resolveSecondaryTables() {
+        resolveSecondaryTables(getMappingRepository());
+    }
+
+    private void resolveSecondaryTables(MappingRepository repos) {
+        DBIdentifier[] secTableNames = _info.getSecondaryTableIdentifiers();
+        if (secTableNames == null || secTableNames.length == 0)
+            return;
+        Table primaryTable = getTable();
+        if (primaryTable == null)
+            return;
+        PrimaryKey primaryPk = primaryTable.getPrimaryKey();
+        if (primaryPk == null)
+            return;
+        Column[] primaryPkCols = primaryPk.getColumns();
+        if (primaryPkCols == null || primaryPkCols.length == 0) {
+            // For application identity, PK columns might not be in the
+            // PrimaryKey object yet. Use the table columns from PK fields.
+            FieldMapping[] pkFields = getPrimaryKeyFieldMappings();
+            if (pkFields.length > 0) {
+                java.util.ArrayList<Column> pkColList = new java.util.ArrayList<>();
+                for (FieldMapping pkField : pkFields) {
+                    Column[] fCols = pkField.getColumns();
+                    for (Column c : fCols) {
+                        pkColList.add(c);
+                    }
+                }
+                primaryPkCols = pkColList.toArray(new Column[0]);
+            }
+            if (primaryPkCols.length == 0)
+                return;
+        }
+
+        // Use the target repos' schema group to create secondary tables
+        org.apache.openjpa.jdbc.schema.SchemaGroup schemaGroup =
+            repos.getSchemaGroup();
+
+        for (DBIdentifier secTableName : secTableNames) {
+            if (DBIdentifier.isNull(secTableName))
+                continue;
+
+            // Find or create the secondary table in the target schema group
+            Table secTable = schemaGroup.findTable(
+                org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier.getPath(secTableName));
+            if (secTable == null) {
+                // Determine the schema to use
+                DBIdentifier schemaName = primaryTable.getSchema() != null
+                    ? primaryTable.getSchema().getIdentifier()
+                    : DBIdentifier.NULL;
+                org.apache.openjpa.jdbc.schema.Schema schema =
+                    schemaGroup.getSchema(schemaName);
+                if (schema == null)
+                    schema = schemaGroup.addSchema(schemaName);
+                secTable = schema.getTable(secTableName);
+                if (secTable == null)
+                    secTable = schema.addTable(secTableName);
+            }
+
+            // get the join column templates from @PrimaryKeyJoinColumn
+            List<Column> joinCols =
+                _info.getSecondaryTableJoinColumns(secTableName);
+            if (joinCols == null || joinCols.isEmpty())
+                continue;
+
+            // add PK to the secondary table if not already present
+            PrimaryKey secPk = secTable.getPrimaryKey();
+            if (secPk == null) {
+                secPk = secTable.addPrimaryKey();
+                secPk.setLogical(false);
+            }
+
+            // build the join columns
+            Column[] secCols = new Column[joinCols.size()];
+            for (int i = 0; i < joinCols.size(); i++) {
+                Column tmpl = joinCols.get(i);
+                DBIdentifier colName = tmpl.getIdentifier();
+                if (DBIdentifier.isNull(colName))
+                    continue;
+                Column secCol = secTable.getColumn(colName);
+                if (secCol == null)
+                    secCol = secTable.addColumn(colName);
+                // configure the column type to match the primary PK
+                int pkIdx = Math.min(i, primaryPkCols.length - 1);
+                if (secCol.getType() == java.sql.Types.OTHER) {
+                    secCol.setType(primaryPkCols[pkIdx].getType());
+                    secCol.setJavaType(primaryPkCols[pkIdx].getJavaType());
+                    secCol.setSize(primaryPkCols[pkIdx].getSize());
+                }
+                secCol.setNotNull(true);
+                secCols[i] = secCol;
+                if (!secPk.containsColumn(secCol))
+                    secPk.addColumn(secCol);
+            }
+
+            // create FK from secondary table to primary table
+            if (secTable.getForeignKeys().length == 0) {
+                ForeignKey fkTemplate =
+                    _info.getSecondaryTableForeignKey(secTableName);
+                DBIdentifier fkName = (fkTemplate != null)
+                    ? fkTemplate.getIdentifier() : DBIdentifier.NULL;
+                ForeignKey fk = secTable.addForeignKey(fkName);
+                for (int i = 0; i < secCols.length; i++) {
+                    if (secCols[i] != null) {
+                        int pkIdx = Math.min(i, primaryPkCols.length - 1);
+                        fk.join(secCols[i], primaryPkCols[pkIdx]);
+                    }
+                }
+            }
+        }
     }
 
     /**

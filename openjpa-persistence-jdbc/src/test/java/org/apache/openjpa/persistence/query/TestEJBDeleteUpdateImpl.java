@@ -146,6 +146,7 @@ public class TestEJBDeleteUpdateImpl extends BaseQueryTest {
 
         assertEquals(1, delEntity);
 
+        em.clear();
         RuntimeTest1 del = em.find(RuntimeTest1.class, em.getObjectId(runt1));
         assertNull(del);
 

@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.openjpa.jdbc.schema.Column;
@@ -37,7 +38,7 @@ import org.apache.openjpa.lib.util.StringUtil;
 class MatchesExpression
     implements Exp {
 
-    
+
     private static final long serialVersionUID = 1L;
     private final Val _val;
     private final Const _const;
@@ -92,7 +93,7 @@ class MatchesExpression
                     str = str.substring(0, idx) + str.substring(idx + 4);
                 else
                     str = str.substring(0, idx);
-                str = str.toLowerCase();
+                str = str.toLowerCase(Locale.ROOT);
             }
 
             // append target

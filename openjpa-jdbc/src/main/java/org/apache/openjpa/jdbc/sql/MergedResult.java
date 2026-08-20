@@ -32,8 +32,10 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
+import java.time.Year;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
@@ -366,6 +368,16 @@ public class MergedResult implements Result {
     @Override
     public OffsetDateTime getOffsetDateTime(Object obj) throws SQLException {
         return _res[_idx].getOffsetDateTime(obj);
+    }
+
+    @Override
+    public Instant getInstant(Object obj) throws SQLException {
+        return _res[_idx].getInstant(obj);
+    }
+
+    @Override
+    public Year getYear(Object obj) throws SQLException {
+        return _res[_idx].getYear(obj);
     }
 
     @Override
