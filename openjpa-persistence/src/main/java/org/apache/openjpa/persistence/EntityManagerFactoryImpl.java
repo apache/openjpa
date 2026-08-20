@@ -28,6 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -93,7 +94,8 @@ public class EntityManagerFactoryImpl
     private final java.util.concurrent.ConcurrentHashMap<String, EntityGraphImpl<?>>
         _entityGraphs = new java.util.concurrent.ConcurrentHashMap<>();
     private volatile boolean _entityGraphsInitialized;
-    private final Object _namedQueriesLock = new Object();
+    // internal lock: must stay serializable, this factory is serialized as-is
+    private final ReentrantLock _namedQueriesLock = new ReentrantLock();
     private volatile boolean _namedQueriesInitialized;
     private transient Map<String, Object> properties;
     private transient Map<String, Object> emEmptyPropsProperties;
@@ -987,7 +989,8 @@ public class EntityManagerFactoryImpl
         if (_namedQueriesInitialized) {
             return;
         }
-        synchronized (_namedQueriesLock) {
+        _namedQueriesLock.lock();
+        try {
             if (_namedQueriesInitialized) {
                 return;
             }
@@ -997,6 +1000,8 @@ public class EntityManagerFactoryImpl
                 mdr.getMetaData(cls, loader, false);
             }
             _namedQueriesInitialized = true;
+        } finally {
+            _namedQueriesLock.unlock();
         }
     }
 
