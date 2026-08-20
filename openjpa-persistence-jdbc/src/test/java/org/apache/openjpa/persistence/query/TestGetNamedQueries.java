@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import jakarta.persistence.EntityManager;
@@ -27,6 +29,7 @@ import jakarta.persistence.TypedQueryReference;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.TypedQueryReferenceImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -102,6 +105,21 @@ public class TestGetNamedQueries extends SingleEMFTestCase {
         } catch (UnsupportedOperationException expected) {
             // expected
         }
+    }
+
+    /**
+     * The hints of a {@link TypedQueryReference} must keep the declaration order they have in the
+     * metadata, because {@link jakarta.persistence.EntityManager#createQuery(TypedQueryReference)}
+     * replays them in iteration order and OpenJPA has aliased hint keys writing the same setting.
+     */
+    public void testHintsKeepDeclarationOrder() {
+        Map<String, Object> declared = new LinkedHashMap<>();
+        declared.put("openjpa.FetchPlan.LockTimeout", "1000");
+        declared.put("jakarta.persistence.lock.timeout", "2000");
+        declared.put("openjpa.FetchPlan.MaxFetchDepth", "2");
+        Map<String, Object> hints = new TypedQueryReferenceImpl<>(
+            "NQRef.all", NamedQueryRefEntity.class, declared).getHints();
+        assertEquals(new ArrayList<>(declared.keySet()), new ArrayList<>(hints.keySet()));
     }
 
     public void testReturnedMapIsACopy() {

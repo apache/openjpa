@@ -739,22 +739,23 @@ public class EntityManagerImpl
 	 * @return the lock mode given among the options or null if none was given
 	 */
 	private LockModeType parseFindOptions(Map<String, Object> props, FindOption... options) {
+		if (options == null) {
+			return null;
+		}
 		LockModeType mode = null;
-		if (options != null) {
-			for (FindOption opt: options) {
-				if (opt instanceof LockModeType lmt) {
-					mode = lmt;
-				} else if (opt instanceof CacheRetrieveMode crm) {
-					props.put(JPAProperties.CACHE_RETRIEVE_MODE, crm);
-				} else if (opt instanceof CacheStoreMode csm) {
-					props.put(JPAProperties.CACHE_STORE_MODE, csm);
-				} else if (opt instanceof PessimisticLockScope pls) {
-					props.put(JPAProperties.LOCK_SCOPE, pls);
-				} else if (opt instanceof Timeout timeout) {
-					props.put(JPAProperties.LOCK_TIMEOUT, timeout.milliseconds());
-				}
-				// open to custom options
+		for (FindOption opt: options) {
+			if (opt instanceof LockModeType lmt) {
+				mode = lmt;
+			} else if (opt instanceof CacheRetrieveMode crm) {
+				props.put(JPAProperties.CACHE_RETRIEVE_MODE, crm);
+			} else if (opt instanceof CacheStoreMode csm) {
+				props.put(JPAProperties.CACHE_STORE_MODE, csm);
+			} else if (opt instanceof PessimisticLockScope pls) {
+				props.put(JPAProperties.LOCK_SCOPE, pls);
+			} else if (opt instanceof Timeout timeout) {
+				props.put(JPAProperties.LOCK_TIMEOUT, timeout.milliseconds());
 			}
+			// open to custom options
 		}
 		return mode;
 	}

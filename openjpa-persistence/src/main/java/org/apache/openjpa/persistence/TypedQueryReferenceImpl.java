@@ -54,8 +54,11 @@ public class TypedQueryReferenceImpl<R> implements TypedQueryReference<R> {
             throw new IllegalArgumentException("resultType is required");
         _name = name;
         _resultType = resultType;
+        // deliberately not Map.copyOf(): its iteration order is randomized per JVM run, while the hints
+        // must be replayed in metadata declaration order (see EntityManager#createQuery(TypedQueryReference)),
+        // and it would reject null keys or values that this constructor has always tolerated
         _hints = (hints == null || hints.isEmpty())
-            ? Collections.emptyMap()
+            ? Map.of()
             : Collections.unmodifiableMap(new LinkedHashMap<>(hints));
     }
 
