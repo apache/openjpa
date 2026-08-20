@@ -2775,8 +2775,29 @@ public class EntityManagerImpl
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public <T> TypedQuery<T> createQuery(TypedQueryReference<T> reference) {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		assertNotCloseInvoked();
+		if (reference == null) {
+			throw new IllegalArgumentException("TypedQueryReference must not be null");
+		}
+		String name = reference.getName();
+		if (name == null) {
+			throw new IllegalArgumentException("TypedQueryReference name must not be null");
+		}
+		Class<? extends T> resultType = reference.getResultType();
+		Query query = (resultType == null) ? createNamedQuery(name) : createNamedQuery(name, resultType);
+		Map<String, Object> hints = reference.getHints();
+		if (hints != null) {
+			try {
+				for (Map.Entry<String, Object> hint : hints.entrySet()) {
+					query.setHint(hint.getKey(), hint.getValue());
+				}
+			} catch (RuntimeException re) {
+				throw translateException(re);
+			}
+		}
+		return (TypedQuery<T>) query;
 	}
 
 	@Override
