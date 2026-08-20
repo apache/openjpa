@@ -2029,6 +2029,14 @@ public class AnnotationPersistenceMetaDataParser
             meta = getRepository().addQueryMetaData(_cls, query.name());
             meta.setLanguage(JPQLParser.LANG_JPQL);
             meta.setQueryString(query.query());
+            // JPA 3.2 added @NamedQuery.resultClass(); handle it exactly like
+            // @NamedNativeQuery.resultClass() so that a declared result type is
+            // available from the metadata (and to EntityManagerFactory.getNamedQueries).
+            Class<?> res = query.resultClass();
+            if (ImplHelper.isManagedType(getConfiguration(), res))
+                meta.setCandidateType(res);
+            else if (!void.class.equals(res))
+                meta.setResultType(res);
             for (QueryHint hint : query.hints())
                 meta.addHint(hint.name(), hint.value());
             LockModeType lmt = processNamedQueryLockModeType(query);
