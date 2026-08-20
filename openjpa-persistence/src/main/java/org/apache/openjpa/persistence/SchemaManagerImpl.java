@@ -52,10 +52,19 @@ public class SchemaManagerImpl implements SchemaManager {
     public void validate() throws SchemaValidationException {
         try {
             _factory.validatePersistenceStructure();
+        } catch (UnsupportedOperationException uoe) {
+            // the store does not implement schema validation at all. That is a missing capability,
+            // not a validation failure, so report it the same way create(), drop() and truncate() do.
+            throw uoe;
         } catch (Exception ex) {
             throw new SchemaValidationException(
-                    String.format("Schema could not be validated: %s", ex.getLocalizedMessage()), ex);
+                    String.format("Schema could not be validated: %s", describe(ex)), ex);
         }
+    }
+
+    private static String describe(Exception ex) {
+        String message = ex.getLocalizedMessage();
+        return message != null ? message : ex.getClass().getName();
     }
 
     @Override
