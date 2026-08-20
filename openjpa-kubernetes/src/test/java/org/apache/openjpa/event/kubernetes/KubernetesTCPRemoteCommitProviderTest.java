@@ -49,6 +49,8 @@ public class KubernetesTCPRemoteCommitProviderTest {
 
     private static final String LABEL = "testKey";
 
+    private static final int REFRESH_MILLIS = 100;
+
     private static List<String> getAddresses(final KubernetesTCPRemoteCommitProvider rcp)
             throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
 
@@ -138,14 +140,17 @@ public class KubernetesTCPRemoteCommitProviderTest {
 
             @Override
             protected KubernetesClient kubernetesClient() throws KubernetesClientException {
-                return server.getClient();
+                // a fresh client per invocation, as done by the base implementation:
+                // fetchDynamicAddresses() closes the client it is given, so handing out the
+                // shared client of the mock server would make every subsequent refresh fail
+                // and hence drop all addresses again
+                return server.getKubernetesMockServer().createClient();
             }
         };
         rcp.setNamespace(NAMESPACE);
         rcp.setLabel(LABEL);
-        // mock will drop all IPs if test will run too long.
-        // 5 sec should be enough
-        rcp.setCacheDurationMillis(5000);
+        // refresh often, so that the assertions below cover the scheduled refreshes as well
+        rcp.setCacheDurationMillis(REFRESH_MILLIS);
 
         // mock OpenJPA configuration
         Configuration conf = context.mock(Configuration.class);
@@ -162,6 +167,15 @@ public class KubernetesTCPRemoteCommitProviderTest {
         rcp.endConfiguration();
 
         // expect to find remote addresses of matching pods
+        assertAddresses(rcp);
+
+        // the addresses are periodically refreshed in the background: expect them to be
+        // still there after some refreshes have taken place
+        Thread.sleep(5 * REFRESH_MILLIS);
+        assertAddresses(rcp);
+    }
+
+    private void assertAddresses(final KubernetesTCPRemoteCommitProvider rcp) throws Exception {
         List<String> addresses = getAddresses(rcp);
         assertEquals(2, addresses.size());
         assertTrue(addresses.contains(pod1.getStatus().getPodIP()));
