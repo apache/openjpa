@@ -56,6 +56,7 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.jdbc.sql.H2Dictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
+import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
 import org.apache.openjpa.persistence.common.utils.DatabaseHelper;
 import org.apache.openjpa.persistence.test.AllowFailure;
 
@@ -1905,7 +1906,9 @@ public class TestTypesafeCriteria extends CriteriaTest {
     public void testCriteriaExceptAll() {
         DBDictionary dict = getDictionary();
         if (dict instanceof H2Dictionary
-                || (dict instanceof OracleDictionary && dict.getMajorVersion() < 21))
+                || (dict instanceof OracleDictionary && dict.getMajorVersion() < 21)
+                || dict instanceof SQLServerDictionary
+            )
         {
             // @AllowFailure
             // Orcale supports `EXCEPT ALL` since 21c
