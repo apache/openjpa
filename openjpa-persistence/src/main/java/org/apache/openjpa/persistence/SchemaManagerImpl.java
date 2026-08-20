@@ -25,7 +25,7 @@ import jakarta.persistence.SchemaValidationException;
 
 /**
  * Implements a no-op SchemaManager object that will throw
- * UnsupportedOperationException if not concretelly implemented
+ * UnsupportedOperationException if not concretely implemented
  * by the given persistence layer.
  *
  * @author Paulo Cristovão Filho
@@ -54,13 +54,12 @@ public class SchemaManagerImpl implements SchemaManager {
             _factory.validatePersistenceStructure();
         } catch (Exception ex) {
             throw new SchemaValidationException(
-                    String.format("Schema could not be validated: %s", ex.getLocalizedMessage()),
-                    (Exception) ex);
+                    String.format("Schema could not be validated: %s", ex.getLocalizedMessage()), ex);
         }
     }
 
     @Override
     public void truncate() {
-        _factory.truncateData();;
+        _factory.truncateData();
     }
 }
