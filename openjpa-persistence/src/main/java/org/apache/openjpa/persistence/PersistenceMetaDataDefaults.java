@@ -143,7 +143,6 @@ public class PersistenceMetaDataDefaults
     protected MemberFilter methodFilter = new MemberFilter(Method.class);
     protected TransientFilter nonTransientFilter = new TransientFilter(false);
     protected AnnotatedFilter annotatedFilter = new AnnotatedFilter();
-    protected AccessTypeFilter accessTypeFilter = new AccessTypeFilter();
     protected GetterFilter getterFilter = new GetterFilter();
     protected SetterFilter setterFilter = new SetterFilter();
     private Boolean _isAbstractMappingUniDirectional = null;
@@ -524,42 +523,6 @@ public class PersistenceMetaDataDefaults
         	return AccessCode.PROPERTY;
         }
         return AccessCode.UNKNOWN;
-    }
-
-    /**
-     * Checks whether the given class has JPA annotations on both fields AND
-     * getters, indicating mixed annotation placement.
-     */
-    private boolean hasMixedAnnotations(Class<?> cls, OpenJPAConfiguration conf) {
-        Field[] allFields = cls.getDeclaredFields();
-        Method[] methods = cls.getDeclaredMethods();
-        List<Field> fields = filter(allFields, new TransientFilter(true));
-        getterFilter.setIncludePrivate(
-            conf.getCompatibilityInstance().getPrivatePersistentProperties());
-        List<Method> getters = filter(methods, getterFilter);
-        fields = filter(fields, annotatedFilter);
-        getters = filter(getters, annotatedFilter);
-        List<Method> setters = filter(methods, setterFilter);
-        getters = matchGetterAndSetter(getters, setters);
-        return !fields.isEmpty() && !getters.isEmpty();
-    }
-
-    private boolean hasFieldStrategyAnnotations(Class<?> cls) {
-        for (Field f : cls.getDeclaredFields()) {
-            if (accessTypeFilter.includes(f)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean hasGetterStrategyAnnotations(Class<?> cls) {
-        for (Method m : cls.getDeclaredMethods()) {
-            if (accessTypeFilter.includes(m)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -1150,27 +1113,6 @@ public class PersistenceMetaDataDefaults
             for (Annotation anno : obj.getAnnotations()) {
                 if (_accessDefiningAnnos.contains(anno.annotationType()))
                     return true;
-            }
-            return false;
-        }
-    }
-
-    /**
-     * Filter that includes only members annotated with access-type-determining
-     * annotations: persistence strategy annotations (@Id, @Basic, @ManyToOne, etc.),
-     * @Version, and @EmbeddedId. Supplementary annotations like @Column,
-     * @JoinColumn, @Enumerated do NOT determine the access type per JPA spec.
-     */
-    static class AccessTypeFilter implements InclusiveFilter<AnnotatedElement> {
-        @Override
-        public boolean includes(AnnotatedElement obj) {
-            for (Annotation anno : obj.getAnnotations()) {
-                Class<?> type = anno.annotationType();
-                if (_strats.containsKey(type)
-                    || type == Id.class
-                    || type == Version.class) {
-                    return true;
-                }
             }
             return false;
         }
