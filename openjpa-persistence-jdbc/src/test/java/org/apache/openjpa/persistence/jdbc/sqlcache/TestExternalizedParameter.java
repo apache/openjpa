@@ -18,7 +18,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.sqlcache;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import jakarta.persistence.EntityManager;
@@ -29,11 +31,18 @@ import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.QueryImpl;
 
 import junit.framework.TestCase;
 
 /**
  * Tests that we can detect if a query is using query parameters for fields whose values are externalized.
+ * <p>
+ * Such queries can not be reparameterized and are therefore excluded from the prepared query cache. The
+ * detection operates on the {@link QueryExpressions} that are attached as a user object to the
+ * {@link ResultList} produced by the kernel query. Since JPA 3.2 the facade
+ * {@link jakarta.persistence.Query#getResultList()} returns a mutable copy of that result rather than the
+ * {@code ResultList} itself, so the tests execute the kernel query directly to get hold of the expressions.
  *
  * @author Pinaki Poddar
  *
@@ -56,44 +65,61 @@ public class TestExternalizedParameter extends TestCase {
         }
     }
 
-    /**
-     * Verifies that a query with a non-externalized parameter executes
-     * correctly.
-     */
     public void testNoFalseAlarmOnExternalizedParameterDetection() {
         String jpql = "select b from Book b where b.title=:title";
         EntityManager em = emf.createEntityManager();
-        List<?> result = em.createQuery(jpql)
-                .setParameter("title","XYZ")
-                .getResultList();
-        assertNotNull(result);
+        Map<String, Object> params = new HashMap<>();
+        params.put("title", "XYZ");
+
+        QueryExpressions[] exps = getExpressions(execute(em, jpql, params));
+        assertNotNull(exps);
+
+        assertFalse(isUsingExternalizedParameter(exps[0]));
     }
 
-    /**
-     * Verifies that a query with an externalized parameter (token maps
-     * to an enum via ExternalValues) executes correctly.
-     */
     public void testCanDetectExternalizedSingleParameterValue() {
         String jpql = "select b from Book b where b.token=:token";
         EntityManager em = emf.createEntityManager();
-        List<?> result = em.createQuery(jpql)
-                .setParameter("token","MEDIUM")
-                .getResultList();
-        assertNotNull(result);
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", "MEDIUM");
+
+        QueryExpressions[] exps = getExpressions(execute(em, jpql, params));
+        assertNotNull(exps);
+
+        assertTrue(isUsingExternalizedParameter(exps[0]));
     }
 
-    /**
-     * Verifies that a query mixing externalized and non-externalized
-     * parameters executes correctly.
-     */
     public void testCanDetectExternalizedMixedParameterValue() {
         String jpql = "select b from Book b where b.token=:token and b.title = :title";
         EntityManager em = emf.createEntityManager();
-        List<?> result = em.createQuery(jpql)
-                .setParameter("token","MEDIUM")
-                .setParameter("title", "LARGE")
-                .getResultList();
-        assertNotNull(result);
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", "MEDIUM");
+        params.put("title", "LARGE");
+
+        QueryExpressions[] exps = getExpressions(execute(em, jpql, params));
+        assertNotNull(exps);
+
+        assertTrue(isUsingExternalizedParameter(exps[0]));
+    }
+
+    /**
+     * Executes the given JPQL on the kernel query to get hold of the raw {@link ResultList}.
+     */
+    Object execute(EntityManager em, String jpql, Map<String, Object> params) {
+        QueryImpl<?> query = (QueryImpl<?>) em.createQuery(jpql);
+        return query.getDelegate().execute(params);
+    }
+
+    public QueryExpressions[] getExpressions(Object result) {
+        if (!(result instanceof ResultList))
+            return null;
+        Object userObject = ((ResultList<?>)result).getUserObject();
+        if (userObject == null || !userObject.getClass().isArray() || ((Object[])userObject).length != 2)
+            return null;
+        Object executor = ((Object[])userObject)[1];
+        if (!(executor instanceof StoreQuery.Executor))
+            return null;
+        return ((StoreQuery.Executor)executor).getQueryExpressions();
     }
 
     boolean isUsingExternalizedParameter(QueryExpressions exp) {
