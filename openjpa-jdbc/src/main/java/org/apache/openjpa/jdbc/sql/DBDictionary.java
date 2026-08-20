@@ -511,7 +511,24 @@ public class DBDictionary
 
     public boolean supportsUnsizedCharOnCast = true;
 
+    /**
+     * Type name used as the target of a CAST to a 32 bit integer.
+     * <p>
+     * Note: this is a field initializer, so it is evaluated before any subclass constructor runs.
+     * Dictionaries which change {@link #integerTypeName} do <em>not</em> implicitly change this value.
+     * Set it explicitly if the DDL type name is not a valid CAST target.
+     */
     public String integerCastTypeName = integerTypeName;
+
+    /**
+     * Type name used as the target of a CAST to a 64 bit integer.
+     * <p>
+     * If <code>null</code> (the default), {@link #bigintTypeName} is resolved lazily by
+     * {@link #getLongCastTypeName()}. Resolving lazily rather than in a field initializer is deliberate:
+     * several dictionaries assign {@link #bigintTypeName} in their constructor or even in
+     * {@link #connectedConfiguration(java.sql.Connection)}, which happens after field initialization.
+     */
+    public String longCastTypeName = null;
 
     // Naming utility and naming rules
     private DBIdentifierUtil namingUtil = null;
@@ -2221,6 +2238,43 @@ public class DBDictionary
      */
     protected int getDateFractionDigits(Column col, String typeName) {
         return dateFractionDigits;
+    }
+
+    /**
+     * Return the type name to use as the target of a CAST to a 64 bit integer.
+     * Defaults to {@link #bigintTypeName} unless {@link #longCastTypeName} was set explicitly.
+     */
+    public String getLongCastTypeName() {
+        return longCastTypeName != null ? longCastTypeName : bigintTypeName;
+    }
+
+    /**
+     * Return the type name to use as the target of a CAST of a numeric value to the given java type.
+     * Any DDL size marker (<code>{0}</code>) is stripped, as CAST targets are not sized by the schema.
+     */
+    public String getNumberCastTypeName(Class<?> type) {
+        String name;
+        if (type == int.class || type == Integer.class) {
+            name = integerCastTypeName;
+        } else if (type == long.class || type == Long.class) {
+            name = getLongCastTypeName();
+        } else if (type == float.class || type == Float.class) {
+            name = floatTypeName;
+        } else {
+            name = doubleTypeName;
+        }
+        return insertSize(name, null);
+    }
+
+    /**
+     * Return the type name to use as the target of a CAST to a string.
+     * Any DDL size marker (<code>{0}</code>) is stripped.
+     */
+    public String getStringCastTypeName() {
+        if (supportsUnsizedCharOnCast) {
+            return insertSize(varcharTypeName, null);
+        }
+        return insertSize(typecastToStringTypeName, null) + "(" + characterColumnSize + ")";
     }
 
     /**
