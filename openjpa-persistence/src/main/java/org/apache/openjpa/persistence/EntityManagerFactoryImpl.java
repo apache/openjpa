@@ -24,9 +24,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -92,6 +94,9 @@ public class EntityManagerFactoryImpl
     private final java.util.concurrent.ConcurrentHashMap<String, EntityGraphImpl<?>>
         _entityGraphs = new java.util.concurrent.ConcurrentHashMap<>();
     private volatile boolean _entityGraphsInitialized;
+    // internal lock: must stay serializable, this factory is serialized as-is
+    private final ReentrantLock _namedQueriesLock = new ReentrantLock();
+    private volatile boolean _namedQueriesInitialized;
     private transient Map<String, Object> properties;
     private transient Map<String, Object> emEmptyPropsProperties;
 
@@ -926,9 +931,78 @@ public class EntityManagerFactoryImpl
     	return OpenJPAPersistenceUtil.getClass(this, entity);
     }
 
+    /**
+     * Return the named queries whose declared result type is assignable to the given result type.
+     * <p>
+     * The declared result type of a query is {@link QueryMetaData#getResultType()} if set, otherwise
+     * {@link QueryMetaData#getCandidateType()} - managed result classes are recorded as the candidate
+     * type by the metadata parsers, exactly as {@code createNamedQuery(name, resultClass)} would do.
+     * Named queries without any declared result type (i.e. a JPQL {@code @NamedQuery} without
+     * {@code resultClass}, or a query declared in XML - the bundled orm_3_2 schema does not allow a
+     * {@code result-class} attribute on {@code named-query}) are never returned, for any result type
+     * including {@code Object.class}, because their result type cannot be proven.
+     * <p>
+     * The hints carried by the returned references are the hints of the named query, including the
+     * OpenJPA specific hints synthesized by the parsers (e.g. {@code openjpa.FetchPlan.ReadLockMode}
+     * derived from {@code @NamedQuery.lockMode()}); these are exactly the hints replayed by
+     * {@code createNamedQuery}.
+     * <p>
+     * A freshly computed, modifiable map is returned on every call; it is not a live view of the
+     * metadata repository.
+     */
     @Override
+    @SuppressWarnings("unchecked")
     public <R> Map<String, TypedQueryReference<R>> getNamedQueries(Class<R> resultType) {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+        if (resultType == null) {
+            throw new IllegalArgumentException("resultType is required");
+        }
+        _factory.assertOpen();
+        loadQueryMetaData();
+        Map<String, TypedQueryReference<R>> result = new HashMap<>();
+        for (QueryMetaData qmd : getConfiguration().getMetaDataRepositoryInstance().getQueryMetaDatas()) {
+            Class<?> declared = qmd.getResultType();
+            if (declared == null) {
+                declared = qmd.getCandidateType();
+            }
+            if (declared == null || !resultType.isAssignableFrom(declared)) {
+                continue;
+            }
+            String[] keys = qmd.getHintKeys();
+            Object[] values = qmd.getHintValues();
+            Map<String, Object> hints = new LinkedHashMap<>();
+            for (int i = 0; i < keys.length && i < values.length; i++) {
+                hints.put(keys[i], values[i]);
+            }
+            result.put(qmd.getName(),
+                new TypedQueryReferenceImpl<>(qmd.getName(), (Class<? extends R>) declared, hints));
+        }
+        return result;
+    }
+
+    /**
+     * Force loading of all persistent types so that their named queries are registered in the
+     * metadata repository. Mirrors the private {@code MetaDataRepository.resolveAll()} that
+     * {@code getQueryMetaData(...)} uses for the same reason: on a cold repository
+     * {@code getQueryMetaDatas()} would otherwise return an empty array.
+     */
+    private void loadQueryMetaData() {
+        if (_namedQueriesInitialized) {
+            return;
+        }
+        _namedQueriesLock.lock();
+        try {
+            if (_namedQueriesInitialized) {
+                return;
+            }
+            MetaDataRepository mdr = getConfiguration().getMetaDataRepositoryInstance();
+            ClassLoader loader = getConfiguration().getClassResolverInstance().getClassLoader(null, null);
+            for (Class<?> cls : mdr.loadPersistentTypes(false, loader)) {
+                mdr.getMetaData(cls, loader, false);
+            }
+            _namedQueriesInitialized = true;
+        } finally {
+            _namedQueriesLock.unlock();
+        }
     }
 
     @Override

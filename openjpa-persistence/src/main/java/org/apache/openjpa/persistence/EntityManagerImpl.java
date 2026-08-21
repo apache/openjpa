@@ -33,6 +33,7 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
@@ -41,6 +42,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import jakarta.persistence.AttributeNode;
 import jakarta.persistence.CacheRetrieveMode;
 import jakarta.persistence.CacheStoreMode;
 import jakarta.persistence.ConnectionConsumer;
@@ -55,6 +57,7 @@ import jakarta.persistence.PessimisticLockScope;
 import jakarta.persistence.Query;
 import jakarta.persistence.RefreshOption;
 import jakarta.persistence.StoredProcedureQuery;
+import jakarta.persistence.Subgraph;
 import jakarta.persistence.Timeout;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.TypedQuery;
@@ -98,6 +101,7 @@ import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.MultiQueryMetaData;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
+import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.criteria.CriteriaBuilderImpl;
 import org.apache.openjpa.persistence.criteria.OpenJPACriteriaBuilder;
@@ -721,6 +725,23 @@ public class EntityManagerImpl
 	@Override
 	public <T> T find(Class<T> cls, Object oid, FindOption... options) {
 		Map<String, Object> props = new HashMap<>();
+		LockModeType mode = parseFindOptions(props, options);
+		return find(cls, oid, mode, props);
+	}
+
+	/**
+	 * Translates the given JPA 3.2 {@link FindOption}s into kernel level properties, which are put into the
+	 * given (modifiable) property map, and returns the {@link LockModeType} found among the options, if any.
+	 * Unknown (custom) options are ignored.
+	 *
+	 * @param props the map to receive the translated properties, never null
+	 * @param options the options to translate, may be null or empty
+	 * @return the lock mode given among the options or null if none was given
+	 */
+	private LockModeType parseFindOptions(Map<String, Object> props, FindOption... options) {
+		if (options == null) {
+			return null;
+		}
 		LockModeType mode = null;
 		for (FindOption opt: options) {
 			if (opt instanceof LockModeType lmt) {
@@ -736,7 +757,7 @@ public class EntityManagerImpl
 			}
 			// open to custom options
 		}
-		return find(cls, oid, mode, props);
+		return mode;
 	}
 
     @Override
@@ -2640,9 +2661,138 @@ public class EntityManagerImpl
         return meta;
     }
 
+	/**
+	 * Finds an instance of the root entity type of the given entity graph by primary key, using the graph
+	 * as a <em>load graph</em> as mandated by JPA 3.2: every attribute named by the graph (and, recursively,
+	 * by its subgraphs) is fetched eagerly, while attributes not mentioned by the graph keep their declared
+	 * fetch behaviour. This is in contrast to a fetch graph, which would additionally force every attribute
+	 * outside the graph to be lazy; therefore the default fetch group is deliberately left untouched here.
+	 * <p>
+	 * The graph is applied to a fetch plan that is pushed for the duration of this call only, so neither the
+	 * entity manager's fetch plan nor its maximum fetch depth is affected once the call returns.
+	 *
+	 * @param entityGraph the load graph, its root type determines the type to look up
+	 * @param primaryKey the primary key of the instance to find
+	 * @param options optional find options, interpreted exactly as by {@link #find(Class, Object, FindOption...)}
+	 * @return the found instance or null if no instance with the given primary key exists
+	 * @throws IllegalArgumentException if the graph is null, is not an OpenJPA entity graph, its root type is
+	 * not an entity type, or the primary key is null or of an invalid type
+	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public <T> T find(EntityGraph<T> entityGraph, Object primaryKey, FindOption... options) {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		assertNotCloseInvoked();
+		if (entityGraph == null) {
+			throw new IllegalArgumentException("entityGraph is null");
+		}
+		if (!(entityGraph instanceof EntityGraphImpl)) {
+			throw new IllegalArgumentException("Unknown EntityGraph implementation: " + entityGraph.getClass());
+		}
+		EntityGraphImpl<T> graph = (EntityGraphImpl<T>) entityGraph;
+		Class<T> cls = graph.getEntityType();
+		Map<String, Object> props = new HashMap<>();
+		LockModeType mode = parseFindOptions(props, options);
+		try {
+			validateFindArguments(cls, primaryKey);
+			configureCurrentCacheModes(pushFetchPlan(), props);
+			try {
+				FetchPlan fetch = getFetchPlan();
+				configureCurrentFetchPlan(fetch, props, mode, true);
+				applyEntityGraph(fetch, graph);
+				Object oid = _broker.newObjectId(cls, primaryKey);
+				return (T) _broker.find(oid, true, this);
+			} finally {
+				popFetchPlan();
+			}
+		} catch (RuntimeException re) {
+			throw translateException(re);
+		}
+	}
+
+	/**
+	 * Applies the given entity graph to the given (already pushed) fetch plan as a load graph, and raises the
+	 * plan's maximum fetch depth if - and only if - the graph is nested deeper than the currently configured
+	 * finite depth. A max fetch depth of {@link FetchPlan#DEPTH_INFINITE} already covers any graph and is never
+	 * lowered.
+	 */
+	private void applyEntityGraph(FetchPlan fetch, EntityGraphImpl<?> graph) {
+		MetaDataRepository repos = _broker.getConfiguration().getMetaDataRepositoryInstance();
+		ClassMetaData meta = toMetaData(repos, graph.getEntityType());
+		if (meta == null) {
+			return;
+		}
+		int depth = applyGraphNodes(fetch, meta, graph.getAttributeNodes(), repos,
+			Collections.newSetFromMap(new IdentityHashMap<Object, Boolean>()));
+		int max = fetch.getMaxFetchDepth();
+		if (max != FetchPlan.DEPTH_INFINITE && max < depth) {
+			fetch.setMaxFetchDepth(depth);
+		}
+	}
+
+	/**
+	 * Adds every attribute named by the given graph nodes to the given fetch plan and recurses into their
+	 * subgraphs. Nodes that do not name a persistent attribute of the given type are silently skipped, so a
+	 * loosely declared named entity graph cannot turn a find() into a hard failure.
+	 *
+	 * @return the number of relation levels spanned by the given nodes, 0 if there are none
+	 */
+	private int applyGraphNodes(FetchPlan fetch, ClassMetaData meta, List<AttributeNode<?>> nodes,
+		MetaDataRepository repos, Set<Object> path) {
+		if (meta == null || nodes == null || nodes.isEmpty()) {
+			return 0;
+		}
+		int depth = 1;
+		for (AttributeNode<?> node : nodes) {
+			FieldMetaData fmd = meta.getField(node.getAttributeName());
+			if (fmd == null) {
+				continue;
+			}
+			// the full name is declaringType.fieldName, which is what FetchConfiguration matches against;
+			// building the name from the root class instead would silently miss inherited attributes
+			fetch.addField(fmd.getFullName(false));
+			ValueMetaData element = fmd.getElement();
+			ValueMetaData key = fmd.getKey();
+			depth = Math.max(depth, 1 + applySubgraphs(fetch, node.getSubgraphs(),
+				(element == null) ? null : element.getDeclaredType(), repos, path));
+			depth = Math.max(depth, 1 + applySubgraphs(fetch, node.getKeySubgraphs(),
+				(key == null) ? null : key.getDeclaredType(), repos, path));
+		}
+		return depth;
+	}
+
+	/**
+	 * Recurses into the given subgraphs. The type declared by a subgraph is preferred, but for a plural
+	 * attribute it may be the collection type rather than the element type, in which case the declared type of
+	 * the owning value is used instead. Recursion is bounded by a path scoped identity guard, so a graph that
+	 * references itself terminates while a subgraph shared by sibling branches is still expanded.
+	 *
+	 * @return the number of relation levels spanned below the given subgraphs
+	 */
+	private int applySubgraphs(FetchPlan fetch, Map<Class, Subgraph> subgraphs, Class<?> fallbackType,
+		MetaDataRepository repos, Set<Object> path) {
+		int depth = 0;
+		if (subgraphs == null || subgraphs.isEmpty()) {
+			return depth;
+		}
+		for (Subgraph<?> sub : subgraphs.values()) {
+			if (sub == null || !path.add(sub)) {
+				continue;
+			}
+			try {
+				ClassMetaData subMeta = toMetaData(repos, sub.getClassType());
+				if (subMeta == null) {
+					subMeta = toMetaData(repos, fallbackType);
+				}
+				depth = Math.max(depth, applyGraphNodes(fetch, subMeta, sub.getAttributeNodes(), repos, path));
+			} finally {
+				path.remove(sub);
+			}
+		}
+		return depth;
+	}
+
+	private ClassMetaData toMetaData(MetaDataRepository repos, Class<?> cls) {
+		return (cls == null) ? null : repos.getMetaData(cls, _broker.getClassLoader(), false);
 	}
 
 	@Override
@@ -2775,8 +2925,29 @@ public class EntityManagerImpl
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public <T> TypedQuery<T> createQuery(TypedQueryReference<T> reference) {
-    	throw new UnsupportedOperationException("Not yet implemented (JPA 3.2)");
+		assertNotCloseInvoked();
+		if (reference == null) {
+			throw new IllegalArgumentException("TypedQueryReference must not be null");
+		}
+		String name = reference.getName();
+		if (name == null) {
+			throw new IllegalArgumentException("TypedQueryReference name must not be null");
+		}
+		Class<? extends T> resultType = reference.getResultType();
+		Query query = (resultType == null) ? createNamedQuery(name) : createNamedQuery(name, resultType);
+		Map<String, Object> hints = reference.getHints();
+		if (hints != null) {
+			try {
+				for (Map.Entry<String, Object> hint : hints.entrySet()) {
+					query.setHint(hint.getKey(), hint.getValue());
+				}
+			} catch (RuntimeException re) {
+				throw translateException(re);
+			}
+		}
+		return (TypedQuery<T>) query;
 	}
 
 	@Override
