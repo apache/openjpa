@@ -305,8 +305,7 @@ public abstract class AbstractExpressionBuilder {
             meta = fmd.getEmbeddedMetaData();
         else
             meta = fmd.getDeclaredTypeMetaData();
-        if (meta == null && fmd.isEmbedded()
-            && !hasEmbeddableAnnotation(fmd.getDeclaredType())) {
+        if (meta == null && fmd.isEmbedded() && !isEmbeddable(fmd)) {
             // Non-@Embeddable @IdClass field inside @EmbeddedId (JPA 2.4.1.3
             // ex2b). Resolve via the @MapsId @ManyToOne target entity.
             meta = resolveMapsIdTargetMeta(fmd);
@@ -352,18 +351,16 @@ public abstract class AbstractExpressionBuilder {
     }
 
     /**
-     * Checks whether a class has an @Embeddable annotation via reflection.
-     * Uses annotation simple name to avoid compile-time dependency on
-     * jakarta.persistence.
+     * Whether the declared type of the given field is known to the metadata
+     * repository as an embeddable. Asking the repository rather than the type's
+     * annotations also covers embeddables that are declared in orm.xml only.
      */
-    private static boolean hasEmbeddableAnnotation(Class<?> type) {
-        if (type == null) return false;
-        for (java.lang.annotation.Annotation ann : type.getAnnotations()) {
-            if ("Embeddable".equals(ann.annotationType().getSimpleName())) {
-                return true;
-            }
-        }
-        return false;
+    private static boolean isEmbeddable(FieldMetaData fmd) {
+        Class<?> type = fmd.getDeclaredType();
+        if (type == null)
+            return false;
+        ClassMetaData typeMeta = fmd.getRepository().getMetaData(type, null, false);
+        return typeMeta != null && typeMeta.isEmbeddable();
     }
 
     /**
