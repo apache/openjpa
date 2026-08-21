@@ -475,22 +475,22 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
     
     @Override
     public void createPersistenceStructure(boolean createSchemas) {
-    	throw new UnsupportedOperationException();
+    	throw new UnsupportedOperationException("This BrokerFactory does not implement schema creation.");
     }
     
     @Override
     public void dropPersistenceStructure(boolean dropSchemas) {
-    	throw new UnsupportedOperationException();
+    	throw new UnsupportedOperationException("This BrokerFactory does not implement schema dropping.");
     }
     
     @Override
     public void validatePersistenceStructure() throws Exception {
-    	throw new UnsupportedOperationException();
+    	throw new UnsupportedOperationException("This BrokerFactory does not implement schema validation.");
     }
     
     @Override
     public void truncateData() {
-    	throw new UnsupportedOperationException();
+    	throw new UnsupportedOperationException("This BrokerFactory does not implement data truncation.");
     }
 
     /**
