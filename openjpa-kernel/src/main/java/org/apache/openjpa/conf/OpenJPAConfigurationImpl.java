@@ -21,8 +21,10 @@ package org.apache.openjpa.conf;
 import static java.util.Arrays.asList;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.openjpa.audit.AuditLogger;
 import org.apache.openjpa.audit.Auditor;
@@ -730,30 +732,38 @@ public class OpenJPAConfigurationImpl
                 }
             }
             // Extract Writer/Reader objects before they hit StringValue
-            // (which would just call toString() and lose them).
+            // (which would just call toString() and lose them). The keys must
+            // not be stripped from the given map: it belongs to the caller,
+            // may be unmodifiable and may be used again afterwards.
+            Set<String> extracted = new HashSet<>();
             extractSchemaGenObjects(map,
                 "jakarta.persistence.schema-generation.scripts.create-target",
-                java.io.Writer.class, true);
+                java.io.Writer.class, true, extracted);
             extractSchemaGenObjects(map,
                 "jakarta.persistence.schema-generation.scripts.drop-target",
-                java.io.Writer.class, false);
+                java.io.Writer.class, false, extracted);
             extractSchemaGenObjects(map,
                 "jakarta.persistence.schema-generation.create-script-source",
-                java.io.Reader.class, true);
+                java.io.Reader.class, true, extracted);
             extractSchemaGenObjects(map,
                 "jakarta.persistence.schema-generation.drop-script-source",
-                java.io.Reader.class, false);
+                java.io.Reader.class, false, extracted);
+            if (!extracted.isEmpty()) {
+                Map copy = new HashMap(map);
+                copy.keySet().removeAll(extracted);
+                map = copy;
+            }
         }
         super.fromProperties(map);
     }
 
     private void extractSchemaGenObjects(Map map, String key,
-            Class<?> expectedType, boolean isCreate) {
+            Class<?> expectedType, boolean isCreate, Set<String> extracted) {
         Object val = map.get(key);
         if (expectedType.isInstance(val)) {
-            // Store the object and remove from map so StringValue
-            // doesn't mangle it
-            map.remove(key);
+            // Store the object and have the caller drop the key from a copy
+            // of the map, so that StringValue does not mangle it
+            extracted.add(key);
             if (expectedType == java.io.Writer.class) {
                 if (isCreate) {
                     _createScriptTargetWriter = (java.io.Writer) val;
