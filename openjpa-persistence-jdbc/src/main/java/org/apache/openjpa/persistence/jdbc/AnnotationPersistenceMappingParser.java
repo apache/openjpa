@@ -1063,7 +1063,7 @@ public class AnnotationPersistenceMappingParser
      * Parse the given index.
      */
     private void parseIndex(MappingInfo info, Index idx) {
-        parseIndex(info, idx.name(), idx.enabled(), idx.unique());
+        parseIndex(info, idx.name(), idx.enabled(), idx.unique(), idx.columnNames());
     }
 
     /**
@@ -1071,6 +1071,14 @@ public class AnnotationPersistenceMappingParser
      */
     protected void parseIndex(MappingInfo info, String name,
         boolean enabled, boolean unique) {
+        parseIndex(info, name, enabled, unique, null);
+    }
+
+    /**
+     * Set index data on the given mapping info, including optional explicit column names.
+     */
+    protected void parseIndex(MappingInfo info, String name,
+        boolean enabled, boolean unique, String[] columnNames) {
         if (!enabled) {
             info.setCanIndex(false);
             return;
@@ -1081,6 +1089,15 @@ public class AnnotationPersistenceMappingParser
         if (!StringUtil.isEmpty(name))
             idx.setIdentifier(DBIdentifier.newConstraint(name, delimit()));
         idx.setUnique(unique);
+
+        if (columnNames != null) {
+            for (String columnName : columnNames) {
+                Column column = new Column();
+                column.setIdentifier(DBIdentifier.newColumn(columnName, delimit()));
+                idx.addColumn(column);
+            }
+        }
+
         info.setIndex(idx);
     }
 
