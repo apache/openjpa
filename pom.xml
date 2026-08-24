@@ -80,7 +80,7 @@
         <hsqldb.version>2.7.4</hsqldb.version>
         <mysql.connector.version>9.7.0</mysql.connector.version>
         <mariadb.connector.version>3.5.8</mariadb.connector.version>
-        <postgresql.connector.version>42.7.11</postgresql.connector.version>
+        <postgresql.connector.version>42.7.12</postgresql.connector.version>
         <mssql.connector.version>13.4.0.jre11</mssql.connector.version>
 
         <!-- other common versions -->
