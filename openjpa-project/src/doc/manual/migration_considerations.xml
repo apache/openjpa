@@ -647,6 +647,25 @@
                     <literal>DBDictionary.supportsQueryTimeout</literal>
                 </para>
             </section>
+            <section id="jpa_3.2_PostgreSqlStoreCharsAsNumbers">
+                <title>PostgreSQL stores char fields as CHAR by default</title>
+                <para>
+                    Previous releases stored Java <literal>char</literal> fields in numeric
+                    (<literal>INTEGER</literal>) columns on PostgreSQL, following the generic
+                    <literal>DBDictionary.StoreCharsAsNumbers=true</literal> default.
+                    Starting with this release, <literal>StoreCharsAsNumbers</literal> defaults to
+                    <literal>false</literal> on PostgreSQL 9 and later, so <literal>char</literal>
+                    fields are mapped to <literal>CHAR</literal> columns.
+                </para>
+                <para>
+                    Existing schemas created by earlier OpenJPA releases must either migrate the
+                    affected columns to <literal>CHAR</literal> or restore the previous behaviour by
+                    setting the property explicitly, e.g.
+                    <literal>openjpa.jdbc.DBDictionary=postgres(StoreCharsAsNumbers=true)</literal>.
+                    An explicitly configured value is always respected and never overridden by the
+                    PostgreSQL version detection.
+                </para>
+            </section>
         </section>
     </section>
 

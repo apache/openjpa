@@ -315,7 +315,18 @@ public class DBDictionary
     // types
     public boolean storageLimitationsFatal = false;
     public boolean storeLargeNumbersAsStrings = false;
+    /**
+     * Whether Java <code>char</code> fields are stored in numeric columns
+     * rather than as <code>CHAR</code> values. Dictionaries may set their own
+     * default and may adjust it in {@link #connectedConfiguration(Connection)}
+     * based on the detected database version; use
+     * {@link #setStoreCharsAsNumbers(boolean)} to configure a value that is
+     * guaranteed to be left untouched (OPENJPA-2971).
+     */
     public boolean storeCharsAsNumbers = true;
+    // true once the user explicitly configured StoreCharsAsNumbers; dictionaries
+    // must not auto-detect over such a value (OPENJPA-2971)
+    private boolean storeCharsAsNumbersExplicit = false;
     public boolean trimStringColumns = false;
     public boolean useGetBytesForBlobs = false;
     public boolean useSetBytesForBlobs = false;
@@ -6011,6 +6022,44 @@ public class DBDictionary
      */
     public void setSupportsDelimitedIdentifiers(boolean supportsDelimitedIds) {
         supportsDelimitedIdentifiers = supportsDelimitedIds;
+    }
+
+    /**
+     * Whether Java <code>char</code> fields are stored in numeric columns
+     * rather than as <code>CHAR</code> values.
+     *
+     * @see #setStoreCharsAsNumbers(boolean)
+     */
+    public boolean getStoreCharsAsNumbers() {
+        return storeCharsAsNumbers;
+    }
+
+    /**
+     * Explicitly configure whether Java <code>char</code> fields are stored
+     * in numeric columns rather than as <code>CHAR</code> values. User
+     * configuration such as
+     * <code>openjpa.jdbc.DBDictionary=postgres(StoreCharsAsNumbers=true)</code>
+     * goes through this setter. A value set this way is treated as an explicit
+     * user choice: dictionaries that auto-detect a database specific default
+     * in {@link #connectedConfiguration(Connection)} must not override it
+     * (see {@link #isStoreCharsAsNumbersExplicit()}). Programmatic
+     * configuration and subclasses should prefer this setter over assigning
+     * the public {@link #storeCharsAsNumbers} field, which dictionaries are
+     * free to adjust for the detected database version.
+     */
+    public void setStoreCharsAsNumbers(boolean storeCharsAsNumbers) {
+        this.storeCharsAsNumbers = storeCharsAsNumbers;
+        this.storeCharsAsNumbersExplicit = true;
+    }
+
+    /**
+     * Whether {@link #setStoreCharsAsNumbers(boolean)} was called, i.e.
+     * whether the user explicitly configured <code>StoreCharsAsNumbers</code>.
+     * Dictionaries auto-detecting a database specific default must respect
+     * an explicit user value.
+     */
+    protected boolean isStoreCharsAsNumbersExplicit() {
+        return storeCharsAsNumbersExplicit;
     }
 
     /**
