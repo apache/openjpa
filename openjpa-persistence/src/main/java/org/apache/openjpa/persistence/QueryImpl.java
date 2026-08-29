@@ -780,20 +780,28 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 
 	@Override
 	public Integer getTimeout() {
-		Object val = getHints().get(JPAProperties.QUERY_TIMEOUT);
-		if (val instanceof Integer) {
-			return (Integer) val;
-		}
-		if (val instanceof Number) {
-			return ((Number) val).intValue();
-		}
-		return null;
+		int timeout = getFetchPlan().getQueryTimeout();
+		return timeout > 0 ? timeout : null;
 	}
 
+	/**
+	 * Sets the query timeout in milliseconds. A null timeout clears a timeout
+	 * set through this method, restoring the timeout this query inherits from
+	 * its entity manager, rather than leaving the previous value in place.
+	 */
 	@Override
 	public TypedQuery<X> setTimeout(Integer timeout) {
-		setHint(JPAProperties.QUERY_TIMEOUT, timeout);
+		setHint(JPAProperties.QUERY_TIMEOUT,
+			timeout != null ? timeout : inheritedQueryTimeout());
 		return this;
+	}
+
+	/**
+	 * The query timeout this query would use had setTimeout() never been
+	 * called on it, i.e. the one configured on its entity manager.
+	 */
+	private int inheritedQueryTimeout() {
+		return _em.getFetchPlan().getQueryTimeout();
 	}
 	
 }

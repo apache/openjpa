@@ -524,22 +524,20 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
 		return this;
 	}
 
+	/**
+	 * Sets the query timeout in milliseconds. A null timeout clears a timeout
+	 * set through this method, restoring the timeout this query inherits from
+	 * its entity manager, rather than leaving the previous value in place.
+	 */
 	@Override
 	public StoredProcedureQuery setTimeout(Integer timeout) {
-		setHint(JPAProperties.QUERY_TIMEOUT, timeout);
+		_delegate.setTimeout(timeout);
 		return this;
 	}
 
 	@Override
 	public Integer getTimeout() {
-		Object val = getHints().get(JPAProperties.QUERY_TIMEOUT);
-		if (val instanceof Integer) {
-			return (Integer) val;
-		}
-		if (val instanceof Number) {
-			return ((Number) val).intValue();
-		}
-		return null;
+		return _delegate.getTimeout();
 	}
 	
 	@Override
