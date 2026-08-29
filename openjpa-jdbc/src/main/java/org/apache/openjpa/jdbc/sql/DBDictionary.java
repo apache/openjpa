@@ -72,6 +72,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 import javax.sql.DataSource;
@@ -529,6 +530,14 @@ public class DBDictionary
      * {@link #connectedConfiguration(java.sql.Connection)}, which happens after field initialization.
      */
     public String longCastTypeName = null;
+
+    /**
+     * Cache of CAST target type names, keyed by the DDL type name they were derived from.
+     * The DDL type names themselves may still be changed by a subclass constructor or by
+     * {@link #connectedConfiguration(java.sql.Connection)}, so the key is the source name
+     * rather than the java type, and the cached value stays valid across such changes.
+     */
+    private final Map<String, String> castTypeNames = new ConcurrentHashMap<>();
 
     // Naming utility and naming rules
     private DBIdentifierUtil namingUtil = null;
@@ -2271,7 +2280,7 @@ public class DBDictionary
         } else {
             name = doubleTypeName;
         }
-        return insertSize(name, null);
+        return castTypeName(name);
     }
 
     /**
@@ -2280,9 +2289,17 @@ public class DBDictionary
      */
     public String getStringCastTypeName() {
         if (supportsUnsizedCharOnCast) {
-            return insertSize(varcharTypeName, null);
+            return castTypeName(varcharTypeName);
         }
-        return insertSize(typecastToStringTypeName, null) + "(" + characterColumnSize + ")";
+        return castTypeName(typecastToStringTypeName) + "(" + characterColumnSize + ")";
+    }
+
+    /**
+     * Strip any DDL size marker from the given type name so that it can be used as a CAST target.
+     * The result is cached, as CAST targets are resolved on every SQL generation.
+     */
+    private String castTypeName(String typeName) {
+        return castTypeNames.computeIfAbsent(typeName, n -> insertSize(n, null));
     }
 
     /**
