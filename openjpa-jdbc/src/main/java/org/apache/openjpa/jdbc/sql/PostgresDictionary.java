@@ -143,6 +143,12 @@ public class PostgresDictionary extends DBDictionary {
         maxAutoAssignNameLength = 63;
         schemaCase = SCHEMA_CASE_LOWER;
         rangePosition = RANGE_POST_LOCK;
+        // Modern PostgreSQL stores Java char fields natively as CHAR; only
+        // PostgreSQL < 9 falls back to numeric storage in
+        // connectedConfiguration. Being the dictionary default, a value
+        // assigned by a subclass constructor or via the public field before
+        // connecting is never overwritten on PostgreSQL 9+ (OPENJPA-2971).
+        storeCharsAsNumbers = false;
         requiresAliasForSubselect = true;
         allowsAliasInBulkClause = false;
 
@@ -1056,11 +1062,16 @@ public class PostgresDictionary extends DBDictionary {
             searchStringEscape = "\\\\";
         }
 
-        // Modern PostgreSQL supports native CHAR storage; only the older
-        // releases required the DBDictionary default (chars stored as
-        // numeric values).
-        if (maj >= 9) {
-            storeCharsAsNumbers = false;
+        // Only PostgreSQL releases before 9 (or an undetectable version)
+        // require the generic DBDictionary behaviour of storing chars as
+        // numeric values; the dictionary default (see constructor) is native
+        // CHAR storage. Never touch an explicit user setting (OPENJPA-2971):
+        // schemas created by earlier OpenJPA releases (INTEGER columns for
+        // char fields) keep working with StoreCharsAsNumbers=true, and a
+        // value assigned to the public field is only ever changed here on
+        // PostgreSQL < 9.
+        if (maj < 9 && !isStoreCharsAsNumbersExplicit()) {
+            storeCharsAsNumbers = true;
         }
     }
 

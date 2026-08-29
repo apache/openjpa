@@ -2577,7 +2577,12 @@ a warning.
                     </indexterm>
 <literal>StoreCharsAsNumbers</literal>: Set this property to <literal>false
 </literal> to store Java <literal>char</literal> fields as <literal>CHAR
-</literal> values rather than numbers. Defaults to <literal>true</literal>.
+</literal> values rather than numbers. Defaults to <literal>true</literal>,
+except on DB2 and on PostgreSQL 9 and later, where the default is
+<literal>false</literal> (native <literal>CHAR</literal> storage). An
+explicitly configured value is always respected. Schemas created by earlier
+OpenJPA releases on PostgreSQL store <literal>char</literal> fields in numeric
+columns and require <literal>StoreCharsAsNumbers=true</literal>.
                     </para>
                 </listitem>
                 <listitem id="DBDictionary.StoreLargeNumbersAsStrings">
