@@ -79,7 +79,7 @@
         <derby.version>10.16.1.1</derby.version>
         <hsqldb.version>2.7.4</hsqldb.version>
         <mysql.connector.version>9.7.0</mysql.connector.version>
-        <mariadb.connector.version>3.5.8</mariadb.connector.version>
+        <mariadb.connector.version>3.5.9</mariadb.connector.version>
         <postgresql.connector.version>42.7.13</postgresql.connector.version>
         <mssql.connector.version>13.4.0.jre11</mssql.connector.version>
 
