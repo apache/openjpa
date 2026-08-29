@@ -38,10 +38,12 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.kernel.ObjectIdStateManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StateManagerImpl;
+import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.util.MetaDataException;
+import org.apache.openjpa.util.StoreException;
 
 /**
  * Base class for embedded value handlers.
@@ -216,21 +218,27 @@ public abstract class EmbedValueHandler
                 if (mic != null && !mic.isEmpty()) {
                     Object idObj = (em == null) ? null : em.fetch(i);
                     if (idObj != null) {
-                        try {
-                            List<java.lang.reflect.Field> df =
-                                getInstanceFields(idObj.getClass(), mic.size());
-                            for (java.lang.reflect.Field f : df) {
-                                Object fv = f.get(idObj);
-                                if (cols.length == 1) rvals.add(fv);
-                                else ((Object[]) rvals.get(0))[idx++] = fv;
+                        List<java.lang.reflect.Field> df =
+                            getIdClassFields(idObj.getClass(), mic);
+                        for (java.lang.reflect.Field f : df) {
+                            Object fv;
+                            try {
+                                fv = f.get(idObj);
+                            } catch (Exception ex) {
+                                // never write partial identities silently
+                                throw new StoreException(_loc.get(
+                                    "mapsid-extract-failed", f.getName(),
+                                    idObj.getClass().getName(),
+                                    fms[i].getFullName(false))).setCause(ex);
                             }
-                        } catch (Exception ex) {
-                            for (int c = 0; c < mic.size(); c++) {
-                                if (cols.length == 1) rvals.add(null);
-                                else ((Object[]) rvals.get(0))[idx++] = null;
-                            }
+                            if (cols.length == 1) rvals.add(fv);
+                            else ((Object[]) rvals.get(0))[idx++] = fv;
                         }
                     } else {
+                        Log log = fms[i].getRepository().getLog();
+                        if (log.isWarnEnabled())
+                            log.warn(_loc.get("mapsid-null-id",
+                                fms[i].getFullName(false)));
                         for (int c = 0; c < mic.size(); c++) {
                             if (cols.length == 1) rvals.add(null);
                             else ((Object[]) rvals.get(0))[idx++] = null;
@@ -325,25 +333,37 @@ public abstract class EmbedValueHandler
             if (!(fm.getStrategy() instanceof Embeddable)) {
                 List<Column> mic = fm.getValueInfo().getMapsIdColumns();
                 if (mic != null && !mic.isEmpty()) {
+                    Object idObj;
                     try {
-                        Object idObj = fm.getDeclaredType()
+                        idObj = fm.getDeclaredType()
                             .getDeclaredConstructor().newInstance();
-                        List<java.lang.reflect.Field> df =
-                            getInstanceFields(fm.getDeclaredType(), mic.size());
-                        int ci = 0;
-                        for (java.lang.reflect.Field f : df) {
-                            Object cv;
-                            if (val instanceof Object[])
-                                cv = ((Object[]) val)[idx + ci];
-                            else
-                                cv = val;
-                            f.set(idObj, cv);
-                            ci++;
-                        }
-                        em.store(fm.getIndex(), idObj);
                     } catch (Exception ex) {
-                        // field stays null
+                        throw new StoreException(_loc.get(
+                            "mapsid-instantiate-failed",
+                            fm.getDeclaredType().getName(),
+                            fm.getFullName(false))).setCause(ex);
                     }
+                    List<java.lang.reflect.Field> df =
+                        getIdClassFields(fm.getDeclaredType(), mic);
+                    int ci = 0;
+                    for (java.lang.reflect.Field f : df) {
+                        Object cv;
+                        if (val instanceof Object[])
+                            cv = ((Object[]) val)[idx + ci];
+                        else
+                            cv = val;
+                        try {
+                            f.set(idObj, cv);
+                        } catch (Exception ex) {
+                            // never load a partial identity silently
+                            throw new StoreException(_loc.get(
+                                "mapsid-reconstruct-failed", f.getName(),
+                                fm.getDeclaredType().getName(),
+                                fm.getFullName(false))).setCause(ex);
+                        }
+                        ci++;
+                    }
+                    em.store(fm.getIndex(), idObj);
                     idx += mic.size();
                 }
                 continue;
@@ -442,20 +462,55 @@ public abstract class EmbedValueHandler
     }
 
     /**
-     * Returns up to {@code limit} non-static declared fields from the class,
-     * each made accessible. Used for @IdClass POJO field reflection.
+     * Returns the @IdClass POJO fields backing the given MapsId columns, in
+     * column order, each made accessible.
+     * <p>
+     * A column names its target through <code>@JoinColumn.referencedColumnName</code>;
+     * where every column does so, the fields are matched by that name. Otherwise the
+     * fields are taken in declaration order, which is all the mapping offers even
+     * though {@link Class#getDeclaredFields} does not guarantee it.
      */
-    private static List<java.lang.reflect.Field> getInstanceFields(
-            Class<?> cls, int limit) {
-        List<java.lang.reflect.Field> result = new ArrayList<>();
+    private static List<java.lang.reflect.Field> getIdClassFields(
+            Class<?> cls, List<Column> mic) {
+        List<java.lang.reflect.Field> declared = new ArrayList<>();
         for (java.lang.reflect.Field f : cls.getDeclaredFields()) {
             if (java.lang.reflect.Modifier.isStatic(f.getModifiers()))
                 continue;
-            if (result.size() >= limit) break;
             f.setAccessible(true);
-            result.add(f);
+            declared.add(f);
         }
-        return result;
+
+        List<java.lang.reflect.Field> byName = new ArrayList<>(mic.size());
+        for (Column col : mic) {
+            DBIdentifier target = col.getTargetIdentifier();
+            java.lang.reflect.Field match = DBIdentifier.isEmpty(target)
+                ? null : findField(declared, target.getName());
+            if (match == null) {
+                byName = null;
+                break;
+            }
+            byName.add(match);
+        }
+        if (byName != null)
+            return byName;
+
+        List<java.lang.reflect.Field> positional = new ArrayList<>(mic.size());
+        for (java.lang.reflect.Field f : declared) {
+            if (positional.size() >= mic.size()) break;
+            positional.add(f);
+        }
+        return positional;
+    }
+
+    private static java.lang.reflect.Field findField(
+            List<java.lang.reflect.Field> fields, String name) {
+        for (java.lang.reflect.Field f : fields)
+            if (f.getName().equals(name))
+                return f;
+        for (java.lang.reflect.Field f : fields)
+            if (f.getName().equalsIgnoreCase(name))
+                return f;
+        return null;
     }
 
 }
