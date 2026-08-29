@@ -61,7 +61,16 @@ public class ImplHelper {
     private static final Map _assignableTypes =
         new ConcurrentReferenceHashMap(ReferenceStrength.WEAK, ReferenceStrength.HARD);
 
-    // map of all new unenhanced instances active in this classloader
+    /**
+     * Map of all new unenhanced instances active in this classloader, keyed
+     * by object identity. Keys are held weakly, values strongly.
+     *
+     * @deprecated use
+     * {@link #registerUnenhancedInstance(Object, PersistenceCapable)} to add
+     * mappings and {@link #toPersistenceCapable(Object, Object)} to resolve
+     * them.
+     */
+    @Deprecated
     public static final Map _unenhancedInstanceMap =
         new ConcurrentReferenceHashMap(ReferenceStrength.WEAK, ReferenceStrength.HARD) {
 
@@ -313,14 +322,43 @@ public class ImplHelper {
                 return null;
 
             pc = new ReflectingPersistenceCapable(o, conf);
-            _unenhancedInstanceMap.put(o, pc);
+            registerUnenhancedInstance(o, pc);
             return pc;
         }
     }
 
+    /**
+     * Registers the {@link PersistenceCapable} instance that manages the state
+     * of the given raw, unenhanced instance, so that subsequent calls to
+     * {@link #toPersistenceCapable(Object, Object)} for that instance resolve
+     * to <code>pc</code> instead of creating a new
+     * {@link org.apache.openjpa.enhance.ReflectingPersistenceCapable}.
+     * <p>
+     * Instances are keyed by identity rather than by {@link Object#equals},
+     * so value-based types such as records can be used as keys. Any mapping
+     * already present for the instance is replaced. <code>pc</code> is not
+     * required to report <code>instance</code> as its managed instance; for a
+     * record embeddable it is the embedded copy carrying the state manager.
+     *
+     * @param instance the raw, unenhanced managed instance
+     * @param pc the persistence-capable instance to resolve it to
+     * @since 4.2.0
+     */
+    public static void registerUnenhancedInstance(Object instance,
+        PersistenceCapable pc) {
+        _unenhancedInstanceMap.put(instance, pc);
+    }
+
+    /**
+     * Re-registers a {@link ReflectingPersistenceCapable} against the
+     * instance it manages, for example after deserialization.
+     *
+     * @param pc the persistence-capable instance to register
+     * @see #registerUnenhancedInstance(Object, PersistenceCapable)
+     */
     public static void registerPersistenceCapable(
         ReflectingPersistenceCapable pc) {
-        _unenhancedInstanceMap.put(pc.getManagedInstance(), pc);
+        registerUnenhancedInstance(pc.getManagedInstance(), pc);
     }
 
     /**
