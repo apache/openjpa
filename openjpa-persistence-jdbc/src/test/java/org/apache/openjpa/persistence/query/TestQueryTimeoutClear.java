@@ -37,6 +37,28 @@ public class TestQueryTimeoutClear extends SingleEMFTestCase {
         super.setUp(QTimeout.class, CLEAR_TABLES);
     }
 
+    public void testUnsetTimeoutIsNull() {
+        OpenJPAEntityManager em = emf.createEntityManager();
+        try {
+            em.getFetchPlan().setQueryTimeout(9000);
+            // the query inherits 9000, but nothing was set on the query itself
+            assertNull(em.createQuery(JPQL).getTimeout());
+        } finally {
+            em.close();
+        }
+    }
+
+    public void testExplicitZeroIsReported() {
+        OpenJPAEntityManager em = emf.createEntityManager();
+        try {
+            Query q = em.createQuery(JPQL);
+            q.setTimeout(0);
+            assertEquals(Integer.valueOf(0), q.getTimeout());
+        } finally {
+            em.close();
+        }
+    }
+
     public void testSetTimeoutIsReported() {
         OpenJPAEntityManager em = emf.createEntityManager();
         try {
@@ -57,6 +79,8 @@ public class TestQueryTimeoutClear extends SingleEMFTestCase {
             q.setTimeout(null);
             assertNull("A cleared timeout must not report the previous value",
                 q.getTimeout());
+            assertEquals("A cleared query must use what it inherits", 0,
+                ((OpenJPAQuery<?>) q).getFetchPlan().getQueryTimeout());
             assertEquals("The query must fall back to what it inherits",
                 em.getFetchPlan().getQueryTimeout(),
                 ((OpenJPAQuery<?>) q).getFetchPlan().getQueryTimeout());
@@ -74,9 +98,11 @@ public class TestQueryTimeoutClear extends SingleEMFTestCase {
             assertEquals(Integer.valueOf(5000), q.getTimeout());
 
             q.setTimeout(null);
+            assertNull("Nothing is set on the query after a clear",
+                q.getTimeout());
             assertEquals("Clearing must restore the entity manager's timeout, "
-                + "not the configuration default",
-                Integer.valueOf(9000), q.getTimeout());
+                + "not the configuration default", 9000,
+                ((OpenJPAQuery<?>) q).getFetchPlan().getQueryTimeout());
         } finally {
             em.close();
         }
