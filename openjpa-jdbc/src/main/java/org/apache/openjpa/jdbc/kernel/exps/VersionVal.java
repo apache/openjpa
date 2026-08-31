@@ -83,8 +83,9 @@ class VersionVal
         // ExpState; getType() has none, so it uses the path's class.
         ClassMetaData meta = _path.getMetaData();
         FieldMetaData versionField = (meta == null) ? null : meta.getVersionField();
-        if (versionField != null)
+        if (versionField != null) {
             return versionField.getType();
+        }
 
         // surrogate version: the version strategy maps column(s) but there is
         // no version field, so no java type is declared here. Type the value
@@ -106,14 +107,16 @@ class VersionVal
         // without screwing up the SQL, to just don't let users call it on
         // non-pc fields at all
         ClassMapping cls = _path.getClassMapping(state);
-        if (cls == null || cls.getEmbeddingMapping() != null)
+        if (cls == null || cls.getEmbeddingMapping() != null) {
             throw new UserException(_loc.get("bad-version-path", pathDescription()));
+        }
 
         // types that are not versioned have no version columns to select,
         // group, order or compare by; fail with a meaningful message rather
         // than a NullPointerException further down the line
-        if (cls.getVersion().getColumns().length == 0)
+        if (cls.getVersion().getColumns().length == 0) {
             throw new UserException(_loc.get("no-version-field", cls));
+        }
         return state;
     }
 
@@ -123,10 +126,12 @@ class VersionVal
      */
     private String pathDescription() {
         String desc = _path.getPCPathString();
-        if (desc != null && desc.endsWith("."))
+        if (desc != null && desc.endsWith(".")) {
             desc = desc.substring(0, desc.length() - 1);
-        if (desc != null && desc.length() > 0)
+        }
+        if (desc != null && desc.length() > 0) {
             return desc;
+        }
         String alias = _path.getSchemaAlias();
         return (alias != null) ? alias : String.valueOf(_path.getMetaData());
     }
@@ -135,14 +140,16 @@ class VersionVal
     public Object toDataStoreValue(Select sel, ExpContext ctx, ExpState state, Object val) {
         ClassMapping cls = _path.getClassMapping(state);
         FieldMetaData versionField = cls.getVersionField();
-        if (versionField != null)
+        if (versionField != null) {
             return Filters.convert(val, versionField.getType());
+        }
 
         // surrogate version: convert using the version column's java type,
         // which the version strategy stamped onto the column
         Column[] cols = cls.getVersion().getColumns();
-        if (cols.length == 1)
+        if (cols.length == 1) {
             return JavaTypes.convert(val, cols[0].getJavaType());
+        }
         return val;
     }
 
