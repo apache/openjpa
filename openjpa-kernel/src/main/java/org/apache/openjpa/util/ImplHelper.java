@@ -64,14 +64,12 @@ public class ImplHelper {
     /**
      * Map of all new unenhanced instances active in this classloader, keyed
      * by object identity. Keys are held weakly, values strongly.
-     *
-     * @deprecated use
-     * {@link #registerUnenhancedInstance(Object, PersistenceCapable)} to add
-     * mappings and {@link #toPersistenceCapable(Object, Object)} to resolve
-     * them.
+     * <p>
+     * Not public: register through
+     * {@link #registerUnenhancedInstance(Object, PersistenceCapable)} and
+     * resolve through {@link #toPersistenceCapable(Object, Object)}.
      */
-    @Deprecated
-    public static final Map _unenhancedInstanceMap =
+    static final Map _unenhancedInstanceMap =
         new ConcurrentReferenceHashMap(ReferenceStrength.WEAK, ReferenceStrength.HARD) {
 
             @Override

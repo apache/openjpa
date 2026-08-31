@@ -33,11 +33,11 @@ import org.junit.Test;
  * Pins the registry contract of
  * {@link ImplHelper#registerUnenhancedInstance(Object, PersistenceCapable)}.
  * <p>
- * The registrations are read back through the registry itself: resolving them
- * through {@link ImplHelper#toPersistenceCapable(Object, Object)} would need a
- * configuration and manageable metadata, which is beyond a unit test here.
+ * The registrations are read back through the package private registry itself:
+ * resolving them through {@link ImplHelper#toPersistenceCapable(Object, Object)}
+ * would need a configuration and manageable metadata, which is beyond a unit
+ * test here.
  */
-@SuppressWarnings("deprecation")
 public class TestImplHelperUnenhancedInstance {
 
     record Point(int x, int y) {
