@@ -414,6 +414,10 @@ class Expressions {
             this.field = field;
         }
 
+        public DateTimeExtractField getField() {
+            return field;
+        }
+
         @Override
         public Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
             Value value = factory.getDateTimeField(field, Expressions.toValue(e, factory, q));

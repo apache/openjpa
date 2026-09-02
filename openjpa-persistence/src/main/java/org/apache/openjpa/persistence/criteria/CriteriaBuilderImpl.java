@@ -29,8 +29,8 @@ import java.time.LocalTime;
 import java.time.temporal.Temporal;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,6 +44,9 @@ import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.From;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.ListJoin;
+import jakarta.persistence.criteria.LocalDateField;
+import jakarta.persistence.criteria.LocalDateTimeField;
+import jakarta.persistence.criteria.LocalTimeField;
 import jakarta.persistence.criteria.MapJoin;
 import jakarta.persistence.criteria.Nulls;
 import jakarta.persistence.criteria.Order;
@@ -83,6 +86,34 @@ import org.apache.openjpa.persistence.meta.Types;
  */
 public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionParser {
     private static final long serialVersionUID = 1L;
+
+    /**
+     * The temporal fields EXTRACT accepts, keyed by the constants defined by the specification.
+     * These constants are not enums, but they are the only instances their classes hand out, so
+     * they are matched by identity rather than by their (locale sensitive, lower case) name.
+     */
+    private static final Map<TemporalField<?, ?>, DateTimeExtractField> EXTRACT_FIELDS;
+    static {
+        Map<TemporalField<?, ?>, DateTimeExtractField> fields = new IdentityHashMap<>();
+        fields.put(LocalDateField.YEAR, DateTimeExtractField.YEAR);
+        fields.put(LocalDateField.QUARTER, DateTimeExtractField.QUARTER);
+        fields.put(LocalDateField.MONTH, DateTimeExtractField.MONTH);
+        fields.put(LocalDateField.WEEK, DateTimeExtractField.WEEK);
+        fields.put(LocalDateField.DAY, DateTimeExtractField.DAY);
+        fields.put(LocalTimeField.HOUR, DateTimeExtractField.HOUR);
+        fields.put(LocalTimeField.MINUTE, DateTimeExtractField.MINUTE);
+        fields.put(LocalTimeField.SECOND, DateTimeExtractField.SECOND);
+        fields.put(LocalDateTimeField.YEAR, DateTimeExtractField.YEAR);
+        fields.put(LocalDateTimeField.QUARTER, DateTimeExtractField.QUARTER);
+        fields.put(LocalDateTimeField.MONTH, DateTimeExtractField.MONTH);
+        fields.put(LocalDateTimeField.WEEK, DateTimeExtractField.WEEK);
+        fields.put(LocalDateTimeField.DAY, DateTimeExtractField.DAY);
+        fields.put(LocalDateTimeField.HOUR, DateTimeExtractField.HOUR);
+        fields.put(LocalDateTimeField.MINUTE, DateTimeExtractField.MINUTE);
+        fields.put(LocalDateTimeField.SECOND, DateTimeExtractField.SECOND);
+        EXTRACT_FIELDS = Collections.unmodifiableMap(fields);
+    }
+
     private MetamodelImpl _model;
 
     public OpenJPACriteriaBuilder setMetaModel(MetamodelImpl model) {
@@ -1202,10 +1233,13 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 
 	@Override
 	public <N, T extends Temporal> Expression<N> extract(TemporalField<N, T> field, Expression<T> temporal) {
-		String fieldName = field.toString().toUpperCase(Locale.ROOT);
-		DateTimeExtractField extractField = DateTimeExtractField.valueOf(fieldName);
+		DateTimeExtractField extractField = EXTRACT_FIELDS.get(field);
+		if (extractField == null) {
+			throw new IllegalArgumentException("Unsupported temporal field for EXTRACT: " + field);
+		}
 		@SuppressWarnings("unchecked")
-		Class<N> resultType = fieldName.equals("SECOND") ? (Class<N>) Double.class : (Class<N>) Integer.class;
+		Class<N> resultType = (Class<N>) (extractField == DateTimeExtractField.SECOND
+				? Double.class : Integer.class);
 		return new Expressions.ExtractField<>(resultType, extractField, temporal);
 	}
 
