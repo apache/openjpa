@@ -26,7 +26,7 @@
     <parent>
       <groupId>org.apache</groupId>
       <artifactId>apache</artifactId>
-      <version>35</version>
+      <version>39</version>
     </parent>
 
     <groupId>org.apache.openjpa</groupId>
@@ -76,29 +76,27 @@
         <createSource>none</createSource>
         <createSources>false</createSources>
         <!-- common JDBC driver versions -->
-        <derby.version>10.16.1.1</derby.version>
+        <derby.version>10.16.1.1</derby.version> <!-- 10.17 requires java-21 -->
         <hsqldb.version>2.7.4</hsqldb.version>
-        <mysql.connector.version>9.7.0</mysql.connector.version>
+        <mysql.connector.version>26.7.0</mysql.connector.version>
         <mariadb.connector.version>3.5.9</mariadb.connector.version>
         <postgresql.connector.version>42.7.13</postgresql.connector.version>
         <mssql.connector.version>13.4.0.jre11</mssql.connector.version>
 
         <!-- other common versions -->
         <kubernetes-client.version>6.13.3</kubernetes-client.version>
-        <slf4j.version>2.0.17</slf4j.version>
+        <slf4j.version>2.0.18</slf4j.version>
 
-        <maven.javadoc.version>3.10.0</maven.javadoc.version>
         <javadoc.additionalparam />
-        <version.maven.surefire>3.5.2</version.maven.surefire>
 
-        <xbean.version>4.30</xbean.version>
-        <bval.version>3.0.2</bval.version>
-        <log4j2.version>2.25.4</log4j2.version>
-        <ant.version>1.10.15</ant.version>
+        <xbean.version>5.0.0</xbean.version>
+        <bval.version>3.1.0</bval.version>
+        <log4j2.version>2.26.1</log4j2.version>
+        <ant.version>1.10.17</ant.version>
 
         <jmock.version>2.13.1</jmock.version>
-        <dbcp2.version>2.13.0</dbcp2.version>
-        <pool2.version>2.12.1</pool2.version>
+        <dbcp2.version>2.14.0</dbcp2.version>
+        <pool2.version>2.13.1</pool2.version>
 
         <jakarta.annotation-api.version>2.1.1</jakarta.annotation-api.version>
         <jakarta.persistence-api.version>3.2.0</jakarta.persistence-api.version>
