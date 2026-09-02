@@ -3094,7 +3094,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             // embedded copy mapping so that getStateManagerImpl can find
             // the SM when the owner's enhanced field provides the raw record
             if (obj != null && meta.isRecord()) {
-                ImplHelper._unenhancedInstanceMap.put(obj, copy);
+                ImplHelper.registerUnenhancedInstance(obj, copy);
             }
 
             return sm;
