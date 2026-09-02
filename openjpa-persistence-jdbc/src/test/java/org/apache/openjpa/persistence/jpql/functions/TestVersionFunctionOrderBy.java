@@ -36,13 +36,15 @@ public class TestVersionFunctionOrderBy extends SQLListenerTestCase {
 
     @Override
     public void setUp() {
-        setUp(CLEAR_TABLES, CompUser.class, CompVerUser.class, Address.class);
+        setUp(CLEAR_TABLES, CompUser.class, CompVerUser.class, Address.class,
+            SurrogateVersionEntity.class);
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new CompVerUser("Bob", "n/a", null, 21));
         em.persist(new CompVerUser("Alice", "n/a", null, 22));
         em.persist(new CompUser("Ugo", "n/a", null, 23));
+        em.persist(new SurrogateVersionEntity(1, "Surro"));
         em.getTransaction().commit();
         em.close();
     }
@@ -105,6 +107,65 @@ public class TestVersionFunctionOrderBy extends SQLListenerTestCase {
                 msg.contains("does not") && msg.contains("version"));
             assertTrue("Message should name the offending type: " + msg,
                 msg.contains(CompUser.class.getName()));
+            assertFalse("Should not fail with a NullPointerException: " + msg,
+                hasNPE(e));
+            assertFalse("VERSION() must not report an object-id failure: " + msg,
+                msg.contains("object id"));
+        } finally {
+            em.close();
+        }
+    }
+
+    public void testProjectVersionOfSurrogateVersionedType() {
+        EntityManager em = emf.createEntityManager();
+        resetSQL();
+
+        List<?> result = em.createQuery(
+            "SELECT VERSION(e) FROM SurrogateVersionEntity e").getResultList();
+
+        assertEquals(1, result.size());
+        assertNotNull(result.get(0));
+        assertContainsSQL("versn");
+        em.close();
+    }
+
+    public void testWhereVersionOnSurrogateVersionedType() {
+        EntityManager em = emf.createEntityManager();
+        resetSQL();
+
+        List<?> result = em.createQuery(
+            "SELECT e FROM SurrogateVersionEntity e WHERE VERSION(e) = :v")
+            .setParameter("v", 1).getResultList();
+
+        assertEquals(1, result.size());
+        assertContainsSQL("versn = ?");
+        em.close();
+    }
+
+    public void testOrderByVersionOnSurrogateVersionedType() {
+        EntityManager em = emf.createEntityManager();
+        resetSQL();
+
+        List<?> result = em.createQuery(
+            "SELECT e FROM SurrogateVersionEntity e ORDER BY VERSION(e)").getResultList();
+
+        // the version column is selected with the entity anyway, so assert on
+        // the ORDER BY clause itself rather than on the column name alone
+        assertEquals(1, result.size());
+        assertContainsSQL("ORDER BY");
+        assertContainsSQL("ORDER BY t0.versn");
+        em.close();
+    }
+
+    public void testProjectVersionOnUnversionedTypeThrowsUserException() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.createQuery("SELECT VERSION(u) FROM CompUser u").getResultList();
+            fail("VERSION() on an unversioned type should be rejected");
+        } catch (RuntimeException e) {
+            String msg = getNestedMessages(e);
+            assertTrue("Unexpected failure: " + msg,
+                msg.contains("does not") && msg.contains("version"));
             assertFalse("Should not fail with a NullPointerException: " + msg,
                 hasNPE(e));
         } finally {
