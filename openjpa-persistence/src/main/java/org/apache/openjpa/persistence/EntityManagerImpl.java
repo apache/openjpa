@@ -2877,15 +2877,22 @@ public class EntityManagerImpl
     	return getFetchPlan().getCacheRetrieveMode() == DataCacheRetrieveMode.USE ? CacheRetrieveMode.USE : CacheRetrieveMode.BYPASS;
 	}
 
+	/**
+	 * Sets the cache retrieve mode. A null mode resets the fetch plan to its
+	 * default, {@link DataCacheRetrieveMode#USE}, so that clearing the
+	 * <code>jakarta.persistence.cache.retrieveMode</code> property does not
+	 * leave the plan bypassing the cache.
+	 */
 	@Override
 	public void setCacheRetrieveMode(CacheRetrieveMode cacheRetrieveMode) {
-    	getFetchPlan().setCacheRetrieveMode(cacheRetrieveMode == CacheRetrieveMode.USE
-    			? DataCacheRetrieveMode.USE : DataCacheRetrieveMode.BYPASS);
+    	getFetchPlan().setCacheRetrieveMode(cacheRetrieveMode == CacheRetrieveMode.BYPASS
+    			? DataCacheRetrieveMode.BYPASS : DataCacheRetrieveMode.USE);
 	}
 
 	@Override
 	public void setCacheStoreMode(CacheStoreMode cacheStoreMode) {
-		DataCacheStoreMode storeMode = switch (cacheStoreMode) {
+		// a null mode resets the fetch plan to its default, as above
+		DataCacheStoreMode storeMode = cacheStoreMode == null ? DataCacheStoreMode.USE : switch (cacheStoreMode) {
 			case USE: yield DataCacheStoreMode.USE;
 			case REFRESH: yield DataCacheStoreMode.REFRESH;
 			default: yield DataCacheStoreMode.BYPASS;

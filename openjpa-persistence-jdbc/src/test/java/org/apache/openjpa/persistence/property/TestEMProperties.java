@@ -21,8 +21,14 @@ package org.apache.openjpa.persistence.property;
 import java.util.HashMap;
 import java.util.Map;
 
+import jakarta.persistence.CacheRetrieveMode;
+import jakarta.persistence.CacheStoreMode;
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.kernel.DataCacheRetrieveMode;
+import org.apache.openjpa.kernel.DataCacheStoreMode;
+import org.apache.openjpa.persistence.FetchPlan;
+import org.apache.openjpa.persistence.JPAProperties;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -76,6 +82,97 @@ public class TestEMProperties extends SingleEMFTestCase {
         assertEquals(12345, query.getFetchPlan().getQueryTimeout());
 
         em.clear();
+        em.close();
+    }
+
+    public void testCacheModeStringSetOnEntityManager() {
+        EntityManager em = emf.createEntityManager();
+
+        em.setProperty(JPAProperties.CACHE_RETRIEVE_MODE, "BYPASS");
+        em.setProperty(JPAProperties.CACHE_STORE_MODE, "REFRESH");
+
+        assertEquals(CacheRetrieveMode.BYPASS, em.getCacheRetrieveMode());
+        assertEquals(CacheStoreMode.REFRESH, em.getCacheStoreMode());
+        FetchPlan fetchPlan = OpenJPAPersistence.cast(em).getFetchPlan();
+        assertEquals(DataCacheRetrieveMode.BYPASS, fetchPlan.getCacheRetrieveMode());
+        assertEquals(DataCacheStoreMode.REFRESH, fetchPlan.getCacheStoreMode());
+
+        em.close();
+    }
+
+    public void testCacheModeStringOnEntityManagerCreation() {
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JPAProperties.CACHE_RETRIEVE_MODE, "BYPASS");
+        properties.put(JPAProperties.CACHE_STORE_MODE, "REFRESH");
+        EntityManager em = emf.createEntityManager(properties);
+
+        assertEquals(CacheRetrieveMode.BYPASS, em.getCacheRetrieveMode());
+        assertEquals(CacheStoreMode.REFRESH, em.getCacheStoreMode());
+        FetchPlan fetchPlan = OpenJPAPersistence.cast(em).getFetchPlan();
+        assertEquals(DataCacheRetrieveMode.BYPASS, fetchPlan.getCacheRetrieveMode());
+        assertEquals(DataCacheStoreMode.REFRESH, fetchPlan.getCacheStoreMode());
+
+        em.close();
+    }
+
+    public void testCacheModeStringIsCaseInsensitive() {
+        EntityManager em = emf.createEntityManager();
+
+        em.setProperty(JPAProperties.CACHE_RETRIEVE_MODE, "use");
+        em.setProperty(JPAProperties.CACHE_STORE_MODE, " refresh ");
+
+        assertEquals(CacheRetrieveMode.USE, em.getCacheRetrieveMode());
+        assertEquals(CacheStoreMode.REFRESH, em.getCacheStoreMode());
+
+        em.close();
+    }
+
+    public void testCacheModeEnumStillWorks() {
+        EntityManager em = emf.createEntityManager();
+
+        em.setProperty(JPAProperties.CACHE_RETRIEVE_MODE, CacheRetrieveMode.BYPASS);
+        em.setProperty(JPAProperties.CACHE_STORE_MODE, CacheStoreMode.REFRESH);
+
+        assertEquals(CacheRetrieveMode.BYPASS, em.getCacheRetrieveMode());
+        assertEquals(CacheStoreMode.REFRESH, em.getCacheStoreMode());
+        em.close();
+
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JPAProperties.CACHE_RETRIEVE_MODE, CacheRetrieveMode.BYPASS);
+        properties.put(JPAProperties.CACHE_STORE_MODE, CacheStoreMode.REFRESH);
+        em = emf.createEntityManager(properties);
+
+        assertEquals(CacheRetrieveMode.BYPASS, em.getCacheRetrieveMode());
+        assertEquals(CacheStoreMode.REFRESH, em.getCacheStoreMode());
+
+        em.close();
+    }
+
+    public void testInvalidCacheModeStringFails() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.setProperty(JPAProperties.CACHE_RETRIEVE_MODE, "NOPE");
+            fail("Expected an IllegalArgumentException for an invalid cache retrieve mode");
+        } catch (IllegalArgumentException iae) {
+            String message = iae.getMessage();
+            assertTrue(message, message.contains("cache.retrieveMode"));
+            assertTrue(message, message.contains("USE"));
+            assertTrue(message, message.contains("BYPASS"));
+        } finally {
+            em.close();
+        }
+    }
+
+    public void testNullCacheModeResetsToDefault() {
+        EntityManager em = emf.createEntityManager();
+
+        em.setProperty(JPAProperties.CACHE_STORE_MODE, null);
+        em.setProperty(JPAProperties.CACHE_RETRIEVE_MODE, "null");
+
+        FetchPlan fetchPlan = OpenJPAPersistence.cast(em).getFetchPlan();
+        assertEquals(DataCacheRetrieveMode.USE, fetchPlan.getCacheRetrieveMode());
+        assertEquals(DataCacheStoreMode.USE, fetchPlan.getCacheStoreMode());
+
         em.close();
     }
 }
