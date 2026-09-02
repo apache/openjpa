@@ -22,6 +22,9 @@ import java.util.Random;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.meta.AccessCode;
+import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestPropertyAccessCapitalization extends SingleEMFTestCase {
@@ -37,17 +40,17 @@ public class TestPropertyAccessCapitalization extends SingleEMFTestCase {
         Random r = new Random();
         entity.setId(r.nextInt());
         entity.setWord(r.nextInt());
-        entity.setAWord(r.nextInt());
+        entity.setaWord(r.nextInt());
         entity.setAaWord(r.nextInt());
         entity.setAaaWord(r.nextInt());
         entity.setCAPITAL(r.nextInt());
-        entity.setACAPITAL(r.nextInt());
+        entity.setaCAPITAL(r.nextInt());
         entity.setAnother(r.nextInt());
         entity.setA1(r.nextInt());
         entity.setB1(r.nextInt());
         entity.setA(r.nextInt());
         entity.setB(r.nextInt());
-        entity.setABoolean(true);
+        entity.setaBoolean(true);
         entity.setBBoolean(true);
         entity.setBOOLEAN(true);
         entity.setBool(true);
@@ -91,5 +94,16 @@ public class TestPropertyAccessCapitalization extends SingleEMFTestCase {
         PropertyAccessCapitalizationOldBehavior persistentEntity =
             em.find(PropertyAccessCapitalizationOldBehavior.class, entity.getId());
         assertEquals(entity, persistentEntity);
+    }
+
+    public void testBothAccessorSpellingsYieldTheSamePropertyNames() {
+        ClassMetaData beanStyle = JPAFacadeHelper.getMetaData(emf, PropertyAccessCapitalization.class);
+        ClassMetaData oldStyle = JPAFacadeHelper.getMetaData(emf, PropertyAccessCapitalizationOldBehavior.class);
+        for (ClassMetaData meta : new ClassMetaData[] { beanStyle, oldStyle }) {
+            assertTrue("Access type should be PROPERTY", AccessCode.isProperty(meta.getAccessType()));
+            assertNotNull(meta + ": 'aWord' should be persistent", meta.getField("aWord"));
+            assertNotNull(meta + ": 'aCAPITAL' should be persistent", meta.getField("aCAPITAL"));
+            assertNotNull(meta + ": 'aBoolean' should be persistent", meta.getField("aBoolean"));
+        }
     }
 }

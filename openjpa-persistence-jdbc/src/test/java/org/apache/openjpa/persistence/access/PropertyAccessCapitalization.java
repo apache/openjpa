@@ -22,6 +22,20 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+/**
+ * Uses the JavaBeans-Introspector / IDE-generated accessor spelling
+ * (<code>getaWord()</code>, <code>getaCAPITAL()</code>,
+ * <code>isaBoolean()</code>) for fields whose first character is lower case and
+ * whose second character is upper case.
+ * {@link PropertyAccessCapitalizationOldBehavior} is the
+ * <code>getAWord()</code> / <code>getACAPITAL()</code> /
+ * <code>isABoolean()</code> twin. Both spellings must resolve to the same
+ * properties <code>aWord</code>, <code>aCAPITAL</code> and
+ * <code>aBoolean</code>, because
+ * <code>AbstractMetaDataDefaults.getFieldName()</code> lower-cases the first
+ * character after the prefix unconditionally. See OPENJPA-2467 and
+ * OPENJPA-2993; do not rename these accessors to make a test pass.
+ */
 @Entity
 @Table(name = "CAPITALIZATION_TABLE")
 public class PropertyAccessCapitalization {
@@ -42,11 +56,11 @@ public class PropertyAccessCapitalization {
     private boolean BOOLEAN;
     private boolean Bool;
 
-    public int getACAPITAL() {
+    public int getaCAPITAL() {
         return aCAPITAL;
     }
 
-    public void setACAPITAL(int aCAPITAL) {
+    public void setaCAPITAL(int aCAPITAL) {
         this.aCAPITAL = aCAPITAL;
     }
 
@@ -83,11 +97,11 @@ public class PropertyAccessCapitalization {
         this.word = word;
     }
 
-    public int getAWord() {
+    public int getaWord() {
         return aWord;
     }
 
-    public void setAWord(int aWord) {
+    public void setaWord(int aWord) {
         this.aWord = aWord;
     }
 
@@ -139,11 +153,11 @@ public class PropertyAccessCapitalization {
         Another = another;
     }
 
-    public boolean isABoolean() {
+    public boolean isaBoolean() {
         return aBoolean;
     }
 
-    public void setABoolean(boolean aBoolean) {
+    public void setaBoolean(boolean aBoolean) {
         this.aBoolean = aBoolean;
     }
 
@@ -198,11 +212,11 @@ public class PropertyAccessCapitalization {
             return false;
         if (getA1() != other.getA1())
             return false;
-        if (isABoolean() != other.isABoolean())
+        if (isaBoolean() != other.isaBoolean())
             return false;
-        if (getACAPITAL() != other.getACAPITAL())
+        if (getaCAPITAL() != other.getaCAPITAL())
             return false;
-        if (getAWord() != other.getAWord())
+        if (getaWord() != other.getaWord())
             return false;
         if (getAaWord() != other.getAaWord())
             return false;
