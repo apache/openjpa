@@ -160,7 +160,7 @@ public class TypecastAsNumber extends AbstractVal {
         sql.append(part1);
         _val.appendTo(sel, ctx, etnstate.valueState, sql, 0);
         sql.append(part2);
-        sql.append(getDbNumberTargetTypeName(dict));
+        sql.append(dict.getNumberCastTypeName(getType()));
         sql.append(part3);
     }
 
@@ -174,24 +174,5 @@ public class TypecastAsNumber extends AbstractVal {
     @Override
     public int getId() {
         return Val.EXTRACTDTF_VAL;
-    }
-
-    private static String sanitize(String type) {
-        final int idx = type.indexOf('{');
-        return idx < 0 ? type : type.substring(0, idx);
-    }
-
-    private String getDbNumberTargetTypeName(DBDictionary dict) {
-        String type;
-        if (getType() == int.class) {
-            type = dict.integerCastTypeName;
-        } else if (getType() == long.class) {
-            type = dict.decimalTypeName;
-        } else if (getType() == float.class) {
-            type = dict.floatTypeName;
-        } else {
-            type = dict.doubleTypeName;
-        }
-        return sanitize(type);
     }
 }

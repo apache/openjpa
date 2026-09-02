@@ -181,6 +181,8 @@ public class MariaDBDictionary extends DBDictionary {
 
         dateFractionDigits = 0;
         supportsUnsizedCharOnCast = false;
+        // MariaDB has no BIGINT cast target; SIGNED [INTEGER] yields a 64 bit signed value
+        longCastTypeName = "SIGNED";
     }
 
     @Override

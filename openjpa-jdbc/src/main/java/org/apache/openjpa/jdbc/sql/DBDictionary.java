@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import static java.util.Locale.ROOT;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.CharArrayReader;
@@ -70,6 +72,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 import javax.sql.DataSource;
@@ -141,8 +144,6 @@ import org.apache.openjpa.util.Serialization;
 import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
-
-import static java.util.Locale.ROOT;
 
 
 /**
@@ -522,7 +523,32 @@ public class DBDictionary
 
     public boolean supportsUnsizedCharOnCast = true;
 
-    public String integerCastTypeName = integerTypeName;
+    /**
+     * Type name used as the target of a CAST to a 32 bit integer.
+     * <p>
+     * Note: this is a field initializer, so it is evaluated before any subclass constructor runs.
+     * Dictionaries which change {@link #integerTypeName} do <em>not</em> implicitly change this value.
+     * Set it explicitly if the DDL type name is not a valid CAST target.
+     */
+    public String integerCastTypeName = null;
+
+    /**
+     * Type name used as the target of a CAST to a 64 bit integer.
+     * <p>
+     * If <code>null</code> (the default), {@link #bigintTypeName} is resolved lazily by
+     * {@link #getLongCastTypeName()}. Resolving lazily rather than in a field initializer is deliberate:
+     * several dictionaries assign {@link #bigintTypeName} in their constructor or even in
+     * {@link #connectedConfiguration(java.sql.Connection)}, which happens after field initialization.
+     */
+    public String longCastTypeName = null;
+
+    /**
+     * Cache of CAST target type names, keyed by the DDL type name they were derived from.
+     * The DDL type names themselves may still be changed by a subclass constructor or by
+     * {@link #connectedConfiguration(java.sql.Connection)}, so the key is the source name
+     * rather than the java type, and the cached value stays valid across such changes.
+     */
+    private final Map<String, String> castTypeNames = new ConcurrentHashMap<>();
 
     // Naming utility and naming rules
     private DBIdentifierUtil namingUtil = null;
@@ -2232,6 +2258,59 @@ public class DBDictionary
      */
     protected int getDateFractionDigits(Column col, String typeName) {
         return dateFractionDigits;
+    }
+
+    /**
+     * Return the type name to use as the target of a CAST to a 32 bit integer.
+     * Defaults to {@link #integerTypeName} unless {@link #integerCastTypeName} was set explicitly.
+     */
+    public String getIntegerCastTypeName() {
+        return integerCastTypeName == null ? integerTypeName : integerCastTypeName;
+    }
+
+    /**
+     * Return the type name to use as the target of a CAST to a 64 bit integer.
+     * Defaults to {@link #bigintTypeName} unless {@link #longCastTypeName} was set explicitly.
+     */
+    public String getLongCastTypeName() {
+        return longCastTypeName == null ? bigintTypeName : longCastTypeName;
+    }
+
+    /**
+     * Return the type name to use as the target of a CAST of a numeric value to the given java type.
+     * Any DDL size marker (<code>{0}</code>) is stripped, as CAST targets are not sized by the schema.
+     */
+    public String getNumberCastTypeName(Class<?> type) {
+        String name;
+        if (type == int.class || type == Integer.class) {
+            name = getIntegerCastTypeName();
+        } else if (type == long.class || type == Long.class) {
+            name = getLongCastTypeName();
+        } else if (type == float.class || type == Float.class) {
+            name = floatTypeName;
+        } else {
+            name = doubleTypeName;
+        }
+        return castTypeName(name);
+    }
+
+    /**
+     * Return the type name to use as the target of a CAST to a string.
+     * Any DDL size marker (<code>{0}</code>) is stripped.
+     */
+    public String getStringCastTypeName() {
+        if (supportsUnsizedCharOnCast) {
+            return castTypeName(varcharTypeName);
+        }
+        return castTypeName(typecastToStringTypeName) + "(" + characterColumnSize + ")";
+    }
+
+    /**
+     * Strip any DDL size marker from the given type name so that it can be used as a CAST target.
+     * The result is cached, as CAST targets are resolved on every SQL generation.
+     */
+    private String castTypeName(String typeName) {
+        return castTypeNames.computeIfAbsent(typeName, n -> insertSize(n, null));
     }
 
     /**
@@ -5313,27 +5392,32 @@ public class DBDictionary
     @Override
     public void endConfiguration() {
         // add additional reserved words set by user
-        if (reservedWords != null)
+        if (reservedWords != null) {
             reservedWordSet.addAll(Arrays.asList(StringUtil.split(reservedWords.toUpperCase(Locale.ENGLISH), ",", 0)));
+        }
 
         // add system schemas set by user
-        if (systemSchemas != null)
+        if (systemSchemas != null) {
             systemSchemaSet.addAll(Arrays.asList(StringUtil.split(systemSchemas.toUpperCase(Locale.ENGLISH), ",", 0)));
+        }
 
         // add system tables set by user
-        if (systemTables != null)
+        if (systemTables != null) {
             systemTableSet.addAll(Arrays.asList(StringUtil.split(systemTables.toUpperCase(Locale.ENGLISH), ",", 0)));
+        }
 
         // add fixed size type names set by the user
-        if (fixedSizeTypeNames != null)
+        if (fixedSizeTypeNames != null) {
             fixedSizeTypeNameSet.addAll(Arrays.asList(StringUtil.split(fixedSizeTypeNames.toUpperCase(Locale.ENGLISH), ",", 0)));
+        }
 
         // if user has unset sequence sql, null it out so we know sequences
         // aren't supported
         nextSequenceQuery = StringUtil.trimToNull(nextSequenceQuery);
 
-        if (selectWords != null)
+        if (selectWords != null) {
             selectWordSet.addAll(Arrays.asList(StringUtil.split(selectWords.toUpperCase(Locale.ENGLISH), ",", 0)));
+        }
 
         if (invalidColumnWordSet.isEmpty()) {
             Collection<String> invalidColumns = loadFromResource("sql-invalid-column-names.rsrc");

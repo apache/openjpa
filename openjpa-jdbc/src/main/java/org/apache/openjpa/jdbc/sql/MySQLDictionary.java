@@ -180,6 +180,8 @@ public class MySQLDictionary
         dateFractionDigits = 0;
         supportsUnsizedCharOnCast = false;
         integerCastTypeName = "SIGNED";
+        // MySQL has no BIGINT cast target; SIGNED [INTEGER] yields a 64 bit signed value
+        longCastTypeName = "SIGNED";
     }
 
     @Override
