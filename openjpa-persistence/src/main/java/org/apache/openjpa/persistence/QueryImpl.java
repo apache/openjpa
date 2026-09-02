@@ -45,6 +45,7 @@ import org.apache.openjpa.kernel.DelegatingQuery;
 import org.apache.openjpa.kernel.DelegatingResultList;
 import org.apache.openjpa.kernel.DistinctResultList;
 import org.apache.openjpa.kernel.FetchConfiguration;
+import org.apache.openjpa.kernel.FetchConfigurationImpl;
 import org.apache.openjpa.kernel.PreparedQuery;
 import org.apache.openjpa.kernel.PreparedQueryCache;
 import org.apache.openjpa.kernel.QueryHints;
@@ -778,22 +779,52 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 		return this;
 	}
 
+	/**
+	 * The timeout set on this query, or null if none was set on it. Reported
+	 * from the fetch configuration rather than from the recorded hint, so that
+	 * it cannot disagree with the timeout the query will actually use.
+	 */
 	@Override
 	public Integer getTimeout() {
-		Object val = getHints().get(JPAProperties.QUERY_TIMEOUT);
-		if (val instanceof Integer) {
-			return (Integer) val;
+		FetchConfiguration fetch = _query.getFetchConfiguration();
+		if (!fetch.isHintSet(JPAProperties.QUERY_TIMEOUT)) {
+			return null;
 		}
-		if (val instanceof Number) {
-			return ((Number) val).intValue();
-		}
-		return null;
+		return fetch.getQueryTimeout();
 	}
 
+	/**
+	 * Sets the query timeout in milliseconds. A null timeout clears the
+	 * timeout of this query, whether it was set through this method, through
+	 * the <code>jakarta.persistence.query.timeout</code> hint or on the fetch
+	 * plan, and restores the timeout its entity manager carries at that point,
+	 * rather than leaving the previous value in place. It does not restore the
+	 * timeout configured for the persistence unit.
+	 */
 	@Override
 	public TypedQuery<X> setTimeout(Integer timeout) {
-		setHint(JPAProperties.QUERY_TIMEOUT, timeout);
+		if (timeout != null) {
+			setHint(JPAProperties.QUERY_TIMEOUT, timeout);
+			return this;
+		}
+		FetchConfiguration fetch = _query.getFetchConfiguration();
+		if (fetch instanceof FetchConfigurationImpl) {
+			// drop the recorded hint, so that the timeout is no longer set on
+			// this query at all rather than being set to the inherited value
+			((FetchConfigurationImpl) fetch).removeHint(JPAProperties.QUERY_TIMEOUT);
+		}
+		fetch.setQueryTimeout(inheritedQueryTimeout());
 		return this;
+	}
+
+	/**
+	 * The timeout this query would use had none been set on it, i.e. the one
+	 * its entity manager carries now. The query's own fetch configuration was
+	 * cloned from the broker when the query was created, so this is the
+	 * entity manager's current value, not necessarily the cloned one.
+	 */
+	private int inheritedQueryTimeout() {
+		return _em.getFetchPlan().getQueryTimeout();
 	}
 	
 }
