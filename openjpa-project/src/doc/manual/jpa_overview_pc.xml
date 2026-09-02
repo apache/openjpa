@@ -838,17 +838,7 @@ following criteria:
             <itemizedlist>
                 <listitem>
                     <para>
-The class must be public.
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-The class must be serializable.
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-The class must have a public no-args constructor.
+The class must have a no-args constructor.
                     </para>
                 </listitem>
                 <listitem>
@@ -879,6 +869,19 @@ hierarchy mirrors the inheritance hierarchy of the owning entity classes (see
                     </para>
                 </listitem>
             </itemizedlist>
+            <note>
+                <para>
+Jakarta Persistence 3.2 no longer requires the identity class to be public or to
+implement <classname>java.io.Serializable</classname>, and OpenJPA no longer
+enforces either. An identity class that does not implement
+<classname>Serializable</classname> can, however, not be used where OpenJPA has
+to serialize the identity object it is wrapped in: serializing a detached
+entity, remote commit events in a clustered configuration, and a distributed
+data cache. Those fail with a
+<classname>java.io.NotSerializableException</classname> naming the identity
+class.
+                </para>
+            </note>
             <note>
                 <para>
 Though you may still create identity classes by hand, OpenJPA provides the
