@@ -108,15 +108,66 @@ public class SchemaTool {
     // Only active when SpecCompliantSchemaGeneration is enabled (TCK mode).
     // Prevents buildSchema/add from re-creating tables that were explicitly
     // dropped by schema gen scripts within the same schema generation flow.
-    private static final java.util.Set<String> _droppedTables =
-        java.util.Collections.synchronizedSet(new java.util.HashSet<>());
+    //
+    // The tracking has to outlive the configuration that wrote it, since
+    // Persistence.generateSchema() closes its factory and a later factory is
+    // expected to see what it dropped. It is therefore static, but keyed by
+    // the database it describes, so that two persistence units on different
+    // databases neither consume nor clear one another's entries.
+    private static final java.util.Map<String, java.util.Set<String>> _droppedTables =
+        new java.util.HashMap<>();
 
     /**
-     * Clear the dropped tables tracking set. Called at the start of each
-     * schema generation flow to prevent cross-EMF contamination.
+     * The set of tables dropped on the database the given configuration
+     * connects to. Callers must hold the monitor of {@link #_droppedTables}.
      */
+    private static java.util.Set<String> droppedTables(JDBCConfiguration conf) {
+        return _droppedTables.computeIfAbsent(databaseKey(conf),
+            k -> new java.util.HashSet<>());
+    }
+
+    /**
+     * An identifier for the database a configuration connects to. Schema
+     * generation reads through the second data source, so its connection
+     * properties are preferred. Configurations that name no connection at all
+     * share one entry, which is the behaviour tracking had before it was
+     * partitioned.
+     */
+    private static String databaseKey(JDBCConfiguration conf) {
+        String[] candidates = new String[] {
+            conf.getConnectionFactory2Name(), conf.getConnection2URL(),
+            conf.getConnectionFactoryName(), conf.getConnectionURL(),
+        };
+        for (String candidate : candidates) {
+            if (!StringUtil.isEmpty(candidate)) {
+                return candidate;
+            }
+        }
+        return "";
+    }
+
+    /**
+     * Clear the tables tracked as dropped on the database the given
+     * configuration connects to. Called at the start of each schema
+     * generation flow to prevent cross-EMF contamination.
+     */
+    public static void clearDroppedTables(JDBCConfiguration conf) {
+        synchronized (_droppedTables) {
+            _droppedTables.remove(databaseKey(conf));
+        }
+    }
+
+    /**
+     * Clear the dropped tables tracking for every database.
+     *
+     * @deprecated use {@link #clearDroppedTables(JDBCConfiguration)}, which
+     * does not discard the tracking of unrelated persistence units.
+     */
+    @Deprecated
     public static void clearDroppedTables() {
-        _droppedTables.clear();
+        synchronized (_droppedTables) {
+            _droppedTables.clear();
+        }
     }
 
     protected final JDBCConfiguration _conf;
@@ -1238,15 +1289,19 @@ public class SchemaTool {
     public boolean createTable(Table table)
         throws SQLException {
         String tableName = table.getFullIdentifier().getName().toUpperCase(Locale.ROOT);
-        if (_log.isTraceEnabled()) {
-            _log.trace("createTable: " + tableName + " action=" + _action
-                + " droppedTables=" + _droppedTables);
-        }
-        if (ACTION_ADD.equals(_action)
-                && (_conf.isSpecCompliantSchemaGeneration()
-                    ? _droppedTables.contains(tableName)
-                    : _droppedTables.remove(tableName))) {
-            return false;
+        if (ACTION_ADD.equals(_action)) {
+            synchronized (_droppedTables) {
+                java.util.Set<String> dropped = droppedTables(_conf);
+                if (_log.isTraceEnabled()) {
+                    _log.trace("createTable: " + tableName + " action=" + _action
+                        + " droppedTables=" + dropped);
+                }
+                if (_conf.isSpecCompliantSchemaGeneration()
+                    ? dropped.contains(tableName)
+                    : dropped.remove(tableName)) {
+                    return false;
+                }
+            }
         }
         return executeSQL(_dict.getCreateTableSQL(table, _db));
     }
@@ -1523,12 +1578,16 @@ public class SchemaTool {
                                     .substring("DROP TABLE".length()).trim()
                                     .replaceAll("(?i)\\s*(IF EXISTS|CASCADE).*", "")
                                     .trim().toUpperCase(Locale.ROOT);
-                                _droppedTables.add(tableName);
+                                synchronized (_droppedTables) {
+                                    droppedTables(_conf).add(tableName);
+                                }
                             } else if (upper.startsWith("CREATE TABLE")) {
                                 String tableName = s.trim()
                                     .substring("CREATE TABLE".length()).trim()
                                     .split("\\s*\\(")[0].trim().toUpperCase(Locale.ROOT);
-                                _droppedTables.remove(tableName);
+                                synchronized (_droppedTables) {
+                                    droppedTables(_conf).remove(tableName);
+                                }
                             }
                         }
                         if (_log.isTraceEnabled()) {
