@@ -1183,6 +1183,17 @@ public class JDBCStoreQuery
         return null;
     }
 
+    /**
+     * Execute a set operation (UNION, INTERSECT, EXCEPT). The operands are
+     * compiled into a single compound SQL statement: operand 0 becomes the
+     * main {@link Select}, every later operand is rendered on its own and
+     * concatenated onto it via
+     * {@link org.apache.openjpa.jdbc.sql.SelectImpl#addSetOperatorSQL}.
+     * <p>
+     * A {@link Range} is therefore applied in memory over the compound
+     * result and is never pushed into the SQL: the range of the main select
+     * would bind to the first operand only, not to the compound result.
+     */
     private ResultObjectProvider executeSetOperatorQuery(Executor ex,
         ClassMetaData base, ClassMetaData[] metas, boolean subclasses,
         ExpressionFactory[] facts, QueryExpressions[] exps,
@@ -1235,13 +1246,28 @@ public class JDBCStoreQuery
 
         localContext.remove();
 
+        ResultObjectProvider rop;
         if (mainExps.projections.length > 0) {
-            return new ProjectionResultObjectProvider(
+            rop = new ProjectionResultObjectProvider(
                 mainSel, mainExps, mainState,
                 new ExpContext(_store, params, fetch));
+        } else {
+            rop = new InstanceResultObjectProvider(
+                mainSel, mapping, _store, fetch);
         }
-        return new InstanceResultObjectProvider(
-            mainSel, mapping, _store, fetch);
+
+        // OPENJPA-2964: the range cannot be pushed into the SQL of a set
+        // operation. DBDictionary.toSelect() renders the first operand in
+        // full - including any LIMIT/OFFSET derived from the select's start
+        // and end index - and only then appends the set operator buffer, so
+        // a range set on the main select would bind to the first operand
+        // instead of to the compound result. Apply it in memory over the
+        // compound result instead; this is the same fallback executeQuery()
+        // uses when the dictionary cannot express the range in SQL.
+        if (range.start != 0 || range.end != Long.MAX_VALUE) {
+            rop = new RangeResultObjectProvider(rop, range.start, range.end);
+        }
+        return rop;
     }
 
     private void flattenSetOperator(QueryExpressions exps,

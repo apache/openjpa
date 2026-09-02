@@ -1405,6 +1405,138 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    /**
+     * A UNION ALL of "age &gt; 25" (Seetha, Shannon, Famzy) and "age &gt; 30"
+     * (Seetha, Shannon), i.e. 5 rows, using the given identification
+     * variable. Every execution below needs its own JPQL string, see
+     * {@link #testSetOperatorRange()}.
+     */
+    private String unionAllQuery(String var) {
+        return "SELECT " + var + ".name FROM CompUser " + var
+            + " WHERE " + var + ".age > 25"
+            + " UNION ALL SELECT " + var + ".name FROM CompUser " + var
+            + " WHERE " + var + ".age > 30";
+    }
+
+    /**
+     * A UNION of "age &gt; 30" (Seetha, Shannon) and "name = 'Ugo'", i.e. 3
+     * rows after duplicate elimination, using the given identification
+     * variable.
+     */
+    private String unionQuery(String var) {
+        return "SELECT " + var + ".name FROM CompUser " + var
+            + " WHERE " + var + ".age > 30"
+            + " UNION SELECT " + var + ".name FROM CompUser " + var
+            + " WHERE " + var + ".name = 'Ugo'";
+    }
+
+    /**
+     * An INTERSECT of "age &gt; 20" and "age &gt; 30", i.e. 2 rows (Seetha,
+     * Shannon), using the given identification variable.
+     */
+    private String intersectQuery(String var) {
+        return "SELECT " + var + ".name FROM CompUser " + var
+            + " WHERE " + var + ".age > 20"
+            + " INTERSECT SELECT " + var + ".name FROM CompUser " + var
+            + " WHERE " + var + ".age > 30";
+    }
+
+    /**
+     * An EXCEPT of "age &gt; 20" and "age &gt; 30", i.e. 2 rows (Famzy, Shade),
+     * using the given identification variable.
+     */
+    private String exceptQuery(String var) {
+        return "SELECT " + var + ".name FROM CompUser " + var
+            + " WHERE " + var + ".age > 20"
+            + " EXCEPT SELECT " + var + ".name FROM CompUser " + var
+            + " WHERE " + var + ".age > 30";
+    }
+
+    /**
+     * The same UNION as {@link #unionQuery(String)}, but selecting the entity
+     * rather than a projection, so that the range is applied over an
+     * InstanceResultObjectProvider instead of a ProjectionResultObjectProvider.
+     */
+    private String entityUnionQuery(String var) {
+        return "SELECT " + var + " FROM CompUser " + var
+            + " WHERE " + var + ".age > 30"
+            + " UNION SELECT " + var + " FROM CompUser " + var
+            + " WHERE " + var + ".name = 'Ugo'";
+    }
+
+    /**
+     * OPENJPA-2964: setFirstResult()/setMaxResults() must be honoured for a
+     * set operation. The range cannot be pushed into the SQL of a compound
+     * statement, so it is applied in memory over the compound result.
+     * <p>
+     * Only the cardinality of the result is asserted: JPQL attaches an
+     * ORDER BY to an individual select, so the row order of a compound set
+     * operation is not defined and the identity of the rows on a given page
+     * is unspecified.
+     * <p>
+     * Every execution uses its own JPQL string (the identification variable
+     * differs) because re-executing the very same set operation string is
+     * broken by the prepared query SQL cache - an unrelated, pre-existing
+     * defect that has nothing to do with the range.
+     */
+    public void testSetOperatorRange() {
+        EntityManager em = currentEntityManager();
+
+        // UNION ALL, 3 rows + 2 rows = 5. The max-4 case is load-bearing:
+        // it is unsatisfiable if the bound had been pushed into operand 1,
+        // which yields only 3 rows.
+        assertEquals(5, em.createQuery(unionAllQuery("a1"))
+            .getResultList().size());
+        assertEquals(4, em.createQuery(unionAllQuery("a2")).setMaxResults(4)
+            .getResultList().size());
+        assertEquals(2, em.createQuery(unionAllQuery("a3")).setFirstResult(3)
+            .getResultList().size());
+        assertEquals(2, em.createQuery(unionAllQuery("a4")).setFirstResult(1)
+            .setMaxResults(2).getResultList().size());
+        assertEquals(0, em.createQuery(unionAllQuery("a5")).setFirstResult(5)
+            .getResultList().size());
+
+        // UNION (duplicate elimination), 3 distinct rows - same query as
+        // testUnionProjection. setFirstResult(2) must yield 1, proving the
+        // window is applied after the database's dedup (a window over the
+        // 5-row pre-dedup stream would yield more).
+        assertEquals(3, em.createQuery(unionQuery("b1"))
+            .getResultList().size());
+        assertEquals(2, em.createQuery(unionQuery("b2")).setMaxResults(2)
+            .getResultList().size());
+        assertEquals(1, em.createQuery(unionQuery("b3")).setFirstResult(2)
+            .getResultList().size());
+        // a range wider than the result set is a no-op
+        assertEquals(3, em.createQuery(unionQuery("b4")).setMaxResults(10)
+            .getResultList().size());
+
+        // INTERSECT, 2 rows - same query as testIntersectProjection.
+        assertEquals(1, em.createQuery(intersectQuery("c1")).setMaxResults(1)
+            .getResultList().size());
+        assertEquals(1, em.createQuery(intersectQuery("c2")).setFirstResult(1)
+            .getResultList().size());
+        assertEquals(0, em.createQuery(intersectQuery("c3")).setFirstResult(2)
+            .getResultList().size());
+
+        // EXCEPT, 2 rows - same query as testExceptProjection.
+        assertEquals(1, em.createQuery(exceptQuery("d1")).setMaxResults(1)
+            .getResultList().size());
+        assertEquals(1, em.createQuery(exceptQuery("d2")).setFirstResult(1)
+            .getResultList().size());
+        assertEquals(0, em.createQuery(exceptQuery("d3")).setFirstResult(2)
+            .getResultList().size());
+
+        // the entity, not a projection: the other provider branch.
+        assertEquals(3, em.createQuery(entityUnionQuery("e1"))
+            .getResultList().size());
+        assertEquals(2, em.createQuery(entityUnionQuery("e2")).setMaxResults(2)
+            .getResultList().size());
+        assertEquals(1, em.createQuery(entityUnionQuery("e3")).setFirstResult(2)
+            .getResultList().size());
+
+        endEm(em);
+    }
+
     public void testScalarOrderBy() {
         EntityManager em = currentEntityManager();
 
