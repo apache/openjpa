@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -27,6 +28,7 @@ import jakarta.persistence.CacheStoreMode;
 
 import org.apache.openjpa.kernel.DataCacheRetrieveMode;
 import org.apache.openjpa.kernel.DataCacheStoreMode;
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.StringUtil;
 
 /**
@@ -41,6 +43,8 @@ import org.apache.openjpa.lib.util.StringUtil;
  *
  */
 public class JPAProperties {
+    private static final Localizer _loc = Localizer.forPackage(JPAProperties.class);
+
     private static final String REGEX_DOT           = "\\.";
     public static final String PREFIX              = "jakarta.persistence.";
 
@@ -124,28 +128,44 @@ public class JPAProperties {
      *
      * @return the same value if the given key is not a valid JPA property key or the value is null.
      */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static <T> T  convertToKernelValue(Class<T> resultType, String key, Object value) {
-        if (value == null)
+        if (value == null) {
             return null;
-        if (JPAProperties.isValidKey(key)) {
-            // works because enum values are identical String
-            if (value instanceof CacheRetrieveMode || (value instanceof String && CACHE_RETRIEVE_MODE.equals(key))) {
-                return (T) value;
-            } else if (value instanceof CacheStoreMode || (value instanceof String && CACHE_STORE_MODE.equals(key))) {
-                return (T) value;
+        }
+        if (!isValidKey(key) || resultType == null || resultType.isInstance(value)) {
+            return (T) value;
+        }
+        if (value instanceof String) {
+            String str = (String) value;
+            if ("null".equals(str)) {
+                return null;
             }
-
-            // If the value doesn't match the result type, attempt to convert
-            if(resultType != null && !resultType.isAssignableFrom(value.getClass())) {
-                if (value instanceof String) {
-                    if ("null".equals(value)) {
-                        return null;
-                    }
-                    return StringUtil.parse((String) value, resultType);
-                }
+            if (resultType.isEnum()) {
+                return (T) toEnumValue(resultType, key, str);
             }
+            return StringUtil.parse(str, resultType);
+        }
+        // e.g. jakarta CacheStoreMode -> kernel DataCacheStoreMode; the constant names are identical
+        if (resultType.isEnum() && value instanceof Enum<?>) {
+            return (T) toEnumValue(resultType, key, ((Enum<?>) value).name());
         }
         return (T) value;
+    }
+
+    /**
+     * Converts the given constant name to a constant of the given enumerated type.
+     *
+     * @throws IllegalArgumentException if the given name does not denote a constant of the given type.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static Object toEnumValue(Class<?> type, String key, String name) {
+        try {
+            return Enum.valueOf((Class<Enum>) type, name.trim().toUpperCase(Locale.ENGLISH));
+        } catch (IllegalArgumentException iae) {
+            throw new IllegalArgumentException(_loc.get("bad-jpa-prop-value", name, key,
+                Arrays.toString(type.getEnumConstants())).getMessage(), iae);
+        }
     }
 
     /**
