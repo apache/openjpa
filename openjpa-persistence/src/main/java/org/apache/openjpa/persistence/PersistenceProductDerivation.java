@@ -296,7 +296,7 @@ public class PersistenceProductDerivation
         }
         return true;
     }
-    
+
     /**
      * Load configuration from the given persistence unit with the specified
      * user properties.
@@ -326,7 +326,7 @@ public class PersistenceProductDerivation
     	PersistenceUnitInfoImpl pinfo = PersistenceUnitInfoImpl.convert(config);
     	return load(pinfo, props);
     }
-    
+
     /**
      * Load configuration from the given resource and unit names, which may
      * be null.
@@ -669,7 +669,7 @@ public class PersistenceProductDerivation
             _puNameCollisions.put(puName, new PUNameCollision(puName, file1, file2));
         }
     }
-    
+
     /**
      * Custom configuration provider.
      */
@@ -857,10 +857,7 @@ public class PersistenceProductDerivation
                     || (_schemaLocation != null && _schemaLocation.indexOf(PERSISTENCE_XSD_3_0) != -1)) {
                 persistencexsd = "persistence_3_0.xsd.rsrc";
             }
-            else if (XMLVersionParser.VERSION_3_1.equals(_persistenceVersion)
-                    || (_schemaLocation != null && _schemaLocation.indexOf(PERSISTENCE_XSD_3_0) != -1)) {
-                persistencexsd = "persistence_3_0.xsd.rsrc";
-            }
+            // According to https://jakarta.ee/xml/ns/persistence/ there is no version 3.1 for persistence.xsd
             else if (XMLVersionParser.VERSION_3_2.equals(_persistenceVersion)
                     || (_schemaLocation != null && _schemaLocation.indexOf(PERSISTENCE_XSD_3_2) != -1)) {
                 persistencexsd = "persistence_3_2.xsd.rsrc";
@@ -934,7 +931,7 @@ public class PersistenceProductDerivation
                 		_info.addQualifierAnnotationNames(currentText());
                 	}
                 	break;
-                case 's' : 
+                case 's' :
                 	if ("shared-cache-mode".equals(name)) {
                 		_info.setSharedCacheMode(JPAProperties.getEnumValue(SharedCacheMode.class, currentText()));
                 	} else if ("scope".equals(name)) {
