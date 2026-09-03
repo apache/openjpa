@@ -81,7 +81,6 @@ import static org.apache.openjpa.persistence.PersistenceStrategy.TRANSIENT;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
@@ -1347,6 +1346,12 @@ public class XMLPersistenceMetaDataParser
         } catch (Throwable t) {
             throw getException(_loc.get("invalid-id-class", meta, cls), t);
         }
+        // Jakarta Persistence 3.2 (section 2.4.1) no longer requires the primary
+        // key class to be public or to implement Serializable, so neither is
+        // validated here; see OPENJPA-2940 and OPENJPA-2984. A non-serializable
+        // id class does still prevent serializing the identity object it is
+        // wrapped in, which detached entities, remote commit events and a
+        // distributed data cache do.
         meta.setObjectIdType(idCls, true);
         return true;
     }

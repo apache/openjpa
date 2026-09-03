@@ -637,6 +637,13 @@ public class AnnotationPersistenceMetaDataParser
                     break;
                 case ID_CLASS:
                     if (isMetaDataMode()) {
+                        // Jakarta Persistence 3.2 (section 2.4.1) no longer requires
+                        // the primary key class to be public or to implement
+                        // Serializable, so neither is validated here; see
+                        // OPENJPA-2940 and OPENJPA-2984. A non-serializable id
+                        // class does still prevent serializing the identity
+                        // object it is wrapped in, which detached entities,
+                        // remote commit events and a distributed data cache do.
                         meta.setObjectIdType(((IdClass) anno).value(), true);
                     }
                     break;
