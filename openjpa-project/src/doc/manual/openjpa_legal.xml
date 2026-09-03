@@ -43,7 +43,7 @@ The Apache OpenJPA website can be found at:
 Apache OpenJPA is released under the <ulink url="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache Software License Version 2.0</ulink>
         </para>
         <para>
-Apache OpenJPA includes the persistence and orm schemas from the JPA specifications and elects to include this software in this distribution under the <ulink url="https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#eclipse-foundation-specification-license-v1-1">EFSL 1.1  license.</ulink>
+Apache OpenJPA includes the persistence and orm schemas from the JPA specifications. OpenJPA elects to include the JPA 1.0 and JPA 2.0 schemas in this distribution under the <ulink url="https://oss.oracle.com/licenses/CDDL">CDDL 1.0 license</ulink> and the JPA 2.1 and later schemas under the <ulink url="https://www.eclipse.org/org/documents/edl-v10.php">Eclipse Distribution License v. 1.0</ulink>.
         </para>
     </section>
 
@@ -99,19 +99,21 @@ Apache, OpenJPA and the Apache feather logo are trademarks of Apache Software Fo
 OpenJPA includes the persistence and orm schemas from the JPA specifications.
             </para>
             <para>
-Copyright (c) [2024] Eclipse Foundation AISBL <ulink url="https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#eclipse-foundation-specification-license-v1-1">EFSL 1.1</ulink>
+The JPA 1.0 and JPA 2.0 schemas are Copyright 2005-2009 Sun Microsystems, Inc. All rights reserved.
+OpenJPA elects to include them in this distribution under the CDDL 1.0 license, a copy of which is
+available at <ulink url="https://oss.oracle.com/licenses/CDDL">https://oss.oracle.com/licenses/CDDL</ulink>.
             </para>
             <para>
-OpenJPA elects to include this software in this distribution under the CDDL license.
+The JPA 2.1 and later schemas are Copyright (c) 2008, 2024 Oracle and/or its affiliates. All rights reserved.
+They are made available under the Eclipse Public License v. 2.0
+(<ulink url="https://www.eclipse.org/legal/epl-2.0">https://www.eclipse.org/legal/epl-2.0</ulink>) or the
+Eclipse Distribution License v. 1.0
+(<ulink url="https://www.eclipse.org/org/documents/edl-v10.php">https://www.eclipse.org/org/documents/edl-v10.php</ulink>);
+OpenJPA elects to include them in this distribution under the Eclipse Distribution License v. 1.0.
             </para>
             <para>
-You can obtain a copy of the License at:
-<ulink url="https://glassfish.dev.java.net/public/CDDL+GPL.html">https://glassfish.dev.java.net/public/CDDL+GPL.html</ulink>
-            </para>
-            <para>
-The source code is available at:
-<ulink url="http://java.net/projects/glassfish/sources/svn/show">http://java.net/projects/glassfish/sources/svn/show</ulink>
-or <ulink url="http://jcp.org/en/jsr/detail?id=317"> http://jcp.org/en/jsr/detail?id=317 </ulink>
+The schemas are published as part of the Jakarta Persistence specifications, which are available at:
+<ulink url="https://jakarta.ee/specifications/persistence/">https://jakarta.ee/specifications/persistence/</ulink>
             </para>
         </section>
         <section id="openjpa_legal_copyright_other">
