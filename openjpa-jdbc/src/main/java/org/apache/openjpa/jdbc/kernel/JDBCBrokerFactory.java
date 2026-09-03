@@ -40,7 +40,6 @@ import org.apache.openjpa.jdbc.meta.MappingTool;
 import org.apache.openjpa.jdbc.schema.SchemaTool;
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Bootstrap;
-import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerImpl;
 import org.apache.openjpa.kernel.StoreManager;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
@@ -160,35 +159,49 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
         }
     }
 
+    /**
+     * Return the class loader for the {@link org.apache.openjpa.kernel.BrokerFactory}
+     * schema management operations, which are not associated with any broker.
+     *
+     * This is the thread context class loader, which is what
+     * {@code BrokerImpl.initialize()} assigns to the loader a broker later reports from
+     * {@code Broker#getClassLoader()}, and what {@link #postCreationCallback()} already
+     * passes here. No broker is created for this: a broker from {@code newBrokerImpl()}
+     * has not been initialized, so its class loader is still null and it supplies no
+     * loader at all (OPENJPA-2962).
+     */
+    private static ClassLoader schemaManagementClassLoader() {
+        return Thread.currentThread().getContextClassLoader();
+    }
+
     @Override
     public void createPersistenceStructure(boolean createSchemas) {
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
-        Broker broker = super.newBrokerImpl(conf.getConnectionUserName(), conf.getConnectionPassword());
         String baseAction = createSchemas ? "createDB, add": MappingTool.ACTION_ADD;
-        synchronizeMappings(broker.getClassLoader(), conf, String.format("buildSchema(ForeignKeys=true,schemaAction='%s')", baseAction));
+        synchronizeMappings(schemaManagementClassLoader(), conf,
+            String.format("buildSchema(ForeignKeys=true,schemaAction='%s')", baseAction));
     }
 
     @Override
     public void dropPersistenceStructure(boolean dropSchemas) {
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
-        Broker broker = super.newBrokerImpl(conf.getConnectionUserName(), conf.getConnectionPassword());
         String baseAction = dropSchemas ? "drop, dropDB": MappingTool.ACTION_DROP;
-        synchronizeMappings(broker.getClassLoader(), conf, String.format("buildSchema(ForeignKeys=true,schemaAction='%s')", baseAction));
+        synchronizeMappings(schemaManagementClassLoader(), conf,
+            String.format("buildSchema(ForeignKeys=true,schemaAction='%s')", baseAction));
     }
 
     @Override
     public void validatePersistenceStructure() throws Exception {
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
-        Broker broker = super.newBrokerImpl(conf.getConnectionUserName(), conf.getConnectionPassword());
-        synchronizeMappings(broker.getClassLoader(), conf, "validate(ForeignKeys=true)");
+        synchronizeMappings(schemaManagementClassLoader(), conf, "validate(ForeignKeys=true)");
     }
 
     @Override
     public void truncateData() {
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
-        Broker broker = super.newBrokerImpl(conf.getConnectionUserName(), conf.getConnectionPassword());
         String baseAction = "refresh,deleteTableContents";
-        synchronizeMappings(broker.getClassLoader(), conf, String.format("buildSchema(ForeignKeys=true,schemaAction='%s')", baseAction));
+        synchronizeMappings(schemaManagementClassLoader(), conf,
+            String.format("buildSchema(ForeignKeys=true,schemaAction='%s')", baseAction));
     }
 
     protected boolean synchronizeMappings(ClassLoader loader, JDBCConfiguration conf) {
