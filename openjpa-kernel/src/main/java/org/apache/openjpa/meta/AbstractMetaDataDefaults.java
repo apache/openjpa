@@ -284,6 +284,14 @@ public abstract class AbstractMetaDataDefaults
      * member cannot be managed. Default behavior: For fields, returns the
      * field name. For getter methods, returns the minus "get" or "is" with
      * the next letter lower-cased. For other methods, returns null.
+     * <p>
+     * Note that this deliberately diverges from
+     * <code>java.beans.Introspector.decapitalize()</code>, which leaves a name
+     * whose first two characters are both upper case untouched. Here the first
+     * character is lower-cased unconditionally, so <code>getAWord()</code> and
+     * <code>getaWord()</code> both yield <code>aWord</code>, so that both
+     * accessor spellings map to a single property. Changing it would rename
+     * existing properties and their default column names. See OPENJPA-2993.
      */
     public static String getFieldName(Member member) {
         if (member instanceof Field) {
@@ -379,11 +387,21 @@ public abstract class AbstractMetaDataDefaults
      * Affirms if the given method matches the following signature
      * <code> public boolean isXXX() </code>
      * <code> public Boolean isXXX() </code>
+     * <p>
+     * The case of the character following the <code>is</code> prefix is
+     * deliberately not constrained. OpenJPA derives the property name by
+     * lower-casing the first character after the prefix (see
+     * {@link #getFieldName}), so <code>isaBoolean()</code> and
+     * <code>isABoolean()</code> both resolve to the property
+     * <code>aBoolean</code>. This mirrors {@link #isNormalGetter} and
+     * <code>PersistenceMetaDataDefaults.isSetter</code>, neither of which
+     * carries such a requirement; requiring an upper-case character here
+     * silently dropped JavaBeans-style <code>is&lt;lowercase&gt;()</code>
+     * properties. See OPENJPA-2993.
      */
     public static boolean isBooleanGetter(Method method) {
         String methodName = method.getName();
         return startsWith(methodName, "is")
-            && Character.isUpperCase(methodName.charAt(2))
             && method.getParameterTypes().length == 0
             && isBoolean(method.getReturnType());
     }
