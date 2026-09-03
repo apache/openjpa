@@ -50,6 +50,7 @@ import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.kernel.exps.Resolver;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
+import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -89,9 +90,21 @@ public class MetamodelImpl implements Metamodel, Resolver {
 
         	ClassMetaData meta = repos.getMetaData(cls, null, false);
             if (meta == null) {
-                // Skip non-entity classes (e.g. exceptions, ID classes,
-                // listeners) that are listed in persistence.xml <class>
-                // elements but have no JPA metadata.
+                // OPENJPA-2940 / OPENJPA-2992: a class listed in a <class>
+                // element that resolves to no metadata is skipped rather
+                // than failing. Jakarta Persistence 3.2 chapter 8 says
+                // nothing about a listed class that is not an entity,
+                // embeddable, mapped superclass or converter, so the
+                // behaviour is provider defined, and both Hibernate and
+                // EclipseLink skip. The Jakarta Persistence TCK requires
+                // tolerating it: its persistence units list plain classes
+                // such as LineItemException alongside real entities.
+                // The skip is logged so that a forgotten @Entity annotation
+                // or a missing orm.xml entry stays diagnosable.
+                Log log = repos.getLog();
+                if (log.isWarnEnabled()) {
+                    log.warn(_loc.get("skip-unmanaged-class", cls.getName()));
+                }
                 continue;
             }
             PersistenceType type = getPersistenceType(meta);

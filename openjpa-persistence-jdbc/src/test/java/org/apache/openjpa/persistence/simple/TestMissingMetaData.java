@@ -46,14 +46,26 @@ public class TestMissingMetaData extends TestCase {
     }
 
     /**
-     * Verify that a non-entity class listed in persistence.xml is
-     * gracefully skipped. Per JPA 3.2, persistence units may list
-     * non-entity managed classes (e.g. converters, listeners,
-     * ID classes, exceptions) which should not cause errors.
+     * Verify that a class listed in persistence.xml without persistence
+     * metadata is skipped rather than failing entity manager creation.
+     * <p>
+     * Jakarta Persistence 3.2 chapter 8 does not say what a provider must do
+     * with such a class, so the behaviour is provider defined; Hibernate and
+     * EclipseLink both skip, and the Jakarta Persistence TCK requires it,
+     * since its own persistence units list plain classes alongside entities.
+     * The skip is logged, so a forgotten annotation stays diagnosable; see
+     * MetamodelImpl and JDBCBrokerFactory.
      */
     public void testMissingMetaData() {
-        // Should not throw — non-entity classes are silently skipped
         emf.createEntityManager().close();
+    }
+
+    /**
+     * The metamodel is built over the same class list, and must skip the
+     * unmanaged class rather than fail.
+     */
+    public void testMissingMetaDataInMetamodel() {
+        assertNotNull(emf.getMetamodel());
     }
 
     @Override

@@ -718,11 +718,18 @@
                     Listing a class without persistence metadata in a persistence unit
                     (<literal>class</literal> element) previously failed at start-up with
                     "No registered metadata for type", in the runtime enhancer, in
-                    <literal>getMetamodel()</literal> and during schema synchronization. Such classes
-                    are now skipped with a warning on the <literal>openjpa.Enhance</literal> and
-                    <literal>openjpa.jdbc.Schema</literal> logs. A forgotten <literal>@Entity</literal>
-                    annotation is therefore no longer detected at start-up; watch the logs for the new
-                    warnings.
+                    <literal>getMetamodel()</literal> and during schema synchronization. Such a class
+                    is now skipped instead, because a persistence unit may legitimately list
+                    classes that are not managed types. The skip is logged as a warning on the
+                    <literal>openjpa.MetaData</literal> log when the metamodel is built and on the
+                    <literal>openjpa.jdbc.Schema</literal> log during schema synchronization, so a
+                    forgotten <literal>@Entity</literal> annotation remains diagnosable.
+                </para>
+                <para>
+                    Note that with the default <literal>openjpa.RuntimeUnenhancedClasses=unsupported</literal>
+                    such a class is still rejected at start-up, by the runtime enhancer, with
+                    "This configuration disallows runtime optimization"; the skip described above
+                    applies once that check passes.
                 </para>
             </section>
             <section id="jpa_4.2_KernelLeniency">

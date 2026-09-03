@@ -257,9 +257,9 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
                 if (tool.getRepository().getMetaData(cls, null, false) != null) {
                     throw mde;
                 }
+                // see MetamodelImpl for why such a class is skipped
                 conf.getLog("openjpa.jdbc.Schema").warn(
-                    "Skipping schema synchronization for non-managed class: "
-                        + cls.getName());
+                    _loc.get("skip-unmanaged-class", cls.getName()));
             }
         }
         tool.record();

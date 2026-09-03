@@ -45,7 +45,6 @@ import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.GeneratedClasses;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
-import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.UserException;
 import org.apache.openjpa.util.asm.ClassNodeTracker;
 
@@ -153,17 +152,16 @@ public class ManagedClassSubclasser {
 
             // set this before enhancement as well as after since enhancement
             // uses a different metadata repository, and the metadata config
-            // matters in the enhancement contract. In order to avoid a
-            // NullPointerException, check for no metadata and throw an
-            // exception if none exists. Otherwise, don't do any warning here,
-            // since we'll issue warnings when we do the final metadata
-            // reconfiguration at the end of this method.
+            // matters in the enhancement contract.
             ClassMetaData meta = enhancer.getMetaData();
             if (meta == null) {
-                // non-entity classes (DTOs, listeners, ID classes) may be
-                // listed in persistence.xml <class> elements; skip them
-                if (log.isWarnEnabled())
-                    log.warn(_loc.get("no-meta", cls));
+                // a persistence unit may legitimately list a class that is
+                // not a managed type; skip it rather than failing, and log
+                // it so that a forgotten annotation stays diagnosable.
+                // See MetamodelImpl for the reasoning.
+                if (log.isWarnEnabled()) {
+                    log.warn(_loc.get("no-meta", cls.getName()));
+                }
                 continue;
             }
             configureMetaData(meta, conf, redefine, false);
