@@ -277,7 +277,7 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
         // preserve tracking from prior generateSchema() calls.
         if (conf.getDatabaseActionConstant() != 0
                 || conf.getScriptsActionConstant() != 0) {
-            SchemaTool.clearDroppedTables();
+            SchemaTool.clearDroppedTables(conf);
         }
         String actions = "";
         if (conf.getDatabaseAction() != null) {

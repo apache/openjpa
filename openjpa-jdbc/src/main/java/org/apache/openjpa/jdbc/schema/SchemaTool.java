@@ -108,15 +108,111 @@ public class SchemaTool {
     // Only active when SpecCompliantSchemaGeneration is enabled (TCK mode).
     // Prevents buildSchema/add from re-creating tables that were explicitly
     // dropped by schema gen scripts within the same schema generation flow.
-    private static final java.util.Set<String> _droppedTables =
-        java.util.Collections.synchronizedSet(new java.util.HashSet<>());
+    //
+    // The tracking has to outlive the configuration that wrote it, since
+    // Persistence.generateSchema() closes its factory and a later factory is
+    // expected to see what it dropped. It is therefore static, but keyed by
+    // the database it describes, so that two persistence units on different
+    // databases neither consume nor clear one another's entries.
+    private static final java.util.Map<String, java.util.Set<String>> _droppedTables =
+        new java.util.HashMap<>();
 
     /**
-     * Clear the dropped tables tracking set. Called at the start of each
-     * schema generation flow to prevent cross-EMF contamination.
+     * The set of tables dropped on the database the given configuration
+     * connects to. Callers must hold the monitor of {@link #_droppedTables}.
      */
+    private static java.util.Set<String> droppedTables(JDBCConfiguration conf) {
+        return _droppedTables.computeIfAbsent(trackingKey(conf),
+            k -> new java.util.HashSet<>());
+    }
+
+    /**
+     * The identity the tracking is partitioned by: the configuration id, which
+     * for a persistence unit is its name (see PersistenceUnitInfoImpl, which
+     * defaults <code>openjpa.Id</code> to the unit name). Two factories for one
+     * unit therefore share their tracking, which is what lets a factory see
+     * what a closed {@code Persistence.generateSchema()} factory dropped, while
+     * two units cannot clear or consume one another's entries.
+     * <p>
+     * Configurations with no id fall back to the connection they name, and
+     * those that name neither share one entry, which is the behaviour the
+     * tracking had before it was partitioned.
+     */
+    static String trackingKey(JDBCConfiguration conf) {
+        String[] candidates = new String[] {
+            conf.getId(),
+            conf.getConnectionFactory2Name(), conf.getConnection2URL(),
+            conf.getConnectionFactoryName(), conf.getConnectionURL(),
+        };
+        for (String candidate : candidates) {
+            if (!StringUtil.isEmpty(candidate)) {
+                return candidate;
+            }
+        }
+        return "";
+    }
+
+    /**
+     * Record the effect of a DDL statement executed from a schema generation
+     * script: a table it drops is tracked, a table it creates is forgotten.
+     */
+    static void trackScriptDdl(JDBCConfiguration conf, String sql) {
+        String upper = sql.toUpperCase(Locale.ROOT).trim();
+        if (upper.startsWith("DROP TABLE")) {
+            String tableName = sql.trim()
+                .substring("DROP TABLE".length()).trim()
+                .replaceAll("(?i)\\s*(IF EXISTS|CASCADE).*", "")
+                .trim().toUpperCase(Locale.ROOT);
+            synchronized (_droppedTables) {
+                droppedTables(conf).add(tableName);
+            }
+        } else if (upper.startsWith("CREATE TABLE")) {
+            String tableName = sql.trim()
+                .substring("CREATE TABLE".length()).trim()
+                .split("\\s*\\(")[0].trim().toUpperCase(Locale.ROOT);
+            synchronized (_droppedTables) {
+                droppedTables(conf).remove(tableName);
+            }
+        }
+    }
+
+    /**
+     * Whether the given table was dropped by a schema generation script on the
+     * database this configuration connects to, and must therefore not be
+     * created again. Outside spec compliant schema generation the entry is
+     * consumed, so it suppresses one create only.
+     */
+    static boolean isDroppedTable(JDBCConfiguration conf, String tableName) {
+        synchronized (_droppedTables) {
+            java.util.Set<String> dropped = droppedTables(conf);
+            return conf.isSpecCompliantSchemaGeneration()
+                ? dropped.contains(tableName)
+                : dropped.remove(tableName);
+        }
+    }
+
+    /**
+     * Clear the tables tracked as dropped on the database the given
+     * configuration connects to. Called at the start of each schema
+     * generation flow to prevent cross-EMF contamination.
+     */
+    public static void clearDroppedTables(JDBCConfiguration conf) {
+        synchronized (_droppedTables) {
+            _droppedTables.remove(trackingKey(conf));
+        }
+    }
+
+    /**
+     * Clear the dropped tables tracking for every database.
+     *
+     * @deprecated use {@link #clearDroppedTables(JDBCConfiguration)}, which
+     * does not discard the tracking of unrelated persistence units.
+     */
+    @Deprecated
     public static void clearDroppedTables() {
-        _droppedTables.clear();
+        synchronized (_droppedTables) {
+            _droppedTables.clear();
+        }
     }
 
     protected final JDBCConfiguration _conf;
@@ -1238,14 +1334,11 @@ public class SchemaTool {
     public boolean createTable(Table table)
         throws SQLException {
         String tableName = table.getFullIdentifier().getName().toUpperCase(Locale.ROOT);
-        if (_log.isTraceEnabled()) {
-            _log.trace("createTable: " + tableName + " action=" + _action
-                + " droppedTables=" + _droppedTables);
-        }
-        if (ACTION_ADD.equals(_action)
-                && (_conf.isSpecCompliantSchemaGeneration()
-                    ? _droppedTables.contains(tableName)
-                    : _droppedTables.remove(tableName))) {
+        if (ACTION_ADD.equals(_action) && isDroppedTable(_conf, tableName)) {
+            if (_log.isTraceEnabled()) {
+                _log.trace("createTable: " + tableName + " action=" + _action
+                    + " was dropped by a schema generation script; not created");
+            }
             return false;
         }
         return executeSQL(_dict.getCreateTableSQL(table, _db));
@@ -1517,19 +1610,7 @@ public class SchemaTool {
                         statement.executeUpdate(s);
                         // Track DROP/CREATE TABLE for drop-then-rebuild flows
                         if (ACTION_EXECUTE_SCRIPT.equals(_action)) {
-                            String upper = s.toUpperCase(Locale.ROOT).trim();
-                            if (upper.startsWith("DROP TABLE")) {
-                                String tableName = s.trim()
-                                    .substring("DROP TABLE".length()).trim()
-                                    .replaceAll("(?i)\\s*(IF EXISTS|CASCADE).*", "")
-                                    .trim().toUpperCase(Locale.ROOT);
-                                _droppedTables.add(tableName);
-                            } else if (upper.startsWith("CREATE TABLE")) {
-                                String tableName = s.trim()
-                                    .substring("CREATE TABLE".length()).trim()
-                                    .split("\\s*\\(")[0].trim().toUpperCase(Locale.ROOT);
-                                _droppedTables.remove(tableName);
-                            }
+                            trackScriptDdl(_conf, s);
                         }
                         if (_log.isTraceEnabled()) {
                             _log.trace("DDL executed successfully: " + s);
