@@ -91,6 +91,67 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
         endEm(em);
     }
 
+    /**
+     * OPENJPA-2956: NULLS FIRST and NULLS LAST were ignored in memory, which
+     * left two of the four combinations with the wrong order.
+     */
+    public void testNullPrecedenceInMemory() {
+        EntityManager em = currentEntityManager();
+        List rsall = em.createQuery("SELECT e from CompUser e").getResultList();
+
+        // two users have a null country
+        assertNull(first(em, rsall,
+            "SELECT e.address.country FROM CompUser e"
+                + " ORDER BY e.address.country ASC NULLS FIRST"));
+        assertNotNull(first(em, rsall,
+            "SELECT e.address.country FROM CompUser e"
+                + " ORDER BY e.address.country ASC NULLS LAST"));
+        assertNull(first(em, rsall,
+            "SELECT e.address.country FROM CompUser e"
+                + " ORDER BY e.address.country DESC NULLS FIRST"));
+        assertNotNull(first(em, rsall,
+            "SELECT e.address.country FROM CompUser e"
+                + " ORDER BY e.address.country DESC NULLS LAST"));
+
+        endEm(em);
+    }
+
+    /**
+     * OPENJPA-2956: a set operation cannot be evaluated in memory, and must
+     * say so rather than return a wrong result.
+     */
+    public void testSetOperationInMemoryIsRejected() {
+        EntityManager em = currentEntityManager();
+        List rsall = em.createQuery("SELECT e from CompUser e").getResultList();
+
+        org.apache.openjpa.persistence.QueryImpl q1 =
+            (org.apache.openjpa.persistence.QueryImpl) em.createQuery(
+                "SELECT e.name FROM CompUser e WHERE e.age > 25"
+                    + " UNION SELECT e.name FROM CompUser e WHERE e.age > 30");
+        try {
+            ((QueryImpl) q1.getDelegate()).setCandidateCollection(rsall);
+            q1.getResultList();
+            fail("a set operation must not be evaluated in memory");
+        } catch (RuntimeException e) {
+            StringBuilder sb = new StringBuilder();
+            for (Throwable t = e; t != null; t = t.getCause()) {
+                sb.append(t.getMessage()).append(' ');
+            }
+            String msg = sb.toString();
+            assertTrue("must be rejected, not merely fail: " + msg,
+                msg.contains("cannot be evaluated in-memory"));
+        } finally {
+            endEm(em);
+        }
+    }
+
+    private Object first(EntityManager em, List candidates, String jpql) {
+        org.apache.openjpa.persistence.QueryImpl q1 =
+            (org.apache.openjpa.persistence.QueryImpl) em.createQuery(jpql);
+        ((QueryImpl) q1.getDelegate()).setCandidateCollection(candidates);
+        return q1.getResultList().get(0);
+    }
+
     public void testCoalesceExpressions() {
         EntityManager em = currentEntityManager();
         List rsall = em.createQuery("SELECT e from CompUser e")

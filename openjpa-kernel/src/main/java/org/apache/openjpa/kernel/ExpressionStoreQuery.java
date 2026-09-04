@@ -627,6 +627,14 @@ public class ExpressionStoreQuery
             _exps = new QueryExpressions[] {
                 parser.eval(parsed, q, _factory, _meta)
             };
+            // set operations require a datastore query; the in-memory
+            // executor is built for a single candidate extent and has no
+            // multiset semantics
+            if (_exps[0].setOperationType != QueryExpressions.SET_OP_NONE) {
+                throw new UnsupportedException(_loc.get("inmem-set-op",
+                    q.getContext().getCandidateType(),
+                    q.getContext().getQueryString()));
+            }
             if (_exps[0].projections.length == 0)
                 _projTypes = StoreQuery.EMPTY_CLASSES;
             else {

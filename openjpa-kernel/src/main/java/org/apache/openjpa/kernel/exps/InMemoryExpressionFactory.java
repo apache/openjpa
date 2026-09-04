@@ -306,14 +306,17 @@ public class InMemoryExpressionFactory
 
         int results = (projected) ? exps.projections.length : 0;
         boolean[] asc = (projected) ? exps.ascending : null;
+        int[] nulls = (projected) ? exps.nullPrecedence : null;
         int idx;
         for (int i = orderValues.length - 1; i >= 0; i--) {
             // if this is a projection, then in project() we must have selected
             // the ordering value already after the projection values
             idx = (results > 0) ? results + i : -1;
+            int nullPrec = (nulls == null || i >= nulls.length)
+                ? QueryExpressions.NULLS_DEFAULT : nulls[i];
             Collections.sort(matches,
                 new OrderValueComparator((Val) orderValues[i],
-                    asc == null || asc[i], idx, ctx, params));
+                    asc == null || asc[i], nullPrec, idx, ctx, params));
         }
         return matches;
     }
@@ -818,7 +821,7 @@ public class InMemoryExpressionFactory
     
     @Override
     public Value getNativeObjectId(Value val) {
-    	return new GetObjectId((Val) val);
+    	return new GetNativeObjectId((Val) val);
     }
     
     @Override
@@ -865,8 +868,9 @@ public class InMemoryExpressionFactory
 
     /**
      * Comparator that uses the result of eval'ing a Value to sort on. Null
-     * values are placed last if sorting in ascending order, first if
-     * descending.
+     * values are placed according to the given null precedence; when no null
+     * precedence is specified they are placed last if sorting in ascending
+     * order, first if descending.
      */
     private static class OrderValueComparator
         implements Comparator {
@@ -874,14 +878,16 @@ public class InMemoryExpressionFactory
         private final StoreContext _ctx;
         private final Val _val;
         private final boolean _asc;
+        private final int _nullPrec;
         private final int _idx;
         private final Object[] _params;
 
-        private OrderValueComparator(Val val, boolean asc, int idx,
-            StoreContext ctx, Object[] params) {
+        private OrderValueComparator(Val val, boolean asc, int nullPrec,
+            int idx, StoreContext ctx, Object[] params) {
             _ctx = ctx;
             _val = val;
             _asc = asc;
+            _nullPrec = nullPrec;
             _idx = idx;
             _params = params;
         }
@@ -898,10 +904,18 @@ public class InMemoryExpressionFactory
 
             if (o1 == null && o2 == null)
                 return 0;
+            boolean nullsFirst;
+            if (_nullPrec == QueryExpressions.NULLS_FIRST) {
+                nullsFirst = true;
+            } else if (_nullPrec == QueryExpressions.NULLS_LAST) {
+                nullsFirst = false;
+            } else {
+                nullsFirst = !_asc;
+            }
             if (o1 == null)
-                return (_asc) ? 1 : -1;
+                return (nullsFirst) ? -1 : 1;
             if (o2 == null)
-                return (_asc) ? -1 : 1;
+                return (nullsFirst) ? 1 : -1;
 
             if (o1 instanceof Boolean && o2 instanceof Boolean) {
                 int i1 = (Boolean) o1 ? 1 : 0;
