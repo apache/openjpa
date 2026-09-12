@@ -19,6 +19,7 @@
 package org.apache.openjpa.jdbc.meta.strats;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,7 +47,7 @@ public class InstantVersionStrategy extends ColumnVersionStrategy {
 
     @Override
     protected Object nextVersion(Object version) {
-        return Instant.now();
+        return Instant.now().truncatedTo(ChronoUnit.MILLIS);
     }
 
     @Override
