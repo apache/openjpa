@@ -54,7 +54,7 @@ public class TestPersistenceUtil extends SingleEMFTestCase{
      * not loaded state.
      */
     public void testNotLoadedLazy() {
-        verifyIsLoadedEagerState(false);
+        verifyIsLoadedLazyState(false);
     }
 
     /*
@@ -212,7 +212,7 @@ public class TestPersistenceUtil extends SingleEMFTestCase{
         RelEntity re = new RelEntity();
         re.setName("My ent");
         ArrayList<RelEntity> rel = new ArrayList<>();
-        rel.add(new RelEntity());
+        rel.add(re);
         le.setRelEntities(rel);
         return le;
     }
