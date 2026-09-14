@@ -74,6 +74,7 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.ee.ManagedRuntime;
 import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.enhance.PCRegistry;
+import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Broker;
@@ -107,6 +108,7 @@ import org.apache.openjpa.persistence.criteria.CriteriaBuilderImpl;
 import org.apache.openjpa.persistence.criteria.OpenJPACriteriaBuilder;
 import org.apache.openjpa.persistence.criteria.OpenJPACriteriaQuery;
 import org.apache.openjpa.persistence.validation.ValidationUtils;
+import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.BlacklistClassResolver;
 import org.apache.openjpa.util.ExceptionInfo;
 import org.apache.openjpa.util.Exceptions;
@@ -2803,36 +2805,52 @@ public class EntityManagerImpl
 			throw new IllegalArgumentException("entity is null");
 		}
 		// JPA 3.2: getReference(entity) extracts the entity class and PK,
-		// then delegates to getReference(Class, Object) for lazy loading
-		Class<T> entityClass = (Class<T>) entity.getClass();
-		ClassMetaData meta = _broker.getConfiguration()
-			.getMetaDataRepositoryInstance()
-			.getMetaData(entityClass, null, false);
+		// then delegates to getReference(Class, Object) for lazy loading.
+		// The instance may be a generated subclass (e.g. runtime enhancement),
+		// so walk up the hierarchy to find the entity metadata.
+		MetaDataRepository repos = _broker.getConfiguration()
+			.getMetaDataRepositoryInstance();
+		ClassMetaData meta = null;
+		for (Class<?> c = entity.getClass(); meta == null && c != null
+			&& c != Object.class; c = c.getSuperclass()) {
+			meta = repos.getMetaData(c, _broker.getClassLoader(), false);
+		}
 		if (meta == null) {
 			throw new IllegalArgumentException(
-				_loc.get("not-entity", entityClass).getMessage());
+				_loc.get("not-entity", entity.getClass()).getMessage());
 		}
-		// Extract the primary key value from the entity instance
-		FieldMetaData[] pkFields = meta.getPrimaryKeyFields();
-		Object pk = null;
-		if (pkFields.length == 1) {
-			FieldMetaData pkField = pkFields[0];
-			if (pkField.getBackingMember() instanceof Method) {
-				try {
-					pk = ((Method) pkField.getBackingMember()).invoke(entity);
-				} catch (Exception e) {
-					throw new IllegalArgumentException("Cannot extract PK from entity", e);
+		Class<T> entityClass = (Class<T>) meta.getDescribedType();
+
+		// Derive the object id from the state manager (managed or detached
+		// with detached state) or from the primary key fields of the instance.
+		// This covers single, IdClass and EmbeddedId identities alike.
+		Object oid = null;
+		try {
+			PersistenceCapable pc = ImplHelper.toPersistenceCapable(entity,
+				_broker.getConfiguration());
+			if (pc != null) {
+				if (pc.pcGetStateManager() != null) {
+					oid = pc.pcFetchObjectId();
 				}
-			} else if (pkField.getBackingMember() instanceof Field f) {
-				try {
-                    f.setAccessible(true);
-					pk = f.get(entity);
-				} catch (Exception e) {
-					throw new IllegalArgumentException("Cannot extract PK from entity", e);
+				if (oid == null
+					&& meta.getIdentityType() == ClassMetaData.ID_APPLICATION) {
+					oid = ApplicationIds.create(pc, meta);
 				}
 			}
+			// an id with unassigned (null) key values cannot be resolved
+			if (oid != null && meta.getIdentityType() == ClassMetaData.ID_APPLICATION
+				&& Arrays.asList(ApplicationIds.toPKValues(oid, meta)).contains(null)) {
+				oid = null;
+			}
+		} catch (RuntimeException re) {
+			throw new IllegalArgumentException(
+				_loc.get("no-entity-pk", entityClass).getMessage(), re);
 		}
-		return getReference(entityClass, pk);
+		if (oid == null) {
+			throw new IllegalArgumentException(
+				_loc.get("no-entity-pk", entityClass).getMessage());
+		}
+		return getReference(entityClass, JPAFacadeHelper.fromOpenJPAObjectId(oid));
 	}
 
 	@Override
