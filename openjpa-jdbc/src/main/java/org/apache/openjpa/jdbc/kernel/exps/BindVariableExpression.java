@@ -80,9 +80,10 @@ class BindVariableExpression
                 Discriminator disc = sup.getDiscriminator();
                 if (disc != null) {
                     Column[] cols = disc.getColumns();
-                    Object discVal = varMapping.getDiscriminator() != null
-                        ? varMapping.getDiscriminator().getValue() : null;
-                    return cols != null && cols.length > 0 && discVal != null;
+                    return cols != null && cols.length > 0
+                        && varMapping.getDiscriminator() != null
+                        && varMapping.getDiscriminator()
+                            .hasClassConditions(varMapping, true);
                 }
             }
         }
@@ -91,26 +92,22 @@ class BindVariableExpression
 
     /**
      * Appends the discriminator condition for TREAT-narrowed variables.
+     * The condition matches the treated class and all of its subclasses.
      */
-    void appendTreatDiscriminator(Select sel, ExpState state, SQLBuffer buf) {
+    void appendTreatDiscriminator(Select sel, ExpContext ctx, ExpState state,
+        SQLBuffer buf) {
         ClassMapping varMapping = (ClassMapping) _var.getMetaData();
-        ClassMapping sup = varMapping;
-        while (sup.getMappedPCSuperclassMapping() != null) {
-            sup = sup.getMappedPCSuperclassMapping();
-        }
-        Discriminator disc = sup.getDiscriminator();
-        Column[] cols = disc.getColumns();
-        Object discVal = varMapping.getDiscriminator().getValue();
-        buf.append(sel.getColumnAlias(cols[0], state.joins));
-        buf.append(" = ");
-        buf.appendValue(discVal, cols[0]);
+        Discriminator disc = varMapping.getDiscriminator();
+        ctx.store.loadSubclasses(varMapping);
+        buf.append(disc.getClassConditions(sel, state.joins, varMapping,
+            true));
     }
 
     @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf) {
         if (hasTreatDiscriminator()) {
-            appendTreatDiscriminator(sel, state, buf);
+            appendTreatDiscriminator(sel, ctx, state, buf);
         } else {
             buf.append("1 = 1");
         }

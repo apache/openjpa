@@ -58,7 +58,7 @@ class BindVariableAndExpression
         BinaryOpExpState bstate = (BinaryOpExpState) state;
         // Append discriminator condition from TREAT (if any)
         if (_bind.hasTreatDiscriminator()) {
-            _bind.appendTreatDiscriminator(sel, bstate.state1, buf);
+            _bind.appendTreatDiscriminator(sel, ctx, bstate.state1, buf);
             buf.append(" AND ");
         }
         boolean or = _exp instanceof OrExpression;
