@@ -640,6 +640,11 @@ public class PersistenceUnitInfoImpl
     	return _qualifierAnnotationNames;
 	}
 	
+	/**
+	 * Converts the given configuration into a persistence unit info. The given
+	 * configuration is left untouched; use {@link #toProperties(PersistenceConfiguration)}
+	 * to obtain the matching user properties.
+	 */
 	public static PersistenceUnitInfoImpl convert(PersistenceConfiguration config) {
 		PersistenceUnitInfoImpl pinfo = new PersistenceUnitInfoImpl();
 		pinfo.setJtaDataSourceName(config.jtaDataSource());
@@ -650,17 +655,40 @@ public class PersistenceUnitInfoImpl
 		pinfo.setTransactionType(config.transactionType() == jakarta.persistence.PersistenceUnitTransactionType.JTA ? 
 				PersistenceUnitTransactionType.JTA : PersistenceUnitTransactionType.RESOURCE_LOCAL);
 		pinfo.setValidationMode(config.validationMode());
-		List<Class<?>> managedClasses = config.managedClasses();
-		if (managedClasses != null && !managedClasses.isEmpty()) {
-			String managedClassesList = managedClasses.stream().map(Class::getName).collect(Collectors.joining(";"));
-			String old = config.properties().containsKey("openjpa.MetaDataFactory")
-					? "," + config.properties().get("openjpa.MetaDataFactory").toString()
-					: "";
-			config.property("openjpa.MetaDataFactory", "jpa(Types=" + managedClassesList + old + ")");
+		for (Class<?> managedClass : config.managedClasses()) {
+			pinfo.addManagedClassName(managedClass.getName());
 		}
-		config.property("openjpa.noPersistenceXMLResource", true);
-		pinfo.setPersistenceUnitName(config.name());
+		for (String mappingFile : config.mappingFiles()) {
+			pinfo.addMappingFileName(mappingFile);
+		}
 		return pinfo;
+	}
+
+	/**
+	 * Returns a copy of the properties of the given configuration, completed with
+	 * the OpenJPA specific properties derived from it. The given configuration is
+	 * left untouched.
+	 */
+	public static Map<String, Object> toProperties(PersistenceConfiguration config) {
+		Map<String, Object> props = new HashMap<>(config.properties());
+		Properties metaFactoryProps = new Properties();
+		if (!config.managedClasses().isEmpty()) {
+			metaFactoryProps.put("Types", config.managedClasses().stream().map(Class::getName)
+					.collect(Collectors.joining(";")));
+		}
+		if (!config.mappingFiles().isEmpty()) {
+			metaFactoryProps.put("Resources", String.join(";", config.mappingFiles()));
+		}
+		if (!metaFactoryProps.isEmpty()) {
+			// the user properties take precedence over the ones derived from the unit info,
+			// so merge the locations into any user provided metadata factory
+			String key = ProductDerivations.getConfigurationKey("MetaDataFactory", props);
+			Object old = props.get(key);
+			props.put(key, Configurations.combinePlugins(old == null ? null : old.toString(),
+					Configurations.serializeProperties(metaFactoryProps)));
+		}
+		props.put("openjpa.noPersistenceXMLResource", true);
+		return props;
 	}
 	
 }

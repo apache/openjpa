@@ -167,7 +167,8 @@ public class PersistenceProviderImpl
 	 */
 	@Override
 	public EntityManagerFactory createEntityManagerFactory(PersistenceConfiguration config) {
-		return createContainerEntityManagerFactory(PersistenceUnitInfoImpl.convert(config), config.properties());
+		return createContainerEntityManagerFactory(PersistenceUnitInfoImpl.convert(config),
+				PersistenceUnitInfoImpl.toProperties(config));
 	}
 
 	@Override
