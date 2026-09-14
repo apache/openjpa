@@ -687,7 +687,6 @@ public class PersistenceUnitInfoImpl
 			props.put(key, Configurations.combinePlugins(old == null ? null : old.toString(),
 					Configurations.serializeProperties(metaFactoryProps)));
 		}
-		props.put("openjpa.noPersistenceXMLResource", true);
 		return props;
 	}
 	
