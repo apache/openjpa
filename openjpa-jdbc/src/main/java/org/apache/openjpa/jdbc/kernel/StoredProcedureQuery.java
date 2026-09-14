@@ -186,15 +186,17 @@ public class StoredProcedureQuery extends AbstractStoreQuery {
                 stmnt = conn.prepareCall(_proc.getCallSQL());
 
                 final StoredProcedureQuery spq = (StoredProcedureQuery) q;
+                // no parameter values at all: leave the (un)binding to the driver
+                final boolean bind = params != null && params.length > 0;
                 for (Column c : spq.getProcedure().getInColumns()) {
-                    if (params != null && c.getIndex() < params.length) {
+                    if (bind) {
                         dict.setUnknown(stmnt, c.getIndex() + 1, params[c.getIndex()], c);
                     }
                 }
                 for (Column c : spq.getProcedure().getInOutColumns()) {
                     final int index = c.getIndex() + 1;
                     stmnt.registerOutParameter(index, c.getType());
-                    if (params != null && index - 1 < params.length) {
+                    if (bind) {
                         dict.setUnknown(stmnt, index, params[index - 1], c);
                     }
                 }
@@ -265,21 +267,29 @@ public class StoredProcedureQuery extends AbstractStoreQuery {
             StoredProcedureQuery storedProcedureQuery = (StoredProcedureQuery) q;
             Column[] inCols = storedProcedureQuery.getProcedure().getInColumns();
             Column[] inOutCols = storedProcedureQuery.getProcedure().getInOutColumns();
-            int paramCount = inCols.length + inOutCols.length;
-            if (paramCount == 0) return NO_PARAM;
-            Object[] array = new Object[paramCount];
-            int i = 0;
+            if (inCols.length + inOutCols.length == 0) return NO_PARAM;
+            // the values are indexed by the parameter position, OUT parameters leave a gap
+            int paramCount = 0;
             for (final Column[] columns : asList(inCols, inOutCols)) {
                 for (Column c : columns) {
-                    // Try by name first, then by 1-based position (matching user's declaration)
-                    Object val = userParams.get(c.getIdentifier().getName());
-                    if (val == null) {
+                    paramCount = Math.max(paramCount, c.getIndex() + 1);
+                }
+            }
+            Object[] array = new Object[paramCount];
+            for (final Column[] columns : asList(inCols, inOutCols)) {
+                for (Column c : columns) {
+                    // Try by name first, then by 1-based position (matching user's declaration).
+                    // An explicit null binding wins over a lookup by position.
+                    String name = c.getIdentifier().getName();
+                    Object val = null;
+                    if (userParams.containsKey(name)) {
+                        val = userParams.get(name);
+                    } else if (userParams.containsKey(c.getIndex() + 1)) {
                         val = userParams.get(c.getIndex() + 1);
-                    }
-                    if (val == null) {
+                    } else if (userParams.containsKey(c.getIndex())) {
                         val = userParams.get(c.getIndex());
                     }
-                    array[i++] = val;
+                    array[c.getIndex()] = val;
                 }
             }
             return array;
