@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -44,9 +45,14 @@ public class ConverterElementHandler extends AbstractValueHandler {
 
     private final Class<?> _converterClass;
     private final Class<?> _dbType;
-    private transient Object _converterInstance;
-    private transient Method _toDbMethod;
-    private transient Method _toEntityMethod;
+
+    // Lazily populated converter caches. The handler is held by the field
+    // strategy and shared across brokers and threads, so these are volatile
+    // to guarantee safe publication. The converter instance is created at
+    // most once while holding this instance's monitor.
+    private transient volatile Object _converterInstance;
+    private transient volatile Method _toDbMethod;
+    private transient volatile Method _toEntityMethod;
 
     public ConverterElementHandler(Class<?> converterClass, Class<?> dbType) {
         _converterClass = converterClass;
@@ -73,8 +79,8 @@ public class ConverterElementHandler extends AbstractValueHandler {
             return null;
         }
         try {
-            ensureInitialized();
-            return _toDbMethod.invoke(_converterInstance, val);
+            Object converter = getConverterInstance();
+            return getToDbMethod().invoke(converter, val);
         } catch (InvocationTargetException ite) {
             Throwable cause = ite.getTargetException();
             if (cause instanceof RuntimeException) {
@@ -92,8 +98,8 @@ public class ConverterElementHandler extends AbstractValueHandler {
             return null;
         }
         try {
-            ensureInitialized();
-            return _toEntityMethod.invoke(_converterInstance, val);
+            Object converter = getConverterInstance();
+            return getToEntityMethod().invoke(converter, val);
         } catch (InvocationTargetException ite) {
             Throwable cause = ite.getTargetException();
             if (cause instanceof RuntimeException) {
@@ -105,17 +111,45 @@ public class ConverterElementHandler extends AbstractValueHandler {
         }
     }
 
-    private void ensureInitialized() throws Exception {
-        if (_converterInstance == null) {
-            _converterInstance = _converterClass.getDeclaredConstructor()
-                .newInstance();
+    /**
+     * Get (or create) the cached converter instance. A single instance is
+     * shared by all brokers and threads using this handler, so
+     * AttributeConverter implementations must be stateless / thread-safe.
+     */
+    private Object getConverterInstance() throws Exception {
+        Object instance = _converterInstance;
+        if (instance != null) {
+            return instance;
         }
-        if (_toDbMethod == null) {
-            _toDbMethod = findMethod("convertToDatabaseColumn");
+        synchronized (this) {
+            instance = _converterInstance;
+            if (instance == null) {
+                Constructor<?> ctor = _converterClass.getDeclaredConstructor();
+                ctor.setAccessible(true);
+                instance = ctor.newInstance();
+                _converterInstance = instance;
+            }
+            return instance;
         }
-        if (_toEntityMethod == null) {
-            _toEntityMethod = findMethod("convertToEntityAttribute");
+    }
+
+    private Method getToDbMethod() {
+        // racy single-check: concurrent lookups resolve the same method
+        Method m = _toDbMethod;
+        if (m == null) {
+            m = findMethod("convertToDatabaseColumn");
+            _toDbMethod = m;
         }
+        return m;
+    }
+
+    private Method getToEntityMethod() {
+        Method m = _toEntityMethod;
+        if (m == null) {
+            m = findMethod("convertToEntityAttribute");
+            _toEntityMethod = m;
+        }
+        return m;
     }
 
     private Method findMethod(String methodName) {
