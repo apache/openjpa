@@ -39,10 +39,10 @@ public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
 
     @Override
     public void setUp() {
-        setUp(TProduct.class, TSoftwareProduct.class,
-            TLineItem.class, TOrder.class,
-            TCustomer.class, TCountry.class,
-            DROP_TABLES);
+        setUp(TProduct.class, TSoftwareProduct.class, 
+        		TCustomSoftwareProduct.class, TLineItem.class, 
+        		TOrder.class, TCustomer.class, TCountry.class,
+        		DROP_TABLES);
         createTestData();
     }
 
@@ -65,6 +65,12 @@ public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
         sp3.setName("Software C");
         sp3.setRevisionNumber(1.0);
         em.persist(sp3);
+        
+        TCustomSoftwareProduct cs1 = new TCustomSoftwareProduct();
+        cs1.setName("Custom Software A");
+        cs1.setRevisionNumber(1.0);
+        cs1.setCustomizationHours(3);
+        em.persist(cs1);
 
         // Create a hardware product (base type)
         TProduct hw = new TProduct();
@@ -95,6 +101,15 @@ public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
         li3.setProduct(hw);
         li3.setOrder(order2);
         em.persist(li3);
+        
+        TOrder order3 = new TOrder();
+        em.persist(order3);
+        
+        TLineItem li4 = new TLineItem();
+        li4.setQuantity(1);
+        li4.setProduct(cs1);
+        li4.setOrder(order3);
+        em.persist(li4);
 
         // Create customer with embedded country
         TCustomer cust = new TCustomer();
@@ -121,10 +136,25 @@ public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
             "SELECT p.name FROM TProduct p WHERE TREAT(p AS TSoftwareProduct).revisionNumber = 1.0",
             String.class).getResultList();
 
-        Collections.sort(results);
-        assertEquals(2, results.size());
+        assertEquals(3, results.size());
         assertTrue(results.contains("Software A"));
         assertTrue(results.contains("Software C"));
+        assertTrue(results.contains("Custom Software A"));
+
+        em.getTransaction().commit();
+        em.close();
+    }
+
+    public void testTreatLeafInWhereClause() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+
+        List<String> results = em.createQuery(
+            "SELECT p.name FROM TProduct p WHERE TREAT(p AS TCustomSoftwareProduct).revisionNumber = 1.0",
+            String.class).getResultList();
+
+        assertEquals(1, results.size());
+        assertTrue(results.contains("Custom Software A"));
 
         em.getTransaction().commit();
         em.close();
@@ -142,9 +172,10 @@ public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
             "SELECT p.name FROM TProduct p WHERE TREAT(p AS TSoftwareProduct).revisionNumber = 1.0D",
             String.class).getResultList();
 
-        assertEquals(2, results.size());
+        assertEquals(3, results.size());
         assertTrue(results.contains("Software A"));
         assertTrue(results.contains("Software C"));
+        assertTrue(results.contains("Custom Software A"));
 
         em.getTransaction().commit();
         em.close();
@@ -162,9 +193,10 @@ public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
             "SELECT p.name FROM TProduct p WHERE TREAT(p AS TSoftwareProduct).revisionNumber = 1E0",
             String.class).getResultList();
 
-        assertEquals(2, results.size());
+        assertEquals(3, results.size());
         assertTrue(results.contains("Software A"));
         assertTrue(results.contains("Software C"));
+        assertTrue(results.contains("Custom Software A"));
 
         em.getTransaction().commit();
         em.close();
@@ -183,12 +215,12 @@ public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
             String.class).getResultList();
 
         // TREAT join should only return software products (not hardware)
-        // We have 2 line items with software products (sp1, sp2) and 1 with hardware
+        // We have 3 line items with software products (sp1, sp2, cp1) and 1 with hardware
         assertNotNull(results);
-        Collections.sort(results);
-        assertEquals("TREAT join should return only software products", 2, results.size());
+        assertEquals("TREAT join should return software products, including the especialized ones", 3, results.size());
         assertTrue(results.contains("Software A"));
         assertTrue(results.contains("Software B"));
+        assertTrue(results.contains("Custom Software A"));
         // Hardware X should NOT be in the results due to TREAT filtering
         assertFalse(results.contains("Hardware X"));
 
