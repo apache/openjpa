@@ -45,10 +45,13 @@ public class TestTreatSubclassDiscriminator extends SQLListenerTestCase {
 
             TSoftwareProduct sw = new TSoftwareProduct();
             sw.setName("Software");
+            sw.setRevisionNumber(2.0);
             em.persist(sw);
 
             TGameProduct game = new TGameProduct();
             game.setName("Game");
+            game.setRevisionNumber(2.0);
+            game.setGenre("FPS");
             em.persist(game);
 
             TOrder order = new TOrder();
@@ -80,6 +83,45 @@ public class TestTreatSubclassDiscriminator extends SQLListenerTestCase {
         try (EntityManager em = emf.createEntityManager()) {
             List<String> results = em.createQuery(
                 "SELECT s.name FROM TLineItem l JOIN TREAT(l.product AS TGameProduct) s",
+                String.class).getResultList();
+            assertEquals(List.of("Game"), results);
+        }
+    }
+
+    public void testTreatInWhereExclusiveProperty() {
+        try (EntityManager em = emf.createEntityManager()) {
+            List<String> results = em.createQuery(
+                "SELECT p.name FROM TProduct p WHERE TREAT(p AS TGameProduct).genre = 'FPS'",
+                String.class).getResultList();
+            assertEquals(List.of("Game"), results);
+        }
+    }
+
+    public void testTreatInWhereCommonProperty() {
+        try (EntityManager em = emf.createEntityManager()) {
+            List<String> results = em.createQuery(
+                "SELECT p.name FROM TProduct p WHERE TREAT(p AS TGameProduct).revisionNumber = 2.0",
+                String.class).getResultList();
+            assertEquals(List.of("Game"), results);
+        }
+    }
+
+    public void testTreatInWhereRestrictsOnlyItsPredicate() {
+        try (EntityManager em = emf.createEntityManager()) {
+            List<String> results = em.createQuery(
+                "SELECT p.name FROM TProduct p "
+                    + "WHERE TREAT(p AS TGameProduct).revisionNumber = 2.0 OR p.name = 'Hardware'",
+                String.class).getResultList();
+            Collections.sort(results);
+            assertEquals(List.of("Game", "Hardware"), results);
+        }
+    }
+
+    public void testTreatInWhereOnJoinVariable() {
+        try (EntityManager em = emf.createEntityManager()) {
+            List<String> results = em.createQuery(
+                "SELECT p.name FROM TLineItem l JOIN l.product p "
+                    + "WHERE TREAT(p AS TGameProduct).revisionNumber = 2.0",
                 String.class).getResultList();
             assertEquals(List.of("Game"), results);
         }
