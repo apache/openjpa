@@ -36,58 +36,52 @@ public class TestTreatSubclassDiscriminator extends SQLListenerTestCase {
         setUp(TProduct.class, TSoftwareProduct.class, TGameProduct.class,
             TLineItem.class, TOrder.class, DROP_TABLES);
 
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
 
-        TProduct hw = new TProduct();
-        hw.setName("Hardware");
-        em.persist(hw);
+            TProduct hw = new TProduct();
+            hw.setName("Hardware");
+            em.persist(hw);
 
-        TSoftwareProduct sw = new TSoftwareProduct();
-        sw.setName("Software");
-        em.persist(sw);
+            TSoftwareProduct sw = new TSoftwareProduct();
+            sw.setName("Software");
+            em.persist(sw);
 
-        TGameProduct game = new TGameProduct();
-        game.setName("Game");
-        em.persist(game);
+            TGameProduct game = new TGameProduct();
+            game.setName("Game");
+            em.persist(game);
 
-        TOrder order = new TOrder();
-        em.persist(order);
+            TOrder order = new TOrder();
+            em.persist(order);
 
-        for (TProduct p : new TProduct[] { hw, sw, game }) {
-            TLineItem li = new TLineItem();
-            li.setQuantity(1);
-            li.setProduct(p);
-            li.setOrder(order);
-            em.persist(li);
+            for (TProduct p : new TProduct[] { hw, sw, game }) {
+                TLineItem li = new TLineItem();
+                li.setQuantity(1);
+                li.setProduct(p);
+                li.setOrder(order);
+                em.persist(li);
+            }
+
+            em.getTransaction().commit();
         }
-
-        em.getTransaction().commit();
-        em.close();
     }
 
     public void testTreatJoinIncludesSubclasses() {
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             List<String> results = em.createQuery(
                 "SELECT s.name FROM TLineItem l JOIN TREAT(l.product AS TSoftwareProduct) s",
                 String.class).getResultList();
             Collections.sort(results);
             assertEquals(List.of("Game", "Software"), results);
-        } finally {
-            em.close();
         }
     }
 
     public void testTreatJoinLeafClass() {
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             List<String> results = em.createQuery(
                 "SELECT s.name FROM TLineItem l JOIN TREAT(l.product AS TGameProduct) s",
                 String.class).getResultList();
             assertEquals(List.of("Game"), results);
-        } finally {
-            em.close();
         }
     }
 }
