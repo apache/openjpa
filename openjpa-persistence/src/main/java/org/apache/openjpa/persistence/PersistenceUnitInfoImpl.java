@@ -35,11 +35,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import jakarta.persistence.PersistenceConfiguration;
+import jakarta.persistence.PersistenceUnitTransactionType;
 import jakarta.persistence.SharedCacheMode;
 import jakarta.persistence.ValidationMode;
 import jakarta.persistence.spi.ClassTransformer;
 import jakarta.persistence.spi.PersistenceUnitInfo;
-import jakarta.persistence.spi.PersistenceUnitTransactionType;
 import javax.sql.DataSource;
 
 import org.apache.openjpa.lib.conf.Configuration;
@@ -129,13 +129,40 @@ public class PersistenceUnitInfoImpl
         _providerClassName = providerClassName;
     }
 
+    /**
+     * The transaction type as the deprecated SPI enum, as still required by
+     * {@link PersistenceUnitInfo} in Jakarta Persistence 3.2.
+     */
     @Override
-    public PersistenceUnitTransactionType getTransactionType() {
-        return _transType;
+    @SuppressWarnings("removal")
+    public jakarta.persistence.spi.PersistenceUnitTransactionType getTransactionType() {
+        return _transType == null ? null
+            : jakarta.persistence.spi.PersistenceUnitTransactionType.valueOf(_transType.name());
     }
 
     public void setTransactionType(PersistenceUnitTransactionType transType) {
         _transType = transType;
+    }
+
+    /**
+     * @deprecated use {@link #setTransactionType(PersistenceUnitTransactionType)}
+     */
+    @Deprecated
+    @SuppressWarnings("removal")
+    public void setTransactionType(jakarta.persistence.spi.PersistenceUnitTransactionType transType) {
+        setTransactionType(toTransactionType(transType));
+    }
+
+    /**
+     * Returns the transaction type of the given unit, which may be provided by a container.
+     */
+    @SuppressWarnings("removal")
+    static PersistenceUnitTransactionType transactionTypeOf(PersistenceUnitInfo info) {
+        return toTransactionType(info.getTransactionType());
+    }
+
+    private static PersistenceUnitTransactionType toTransactionType(Enum<?> transType) {
+        return transType == null ? null : PersistenceUnitTransactionType.valueOf(transType.name());
     }
 
     public String getJtaDataSourceName() {
@@ -356,7 +383,10 @@ public class PersistenceUnitInfoImpl
             if (JPAProperties.PROVIDER.equals(key))
                 setPersistenceProviderClassName((String) val);
             else if (JPAProperties.TRANSACTION_TYPE.equals(key)) {
-                setTransactionType(JPAProperties.getEnumValue(PersistenceUnitTransactionType.class, val));
+                // accept the deprecated SPI enum as well
+                setTransactionType(val instanceof Enum
+                    ? toTransactionType((Enum<?>) val)
+                    : JPAProperties.getEnumValue(PersistenceUnitTransactionType.class, val));
             } else if (JPAProperties.DATASOURCE_JTA.equals(key)) {
                 if (val instanceof String) {
                     setJtaDataSourceName((String) val);
@@ -402,7 +432,7 @@ public class PersistenceUnitInfoImpl
     public static Map toOpenJPAProperties(PersistenceUnitInfo info) {
         Map map = new HashMap<String,Object>();
         Set<String> added = new HashSet<>();
-        if (info.getTransactionType() == PersistenceUnitTransactionType.JTA)
+        if (transactionTypeOf(info) == PersistenceUnitTransactionType.JTA)
             replaceAsOpenJPAProperty(map, added, "TransactionMode", "managed");
 
         boolean hasJta = false;
@@ -647,8 +677,7 @@ public class PersistenceUnitInfoImpl
 		pinfo.setPersistenceProviderClassName(config.provider());
 		pinfo.setPersistenceUnitName(config.name());
 		pinfo.setSharedCacheMode(config.sharedCacheMode());
-		pinfo.setTransactionType(config.transactionType() == jakarta.persistence.PersistenceUnitTransactionType.JTA ? 
-				PersistenceUnitTransactionType.JTA : PersistenceUnitTransactionType.RESOURCE_LOCAL);
+		pinfo.setTransactionType(config.transactionType());
 		pinfo.setValidationMode(config.validationMode());
 		List<Class<?>> managedClasses = config.managedClasses();
 		if (managedClasses != null && !managedClasses.isEmpty()) {
