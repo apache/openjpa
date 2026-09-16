@@ -40,9 +40,9 @@ public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
     @Override
     public void setUp() {
         setUp(TProduct.class, TSoftwareProduct.class, 
-        		TCustomSoftwareProduct.class, TLineItem.class, 
-        		TOrder.class, TCustomer.class, TCountry.class,
-        		DROP_TABLES);
+                TCustomSoftwareProduct.class, TLineItem.class, 
+                TOrder.class, TCustomer.class, TCountry.class,
+                DROP_TABLES);
         createTestData();
     }
 
