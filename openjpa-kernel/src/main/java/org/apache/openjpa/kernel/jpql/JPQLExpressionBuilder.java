@@ -98,6 +98,9 @@ public class JPQLExpressionBuilder
     private int aliasCount = 0;
     private boolean inAssignSubselectProjection = false;
     private boolean hasParameterizedInExpression = false;
+    // type restrictions of the TREAT paths of the predicate being evaluated
+    private List<Expression> treatRestrictions;
+    private Context treatRestrictionsContext;
 
     /**
      * Constructor.
@@ -2236,7 +2239,27 @@ public class JPQLExpressionBuilder
         String schemaName = assemble(schemaNode);
         ClassMetaData treatMeta = getClassMetaData(schemaName, true);
 
-        // Resolve the base path using the variable
+        Path path = getTreatBasePath(node, name);
+        if (treatRestrictions != null && treatRestrictionsContext == ctx()) {
+            treatRestrictions.add(factory.isInstance(getTreatBasePath(node, name),
+                treatMeta.getDescribedType()));
+        }
+
+        // Override the metadata to the treat target type
+        path.setMetaData(treatMeta);
+
+        // Walk through the remaining children (path components after the dot)
+        for (int i = 2; i < node.children.length; i++) {
+            path = (Path) traversePath(path, node.children[i].text, false, true);
+        }
+
+        return path;
+    }
+
+    /**
+     * Resolves the identifier of a TREAT(identifier AS Type) path to a new path.
+     */
+    private Path getTreatBasePath(JPQLNode node, String name) {
         Path path = null;
         final Value val = getVariable(name, false);
 
@@ -2260,15 +2283,6 @@ public class JPQLExpressionBuilder
         }
 
         path.setSchemaAlias(name);
-
-        // Override the metadata to the treat target type
-        path.setMetaData(treatMeta);
-
-        // Walk through the remaining children (path components after the dot)
-        for (int i = 2; i < node.children.length; i++) {
-            path = (Path) traversePath(path, node.children[i].text, false, true);
-        }
-
         return path;
     }
 
@@ -2345,12 +2359,26 @@ public class JPQLExpressionBuilder
      * Returns an Expression for the given node by eval'ing it.
      */
     private Expression getExpression(JPQLNode node) {
-        Object exp = eval(node);
+        List<Expression> outerRestrictions = treatRestrictions;
+        Context outerRestrictionsContext = treatRestrictionsContext;
+        treatRestrictions = new ArrayList<>();
+        treatRestrictionsContext = ctx();
+        try {
+            Object exp = eval(node);
 
-        // check for boolean values used as expressions
-        if (!(exp instanceof Expression))
-            return factory.asExpression((Value) exp);
-        return (Expression) exp;
+            // check for boolean values used as expressions
+            Expression result = exp instanceof Expression
+                ? (Expression) exp : factory.asExpression((Value) exp);
+
+            // a predicate over TREAT(x AS Type) is false if x is not a Type
+            for (Expression restriction : treatRestrictions) {
+                result = and(restriction, result);
+            }
+            return result;
+        } finally {
+            treatRestrictions = outerRestrictions;
+            treatRestrictionsContext = outerRestrictionsContext;
+        }
     }
 
     /**
