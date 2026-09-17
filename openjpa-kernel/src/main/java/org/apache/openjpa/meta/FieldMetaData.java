@@ -205,11 +205,14 @@ public class FieldMetaData
     private transient Method _extMethod = DEFAULT_METHOD;
     private transient Member _factMethod = DEFAULT_METHOD;
 
-    private transient Constructor _converterConstructor;
-    private transient Object _converterInstance;
-    private transient Method _converterExtMethod;
-    private transient Method _converterFactMethod;
-    private transient Class _converterDbType;
+    // Lazily populated converter caches. FieldMetaData is shared across
+    // brokers and threads, so these are volatile to guarantee safe
+    // publication. The converter instance is created at most once while
+    // holding this instance's monitor (see getConverterInstance).
+    private transient volatile Object _converterInstance;
+    private transient volatile Method _converterExtMethod;
+    private transient volatile Method _converterFactMethod;
+    private transient volatile Class _converterDbType;
 
     // intermediate and impl data
     private boolean _intermediate = true;
@@ -1498,30 +1501,46 @@ public class FieldMetaData
         _extMethod = DEFAULT_METHOD;
     }
 
+    /**
+     * Set the AttributeConverter class of this field. Any cached converter
+     * state is discarded.
+     */
     public void setConverter(Class converter) {
-        _converter = converter;
-        _converterExtMethod = null;
-        _converterFactMethod = null;
-        _converterInstance = null;
-        _converterDbType = null;
+        synchronized (this) {
+            _converter = converter;
+            _converterExtMethod = null;
+            _converterFactMethod = null;
+            _converterInstance = null;
+            _converterDbType = null;
+        }
     }
 
     /**
-     * Get (or create) a cached instance of the converter class.
+     * Get (or create) the cached instance of the converter class.
+     * <p>
+     * A single converter instance is created lazily and shared by all
+     * brokers and threads using this field, so AttributeConverter
+     * implementations must be stateless / thread-safe.
      */
     private Object getConverterInstance() throws Exception {
-        if (_converterInstance == null) {
-            Class converter = getConverter();
-            if (converter == null) {
-                return null;
-            }
-            if (_converterConstructor == null) {
-                _converterConstructor = converter.getDeclaredConstructor();
-                _converterConstructor.setAccessible(true);
-            }
-            _converterInstance = _converterConstructor.newInstance();
+        Object instance = _converterInstance;
+        if (instance != null) {
+            return instance;
         }
-        return _converterInstance;
+        synchronized (this) {
+            instance = _converterInstance;
+            if (instance == null) {
+                Class converter = getConverter();
+                if (converter == null) {
+                    return null;
+                }
+                Constructor ctor = converter.getDeclaredConstructor();
+                ctor.setAccessible(true);
+                instance = ctor.newInstance();
+                _converterInstance = instance;
+            }
+            return instance;
+        }
     }
 
     /**
@@ -1530,22 +1549,25 @@ public class FieldMetaData
      * from AttributeConverter, not just the bridge method with Object params.
      */
     private Method getConverterToDatabaseMethod() {
-        if (_converterExtMethod == null) {
-            _converterExtMethod = findConverterMethod(
-                getConverter(), "convertToDatabaseColumn");
+        // racy single-check: concurrent lookups resolve the same method
+        Method m = _converterExtMethod;
+        if (m == null) {
+            m = findConverterMethod(getConverter(), "convertToDatabaseColumn");
+            _converterExtMethod = m;
         }
-        return _converterExtMethod;
+        return m;
     }
 
     /**
      * Resolve the convertToEntityAttribute method on the converter.
      */
     private Method getConverterToEntityMethod() {
-        if (_converterFactMethod == null) {
-            _converterFactMethod = findConverterMethod(
-                getConverter(), "convertToEntityAttribute");
+        Method m = _converterFactMethod;
+        if (m == null) {
+            m = findConverterMethod(getConverter(), "convertToEntityAttribute");
+            _converterFactMethod = m;
         }
-        return _converterFactMethod;
+        return m;
     }
 
     /**
@@ -1582,12 +1604,15 @@ public class FieldMetaData
      * in AttributeConverter&lt;X,Y&gt;. Returns null if no converter is set.
      */
     public Class getConverterDatabaseType() {
-        if (_converter == null)
+        Class converter = _converter;
+        if (converter == null)
             return null;
-        if (_converterDbType == null) {
-            _converterDbType = resolveConverterDatabaseType(_converter);
+        Class dbType = _converterDbType;
+        if (dbType == null) {
+            dbType = resolveConverterDatabaseType(converter);
+            _converterDbType = dbType;
         }
-        return _converterDbType;
+        return dbType;
     }
 
     /**

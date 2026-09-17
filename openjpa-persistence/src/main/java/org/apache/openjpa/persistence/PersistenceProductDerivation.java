@@ -34,10 +34,11 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Set;
 
+import jakarta.persistence.PersistenceConfiguration;
+import jakarta.persistence.PersistenceUnitTransactionType;
 import jakarta.persistence.SharedCacheMode;
 import jakarta.persistence.ValidationMode;
 import jakarta.persistence.spi.PersistenceUnitInfo;
-import jakarta.persistence.spi.PersistenceUnitTransactionType;
 
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -317,6 +318,13 @@ public class PersistenceProductDerivation
                 cp.setSource(impl.getPersistenceXmlFileUrl().toString());
         }
         return cp;
+    }
+
+    public ConfigurationProvider load(PersistenceConfiguration config, Map props) throws IOException {
+    	ConfigurationProviderImpl cp = new ConfigurationProviderImpl();
+    	// convert config into pinfo
+    	PersistenceUnitInfoImpl pinfo = PersistenceUnitInfoImpl.convert(config);
+    	return load(pinfo, props);
     }
 
     /**

@@ -85,7 +85,7 @@ public class TestPersistenceUnitUtil {
 	 */
 	@Test
 	public void testNotLoadedLazy() {
-		verifyIsLoadedEagerState(false);
+		verifyIsLoadedLazyState(false);
 	}
 
     /*
@@ -387,6 +387,9 @@ public class TestPersistenceUnitUtil {
         
         assertTrue(puu.isLoaded(e, "name"));
         assertTrue(puu.isLoaded(e, "relEntities"));
+        assertEquals("LazyEntity", e.getName());
+        assertEquals(1, e.getRelEntities().size());
+        assertEquals("My ent", e.getRelEntities().get(0).getName());
 	
 	}
 	
@@ -680,7 +683,8 @@ public class TestPersistenceUnitUtil {
         RelEntity re = new RelEntity();
         re.setName("My ent");
         ArrayList<RelEntity> rel = new ArrayList<>();
-        rel.add(new RelEntity());
+        rel.add(re);
+        le.setRelEntities(rel);
         return le;
     }
 

@@ -55,7 +55,7 @@ public class TestProviderUtil extends SingleEMFTestCase{
      * NOT_LOADED state.
      */
     public void testNotLoadedLazy() {
-        verifyIsLoadedEagerState(LoadState.NOT_LOADED);
+        verifyIsLoadedLazyState(LoadState.NOT_LOADED);
     }
 
     /*
