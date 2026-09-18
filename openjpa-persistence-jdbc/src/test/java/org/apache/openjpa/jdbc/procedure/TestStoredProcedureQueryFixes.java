@@ -186,6 +186,67 @@ public class TestStoredProcedureQueryFixes extends SingleEMFTestCase {
         }
     }
 
+    /**
+     * Test that a named parameter explicitly bound to null is not replaced by
+     * the value registered under the position of that parameter.
+     */
+    public void testExplicitNullNamedParameterWinsOverPosition() throws Exception {
+        Procedures.inParamsInteger = -1;
+        Procedures.inParamsString = null;
+
+        EntityManager em = emf.createEntityManager();
+        try {
+            exec(em, "DROP PROCEDURE TESTINS", true);
+            exec(em, "CREATE PROCEDURE TESTINS(SOME_NUMBER INTEGER,SOME_STRING VARCHAR(255)) " +
+                    "PARAMETER STYLE JAVA LANGUAGE JAVA EXTERNAL NAME " +
+                    "'" + Procedures.class.getName() + ".inParams'", false);
+
+            StoredProcedureQuery spq = em.createStoredProcedureQuery("TESTINS");
+            spq.registerStoredProcedureParameter("SOME_NUMBER", Integer.class, ParameterMode.IN);
+            spq.registerStoredProcedureParameter("SOME_STRING", String.class, ParameterMode.IN);
+            spq.registerStoredProcedureParameter(2, String.class, ParameterMode.IN);
+            spq.setParameter("SOME_NUMBER", 42);
+            spq.setParameter(2, "positional");
+            spq.setParameter("SOME_STRING", null);
+            assertFalse(spq.execute());
+
+            assertEquals(42, Procedures.inParamsInteger);
+            assertNull(Procedures.inParamsString);
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
+     * Test that IN parameters following an OUT parameter are bound at their position.
+     */
+    public void testInParameterAfterOutParameter() throws Exception {
+        EntityManager em = emf.createEntityManager();
+        try {
+            exec(em, "DROP PROCEDURE XSUM", true);
+            exec(em, "CREATE PROCEDURE XSUM(IN A INTEGER,OUT S INTEGER,IN B INTEGER) " +
+                    "PARAMETER STYLE JAVA LANGUAGE JAVA EXTERNAL NAME " +
+                    "'" + TestStoredProcedureQueryFixes.class.getName() + ".sum'", false);
+
+            StoredProcedureQuery spq = em.createStoredProcedureQuery("XSUM");
+            spq.registerStoredProcedureParameter(1, Integer.class, ParameterMode.IN);
+            spq.registerStoredProcedureParameter(2, Integer.class, ParameterMode.OUT);
+            spq.registerStoredProcedureParameter(3, Integer.class, ParameterMode.IN);
+            spq.setParameter(1, 3);
+            spq.setParameter(3, 4);
+            spq.execute();
+
+            assertEquals(7, spq.getOutputParameterValue(2));
+        } finally {
+            em.close();
+        }
+    }
+
+    // Derby stored procedure: s = a + b
+    public static void sum(int a, int[] s, int b) {
+        s[0] = a + b;
+    }
+
     // Derby stored procedure: returns empty result set
     public static void emptyResultSet(java.sql.ResultSet[] rs) throws Exception {
         java.sql.Connection c = java.sql.DriverManager.getConnection("jdbc:default:connection");
