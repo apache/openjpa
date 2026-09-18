@@ -18,10 +18,16 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.PersistenceConfiguration;
+
+import org.apache.openjpa.persistence.OpenJPAPersistence;
+
 import junit.framework.TestCase;
 
 public class TestEntityManagerFactory extends TestCase {
@@ -61,6 +67,68 @@ public class TestEntityManagerFactory extends TestCase {
 		
 		em.close();
 		emf.close();
+	}
+
+	public void testEMFCreationDoesNotMutateConfiguration() {
+		PersistenceConfiguration conf = new PersistenceConfiguration("dynamicaly-created-pu");
+		conf.managedClass(AllFieldTypes.class);
+		conf.property(PersistenceConfiguration.SCHEMAGEN_DATABASE_ACTION, "drop-and-create");
+		Map<String, Object> before = new HashMap<>(conf.properties());
+
+		EntityManagerFactory emf = Persistence.createEntityManagerFactory(conf);
+		emf.close();
+
+		assertEquals(before, conf.properties());
+	}
+
+	public void testRepeatedEMFCreationFromSameConfiguration() {
+		PersistenceConfiguration conf = new PersistenceConfiguration("dynamicaly-created-pu");
+		conf.managedClass(AllFieldTypes.class);
+		conf.property(PersistenceConfiguration.SCHEMAGEN_DATABASE_ACTION, "drop-and-create");
+
+		EntityManagerFactory emf1 = Persistence.createEntityManagerFactory(conf);
+		String mdf1 = OpenJPAPersistence.cast(emf1).getConfiguration().getMetaDataFactory();
+		emf1.close();
+		EntityManagerFactory emf2 = Persistence.createEntityManagerFactory(conf);
+		String mdf2 = OpenJPAPersistence.cast(emf2).getConfiguration().getMetaDataFactory();
+		assertCount(emf2, 0L);
+		emf2.close();
+
+		assertEquals(mdf1, mdf2);
+	}
+
+	public void testEMFCreationMergesUserMetaDataFactory() {
+		PersistenceConfiguration conf = new PersistenceConfiguration("dynamicaly-created-pu");
+		conf.managedClass(AllFieldTypes.class);
+		conf.property("openjpa.MetaDataFactory", "jpa");
+		conf.property(PersistenceConfiguration.SCHEMAGEN_DATABASE_ACTION, "drop-and-create");
+
+		EntityManagerFactory emf = Persistence.createEntityManagerFactory(conf);
+		assertEquals("jpa(Types=" + AllFieldTypes.class.getName() + ")",
+				OpenJPAPersistence.cast(emf).getConfiguration().getMetaDataFactory());
+		assertCount(emf, 0L);
+		emf.close();
+	}
+
+	public void testEMFCreationHonoursMappingFiles() {
+		PersistenceConfiguration conf = new PersistenceConfiguration("dynamicaly-created-pu");
+		conf.managedClass(AllFieldTypes.class);
+		conf.mappingFile("org/apache/openjpa/persistence/simple/persistence-configuration-orm.xml");
+		conf.property(PersistenceConfiguration.SCHEMAGEN_DATABASE_ACTION, "drop-and-create");
+
+		EntityManagerFactory emf = Persistence.createEntityManagerFactory(conf);
+		EntityManager em = emf.createEntityManager();
+		long count = em.createNamedQuery("AllFieldTypes.countFromMappingFile", Long.class).getSingleResult();
+		assertEquals(0L, count);
+		em.close();
+		emf.close();
+	}
+
+	private void assertCount(EntityManagerFactory emf, long expected) {
+		EntityManager em = emf.createEntityManager();
+		long count = em.createQuery("SELECT COUNT(a) FROM AllFieldTypes AS a", Long.class).getSingleResult();
+		assertEquals(expected, count);
+		em.close();
 	}
 
 }
