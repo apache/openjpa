@@ -252,6 +252,7 @@ abstract class Joins {
                     var = factory.newBoundVariable(c.getAlias(this),type);
                     join = factory.bindVariable(var, path);
                     c.registerVariable(this, var, path);
+                    narrowBoundVariable(var);
                 }
 
                 if (!_member.fmd.isTypePC()) { // multi-valued relation
@@ -499,6 +500,7 @@ abstract class Joins {
                     Value var = factory.newBoundVariable(c.getAlias(this), type);
                     join = factory.bindVariable(var, path);
                     c.registerVariable(this, var, path);
+                    narrowBoundVariable(var);
                 }
             }
             if (getJoins() != null) {

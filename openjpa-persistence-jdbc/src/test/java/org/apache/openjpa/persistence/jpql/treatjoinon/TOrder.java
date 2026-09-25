@@ -24,6 +24,7 @@ import java.util.Collection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -37,10 +38,17 @@ public class TOrder {
     @OneToMany(mappedBy = "order")
     private Collection<TLineItem> lineItems = new ArrayList<>();
 
+    @ManyToMany
+    private Collection<TProduct> products = new ArrayList<>();
+
     public long getId() { return id; }
     public void setId(long id) { this.id = id; }
     public Collection<TLineItem> getLineItems() { return lineItems; }
     public void setLineItems(Collection<TLineItem> lineItems) {
         this.lineItems = lineItems;
+    }
+    public Collection<TProduct> getProducts() { return products; }
+    public void setProducts(Collection<TProduct> products) {
+        this.products = products;
     }
 }
