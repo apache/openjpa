@@ -97,8 +97,8 @@ public class EntityManagerFactoryImpl
     // internal lock: must stay serializable, this factory is serialized as-is
     private final ReentrantLock _namedQueriesLock = new ReentrantLock();
     private volatile boolean _namedQueriesInitialized;
-    private transient Map<String, Object> properties;
-    private transient Map<String, Object> emEmptyPropsProperties;
+    private transient volatile Map<String, Object> properties;
+    private transient volatile Map<String, Object> emEmptyPropsProperties;
 
     /**
      * Default constructor provided for auto-instantiation.
@@ -139,17 +139,22 @@ public class EntityManagerFactoryImpl
             throw new IllegalStateException(
                 "EntityManagerFactory is closed.");
         }
-        if (properties == null) {
-            Map<String,Object> props = _factory.getProperties();
-            // convert to user readable values
-            if (emEmptyPropsProperties != null) {
-                props.putAll(emEmptyPropsProperties);
-            }
-            // no need to sync or volatile, worse case concurrent threads create 2 instances
+        Map<String,Object> cached = properties;
+        if (cached != null) {
+            return cached;
+        }
+        Map<String,Object> emProps = emEmptyPropsProperties;
+        Map<String,Object> props = _factory.getProperties();
+        // convert to user readable values
+        if (emProps != null) {
+            // no need to sync, worse case concurrent threads create 2 instances
             // we just want to avoid to do it after some "init" phase
+            props.putAll(emProps);
             this.properties = props;
         }
-        return properties;
+        // without the EM level defaults the map stays uncached, otherwise a caller racing
+        // with the first createEntityManager() could install an incomplete map for good
+        return props;
     }
 
     @Override
