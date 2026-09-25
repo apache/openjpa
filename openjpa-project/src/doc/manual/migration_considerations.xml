@@ -1029,10 +1029,13 @@
                             an optional <literal>SELECT</literal> clause and the implicit
                             <literal>this</literal> identification variable (bound automatically when a
                             <literal>FROM</literal> item declares no identification variable). See <xref linkend="jpa_langref_typecasts_expressions"/>.
-                            In-memory query execution (and custom <classname>StoreQuery</classname>
-                            implementations) silently ignore
-                            <literal>UNION</literal>/<literal>INTERSECT</literal>/<literal>EXCEPT</literal>
-                            and <literal>NULLS FIRST/LAST</literal>;
+                            As defined by the specification grammar, <literal>ID()</literal> and
+                            <literal>VERSION()</literal> may only be compared with <literal>=</literal>
+                            or <literal>&lt;&gt;</literal>; other operators are rejected with a parse
+                            error. In-memory query execution (and custom
+                            <classname>StoreQuery</classname> implementations) honours
+                            <literal>NULLS FIRST/LAST</literal> and rejects
+                            <literal>UNION</literal>/<literal>INTERSECT</literal>/<literal>EXCEPT</literal>;
                             <literal>LEFT</literal>/<literal>RIGHT</literal>, <literal>CAST</literal> and
                             <literal>EXTRACT</literal> are not available on Derby.
                         </para></listitem>
