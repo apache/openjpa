@@ -27,6 +27,7 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Root;
 
+import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.persistence.criteria.CriteriaTest;
 import org.apache.openjpa.persistence.criteria.Person;
 import org.apache.openjpa.persistence.criteria.Person_;
@@ -368,6 +369,39 @@ public class TestMultiselect extends CriteriaTest {
         } catch (IllegalArgumentException e) {
             // expected per JPA 3.2 spec - compound selections cannot contain
             // other compound selections
+        }
+    }
+
+    /**
+     * With the compatibility option <code>AllowNestedCompoundSelection</code> enabled,
+     * OpenJPA's historic extension supporting arbitrarily nested tuple and array selections
+     * is available again.
+     */
+    public void testDeeplyNestedShapeWithCompatibilityOption() {
+        Compatibility compat = emf.getConfiguration().getCompatibilityInstance();
+        boolean allowed = compat.getAllowNestedCompoundSelection();
+        compat.setAllowNestedCompoundSelection(true);
+        try {
+            CriteriaQuery<Tuple> q = cb.createQuery(Tuple.class);
+            Root<Foo> foo = q.from(Foo.class);
+            q.multiselect(cb.construct(Foo.class, foo.get(Foo_.flong), foo.get(Foo_.fstring)),
+                     cb.tuple(foo, cb.array(foo.get(Foo_.fint), cb.tuple(foo.get(Foo_.fstring)))));
+            List<Tuple> result = em.createQuery(q).getResultList();
+            assertFalse(result.isEmpty());
+            Tuple tuple = result.get(0);
+
+            assertEquals(Foo.class,   tuple.get(0).getClass());
+            assertTrue(Tuple.class.isAssignableFrom(tuple.get(1).getClass()));
+            Tuple tuple2 = (Tuple)tuple.get(1);
+            assertEquals(Foo.class,   tuple2.get(0).getClass());
+            assertEquals(Object[].class, tuple2.get(1).getClass());
+            Object[] level3 = (Object[])tuple2.get(1);
+            assertEquals(Integer.class, level3[0].getClass());
+            assertTrue(Tuple.class.isAssignableFrom(level3[1].getClass()));
+            Tuple tuple4 = (Tuple)level3[1];
+            assertEquals(String.class, tuple4.get(0).getClass());
+        } finally {
+            compat.setAllowNestedCompoundSelection(allowed);
         }
     }
 
