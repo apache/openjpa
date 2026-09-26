@@ -442,6 +442,46 @@ public class TestContainerSpecCompatibilityOptions
         }
     }
 
+    /*
+     * With the compatibility option UseSpecDefaultMapKeyColumnName disabled the
+     * pre-4.2.0 map key column name "KEY" (usually "KEY0", as "KEY" is a
+     * reserved word) must be used again, so that schemas created by earlier
+     * releases keep working.
+     */
+    public void testLegacyDefaultMapKeyColumnName() {
+        List<Class<?>> types = new ArrayList<>();
+        types.add(Uni_Map_KeyCol.class);
+        Map<String,Object> props = new HashMap<>();
+        props.put("openjpa.Compatibility", "UseSpecDefaultMapKeyColumnName=false");
+        OpenJPAEntityManagerFactorySPI emf = createEMF2_0(types, props);
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            assertFalse(emf.getConfiguration().getCompatibilityInstance().
+                getUseSpecDefaultMapKeyColumnName());
+
+            // trigger table creation
+            em.getTransaction().begin();
+            em.getTransaction().commit();
+
+            // on some databases KEY is a forbidden name for columns.
+            String keyColumn = getDbDictionary(emf).getInvalidColumnWordSet().contains("KEY")
+                    ? "KEY0"
+                    : "KEY";
+            assertSQLFragnments(sql, "CREATE TABLE Uni_Map_KeyCol_attrs",
+                "UniMapKeyCol_ID", keyColumn);
+            // the spec default must not appear: on a dictionary that allows KEY as a column
+            // name the fragment above would also match attributes_KEY
+            for (String stmnt : sql) {
+                assertFalse("The spec default map key column name was used: " + stmnt,
+                    stmnt.contains("attributes_KEY"));
+            }
+        } finally {
+            em.close();
+            emf.close();
+        }
+    }
+
     public void crudUni1MMapFK(EntityManager em) {
         //create
         Uni_1ToM_Map_FK u = new Uni_1ToM_Map_FK();
@@ -870,7 +910,11 @@ public class TestContainerSpecCompatibilityOptions
     }
 
     private OpenJPAEntityManagerFactorySPI createEMF2_0(List<Class<?>> types) {
-        Map<String,Object> map = new HashMap<>();
+        return createEMF2_0(types, new HashMap<String,Object>());
+    }
+
+    private OpenJPAEntityManagerFactorySPI createEMF2_0(List<Class<?>> types, Map<String,Object> props) {
+        Map<String,Object> map = new HashMap<>(props);
         map.put("openjpa.jdbc.JDBCListeners",
                 new JDBCListener[] {
                     this.new Listener()

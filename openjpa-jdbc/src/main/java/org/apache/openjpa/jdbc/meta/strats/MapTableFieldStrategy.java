@@ -74,6 +74,21 @@ public abstract class MapTableFieldStrategy
         return field;
     }
 
+    /**
+     * Return the default column name for the map key.  Section 11.1.35 of the
+     * specification defines it as the field name followed by "_KEY".  Setting
+     * the compatibility option <code>UseSpecDefaultMapKeyColumnName</code> to
+     * false restores the name used before OpenJPA 4.2.0, "key", which
+     * dictionaries usually turn into "KEY0" as "KEY" is a reserved word.
+     */
+    protected DBIdentifier getDefaultKeyColumnName() {
+        if (field.getMappingRepository().getConfiguration().
+            getCompatibilityInstance().getUseSpecDefaultMapKeyColumnName())
+            return DBIdentifier.newColumn(field.getName() + "_KEY");
+        return field.getMappingRepository().getDBDictionary().
+            getValidColumnName(DBIdentifier.newColumn("key"), field.getTable());
+    }
+
     @Override
     public ClassMapping[] getIndependentKeyMappings(boolean traverse) {
         return (traverse) ? field.getKeyMapping().getIndependentTypeMappings()

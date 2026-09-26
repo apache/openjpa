@@ -470,8 +470,17 @@
                 <para>
                     Declare the existing column explicitly, for example
                     <literal>@MapKeyColumn(name="KEY0")</literal>, or rename the column in the
-                    database. No compatibility option restores the old default. See also
-                    <xref linkend="jpa_overview_mapping_map"/>.
+                    database. Alternatively, set the <xref linkend="openjpa.Compatibility"/>
+                    option <literal>UseSpecDefaultMapKeyColumnName</literal> to
+                    <literal>false</literal>, which restores the old default for all map fields
+                    that do not declare a key column:
+                </para>
+<programlisting>
+&lt;property name="openjpa.Compatibility" value="UseSpecDefaultMapKeyColumnName=false"/&gt;
+</programlisting>
+                <para>
+                    An explicit <literal>@MapKeyColumn</literal> is honoured regardless of the
+                    setting. See also <xref linkend="jpa_overview_mapping_map"/>.
                 </para>
             </section>
             <section id="jpa_4.2_MappingResolution">

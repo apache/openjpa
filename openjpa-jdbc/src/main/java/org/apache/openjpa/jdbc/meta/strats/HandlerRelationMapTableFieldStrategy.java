@@ -20,12 +20,10 @@ package org.apache.openjpa.jdbc.meta.strats;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
@@ -38,7 +36,6 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Table;
-import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.Row;
@@ -199,8 +196,7 @@ public class HandlerRelationMapTableFieldStrategy
             val.mapConstraints("value", adapt);
         }
         _kio = new ColumnIO();
-        // JPA 3.2 spec 11.1.35: default map key column name is <field_name>_KEY
-        _kcols = HandlerStrategies.map(key, field.getName() + "_KEY", _kio, adapt);
+        _kcols = HandlerStrategies.map(key, getDefaultKeyColumnName().getName(), _kio, adapt);
 
         field.mapPrimaryKey(adapt);
     }

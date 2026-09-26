@@ -58,6 +58,7 @@ public class Compatibility {
     private boolean _flushBeforeDetach = false;
     private boolean _cascadeWithDetach = false;
     private boolean _useJPA2DefaultOrderColumnName = true;
+    private boolean _useSpecDefaultMapKeyColumnName = true;
     private boolean _copyOnDetach = false;
     private boolean _privatePersistentProperties = false;
     private boolean _autoOff = true;
@@ -446,6 +447,34 @@ public class Compatibility {
      */
     public void setUseJPA2DefaultOrderColumnName(boolean useJPA2Name) {
         _useJPA2DefaultOrderColumnName = useJPA2Name;
+    }
+
+    /**
+     * Whether OpenJPA should use the default map key column name defined by
+     * section 11.1.35 of the specification: name; "_"; "KEY" or the name used
+     * before OpenJPA 4.2.0, "key" (which dictionaries usually turn into
+     * "KEY0", as "KEY" is a reserved word).
+     *
+     * @since 4.2.0
+     * @return true if the specification default name should be used
+     */
+    public boolean getUseSpecDefaultMapKeyColumnName() {
+        return _useSpecDefaultMapKeyColumnName;
+    }
+
+    /**
+     * Whether OpenJPA should use the default map key column name defined by
+     * section 11.1.35 of the specification: name; "_"; "KEY" or the name used
+     * before OpenJPA 4.2.0, "key" (which dictionaries usually turn into
+     * "KEY0", as "KEY" is a reserved word).
+     *
+     * @param useSpecName true if the specification default name should be
+     * used.  false if the pre-4.2.0 name should be used.
+     *
+     * @since 4.2.0
+     */
+    public void setUseSpecDefaultMapKeyColumnName(boolean useSpecName) {
+        _useSpecDefaultMapKeyColumnName = useSpecName;
     }
 
 
