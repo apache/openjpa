@@ -208,18 +208,74 @@
                     <literal>@ElementCollection</literal>) was executed in memory: every instance was
                     loaded and removed through the persistence context, cascading to related entities
                     and cleaning up join table and element collection rows. As required by section
-                    4.10 of the specification, bulk operations do not cascade. A <literal>DELETE</literal>
-                    query now issues a single SQL <literal>DELETE</literal> against the entity table(s);
-                    related entities, join table rows and element collection rows are left untouched
-                    and will cause foreign key violations unless the database defines
-                    <literal>ON DELETE CASCADE</literal>.
+                    4.10 of the specification, bulk operations do not cascade. Related entities are
+                    left untouched by a <literal>DELETE</literal> query and will cause foreign key
+                    violations unless the database defines <literal>ON DELETE CASCADE</literal>.
                 </para>
                 <para>
-                    Delete dependents explicitly (separate bulk deletes or <literal>em.remove()</literal>)
-                    or rely on database-level cascades. Note that a bulk <literal>UPDATE</literal> or
-                    <literal>DELETE</literal> that still has to be executed in memory now flushes all
-                    pending changes of the persistence context after processing. No compatibility
-                    option exists. See also <xref linkend="jpa_langref_bulk_ops"/>.
+                    The rows of the join tables and element collection tables owned by the deleted
+                    entities are not entities themselves and are still removed. A
+                    <literal>DELETE</literal> query against a candidate that owns such a table
+                    therefore executes as a sequence of statements rather than as one: the criteria
+                    are evaluated once by a
+                    <literal>SELECT DISTINCT &lt;pk&gt; FROM &lt;entity table&gt; WHERE ...</literal>,
+                    then a <literal>DELETE FROM &lt;owned table&gt; WHERE &lt;join column&gt; IN (...)</literal>
+                    is issued for every owned table and finally a
+                    <literal>DELETE FROM &lt;entity table&gt; WHERE &lt;pk&gt; IN (...)</literal> for the
+                    entity rows. The keys are materialized before anything is deleted, so no
+                    statement re-evaluates the criteria against an already modified database, and the
+                    <literal>IN</literal> lists are split into chunks the database accepts. The
+                    reported update count is the number of deleted entity rows. A candidate with a
+                    composite primary key, or with a join foreign key that does not consist of a
+                    single column referencing that primary key, is executed in memory instead.
+                </para>
+                <para>
+                    A <literal>DELETE</literal> query that carries no criteria at all - no
+                    <literal>WHERE</literal> clause and no discriminator or subclass condition -
+                    matches every candidate row, so every row of every owned table belongs to a
+                    deleted candidate. Such a query skips the key select and issues an unqualified
+                    <literal>DELETE FROM &lt;owned table&gt;</literal> for every owned table,
+                    followed by the unqualified delete of the entity table. Any condition whatsoever
+                    falls back to the key based path described above.
+                </para>
+                <para>
+                    Three consequences are worth noting for a filtered delete. The primary keys of
+                    all matching candidates are held in memory while the query runs, so a delete
+                    that matches millions of rows now needs memory proportional to the number of
+                    matches. A configured query timeout is applied to each statement, which turns it
+                    into a per-chunk budget rather than a budget for the whole operation. And the
+                    criteria are evaluated by a statement of their own, separate from the deletes,
+                    so under <literal>READ COMMITTED</literal> a row that stops matching between the
+                    key select and the delete is still deleted.
+                </para>
+                <para>
+                    One case is not covered: for a uni-directional self-referencing
+                    <literal>@ManyToMany</literal> the join table is only cleaned by the owner
+                    column, so rows whose inverse column references a deleted primary key remain.
+                    This is a pre-existing limitation; delete those rows explicitly or define
+                    <literal>ON DELETE CASCADE</literal> on both foreign keys.
+                </para>
+                <para>
+                    Set <literal>openjpa.Compatibility=CleanupOwnedTablesOnBulkDelete=false</literal>
+                    (default <literal>true</literal>) to suppress the cleanup. This does not restore
+                    the behavior of any released version - the cleanup ships with 4.2.0 - it only
+                    leaves the rows of the owned tables behind. Note that a candidate which owns a
+                    bi-directional join table can only be bulk deleted in SQL when the cleanup is
+                    enabled; with the option turned off such a query is executed in memory, which
+                    loads the matching instances and deletes them one row at a time - a
+                    <literal>SELECT</literal> of the candidates followed by one
+                    <literal>DELETE FROM &lt;entity table&gt; WHERE &lt;pk&gt; = ?</literal> per
+                    instance instead of a single bulk statement - and, because the rows of a
+                    bi-directional join table are maintained by the inverse side, still leaves those
+                    join table rows behind.
+                </para>
+                <para>
+                    Delete dependent entities explicitly (separate bulk deletes or
+                    <literal>em.remove()</literal>) or rely on database-level cascades. Note that a
+                    bulk <literal>UPDATE</literal> or <literal>DELETE</literal> that still has to be
+                    executed in memory now flushes all pending changes of the persistence context
+                    after processing; no compatibility option exists for that. See also
+                    <xref linkend="jpa_langref_bulk_ops"/>.
                 </para>
             </section>
             <section id="jpa_4.2_FlushBeforeQueries">

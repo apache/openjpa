@@ -79,6 +79,7 @@ public class Compatibility {
     private boolean _returnNullOnEmptyAggregateResult = true;   // OPENJPA-1794
     private boolean _cacheNonDefaultFetchPlanQueries = false; // OPENJPA-2414
     private boolean _specCompliantSchemaGeneration = false; // OPENJPA-2940
+    private boolean _cleanupOwnedTablesOnBulkDelete = true; // OPENJPA-2990
 
     /**
      * Whether to require exact identity value types when creating object
@@ -799,5 +800,38 @@ public class Compatibility {
      */
     public void setSpecCompliantSchemaGeneration(boolean b) {
         _specCompliantSchemaGeneration = b;
+    }
+
+    /**
+     * Whether a bulk delete removes the rows of the join tables and element
+     * collection tables owned by the deleted entities. A bulk delete never
+     * cascades to related entities, but the rows of the tables owned by a
+     * deleted entity are not entities themselves and would dangle on deleted
+     * primary keys otherwise. Defaults to true; set to false to leave those
+     * rows behind. A candidate that owns a bi-directional join table then has
+     * to be deleted in memory, because the SQL bulk delete cannot maintain
+     * that table; the in-memory path loads the matching instances and deletes
+     * them one row at a time rather than with a single bulk statement.
+     *<p>
+     * A delete without any criteria empties the owned tables outright. A
+     * filtered delete materializes the primary keys of the matching candidates
+     * first and deletes by those keys, so it holds them in memory, spends a
+     * configured query timeout per statement rather than per operation, and
+     * evaluates the criteria in a statement of its own.
+     *
+     * @since 4.2.0
+     */
+    public boolean getCleanupOwnedTablesOnBulkDelete() {
+        return _cleanupOwnedTablesOnBulkDelete;
+    }
+
+    /**
+     * Whether a bulk delete removes the rows of the join tables and element
+     * collection tables owned by the deleted entities.
+     *
+     * @since 4.2.0
+     */
+    public void setCleanupOwnedTablesOnBulkDelete(boolean b) {
+        _cleanupOwnedTablesOnBulkDelete = b;
     }
 }

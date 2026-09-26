@@ -115,6 +115,10 @@ public class TestBiDirectionalJoinTable extends SQLListenerTestCase {
 		assertEquals(0, count(Person.class));
 		// JPA 3.2 spec section 4.10: bulk DELETE does not cascade
 		assertEquals(ADDRESS_COUNT, count(Address.class));
+		// but the rows of the join table pointing at the deleted person are
+		// removed by the primary keys the criteria were evaluated into
+		assertSQL("DELETE FROM .*J_PERSON_ADDRESSES WHERE .*IN \\(.*");
+		assertSQL("DELETE FROM .*J_PERSON WHERE .*IN \\(.*");
 	}
 
 	public void testBulkDelete() {
@@ -127,6 +131,11 @@ public class TestBiDirectionalJoinTable extends SQLListenerTestCase {
 		assertEquals(0, count(Person.class));
 		// JPA 3.2 spec section 4.10: bulk DELETE does not cascade
 		assertEquals(ADDRESS_COUNT, count(Address.class));
+		// the delete carries no criteria, so every row of the join table
+		// belongs to a deleted person and it is emptied outright
+		assertNotSQL("SELECT DISTINCT .*FROM .*J_PERSON.*");
+		assertSQL("DELETE FROM .*J_PERSON_ADDRESSES( t[0-9]+)?");
+		assertSQL("DELETE FROM .*J_PERSON( t[0-9]+)?");
 	}
 
 	public void testBreakingRelationCausesDeleteFromJoinTable() {
