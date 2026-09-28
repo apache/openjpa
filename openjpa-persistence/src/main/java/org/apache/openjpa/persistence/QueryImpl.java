@@ -327,7 +327,11 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 			        } else {
 			            delegate = new DelegatingResultList((ResultList) ret, trans);
 			        }
-			        return new ArrayList<>(delegate);
+			        // Materializing the result keeps the returned List mutable and usable
+			        // after the query and the EntityManager have been closed (introduced for
+			        // TCK compliance in OPENJPA-2940). It is the default, but can be turned
+			        // off to restore the lazy, streaming result list.
+			        return isMaterializedResultList() ? new ArrayList<>(delegate) : delegate;
 			    } else {
 				    return ret;
 			    }
@@ -336,6 +340,16 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 		} finally {
 			popQueryFetchPlan(queryFetchPlanUsed);
 		}
+	}
+
+	/**
+	 * Whether the lazy result list is copied into an {@link ArrayList}.
+	 *
+	 * @see Compatibility#getMaterializeQueryResultList()
+	 */
+	private boolean isMaterializedResultList() {
+		OpenJPAConfiguration conf = _query.getStoreContext().getConfiguration();
+		return conf.getCompatibilityInstance().getMaterializeQueryResultList();
 	}
 
 	/**

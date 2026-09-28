@@ -192,11 +192,30 @@
                     (<xref linkend="ref_guide_pc_scos_proxy_lrs"/>) are not affected.
                 </para>
                 <para>
-                    For very large query results use <literal>setFirstResult()</literal> /
-                    <literal>setMaxResults()</literal> paging, or obtain the kernel query via
-                    <literal>OpenJPAQuery.getDelegate()</literal> for lazy semantics. Code that casts
-                    the result to <classname>ResultList</classname> or
+                    The memory and performance implication is that the whole result set is held in
+                    memory at once: a query that previously streamed rows in
+                    <xref linkend="openjpa.FetchBatchSize"/> sized windows now allocates one list
+                    entry per row before <literal>getResultList()</literal> returns. Applications
+                    that scan very large result sets should use
+                    <literal>setFirstResult()</literal> / <literal>setMaxResults()</literal> paging,
+                    or obtain the kernel query via <literal>OpenJPAQuery.getDelegate()</literal> for
+                    lazy semantics. Code that casts the result to
+                    <classname>ResultList</classname> or
                     <classname>DelegatingResultList</classname> must be changed.
+                </para>
+                <para>
+                    Applications that depend on the previous streaming behaviour can restore it with
+                    the <literal>MaterializeQueryResultList</literal> compatibility option:
+                </para>
+<programlisting>
+&lt;property name="openjpa.Compatibility" value="MaterializeQueryResultList=false"/&gt;
+</programlisting>
+                <para>
+                    With the option disabled, <literal>Query.getResultList()</literal> again returns
+                    the lazy <classname>ResultList</classname> that honours
+                    <xref linkend="openjpa.FetchBatchSize"/> and becomes invalid once the query or
+                    the <classname>EntityManager</classname> is closed. The option defaults to
+                    <literal>true</literal>, which is the behaviour since 4.2.0.
                 </para>
             </section>
             <section id="jpa_4.2_BulkDeleteNoCascade">

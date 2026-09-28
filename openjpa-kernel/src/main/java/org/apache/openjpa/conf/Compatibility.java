@@ -79,6 +79,7 @@ public class Compatibility {
     private boolean _returnNullOnEmptyAggregateResult = true;   // OPENJPA-1794
     private boolean _cacheNonDefaultFetchPlanQueries = false; // OPENJPA-2414
     private boolean _specCompliantSchemaGeneration = false; // OPENJPA-2940
+    private boolean _materializeQueryResultList = true; // OPENJPA-2989
     private boolean _allowNestedCompoundSelection = false; // OPENJPA-2991
 
     /**
@@ -800,6 +801,32 @@ public class Compatibility {
      */
     public void setSpecCompliantSchemaGeneration(boolean b) {
         _specCompliantSchemaGeneration = b;
+    }
+
+    /**
+     * Whether <code>Query.getResultList()</code> copies the query result into a
+     * {@link java.util.ArrayList}. When true (the default) the complete result is
+     * materialized before it is returned, so the list is mutable and remains usable
+     * after the query or the <code>EntityManager</code> has been closed. When false,
+     * the lazy <code>org.apache.openjpa.lib.rop.ResultList</code> of releases before
+     * 4.2.0 is returned, which streams rows on demand according to
+     * <code>openjpa.FetchBatchSize</code> and becomes invalid on close.
+     *
+     * @since 4.2.0
+     */
+    public boolean getMaterializeQueryResultList() {
+        return _materializeQueryResultList;
+    }
+
+    /**
+     * Whether <code>Query.getResultList()</code> copies the query result into a
+     * {@link java.util.ArrayList}. Set to false to restore the lazy, streaming
+     * result list of releases before 4.2.0.
+     *
+     * @since 4.2.0
+     */
+    public void setMaterializeQueryResultList(boolean b) {
+        _materializeQueryResultList = b;
     }
 
     /**
