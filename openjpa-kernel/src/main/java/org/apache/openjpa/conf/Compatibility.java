@@ -80,6 +80,7 @@ public class Compatibility {
     private boolean _cacheNonDefaultFetchPlanQueries = false; // OPENJPA-2414
     private boolean _specCompliantSchemaGeneration = false; // OPENJPA-2940
     private boolean _materializeQueryResultList = true; // OPENJPA-2989
+    private boolean _allowNestedCompoundSelection = false; // OPENJPA-2991
 
     /**
      * Whether to require exact identity value types when creating object
