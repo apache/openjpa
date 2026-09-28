@@ -63,6 +63,7 @@ import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.ManagedType;
 import jakarta.persistence.metamodel.Metamodel;
 
+import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.ExpressionStoreQuery;
 import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
@@ -1295,15 +1296,29 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 
     /**
      * Validates that none of the given selections is a compound (tuple or array) selection.
-     * Per JPA spec, tuple() and array() must not accept compound selection arguments.
+     * Per JPA spec, tuple() and array() must not accept compound selection arguments. The
+     * compatibility option <code>AllowNestedCompoundSelection</code> restores the historic
+     * OpenJPA extension that allowed arbitrarily nested tuple and array selections.
      */
     private void assertNoCompoundSelections(Selection<?>... selections) {
+        if (isNestedCompoundSelectionAllowed()) {
+            return;
+        }
         for (Selection<?> s : selections) {
             if (s.isCompoundSelection()) {
                 throw new IllegalArgumentException(
                     "A compound selection (tuple or array) must not contain another compound selection");
             }
         }
+    }
+
+    private boolean isNestedCompoundSelectionAllowed() {
+        if (_model == null) {
+            return false;
+        }
+        OpenJPAConfiguration conf = _model.getConfiguration();
+        return conf != null && conf.getCompatibilityInstance() != null
+            && conf.getCompatibilityInstance().getAllowNestedCompoundSelection();
     }
 
 }

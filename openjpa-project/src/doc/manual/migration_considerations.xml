@@ -441,6 +441,13 @@
                     subclasses. Flatten nested selections, use unique aliases and adjust catch blocks
                     and <literal>null</literal> checks accordingly.
                 </para>
+                <para>
+                    Rejecting nested compound selections removes a documented OpenJPA extension
+                    that supported arbitrarily nested tuple and array selections. Applications
+                    relying on it can restore the previous behavior with the compatibility option
+                    <literal>AllowNestedCompoundSelection</literal>:
+                </para>
+                <programlisting>&lt;property name="openjpa.Compatibility" value="AllowNestedCompoundSelection=true"/&gt;</programlisting>
             </section>
             <section id="jpa_4.2_PersistenceUnitUtilIdentifier">
                 <title>PersistenceUnitUtil.getIdentifier() returns the plain identifier</title>

@@ -827,4 +827,27 @@ public class Compatibility {
     public void setMaterializeQueryResultList(boolean b) {
         _materializeQueryResultList = b;
     }
+
+    /**
+     * Whether <code>CriteriaBuilder.tuple()</code> and <code>CriteriaBuilder.array()</code>
+     * accept compound selections as arguments. The specification forbids nesting a compound
+     * selection in another one, which OpenJPA rejects with an
+     * <code>IllegalArgumentException</code> by default. Set to true to restore the historic
+     * OpenJPA extension that allowed arbitrarily nested tuple and array selections.
+     *
+     * @since 4.2.0
+     */
+    public boolean getAllowNestedCompoundSelection() {
+        return _allowNestedCompoundSelection;
+    }
+
+    /**
+     * Whether <code>CriteriaBuilder.tuple()</code> and <code>CriteriaBuilder.array()</code>
+     * accept compound selections as arguments.
+     *
+     * @since 4.2.0
+     */
+    public void setAllowNestedCompoundSelection(boolean b) {
+        _allowNestedCompoundSelection = b;
+    }
 }
