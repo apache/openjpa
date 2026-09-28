@@ -62,10 +62,6 @@
                 </plugins>
             </build>
         </profile>
-
-
-
-
     </profiles>
 
     <dependencies>
@@ -104,6 +100,10 @@
             <artifactId>simple-jndi</artifactId>
             <version>0.11.4.1</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
         </dependency>
     </dependencies>
 

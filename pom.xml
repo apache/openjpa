@@ -1883,6 +1883,7 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>4.13.2</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.google.code.findbugs</groupId>
@@ -1893,11 +1894,6 @@
     </dependencyManagement>
 
     <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
