@@ -26,7 +26,7 @@
     <parent>
       <groupId>org.apache</groupId>
       <artifactId>apache</artifactId>
-      <version>39</version>
+      <version>40</version>
     </parent>
 
     <groupId>org.apache.openjpa</groupId>
@@ -85,7 +85,7 @@
 
         <!-- other common versions -->
         <kubernetes-client.version>6.13.3</kubernetes-client.version>
-        <slf4j.version>2.0.19</slf4j.version>
+        <slf4j.version>2.0.20</slf4j.version>
 
         <javadoc.additionalparam />
 
