@@ -1144,7 +1144,7 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 
     @Override
     public <T> Predicate qbe(From<?, T> from, T example, ComparisonStyle style) {
-        return qbe(from, example, style, null);
+        return qbe(from, example, style);
     }
 
     @Override
@@ -1154,7 +1154,7 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 
     @Override
     public <T> Predicate qbe(From<?, T> from, T example) {
-        return qbe(from, example, qbeStyle(), null);
+        return qbe(from, example, qbeStyle());
     }
 
     /**
