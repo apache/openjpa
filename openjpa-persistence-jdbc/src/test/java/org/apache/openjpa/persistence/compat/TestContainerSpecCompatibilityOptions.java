@@ -26,6 +26,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.conf.Compatibility;
@@ -453,11 +454,10 @@ public class TestContainerSpecCompatibilityOptions
         types.add(Uni_Map_KeyCol.class);
         Map<String,Object> props = new HashMap<>();
         props.put("openjpa.Compatibility", "UseSpecDefaultMapKeyColumnName=false");
-        OpenJPAEntityManagerFactorySPI emf = createEMF2_0(types, props);
-        EntityManager em = emf.createEntityManager();
 
-        try {
-            assertFalse(emf.getConfiguration().getCompatibilityInstance().
+        try (EntityManagerFactory emf = createEMF2_0(types, props);
+        		EntityManager em = emf.createEntityManager();){
+            assertFalse(((OpenJPAEntityManagerFactorySPI) emf).getConfiguration().getCompatibilityInstance().
                 getUseSpecDefaultMapKeyColumnName());
 
             // trigger table creation
@@ -476,10 +476,7 @@ public class TestContainerSpecCompatibilityOptions
                 assertFalse("The spec default map key column name was used: " + stmnt,
                     stmnt.contains("attributes_KEY"));
             }
-        } finally {
-            em.close();
-            emf.close();
-        }
+        } 
     }
 
     public void crudUni1MMapFK(EntityManager em) {
