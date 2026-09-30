@@ -46,7 +46,6 @@ import org.apache.openjpa.kernel.QueryOperations;
 import org.apache.openjpa.kernel.ResultShape;
 import org.apache.openjpa.kernel.exps.AbstractExpressionBuilder;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
-import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -79,6 +78,7 @@ class CriteriaExpressionBuilder {
         evalFilter(exps, factory, q);
         evalGrouping(exps, factory, q);
         evalOrderingAndProjection(exps, factory, q);
+        evalTreatedRoots(exps, factory, q);
         exps.operation = QueryOperations.OP_SELECT;
         exps.range = QueryExpressions.EMPTY_VALUES;
         exps.resultClass = q.getResultType();
@@ -112,6 +112,28 @@ class CriteriaExpressionBuilder {
         // TODO -- need to handle subqueries
 
         exps.accessPath = metas.toArray(new ClassMetaData[metas.size()]);
+    }
+
+    /**
+     * Adds a type-restriction predicate for each treated root used in the query.
+     * TREAT(root AS SubType) restricts the query to instances of SubType and of its subtypes.
+     * Called after the projection and ordering terms have been evaluated, because a treated
+     * root registers itself on the query when it is converted to a kernel value. Being the last
+     * step that contributes to the filter, it also substitutes an empty filter if the query is
+     * unrestricted.
+     */
+    protected void evalTreatedRoots(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
+        Set<RootImpl.TreatedRoot<?>> treatedRoots = q.getTreatedRoots();
+        if (treatedRoots != null) {
+            for (RootImpl.TreatedRoot<?> treated : treatedRoots) {
+                Value originalPath = treated.getOriginal().toValue(factory, q);
+                exps.filter = Expressions.and(factory,
+                    factory.isInstance(originalPath, treated.getTreatedType()), exps.filter);
+            }
+        }
+        if (exps.filter == null) {
+            exps.filter = factory.emptyExpression();
+        }
     }
 
     protected void evalOrderingAndProjection(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
@@ -233,27 +255,8 @@ class CriteriaExpressionBuilder {
             filter = Expressions.and(factory, where.toKernelExpression(factory, q), filter);
         }
 
-        // Add type-restriction predicates for any treated roots used in the query.
-        // TREAT(root as SubType) implies that only instances of SubType should be included.
-        Set<RootImpl.TreatedRoot<?>> treatedRoots = q.getTreatedRoots();
-        if (treatedRoots != null) {
-            for (RootImpl.TreatedRoot<?> treated : treatedRoots) {
-                Value originalPath = treated.getOriginal().toValue(factory, q);
-                Value typeExpr = factory.type(originalPath);
-                Class<?> targetType = treated.getTreatedType();
-                Value typeLiteral = factory.newTypeLiteral(targetType, Literal.TYPE_CLASS);
-                ClassMetaData targetMeta = q.getMetamodel().getRepository()
-                    .getMetaData(targetType, null, true);
-                typeLiteral.setMetaData(targetMeta);
-                org.apache.openjpa.kernel.exps.Expression typeCheck =
-                    factory.equal(typeExpr, typeLiteral);
-                filter = Expressions.and(factory, typeCheck, filter);
-            }
-        }
-
-        if (filter == null) {
-            filter = factory.emptyExpression();
-        }
+        // an empty filter is substituted by evalTreatedRoots(), which is the last step that
+        // may contribute a restriction to the filter
         exps.filter = filter;
     }
 

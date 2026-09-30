@@ -43,6 +43,7 @@ import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.Type;
 import jakarta.persistence.metamodel.Type.PersistenceType;
 
+import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.persistence.meta.AbstractManagedType;
 import org.apache.openjpa.persistence.meta.Members;
 
@@ -60,6 +61,7 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     private java.util.Set<Join<X, ?>> _joins;
     private java.util.Set<Fetch<X, ?>> _fetches;
     private final Type<X> type;
+    private AbstractManagedType<? extends X> _treatAs;
 
     /**
      * Supply the non-null managed type.
@@ -76,7 +78,27 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
 
     @Override
     public Type<?> getType() {
-        return type;
+        return _treatAs == null ? type : _treatAs;
+    }
+
+    /**
+     * Narrows this receiver to the given subtype as requested by
+     * {@link jakarta.persistence.criteria.CriteriaBuilder#treat(jakarta.persistence.criteria.Join, Class) treat()}.
+     * The attributes of this receiver are subsequently resolved against the narrowed type.
+     */
+    void setTreatAs(AbstractManagedType<? extends X> treatAs) {
+        _treatAs = treatAs;
+    }
+
+    /**
+     * Sets the narrowed metadata, if any, on the kernel variable bound to this receiver.
+     * The narrowed metadata makes the kernel render a TREAT discriminator condition that
+     * matches the narrowed type and its subclasses, as it does for a JPQL TREAT join.
+     */
+    protected void narrowBoundVariable(Value var) {
+        if (_treatAs != null && var != null) {
+            var.setMetaData(_treatAs.meta);
+        }
     }
 
     /**
@@ -192,8 +214,8 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
 
     @Override
     public <W,Y> Join<W,Y> join(String name, JoinType jt) {
-        assertJoinable(type);
-        ManagedType<X> mType = (ManagedType<X>)type;
+        assertJoinable(getType());
+        ManagedType<X> mType = (ManagedType<X>)getType();
         Attribute<?, ?> attr = mType.getAttribute(name);
         assertJoinable(attr.getDeclaringType());
         if (attr instanceof SingularAttribute) {
@@ -214,50 +236,50 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
 
     @Override
     public <W,Y> CollectionJoin<W, Y> joinCollection(String attr) {
-        assertJoinable(type);
-        return (CollectionJoin<W,Y>)join(((ManagedType<X>)type).getCollection(attr), JoinType.INNER);
+        assertJoinable(getType());
+        return (CollectionJoin<W,Y>)join(((ManagedType<X>)getType()).getCollection(attr), JoinType.INNER);
     }
 
     @Override
     public <W,Y> CollectionJoin<W, Y> joinCollection(String attr, JoinType jt) {
-        assertJoinable(type);
-        return (CollectionJoin<W,Y>)join(((ManagedType<X>)type).getCollection(attr), jt);
+        assertJoinable(getType());
+        return (CollectionJoin<W,Y>)join(((ManagedType<X>)getType()).getCollection(attr), jt);
     }
 
     @Override
     public <W,Y> ListJoin<W, Y> joinList(String attr) {
-        assertJoinable(type);
-        return (ListJoin<W,Y>)join(((ManagedType<X>)type).getList(attr), JoinType.INNER);
+        assertJoinable(getType());
+        return (ListJoin<W,Y>)join(((ManagedType<X>)getType()).getList(attr), JoinType.INNER);
     }
 
     @Override
     public <W,Y> ListJoin<W,Y> joinList(String attr, JoinType jt) {
-        assertJoinable(type);
-        return (ListJoin<W,Y>)join(((ManagedType<X>)type).getList(attr), jt);
+        assertJoinable(getType());
+        return (ListJoin<W,Y>)join(((ManagedType<X>)getType()).getList(attr), jt);
     }
 
     @Override
     public <W,K,V> MapJoin<W,K,V> joinMap(String attr) {
-        assertJoinable(type);
-        return (MapJoin<W,K,V>)join(((ManagedType<X>)type).getMap(attr));
+        assertJoinable(getType());
+        return (MapJoin<W,K,V>)join(((ManagedType<X>)getType()).getMap(attr));
     }
 
     @Override
     public <W,K,V> MapJoin<W,K,V>  joinMap(String attr, JoinType jt) {
-        assertJoinable(type);
-        return (MapJoin<W,K,V>)join(((ManagedType<X>)type).getMap(attr), jt);
+        assertJoinable(getType());
+        return (MapJoin<W,K,V>)join(((ManagedType<X>)getType()).getMap(attr), jt);
     }
 
     @Override
     public <W,Y> SetJoin<W, Y>  joinSet(String attr) {
-        assertJoinable(type);
-        return (SetJoin<W, Y>)join(((ManagedType<X>)type).getSet(attr));
+        assertJoinable(getType());
+        return (SetJoin<W, Y>)join(((ManagedType<X>)getType()).getSet(attr));
     }
 
     @Override
     public <W,Y> SetJoin<W, Y>  joinSet(String attr, JoinType jt) {
-        assertJoinable(type);
-        return (SetJoin<W, Y>)join(((ManagedType<X>)type).getSet(attr), jt);
+        assertJoinable(getType());
+        return (SetJoin<W, Y>)join(((ManagedType<X>)getType()).getSet(attr), jt);
     }
 
     void assertJoinable(Type<?> type) {
@@ -303,8 +325,8 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
 
     @Override
     public <X,Y> Fetch<X, Y> fetch(String name, JoinType jt) {
-        assertJoinable(type);
-        Attribute<? super X,?> attr = ((ManagedType<X>)type).getAttribute(name);
+        assertJoinable(getType());
+        Attribute<? super X,?> attr = ((ManagedType<X>)getType()).getAttribute(name);
         if (attr.isCollection()) {
             return fetch((PluralAttribute)attr, jt);
         } else {
