@@ -589,17 +589,20 @@ public class JDBCStoreQuery
                     if (isUnfiltered(sel) && !hasConstantJoin(joins)) {
                         // every row of every owned table belongs to a deleted
                         // candidate, so there is nothing to materialize
-                        if (owned == null)
+                        if (owned == null) {
                             owned = new OwnedTableDelete[mappings.length];
+                        }
                         owned[i] = new OwnedTableDelete(joins);
                     } else {
                         Column key = getBulkDeleteKey(mappings[i], joins);
                         // the owned rows cannot be deleted by primary key;
                         // indicate that the query has to be executed in-memory
-                        if (key == null)
+                        if (key == null) {
                             return null;
-                        if (owned == null)
+                        }
+                        if (owned == null) {
                             owned = new OwnedTableDelete[mappings.length];
+                        }
                         sel.clearSelects();
                         sel.setDistinct(true);
                         sel.select(key);
@@ -614,14 +617,15 @@ public class JDBCStoreQuery
             // does not support the request bulk delete operation; in
             // this case, we need to perform the query in-memory and
             // manually delete the instances
-            if (!isUpdate)
+            if (!isUpdate) {
                 sql[i] = dict.toDelete(mappings[i], sel, params);
-            else
-                sql[i] = dict.toUpdate(mappings[i], sel, _store, params,
-                    updates);
+            } else {
+                sql[i] = dict.toUpdate(mappings[i], sel, _store, params, updates);
+            }
 
-            if (sql[i] == null)
+            if (sql[i] == null) {
                 return null;
+            }
         }
 
         // we need to make sure we have an active store connection
@@ -678,12 +682,13 @@ public class JDBCStoreQuery
                     _store.getDBDictionary());
         }
         finally {
-            if (stmnt != null)
+            if (stmnt != null) {
                 try {
                     stmnt.close();
                 }
                 catch (SQLException se) {
                 }
+            }
         }
     }
 
@@ -725,20 +730,21 @@ public class JDBCStoreQuery
         catch (SQLException se) {
             throw SQLExceptions.getStore(se, sqlBuffer.getSQL(),
                 _store.getDBDictionary());
-        }
-        finally {
-            if (rs != null)
+        } finally {
+        	if (rs != null) {
                 try {
                     rs.close();
                 }
                 catch (SQLException se) {
                 }
-            if (stmnt != null)
+        	}
+            if (stmnt != null) {
                 try {
                     stmnt.close();
                 }
                 catch (SQLException se) {
                 }
+            }
         }
         return keys;
     }
@@ -769,8 +775,9 @@ public class JDBCStoreQuery
             sql.append("DELETE FROM ").append(table).append(" WHERE ").
                 append(col).append(" IN (");
             for (int i = start; i < end; i++) {
-                if (i > start)
+                if (i > start) {
                     sql.append(", ");
+                }
                 sql.appendValue(keys.get(i), col);
             }
             sql.append(")");
@@ -807,9 +814,9 @@ public class JDBCStoreQuery
             joins);
         if (subclasses) {
             ClassMapping[] subs = mapping.getJoinablePCSubclassMappings();
-            for (int i = 0; subs != null && i < subs.length; i++)
-                addOwnedTableJoins(subs[i].getDefinedFieldMappings(),
-                    mapping.getTable(), joins);
+            for (int i = 0; subs != null && i < subs.length; i++) {
+                addOwnedTableJoins(subs[i].getDefinedFieldMappings(), mapping.getTable(), joins);
+            }
         }
         return joins;
     }
@@ -823,12 +830,14 @@ public class JDBCStoreQuery
             // it leads to are entity rows and a bulk delete never cascades
             if (join != null && join.getTable() != table
                 && !joinsRelatedType(field, join.getTable())
-                && !joins.contains(join))
+                && !joins.contains(join)) {
                 joins.add(join);
+            }
             // an element collection can also be declared inside an embeddable
             ClassMapping embedded = field.getEmbeddedMapping();
-            if (embedded != null)
+            if (embedded != null) {
                 addOwnedTableJoins(embedded.getFieldMappings(), table, joins);
+            }
         }
     }
 
@@ -851,11 +860,14 @@ public class JDBCStoreQuery
         // the table of an embeddable is the table it is embedded into - for an
         // element collection of an embeddable that is the collection table
         // itself, which the candidate owns and has to clean up
-        if (type == null || type.isEmbeddedOnly())
+        if (type == null || type.isEmbeddedOnly()) {
             return false;
-        for (; type != null; type = type.getJoinablePCSuperclassMapping())
-            if (type.getTable() == table)
+        }
+        for (; type != null; type = type.getJoinablePCSuperclassMapping()) {
+            if (type.getTable() == table) {
                 return true;
+            }
+        }
         return false;
     }
 
@@ -868,15 +880,15 @@ public class JDBCStoreQuery
     private Column getBulkDeleteKey(ClassMapping mapping,
         List<ForeignKey> joins) {
         Column[] pks = mapping.getPrimaryKeyColumns();
-        if (pks == null || pks.length != 1)
+        if (pks == null || pks.length != 1 || hasConstantJoin(joins)) {
             return null;
-        if (hasConstantJoin(joins))
-            return null;
+        }
         for (ForeignKey join : joins) {
             if (join.getColumns().length != 1
                 || join.getPrimaryKeyColumns().length != 1
-                || join.getPrimaryKeyColumns()[0] != pks[0])
+                || join.getPrimaryKeyColumns()[0] != pks[0]) {
                 return null;
+            }
         }
         return pks[0];
     }
@@ -891,8 +903,9 @@ public class JDBCStoreQuery
     private boolean hasConstantJoin(List<ForeignKey> joins) {
         for (ForeignKey join : joins) {
             if (join.getConstantColumns().length != 0
-                || join.getConstantPrimaryKeyColumns().length != 0)
+                || join.getConstantPrimaryKeyColumns().length != 0) {
                 return true;
+            }
         }
         return false;
     }
@@ -944,8 +957,9 @@ public class JDBCStoreQuery
         // all the related tables and then issing a delete against those
         // keys), but that logic is not currently implemented
         Table table = getTable(mapping.getFieldMappings(), null);
-        if (table == INVALID)
+        if (table == INVALID) {
             return false;
+        }
 
         if (subclasses) {
             // if we are including subclasses, we also need to gather
@@ -953,8 +967,9 @@ public class JDBCStoreQuery
             ClassMapping[] subs = mapping.getJoinablePCSubclassMappings();
             for (int i = 0; subs != null && i < subs.length; i++) {
                 table = getTable(subs[i].getDefinedFieldMappings(), table);
-                if (table == INVALID)
+                if (table == INVALID) {
                     return false;
+                }
             }
         }
         return true;

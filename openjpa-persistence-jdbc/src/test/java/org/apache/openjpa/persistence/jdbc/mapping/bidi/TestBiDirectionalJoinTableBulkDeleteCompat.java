@@ -45,12 +45,12 @@ public class TestBiDirectionalJoinTableBulkDeleteCompat
     }
 
     public void testBulkDeleteFallsBackToTheInMemoryPath() {
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        assertEquals(1, em.createQuery("delete from Person p where p.ssn=:ssn")
-            .setParameter("ssn", SSN).executeUpdate());
-        em.getTransaction().commit();
-        em.close();
+        try (EntityManager em = emf.createEntityManager()) {
+	        em.getTransaction().begin();
+	        assertEquals(1, em.createQuery("delete from Person p where p.ssn=:ssn")
+	            .setParameter("ssn", SSN).executeUpdate());
+	        em.getTransaction().commit();
+        }
 
         assertEquals(0, count(Person.class));
         // the candidates are loaded and removed one by one
@@ -62,20 +62,20 @@ public class TestBiDirectionalJoinTableBulkDeleteCompat
     }
 
     private void createData() {
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        Person person = new Person();
-        person.setSsn(SSN);
-        person.setName("person");
-        for (String phone : PHONES) {
-            Address address = new Address();
-            address.setPhone(phone);
-            address.setCity("city");
-            person.addAddress(address);
-            em.persist(address);
+        try (EntityManager em = emf.createEntityManager()) {
+	        em.getTransaction().begin();
+	        Person person = new Person();
+	        person.setSsn(SSN);
+	        person.setName("person");
+	        for (String phone : PHONES) {
+	            Address address = new Address();
+	            address.setPhone(phone);
+	            address.setCity("city");
+	            person.addAddress(address);
+	            em.persist(address);
+	        }
+	        em.persist(person);
+	        em.getTransaction().commit();
         }
-        em.persist(person);
-        em.getTransaction().commit();
-        em.close();
     }
 }

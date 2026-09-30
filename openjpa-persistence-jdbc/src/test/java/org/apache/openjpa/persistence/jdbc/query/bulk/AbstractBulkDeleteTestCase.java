@@ -36,43 +36,40 @@ public abstract class AbstractBulkDeleteTestCase extends SQLListenerTestCase {
      * <code>2</code> owns none.
      */
     protected void createData() {
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        BulkDeleteOwner owner = new BulkDeleteOwner();
-        owner.setId(1L);
-        owner.setName("owner");
-        for (int i = 0; i < ITEM_COUNT; i++) {
-            BulkDeleteItem item = new BulkDeleteItem();
-            item.setId(i + 1);
-            item.setName("item" + i);
-            em.persist(item);
-            owner.getItems().add(item);
-            owner.getNicknames().add("nick" + i);
-            owner.getAddresses().add(new BulkDeleteAddress("city" + i));
+        try (EntityManager em = emf.createEntityManager()) {
+	        em.getTransaction().begin();
+	        BulkDeleteOwner owner = new BulkDeleteOwner();
+	        owner.setId(1L);
+	        owner.setName("owner");
+	        for (int i = 0; i < ITEM_COUNT; i++) {
+	            BulkDeleteItem item = new BulkDeleteItem();
+	            item.setId(i + 1);
+	            item.setName("item" + i);
+	            em.persist(item);
+	            owner.getItems().add(item);
+	            owner.getNicknames().add("nick" + i);
+	            owner.getAddresses().add(new BulkDeleteAddress("city" + i));
+	        }
+	        for (int i = 0; i < ALIAS_COUNT; i++)
+	            owner.getAliases().put("alias" + i, new BulkDeleteAddress("a" + i));
+	        for (int i = 0; i < LABEL_COUNT; i++)
+	            owner.getDetails().getLabels().add("label" + i);
+	        owner.getDetails().setNote("note");
+	        em.persist(owner);
+	
+	        BulkDeleteOwner empty = new BulkDeleteOwner();
+	        empty.setId(2L);
+	        empty.setName("other");
+	        em.persist(empty);
+	        em.getTransaction().commit();
         }
-        for (int i = 0; i < ALIAS_COUNT; i++)
-            owner.getAliases().put("alias" + i, new BulkDeleteAddress("a" + i));
-        for (int i = 0; i < LABEL_COUNT; i++)
-            owner.getDetails().getLabels().add("label" + i);
-        owner.getDetails().setNote("note");
-        em.persist(owner);
-
-        BulkDeleteOwner empty = new BulkDeleteOwner();
-        empty.setId(2L);
-        empty.setName("other");
-        em.persist(empty);
-        em.getTransaction().commit();
-        em.close();
     }
 
     protected int countRows(String table) {
-        EntityManager em = emf.createEntityManager();
-        try {
+        try  (EntityManager em = emf.createEntityManager()) {
             Object count = em.createNativeQuery("SELECT COUNT(*) FROM " + table)
                 .getSingleResult();
             return ((Number) count).intValue();
-        } finally {
-            em.close();
         }
     }
 
@@ -103,8 +100,7 @@ public abstract class AbstractBulkDeleteTestCase extends SQLListenerTestCase {
      * Execute the given bulk delete and return the number of deleted rows.
      */
     protected int delete(String jpql, Object... params) {
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             jakarta.persistence.Query q = em.createQuery(jpql);
             for (int i = 0; i < params.length; i += 2)
@@ -112,8 +108,6 @@ public abstract class AbstractBulkDeleteTestCase extends SQLListenerTestCase {
             int deleted = q.executeUpdate();
             em.getTransaction().commit();
             return deleted;
-        } finally {
-            em.close();
         }
     }
 }
