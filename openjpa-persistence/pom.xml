@@ -62,5 +62,9 @@
             <scope>provided</scope>
         </dependency>
         <!-- annotation jakarta.annotation.Generated -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
     </dependencies>
 </project>

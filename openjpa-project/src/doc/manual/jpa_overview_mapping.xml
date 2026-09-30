@@ -4255,6 +4255,15 @@ relations</link>. The only additions are the <classname>MapKey</classname>
 annotation and <literal>map-key</literal> element to declare the key field. We
 covered these additions in <xref linkend="jpa_overview_meta_mapkey"/>.
             </para>
+            <para>
+For a map of basic types the key is held in a column of its own. Unless
+<classname>MapKeyColumn</classname> names it, the column defaults to <literal>the
+name of the field or property + _KEY</literal>. To use the default of OpenJPA
+releases before 4.2.0, <literal>KEY</literal> (which most dictionaries turn into
+<literal>KEY0</literal>, as <literal>KEY</literal> is a reserved word), set the
+<xref linkend="openjpa.Compatibility"/> option
+<literal>UseSpecDefaultMapKeyColumnName</literal> to <literal>false</literal>.
+            </para>
             <mediaobject>
                 <imageobject>
                     <!-- PNG image data, 382 x 274 (see README) -->

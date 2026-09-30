@@ -192,11 +192,30 @@
                     (<xref linkend="ref_guide_pc_scos_proxy_lrs"/>) are not affected.
                 </para>
                 <para>
-                    For very large query results use <literal>setFirstResult()</literal> /
-                    <literal>setMaxResults()</literal> paging, or obtain the kernel query via
-                    <literal>OpenJPAQuery.getDelegate()</literal> for lazy semantics. Code that casts
-                    the result to <classname>ResultList</classname> or
+                    The memory and performance implication is that the whole result set is held in
+                    memory at once: a query that previously streamed rows in
+                    <xref linkend="openjpa.FetchBatchSize"/> sized windows now allocates one list
+                    entry per row before <literal>getResultList()</literal> returns. Applications
+                    that scan very large result sets should use
+                    <literal>setFirstResult()</literal> / <literal>setMaxResults()</literal> paging,
+                    or obtain the kernel query via <literal>OpenJPAQuery.getDelegate()</literal> for
+                    lazy semantics. Code that casts the result to
+                    <classname>ResultList</classname> or
                     <classname>DelegatingResultList</classname> must be changed.
+                </para>
+                <para>
+                    Applications that depend on the previous streaming behaviour can restore it with
+                    the <literal>MaterializeQueryResultList</literal> compatibility option:
+                </para>
+<programlisting>
+&lt;property name="openjpa.Compatibility" value="MaterializeQueryResultList=false"/&gt;
+</programlisting>
+                <para>
+                    With the option disabled, <literal>Query.getResultList()</literal> again returns
+                    the lazy <classname>ResultList</classname> that honours
+                    <xref linkend="openjpa.FetchBatchSize"/> and becomes invalid once the query or
+                    the <classname>EntityManager</classname> is closed. The option defaults to
+                    <literal>true</literal>, which is the behaviour since 4.2.0.
                 </para>
             </section>
             <section id="jpa_4.2_BulkDeleteNoCascade">
@@ -478,6 +497,13 @@
                     subclasses. Flatten nested selections, use unique aliases and adjust catch blocks
                     and <literal>null</literal> checks accordingly.
                 </para>
+                <para>
+                    Rejecting nested compound selections removes a documented OpenJPA extension
+                    that supported arbitrarily nested tuple and array selections. Applications
+                    relying on it can restore the previous behavior with the compatibility option
+                    <literal>AllowNestedCompoundSelection</literal>:
+                </para>
+                <programlisting>&lt;property name="openjpa.Compatibility" value="AllowNestedCompoundSelection=true"/&gt;</programlisting>
             </section>
             <section id="jpa_4.2_PersistenceUnitUtilIdentifier">
                 <title>PersistenceUnitUtil.getIdentifier() returns the plain identifier</title>
@@ -526,8 +552,17 @@
                 <para>
                     Declare the existing column explicitly, for example
                     <literal>@MapKeyColumn(name="KEY0")</literal>, or rename the column in the
-                    database. No compatibility option restores the old default. See also
-                    <xref linkend="jpa_overview_mapping_map"/>.
+                    database. Alternatively, set the <xref linkend="openjpa.Compatibility"/>
+                    option <literal>UseSpecDefaultMapKeyColumnName</literal> to
+                    <literal>false</literal>, which restores the old default for all map fields
+                    that do not declare a key column:
+                </para>
+<programlisting>
+&lt;property name="openjpa.Compatibility" value="UseSpecDefaultMapKeyColumnName=false"/&gt;
+</programlisting>
+                <para>
+                    An explicit <literal>@MapKeyColumn</literal> is honoured regardless of the
+                    setting. See also <xref linkend="jpa_overview_mapping_map"/>.
                 </para>
             </section>
             <section id="jpa_4.2_MappingResolution">

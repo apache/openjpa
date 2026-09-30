@@ -63,6 +63,7 @@ import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.ManagedType;
 import jakarta.persistence.metamodel.Metamodel;
 
+import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.ExpressionStoreQuery;
 import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
@@ -457,42 +458,73 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
     @Override
     @SuppressWarnings("unchecked")
     public <X, T, V extends T> Join<X, V> treat(Join<X, T> join, Class<V> type) {
-        return (Join<X, V>) join;
+        return (Join<X, V>) narrow(join, type);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <X, T, E extends T> CollectionJoin<X, E> treat(CollectionJoin<X, T> join, Class<E> type) {
-        return (CollectionJoin<X, E>) join;
+        return (CollectionJoin<X, E>) narrow(join, type);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <X, T, E extends T> SetJoin<X, E> treat(SetJoin<X, T> join, Class<E> type) {
-        return (SetJoin<X, E>) join;
+        return (SetJoin<X, E>) narrow(join, type);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <X, T, E extends T> ListJoin<X, E> treat(ListJoin<X, T> join, Class<E> type) {
-        return (ListJoin<X, E>) join;
+        return (ListJoin<X, E>) narrow(join, type);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <X, K, T, V extends T> MapJoin<X, K, V> treat(MapJoin<X, K, T> join, Class<V> type) {
-        return (MapJoin<X, K, V>) join;
+        return (MapJoin<X, K, V>) narrow(join, type);
+    }
+
+    /**
+     * Narrows the given join to the given subtype. The join resolves its attributes against the
+     * narrowed type and binds its kernel variable to the narrowed metadata, which restricts the
+     * join to instances of the given type and of its subtypes, as a JPQL TREAT join does.
+     *
+     * @return the given join, narrowed to the given type
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private <T> Join<?, ?> narrow(Join<?, ?> join, Class<T> type) {
+        FromImpl<?, ?> from = (FromImpl<?, ?>) join;
+        if (!from.getJavaType().isAssignableFrom(type)) {
+            throw new IllegalArgumentException(type.getName() + " is not a subtype of "
+                + from.getJavaType().getName() + " and hence can not be a TREAT target of " + join);
+        }
+        // A join that is correlated to an outer query, or that is reached from such a join, is not
+        // bound to a kernel variable of its own, so there is no variable that could carry the
+        // narrowed metadata. Fail loudly rather than narrowing such a join without any effect.
+        if (from.getCorrelatedJoin(from) != null) {
+            throw new UnsupportedOperationException("TREAT(" + join + " AS " + type.getName()
+                + ") is not supported for a join that is correlated to an outer query; "
+                + "use TREAT in a JPQL query to narrow such a join.");
+        }
+        ((FromImpl) from).setTreatAs((Types.Entity<T>) _model.entity(type));
+        return join;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <X, T extends X> Path<T> treat(Path<X> path, Class<T> type) {
         if (path instanceof Root) {
             return (Path<T>) treat((Root<X>) path, type);
         }
-        // For general paths, return the path cast to the subclass type.
-        // The path already carries the correct parent navigation; we just
-        // need the subclass type for subsequent attribute resolution.
-        return (Path<T>) path;
+        if (path instanceof Join) {
+            return (Path<T>) narrow((Join<?, ?>) path, type);
+        }
+        // Narrowing an arbitrary path expression is not implemented. Fail loudly rather than
+        // returning the path unnarrowed, which would silently produce unrestricted results.
+        throw new UnsupportedOperationException("TREAT(" + path + " AS " + type.getName()
+            + ") is not supported. Only a Root or a Join can be narrowed by a Criteria query; "
+            + "use TREAT in a JPQL query to narrow other path expressions.");
     }
 
     @Override
@@ -1113,7 +1145,7 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 
     @Override
     public <T> Predicate qbe(From<?, T> from, T example, ComparisonStyle style) {
-        return qbe(from, example, style, null);
+        return qbe(from, example, style);
     }
 
     @Override
@@ -1123,7 +1155,7 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 
     @Override
     public <T> Predicate qbe(From<?, T> from, T example) {
-        return qbe(from, example, qbeStyle(), null);
+        return qbe(from, example, qbeStyle());
     }
 
     /**
@@ -1295,15 +1327,29 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 
     /**
      * Validates that none of the given selections is a compound (tuple or array) selection.
-     * Per JPA spec, tuple() and array() must not accept compound selection arguments.
+     * Per JPA spec, tuple() and array() must not accept compound selection arguments. The
+     * compatibility option <code>AllowNestedCompoundSelection</code> restores the historic
+     * OpenJPA extension that allowed arbitrarily nested tuple and array selections.
      */
     private void assertNoCompoundSelections(Selection<?>... selections) {
+        if (isNestedCompoundSelectionAllowed()) {
+            return;
+        }
         for (Selection<?> s : selections) {
             if (s.isCompoundSelection()) {
                 throw new IllegalArgumentException(
                     "A compound selection (tuple or array) must not contain another compound selection");
             }
         }
+    }
+
+    private boolean isNestedCompoundSelectionAllowed() {
+        if (_model == null) {
+            return false;
+        }
+        OpenJPAConfiguration conf = _model.getConfiguration();
+        return conf != null && conf.getCompatibilityInstance() != null
+            && conf.getCompatibilityInstance().getAllowNestedCompoundSelection();
     }
 
 }

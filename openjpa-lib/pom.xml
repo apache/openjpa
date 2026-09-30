@@ -79,6 +79,10 @@
             <artifactId>jakarta.validation-api</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -112,7 +116,7 @@
                                         <equals arg1="${diff.state.cached}" arg2="1" />
                                     </or>
                                 </condition>
-                                
+
                                 <echo>Getting the 'GIT' revision value</echo>
                                 <exec outputproperty="git.revision" failonerror="false" failifexecutionfails="false" executable="git">
                                     <arg line="rev-parse --short=7 HEAD" />

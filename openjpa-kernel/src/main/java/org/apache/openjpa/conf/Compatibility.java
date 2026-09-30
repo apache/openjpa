@@ -58,6 +58,7 @@ public class Compatibility {
     private boolean _flushBeforeDetach = false;
     private boolean _cascadeWithDetach = false;
     private boolean _useJPA2DefaultOrderColumnName = true;
+    private boolean _useSpecDefaultMapKeyColumnName = true;
     private boolean _copyOnDetach = false;
     private boolean _privatePersistentProperties = false;
     private boolean _autoOff = true;
@@ -79,7 +80,9 @@ public class Compatibility {
     private boolean _returnNullOnEmptyAggregateResult = true;   // OPENJPA-1794
     private boolean _cacheNonDefaultFetchPlanQueries = false; // OPENJPA-2414
     private boolean _specCompliantSchemaGeneration = false; // OPENJPA-2940
+    private boolean _materializeQueryResultList = true; // OPENJPA-2989
     private boolean _cleanupOwnedTablesOnBulkDelete = true; // OPENJPA-2990
+    private boolean _allowNestedCompoundSelection = false; // OPENJPA-2991
 
     /**
      * Whether to require exact identity value types when creating object
@@ -449,6 +452,34 @@ public class Compatibility {
         _useJPA2DefaultOrderColumnName = useJPA2Name;
     }
 
+    /**
+     * Whether OpenJPA should use the default map key column name defined by
+     * section 11.1.35 of the specification: name; "_"; "KEY" or the name used
+     * before OpenJPA 4.2.0, "key" (which dictionaries usually turn into
+     * "KEY0", as "KEY" is a reserved word).
+     *
+     * @since 4.2.0
+     * @return true if the specification default name should be used
+     */
+    public boolean getUseSpecDefaultMapKeyColumnName() {
+        return _useSpecDefaultMapKeyColumnName;
+    }
+
+    /**
+     * Whether OpenJPA should use the default map key column name defined by
+     * section 11.1.35 of the specification: name; "_"; "KEY" or the name used
+     * before OpenJPA 4.2.0, "key" (which dictionaries usually turn into
+     * "KEY0", as "KEY" is a reserved word).
+     *
+     * @param useSpecName true if the specification default name should be
+     * used.  false if the pre-4.2.0 name should be used.
+     *
+     * @since 4.2.0
+     */
+    public void setUseSpecDefaultMapKeyColumnName(boolean useSpecName) {
+        _useSpecDefaultMapKeyColumnName = useSpecName;
+    }
+
 
     /**
      * Whether OpenJPA allows private, non-transient properties to be
@@ -800,6 +831,55 @@ public class Compatibility {
      */
     public void setSpecCompliantSchemaGeneration(boolean b) {
         _specCompliantSchemaGeneration = b;
+    }
+
+    /**
+     * Whether <code>Query.getResultList()</code> copies the query result into a
+     * {@link java.util.ArrayList}. When true (the default) the complete result is
+     * materialized before it is returned, so the list is mutable and remains usable
+     * after the query or the <code>EntityManager</code> has been closed. When false,
+     * the lazy <code>org.apache.openjpa.lib.rop.ResultList</code> of releases before
+     * 4.2.0 is returned, which streams rows on demand according to
+     * <code>openjpa.FetchBatchSize</code> and becomes invalid on close.
+     *
+     * @since 4.2.0
+     */
+    public boolean getMaterializeQueryResultList() {
+        return _materializeQueryResultList;
+    }
+
+    /**
+     * Whether <code>Query.getResultList()</code> copies the query result into a
+     * {@link java.util.ArrayList}. Set to false to restore the lazy, streaming
+     * result list of releases before 4.2.0.
+     *
+     * @since 4.2.0
+     */
+    public void setMaterializeQueryResultList(boolean b) {
+        _materializeQueryResultList = b;
+    }
+
+    /**
+     * Whether <code>CriteriaBuilder.tuple()</code> and <code>CriteriaBuilder.array()</code>
+     * accept compound selections as arguments. The specification forbids nesting a compound
+     * selection in another one, which OpenJPA rejects with an
+     * <code>IllegalArgumentException</code> by default. Set to true to restore the historic
+     * OpenJPA extension that allowed arbitrarily nested tuple and array selections.
+     *
+     * @since 4.2.0
+     */
+    public boolean getAllowNestedCompoundSelection() {
+        return _allowNestedCompoundSelection;
+    }
+
+    /**
+     * Whether <code>CriteriaBuilder.tuple()</code> and <code>CriteriaBuilder.array()</code>
+     * accept compound selections as arguments.
+     *
+     * @since 4.2.0
+     */
+    public void setAllowNestedCompoundSelection(boolean b) {
+        _allowNestedCompoundSelection = b;
     }
 
     /**
