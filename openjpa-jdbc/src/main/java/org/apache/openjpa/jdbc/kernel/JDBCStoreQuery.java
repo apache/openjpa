@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.kernel;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,9 +46,11 @@ import org.apache.openjpa.jdbc.kernel.exps.Val;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Discriminator;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
+import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.meta.strats.NoneDiscriminatorStrategy;
 import org.apache.openjpa.jdbc.meta.strats.VerticalClassStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.PostgresDictionary;
@@ -92,6 +95,9 @@ public class JDBCStoreQuery
     private static final long serialVersionUID = 1L;
 
     private static final Table INVALID = new Table();
+
+    // number of keys per IN list when the dictionary defines no limit
+    private static final int IN_CLAUSE_CHUNK_SIZE = 1000;
 
     // add all standard filter and aggregate listeners to these maps
     private static final Map _listeners = new HashMap();
@@ -557,6 +563,14 @@ public class JDBCStoreQuery
             state[i] = new QueryExpressionsState();
 
         SQLBuffer[] sql = new SQLBuffer[mappings.length];
+        // a bulk delete does not cascade to related entities, but the rows of
+        // the join tables and element collection tables owned by the deleted
+        // entities are not entities themselves and have to be removed as well.
+        // Those candidates are deleted by primary key, so the criteria are
+        // evaluated exactly once and no statement sees a mutated database; a
+        // delete without criteria needs no keys and empties them outright
+        OwnedTableDelete[] owned = null;
+        boolean cleanupOwnedTables = !isUpdate && cleansOwnedTables();
         JDBCExpressionFactory jdbcFactory;
         Select sel;
         for (int i = 0; i < mappings.length; i++) {
@@ -567,18 +581,51 @@ public class JDBCStoreQuery
                 subclasses, exps[i], state[i],
                 EagerFetchModes.EAGER_NONE);
 
+            if (cleanupOwnedTables) {
+                List<ForeignKey> joins = getOwnedTableJoins(mappings[i],
+                    subclasses);
+                if (!joins.isEmpty()) {
+                    sel.addJoinClassConditions();
+                    if (isUnfiltered(sel) && !hasConstantJoin(joins)) {
+                        // every row of every owned table belongs to a deleted
+                        // candidate, so there is nothing to materialize
+                        if (owned == null) {
+                            owned = new OwnedTableDelete[mappings.length];
+                        }
+                        owned[i] = new OwnedTableDelete(joins);
+                    } else {
+                        Column key = getBulkDeleteKey(mappings[i], joins);
+                        // the owned rows cannot be deleted by primary key;
+                        // indicate that the query has to be executed in-memory
+                        if (key == null) {
+                            return null;
+                        }
+                        if (owned == null) {
+                            owned = new OwnedTableDelete[mappings.length];
+                        }
+                        sel.clearSelects();
+                        sel.setDistinct(true);
+                        sel.select(key);
+                        owned[i] = new OwnedTableDelete(mappings[i].getTable(),
+                            key, joins, sel.toSelect(false, null));
+                        continue;
+                    }
+                }
+            }
+
             // The bulk operation will return null to indicate that the database
             // does not support the request bulk delete operation; in
             // this case, we need to perform the query in-memory and
             // manually delete the instances
-            if (!isUpdate)
+            if (!isUpdate) {
                 sql[i] = dict.toDelete(mappings[i], sel, params);
-            else
-                sql[i] = dict.toUpdate(mappings[i], sel, _store, params,
-                    updates);
+            } else {
+                sql[i] = dict.toUpdate(mappings[i], sel, _store, params, updates);
+            }
 
-            if (sql[i] == null)
+            if (sql[i] == null) {
                 return null;
+            }
         }
 
         // we need to make sure we have an active store connection
@@ -587,26 +634,19 @@ public class JDBCStoreQuery
         Connection conn = _store.getConnection();
         long count = 0;
         try {
-            PreparedStatement stmnt;
-            for (SQLBuffer sqlBuffer : sql) {
-                stmnt = null;
-                try {
-                    stmnt = prepareStatement(conn, sqlBuffer);
-                    dict.setTimeouts(stmnt, fetch, true);
-                    count += executeUpdate(conn, stmnt, sqlBuffer, isUpdate);
+            for (int i = 0; i < sql.length; i++) {
+                OwnedTableDelete del = (owned == null) ? null : owned[i];
+                if (del != null && del.keySelect != null) {
+                    count += deleteByKey(conn, dict, fetch, del);
+                    continue;
                 }
-                catch (SQLException se) {
-                    throw SQLExceptions.getStore(se, sqlBuffer.getSQL(),
-                            _store.getDBDictionary());
+                if (del != null) {
+                    // an unfiltered delete empties the owned tables outright
+                    for (ForeignKey join : del.joins)
+                        deleteAll(conn, dict, fetch, join.getTable());
                 }
-                finally {
-                    if (stmnt != null)
-                        try {
-                            stmnt.close();
-                        }
-                        catch (SQLException se) {
-                        }
-                }
+                count += executeBulkStatement(conn, dict, fetch, sql[i],
+                    isUpdate);
             }
         } finally {
             try {
@@ -618,6 +658,283 @@ public class JDBCStoreQuery
 
         localContext.remove();
         return count;
+    }
+
+    /**
+     * Whether a bulk delete also removes the rows of the tables owned by the
+     * deleted entities.
+     */
+    private boolean cleansOwnedTables() {
+        return _store.getConfiguration().getCompatibilityInstance().
+            getCleanupOwnedTablesOnBulkDelete();
+    }
+
+    private int executeBulkStatement(Connection conn, DBDictionary dict,
+        JDBCFetchConfiguration fetch, SQLBuffer sqlBuffer, boolean isUpdate) {
+        PreparedStatement stmnt = null;
+        try {
+            stmnt = prepareStatement(conn, sqlBuffer);
+            dict.setTimeouts(stmnt, fetch, true);
+            return executeUpdate(conn, stmnt, sqlBuffer, isUpdate);
+        }
+        catch (SQLException se) {
+            throw SQLExceptions.getStore(se, sqlBuffer.getSQL(),
+                    _store.getDBDictionary());
+        }
+        finally {
+            if (stmnt != null) {
+                try {
+                    stmnt.close();
+                }
+                catch (SQLException se) {
+                }
+            }
+        }
+    }
+
+    /**
+     * Delete the candidate rows and the rows of the tables they own. The
+     * criteria are evaluated exactly once to materialize the primary keys of
+     * the candidates; every delete is then issued against those keys, so no
+     * statement re-evaluates the criteria against a mutated database.
+     * Returns the number of deleted candidate rows.
+     */
+    private long deleteByKey(Connection conn, DBDictionary dict,
+        JDBCFetchConfiguration fetch, OwnedTableDelete del) {
+        List<Object> keys = selectKeys(conn, dict, fetch, del.keySelect);
+        if (keys.isEmpty())
+            return 0;
+        // the owned rows have to go first, else they would still reference the
+        // primary keys of the candidate rows that are about to be deleted
+        for (ForeignKey join : del.joins)
+            deleteIn(conn, dict, fetch, join.getTable(), join.getColumns()[0],
+                keys);
+        return deleteIn(conn, dict, fetch, del.table, del.key, keys);
+    }
+
+    /**
+     * Read the single column selected by the given statement.
+     */
+    private List<Object> selectKeys(Connection conn, DBDictionary dict,
+        JDBCFetchConfiguration fetch, SQLBuffer sqlBuffer) {
+        List<Object> keys = new ArrayList<>();
+        PreparedStatement stmnt = null;
+        ResultSet rs = null;
+        try {
+            stmnt = prepareStatement(conn, sqlBuffer);
+            dict.setTimeouts(stmnt, fetch, false);
+            rs = stmnt.executeQuery();
+            while (rs.next())
+                keys.add(dict.getObject(rs, 1, null));
+        }
+        catch (SQLException se) {
+            throw SQLExceptions.getStore(se, sqlBuffer.getSQL(),
+                _store.getDBDictionary());
+        } finally {
+        	if (rs != null) {
+                try {
+                    rs.close();
+                }
+                catch (SQLException se) {
+                }
+        	}
+            if (stmnt != null) {
+                try {
+                    stmnt.close();
+                }
+                catch (SQLException se) {
+                }
+            }
+        }
+        return keys;
+    }
+
+    /**
+     * Delete every row of the given table.
+     */
+    private long deleteAll(Connection conn, DBDictionary dict,
+        JDBCFetchConfiguration fetch, Table table) {
+        SQLBuffer sql = new SQLBuffer(dict);
+        sql.append("DELETE FROM ").append(table);
+        return executeBulkStatement(conn, dict, fetch, sql, false);
+    }
+
+    /**
+     * Delete the rows of the given table whose given column matches one of the
+     * given keys, chunking the IN list to a size the database accepts.
+     */
+    private long deleteIn(Connection conn, DBDictionary dict,
+        JDBCFetchConfiguration fetch, Table table, Column col,
+        List<Object> keys) {
+        int limit = dict.inClauseLimit > 0 ? dict.inClauseLimit
+            : IN_CLAUSE_CHUNK_SIZE;
+        long count = 0;
+        for (int start = 0; start < keys.size(); start += limit) {
+            int end = Math.min(start + limit, keys.size());
+            SQLBuffer sql = new SQLBuffer(dict);
+            sql.append("DELETE FROM ").append(table).append(" WHERE ").
+                append(col).append(" IN (");
+            for (int i = start; i < end; i++) {
+                if (i > start) {
+                    sql.append(", ");
+                }
+                sql.appendValue(keys.get(i), col);
+            }
+            sql.append(")");
+            count += executeBulkStatement(conn, dict, fetch, sql, false);
+        }
+        return count;
+    }
+
+    /**
+     * Whether the given select restricts the candidate rows in no way at all,
+     * so that every row of the candidate table - and therefore every row of
+     * every table those candidates own - is deleted. Deliberately strict: any
+     * condition whatsoever, including a discriminator or subclass condition,
+     * a subselect, a grouping or a join, makes the keys of the matching rows
+     * the only safe thing to delete by.
+     */
+    private boolean isUnfiltered(Select sel) {
+        SQLBuffer where = sel.getWhere();
+        return (where == null || where.isEmpty())
+            && sel.getFromSelect() == null
+            && sel.getHaving() == null
+            && sel.getGrouping() == null
+            && !sel.getJoinIterator().hasNext();
+    }
+
+    /**
+     * Return the foreign keys that link the tables owned by the given mapping -
+     * join tables and element collection tables - back to its primary table.
+     */
+    private List<ForeignKey> getOwnedTableJoins(ClassMapping mapping,
+        boolean subclasses) {
+        List<ForeignKey> joins = new ArrayList<>(0);
+        addOwnedTableJoins(mapping.getFieldMappings(), mapping.getTable(),
+            joins);
+        if (subclasses) {
+            ClassMapping[] subs = mapping.getJoinablePCSubclassMappings();
+            for (int i = 0; subs != null && i < subs.length; i++) {
+                addOwnedTableJoins(subs[i].getDefinedFieldMappings(), mapping.getTable(), joins);
+            }
+        }
+        return joins;
+    }
+
+    private void addOwnedTableJoins(FieldMapping[] fields, Table table,
+        List<ForeignKey> joins) {
+        for (FieldMapping field : fields) {
+            ForeignKey join = field.getJoinForeignKey();
+            // a join into the table of a related entity - an inverse key
+            // mapping - does not point at a table this field owns; the rows
+            // it leads to are entity rows and a bulk delete never cascades
+            if (join != null && join.getTable() != table
+                && !joinsRelatedType(field, join.getTable())
+                && !joins.contains(join)) {
+                joins.add(join);
+            }
+            // an element collection can also be declared inside an embeddable
+            ClassMapping embedded = field.getEmbeddedMapping();
+            if (embedded != null) {
+                addOwnedTableJoins(embedded.getFieldMappings(), table, joins);
+            }
+        }
+    }
+
+    private boolean joinsRelatedType(FieldMapping field, Table table) {
+        // the value of a map is its element
+        return isTypeTable(field.getElementMapping(), table)
+            || isTypeTable(field.getKeyMapping(), table);
+    }
+
+    /**
+     * Whether the given table is a table of the type of the given value. The
+     * table does not have to be the one of the declared type: an inverse key
+     * mapping joins into the table of the class that declares the inverse
+     * field, which can be any joined superclass of the declared type.
+     */
+    private boolean isTypeTable(ValueMapping val, Table table) {
+        if (val == null || val.getEmbeddedMapping() != null)
+            return false;
+        ClassMapping type = val.getTypeMapping();
+        // the table of an embeddable is the table it is embedded into - for an
+        // element collection of an embeddable that is the collection table
+        // itself, which the candidate owns and has to clean up
+        if (type == null || type.isEmbeddedOnly()) {
+            return false;
+        }
+        for (; type != null; type = type.getJoinablePCSuperclassMapping()) {
+            if (type.getTable() == table) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Return the single primary key column the candidates and all their owned
+     * tables can be deleted by, or null if they cannot: composite primary keys,
+     * multi-column or partially constant join foreign keys and joins that do
+     * not reference the primary key have to be handled in-memory.
+     */
+    private Column getBulkDeleteKey(ClassMapping mapping,
+        List<ForeignKey> joins) {
+        Column[] pks = mapping.getPrimaryKeyColumns();
+        if (pks == null || pks.length != 1 || hasConstantJoin(joins)) {
+            return null;
+        }
+        for (ForeignKey join : joins) {
+            if (join.getColumns().length != 1
+                || join.getPrimaryKeyColumns().length != 1
+                || join.getPrimaryKeyColumns()[0] != pks[0]) {
+                return null;
+            }
+        }
+        return pks[0];
+    }
+
+    /**
+     * Whether any of the given joins carries constant columns. Such a join
+     * discriminates the rows of a table that is shared by more than one
+     * mapping, so the candidates do not own every row of that table and it
+     * must neither be emptied outright nor be deleted from by primary key
+     * alone.
+     */
+    private boolean hasConstantJoin(List<ForeignKey> joins) {
+        for (ForeignKey join : joins) {
+            if (join.getConstantColumns().length != 0
+                || join.getConstantPrimaryKeyColumns().length != 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * A delete of the candidate rows selected by a statement that yields their
+     * primary keys, and of the rows of the tables those candidates own.
+     */
+    private static class OwnedTableDelete {
+        private final Table table;
+        private final Column key;
+        private final List<ForeignKey> joins;
+        private final SQLBuffer keySelect;
+
+        OwnedTableDelete(Table table, Column key, List<ForeignKey> joins,
+            SQLBuffer keySelect) {
+            this.table = table;
+            this.key = key;
+            this.joins = joins;
+            this.keySelect = keySelect;
+        }
+
+        /**
+         * A cleanup of the owned tables that needs no keys, because the
+         * candidates are deleted without any criteria.
+         */
+        OwnedTableDelete(List<ForeignKey> joins) {
+            this(null, null, joins, null);
+        }
     }
 
     /**
@@ -640,8 +957,9 @@ public class JDBCStoreQuery
         // all the related tables and then issing a delete against those
         // keys), but that logic is not currently implemented
         Table table = getTable(mapping.getFieldMappings(), null);
-        if (table == INVALID)
+        if (table == INVALID) {
             return false;
+        }
 
         if (subclasses) {
             // if we are including subclasses, we also need to gather
@@ -649,8 +967,9 @@ public class JDBCStoreQuery
             ClassMapping[] subs = mapping.getJoinablePCSubclassMappings();
             for (int i = 0; subs != null && i < subs.length; i++) {
                 table = getTable(subs[i].getDefinedFieldMappings(), table);
-                if (table == INVALID)
+                if (table == INVALID) {
                     return false;
+                }
             }
         }
         return true;
@@ -687,7 +1006,10 @@ public class JDBCStoreQuery
             else if (table != columns[i].getTable())
                 return INVALID;
         }
-        if (fm.isBidirectionalJoinTableMappingOwner())
+        // the rows of a bi-directional join table are maintained by the
+        // inverse side, so the in-memory path leaves them behind; they are
+        // only removed if the bulk delete cleans up the owned tables itself
+        if (fm.isBidirectionalJoinTableMappingOwner() && !cleansOwnedTables())
         	return INVALID;
         return table;
     }
