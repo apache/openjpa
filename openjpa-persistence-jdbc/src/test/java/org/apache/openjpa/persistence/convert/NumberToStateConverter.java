@@ -32,6 +32,9 @@ public class NumberToStateConverter
 
     @Override
     public String convertToDatabaseColumn(Integer attribute) {
+        if (attribute == null) {
+            return null;
+        }
         if (attribute.equals(1)) {
             return "MA";
         } else if (attribute.equals(2)) {
@@ -45,6 +48,11 @@ public class NumberToStateConverter
 
     @Override
     public Integer convertToEntityAttribute(String dbData) {
+        // the converted attributes are primitive ints, so a null column
+        // maps to the "no state" value rather than to null
+        if (dbData == null) {
+            return 0;
+        }
         if (dbData.equals("MA")) {
             return 1;
         } else if (dbData.equals("CA")) {

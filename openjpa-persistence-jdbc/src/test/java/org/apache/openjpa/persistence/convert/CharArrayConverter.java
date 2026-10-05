@@ -32,6 +32,9 @@ public class CharArrayConverter
 
     @Override
     public String convertToDatabaseColumn(char[] attribute) {
+        if (attribute == null) {
+            return null;
+        }
         String s = new String(attribute);
         if (attribute.length == 3 && attribute[0] == 'D'
                 && attribute[1] == 'o' && attribute[2] == 'e') {
@@ -42,6 +45,9 @@ public class CharArrayConverter
 
     @Override
     public char[] convertToEntityAttribute(String dbData) {
+        if (dbData == null) {
+            return null;
+        }
         if ("Smith".equals(dbData)) {
             return new char[]{'J', 'a', 'm', 'e', 's'};
         }

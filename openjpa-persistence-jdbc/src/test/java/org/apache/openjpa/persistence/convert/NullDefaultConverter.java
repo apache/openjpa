@@ -22,25 +22,34 @@ import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
 /**
- * Converts dots to hashes (toDB) and hashes to underscores (toEntity).
- * Mirrors TCK DotConverter.
+ * Converter that substitutes defaults for null in both directions, as the
+ * specification allows. A null attribute is stored as {@link #DB_DEFAULT},
+ * a null column value is read back as {@link #ENTITY_DEFAULT}, and the
+ * attribute value {@link #ERASE} is stored as a null column value.
  */
-@Converter(autoApply = false)
-public class DotConverter implements AttributeConverter<String, String> {
+@Converter
+public class NullDefaultConverter
+        implements AttributeConverter<String, String> {
+
+    public static final String DB_DEFAULT = "DB_DEFAULT";
+    public static final String ENTITY_DEFAULT = "ENTITY_DEFAULT";
+    public static final String ERASE = "ERASE";
 
     @Override
     public String convertToDatabaseColumn(String attribute) {
-        if (attribute == null) {
+        if (attribute == null)
+            return DB_DEFAULT;
+        if (ERASE.equals(attribute))
             return null;
-        }
-        return attribute.replace(".", "#");
+        return attribute;
     }
 
     @Override
     public String convertToEntityAttribute(String dbData) {
-        if (dbData == null) {
+        if (dbData == null)
+            return ENTITY_DEFAULT;
+        if (DB_DEFAULT.equals(dbData))
             return null;
-        }
-        return dbData.replace("#", "_");
+        return dbData;
     }
 }

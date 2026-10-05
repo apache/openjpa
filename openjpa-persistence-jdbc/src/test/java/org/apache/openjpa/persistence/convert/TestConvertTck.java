@@ -175,7 +175,8 @@ public class TestConvertTck extends SingleEMFTestCase {
             fail("Expected PersistenceException from converter");
         } catch (PersistenceException pe) {
             // Expected: converter RuntimeException wrapped in
-            // PersistenceException
+            // PersistenceException, naming the field and the converter
+            assertConverterErrorMessage(pe);
             assertTrue("Transaction should be marked for rollback",
                 em.getTransaction().getRollbackOnly());
         } finally {
@@ -214,7 +215,8 @@ public class TestConvertTck extends SingleEMFTestCase {
             fail("Expected PersistenceException from converter during load");
         } catch (PersistenceException pe) {
             // Expected: converter RuntimeException wrapped in
-            // PersistenceException
+            // PersistenceException, naming the field and the converter
+            assertConverterErrorMessage(pe);
             assertTrue("Transaction should be marked for rollback",
                 em.getTransaction().getRollbackOnly());
         } finally {
@@ -257,5 +259,83 @@ public class TestConvertTck extends SingleEMFTestCase {
         assertEquals(1, a.getState());
         em.getTransaction().commit();
         em.close();
+    }
+
+    /**
+     * A null value of an auto-applied converter on an array attribute is
+     * passed to the converter and back, so the attribute reads back as null.
+     */
+    public void testNullConvertedArrayAttribute() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        em.persist(new ConvertFullTimeEmp(900, "Jane", null, "1000.00"));
+        em.getTransaction().commit();
+        em.clear();
+        emf.getCache().evictAll();
+
+        ConvertFullTimeEmp emp = em.find(ConvertFullTimeEmp.class, 900);
+        assertNotNull("Employee should be found", emp);
+        assertNull("lastName should read back as null", emp.getLastName());
+        assertEquals("1000.0", emp.getSalary());
+        em.close();
+    }
+
+    /**
+     * A null attribute of an embeddable is converted like any other, so a
+     * null-safe converter round-trips it as null.
+     */
+    public void testNullConvertedAttributeOnEmbedded() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        em.persist(new ConvertEmbedEntity("null-attr", "name1", 1000,
+            new ConvertAddress(null, "Redwood Shores", 1)));
+        em.getTransaction().commit();
+        em.clear();
+        emf.getCache().evictAll();
+
+        ConvertEmbedEntity e = em.find(ConvertEmbedEntity.class, "null-attr");
+        assertNotNull("Entity should be found", e);
+        ConvertAddress a = e.getAddress();
+        assertNotNull("Address should not be null", a);
+        assertNull("street should read back as null", a.getStreet());
+        assertEquals("Redwood Shores", a.getCity());
+        assertEquals(1, a.getState());
+        em.close();
+    }
+
+    /**
+     * An embeddable without a null-indicator column is materialized from its
+     * all-null columns, so its converted attributes are loaded from a null
+     * column value.
+     */
+    public void testNullEmbedded() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        em.persist(new ConvertEmbedEntity("null-embed", "name1", 1000));
+        em.getTransaction().commit();
+        em.clear();
+        emf.getCache().evictAll();
+
+        ConvertEmbedEntity e = em.find(ConvertEmbedEntity.class, "null-embed");
+        assertNotNull("Entity should be found", e);
+        ConvertAddress a = e.getAddress();
+        assertNotNull("Address is materialized from the null columns", a);
+        assertNull("street should read back as null", a.getStreet());
+        assertNull("city should read back as null", a.getCity());
+        assertEquals(0, a.getState());
+        em.close();
+    }
+
+    /**
+     * A converter failure must name the field it happened on, so the user can
+     * tell which attribute and converter is at fault.
+     */
+    private void assertConverterErrorMessage(PersistenceException pe) {
+        StringBuilder msgs = new StringBuilder();
+        for (Throwable t = pe; t != null; t = t.getCause()) {
+            msgs.append(t.getMessage()).append('\n');
+        }
+        assertTrue("A converter failure should name the failing field, was: "
+            + msgs, msgs.indexOf("ConvertAddress.state") >= 0);
     }
 }

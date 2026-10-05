@@ -861,7 +861,12 @@ public class PCPath extends CandidatePath implements JDBCPath {
             if (field.getElement().getDeclaredTypeCode() != JavaTypes.OBJECT)
                 return field.toDataStoreValue(val, ctx.store);
 
-            val = field.getExternalValue(val, ctx.store.getContext());
+            // A null in a query means SQL NULL and is not passed through an
+            // AttributeConverter: the converter is consulted on the store and
+            // load paths only, so that a literal "x IS NULL", a null bound to
+            // a parameter and a bulk "SET x = NULL" all keep the same meaning.
+            if (val != null)
+                val = field.getExternalValue(val, ctx.store.getContext());
             return field.toDataStoreValue(val, ctx.store);
         }
         return _class.toDataStoreValue(val, _class.getPrimaryKeyColumns(),

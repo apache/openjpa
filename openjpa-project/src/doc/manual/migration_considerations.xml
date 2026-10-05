@@ -629,6 +629,32 @@
                     <literal>autoApply</literal> converter from being applied.
                 </para>
                 <para>
+                    A converter is now also consulted for <literal>null</literal> in both
+                    directions, as required by Jakarta Persistence 3.2; in 4.1.x a
+                    <literal>null</literal> attribute or <literal>null</literal> column value
+                    bypassed the converter. Converter implementations must therefore be
+                    null-safe. A converter written without null checks throws on the first
+                    <literal>null</literal> it sees, which surfaces as a
+                    <classname>jakarta.persistence.PersistenceException</classname>. This also
+                    changes the stored data where a converter maps <literal>null</literal> to a
+                    column default: a <literal>null</literal> attribute is written as
+                    <literal>convertToDatabaseColumn(null)</literal> and a <literal>null</literal>
+                    column value is read as <literal>convertToEntityAttribute(null)</literal>.
+                    Converters on attributes of an embeddable are no exception; note that an
+                    embeddable without a mapped null-indicator column is materialized from its
+                    all-null columns, so its converted attributes are loaded from a
+                    <literal>null</literal> column value.
+                </para>
+                <para>
+                    Queries are unaffected: a <literal>null</literal> in a query always means SQL
+                    <literal>NULL</literal> and is never passed through the converter, so
+                    <literal>x IS NULL</literal>, <literal>x = :nullParameter</literal>,
+                    <literal>SET x = NULL</literal> and <literal>SET x = :nullParameter</literal>
+                    keep the same meaning as in 4.1.x. A converter that maps <literal>null</literal>
+                    to a column default can therefore not be queried for its null attributes by
+                    <literal>IS NULL</literal>; compare against the substitute value instead.
+                </para>
+                <para>
                     Audit existing <literal>@Converter(autoApply=true)</literal> classes: attributes of
                     the matching type that were stored unconverted by 4.1.x are now written and read
                     through the converter and their generated column type changes. Remove
