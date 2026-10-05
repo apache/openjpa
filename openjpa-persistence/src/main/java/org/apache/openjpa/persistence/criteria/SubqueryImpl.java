@@ -81,17 +81,23 @@ class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
         super(cls);
         _parent = parent;
         OrderedMap<Object, Class<?>> params;
+        // the captive query shares the translation state of the tree this
+        // subquery belongs to, hence also the lock that serializes it
+        TranslationLock translationLock;
         if (parent instanceof CriteriaQueryImpl) {
             _model = ((CriteriaQueryImpl<?>)parent).getMetamodel();
             params = ((CriteriaQueryImpl<?>)parent).getParameterTypes();
+            translationLock = ((CriteriaQueryImpl<?>)parent).getTranslationLock();
         } else if (parent instanceof SubqueryImpl) {
             _model = ((SubqueryImpl<?>)parent).getMetamodel();
             params = ((SubqueryImpl<?>)parent).getInnermostParent().getParameterTypes();
+            translationLock = ((SubqueryImpl<?>)parent).getInnermostParent().getTranslationLock();
         } else {
             _model = null;
             params = null;
+            translationLock = new TranslationLock();
         }
-        _delegate = new CriteriaQueryImpl<>(_model, this, params);
+        _delegate = new CriteriaQueryImpl<>(_model, this, params, translationLock);
     }
 
     /**

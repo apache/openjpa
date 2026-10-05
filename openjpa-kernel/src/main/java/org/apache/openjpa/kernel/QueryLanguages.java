@@ -35,6 +35,14 @@ public class QueryLanguages {
     public static final String LANG_STORED_PROC = "openjpa.StoredProcedure.SQL";
     public static final String LANG_PREPARED_SQL = "openjpa.prepared.SQL";
     public static final String LANG_METHODQL = "openjpa.MethodQL";
+    /**
+     * The Criteria API. Unlike the other languages, a query of this language is
+     * not expressed as a string, so it can neither be identified nor recreated
+     * by a query string.
+     *
+     * @since 4.2.0
+     */
+    public static final String LANG_CRITERIA = "jakarta.persistence.criteria";
 
     private static Map _expressionParsers = new HashMap();
     static {

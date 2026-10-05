@@ -56,6 +56,8 @@ public class QueryMetaData
     private Class _candidate;
     private Class _res;
     private String _query;
+    private transient Object _parsedQuery;
+    private transient String _parsedQueryId;
     private String[] _comments;
     private List _hintKeys;
     private List _hintVals;
@@ -171,6 +173,42 @@ public class QueryMetaData
             query = query.replaceAll("[\\?]", "\\:_");
         }
         _query = query;
+    }
+
+    /**
+     * The already parsed form of this query, or null if none. Non string-based
+     * query languages such as the Criteria API are not necessarily expressible
+     * as a parseable query string, so their compiled form is held here and
+     * replayed verbatim instead of being re-parsed from
+     * {@link #getQueryString()}.
+     */
+    public Object getParsedQuery() {
+        return _parsedQuery;
+    }
+
+    /**
+     * The already parsed form of this query, or null if none.
+     */
+    public void setParsedQuery(Object parsed) {
+        _parsedQuery = parsed;
+    }
+
+    /**
+     * The identifier of the parsed form of this query, or null if none. A query
+     * of a non string-based language has no query string to be identified by,
+     * so the identifier is rendered once, when the query is registered: the
+     * parsed form is shared by every replay of the query and rendering it again
+     * would read the shared form without holding its lock.
+     */
+    public String getParsedQueryId() {
+        return _parsedQueryId;
+    }
+
+    /**
+     * The identifier of the parsed form of this query, or null if none.
+     */
+    public void setParsedQueryId(String id) {
+        _parsedQueryId = id;
     }
 
     /**

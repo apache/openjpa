@@ -81,6 +81,10 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
             || query == null
             || QueryLanguages.LANG_SQL.equals(query.getLanguage())
             || QueryLanguages.LANG_METHODQL.equals(query.getLanguage())
+            // a query of a non string-based language is identified by a
+            // rendering of its compiled form, which is not a query string and
+            // must never be parsed back into a query
+            || QueryLanguages.LANG_CRITERIA.equals(query.getLanguage())
             || isHinted(hints, QueryHints.HINT_IGNORE_PREPARED_QUERY)
             || isHinted(hints, QueryHints.HINT_INVALIDATE_PREPARED_QUERY))
             return Boolean.FALSE;

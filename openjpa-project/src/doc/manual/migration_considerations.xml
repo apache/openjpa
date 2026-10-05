@@ -417,8 +417,16 @@
                     <literal>null</literal>-valued entries are removed; read such defaults from
                     <literal>EntityManager.getProperties()</literal> instead.
                     <literal>addNamedQuery()</literal> now replaces an existing definition of the same
-                    name and records flush mode, max results and lock mode; Criteria queries are stored
-                    as JPQL text, which is not guaranteed to round-trip for complex criteria.
+                    name and records flush mode, max results and lock mode; a Criteria query keeps its
+                    compiled criteria form and is replayed by <literal>createNamedQuery()</literal> as a
+                    Criteria query instead of being re-labelled as JPQL, so renderings that are not
+                    parseable JPQL (unescaped string literals, unparenthesized subqueries) work as well.
+                    <literal>getQueryString()</literal> on the recreated query still returns the CQL
+                    rendering; as that rendering is not a query string the query can be parsed from, such
+                    a query is neither registered in the prepared query cache nor rebuilt from an entry
+                    that another query left there under the same text. The retained criteria form is
+                    transient, so a Criteria query registered at runtime is not recoverable from a
+                    serialized metadata repository.
                 </para>
             </section>
             <section id="jpa_4.2_QueryParameters">

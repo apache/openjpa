@@ -93,6 +93,24 @@ public class CriteriaSelectImpl<T> implements CriteriaSelect<T> {
             .getQueryExpressions(factory);
     }
 
+    /**
+     * Collects the translation locks of the operand trees of this set
+     * operation. Unlike a subquery, an operand is an independent tree with its
+     * own translation state, so a set operation has to hold more than one lock.
+     */
+    void collectTranslationLocks(Set<TranslationLock> locks) {
+        collectTranslationLocks(left, locks);
+        collectTranslationLocks(right, locks);
+    }
+
+    private static void collectTranslationLocks(CriteriaSelect<?> operand, Set<TranslationLock> locks) {
+        if (operand instanceof CriteriaSelectImpl) {
+            ((CriteriaSelectImpl<?>) operand).collectTranslationLocks(locks);
+        } else {
+            locks.add(((CriteriaQueryImpl<?>) operand).getTranslationLock());
+        }
+    }
+
     OrderedMap<Object, Class<?>> collectParameters() {
         OrderedMap<Object, Class<?>> params = new OrderedMap<>();
         collectParameters(left, params);

@@ -27,8 +27,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.Temporal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -152,6 +154,47 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
     @Override
     public QueryExpressions eval(Object parsed, ExpressionStoreQuery query,
         ExpressionFactory factory, ClassMetaData candidate) {
+        // Translating a criteria tree to a kernel expression tree mutates the
+        // tree itself: the alias, variable and value maps of the query are
+        // (re-)populated and a subquery records the kernel subquery it was
+        // translated to. A criteria query registered as a named query is shared
+        // by every replay, so the translation must be serialized. The tree is
+        // not a usable monitor for that - a snapshot shares its mutable state
+        // with the original query and with every other snapshot - so lock on the
+        // identity of that shared state instead. A set operation translates two
+        // independent trees and holds both their locks, in their natural order
+        // so that two set operations over the same operands cannot deadlock.
+        List<TranslationLock> locks = new ArrayList<>(translationLocksOf(parsed));
+        Collections.sort(locks);
+        return evalLocked(parsed, factory, locks, 0);
+    }
+
+    private static Set<TranslationLock> translationLocksOf(Object parsed) {
+        if (parsed instanceof CriteriaSelectImpl) {
+            Set<TranslationLock> locks = new HashSet<>();
+            ((CriteriaSelectImpl<?>) parsed).collectTranslationLocks(locks);
+            return locks;
+        }
+        if (parsed instanceof CriteriaDeleteImpl) {
+            return Collections.singleton(((CriteriaDeleteImpl<?>) parsed).getTranslationLock());
+        }
+        if (parsed instanceof CriteriaUpdateImpl) {
+            return Collections.singleton(((CriteriaUpdateImpl<?>) parsed).getTranslationLock());
+        }
+        return Collections.singleton(((CriteriaQueryImpl<?>) parsed).getTranslationLock());
+    }
+
+    private QueryExpressions evalLocked(Object parsed, ExpressionFactory factory,
+        List<TranslationLock> locks, int index) {
+        if (index == locks.size()) {
+            return translate(parsed, factory);
+        }
+        synchronized (locks.get(index)) {
+            return evalLocked(parsed, factory, locks, index + 1);
+        }
+    }
+
+    private QueryExpressions translate(Object parsed, ExpressionFactory factory) {
         if (parsed instanceof CriteriaSelectImpl) {
             return ((CriteriaSelectImpl<?>) parsed)
                 .getQueryExpressions(factory);

@@ -25,6 +25,8 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.Metamodel;
 
+import org.apache.openjpa.kernel.QueryLanguages;
+
 /**
  * OpenJPA-specific extension to JPA 2.0 Criteria Query Builder API.
  *
@@ -36,7 +38,7 @@ public interface OpenJPACriteriaBuilder extends CriteriaBuilder {
     /**
      * The mnemonic to identify the query language.
      */
-    String LANG_CRITERIA = "jakarta.persistence.criteria";
+    String LANG_CRITERIA = QueryLanguages.LANG_CRITERIA;
 
     /**
      * Create a predicate based upon the attribute values of a given

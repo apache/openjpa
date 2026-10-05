@@ -1499,17 +1499,33 @@ public class EntityManagerImpl
                 getMetaDataRepositoryInstance().getQueryMetaData(null, name,
                 _broker.getClassLoader(), true);
             String qid = meta.getQueryString();
+            // A query registered from a non string-based language, e.g. a
+            // criteria query handed to addNamedQuery, carries its compiled form
+            // rather than a parseable query string; replay that form.
+            Object parsed = meta.getParsedQuery();
 
             PreparedQuery pq = JPQLParser.LANG_JPQL.equals(meta.getLanguage()) ? getPreparedQuery(qid) : null;
-            org.apache.openjpa.kernel.Query del =
-                (pq == null || !pq.isInitialized()) ? _broker.newQuery(meta.getLanguage(), meta.getQueryString())
-                    : _broker.newQuery(pq.getLanguage(), pq);
+            org.apache.openjpa.kernel.Query del;
+            if (pq != null && pq.isInitialized()) {
+                del = _broker.newQuery(pq.getLanguage(), pq);
+            } else if (parsed != null) {
+                del = _broker.newQuery(meta.getLanguage(), parsed);
+            } else {
+                del = _broker.newQuery(meta.getLanguage(), meta.getQueryString());
+            }
 
             if (pq != null) {
                 pq.setInto(del);
             } else {
                 meta.setInto(del);
                 del.compile();
+            }
+            if (qid == null) {
+                // a query of a non string-based language is identified by the
+                // identifier rendered when it was registered; the parsed form
+                // itself must not be rendered here, as it is shared by every
+                // replay and translating it mutates it
+                qid = meta.getParsedQueryId();
             }
 
             OpenJPAQuery q = newQueryImpl(del, meta).setId(qid);
