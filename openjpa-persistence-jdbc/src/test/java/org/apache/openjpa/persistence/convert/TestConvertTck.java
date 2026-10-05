@@ -46,6 +46,7 @@ public class TestConvertTck extends SingleEMFTestCase {
             ConvertEmbedEntity.class,
             ConvertRepeatableEntity.class,
             ConvertAddress.class,
+            ConvertSelfAddress.class,
             SalaryConverter.class,
             CharArrayConverter.class,
             DotConverter.class,

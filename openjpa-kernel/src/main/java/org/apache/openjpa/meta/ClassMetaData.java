@@ -1405,6 +1405,11 @@ public class ClassMetaData
         // etc set correctly
         clearAllFieldCache();
         cacheFields();
+
+        // the redefinitions of the superclass fields exist now, so any
+        // class-level converter override for an inherited field can be
+        // applied to them
+        applyConverterOverrides();
     }
 
     /**
@@ -2914,7 +2919,16 @@ public class ClassMetaData
         }
         for (Map.Entry<String, Class> entry
                 : _converterOverrides.entrySet()) {
-            FieldMetaData fmd = getField(entry.getKey());
+            FieldMetaData fmd = getDeclaredField(entry.getKey());
+            if (fmd == null) {
+                // The field is inherited. Its metadata is owned by the
+                // superclass and shared by all sibling subclasses, so the
+                // override may only be applied to this class' own
+                // redefinition of it (OPENJPA-2953). It does not exist
+                // before defineSuperclassFields() ran; this method is
+                // called again from there.
+                fmd = getDefinedSuperclassField(entry.getKey());
+            }
             if (fmd != null) {
                 fmd.setConverter(entry.getValue());
             }

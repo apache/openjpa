@@ -127,6 +127,11 @@ public class FieldMetaData
     private static final Localizer _loc = Localizer.forPackage
         (FieldMetaData.class);
 
+    // prefixes addressing a map's key resp. value in the attributeName of
+    // an embedded converter override
+    private static final String KEY_PREFIX = "key.";
+    private static final String VALUE_PREFIX = "value.";
+
     private static final int DFG_FALSE = 1;
     private static final int DFG_TRUE = 2;
     private static final int DFG_EXPLICIT = 4;
@@ -2171,33 +2176,36 @@ public class FieldMetaData
      * specifying converters for embedded attributes.
      */
     private void propagateEmbeddedConverters() {
-        // Always set converters on the "real" type metadata so that
-        // the mapping template has the correct strategy/column types
-        ClassMetaData typeMeta = getRepository().getMetaData(
-            getDeclaredType(), null, false);
-        if (typeMeta != null) {
-            for (Map.Entry<String, Class> entry
-                    : _embeddedConverters.entrySet()) {
-                String attrName = entry.getKey();
-                Class convClass = entry.getValue();
-                FieldMetaData typeField = typeMeta.getField(attrName);
-                if (typeField != null) {
-                    typeField.setConverter(convClass);
-                }
-            }
-        }
+        // Only set the converters on the per-embedding embedded metadata
+        // copy. The repository-level metadata of the embeddable type is
+        // shared by every entity embedding it, so writing the override
+        // there would leak it into all other embeddings (OPENJPA-2953).
+        for (Map.Entry<String, Class> entry
+                : _embeddedConverters.entrySet()) {
+            String attrName = entry.getKey();
+            Class convClass = entry.getValue();
 
-        // Also set on the embedded metadata copy if it exists
-        ClassMetaData embeddedMeta = _val.getEmbeddedMetaData();
-        if (embeddedMeta != null) {
-            for (Map.Entry<String, Class> entry
-                    : _embeddedConverters.entrySet()) {
-                String attrName = entry.getKey();
-                Class convClass = entry.getValue();
-                FieldMetaData embField = embeddedMeta.getField(attrName);
-                if (embField != null) {
-                    embField.setConverter(convClass);
-                }
+            // For collections and maps of embeddables the embedded metadata
+            // hangs off the element resp. key value, not off this field's
+            // value. A "key." or "value." prefix addresses a map's key resp.
+            // value explicitly, an unqualified name the value or element.
+            ClassMetaData embeddedMeta;
+            if (attrName.startsWith(KEY_PREFIX)) {
+                attrName = attrName.substring(KEY_PREFIX.length());
+                embeddedMeta = _key.getEmbeddedMetaData();
+            } else {
+                if (attrName.startsWith(VALUE_PREFIX))
+                    attrName = attrName.substring(VALUE_PREFIX.length());
+                embeddedMeta = _val.getEmbeddedMetaData();
+                if (embeddedMeta == null)
+                    embeddedMeta = _elem.getEmbeddedMetaData();
+            }
+            if (embeddedMeta == null)
+                continue;
+
+            FieldMetaData embField = embeddedMeta.getField(attrName);
+            if (embField != null) {
+                embField.setConverter(convClass);
             }
         }
     }
