@@ -41,12 +41,13 @@ import java.util.List;
  * Test for JPA-2.2 java.time.* functionality
  */
 public class TestJava8TimeTypes extends SingleEMFTestCase {
-    private static String VAL_LOCAL_DATE = "2019-01-01";
-    private static String VAL_LOCAL_TIME = "04:57:15";
-    private static String VAL_LOCAL_DATETIME = "2019-01-01T01:00:00";
+    private static final String VAL_LOCAL_DATE = "2019-01-01";
+    private static final String VAL_LOCAL_TIME = "04:57:15";
+    private static final String VAL_LOCAL_DATETIME = "2019-01-01T01:00:00";
+    private static final int GAP_MINUTES = 2;
 
-    private Java8TimeTypes entity1 = new Java8TimeTypes();
-    private Java8TimeTypes entity2 = new Java8TimeTypes();
+    private final Java8TimeTypes entity1 = new Java8TimeTypes();
+    private final Java8TimeTypes entity2 = new Java8TimeTypes();
 
     @Override
     public void setUp() {
@@ -70,10 +71,14 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         em.persist(entity1);
 
         // Second entity is created to pass testGetCurrentLocalTime test
-        // it still can fail in case will be started exactly at midnight
         entity2.setId(2);
         entity2.setOldDateField(new Date());
-        entity2.setLocalTimeField(LocalTime.now().minusSeconds(30)); // hopefully test will pass in 30 sec
+        final LocalTime lt = LocalTime.now().minusMinutes(GAP_MINUTES);
+        System.err.println(lt);
+        entity2.setLocalTimeField(
+            lt.isAfter(LocalTime.now()) // we are ~ at 00:01:00 and subtructing 2 minutes
+            || LocalTime.now().plusMinutes(GAP_MINUTES).isBefore(LocalTime.now()) // we are ~ at 23:59:59 and can pass midnight while test is running
+                ? LocalTime.of(0, 0, 0) : lt);
         entity2.setLocalDateField(LocalDate.parse(VAL_LOCAL_DATE));
         entity2.setLocalDateTimeField(LocalDateTime.parse(VAL_LOCAL_DATETIME));
         entity2.setOffsetTimeField(entity2.getLocalTimeField().atOffset(ZoneOffset.ofHours(-9)));
@@ -265,15 +270,15 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
 
     public void testGetCurrentLocalTime() {
-    	DBDictionary dict = getDbDictionary(emf);
-    	if (dict instanceof OracleDictionary) {
-    		// Oracle has no TIME data type
-    		return;
-    	}
-    	
+        DBDictionary dict = getDbDictionary(emf);
+        if (dict instanceof OracleDictionary) {
+            // Oracle has no TIME data type
+            return;
+        }
+
         EntityManager em = emf.createEntityManager();
         final TypedQuery<Java8TimeTypes> qry = em.createQuery(
-            "select j from Java8TimeTypes AS j where j.localTimeField < LOCAL TIME OR j.localTimeField >= LOCAL TIME", Java8TimeTypes.class);
+            "select j from Java8TimeTypes AS j where j.localTimeField <= LOCAL TIME", Java8TimeTypes.class);
         final List<Java8TimeTypes> times = qry.getResultList();
         assertNotNull(times);
         assertFalse(times.isEmpty());
