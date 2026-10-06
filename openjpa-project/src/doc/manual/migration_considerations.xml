@@ -222,18 +222,31 @@
                 <title>Bulk DELETE no longer cascades</title>
                 <para>
                     In previous releases a JPQL or Criteria bulk <literal>DELETE</literal> against an
-                    entity with cascade-delete or dependent relations (for example
-                    <literal>@OneToMany(cascade=REMOVE)</literal> or an
-                    <literal>@ElementCollection</literal>) was executed in memory: every instance was
-                    loaded and removed through the persistence context, cascading to related entities
-                    and cleaning up join table and element collection rows. As required by section
-                    4.10 of the specification, bulk operations do not cascade. Related entities are
-                    left untouched by a <literal>DELETE</literal> query and will cause foreign key
+                    entity with a single-valued cascade-delete relation - a
+                    <literal>@OneToOne</literal> or <literal>@ManyToOne</literal> with
+                    <literal>cascade=REMOVE</literal> or <literal>orphanRemoval=true</literal>, or
+                    OpenJPA's own <literal>@Dependent</literal> - was executed in memory: every
+                    instance was loaded and removed through the persistence context, cascading to
+                    related entities and, as a side effect, cleaning up the rows of the join tables
+                    and element collection tables of the candidate. As required by section 4.10 of
+                    the specification, bulk operations do not cascade. Related entities are left
+                    untouched by a <literal>DELETE</literal> query and will cause foreign key
                     violations unless the database defines <literal>ON DELETE CASCADE</literal>.
                 </para>
                 <para>
+                    A candidate <emphasis>without</emphasis> such a relation - one that only has an
+                    <literal>@ElementCollection</literal>, or a collection whose cascade is declared
+                    on the elements, as <literal>@OneToMany(cascade=REMOVE)</literal>,
+                    <literal>orphanRemoval=true</literal> and
+                    <literal>@ElementDependent</literal> do - already took the bulk SQL path, and
+                    the rows of its join tables and element collection tables were left behind on
+                    the deleted primary keys. Those rows are now removed, so for such a candidate
+                    the behaviour described below is a fix rather than a replacement for cascading
+                    that was lost.
+                </para>
+                <para>
                     The rows of the join tables and element collection tables owned by the deleted
-                    entities are not entities themselves and are still removed. A
+                    entities are not entities themselves and are removed. A
                     <literal>DELETE</literal> query against a candidate that owns such a table
                     therefore executes as a sequence of statements rather than as one: the criteria
                     are evaluated once by a
