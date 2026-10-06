@@ -28,13 +28,14 @@ public class UuidAttributeConverter implements AttributeConverter<UUID, String>
     @Override
     public String convertToDatabaseColumn(UUID attribute)
     {
-        return attribute.toString();
+        // a converter is consulted for null values as well
+        return attribute == null ? null : attribute.toString();
     }
 
     @Override
     public UUID convertToEntityAttribute(String dbData)
     {
-        return UUID.fromString(dbData);
+        return dbData == null ? null : UUID.fromString(dbData);
     }
     
 }

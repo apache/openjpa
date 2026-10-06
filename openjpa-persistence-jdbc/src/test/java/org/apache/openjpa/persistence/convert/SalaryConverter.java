@@ -31,11 +31,17 @@ public class SalaryConverter
 
     @Override
     public Float convertToDatabaseColumn(String attribute) {
+        if (attribute == null) {
+            return null;
+        }
         return Float.valueOf(attribute.replace("#", ""));
     }
 
     @Override
     public String convertToEntityAttribute(Float dbData) {
+        if (dbData == null) {
+            return null;
+        }
         return dbData.toString();
     }
 }

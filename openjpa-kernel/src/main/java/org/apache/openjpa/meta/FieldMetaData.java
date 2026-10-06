@@ -1377,8 +1377,9 @@ public class FieldMetaData
             }
         }
 
-        Class converter = getConverter();
-        if (converter != null && val != null) {
+        // JPA 3.2 3.11.3: the converter is also consulted for null, so a
+        // converter that maps null to a column default is honoured here.
+        if (isValueConverted()) {
             try {
                 Object instance = getConverterInstance();
                 Method m = getConverterToDatabaseMethod();
@@ -1389,8 +1390,10 @@ public class FieldMetaData
                     // JPA spec: converter RuntimeExceptions must be
                     // wrapped in PersistenceException. Wrap in
                     // StoreException so the persistence layer can
-                    // translate it.
-                    throw new StoreException(cause.getMessage())
+                    // translate it, but keep the field and converter
+                    // identity in the message.
+                    throw new StoreException(_loc.get("converter-err", this,
+                        Exceptions.toString(val), cause.toString()))
                         .setCause(cause);
                 }
                 throw new MetaDataException(_loc.get("converter-err", this,
@@ -1461,8 +1464,10 @@ public class FieldMetaData
             }
         }
 
-        Class converter = getConverter();
-        if (converter != null && val != null) {
+        // JPA 3.2 3.11.3: the converter is also consulted for a null column
+        // value, so a converter that maps null to an attribute default is
+        // honoured here.
+        if (isValueConverted()) {
             try {
                 Object instance = getConverterInstance();
                 Method m = getConverterToEntityMethod();
@@ -1473,8 +1478,10 @@ public class FieldMetaData
                     // JPA spec: converter RuntimeExceptions must be
                     // wrapped in PersistenceException. Wrap in
                     // StoreException so the persistence layer can
-                    // translate it.
-                    throw new StoreException(cause.getMessage())
+                    // translate it, but keep the field and converter
+                    // identity in the message.
+                    throw new StoreException(_loc.get("converter-err", this,
+                        Exceptions.toString(val), cause.toString()))
                         .setCause(cause);
                 }
                 throw new MetaDataException(_loc.get("converter-err", this,
@@ -1521,11 +1528,36 @@ public class FieldMetaData
     }
 
     /**
+     * Whether this field's value as a whole is passed through an
+     * AttributeConverter. Collection and map fields convert their elements
+     * instead (see {@code ConverterElementHandler}), so they are excluded
+     * here; this mirrors {@link #isExternalized()}.
+     * <p>
+     * Array fields are deliberately not excluded: the converter is declared
+     * for the array type itself (e.g. {@code char[]}), and
+     * {@code MappingRepository.defaultTypeStrategy()} applies the same
+     * collection/map test before its array handling, so an array with a
+     * converter is mapped by a single-value {@code ConverterValueHandler}.
+     */
+    private boolean isValueConverted() {
+        if (getConverter() == null)
+            return false;
+        int tc = getDeclaredTypeCode();
+        return tc != JavaTypes.COLLECTION && tc != JavaTypes.MAP;
+    }
+
+    /**
      * Get (or create) the cached instance of the converter class.
      * <p>
      * A single converter instance is created lazily and shared by all
      * brokers and threads using this field, so AttributeConverter
      * implementations must be stateless / thread-safe.
+     * <p>
+     * The instance is created through its no-arg constructor. OpenJPA has no
+     * container hook (no BeanManager / InjectionTarget plumbing anywhere in
+     * the runtime, cf. {@code BeanLifecycleCallbacks}), so a converter that is
+     * also a CDI bean is not injected. Adding that requires a provider-wide
+     * instance factory first and is out of scope here.
      */
     private Object getConverterInstance() throws Exception {
         Object instance = _converterInstance;
@@ -1578,6 +1610,12 @@ public class FieldMetaData
     /**
      * Find a converter method by name, preferring the typed (non-bridge)
      * version over the bridge method with Object parameter.
+     * <p>
+     * The methods are invoked reflectively rather than through a cast to
+     * {@code jakarta.persistence.AttributeConverter} on purpose:
+     * openjpa-kernel does not depend on jakarta.persistence-api (see this
+     * module's pom), so that interface is not on the kernel's compile
+     * classpath.
      */
     private static Method findConverterMethod(Class converterClass,
             String methodName) {
