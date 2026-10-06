@@ -19,20 +19,22 @@
 package org.apache.openjpa.persistence.convert;
 
 import jakarta.persistence.Basic;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Converts;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 /**
- * Entity with @Converts on an embedded field.
- * Mirrors TCK B entity.
+ * Entity embedding the same embeddable as {@link ConvertEmbedEntity} but
+ * without declaring any converter override. Used to verify that the
+ * per-embedding overrides of another entity do not leak into the shared
+ * embeddable metadata.
  */
 @Entity
-@Table(name = "CONV_B_EMBED")
-public class ConvertEmbedEntity implements java.io.Serializable {
+@Table(name = "CONV_PLAIN_EMBED")
+public class ConvertPlainEmbedEntity implements java.io.Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     protected String id;
@@ -40,35 +42,19 @@ public class ConvertEmbedEntity implements java.io.Serializable {
     @Basic
     protected String name;
 
-    @Basic
-    protected Integer value;
-
     @Embedded
-    @Converts(value = {
-        @Convert(attributeName = "street",
-            converter = DotConverter.class),
-        @Convert(attributeName = "state",
-            converter = NumberToStateConverter.class)
-    })
     protected ConvertAddress address;
 
     @Embedded
     protected ConvertSelfAddress selfAddress;
 
-    public ConvertEmbedEntity() {
+    public ConvertPlainEmbedEntity() {
     }
 
-    public ConvertEmbedEntity(String id, String name, int value) {
-        this.id = id;
-        this.name = name;
-        this.value = value;
-    }
-
-    public ConvertEmbedEntity(String id, String name, int value,
+    public ConvertPlainEmbedEntity(String id, String name,
             ConvertAddress addr) {
         this.id = id;
         this.name = name;
-        this.value = value;
         this.address = addr;
     }
 
@@ -82,14 +68,6 @@ public class ConvertEmbedEntity implements java.io.Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Integer getValue() {
-        return value;
-    }
-
-    public void setValue(Integer value) {
-        this.value = value;
     }
 
     public ConvertAddress getAddress() {
@@ -110,9 +88,8 @@ public class ConvertEmbedEntity implements java.io.Serializable {
 
     @Override
     public String toString() {
-        return "ConvertEmbedEntity[id=" + id
+        return "ConvertPlainEmbedEntity[id=" + id
             + ", name=" + name
-            + ", value=" + value
             + ", address=" + address + "]";
     }
 }

@@ -1438,20 +1438,21 @@ public class AnnotationPersistenceMetaDataParser
                 fmd.addEmbeddedConverter(embAttr, convert.converter());
             }
         } else {
-            // Simple attribute name - first check if it is a direct field
-            // (including inherited fields from mapped superclass)
+            // Simple attribute name - first check if it is a field declared
+            // by this class. An inherited field is deliberately not touched
+            // here: its metadata is owned by the (mapped) superclass and
+            // shared by all sibling entities, so the override is recorded
+            // and later applied to this class' own redefinition of the
+            // field only (OPENJPA-2953).
             FieldMetaData directField = meta.getDeclaredField(attrName);
-            if (directField == null) {
-                directField = meta.getField(attrName);
-            }
             if (directField != null) {
-                // Direct field or inherited field - override converter
+                // Direct field - override converter
                 directField.setConverter(convert.converter());
             }
             // Also store as a pending override in case the field doesn't
             // exist yet (MappedSuperclass fields are inherited later)
             meta.addConverterOverride(attrName, convert.converter());
-            if (directField == null) {
+            if (directField == null && meta.getField(attrName) == null) {
                 // Not a direct field - applies to embedded field attributes
                 for (FieldMetaData fmd : meta.getDeclaredFields()) {
                     if (fmd.isEmbedded()) {
