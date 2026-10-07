@@ -17,7 +17,7 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-
+#set -x
 TCK_VERSION="${TCK_VERSION:-3.2.0}"
 TCK_BASE="${TCK_VERSION:0:3}"
 
@@ -79,13 +79,19 @@ stopAll() {
     done
 }
 
+declare -a EXTRA_ARGS=()
 while [[ $# -gt 0 ]]; do
     case ${1} in
         --stop-all)
             shift
             stopAll
             ;;
-	esac
+        *)
+            echo "GOT extra arg: ${1}"
+            EXTRA_ARGS+=("${1}")
+            shift
+            ;;
+    esac
 done
 
 TCK_URL="https://download.eclipse.org/jakartaee/persistence/${TCK_BASE}/jakarta-persistence-tck-${TCK_VERSION}.zip"
@@ -224,4 +230,4 @@ mvn -e -f "${TCK_POM}" -P "openjpa,${TCK_DB_TYPE}" verify \
     "-Djakarta.persistence.jdbc.user=${DB_USER}" \
     "-Djakarta.persistence.jdbc.password=${DB_PASSWORD}" \
     "-Djakarta.persistence.jdbc.url=${DB_URL}" \
-    "$@"
+    "${EXTRA_ARGS[@]}"
