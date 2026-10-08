@@ -994,6 +994,44 @@
                     <xref linkend="ref_guide_dbsetup_dbsupport_delim_id"/>.
                 </para>
             </section>
+            <section id="jpa_4.2_LikeEscape">
+                <title>LIKE without an ESCAPE clause</title>
+                <para>
+                    A <literal>LIKE</literal> pattern with no <literal>ESCAPE</literal> clause now has
+                    no escape character on any database, as Jakarta Persistence requires: only
+                    <literal>%</literal> and <literal>_</literal> are special and a backslash in the
+                    pattern matches a backslash. On H2, MySQL, MariaDB and PostgreSQL, whose
+                    <literal>LIKE</literal> defaults to a backslash escape, OpenJPA now emits an
+                    explicit <literal>ESCAPE</literal> clause to say so, and
+                    <classname>H2Dictionary</classname> sets
+                    <literal>RequiresSearchStringEscapeForLike</literal> to <literal>true</literal> for
+                    that reason. The clause holds the new
+                    <literal>SearchStringNoEscape</literal> expression, by default the empty string
+                    literal <literal>&apos;&apos;</literal>, a non-standard spelling of "no escape
+                    character" which H2 and PostgreSQL accept. MySQL rejects that literal when
+                    <literal>sql_mode</literal> contains <literal>NO_BACKSLASH_ESCAPES</literal> and
+                    MariaDB ignores it altogether and keeps its backslash escape, so both use
+                    <literal>CHAR(0)</literal>, an escape character
+                    which cannot occur in a pattern unless the pattern contains a NUL character. A pattern which relied on the implicit backslash escape, such as
+                    <literal>foo\_bar</literal> meant to match a literal underscore, now matches a
+                    backslash followed by any character and must add an explicit
+                    <literal>ESCAPE &apos;\&apos;</literal> clause to the query. On MySQL and MariaDB
+                    such a clause is rendered from <literal>SearchStringEscape</literal> as a doubled
+                    backslash, which those servers only accept while <literal>sql_mode</literal>
+                    contains no <literal>NO_BACKSLASH_ESCAPES</literal>; with that mode they fail the
+                    statement with <literal>ERROR 1210</literal>, so a query which has to run against
+                    it should name an escape character other than a backslash.
+                </para>
+                <para>
+                    <literal>SearchStringEscape</literal> is now only the SQL literal rendering of a
+                    backslash escape character supplied by the query; it never gives a pattern
+                    character an escape meaning, so configuring it to another character no longer makes
+                    that character escape inside a pattern. For dictionary subclasses:
+                    <classname>JDBCExpressionFactory</classname> no longer injects the dictionary escape
+                    character into the <literal>matches()</literal> expression, so the escape of a
+                    query without an <literal>ESCAPE</literal> clause stays <literal>null</literal>.
+                </para>
+            </section>
             <section id="jpa_4.2_PostgreSQL">
                 <title>PostgreSQL</title>
                 <para>

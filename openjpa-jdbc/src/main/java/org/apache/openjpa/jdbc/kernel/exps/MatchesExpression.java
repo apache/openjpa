@@ -113,11 +113,21 @@ class MatchesExpression
 
             // escape out characters by using the database's escape sequence
             DBDictionary dict = ctx.store.getDBDictionary();
-            if (_escape != null) {
+            // an empty escape character means the same as none at all; the
+            // JPQL grammar accepts ESCAPE '' and some databases reject it
+            if (StringUtil.isNotEmpty(_escape)) {
                 if (_escape.equals("\\"))
                     buf.append(" ESCAPE '").append(dict.searchStringEscape).append("'");
                 else
                     buf.append(" ESCAPE '").append(_escape).append("'");
+            }
+            else if (dict.requiresSearchStringEscapeForLike) {
+                // The query gave no ESCAPE clause, so only '%' and '_' are
+                // special. A database whose LIKE defaults to an escape
+                // character of its own has to be told that there is none,
+                // otherwise the same pattern means different things on
+                // different databases (OPENJPA-3009).
+                buf.append(" ESCAPE ").append(dict.searchStringNoEscape);
             }
 
         }

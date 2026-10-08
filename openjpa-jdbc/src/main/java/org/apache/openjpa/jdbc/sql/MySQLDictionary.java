@@ -167,6 +167,12 @@ public class MySQLDictionary
 
         requiresSearchStringEscapeForLike = true;
 
+        // MySQL rejects ESCAPE '' when sql_mode contains
+        // NO_BACKSLASH_ESCAPES, and MariaDB ignores it altogether, so "no
+        // escape character" is spelled with a character that cannot occur in
+        // a pattern (OPENJPA-3009)
+        searchStringNoEscape = "CHAR(0)";
+
         // MySQL requires double-escape for strings
         searchStringEscape = "\\\\";
 
