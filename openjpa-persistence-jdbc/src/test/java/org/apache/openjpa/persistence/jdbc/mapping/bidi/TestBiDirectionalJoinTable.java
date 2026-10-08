@@ -134,8 +134,8 @@ public class TestBiDirectionalJoinTable extends SQLListenerTestCase {
 		// the delete carries no criteria, so every row of the join table
 		// belongs to a deleted person and it is emptied outright
 		assertNotSQL("SELECT DISTINCT .*FROM .*J_PERSON.*");
-		assertSQL("DELETE FROM .*J_PERSON_ADDRESSES( t[0-9]+)?");
-		assertSQL("DELETE FROM .*J_PERSON( t[0-9]+)?");
+		assertSQL("DELETE( t[0-9]+)? FROM .*J_PERSON_ADDRESSES( t[0-9]+)?");
+		assertSQL("DELETE( t[0-9]+)? FROM .*J_PERSON( t[0-9]+)?");
 	}
 
 	public void testBreakingRelationCausesDeleteFromJoinTable() {

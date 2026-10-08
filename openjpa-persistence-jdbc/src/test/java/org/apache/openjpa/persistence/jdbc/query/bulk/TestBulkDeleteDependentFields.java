@@ -135,9 +135,9 @@ public class TestBulkDeleteDependentFields extends AbstractBulkDeleteTestCase {
         assertDependentEntitiesSurvive();
 
         assertNotSQL("SELECT DISTINCT .*FROM .*BULK_DEP_OWNER.*");
-        assertSQL("DELETE FROM .*BULK_DEP_OWNER_PARTS( t[0-9]+)?");
-        assertSQL("DELETE FROM .*BULK_DEP_OWNER_TAGS( t[0-9]+)?");
-        assertSQL("DELETE FROM .*BULK_DEP_OWNER( t[0-9]+)?");
+        assertSQL("DELETE( t[0-9]+)? FROM .*BULK_DEP_OWNER_PARTS( t[0-9]+)?");
+        assertSQL("DELETE( t[0-9]+)? FROM .*BULK_DEP_OWNER_TAGS( t[0-9]+)?");
+        assertSQL("DELETE( t[0-9]+)? FROM .*BULK_DEP_OWNER( t[0-9]+)?");
     }
 
     /**

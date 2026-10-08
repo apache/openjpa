@@ -61,8 +61,8 @@ public class TestBulkDeleteCompositeId extends AbstractBulkDeleteTestCase {
         assertEquals(0, count(BulkDeleteCompositeOwner.class));
         assertEquals(0, countRows("BULK_CID_TAGS"));
         assertNotSQL("DELETE FROM .*IN \\(.*");
-        assertSQL("DELETE FROM .*BULK_CID_TAGS( t[0-9]+)?");
-        assertSQL("DELETE FROM .*BULK_CID_OWNER( t[0-9]+)?");
+        assertSQL("DELETE( t[0-9]+)? FROM .*BULK_CID_TAGS( t[0-9]+)?");
+        assertSQL("DELETE( t[0-9]+)? FROM .*BULK_CID_OWNER( t[0-9]+)?");
     }
 
     private void createCompositeData() {

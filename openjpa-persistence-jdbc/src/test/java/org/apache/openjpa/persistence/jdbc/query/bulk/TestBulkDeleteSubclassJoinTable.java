@@ -46,9 +46,9 @@ public class TestBulkDeleteSubclassJoinTable extends AbstractBulkDeleteTestCase 
         assertEquals(0, countRows("BULK_SUB_TAGS"));
         assertEquals(0, countRows("SUBLINK"));
         assertNotSQL("SELECT DISTINCT .*FROM .*BULK_BASE.*");
-        assertSQL("DELETE FROM .*BULK_SUB_TAGS( t[0-9]+)?");
-        assertSQL("DELETE FROM .*SUBLINK( t[0-9]+)?");
-        assertSQL("DELETE FROM .*BULK_BASE( t[0-9]+)?");
+        assertSQL("DELETE( t[0-9]+)? FROM .*BULK_SUB_TAGS( t[0-9]+)?");
+        assertSQL("DELETE( t[0-9]+)? FROM .*SUBLINK( t[0-9]+)?");
+        assertSQL("DELETE( t[0-9]+)? FROM .*BULK_BASE( t[0-9]+)?");
     }
 
     /**
