@@ -410,6 +410,38 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
         endEm(em);
     }
 
+    public void testChainedArithmeticIsLeftAssociative() {
+        EntityManager em = currentEntityManager();
+
+        // a - b - c and a / b / c must be evaluated left to right; a right
+        // associative parse would yield 19 - (10 - 20) = 29 and 36 / (3 / 2) = 36
+        // instead of (19 - 10) - 20 = -11 and (36 / 3) / 2 = 6.
+        List<?> minus = em.createQuery(
+            "SELECT c.age - 10 - 20 FROM CompUser c WHERE c.name = 'Ugo'").getResultList();
+        assertEquals(1, minus.size());
+        assertEquals(-11, ((Number) minus.get(0)).intValue());
+
+        List<?> div = em.createQuery(
+            "SELECT c.age / 3 / 2 FROM CompUser c WHERE c.name = 'Seetha'").getResultList();
+        assertEquals(1, div.size());
+        assertEquals(6, ((Number) div.get(0)).intValue());
+
+        // the same holds for operators of equal precedence that differ: a - b + c
+        // and a / b * c group to the left, not as 19 - (10 + 20) = -11 and
+        // 36 / (3 * 2) = 6.
+        List<?> minusPlus = em.createQuery(
+            "SELECT c.age - 10 + 20 FROM CompUser c WHERE c.name = 'Ugo'").getResultList();
+        assertEquals(1, minusPlus.size());
+        assertEquals(29, ((Number) minusPlus.get(0)).intValue());
+
+        List<?> divTimes = em.createQuery(
+            "SELECT c.age / 3 * 2 FROM CompUser c WHERE c.name = 'Seetha'").getResultList();
+        assertEquals(1, divTimes.size());
+        assertEquals(24, ((Number) divTimes.get(0)).intValue());
+
+        endEm(em);
+    }
+
     @SuppressWarnings("unchecked")
     public void testMathFuncOrderByAlias() {
         EntityManager em = currentEntityManager();

@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.kernel.jpql;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
@@ -550,5 +551,61 @@ public class TestJPQLParser {
             ex.printStackTrace();
         }
         fail();
+    }
+
+    @Test
+    public void testChainedAdditiveOperatorsAreLeftAssociative() throws ParseException {
+        // 10 - 3 - 2 must parse as (10 - 3) - 2, i.e. the left operand of the
+        // outermost subtraction is itself a subtraction.
+        String query = "SELECT u FROM User AS u WHERE u.age = 10 - 3 - 2";
+        JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+        JPQLNode subtract = node.findChildByID(JPQLTreeConstants.JJTSUBTRACT, true);
+        assertNotNull(subtract);
+        assertEquals(JPQLTreeConstants.JJTSUBTRACT, subtract.children[0].id);
+        assertEquals("2", subtract.children[1].text);
+    }
+
+    @Test
+    public void testChainedMultiplicativeOperatorsAreLeftAssociative() throws ParseException {
+        // 100 / 5 / 2 must parse as (100 / 5) / 2.
+        String query = "SELECT u FROM User AS u WHERE u.age = 100 / 5 / 2";
+        JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+        JPQLNode divide = node.findChildByID(JPQLTreeConstants.JJTDIVIDE, true);
+        assertNotNull(divide);
+        assertEquals(JPQLTreeConstants.JJTDIVIDE, divide.children[0].id);
+        assertEquals("2", divide.children[1].text);
+    }
+
+    @Test
+    public void testMixedAdditiveOperatorsAreLeftAssociative() throws ParseException {
+        // 10 - 3 + 2 must parse as (10 - 3) + 2, not as 10 - (3 + 2).
+        String query = "SELECT u FROM User AS u WHERE u.age = 10 - 3 + 2";
+        JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+        JPQLNode add = node.findChildByID(JPQLTreeConstants.JJTADD, true);
+        assertNotNull(add);
+        assertEquals(JPQLTreeConstants.JJTSUBTRACT, add.children[0].id);
+        assertEquals("2", add.children[1].text);
+    }
+
+    @Test
+    public void testMixedMultiplicativeOperatorsAreLeftAssociative() throws ParseException {
+        // 100 / 5 * 2 must parse as (100 / 5) * 2, not as 100 / (5 * 2).
+        String query = "SELECT u FROM User AS u WHERE u.age = 100 / 5 * 2";
+        JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+        JPQLNode multiply = node.findChildByID(JPQLTreeConstants.JJTMULTIPLY, true);
+        assertNotNull(multiply);
+        assertEquals(JPQLTreeConstants.JJTDIVIDE, multiply.children[0].id);
+        assertEquals("2", multiply.children[1].text);
+    }
+
+    @Test
+    public void testMultiplicationBindsTighterThanAddition() throws ParseException {
+        // 1 + 2 * 3 must parse as 1 + (2 * 3).
+        String query = "SELECT u FROM User AS u WHERE u.age = 1 + 2 * 3";
+        JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+        JPQLNode add = node.findChildByID(JPQLTreeConstants.JJTADD, true);
+        assertNotNull(add);
+        assertEquals("1", add.children[0].text);
+        assertEquals(JPQLTreeConstants.JJTMULTIPLY, add.children[1].id);
     }
 }

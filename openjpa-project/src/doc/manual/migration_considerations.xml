@@ -156,6 +156,24 @@
                     explicit <literal>1L</literal> literal. No compatibility option exists.
                 </para>
             </section>
+            <section id="jpa_4.2_JPQLArithmeticAssociativity">
+                <title>JPQL arithmetic operators are left associative</title>
+                <para>
+                    Operators of equal precedence in a JPQL arithmetic expression are now evaluated
+                    from left to right, as required by section 4.8.1 of the specification. Previous
+                    releases parsed them right associatively, so <literal>a - b - c</literal> was
+                    evaluated as <literal>a - (b - c)</literal> and <literal>a / b * c</literal> as
+                    <literal>a / (b * c)</literal>. For example,
+                    <literal>SELECT c.age - 10 - 20 FROM CompUser c</literal> returned
+                    <literal>29</literal> for an age of <literal>19</literal> and now returns
+                    <literal>-11</literal>.
+                </para>
+                <para>
+                    Relative precedence of the additive and the multiplicative operators is
+                    unchanged. Queries that relied on the previous grouping have to be parenthesized
+                    explicitly. No compatibility option exists.
+                </para>
+            </section>
             <section id="jpa_4.2_QueryValueConversion">
                 <title>Query value conversion</title>
                 <para>

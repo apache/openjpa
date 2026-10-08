@@ -1046,21 +1046,23 @@ void arithmetic_value() : { }
 }
 
 
-/* changed to eliminate left recursion */
+/* left recursion is eliminated by iterating over the operator instead of
+   recursing on arithmetic_expression(); recursing would both make the choice
+   in the (...)* ambiguous and parse a - b - c as a - (b - c) */
 void arithmetic_expression() : { }
 {
 	arithmetic_term()
-		((<PLUS> arithmetic_expression() #ADD(2))
-		| (<MINUS> arithmetic_expression() #SUBTRACT(2)))*
+		((<PLUS> arithmetic_term() #ADD(2))
+		| (<MINUS> arithmetic_term() #SUBTRACT(2)))*
 }
 
 
-/* changed to eliminate left recursion */
+/* see arithmetic_expression(): iterate, do not recurse */
 void arithmetic_term() : { }
 {
 	arithmetic_factor()
-		((<TIMES> arithmetic_term() #MULTIPLY(2))
-		| (<DIV> arithmetic_term() #DIVIDE(2)))*
+		((<TIMES> arithmetic_factor() #MULTIPLY(2))
+		| (<DIV> arithmetic_factor() #DIVIDE(2)))*
 }
 
 
@@ -1530,7 +1532,8 @@ void orderby_item() #ORDERBYITEM : { }
 {
 	(LOOKAHEAD(path()) path() | LOOKAHEAD(qualified_path()) qualified_path()
 	 | LOOKAHEAD(general_identification_variable()) general_identification_variable()
-	 | orderby_extension() | identification_variable()
+	 | LOOKAHEAD(1) orderby_extension()
+	 | LOOKAHEAD(1) identification_variable()
 	 | LOOKAHEAD(scalar_expression()) scalar_expression()
 	 )
 	    [ <ASC> #ASCENDING | <DESC> #DESCENDING ]
