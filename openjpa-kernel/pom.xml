@@ -105,7 +105,13 @@
                         <?m2e execute onConfiguration,onIncremental?>
                         <configuration>
                             <buildNodeFiles>false</buildNodeFiles>
-                            <jdkVersion>${java.class.version}</jdkVersion>
+                            <!-- No jdkVersion: JavaCC 5.0 types an option value by the
+                                 class of its default, so the String option JDK_VERSION
+                                 rejects a value that parses as an integer ("17") with
+                                 'Bad option value ... will be ignored'. Every
+                                 JDK-dependent switch in JavaCC 5.0 is jdkVersionAtLeast(1.5),
+                                 so its default 1.5 - what this build has effectively been
+                                 generating with all along - already produces the same code. -->
                         </configuration>
                         <goals>
                             <goal>jjtree-javacc</goal>

@@ -2980,7 +2980,7 @@ The operators are listed below in order of decreasing precedence. <itemizedlist>
                         <listitem>
                             <para>
 Arithmetic operators: +, - unary *, / multiplication and division +, - addition
-and subtraction
+and subtraction. Operators of equal precedence are evaluated from left to right.
                             </para>
                         </listitem>
                         <listitem>
