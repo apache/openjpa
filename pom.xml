@@ -451,7 +451,14 @@
             <properties>
                 <h2.version>2.3.232</h2.version>
                 <connection.driver.name>org.h2.Driver</connection.driver.name>
-                <connection.url>jdbc:h2:./target/database/openjpa-h2-database</connection.url>
+                <!-- DB_CLOSE_DELAY=-1 keeps the database open for the lifetime of the test JVM.
+                     Without it H2 closes the file database whenever the connection pool of a
+                     factory drains to zero, which the suite does once per EntityManagerFactory,
+                     and compacts the store on every one of those closes. That compaction trips an
+                     assertion inside H2 (RandomAccessStore.moveChunkInside, assertions are on by
+                     default under Surefire), the close is abandoned half way through and commits
+                     made just before it are lost, so a later test finds its tables gone. -->
+                <connection.url>jdbc:h2:./target/database/openjpa-h2-database;DB_CLOSE_DELAY=-1</connection.url>
                 <connection.username />
                 <connection.password />
                 <!-- TCK specific properties -->
