@@ -77,7 +77,7 @@ public class TestBulkDeleteSharedCollectionTable extends SQLListenerTestCase {
         assertEquals(0, count(BulkDeleteSharedA.class));
         assertEquals(1, count(BulkDeleteSharedB.class));
         assertEquals(1, countRows("BULK_SHARED_COLL"));
-        assertNotSQL("DELETE FROM .*BULK_SHARED_COLL( t[0-9]+)?");
+        assertNotSQL("DELETE( t[0-9]+)? FROM .*BULK_SHARED_COLL( t[0-9]+)?");
     }
 
     private int countRows(String table) {

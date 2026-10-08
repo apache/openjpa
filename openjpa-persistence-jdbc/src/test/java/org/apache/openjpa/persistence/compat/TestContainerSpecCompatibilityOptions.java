@@ -464,18 +464,23 @@ public class TestContainerSpecCompatibilityOptions
             em.getTransaction().begin();
             em.getTransaction().commit();
 
-            // on some databases KEY is a forbidden name for columns.
-            String keyColumn = getDbDictionary(emf).getInvalidColumnWordSet().contains("KEY")
-                    ? "KEY0"
-                    : "KEY";
-            assertSQLFragnments(sql, "CREATE TABLE Uni_Map_KeyCol_attrs",
-                "UniMapKeyCol_ID", keyColumn);
-            // the spec default must not appear: on a dictionary that allows KEY as a column
-            // name the fragment above would also match attributes_KEY
+            // Every dictionary spells the legacy name its own way: KEY where it is a legal
+            // column name, KEY0 where the word is renamed (Derby), and a delimited key where
+            // the word is quoted instead (MySQL), so compare without delimiters and case.
+            String ddl = null;
             for (String stmnt : sql) {
-                assertFalse("The spec default map key column name was used: " + stmnt,
-                    stmnt.contains("attributes_KEY"));
+                if (stmnt.toUpperCase().contains("CREATE TABLE UNI_MAP_KEYCOL_ATTRS")) {
+                    ddl = stmnt.replaceAll("[\"`\\[\\]]", "").toUpperCase();
+                    break;
+                }
             }
+            assertNotNull("No CREATE TABLE for the collection table in " + sql, ddl);
+            assertTrue(ddl, ddl.contains("UNIMAPKEYCOL_ID"));
+            assertTrue("The legacy map key column name was not used: " + ddl,
+                ddl.matches(".*\\bKEY0?\\b.*"));
+            // the spec default must not appear
+            assertFalse("The spec default map key column name was used: " + ddl,
+                ddl.contains("ATTRIBUTES_KEY"));
         } 
     }
 

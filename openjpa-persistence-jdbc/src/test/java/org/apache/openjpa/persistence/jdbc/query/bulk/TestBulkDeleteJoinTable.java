@@ -50,12 +50,12 @@ public class TestBulkDeleteJoinTable extends AbstractBulkDeleteTestCase {
         assertOwnedTablesAreEmpty();
         assertNotSQL("SELECT DISTINCT .*FROM .*BULK_OWNER.*");
         assertNotSQL("DELETE FROM .*BULK_OWNER.* WHERE .*");
-        assertSQL("DELETE FROM .*BULK_OWNER_ITEMS( t[0-9]+)?");
-        assertSQL("DELETE FROM .*BULK_OWNER_NICKNAMES( t[0-9]+)?");
-        assertSQL("DELETE FROM .*BULK_OWNER_LABELS( t[0-9]+)?");
-        assertSQL("DELETE FROM .*BULK_OWNER_ADDRESSES( t[0-9]+)?");
-        assertSQL("DELETE FROM .*BULK_OWNER_ALIASES( t[0-9]+)?");
-        assertSQL("DELETE FROM .*BULK_OWNER( t[0-9]+)?");
+        assertSQL("DELETE( t[0-9]+)? FROM .*BULK_OWNER_ITEMS( t[0-9]+)?");
+        assertSQL("DELETE( t[0-9]+)? FROM .*BULK_OWNER_NICKNAMES( t[0-9]+)?");
+        assertSQL("DELETE( t[0-9]+)? FROM .*BULK_OWNER_LABELS( t[0-9]+)?");
+        assertSQL("DELETE( t[0-9]+)? FROM .*BULK_OWNER_ADDRESSES( t[0-9]+)?");
+        assertSQL("DELETE( t[0-9]+)? FROM .*BULK_OWNER_ALIASES( t[0-9]+)?");
+        assertSQL("DELETE( t[0-9]+)? FROM .*BULK_OWNER( t[0-9]+)?");
     }
 
     /**
