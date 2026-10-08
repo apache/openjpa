@@ -182,6 +182,8 @@ public class MySQLDictionary
         integerCastTypeName = "SIGNED";
         // MySQL has no BIGINT cast target; SIGNED [INTEGER] yields a 64 bit signed value
         longCastTypeName = "SIGNED";
+        // MySql supports CHAR data type
+        storeCharsAsNumbers = isStoreCharsAsNumbersExplicit();
     }
 
     @Override
