@@ -1,0 +1,186 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements.  See the NOTICE file distributed with this work for additional
+# information regarding copyright ownership.  The ASF licenses this file to you
+# under the Apache License, Version 2.0 (the # "License"); you may not use this
+# file except in compliance with the License.  You may obtain a copy of the License
+# at:
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed
+# under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+# CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations under the License.
+#
+# The pull request build covers Derby and H2 only. This workflow runs the other
+# dictionaries on a schedule, because defects that are invisible on Derby and H2
+# reach master otherwise - see OPENJPA-3009 (a JPQL LIKE pattern matched only on
+# Derby) and OPENJPA-3010 (tests asserting the SQL shape Derby and H2 emit).
+#
+# One job per database: MySQL and MariaDB both listen on 3306, and a service
+# container cannot be chosen per matrix entry. The credentials below are the ones
+# the corresponding profile in pom.xml expects.
+#
+# A scheduled event only ever fires on the default branch, and the check job
+# below additionally refuses a scheduled run on any other branch; a manual run is
+# allowed anywhere, so a risky change can be tried on its branch before it lands.
+#
+name: Databases
+on:
+  schedule:
+    # Mondays, 04:17 UTC. A quarter past the hour avoids the load peak at :00.
+    - cron: '17 4 * * 1'
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  MAVEN_OPTS: -Dmaven.artifact.threads=256 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+jobs:
+  # A scheduled run on an unchanged tree would test what the previous one already
+  # tested, so skip it unless something was committed since. A manual run always
+  # proceeds, which is the point of being able to ask for one.
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.decide.outputs.should_run }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: 'Decide whether there is anything new to test'
+        id: decide
+        env:
+          EVENT: ${{ github.event_name }}
+          BRANCH: ${{ github.ref_name }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          if [ "$EVENT" = 'workflow_dispatch' ]; then
+            echo "Manual run on $BRANCH."
+            echo 'should_run=true' >> "$GITHUB_OUTPUT"
+          elif [ "$BRANCH" != "$DEFAULT_BRANCH" ]; then
+            echo "Scheduled runs are limited to $DEFAULT_BRANCH, this is $BRANCH."
+            echo 'should_run=false' >> "$GITHUB_OUTPUT"
+          else
+            age=$(( ( $(date +%s) - $(git log -1 --format=%ct) ) / 86400 ))
+            if [ "$age" -ge 7 ]; then
+              echo "Last commit is $age days old, nothing new since the previous run."
+              echo 'should_run=false' >> "$GITHUB_OUTPUT"
+            else
+              echo "Last commit is $age days old."
+              echo 'should_run=true' >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
+  mysql:
+    needs: check
+    if: needs.check.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    name: build (Java 21, test-mysql-docker)
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: openjpatst
+          MYSQL_USER: openjpatst
+          MYSQL_PASSWORD: openjpatst
+          MYSQL_RANDOM_ROOT_PASSWORD: yes
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=12
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Setup Java JDK
+        uses: actions/setup-java@v6.0.0
+        with:
+          distribution: 'zulu'
+          java-version: 21
+      - name: 'Cache Maven packages'
+        uses: actions/cache@v6.1.0
+        with:
+          path: ~/.m2
+          key: cache-21-test-mysql-docker
+          restore-keys: cache-21-test-mysql-docker
+      - name: 'Build with Maven'
+        run: mvn -Ptest-mysql-docker -B clean install --file pom.xml
+      - name: 'Remove snapshots before caching'
+        if: always()
+        run: find ~/.m2 -name '*SNAPSHOT' | xargs rm -Rf
+
+  mariadb:
+    needs: check
+    if: needs.check.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    name: build (Java 21, test-mariadb-docker)
+    services:
+      mariadb:
+        image: mariadb:11.8
+        env:
+          MARIADB_DATABASE: openjpatst
+          MARIADB_ROOT_PASSWORD: openjpatst
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=12
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Setup Java JDK
+        uses: actions/setup-java@v6.0.0
+        with:
+          distribution: 'zulu'
+          java-version: 21
+      - name: 'Cache Maven packages'
+        uses: actions/cache@v6.1.0
+        with:
+          path: ~/.m2
+          key: cache-21-test-mariadb-docker
+          restore-keys: cache-21-test-mariadb-docker
+      - name: 'Build with Maven'
+        run: mvn -Ptest-mariadb-docker -B clean install --file pom.xml
+      - name: 'Remove snapshots before caching'
+        if: always()
+        run: find ~/.m2 -name '*SNAPSHOT' | xargs rm -Rf
+
+  postgresql:
+    needs: check
+    if: needs.check.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    name: build (Java 21, test-postgresql-docker)
+    services:
+      postgres:
+        image: postgres:11
+        env:
+          POSTGRES_DB: openjpatst
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd=pg_isready
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=12
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Setup Java JDK
+        uses: actions/setup-java@v6.0.0
+        with:
+          distribution: 'zulu'
+          java-version: 21
+      - name: 'Cache Maven packages'
+        uses: actions/cache@v6.1.0
+        with:
+          path: ~/.m2
+          key: cache-21-test-postgresql-docker
+          restore-keys: cache-21-test-postgresql-docker
+      - name: 'Build with Maven'
+        run: mvn -Ptest-postgresql-docker -B clean install --file pom.xml
+      - name: 'Remove snapshots before caching'
+        if: always()
+        run: find ~/.m2 -name '*SNAPSHOT' | xargs rm -Rf
