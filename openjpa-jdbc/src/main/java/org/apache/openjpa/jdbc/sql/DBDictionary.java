@@ -271,8 +271,28 @@ public class DBDictionary
     public boolean requiresTargetForDelete = false;
     public boolean allowsAliasInBulkClause = true;
     public boolean supportsMultipleNontransactionalResultSets = true;
+    /**
+     * Set to true for a database whose LIKE has a default escape character
+     * (e.g. backslash). Jakarta Persistence gives a LIKE pattern without an
+     * ESCAPE clause no escape character at all, so such a database is given an
+     * explicit {@link #searchStringNoEscape} ESCAPE clause to make the same
+     * JPQL query mean the same thing everywhere.
+     */
     public boolean requiresSearchStringEscapeForLike = false;
     public String searchStringEscape = "\\";
+    /**
+     * The SQL expression written into the ESCAPE clause of a LIKE whose query
+     * supplied no escape character, used when
+     * {@link #requiresSearchStringEscapeForLike} is set. The default empty
+     * string literal is a non-standard spelling of "no escape character"
+     * which H2 and PostgreSQL accept, and MySQL only while its sql_mode has
+     * no NO_BACKSLASH_ESCAPES; a standard conforming database such as Derby
+     * rejects it, because the standard wants exactly one character. A
+     * dictionary which sets {@link #requiresSearchStringEscapeForLike} has to
+     * make sure that the value is one its database accepts, and otherwise
+     * name a single character expression that cannot occur in a pattern.
+     */
+    public String searchStringNoEscape = "''";
     public boolean requiresCastForMathFunctions = false;
     public boolean requiresCastForComparisons = false;
     public boolean supportsModOperator = false;

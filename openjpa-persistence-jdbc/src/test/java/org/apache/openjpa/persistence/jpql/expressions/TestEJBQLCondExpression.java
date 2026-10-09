@@ -189,6 +189,46 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
         endEm(em);
     }
 
+    /**
+     * A LIKE pattern without an ESCAPE clause has no escape character at
+     * all, so a backslash in it is an ordinary character on every database
+     * (OPENJPA-3009). The same has to hold for a bound parameter, and it has
+     * to keep holding when the query is executed again from the prepared
+     * query cache.
+     */
+    public void testLikeWithoutEscapeTreatsBackslashLiterally() {
+        EntityManager em = currentEntityManager();
+
+        String literal = "SELECT o.name FROM CompUser o WHERE o.name LIKE 'tes\\%'";
+        String param = "SELECT o.name FROM CompUser o WHERE o.name LIKE ?1";
+
+        for (int i = 0; i < 2; i++) {
+            List result = em.createQuery(literal).getResultList();
+            assertEquals("literal pattern, run " + i, 1, result.size());
+            assertEquals("tes\\ter", result.get(0));
+
+            result = em.createQuery(param).setParameter(1, "tes\\%").getResultList();
+            assertEquals("bound pattern, run " + i, 1, result.size());
+            assertEquals("tes\\ter", result.get(0));
+
+            // a lone backslash is not a wildcard either
+            result = em.createQuery(param).setParameter(1, "tes\\").getResultList();
+            assertEquals("non-wildcard pattern, run " + i, 0, result.size());
+
+            // '_' is still a wildcard and matches the backslash
+            result = em.createQuery(param).setParameter(1, "tes_ter").getResultList();
+            assertEquals("single wildcard, run " + i, 1, result.size());
+
+            // an empty ESCAPE clause names no escape character either
+            result = em.createQuery(param + " ESCAPE ''").
+                setParameter(1, "tes\\%").getResultList();
+            assertEquals("empty escape clause, run " + i, 1, result.size());
+            assertEquals("tes\\ter", result.get(0));
+        }
+
+        endEm(em);
+    }
+
     public void testNullExpr() {
         EntityManager em = currentEntityManager();
 

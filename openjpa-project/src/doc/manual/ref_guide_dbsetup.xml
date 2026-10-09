@@ -2415,13 +2415,46 @@ Available values are: <literal>upper, lower, preserve</literal>.
                         </secondary>
                     </indexterm>
 <literal>SearchStringEscape</literal>:
-The default escape character used when generating SQL <literal>LIKE</literal>
-clauses.  The escape character is used to escape the wildcard meaning of the
-<literal>_</literal> and <literal>%</literal> characters.
-Note: since JPQL provides the ability to define the escape character in
-the query, this setting is primarily used when translating other query
-languages, such as JDOQL.  Defaults to <literal>"\\"</literal>
-(a single backslash in Java speak).
+The SQL string literal rendering of the backslash escape character, written into
+the <literal>ESCAPE</literal> clause of a generated SQL <literal>LIKE</literal>
+when the query itself supplies a backslash as its escape character.  A database
+which consumes a backslash while parsing a string literal needs it doubled here.
+On MySQL and MariaDB that doubling is only correct while
+<literal>sql_mode</literal> contains no <literal>NO_BACKSLASH_ESCAPES</literal>;
+with that mode the server stops consuming backslashes and rejects the clause
+with <literal>ERROR 1210</literal>, so a query which runs against it has to pick
+an escape character other than a backslash.
+Defaults to <literal>"\\"</literal> (a single backslash in Java speak).
+Note: this character never gains an escape meaning inside a query pattern.  A
+<literal>LIKE</literal> without an <literal>ESCAPE</literal> clause has no
+escape character at all, as Jakarta Persistence requires.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SearchStringNoEscape">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            SQL
+                        </primary>
+                        <secondary>
+                            SearchStringNoEscape
+                        </secondary>
+                    </indexterm>
+<literal>SearchStringNoEscape</literal>:
+The SQL expression written into the <literal>ESCAPE</literal> clause of a
+generated SQL <literal>LIKE</literal> whose query supplied no escape character,
+used when <literal>RequiresSearchStringEscapeForLike</literal> is true.
+Defaults to <literal>"''"</literal>, the empty string literal, which is a
+non-standard spelling of "no escape character" accepted by H2 and PostgreSQL,
+and by MySQL only while <literal>sql_mode</literal> contains no
+<literal>NO_BACKSLASH_ESCAPES</literal>; a standard conforming database such as
+Derby rejects it, since the standard wants exactly one character.  A dictionary
+which turns <literal>RequiresSearchStringEscapeForLike</literal> on therefore
+has to supply a value its database accepts.  MySQL uses
+<literal>"CHAR(0)"</literal> because of the <literal>sql_mode</literal> above,
+and MariaDB because it ignores an empty escape clause altogether and keeps its
+backslash escape; that expression has the same effect for every pattern which
+does not contain a NUL character.
                     </para>
                 </listitem>
                 <listitem id="DBDictionary.RequiresSearchStringEscapeForLike">
@@ -2435,9 +2468,14 @@ languages, such as JDOQL.  Defaults to <literal>"\\"</literal>
                         </secondary>
                     </indexterm>
 <literal>RequiresSearchStringEscapeForLike</literal>:
-When true, the database requires an escape string for queries that use
-<literal>LIKE</literal>.  The escape string can be specified using
-<literal>searchStringEscape</literal>.  Defaults to <literal>false</literal>.
+When true, the database requires an explicit <literal>ESCAPE</literal> clause
+for queries that use <literal>LIKE</literal>, because its
+<literal>LIKE</literal> defaults to an escape character of its own (a backslash
+on H2, MySQL, MariaDB and PostgreSQL).  OpenJPA then writes the
+<literal>SearchStringNoEscape</literal> expression into an
+<literal>ESCAPE</literal> clause, which gives such a database the no escape
+character behaviour Jakarta Persistence requires.  Defaults to
+<literal>false</literal>.
                     </para>
                 </listitem>
                 <listitem id="DBDictionary.SelectWords">

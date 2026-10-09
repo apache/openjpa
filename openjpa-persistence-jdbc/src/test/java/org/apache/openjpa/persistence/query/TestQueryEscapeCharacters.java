@@ -24,6 +24,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -32,7 +33,8 @@ public class TestQueryEscapeCharacters
 
     @Override
     public void setUp() {
-        setUp(Employee.class, CLEAR_TABLES);
+        setUp(Employee.class, CLEAR_TABLES,
+            "openjpa.jdbc.QuerySQLCache", "true");
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -92,43 +94,92 @@ public class TestQueryEscapeCharacters
     }
 
     public void testDoubleSlashQuery() {
-        // get the Dictionary and check the requiresSearchStringEscapeForLike flag
-        OpenJPAEntityManagerFactorySPI ojpaEmf = emf;
-        JDBCConfiguration conf = (JDBCConfiguration)ojpaEmf.getConfiguration();
-
-        if (conf.getDBDictionaryInstance().
-                requiresSearchStringEscapeForLike) {
-            return;
-        }
-
+        // a LIKE without an ESCAPE clause has no escape character on any
+        // database, so this is a pattern of one ordinary backslash
         performFind ("Employee.findByName", "\\", 0);
     }
 
+    /**
+     * The dictionary escape character is only used to render an ESCAPE
+     * clause; it never turns a plain pattern character into an escape
+     * (OPENJPA-3009). The dictionary is flagged as needing an explicit
+     * ESCAPE clause so that the generated clause is exercised on every
+     * database, not only on the ones which set the flag themselves.
+     */
     @SuppressWarnings("unchecked")
     public void testDifferentEscapeCharacter () {
         OpenJPAEntityManagerFactorySPI ojpaEmf = emf;
         JDBCConfiguration conf = (JDBCConfiguration)ojpaEmf.getConfiguration();
+        DBDictionary dict = conf.getDBDictionaryInstance();
+
+        String escape = dict.searchStringEscape;
+        String noEscape = dict.searchStringNoEscape;
+        boolean requiresEscape = dict.requiresSearchStringEscapeForLike;
 
         // Would be nice to just pass a map to the createEntityManager, but
         // seems like it would be too much trouble to get the proper DB type
         // and then build the string for the map.
-        conf.getDBDictionaryInstance().requiresSearchStringEscapeForLike = true;
-        conf.getDBDictionaryInstance().searchStringEscape = "|";
+        dict.searchStringEscape = "|";
+        dict.requiresSearchStringEscapeForLike = true;
+        // a character which cannot occur in the patterns below; the empty
+        // string literal is not accepted by every database
+        dict.searchStringNoEscape = "'~'";
         EntityManager em = emf.createEntityManager();
-
-        Query q = em.createNamedQuery("Employee.findByName");
-        q.setParameter("name", "M|%%");
-        List<Employee> emps = q.getResultList();
-        assertEquals(1, emps.size());
 
         String unnamedQuery =
             "Select e from Employee e where e.name LIKE :name";
+        try {
+            Query q = em.createNamedQuery("Employee.findByName");
+            q.setParameter("name", "M|%%");
+            List<Employee> emps = q.getResultList();
+            assertEquals(0, emps.size());
 
-        q = em.createQuery(unnamedQuery);
-        q.setParameter("name", "M|%%");
-        emps = q.getResultList();
-        assertEquals(1, emps.size());
-        em.close();
+            q = em.createQuery(unnamedQuery);
+            q.setParameter("name", "M|%%");
+            emps = q.getResultList();
+            assertEquals(0, emps.size());
+
+            // an ESCAPE clause in the query still escapes
+            q = em.createQuery(unnamedQuery + " ESCAPE '|'");
+            q.setParameter("name", "M|%%");
+            emps = q.getResultList();
+            assertEquals(1, emps.size());
+        } finally {
+            em.close();
+            dict.searchStringEscape = escape;
+            dict.searchStringNoEscape = noEscape;
+            dict.requiresSearchStringEscapeForLike = requiresEscape;
+        }
+    }
+
+    /**
+     * The SQL generated for a parameterized LIKE without an ESCAPE clause
+     * does not depend on the pattern, so re-executing the query with another
+     * pattern from the prepared query cache stays correct (OPENJPA-3009).
+     */
+    public void testCachedSqlDoesNotDependOnThePattern() {
+        String jpql = "Select e from Employee e where e.name LIKE :name";
+
+        EntityManager em = emf.createEntityManager();
+        try {
+            for (int i = 0; i < 3; i++) {
+                Query q = em.createQuery(jpql);
+                q.setParameter("name", "Mike%");
+                assertEquals("run " + i, 3, q.getResultList().size());
+
+                q = em.createQuery(jpql);
+                q.setParameter("name", "%Dick");
+                assertEquals("run " + i, 1, q.getResultList().size());
+
+                // a backslash is an ordinary character, so this matches
+                // nothing rather than 'M' plus any two characters
+                q = em.createQuery(jpql);
+                q.setParameter("name", "M\\%%");
+                assertEquals("run " + i, 0, q.getResultList().size());
+            }
+        } finally {
+            em.close();
+        }
     }
 
     @SuppressWarnings("unchecked")

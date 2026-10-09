@@ -169,6 +169,12 @@ public class MariaDBDictionary extends DBDictionary {
 
         requiresSearchStringEscapeForLike = true;
 
+        // MariaDB silently ignores ESCAPE '' and keeps its default backslash
+        // escape, and rejects ESCAPE '' outright when sql_mode contains
+        // NO_BACKSLASH_ESCAPES, so "no escape character" has to be spelled
+        // with a character that cannot occur in a pattern (OPENJPA-3009)
+        searchStringNoEscape = "CHAR(0)";
+
         // MariaDB requires double-escape for strings
         searchStringEscape = "\\\\";
 

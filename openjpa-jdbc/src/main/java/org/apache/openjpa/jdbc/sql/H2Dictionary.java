@@ -190,6 +190,10 @@ public class H2Dictionary extends DBDictionary {
         // no timezone support for time in h2
         timeWithZoneTypeName = "TIME";
 
+        // H2 defaults the LIKE escape character to a backslash, so an
+        // explicit ESCAPE clause is required (OPENJPA-3009)
+        requiresSearchStringEscapeForLike = true;
+
         reservedWordSet.addAll(Arrays.asList(new String[] {
                 "ALL",
                 "CHECK",

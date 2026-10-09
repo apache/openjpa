@@ -48,7 +48,8 @@ class MatchesExpression
         super(val1, val2);
         _single = single;
         _multi = multi;
-        if (escape != null)
+        // an empty escape character means the same as none at all
+        if (StringUtil.isNotEmpty(escape))
             throw new IllegalArgumentException(_loc.get(
                 "escape-for-inmem-query-not-supported").getMessage());
         _affirmation = affirmation;
