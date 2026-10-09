@@ -27,6 +27,8 @@ import java.io.ObjectOutputStream;
 import java.io.ObjectStreamClass;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Objects;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.StoreContext;
@@ -108,6 +110,10 @@ public class Serialization {
         /**
          * Candidate loaders, in the same order the original MultiClassLoader
          * used them; resolved lazily once per stream.
+         * The lazy initialisation cannot move into the constructor:
+         * PersistentObjectInputStream assigns _ctx after super(delegate), and its
+         * addContextClassLoaders override dereferences it, so eager initialisation
+         * would throw an NPE. A comment would prevent a later simplification.
          */
         private ClassLoader[] _loaders;
 
@@ -125,6 +131,8 @@ public class Serialization {
                 } catch (ClassNotFoundException e) {
                     if (notFound == null) {
                         notFound = e;
+                    } else {
+                        notFound.addSuppressed(e);
                     }
                 }
             }
@@ -147,8 +155,8 @@ public class Serialization {
                 addContextClassLoaders(holder);
                 holder.addClassLoader(getClass().getClassLoader());
                 holder.addClassLoader(MultiClassLoader.SYSTEM_LOADER);
-                _loaders = java.util.Arrays.stream(holder.getClassLoaders())
-                    .filter(java.util.Objects::nonNull)
+                _loaders = Arrays.stream(holder.getClassLoaders())
+                    .filter(Objects::nonNull)
                     .distinct()
                     .toArray(ClassLoader[]::new);
             }
