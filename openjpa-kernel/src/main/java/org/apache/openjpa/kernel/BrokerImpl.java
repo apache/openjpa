@@ -22,6 +22,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
@@ -74,6 +77,7 @@ import org.apache.openjpa.lib.util.collections.LinkedMap;
 import org.apache.openjpa.lib.util.collections.MapBackedSet;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.meta.ValueMetaData;
@@ -4842,7 +4846,90 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         if (oid == null)
             return false;
 
+        // an instance whose identity was never assigned cannot have a store
+        // record, so do not go to the datastore for it
+        if (meta.getIdentityType() == ClassMetaData.ID_APPLICATION
+            && !isIdentityAssigned(ImplHelper.getManagedInstance(pc), meta))
+            return false;
+
         return find(oid, null, EXCLUDE_ALL, null, 0) != null;
+    }
+
+    /**
+     * Return whether the primary key values of the given instance could
+     * identify a store record. The values are read from the instance itself,
+     * because an application identity object cannot represent an unset value
+     * of a primitive primary key field and wraps a null one as a zero.
+     */
+    private boolean isIdentityAssigned(Object instance, ClassMetaData meta) {
+        FieldMetaData[] pkFields = meta.getPrimaryKeyFields();
+        if (pkFields.length == 0)
+            return false;
+
+        // a non-default version is evidence that the instance was read from
+        // the store, so leave the primary key values out of it
+        FieldMetaData version = meta.getVersionField();
+        if (version != null) {
+            Object val = getMemberValue(instance, version);
+            if (val != null && !isDefaultValue(val))
+                return true;
+        }
+        return isAssigned(instance, pkFields);
+    }
+
+    /**
+     * Return whether all of the given fields of the given instance hold an
+     * assigned value.
+     */
+    private static boolean isAssigned(Object instance, FieldMetaData[] fmds) {
+        for (FieldMetaData fmd : fmds) {
+            Member member = fmd.getBackingMember();
+            if (!(member instanceof Field) && !(member instanceof Method))
+                continue; // value not readable; let the lookup decide
+            Object val = getMemberValue(instance, fmd);
+            if (val == null)
+                return false;
+            if (fmd.getDeclaredTypeCode() == JavaTypes.OID) {
+                ClassMetaData embed = fmd.getEmbeddedMetaData();
+                if (embed != null && !isAssigned(val, embed.getFields()))
+                    return false;
+                continue;
+            }
+            // a generated value that still holds the default value of its
+            // type was never assigned; OpenJPA itself reads the default value
+            // of a generated primary key field as "no identity yet" when it
+            // decides to generate one
+            if (fmd.getValueStrategy() != ValueStrategies.NONE
+                && isDefaultValue(val))
+                return false;
+        }
+        return true;
+    }
+
+    /**
+     * Read the value of the given field from the given instance, or return
+     * null if it cannot be read.
+     */
+    private static Object getMemberValue(Object instance, FieldMetaData fmd) {
+        Member member = fmd.getBackingMember();
+        if (member instanceof Field field)
+            return Reflection.get(instance, field);
+        if (member instanceof Method method)
+            return Reflection.get(instance, method);
+        return null;
+    }
+
+    /**
+     * Return whether the given value is the default value of its type.
+     */
+    private static boolean isDefaultValue(Object val) {
+        if (val instanceof Number num)
+            return num.doubleValue() == 0;
+        if (val instanceof Character chr)
+            return chr == 0;
+        if (val instanceof String str)
+            return str.isEmpty();
+        return false;
     }
 
     @Override

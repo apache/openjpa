@@ -32,7 +32,6 @@ import java.util.TimeZone;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.RecordPersistenceCapable;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueMetaData;
@@ -793,20 +792,6 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
                 return; // allow but ignore
             }
 
-            // If the object is not manageable (e.g. unenhanced original reference)
-            // but its class is a known entity type, treat it as detached. This
-            // handles the case where an entity was persisted in a prior transaction
-            // and the original (unenhanced) reference is used in a relationship
-            // with cascade=NONE (e.g. @JoinColumn(insertable=false, updatable=false)).
-            if (!ImplHelper.isManageable(obj)) {
-                ClassMetaData meta = _broker.getConfiguration()
-                    .getMetaDataRepositoryInstance()
-                    .getCachedMetaData(obj.getClass());
-                if (meta != null) {
-                    return; // known entity type, treat as detached
-                }
-            }
-
             sm = _broker.getStateManager(obj);
             if (sm == null || !sm.isPersistent()) {
                 if (_broker.getAllowReferenceToSiblingContext()
@@ -818,11 +803,13 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
                 // If the object is manageable (e.g. subclass-redefined) but
                 // has no state manager in this context, it may be a detached
                 // entity whose SM was cleared after a prior transaction
-                // committed. Do a DB lookup to confirm it was previously
-                // persisted (detached) vs. truly transient.
+                // committed. Confirm that it was previously persisted
+                // (detached) rather than truly transient; the broker only
+                // falls back to a datastore lookup if the identity of the
+                // instance does not already settle the question.
                 if (sm == null && ImplHelper.isManageable(obj)
                     && _broker.isDetached(obj, true)) {
-                    return; // confirmed detached via DB lookup
+                    return; // confirmed detached
                 }
 
                 throw new InvalidStateException(_loc.get("cant-cascade-persist",

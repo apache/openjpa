@@ -1523,6 +1523,19 @@
                     property <literal>CheckDatabaseForCascadePersistToDetachedEntity</literal>
                     to <literal>true</literal>.
                 </para>
+                <!-- See OPENJPA-2940 and OPENJPA-2952 for details. -->
+                <para>
+                    This property does not cover a relation without cascade that refers to
+                    a manageable instance which has no persistence state in the current
+                    context, for example an entity of a runtime enhanced (subclassed) type
+                    that was detached when a previous transaction committed. Such an
+                    instance is looked up in the database irrespective of the value of
+                    <literal>CheckDatabaseForCascadePersistToDetachedEntity</literal>,
+                    because the lookup is the only available evidence that the instance was
+                    persisted before. The lookup is skipped if the primary key values of the
+                    instance show that it never was assigned an identity; the relation is
+                    then reported as a reference to an unmanaged instance.
+                </para>
             </section>
             <section id="jpa_2.2_LifecycleEventManager">
                 <title>
