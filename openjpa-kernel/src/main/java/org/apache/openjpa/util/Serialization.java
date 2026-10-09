@@ -43,9 +43,7 @@ import org.apache.openjpa.lib.util.MultiClassLoader;
  * @since 0.3.3
  */
 public class Serialization {
-
-    private static final Localizer _loc = Localizer.forPackage
-        (Serialization.class);
+    private static final Localizer _loc = Localizer.forPackage(Serialization.class);
 
     /**
      * Serialize a value that might contain persistent objects. Replaces
@@ -54,8 +52,7 @@ public class Serialization {
     public static byte[] serialize(Object val, StoreContext ctx) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         try {
-            ObjectOutputStream objs = new PersistentObjectOutputStream(bytes,
-                ctx);
+            ObjectOutputStream objs = new PersistentObjectOutputStream(bytes, ctx);
             objs.writeObject(val);
             objs.flush();
             return bytes.toByteArray();
@@ -77,9 +74,9 @@ public class Serialization {
      */
     public static Object deserialize(InputStream in, StoreContext ctx) {
         try {
-            if (ctx == null)
-                return new ClassResolvingObjectInputStream(in).readObject();
-            return new PersistentObjectInputStream(in, ctx).readObject();
+            return ctx == null
+                ? new ClassResolvingObjectInputStream(in).readObject()
+                : new PersistentObjectInputStream(in, ctx).readObject();
         } catch (Exception e) {
             throw new StoreException(e);
         }
@@ -88,17 +85,13 @@ public class Serialization {
     /**
      * Object output stream that replaces persistent objects with their oids.
      */
-    public static class PersistentObjectOutputStream
-        extends ObjectOutputStream {
-
+    public static class PersistentObjectOutputStream extends ObjectOutputStream {
         private StoreContext _ctx;
 
         /**
          * Constructor; supply underlying stream.
          */
-        public PersistentObjectOutputStream(OutputStream delegate,
-            StoreContext ctx)
-            throws IOException {
+        public PersistentObjectOutputStream(OutputStream delegate, StoreContext ctx) throws IOException {
             super(delegate);
             _ctx = ctx;
             enableReplaceObject(true);
@@ -111,23 +104,55 @@ public class Serialization {
         }
     }
 
-    public static class ClassResolvingObjectInputStream
-        extends ObjectInputStream {
+    public static class ClassResolvingObjectInputStream extends ObjectInputStream {
+        /**
+         * Candidate loaders, in the same order the original MultiClassLoader
+         * used them; resolved lazily once per stream.
+         */
+        private ClassLoader[] _loaders;
 
-        public ClassResolvingObjectInputStream(InputStream delegate)
-            throws IOException {
+        public ClassResolvingObjectInputStream(InputStream delegate) throws IOException {
             super(delegate);
         }
 
         @Override
-        protected Class resolveClass(ObjectStreamClass desc)
-            throws IOException, ClassNotFoundException {
+        protected Class resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
             String name = BlacklistClassResolver.DEFAULT.check(desc.getName());
-            MultiClassLoader loader = new MultiClassLoader();
-            addContextClassLoaders(loader);
-            loader.addClassLoader(getClass().getClassLoader());
-            loader.addClassLoader(MultiClassLoader.SYSTEM_LOADER);
-            return Class.forName(name, true, loader);
+            ClassNotFoundException notFound = null;
+            for (ClassLoader loader : getCandidateLoaders()) {
+                try {
+                    return Class.forName(name, true, loader);
+                } catch (ClassNotFoundException e) {
+                    if (notFound == null) {
+                        notFound = e;
+                    }
+                }
+            }
+
+            // primitive types and anything the candidates could not see
+            try {
+                return super.resolveClass(desc);
+            } catch (ClassNotFoundException e) {
+                throw notFound == null ? e : notFound;
+            }
+        }
+
+        private ClassLoader[] getCandidateLoaders() {
+            if (_loaders == null) {
+                // MultiClassLoader is used here only as an ordered, de-duplicating
+                // container so that subclasses overriding addContextClassLoaders keep
+                // working; it is never handed to the JVM, hence no ClassLoaderData
+                // is created for it.
+                MultiClassLoader holder = new MultiClassLoader();
+                addContextClassLoaders(holder);
+                holder.addClassLoader(getClass().getClassLoader());
+                holder.addClassLoader(MultiClassLoader.SYSTEM_LOADER);
+                _loaders = java.util.Arrays.stream(holder.getClassLoaders())
+                    .filter(java.util.Objects::nonNull)
+                    .distinct()
+                    .toArray(ClassLoader[]::new);
+            }
+            return _loaders;
         }
 
         protected void addContextClassLoaders(MultiClassLoader loader) {
@@ -138,18 +163,14 @@ public class Serialization {
     /**
      * Object input stream that replaces oids with their objects.
      */
-    public static class PersistentObjectInputStream
-        extends ClassResolvingObjectInputStream {
-
+    public static class PersistentObjectInputStream extends ClassResolvingObjectInputStream {
         private final StoreContext _ctx;
 
         /**
          * Constructor; supply source stream and broker to
          * use for persistent object lookups.
          */
-        public PersistentObjectInputStream(InputStream delegate,
-            StoreContext ctx)
-            throws IOException {
+        public PersistentObjectInputStream(InputStream delegate, StoreContext ctx) throws IOException {
             super(delegate);
             _ctx = ctx;
             enableResolveObject(true);
@@ -163,21 +184,25 @@ public class Serialization {
 
         @Override
         protected Object resolveObject(Object obj) {
-            if (!(obj instanceof ObjectIdMarker))
+            Object oid = null;
+            if (obj instanceof ObjectIdMarker marker) {
+                oid = marker.oid;
+            } else {
                 return obj;
-
-            Object oid = ((ObjectIdMarker) obj).oid;
-            if (oid == null)
+            }
+            if (oid == null) {
                 return null;
+            }
 
             Object pc = _ctx.find(oid, null, null, null, 0);
             if (pc == null) {
-                Log log = _ctx.getConfiguration().getLog
-                    (OpenJPAConfiguration.LOG_RUNTIME);
-                if (log.isWarnEnabled())
+                Log log = _ctx.getConfiguration().getLog(OpenJPAConfiguration.LOG_RUNTIME);
+                if (log.isWarnEnabled()) {
                     log.warn(_loc.get("bad-ser-oid", oid));
-                if (log.isTraceEnabled())
+                }
+                if (log.isTraceEnabled()) {
                     log.trace(new ObjectNotFoundException(oid));
+                }
             }
             return pc;
         }
@@ -186,16 +211,12 @@ public class Serialization {
     /**
      * Marker for oids.
      */
-    private static class ObjectIdMarker
-        implements Serializable {
-
-        
+    private static class ObjectIdMarker implements Serializable {
         private static final long serialVersionUID = 1L;
         public Object oid;
 
         public ObjectIdMarker(Object oid) {
             this.oid = oid;
-		}
-	}
+        }
+    }
 }
-
