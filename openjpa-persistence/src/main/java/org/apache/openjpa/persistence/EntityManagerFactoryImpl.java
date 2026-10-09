@@ -496,53 +496,49 @@ public class EntityManagerFactoryImpl
         org.apache.openjpa.kernel.Query kernelQuery = queryImpl.getDelegate();
         MetaDataRepository repos = _factory.getConfiguration().getMetaDataRepositoryInstance();
         QueryMetaData metaData = repos.newQueryMetaData(null, name);
-        metaData.setFrom(kernelQuery);
 
-        // If the source query uses the Criteria language, convert to JPQL
-        // so that createNamedQuery can recreate it without needing the
-        // original CriteriaQuery object (CriteriaBuilder.parse() only
-        // accepts CriteriaQuery objects, not strings).
-        if (OpenJPACriteriaBuilder.LANG_CRITERIA.equals(metaData.getLanguage())) {
-            metaData.setLanguage(org.apache.openjpa.kernel.jpql.JPQLParser.LANG_JPQL);
-            // For criteria queries, the kernel query string is null.
-            // Use the facade's getQueryString() which returns the JPQL
-            // generated from the CriteriaQuery (stored as the query id).
-            String jpql = queryImpl.getQueryString();
-            if (jpql != null) {
-                metaData.setQueryString(jpql);
-            }
+        // A Criteria query must not be re-labeled as JPQL: the only string
+        // available for it is the CQL rendering of the CriteriaQuery, and that
+        // rendering is not guaranteed to be parseable JPQL (string literals are
+        // not escaped, subqueries are not parenthesized, ...). Keep the compiled
+        // criteria form instead so that createNamedQuery replays the query as a
+        // criteria query. Compile before the metadata is captured: the candidate
+        // and result type of a query are only known once it has been compiled,
+        // and a Criteria query has no query string they could be recovered from
+        // later. Render the identifier of the compiled form here as well, while
+        // this thread is still the only one holding the tree; every replay then
+        // reuses it instead of rendering the shared tree again.
+        if (OpenJPACriteriaBuilder.LANG_CRITERIA.equals(kernelQuery.getLanguage())) {
+            kernelQuery.compile();
+            Object parsed = kernelQuery.getCompilation();
+            metaData.setParsedQuery(parsed);
+            metaData.setParsedQueryId(parsed == null ? null : parsed.toString());
         }
+
+        metaData.setFrom(kernelQuery);
 
         // Capture JPA-level query properties per JPA 3.2 spec
         // FlushMode
-        try {
-            jakarta.persistence.FlushModeType fm = query.getFlushMode();
-            if (fm != null) {
-                metaData.setFlushType(
-                    EntityManagerImpl.toFlushBeforeQueries(fm));
-            }
-        } catch (Exception e) {
-            // ignore if not supported for this query type
+        jakarta.persistence.FlushModeType fm = query.getFlushMode();
+        if (fm != null) {
+            metaData.setFlushType(EntityManagerImpl.toFlushBeforeQueries(fm));
         }
 
         // MaxResults
-        try {
-            int maxResults = query.getMaxResults();
-            if (maxResults != Integer.MAX_VALUE) {
-                metaData.setMaxResults(maxResults);
-            }
-        } catch (Exception e) {
-            // ignore if not supported for this query type
+        int maxResults = query.getMaxResults();
+        if (maxResults != Integer.MAX_VALUE) {
+            metaData.setMaxResults(maxResults);
         }
 
-        // LockMode (only for JPQL and Criteria queries, not native)
+        // LockMode
         try {
             jakarta.persistence.LockModeType lm = query.getLockMode();
             if (lm != null) {
                 metaData.setLockMode(lm.name());
             }
-        } catch (Exception e) {
-            // ignore - native queries don't support getLockMode()
+        } catch (IllegalStateException ise) {
+            // per spec getLockMode() throws ISE unless the query is a JPQL or
+            // criteria SELECT query; there is no lock mode to capture then
         }
 
         // Remove any existing query with this name, then add the new one

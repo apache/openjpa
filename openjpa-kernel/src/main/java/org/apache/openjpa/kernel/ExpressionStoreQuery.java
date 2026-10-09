@@ -99,6 +99,7 @@ public class ExpressionStoreQuery
 
     protected final ExpressionParser _parser;
     protected transient Object _parsed;
+    private transient Object _source;
 
     /**
      * Construct a query with a parser for the language.
@@ -147,6 +148,9 @@ public class ExpressionStoreQuery
     @Override
     public boolean setQuery(Object query) {
         _parsed = query;
+        if (query != null) {
+            _source = query;
+        }
         return true;
     }
 
@@ -162,6 +166,10 @@ public class ExpressionStoreQuery
     public Object newCompilation() {
         if (_parsed != null)
             return _parsed;
+        // a query of a non string-based language, e.g. the Criteria API, has no
+        // query string to parse again, so its parsed form is its only source
+        if (_source != null && ctx.getQueryString() == null)
+            return _source;
         return _parser.parse(ctx.getQueryString(), this);
     }
 

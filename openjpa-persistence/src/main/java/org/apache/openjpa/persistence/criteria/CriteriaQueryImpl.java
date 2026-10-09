@@ -84,6 +84,7 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
     private final SubqueryImpl<?> _delegator;
     private final Class<T>      _resultClass;
     private boolean             _compiled;
+    private final TranslationLock _translationLock;
 
     private Set<RootImpl.TreatedRoot<?>> _treatedRoots;
 
@@ -105,9 +106,19 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
     };
 
     public CriteriaQueryImpl(MetamodelImpl model, Class<T> resultClass) {
+        this(model, resultClass, new TranslationLock());
+    }
+
+    /**
+     * Constructs a query that serializes its translation on the given lock,
+     * i.e. one that shares its mutable translation state with the query the
+     * lock was created by.
+     */
+    CriteriaQueryImpl(MetamodelImpl model, Class<T> resultClass, TranslationLock translationLock) {
         this._model = model;
         this._resultClass = resultClass;
         this._delegator = null;
+        this._translationLock = translationLock;
         _aliases = new HashMap<>();
     }
 
@@ -121,7 +132,9 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
      * where clause, selection, ordering, grouping, having, and distinct flag.
      */
     CriteriaQueryImpl<T> snapshot() {
-        CriteriaQueryImpl<T> copy = new CriteriaQueryImpl<>(_model, _resultClass);
+        // the snapshot shares the mutable translation state below, so it must
+        // also share the lock that serializes the translation
+        CriteriaQueryImpl<T> copy = new CriteriaQueryImpl<>(_model, _resultClass, _translationLock);
         // Share roots (immutable from the perspective of the snapshot)
         if (_roots != null) {
             for (Root<?> root : _roots) {
@@ -153,12 +166,23 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
      * @param model the metamodel defines the scope of all persistent entity references.
      * @param delegator the subquery which will delegate to this receiver.
      */
-    CriteriaQueryImpl(MetamodelImpl model, SubqueryImpl<T> delegator, OrderedMap<Object, Class<?>> params) {
+    CriteriaQueryImpl(MetamodelImpl model, SubqueryImpl<T> delegator, OrderedMap<Object, Class<?>> params,
+        TranslationLock translationLock) {
         this._model = model;
         this._resultClass = delegator.getJavaType();
         _delegator = delegator;
+        _translationLock = translationLock;
         _aliases = getAliases();
         _params = params;
+    }
+
+    /**
+     * Gets the lock that serializes the translation of the tree this query
+     * belongs to. It is shared by the root query, by every snapshot of it and by
+     * the captive query of each of its subqueries.
+     */
+    TranslationLock getTranslationLock() {
+        return _translationLock;
     }
 
     /**
@@ -539,7 +563,8 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
      * a new internal CriteriaQueryImpl, but subqueries still reference the
      * original internal query's context stack via their _parent pointer.
      * By sharing the same ThreadLocal and maps, both the original and copy
-     * see the same evaluation state.
+     * see the same evaluation state. Both must therefore already share the
+     * translation lock that serializes access to that state.
      */
     void shareEvalState(CriteriaQueryImpl<?> source) {
         this._contexts = source._contexts;

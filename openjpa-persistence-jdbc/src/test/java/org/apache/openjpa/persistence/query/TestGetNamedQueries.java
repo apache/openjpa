@@ -25,6 +25,8 @@ import java.util.Map;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQueryReference;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
 
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.QueryMetaData;
@@ -157,6 +159,30 @@ public class TestGetNamedQueries extends SingleEMFTestCase {
             Query q = em.createQuery("select o from NamedQueryRefEntity o");
             emf.addNamedQuery("NQRef.dyn", q);
             assertTrue(emf.getNamedQueries(NamedQueryRefEntity.class).containsKey("NQRef.dyn"));
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
+     * A criteria query registered by {@code addNamedQuery()} has no query string
+     * its candidate type could be recovered from, so the candidate type has to
+     * be captured from the compiled query. Without it the registered query is
+     * invisible to {@code getNamedQueries(Class)}, unlike a JPQL one.
+     */
+    public void testDynamicallyAddedCriteriaNamedQuery() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            CriteriaBuilder cb = emf.getCriteriaBuilder();
+            CriteriaQuery<NamedQueryRefEntity> cquery = cb.createQuery(NamedQueryRefEntity.class);
+            cquery.select(cquery.from(NamedQueryRefEntity.class));
+            emf.addNamedQuery("NQRef.dynCriteria", em.createQuery(cquery));
+
+            Map<String, TypedQueryReference<NamedQueryRefEntity>> refs =
+                emf.getNamedQueries(NamedQueryRefEntity.class);
+            assertTrue(refs.keySet().toString(), refs.containsKey("NQRef.dynCriteria"));
+            assertEquals(NamedQueryRefEntity.class, refs.get("NQRef.dynCriteria").getResultType());
+            assertNotNull(em.createQuery(refs.get("NQRef.dynCriteria")).getResultList());
         } finally {
             em.close();
         }

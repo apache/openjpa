@@ -685,13 +685,20 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
      * query if it has been cached.
      */
     void ignorePreparedQuery() {
+        // Critical assumption: Only JPQL queries are cached and more
+        // importantly, the identifier of the prepared query is the original
+        // JPQL String. A query of another language is identified by something
+        // else - a criteria query by the CQL rendering of its tree, which can
+        // coincide with the string of an unrelated JPQL query - and must never
+        // be rebuilt by parsing its own identifier as JPQL, no matter what is
+        // cached under it.
+        String language = _query.getLanguage();
+        if (!JPQLParser.LANG_JPQL.equals(language) && !LANG_PREPARED_SQL.equals(language))
+            return;
         PreparedQuery cached = _em.getPreparedQuery(_id);
         if (cached == null)
             return;
         Broker broker = _em.getBroker();
-        // Critical assumption: Only JPQL queries are cached and more
-        // importantly, the identifier of the prepared query is the original
-        // JPQL String
         String JPQL = JPQLParser.LANG_JPQL;
         String jpql = _id;
 

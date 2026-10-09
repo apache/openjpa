@@ -61,6 +61,23 @@ class CriteriaDeleteImpl<T> implements CriteriaDelete<T> {
     }
 
     /**
+     * Constructs a copy whose internal query shares the translation state, and
+     * hence the translation lock, of the internal query the lock came from.
+     */
+    private CriteriaDeleteImpl(MetamodelImpl model, Class<T> targetClass, TranslationLock translationLock) {
+        _model = model;
+        _targetClass = targetClass;
+        _internalQuery = new CriteriaQueryImpl<>(model, targetClass, translationLock);
+    }
+
+    /**
+     * Gets the lock that serializes the translation of this tree.
+     */
+    TranslationLock getTranslationLock() {
+        return _internalQuery.getTranslationLock();
+    }
+
+    /**
      * Creates a snapshot of this CriteriaDelete that captures the current state.
      * Per JPA spec, createQuery() should capture the query state at that point.
      * Subsequent modifications to the original CriteriaDelete should NOT affect
@@ -71,7 +88,7 @@ class CriteriaDeleteImpl<T> implements CriteriaDelete<T> {
      * time of the snapshot.
      */
     CriteriaDeleteImpl<T> snapshot() {
-        CriteriaDeleteImpl<T> copy = new CriteriaDeleteImpl<>(_model, _targetClass);
+        CriteriaDeleteImpl<T> copy = new CriteriaDeleteImpl<>(_model, _targetClass, _internalQuery.getTranslationLock());
         // Share the same root
         copy._root = this._root;
         // Add the root to the copy's internal query (for alias context)
