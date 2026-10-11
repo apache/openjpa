@@ -27,7 +27,8 @@ import java.io.ObjectOutputStream;
 import java.io.ObjectStreamClass;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -108,12 +109,10 @@ public class Serialization {
 
     public static class ClassResolvingObjectInputStream extends ObjectInputStream {
         /**
-         * Candidate loaders, in the same order the original MultiClassLoader
-         * used them; resolved lazily once per stream.
-         * The lazy initialisation cannot move into the constructor:
-         * PersistentObjectInputStream assigns _ctx after super(delegate), and its
-         * addContextClassLoaders override dereferences it, so eager initialisation
-         * would throw an NPE. A comment would prevent a later simplification.
+         * The loaders to try, in order, resolved on first use. Resolving them in
+         * the constructor is not possible: {@link PersistentObjectInputStream}
+         * assigns its context after <code>super(delegate)</code> and contributes a
+         * loader from it, which is not available yet at that point.
          */
         private ClassLoader[] _loaders;
 
@@ -147,15 +146,11 @@ public class Serialization {
 
         private ClassLoader[] getCandidateLoaders() {
             if (_loaders == null) {
-                // MultiClassLoader is used here only as an ordered, de-duplicating
-                // container so that subclasses overriding addContextClassLoaders keep
-                // working; it is never handed to the JVM, hence no ClassLoaderData
-                // is created for it.
-                MultiClassLoader holder = new MultiClassLoader();
-                addContextClassLoaders(holder);
-                holder.addClassLoader(getClass().getClassLoader());
-                holder.addClassLoader(MultiClassLoader.SYSTEM_LOADER);
-                _loaders = Arrays.stream(holder.getClassLoaders())
+                List<ClassLoader> candidates = new ArrayList<>(3);
+                addContextClassLoaders(candidates);
+                candidates.add(getClass().getClassLoader());
+                candidates.add(MultiClassLoader.SYSTEM_LOADER);
+                _loaders = candidates.stream()
                     .filter(Objects::nonNull)
                     .distinct()
                     .toArray(ClassLoader[]::new);
@@ -163,6 +158,19 @@ public class Serialization {
             return _loaders;
         }
 
+        /**
+         * Add the loaders to consult before the loader of this class and the
+         * system loader. The order is kept, duplicates and nulls are discarded.
+         */
+        protected void addContextClassLoaders(List<ClassLoader> loaders) {
+            loaders.add(Thread.currentThread().getContextClassLoader());
+        }
+
+        /**
+         * @deprecated no longer called; override
+         * {@link #addContextClassLoaders(List)} instead.
+         */
+        @Deprecated(forRemoval = true)
         protected void addContextClassLoaders(MultiClassLoader loader) {
             loader.addClassLoader(Thread.currentThread().getContextClassLoader());
         }
@@ -185,9 +193,9 @@ public class Serialization {
         }
 
         @Override
-        protected void addContextClassLoaders(MultiClassLoader loader) {
-            super.addContextClassLoaders(loader);
-            loader.addClassLoader(_ctx.getClassLoader());
+        protected void addContextClassLoaders(List<ClassLoader> loaders) {
+            super.addContextClassLoaders(loaders);
+            loaders.add(_ctx.getClassLoader());
         }
 
         @Override
