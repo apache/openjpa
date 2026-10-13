@@ -2091,6 +2091,14 @@ execute the query directly against the datastore. A value of <literal>false
 transaction affect the query, and if so to either evaluate the query in-memory
 or flush before running it against the datastore.
             </para>
+            <para>
+Note that <literal>true</literal> is an OpenJPA extension that deliberately opts
+every <literal>SELECT</literal> out of the guarantee of section 3.10.8 of the
+specification that pending updates which could affect a query's result are visible
+to it. The opt-out applies whatever the flush mode of the query is, including
+<literal>FlushModeType.AUTO</literal> set on the <classname>Query</classname>
+object itself.
+            </para>
         </section>
         <section id="openjpa.Id">
             <title>openjpa.Id</title>

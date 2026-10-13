@@ -329,23 +329,37 @@
                 </para>
             </section>
             <section id="jpa_4.2_FlushBeforeQueries">
-                <title>FlushModeType.AUTO flushes whenever the context is dirty</title>
+                <title>Completed access paths for Criteria and collection-valued queries</title>
                 <para>
-                    Previously a query only flushed pending changes when a dirty instance belonged to
-                    a type in the query's access path, and never for <literal>SELECT</literal> queries
-                    when <xref linkend="openjpa.IgnoreChanges"/> was <literal>true</literal>. With
-                    <literal>FlushModeType.AUTO</literal> (the default,
-                    <xref linkend="openjpa.FlushBeforeQueries"/><literal>=true</literal>) and an active
-                    transaction, a query now flushes whenever any instance in the persistence context
-                    is new, dirty or deleted, regardless of the query's access path, and overrides
-                    <literal>openjpa.IgnoreChanges</literal>. Applications with write-heavy transactions
-                    may observe more flushes (and therefore earlier constraint or trigger evaluation).
+                    As before, a query with <literal>FlushModeType.AUTO</literal> (the default,
+                    <xref linkend="openjpa.FlushBeforeQueries"/><literal>=true</literal>) flushes
+                    pending changes only when a new, dirty or deleted instance belongs to a type in
+                    the query's access path, that is to a type the query actually reads. This is what
+                    section 3.10.8 of the specification asks for: the duty covers the updates "which
+                    could potentially affect the result of the query", and the provider may discharge
+                    it "by flushing those entities to the database or by some other means".
                 </para>
                 <para>
-                    To restore the previous behavior use <literal>FlushModeType.COMMIT</literal> on
-                    the query or the <classname>EntityManager</classname>, or set
-                    <literal>openjpa.FlushBeforeQueries</literal> to <literal>false</literal> or
-                    <literal>with-connection</literal>.
+                    What changed is that the access paths themselves are now complete, so queries
+                    that failed to flush a relevant change do so. For a Criteria query a type
+                    reached through an implicit join (a path navigated with
+                    <methodname>Path.get</methodname>), through a join of a join, through a fetch
+                    join, inside a subquery or behind a join of a correlated join used to be left
+                    out. For JPQL, a collection- or map-valued path used without a join variable -
+                    <literal>SIZE(x.coll)</literal>, <literal>x.coll IS EMPTY</literal> - did not
+                    contribute its element and key types, because the declared type of such a field
+                    is <classname>Collection</classname> or <classname>Map</classname>. A dirty
+                    instance of any of those types was not flushed before the query ran, which
+                    could yield a stale result; such a query now flushes where it did not before.
+                </para>
+                <para>
+                    <xref linkend="openjpa.IgnoreChanges"/><literal>=true</literal> is unchanged
+                    and keeps its documented effect for every <literal>SELECT</literal>, whatever
+                    the flush mode of the query is. It is an OpenJPA extension that deliberately
+                    opts a <literal>SELECT</literal> out of the visibility guarantee of section
+                    3.10.8; the specification states that guarantee equally for a flush mode set on
+                    the query object and for one inherited from the persistence context, so the
+                    option is not overridden by either.
                 </para>
             </section>
             <section id="jpa_4.2_RollbackOnException">

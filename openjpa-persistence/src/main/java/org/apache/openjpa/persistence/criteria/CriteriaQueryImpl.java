@@ -51,6 +51,8 @@ import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.OrderedMap;
+import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.meta.Types;
 
@@ -87,6 +89,7 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
     private final TranslationLock _translationLock;
 
     private Set<RootImpl.TreatedRoot<?>> _treatedRoots;
+    private Set<ClassMetaData> _navigatedAccessPath;
 
     // AliasContext
     private int aliasCount = 0;
@@ -497,6 +500,58 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
      */
     Set<RootImpl.TreatedRoot<?>> getTreatedRoots() {
         return _treatedRoots;
+    }
+
+    /**
+     * Registers a type this query reads through a path traversal or a subquery.
+     * The roots and their joins are known statically, but a path navigated with
+     * {@link jakarta.persistence.criteria.Path#get(String) get()} creates an implicit
+     * join that is only discovered while the path is converted to a kernel value, and a
+     * subquery compiles its own access path. Both are collected here so that
+     * {@link CriteriaExpressionBuilder} can add them to
+     * {@link QueryExpressions#accessPath}, which decides whether a dirty instance can
+     * affect this query's result.
+     */
+    void addAccessPathMetaData(ClassMetaData meta) {
+        if (meta == null)
+            return;
+        if (_navigatedAccessPath == null) {
+            _navigatedAccessPath = new LinkedHashSet<>();
+        }
+        _navigatedAccessPath.add(meta);
+    }
+
+    /**
+     * Registers the types the given field reads: the field's own type, and for a
+     * collection or map field its element and key types.
+     */
+    void addAccessPathMetaData(FieldMetaData fmd) {
+        if (fmd == null)
+            return;
+        addAccessPathMetaData(fmd.isEmbedded()
+            ? fmd.getEmbeddedMetaData() : fmd.getDeclaredTypeMetaData());
+        if (fmd.getElement() != null)
+            addAccessPathMetaData(fmd.getElement().getDeclaredTypeMetaData());
+        if (fmd.getKey() != null)
+            addAccessPathMetaData(fmd.getKey().getDeclaredTypeMetaData());
+    }
+
+    /**
+     * Registers every type of the given access path on this query.
+     */
+    void addAccessPathMetaDatas(ClassMetaData[] metas) {
+        if (metas == null)
+            return;
+        for (ClassMetaData meta : metas) {
+            addAccessPathMetaData(meta);
+        }
+    }
+
+    /**
+     * Returns the types registered by {@link #addAccessPathMetaData}, or null if none.
+     */
+    Set<ClassMetaData> getNavigatedAccessPathMetaDatas() {
+        return _navigatedAccessPath;
     }
 
     /**
