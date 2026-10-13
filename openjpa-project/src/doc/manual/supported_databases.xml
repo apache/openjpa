@@ -1275,6 +1275,33 @@ GenerationType.TABLE, or GenerationType.AUTO.
                         UUID field support is made through UUID to String conversion.
                     </para>
                 </listitem>
+                <listitem>
+                    <para>
+                        MariaDB's InnoDB performs <code>ALTER TABLE ... ADD COLUMN</code> and
+                        <code>ALTER TABLE ... DROP COLUMN</code> instantly and keeps the dropped
+                        columns in the clustered index record format, where they continue to count
+                        towards the 8126 byte maximum row size. Re-synchronising a mapping with a
+                        drop/add schema action against the same table - either
+                        <link linkend="ref_guide_mapping_synch"><literal>
+                        openjpa.jdbc.SynchronizeMappings</literal></link> set to
+                        <code>buildSchema(SchemaAction='drop,add')</code>, or
+                        <code>mappingtool -action refresh</code> in a deployment script -
+                        therefore accumulates that metadata on every cycle and eventually fails
+                        with
+                    </para>
+<programlisting>
+Row size too large. The maximum row size for the used table type, not counting BLOBs,
+is 8126. [code=1118, state=42000]
+</programlisting>
+                    <para>
+                        even though the table's visible columns fit well inside the limit;
+                        <code>information_schema</code> gives no indication of the accumulated
+                        metadata. Rebuild the table to discard it
+                        (<code>ALTER TABLE &lt;name&gt; FORCE</code> or
+                        <code>OPTIMIZE TABLE &lt;name&gt;</code>), or do not use a drop/add schema
+                        action against a long-lived MariaDB schema.
+                    </para>
+                </listitem>
             </itemizedlist>
         </section>
     </section>
