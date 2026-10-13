@@ -321,11 +321,120 @@
                 </para>
                 <para>
                     Delete dependent entities explicitly (separate bulk deletes or
-                    <literal>em.remove()</literal>) or rely on database-level cascades. Note that a
-                    bulk <literal>UPDATE</literal> or <literal>DELETE</literal> that still has to be
-                    executed in memory now flushes all pending changes of the persistence context
-                    after processing; no compatibility option exists for that. See also
+                    <literal>em.remove()</literal>) or rely on database-level cascades. A bulk
+                    <literal>UPDATE</literal> or <literal>DELETE</literal> that still has to be
+                    executed in memory now flushes the persistence context, which is described in
+                    <xref linkend="jpa_4.2_InMemoryBulkFlush"/>. See also
                     <xref linkend="jpa_langref_bulk_ops"/>.
+                </para>
+            </section>
+            <section id="jpa_4.2_InMemoryBulkFlush">
+                <title>An in-memory bulk operation flushes the persistence context</title>
+                <para>
+                    Not every bulk <literal>UPDATE</literal> or <literal>DELETE</literal> can be
+                    expressed as a single statement. A delete whose candidate is mapped to more than
+                    one table, a candidate with delete lifecycle listeners, a candidate whose owned
+                    tables cannot be cleaned by a single key column and a query that was handed its
+                    candidates with
+                    <literal>OpenJPAQuery.setCandidateCollection()</literal> are executed in memory
+                    instead: OpenJPA loads the matching instances and applies the operation to them
+                    one by one. The result is a modified persistence context, not a modified
+                    database.
+                </para>
+                <para>
+                    Such an operation now flushes the persistence context when it has matched at
+                    least one instance, so the count returned by
+                    <literal>executeUpdate()</literal> has reached the database by the time the call
+                    returns. Previously nothing was written until the next flush or the commit,
+                    which meant that an <literal>em.clear()</literal> before the commit discarded
+                    the operation altogether while the count had already been reported, and that a
+                    <literal>find()</literal> in the same transaction after a
+                    <literal>clear()</literal> still saw the old row.
+                </para>
+                <para>
+                    The flush is not restricted to the instances the operation touched. The kernel
+                    flushes the transactional cache as a whole - there is no public API for flushing
+                    single instances - so pending changes that have nothing to do with the bulk
+                    operation are written as well, and the locks, triggers and constraint checks
+                    they imply happen earlier than before.
+                </para>
+                <para>
+                    Under the default <literal>FlushModeType.AUTO</literal> this is usually not a
+                    change of its own, because the query that loads the candidates flushes the
+                    context before the operation starts - but note that this pre-flush of
+                    <emphasis>unrelated</emphasis> pending changes is itself new in 4.2.0, see
+                    <xref linkend="jpa_4.2_FlushBeforeQueries"/>. The trailing flush is the only
+                    flush, and therefore a side effect in its own right, in two cases:
+                </para>
+                <itemizedlist>
+                    <listitem>
+                        <para>
+                            when the query never reaches the datastore at all, which is the case
+                            whenever its candidates were handed over with
+                            <literal>OpenJPAQuery.setCandidateCollection()</literal> - such a query
+                            is executed in memory from the start and does not pre-flush under any
+                            flush mode, including <literal>AUTO</literal>;
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                            with <literal>FlushModeType.COMMIT</literal>, or
+                            <xref linkend="openjpa.FlushBeforeQueries"/><literal>=false</literal> or
+                            <literal>with-connection</literal> while no connection is open, where a
+                            dirty instance of a type that is not on the query's access path used to
+                            stay pending.
+                        </para>
+                    </listitem>
+                </itemizedlist>
+                <para>
+                    The flush also moves the lifecycle callbacks of the instances the operation
+                    itself touched: <literal>@PostRemove</literal> and
+                    <literal>@PostUpdate</literal> fire during a flush, so they now run inside
+                    <literal>executeUpdate()</literal>. This is not an exotic case - a candidate
+                    with delete lifecycle listeners is one of the reasons a bulk delete is executed
+                    in memory in the first place.
+                </para>
+                <para>
+                    Nothing in the specification requires either behaviour. Jakarta Persistence 3.1
+                    section 4.10 states that "the persistence context is not synchronized with the
+                    result of the bulk update or delete" and recommends that "bulk update and delete
+                    operations should only be performed within a transaction in a new persistence
+                    context or before fetching or accessing entities whose state might be affected
+                    by such operations". The flush is therefore a choice: a reported row count that
+                    has not reached the database is the worse of the two, so it is the default.
+                </para>
+                <para>
+                    Set
+                    <literal>openjpa.Compatibility=FlushAfterInMemoryBulkOperation=false</literal>
+                    (default <literal>true</literal>) to restore the 4.1.x timing. This only
+                    suppresses the flush, not the operation: the matching instances are still
+                    modified or marked for deletion in the persistence context and are written by
+                    the next flush or at commit, together with their
+                    <literal>@PostRemove</literal> and <literal>@PostUpdate</literal> callbacks. An
+                    <literal>em.clear()</literal> before that flush loses the operation, which is
+                    the behaviour this option restores.
+                </para>
+                <para>
+                    The same fallback applies when the context cannot be flushed at all:
+                    a store manager that does not support incremental flushing (the default of
+                    <classname>AbstractStoreManager</classname>, so every bulk operation of such a
+                    store takes the in-memory path), or a savepoint set through a
+                    <xref linkend="openjpa.SavepointManager"/> that cannot flush incrementally -
+                    which the default <literal>in-mem</literal> manager cannot. The flush after the
+                    operation is then skipped and logged at <literal>INFO</literal> rather than
+                    raising an exception, so the operation behaves as if the option had been turned
+                    off: it is applied in the context and written at commit, but the row count
+                    <literal>executeUpdate()</literal> returned has not reached the database when
+                    the call returns.
+                </para>
+                <para>
+                    Note that this covers only the flush after the operation. The flush
+                    <emphasis>before</emphasis> the candidate query, described in
+                    <xref linkend="jpa_4.2_FlushBeforeQueries"/>, is guarded against an unsupported
+                    store but not against a savepoint, so a bulk operation issued with pending
+                    changes and a savepoint set still fails with the
+                    <classname>SavepointManager</classname> message, exactly as in earlier
+                    releases.
                 </para>
             </section>
             <section id="jpa_4.2_FlushBeforeQueries">
