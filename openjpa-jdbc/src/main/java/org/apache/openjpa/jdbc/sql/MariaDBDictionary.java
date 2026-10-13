@@ -44,6 +44,7 @@ import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
+import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.util.ExceptionInfo;
@@ -57,6 +58,13 @@ public class MariaDBDictionary extends DBDictionary {
     public static final String SELECT_HINT = "openjpa.hint.MariaDBSelectHint";
 
     public static final String DELIMITER_BACK_TICK = "`";
+
+    /**
+     * The replication compatibility prefix a MariaDB 10 or 11 server prepends
+     * to its reported product version for clients that are not MariaDB aware,
+     * as in <code>5.5.5-10.3.39-MariaDB</code>.
+     */
+    private static final String COMPAT_VERSION_PREFIX = "5.5.5-";
 
     /**
      * The MySQL table type to use when creating tables; defaults to innodb.
@@ -227,6 +235,90 @@ public class MariaDBDictionary extends DBDictionary {
             timeTypeName = "TIME{0}";
             fractionalTypeNameSet.add(timeTypeName);
         }
+
+        // MariaDB 10.3 introduced sequence objects: CREATE SEQUENCE with
+        // NEXTVAL()/NEXT VALUE FOR. Older servers have none, and a named
+        // @SequenceGenerator falls back to a table sequence there
+        // (OPENJPA-3014). There is no setter for NextSequenceQuery and hence
+        // no flag saying the user configured one, but this dictionary leaves
+        // it null in its constructor and DBDictionary.endConfiguration() nulls
+        // an empty value out, so a value seen here was configured explicitly
+        // and is left alone.
+        if (nextSequenceQuery == null && (maj > 10 || (maj == 10 && min >= 3))) {
+            nextSequenceQuery = "SELECT NEXTVAL({0})";
+        }
+    }
+
+    /**
+     * MariaDB caches 1000 increments of a sequence per server by default, and
+     * discards what is left of that range whenever the cache is flushed - an
+     * <code>ALTER SEQUENCE</code>, a restart - so the identifiers jump by up
+     * to <code>1000 * increment</code>. OpenJPA caches values itself, in
+     * blocks of the generator's allocation size, and
+     * {@link org.apache.openjpa.jdbc.kernel.NativeJDBCSeq} issues
+     * <code>ALTER SEQUENCE ... INCREMENT BY</code> once per sequence instance
+     * to do so, which is exactly such a flush: the server side cache adds
+     * nothing but those gaps. Create the sequence with <code>NOCACHE</code>.
+     *<p>
+     * Measured on MariaDB 11.8 with a sequence created
+     * <code>START WITH 100 INCREMENT BY 7</code>: <code>NEXTVAL</code>
+     * returns 100 and leaves <code>NEXT_NOT_CACHED_VALUE</code> at 7100, and
+     * after <code>ALTER SEQUENCE ... INCREMENT BY 7</code> the next
+     * <code>NEXTVAL</code> returns 7100; with <code>NOCACHE</code> the same
+     * statements return 100 and then 107.
+     */
+    @Override
+    public String[] getCreateSequenceSQL(Sequence seq) {
+        String[] sql = super.getCreateSequenceSQL(seq);
+        if (sql != null) {
+            for (int i = 0; i < sql.length; i++) {
+                sql[i] = sql[i] + " NOCACHE";
+            }
+        }
+        return sql;
+    }
+
+    /**
+     * MariaDB has no <code>INFORMATION_SCHEMA.SEQUENCES</code> before 10.6;
+     * a sequence is listed in <code>INFORMATION_SCHEMA.TABLES</code> with a
+     * <code>TABLE_TYPE</code> of <code>SEQUENCE</code> in every version that
+     * has sequences at all. Schema names are matched case insensitively
+     * because {@link DBDictionary#getSequences} upper cases the schema it
+     * passes, while MariaDB keeps the case of the schema as created.
+     *<p>
+     * <code>INFORMATION_SCHEMA</code> spans every database on the server, not
+     * just the connected one, and every caller in OpenJPA asks for a null
+     * schema - <code>SchemaGenerator.generateSequences()</code> passes
+     * {@link DBIdentifier#NULL} deliberately, and an unqualified
+     * <code>@SequenceGenerator</code> has none. Unrestricted, the reflection
+     * would report sequences of other applications' databases, which makes
+     * the schema tool skip a <code>CREATE SEQUENCE</code> it owes and, on the
+     * drop side, issue <code>DROP SEQUENCE</code> outside the configured
+     * database. The no schema case is therefore scoped to
+     * <code>DATABASE()</code>, which takes no bind parameter and so leaves
+     * the parameter indices {@link DBDictionary#getSequences} binds intact.
+     */
+    @Override
+    protected String getSequencesSQL(String schemaName, String sequenceName) {
+        return getSequencesSQL(DBIdentifier.newSchema(schemaName),
+            DBIdentifier.newSequence(sequenceName));
+    }
+
+    @Override
+    protected String getSequencesSQL(DBIdentifier schemaName, DBIdentifier sequenceName) {
+        StringBuilder buf = new StringBuilder();
+        buf.append("SELECT TABLE_SCHEMA AS SEQUENCE_SCHEMA, ")
+            .append("TABLE_NAME AS SEQUENCE_NAME ")
+            .append("FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'SEQUENCE'");
+        if (!DBIdentifier.isNull(schemaName)) {
+            buf.append(" AND UPPER(TABLE_SCHEMA) = UPPER(?)");
+        } else {
+            buf.append(" AND TABLE_SCHEMA = DATABASE()");
+        }
+        if (!DBIdentifier.isNull(sequenceName)) {
+            buf.append(" AND UPPER(TABLE_NAME) = UPPER(?)");
+        }
+        return buf.toString();
     }
 
     @Override
@@ -241,11 +333,35 @@ public class MariaDBDictionary extends DBDictionary {
         return conn;
     }
 
-    private static int[] getMajorMinorVersions(String versionStr)
+    /**
+     * The major and minor version of the server, as
+     * {@link DatabaseMetaData#getDatabaseProductVersion} reports it.
+     *<p>
+     * A MariaDB 10 or 11 server reports its version to a client that is not
+     * MariaDB aware with a replication compatibility prefix -
+     * <code>5.5.5-10.3.39-MariaDB</code> rather than
+     * <code>10.3.39-MariaDB</code> - and both forms reach this dictionary.
+     * Which dictionary is used is decided by the product name:
+     * {@link DBDictionaryFactory#newDBDictionary(org.apache.openjpa.jdbc.conf.JDBCConfiguration,
+     * javax.sql.DataSource, String)} matches
+     * {@link DatabaseMetaData#getDatabaseProductName}, falls back to the URL
+     * protocol, and consults
+     * {@link DatabaseMetaData#getDatabaseProductVersion} only when the name
+     * maps to MySQL - which is what a client that is not MariaDB aware
+     * reports, and such a client is also the one that passes the prefixed
+     * version through. Reading the leading group of that form would yield 5.5
+     * and withhold every version gated feature from a server that has it -
+     * sequence support from 10.3 on, and the microsecond precision temporal
+     * types from 10.2 on - so the prefix is stripped before parsing.
+     */
+    static int[] getMajorMinorVersions(String versionStr)
         throws IllegalArgumentException {
         int beginIndex = 0;
 
         versionStr = versionStr.trim();
+        if (versionStr.startsWith(COMPAT_VERSION_PREFIX)) {
+            versionStr = versionStr.substring(COMPAT_VERSION_PREFIX.length()).trim();
+        }
         char[] charArr = versionStr.toCharArray();
         for (int i = 0; i < charArr.length; i++) {
             if (Character.isDigit(charArr[i])) {
