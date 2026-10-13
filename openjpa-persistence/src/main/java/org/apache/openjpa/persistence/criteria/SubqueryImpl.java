@@ -332,6 +332,8 @@ class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
         _delegate.setContexts(contexts);
         QueryExpressions subexp = exprBuilder.getQueryExpressions(factory, _delegate);
         _subq.setQueryExpressions(subexp);
+        // the enclosing query reads everything the subquery reads
+        q.addAccessPathMetaDatas(subexp.accessPath);
         if (subexp.projections.length > 0)
             JPQLExpressionBuilder.checkEmbeddable(subexp.projections[0], null);
         contexts.pop();
