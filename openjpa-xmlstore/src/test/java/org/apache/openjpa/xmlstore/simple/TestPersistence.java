@@ -25,6 +25,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import jakarta.persistence.EntityManager;
@@ -139,6 +140,56 @@ public class TestPersistence extends AbstractPersistenceTestCase {
             em.getTransaction().rollback();
             em.close();
 
+        } finally {
+            closeEMF(emf);
+        }
+    }
+
+    /**
+     * A store manager that does not support incremental flushing - the default
+     * of <code>AbstractStoreManager</code>, which the XML store keeps - cannot
+     * execute a bulk delete as a statement either, so the operation always
+     * takes the in-memory path of the kernel query. The flush that follows an
+     * in-memory bulk operation has to stay optional for such a store.
+     *
+     * @see <A HREF="https://issues.apache.org/jira/browse/OPENJPA-2951">OPENJPA-2951</A>
+     */
+    public void testBulkDelete() {
+        assertBulkDelete(Map.of());
+    }
+
+    /**
+     * The same with the flush explicitly turned off.
+     */
+    public void testBulkDeleteWithoutFlush() {
+        assertBulkDelete(Map.of("openjpa.Compatibility",
+                "FlushAfterInMemoryBulkOperation=false"));
+    }
+
+    private void assertBulkDelete(Map<String, String> props) {
+        Map<String, Object> all = new HashMap<>(
+                getPropertiesMap(CLEAR_TABLES, Place.class));
+        all.putAll(props);
+        OpenJPAEntityManagerFactorySPI emf = createNamedOpenJPAEMF(
+                "xmlstore-simple",
+                "META-INF/persistence.xml", all);
+        try {
+            EntityManager em = emf.createEntityManager();
+            em.getTransaction().begin();
+            Place place = new Place();
+            place.setLocation("Lexington");
+            em.persist(place);
+            em.getTransaction().commit();
+
+            em.getTransaction().begin();
+            assertEquals(1, em.createQuery("delete from Place p")
+                    .executeUpdate());
+            em.getTransaction().commit();
+            em.close();
+
+            em = emf.createEntityManager();
+            assertNull(em.find(Place.class, "Lexington"));
+            em.close();
         } finally {
             closeEMF(emf);
         }

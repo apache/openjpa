@@ -442,6 +442,23 @@ public interface Broker
     void flush();
 
     /**
+     * Whether {@link #flush} would be accepted in the current state, rather
+     * than rejected with an
+     * {@link org.apache.openjpa.util.UnsupportedException}. That is the case
+     * unless the runtime does not support
+     * {@link org.apache.openjpa.conf.OpenJPAConfiguration#OPTION_INC_FLUSH}
+     * incremental flushing, or a savepoint is set that the configured
+     * {@link SavepointManager} cannot flush incrementally. Callers that flush
+     * on their own account rather than on the application's request can use
+     * this to leave the changes pending instead of failing the operation.
+     *
+     * @since 4.2.0
+     */
+    default boolean isFlushSupported() {
+        return true;
+    }
+
+    /**
      * Run pre-flush actions on transactional objects, including
      * persistence-by-reachability, inverse relationship management,
      * deletion of dependent instances, and instance callbacks.
