@@ -1165,6 +1165,15 @@ public class DelegatingBroker
     }
 
     @Override
+    public boolean isFlushSupported() {
+        try {
+            return _broker.isFlushSupported();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
+    @Override
     public void preFlush() {
         try {
             _broker.preFlush();

@@ -1109,12 +1109,14 @@ public class QueryImpl implements Query {
             int size = 0;
             for (Iterator i = ((Collection) o).iterator(); i.hasNext(); size++)
                 _broker.delete(i.next(), noCascade);
-            // Flush the deletes to the database so that the bulk operation
-            // is visible immediately. Without this flush, em.clear() or
-            // subsequent find() calls in the same transaction would not
-            // see the deletes.
+            // The in-memory path marks the managed instances for deletion
+            // rather than deleting rows, so without a flush the returned
+            // count has not reached the database and the deletes are lost
+            // when the context is cleared. JPA spec section 4.10 does not
+            // synchronize the context with a bulk operation either way, so
+            // the flush can be suppressed for the sake of the 4.1.x timing.
             if (size > 0) {
-                _broker.flush();
+                flushAfterInMemoryBulkOperation();
             }
             return size;
         } catch (OpenJPAException ke) {
@@ -1148,12 +1150,10 @@ public class QueryImpl implements Query {
             int size = 0;
             for (Iterator i = ((Collection) o).iterator(); i.hasNext(); size++)
                 updateInMemory(i.next(), params, q);
-            // Flush the updates to the database so that the bulk operation
-            // is visible immediately. Without this flush, em.clear() or
-            // subsequent find() calls in the same transaction would not
-            // see the updates.
+            // see the comment in deleteInMemory(): the updates only live in
+            // the managed instances until the context is flushed
             if (size > 0) {
-                _broker.flush();
+                flushAfterInMemoryBulkOperation();
             }
             return size;
         } catch (OpenJPAException ke) {
@@ -1161,6 +1161,34 @@ public class QueryImpl implements Query {
         } catch (Exception e) {
             throw new UserException(e);
         }
+    }
+
+    /**
+     * Flush the persistence context after a bulk operation that had to be
+     * executed in memory, so that the row count the operation returns has
+     * reached the database. The whole context is flushed, because the kernel
+     * does not flush single instances; an application that relies on the
+     * former timing can turn the flush off with the compatibility option
+     * <code>FlushAfterInMemoryBulkOperation</code>.
+     *<p>
+     * The flush is also skipped when the context cannot be flushed at all -
+     * see {@link Broker#isFlushSupported} - rather than letting
+     * {@link Broker#flush} reject the operation. The bulk operation is legal
+     * and the specification does not ask for a flush, so a store manager
+     * without incremental flushing or a savepoint that cannot be flushed
+     * incrementally leaves the operation pending in the context instead of
+     * failing it, which is the behaviour of the option turned off.
+     */
+    private void flushAfterInMemoryBulkOperation() {
+        if (!_broker.getConfiguration().getCompatibilityInstance()
+            .getFlushAfterInMemoryBulkOperation())
+            return;
+        if (!_broker.isFlushSupported()) {
+            if (_log.isInfoEnabled())
+                _log.info(_loc.get("no-flush-after-bulk-inmem", _class));
+            return;
+        }
+        _broker.flush();
     }
 
     /**

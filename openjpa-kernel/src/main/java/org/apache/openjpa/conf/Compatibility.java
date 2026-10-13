@@ -83,6 +83,7 @@ public class Compatibility {
     private boolean _materializeQueryResultList = true; // OPENJPA-2989
     private boolean _cleanupOwnedTablesOnBulkDelete = true; // OPENJPA-2990
     private boolean _allowNestedCompoundSelection = false; // OPENJPA-2991
+    private boolean _flushAfterInMemoryBulkOperation = true; // OPENJPA-2951
 
     /**
      * Whether to require exact identity value types when creating object
@@ -913,5 +914,58 @@ public class Compatibility {
      */
     public void setCleanupOwnedTablesOnBulkDelete(boolean b) {
         _cleanupOwnedTablesOnBulkDelete = b;
+    }
+
+    /**
+     * Whether a bulk update or delete that has to be executed in memory
+     * flushes the persistence context afterwards. The in-memory path applies
+     * the operation to the managed instances rather than to the database, so
+     * without the flush <code>executeUpdate()</code> reports a row count that
+     * no statement has carried to the database yet, and the operation is lost
+     * altogether if the context is cleared before it is committed. Defaults to
+     * true.
+     *<p>
+     * The flush is not restricted to the affected instances - the kernel only
+     * flushes the whole transactional cache - so unrelated pending changes of
+     * the same context are written as well. Jakarta Persistence 3.1 section
+     * 4.10 states that "the persistence context is not synchronized with the
+     * result of the bulk update or delete", so neither flushing nor not
+     * flushing is mandated; set this to false to restore the 4.1.x timing, in
+     * which nothing is written until the next flush or commit. Suppressing the
+     * flush does not suppress the operation itself: the matching instances are
+     * still modified or marked for deletion in the persistence context and are
+     * written by the next flush or at commit.
+     *<p>
+     * The flush also decides when the lifecycle callbacks of the affected
+     * instances run: <code>@PostRemove</code> and <code>@PostUpdate</code>
+     * (<code>AFTER_DELETE_PERFORMED</code> and
+     * <code>AFTER_UPDATE_PERFORMED</code>) fire during a flush, so they run
+     * inside <code>executeUpdate()</code> by default and at the next flush or
+     * at commit when this is false.
+     *<p>
+     * The flush after the operation is skipped regardless of this setting when
+     * the runtime cannot flush incrementally, that is when
+     * {@link OpenJPAConfiguration#OPTION_INC_FLUSH} is not supported or a
+     * savepoint is set that the configured
+     * {@link org.apache.openjpa.kernel.SavepointManager} cannot flush
+     * incrementally. The behaviour is then the same as with this option turned
+     * off. This covers the flush after the operation only: the flush before the
+     * candidate query is not guarded against a savepoint, so an operation
+     * issued with pending changes and a savepoint set still fails.
+     *
+     * @since 4.2.0
+     */
+    public boolean getFlushAfterInMemoryBulkOperation() {
+        return _flushAfterInMemoryBulkOperation;
+    }
+
+    /**
+     * Whether a bulk update or delete that has to be executed in memory
+     * flushes the persistence context afterwards.
+     *
+     * @since 4.2.0
+     */
+    public void setFlushAfterInMemoryBulkOperation(boolean b) {
+        _flushAfterInMemoryBulkOperation = b;
     }
 }
