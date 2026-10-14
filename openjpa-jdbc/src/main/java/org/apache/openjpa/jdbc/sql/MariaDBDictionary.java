@@ -227,6 +227,10 @@ public class MariaDBDictionary extends DBDictionary {
             timeTypeName = "TIME{0}";
             fractionalTypeNameSet.add(timeTypeName);
         }
+        if (maj > 10 || (maj == 10 && min > 2)) {
+            // MariaDB supports sequenses
+            nextSequenceQuery = "SELECT NEXTVAL({0})";
+        }
     }
 
     @Override
