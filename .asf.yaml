@@ -12,3 +12,9 @@ github:
         - root
       restrict_deletion: true
       restrict_force_push: true
+
+# Mails a workflow run that fails, and one that succeeds after a series of
+# failures; successful runs are not mailed. The scheduled Databases workflow
+# would otherwise fail unnoticed.
+notifications:
+  jobs: dev@openjpa.apache.org
