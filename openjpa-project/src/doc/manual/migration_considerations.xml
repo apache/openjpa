@@ -641,6 +641,94 @@
                     sequences. See <xref linkend="jpa_overview_mapping_sequence_seqgen"/>.
                 </para>
             </section>
+            <section id="jpa_4.2_SequenceGeneratorWithoutSequences">
+                <title>@SequenceGenerator on a database without sequences</title>
+                <para>
+                    A named <literal>@SequenceGenerator</literal> previously failed outright on every
+                    database whose dictionary defines no <literal>NextSequenceQuery</literal> - MySQL,
+                    MariaDB before 10.3, Apache Derby, Microsoft SQL Server and Sybase as configured
+                    by OpenJPA, and any other dictionary that declares none - with
+                    <literal>Error instantiating named sequence "...": Your database dictionary does
+                    not support native sequences</literal>, and there was no property that avoided it.
+                    Such a generator is now backed by a
+                    <classname>org.apache.openjpa.jdbc.kernel.ValueTableJDBCSeq</classname> instead: a
+                    counter row in <literal>OPENJPA_SEQUENCES_TABLE</literal>, whose
+                    <literal>initialValue</literal> and <literal>allocationSize</literal> are honoured,
+                    so the identifiers are unique and allocated in blocks as they would be from a real
+                    sequence. This is a design decision with a compatibility dimension, not something
+                    Jakarta Persistence demands; the specification leaves the realisation of a generator
+                    to the provider, and the observable contract is the uniqueness of the identifiers.
+                </para>
+                <para>
+                    What this means in practice:
+                    <itemizedlist>
+                        <listitem>
+                            <para>
+                                The <literal>OPENJPA_SEQUENCES_TABLE</literal> has to exist. The schema
+                                tool and <literal>openjpa.jdbc.SynchronizeMappings</literal> create it,
+                                but a hand-maintained schema has to add it, since nothing creates it
+                                otherwise.
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+                                The counter row is keyed by the sequence name, so entities sharing one
+                                generator share one counter, as they would share a sequence object. The
+                                generator's <literal>schema</literal> and <literal>catalog</literal>
+                                qualify that key - they do not place the table, which stays in the
+                                default schema. The schema is the one a sequence object would have been
+                                created in, which is the persistence unit default schema when the
+                                generator declares none, so changing that default moves the counter just
+                                as it would move the sequence object.
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+                                Each allocation takes a row lock on the shared counter row for the
+                                duration of its transaction. Like every
+                                <classname>org.apache.openjpa.jdbc.kernel.TableJDBCSeq</classname>
+                                derived sequence it therefore behaves best with
+                                <xref linkend="openjpa.ConnectionFactory2"/> configured, so that the
+                                allocation runs on a connection of its own.
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+                                Some of these databases do have sequence objects even though the
+                                dictionary declares none - Microsoft SQL Server has had them since
+                                2012. Where a generator is meant to draw from a sequence the database
+                                already has, which is also the way to keep sharing it with anything
+                                else that draws from it, configure that dictionary with a
+                                <literal>NextSequenceQuery</literal> in
+                                <xref linkend="openjpa.jdbc.DBDictionary"/>, for instance
+                                <literal>openjpa.jdbc.DBDictionary=sqlserver(NextSequenceQuery="SELECT NEXT VALUE FOR {0}")</literal>;
+                                the generator then keeps the native path.
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+                                The substitution is logged once per generator as a warning, and
+                                <literal>openjpa.Compatibility=EmulateNativeSequences=false</literal>
+                                restores the previous hard failure.
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+                                A dictionary that only learns from the server version whether the
+                                database has sequence objects - <classname>MariaDBDictionary</classname>
+                                does - is asked for a connection while the generator is resolved, so
+                                that the answer does not depend on whether anything else has touched
+                                the database first. If no connection can be obtained, resolving the
+                                generator fails with that failure as its cause rather than picking a
+                                backing store that cannot be revised later. Dictionaries that declare a
+                                <literal>NextSequenceQuery</literal> in their constructor - Oracle, DB2,
+                                PostgreSQL, H2, HSQL, Informix, Firebird, Ingres - are resolved without
+                                a connection, as before.
+                            </para>
+                        </listitem>
+                    </itemizedlist>
+                </para>
+            </section>
             <section id="jpa_4.2_AttributeConverters">
                 <title>AttributeConverter handling</title>
                 <para>
@@ -1120,6 +1208,57 @@
                     Subclass <classname>MariaDBDictionary</classname> and override
                     <literal>getBatchFetchSize(int)</literal> to restore streaming.
                 </para>
+                <para>
+                    MariaDB 10.3 introduced sequence objects, and
+                    <classname>MariaDBDictionary</classname> now reports sequence support on 10.3 and
+                    later, where it previously declared none. A
+                    <literal>@SequenceGenerator</literal> is therefore backed by a real sequence, so
+                    the schema tool issues <literal>CREATE SEQUENCE</literal> and
+                    <literal>DROP SEQUENCE</literal> for it and the database user needs the privilege
+                    to do so. The sequences are created <literal>NOCACHE</literal>, because OpenJPA
+                    caches values itself in blocks of the generator's allocation size, and the
+                    server-side cache of 1000 increments - 1000 times the allocation size in
+                    identifiers, which is 50000 for an <literal>allocationSize</literal> of 50 - would
+                    only add gaps, since the <literal>ALTER SEQUENCE ... INCREMENT BY</literal> that
+                    OpenJPA issues per sequence instance discards the rest of the cached range.
+                    MariaDB 10.2 and earlier keep the sequence table fallback described in
+                    <xref linkend="jpa_4.2_SequenceGeneratorWithoutSequences"/>; a
+                    <literal>NextSequenceQuery</literal> configured in
+                    <xref linkend="openjpa.jdbc.DBDictionary"/> is left untouched.
+                </para>
+                <para>
+                    Since the version is now parsed from the server's reply even when a driver that is
+                    not MariaDB aware passes it on with its <literal>5.5.5-</literal> replication
+                    compatibility prefix, such a deployment reaches the features gated on 10.2 as well:
+                    temporal columns are generated as <literal>DATETIME(6)</literal> rather than
+                    <literal>DATETIME</literal>, as they already were for the same server reached
+                    through <literal>mariadb-java-client</literal>. A schema created by an earlier
+                    release keeps whole-second <literal>DATETIME</literal> columns until they are
+                    altered, and reading them is unaffected. The version gate assigns
+                    <literal>timestampTypeName</literal> and <literal>dateFractionDigits</literal>
+                    outright, so a value configured in
+                    <xref linkend="openjpa.jdbc.DBDictionary"/> does not survive it; subclass
+                    <classname>MariaDBDictionary</classname> to generate the previous types.
+                </para>
+                <para>
+                    There is no upgrade path from an earlier release to migrate: a named
+                    <literal>@SequenceGenerator</literal> failed outright on every MariaDB before
+                    4.2.0, so no counter exists to move. The case that needs care is a server upgrade
+                    under 4.2.0. An application that ran on MariaDB 10.2 or earlier has its counters in
+                    <literal>OPENJPA_SEQUENCES_TABLE</literal>; once the server is 10.3 or later the
+                    same generator is backed by a sequence object, which
+                    <literal>openjpa.jdbc.SynchronizeMappings</literal> or the schema tool creates
+                    starting at the generator's <literal>initialValue</literal> and which therefore
+                    hands out identifiers that are already in use. Before upgrading the server, either
+                    create each sequence with <literal>START WITH</literal> above the highest
+                    identifier in use, or keep the existing counter by declaring the generator's
+                    <literal>sequenceName</literal> as a
+                    <literal>value-table(PrimaryKeyValue=...)</literal> plugin string, which
+                    <xref linkend="jpa_4.2_SequenceGeneratorWithoutSequences"/> leaves alone. Emptying
+                    the dictionary's <literal>NextSequenceQuery</literal> does not pin the old backing
+                    store, because an empty value is normalised to none and then set again for a 10.3
+                    server.
+                </para>
             </section>
             <section id="jpa_4.2_SQLServer">
                 <title>Microsoft SQL Server</title>
@@ -1133,6 +1272,14 @@
                     time literals are rendered as <literal>CAST('hh:mm:ss' AS TIME)</literal>. To
                     restore the previous SQL set
                     <literal>openjpa.jdbc.DBDictionary=sqlserver(CurrentDateFunction=GETDATE(),CurrentTimeFunction=GETDATE())</literal>.
+                </para>
+                <para>
+                    <classname>SQLServerDictionary</classname> declares no
+                    <literal>NextSequenceQuery</literal>, although SQL Server has had sequence objects
+                    since 2012, so a named <literal>@SequenceGenerator</literal> that used to fail is
+                    now backed by a counter row instead of by the sequence it names. To draw from that
+                    sequence, configure the query - see
+                    <xref linkend="jpa_4.2_SequenceGeneratorWithoutSequences"/>.
                 </para>
             </section>
             <section id="jpa_4.2_Oracle">

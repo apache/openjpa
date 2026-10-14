@@ -82,6 +82,7 @@ public class Compatibility {
     private boolean _specCompliantSchemaGeneration = false; // OPENJPA-2940
     private boolean _materializeQueryResultList = true; // OPENJPA-2989
     private boolean _cleanupOwnedTablesOnBulkDelete = true; // OPENJPA-2990
+    private boolean _emulateNativeSequences = true; // OPENJPA-3014
     private boolean _allowNestedCompoundSelection = false; // OPENJPA-2991
 
     /**
@@ -913,5 +914,40 @@ public class Compatibility {
      */
     public void setCleanupOwnedTablesOnBulkDelete(boolean b) {
         _cleanupOwnedTablesOnBulkDelete = b;
+    }
+
+    /**
+     * Whether a named generator that asks for a database sequence is backed by
+     * a table sequence when the database has no sequence objects at all, i.e.
+     * when the dictionary defines no <code>NextSequenceQuery</code>. Defaults
+     * to true. Set to false to get the historical behaviour, where such a
+     * generator fails to configure with
+     * <code>&quot;Your database dictionary does not support native
+     * sequences&quot;</code>.
+     *<p>
+     * The substitution keys the emulated sequence by the sequence name, so
+     * entities sharing one generator share one counter, and
+     * <code>initialValue</code> and <code>allocationSize</code> are honoured
+     * either way. It changes which object holds the identifier state, however:
+     * a schema built by an earlier OpenJPA release does not have the sequence
+     * table, and an application that generated identifiers elsewhere - a
+     * sequence created by hand plus an explicit
+     * <code>NextSequenceQuery</code>, for instance - should configure that
+     * query rather than rely on the fallback.
+     *
+     * @since 4.2.0
+     */
+    public boolean getEmulateNativeSequences() {
+        return _emulateNativeSequences;
+    }
+
+    /**
+     * Whether a named generator that asks for a database sequence is backed by
+     * a table sequence when the database has no sequence objects at all.
+     *
+     * @since 4.2.0
+     */
+    public void setEmulateNativeSequences(boolean b) {
+        _emulateNativeSequences = b;
     }
 }
