@@ -827,9 +827,9 @@ openjpa.ConnectionURL: jdbc:h2:DB_NAME
             <itemizedlist>
                 <listitem>
                     <para>
-<classname>UUID</classname> support allows usage of binary data on entities. 
-If the user wants to exchange <classname>String</classname> for 
-<classname>UUID</classname>, it is necessary to previously convert the 
+<classname>UUID</classname> support allows usage of binary data on entities.
+If the user wants to exchange <classname>String</classname> for
+<classname>UUID</classname>, it is necessary to previously convert the
 <classname>String</classname> to UUID type in database.
                     </para>
                 </listitem>
@@ -1230,7 +1230,13 @@ The number of fractions can be explicitly set via scale:
 <code>@Column(scale=3)</code> will lead to a <code>DATETIME(3)</code> column.
                     </para>
                 </listitem>
-
+                <listitem>
+                    <para>
+MySQL does not support native sequences. If you would like to use
+generated values with SQL Server you should use GenerationType.IDENTITY,
+GenerationType.TABLE, or GenerationType.AUTO.
+                    </para>
+                </listitem>
             </itemizedlist>
         </section>
     </section>
@@ -1265,7 +1271,7 @@ The number of fractions can be explicitly set via scale:
                 <listitem>
                     <para>
                         As of MariaDB 10.7 the <code>UUID</code> data type is supported,
-                        but the JDBC driver does not writes the object directly, so 
+                        but the JDBC driver does not writes the object directly, so
                         UUID field support is made through UUID to String conversion.
                     </para>
                 </listitem>
@@ -1479,9 +1485,9 @@ supported when using
                 </listitem>
                 <listitem>
                     <para>
-<classname>UUID</classname> support allows usage of binary data on entities. 
-If the user wants to exchange <classname>String</classname> for 
-<classname>UUID</classname>, it is necessary to previously convert the 
+<classname>UUID</classname> support allows usage of binary data on entities.
+If the user wants to exchange <classname>String</classname> for
+<classname>UUID</classname>, it is necessary to previously convert the
 <classname>String</classname> to UUID type in database.
                     </para>
                 </listitem>

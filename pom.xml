@@ -652,6 +652,8 @@
                         <groupId>io.fabric8</groupId>
                         <artifactId>docker-maven-plugin</artifactId>
                         <configuration>
+                            <keepContainer>false</keepContainer>
+                            <removeVolumes>true</removeVolumes>
                             <images>
                                 <image>
                                     <name>mysql:${mysql.server.version}</name>
@@ -748,6 +750,8 @@
                         <groupId>io.fabric8</groupId>
                         <artifactId>docker-maven-plugin</artifactId>
                         <configuration>
+                            <keepContainer>false</keepContainer>
+                            <removeVolumes>true</removeVolumes>
                             <images>
                                 <image>
                                     <name>mariadb:${mariadb.server.version}</name>
@@ -849,6 +853,8 @@
                         <groupId>io.fabric8</groupId>
                         <artifactId>docker-maven-plugin</artifactId>
                         <configuration>
+                            <keepContainer>false</keepContainer>
+                            <removeVolumes>true</removeVolumes>
                             <images>
                                 <image>
                                     <name>postgres:${postgresql.server.version}</name>
@@ -993,6 +999,8 @@
                         <groupId>io.fabric8</groupId>
                         <artifactId>docker-maven-plugin</artifactId>
                         <configuration>
+                            <keepContainer>false</keepContainer>
+                            <removeVolumes>true</removeVolumes>
                             <images>
                                 <image>
                                     <name>mcr.microsoft.com/mssql/server:${mssql.server.version}</name>
@@ -1156,6 +1164,8 @@
                         <groupId>io.fabric8</groupId>
                         <artifactId>docker-maven-plugin</artifactId>
                         <configuration>
+                            <keepContainer>false</keepContainer>
+                            <removeVolumes>true</removeVolumes>
                             <images>
                                 <image>
                                     <name>herddb/herddb:${herddb.server.version}</name>
