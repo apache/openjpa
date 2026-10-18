@@ -20,6 +20,7 @@
 package org.apache.openjpa.persistence.criteria;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -31,6 +32,7 @@ import jakarta.persistence.TupleElement;
 import jakarta.persistence.criteria.CompoundSelection;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Fetch;
+import jakarta.persistence.criteria.From;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Nulls;
@@ -38,8 +40,6 @@ import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Selection;
 import jakarta.persistence.metamodel.Attribute;
-import jakarta.persistence.metamodel.PluralAttribute;
-import jakarta.persistence.metamodel.Type.PersistenceType;
 
 import org.apache.openjpa.kernel.FillStrategy;
 import org.apache.openjpa.kernel.QueryOperations;
@@ -49,6 +49,7 @@ import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.persistence.TupleFactory;
 import org.apache.openjpa.persistence.TupleImpl;
 import org.apache.openjpa.persistence.meta.AbstractManagedType;
@@ -85,32 +86,68 @@ class CriteriaExpressionBuilder {
         exps.shape = evalResultShape(q);
         exps.parameterTypes = q.getParameterTypes();
         exps.isAggregate();
+        evalNavigatedAccessPaths(exps, q);
         return exps;
     }
 
     protected void evalAccessPaths(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
         Set<ClassMetaData> metas = new HashSet<>();
-        MetamodelImpl metamodel = q.getMetamodel();
         for (Root<?> root : q.getRoots()) {
             metas.add(((AbstractManagedType<?>)root.getModel()).meta);
-            for (Join<?,?> join : root.getJoins()) {
-                Attribute<?,?> attr = join.getAttribute();
-                Class<?> cls = attr.getJavaType();
-                // For plural attributes (Collection/List/Set/Map), use the
-                // element/value type for metadata lookup, not the collection type
-                if (attr instanceof PluralAttribute) {
-                    cls = ((PluralAttribute<?,?,?>)attr).getElementType().getJavaType();
-                }
-                if (attr.isAssociation()) {
-                    ClassMetaData meta = metamodel.getRepository().getMetaData(cls, null, true);
-                    PersistenceType type = MetamodelImpl.getPersistenceType(meta);
-                    if (type == PersistenceType.ENTITY || type == PersistenceType.EMBEDDABLE)
-                        metas.add(meta);
-                }
+            registerJoinedTypes(q, root);
+        }
+        // A subquery's correlated joins are not reachable from its roots: correlate(Join)
+        // clones the parent join into the subquery without adding a root, and the joins
+        // the subquery then makes are made on that clone. Walk them from the delegator.
+        SubqueryImpl<?> delegator = q.getDelegator();
+        if (delegator != null) {
+            for (Join<?,?> corr : delegator.getCorrelatedJoins()) {
+                q.addAccessPathMetaData(getFieldMetaData(corr.getAttribute()));
+                registerJoinedTypes(q, corr);
             }
         }
-        // TODO -- need to handle subqueries
+        // Types reached only by an implicit join (a navigated path) or by a subquery are
+        // added by evalNavigatedAccessPaths() once the expressions have been converted.
 
+        exps.accessPath = metas.toArray(new ClassMetaData[metas.size()]);
+    }
+
+    /**
+     * Registers the types of the given from-element's joins and fetch joins, and of their
+     * own joins. A join of a join reads its type just as a join of the root does, so the
+     * recursion has to follow the whole join tree.
+     */
+    private void registerJoinedTypes(CriteriaQueryImpl<?> q, From<?,?> from) {
+        for (Join<?,?> join : from.getJoins()) {
+            q.addAccessPathMetaData(getFieldMetaData(join.getAttribute()));
+            registerJoinedTypes(q, join);
+        }
+        for (Fetch<?,?> fetch : from.getFetches()) {
+            q.addAccessPathMetaData(getFieldMetaData(fetch.getAttribute()));
+            if (fetch instanceof From) {
+                registerJoinedTypes(q, (From<?,?>) fetch);
+            }
+        }
+    }
+
+    private FieldMetaData getFieldMetaData(Attribute<?,?> attr) {
+        return attr instanceof Members.Member ? ((Members.Member<?,?>) attr).fmd : null;
+    }
+
+    /**
+     * Adds the types registered on the query while its expressions were converted to
+     * kernel values: the targets of implicit joins created by
+     * {@link jakarta.persistence.criteria.Path#get(String) get()} and the access paths of
+     * the query's subqueries. Both are only known after the conversion, so this runs last.
+     */
+    protected void evalNavigatedAccessPaths(QueryExpressions exps, CriteriaQueryImpl<?> q) {
+        Set<ClassMetaData> navigated = q.getNavigatedAccessPathMetaDatas();
+        if (navigated == null || navigated.isEmpty())
+            return;
+        Set<ClassMetaData> metas = new HashSet<>(navigated);
+        if (exps.accessPath != null) {
+            metas.addAll(Arrays.asList(exps.accessPath));
+        }
         exps.accessPath = metas.toArray(new ClassMetaData[metas.size()]);
     }
 

@@ -161,6 +161,7 @@ class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
     public Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
         if (q.isRegistered(this))
             return q.getRegisteredValue(this);
+        recordAccessPath(q, _member == null ? null : _member.fmd);
         org.apache.openjpa.kernel.exps.Path path = null;
         SubqueryImpl<?> subquery = q.getDelegator();
         boolean allowNull = _parent != null && _parent instanceof Join
@@ -180,7 +181,7 @@ class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
             path = factory.newPath(subQ);
             path.setMetaData(subQ.getMetaData());
             path.setSchemaAlias(q.getAlias(_parent));
-            traversePath(_parent, path, _member.fmd);
+            traversePath(q, _parent, path, _member.fmd);
         } else if (_parent != null) {
             Value val = _parent.toValue(factory, q);
             if (val instanceof org.apache.openjpa.kernel.exps.Path) {
@@ -226,7 +227,9 @@ class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
         return subquery != null && (subquery.getRoots() != null && subquery.getRoots().contains(this));
     }
 
-    protected void traversePath(PathImpl<?,?> parent,  org.apache.openjpa.kernel.exps.Path path, FieldMetaData fmd) {
+    protected void traversePath(CriteriaQueryImpl<?> q, PathImpl<?,?> parent,
+        org.apache.openjpa.kernel.exps.Path path, FieldMetaData fmd) {
+        recordAccessPath(q, fmd);
         boolean allowNull = parent != null && parent instanceof Join
                 && ((Join<?, ?>) parent).getJoinType() != JoinType.INNER;
         FieldMetaData fmd1 = parent._member == null ? null : parent._member.fmd;
@@ -236,9 +239,21 @@ class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
                 path.get(fmd, allowNull);
             return;
         }
-        traversePath(parent1, path, fmd1);
+        traversePath(q, parent1, path, fmd1);
         if (fmd != null)
             path.get(fmd, allowNull);
+    }
+
+    /**
+     * Registers the type this path traverses into on the query's access path.
+     * A path navigated with {@link #get(String) get()} is an implicit join, and the
+     * types it reads must be part of the query's access path for the same reason the
+     * types of an explicit join are: a dirty instance of such a type can change the
+     * query's result and therefore has to be flushed before the query runs.
+     */
+    private void recordAccessPath(CriteriaQueryImpl<?> q, FieldMetaData fmd) {
+        if (q != null)
+            q.addAccessPathMetaData(fmd);
     }
 
     /**

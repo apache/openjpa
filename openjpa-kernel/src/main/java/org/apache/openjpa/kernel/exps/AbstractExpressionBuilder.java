@@ -128,6 +128,26 @@ public abstract class AbstractExpressionBuilder {
     }
 
     /**
+     * Register the element and key types of the given field in the query's access path.
+     * A collection or map field declares Collection/List/Map as its type, which has no
+     * metadata of its own, so the types such a field reads are its element and key
+     * types. Registering them keeps the access path complete for a predicate that uses
+     * the field without declaring a join variable - SIZE(x.coll), x.coll IS EMPTY - and
+     * mirrors what the Criteria builder records for the same field.
+     */
+    protected void addElementAndKeyAccessPath(FieldMetaData fmd) {
+        if (fmd == null) {
+            return;
+        }
+        if (fmd.getElement() != null && fmd.getElement().getDeclaredTypeMetaData() != null) {
+            addAccessPath(fmd.getElement().getDeclaredTypeMetaData());
+        }
+        if (fmd.getKey() != null && fmd.getKey().getDeclaredTypeMetaData() != null) {
+            addAccessPath(fmd.getKey().getDeclaredTypeMetaData());
+        }
+    }
+
+    /**
      * Return the recorded query access path.
      */
     protected ClassMetaData[] getAccessPath() {
@@ -310,6 +330,12 @@ public abstract class AbstractExpressionBuilder {
             // ex2b). Resolve via the @MapsId @ManyToOne target entity.
             meta = resolveMapsIdTargetMeta(fmd);
         }
+        // A collection or map field has no declared type metadata of its own - its
+        // declared type is Collection/List/Map - so the types it actually reads are its
+        // element and key types. They have to be registered for predicates that use the
+        // field without declaring a join variable, such as SIZE(x.coll) or
+        // x.coll IS EMPTY; without them a dirty element would not be flushed.
+        addElementAndKeyAccessPath(fmd);
         if (meta != null) {
             addAccessPath(meta);
             path.setMetaData(meta);
