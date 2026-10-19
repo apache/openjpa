@@ -1979,6 +1979,13 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
     }
 
     @Override
+    public boolean isFlushSupported() {
+        return _conf.supportedOptions().contains(OpenJPAConfiguration.OPTION_INC_FLUSH)
+            && (_savepoints == null || _savepoints.isEmpty()
+            || _spm.supportsIncrementalFlush());
+    }
+
+    @Override
     public void preFlush() {
         beginOperation(true);
         try {
