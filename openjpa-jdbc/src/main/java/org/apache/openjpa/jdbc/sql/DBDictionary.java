@@ -618,6 +618,17 @@ public class DBDictionary
     }
 
     /**
+     * Whether {@link #connectedConfiguration(Connection)} has run, i.e.
+     * whether this dictionary has seen a connection and the settings it
+     * derives from the server it is talking to are in place. A dictionary
+     * that is chosen from the connection URL alone is not connected until
+     * something first asks the configuration for its connection factory.
+     */
+    public boolean isConnected() {
+        return connected;
+    }
+
+    /**
      * This method is called when the dictionary first sees any connection.
      * It is used to initialize dictionary metadata if needed. If you
      * override this method, be sure to call
