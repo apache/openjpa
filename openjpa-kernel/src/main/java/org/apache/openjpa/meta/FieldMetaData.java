@@ -1713,16 +1713,16 @@ public class FieldMetaData
         for (Type iface : converterClass.getGenericInterfaces()) {
             if (iface instanceof ParameterizedType pt) {
                 Type rawType = pt.getRawType();
-                if (rawType instanceof Class
+                if (rawType instanceof Class<?> rawCls
                         && "jakarta.persistence.AttributeConverter"
-                            .equals(((Class) rawType).getName())) {
+                            .equals(rawCls.getName())) {
                     Type arg = pt.getActualTypeArguments()[index];
-                    if (arg instanceof Class<?>) {
-                        return (Class) arg;
+                    if (arg instanceof Class<?> argCls) {
+                        return argCls;
                     }
                     if (arg instanceof ParameterizedType argPt
-                            && argPt.getRawType() instanceof Class<?>) {
-                        return (Class) argPt.getRawType();
+                            && argPt.getRawType() instanceof Class<?> argRawCls) {
+                        return argRawCls;
                     }
                 }
             }
