@@ -218,6 +218,7 @@ public class FieldMetaData
     private transient volatile Method _converterExtMethod;
     private transient volatile Method _converterFactMethod;
     private transient volatile Class _converterDbType;
+    private transient volatile Class _converterAttrType;
 
     // intermediate and impl data
     private boolean _intermediate = true;
@@ -1524,6 +1525,7 @@ public class FieldMetaData
             _converterFactMethod = null;
             _converterInstance = null;
             _converterDbType = null;
+            _converterAttrType = null;
         }
     }
 
@@ -1543,7 +1545,24 @@ public class FieldMetaData
         if (getConverter() == null)
             return false;
         int tc = getDeclaredTypeCode();
-        return tc != JavaTypes.COLLECTION && tc != JavaTypes.MAP;
+        if (tc != JavaTypes.COLLECTION && tc != JavaTypes.MAP) {
+            return true;
+        }
+        return convertsWholeValue();
+    }
+
+    /**
+     * Whether the converter declares this field's own type as its attribute
+     * type rather than the type of the elements. A converter of
+     * {@code List<Item>} converts the list as one value into one column,
+     * where a converter of {@code Item} converts the elements.
+     */
+    public boolean convertsWholeValue() {
+        Class attrType = getConverterAttributeType();
+        if (attrType == null || attrType == Object.class) {
+            return false;
+        }
+        return attrType.isAssignableFrom(getDeclaredType());
     }
 
     /**
@@ -1659,26 +1678,60 @@ public class FieldMetaData
     }
 
     /**
+     * Return the attribute type of this converter, i.e. the X type in
+     * AttributeConverter&lt;X,Y&gt;. Returns null if no converter is set.
+     */
+    public Class getConverterAttributeType() {
+        Class converter = _converter;
+        if (converter == null) {
+            return null;
+        }
+        Class attrType = _converterAttrType;
+        if (attrType == null) {
+            attrType = resolveConverterTypeArgument(converter, 0);
+            _converterAttrType = attrType;
+        }
+        return attrType;
+    }
+
+    /**
      * Extract the database type (second type argument) from an
      * AttributeConverter implementation class.
      */
     private static Class resolveConverterDatabaseType(Class converterClass) {
+        return resolveConverterTypeArgument(converterClass, 1);
+    }
+
+    /**
+     * Extract one type argument of the AttributeConverter&lt;X,Y&gt; that an
+     * implementation class declares: index 0 for the attribute type, 1 for the
+     * database type. A parameterized argument such as {@code List<Item>}
+     * yields its raw type. Returns {@code Object.class} when the argument is
+     * neither, for instance a type variable.
+     */
+    public static Class resolveConverterTypeArgument(Class converterClass, int index) {
         for (Type iface : converterClass.getGenericInterfaces()) {
             if (iface instanceof ParameterizedType pt) {
                 Type rawType = pt.getRawType();
                 if (rawType instanceof Class
                         && "jakarta.persistence.AttributeConverter"
                             .equals(((Class) rawType).getName())) {
-                    Type dbArg = pt.getActualTypeArguments()[1];
-                    if (dbArg instanceof Class<?>)
-                        return (Class) dbArg;
+                    Type arg = pt.getActualTypeArguments()[index];
+                    if (arg instanceof Class<?>) {
+                        return (Class) arg;
+                    }
+                    if (arg instanceof ParameterizedType argPt
+                            && argPt.getRawType() instanceof Class<?>) {
+                        return (Class) argPt.getRawType();
+                    }
                 }
             }
         }
         // Check superclass
         Class superclass = converterClass.getSuperclass();
-        if (superclass != null && superclass != Object.class)
-            return resolveConverterDatabaseType(superclass);
+        if (superclass != null && superclass != Object.class) {
+            return resolveConverterTypeArgument(superclass, index);
+        }
         return Object.class;
     }
 

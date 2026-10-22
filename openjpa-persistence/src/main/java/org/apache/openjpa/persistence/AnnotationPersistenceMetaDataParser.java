@@ -1213,7 +1213,9 @@ public class AnnotationPersistenceMetaDataParser
         if (isMetaDataMode()) {
             switch (pstrat) {
                 case BASIC:
-                    parseBasic(fmd, el.getAnnotation(Basic.class), lob);
+                    parseBasic(fmd, el.getAnnotation(Basic.class), lob,
+                        PersistenceMetaDataDefaults.convertsWholeValue(el,
+                            fmd.getDeclaredType()));
                     break;
                 case MANY_ONE:
                     parseManyToOne(fmd, el.getAnnotation
@@ -1580,8 +1582,13 @@ public class AnnotationPersistenceMetaDataParser
 
     /**
      * Parse @Basic. Given annotation may be null.
+     *
+     * @param wholeValueConverted whether an {@code @Convert} on the member
+     * names a converter of the member's own type, in which case the converter
+     * maps the value and neither serialization nor a type complaint applies
      */
-    private void parseBasic(FieldMetaData fmd, Basic anno, boolean lob) {
+    private void parseBasic(FieldMetaData fmd, Basic anno, boolean lob,
+        boolean wholeValueConverted) {
         Class<?> type = fmd.getDeclaredType();
         if (lob && type != String.class
             && type != char[].class && type != Character[].class
@@ -1597,6 +1604,9 @@ public class AnnotationPersistenceMetaDataParser
                 case JavaTypes.MAP:
                 case JavaTypes.PC:
                 case JavaTypes.PC_UNTYPED:
+                    if (wholeValueConverted) {
+                        break;
+                    }
                     if (Serializable.class.isAssignableFrom(type))
                         fmd.setSerialized(true);
                     else
