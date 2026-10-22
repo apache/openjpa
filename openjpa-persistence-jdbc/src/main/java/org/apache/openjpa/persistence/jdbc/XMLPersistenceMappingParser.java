@@ -104,6 +104,7 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MultiQueryMetaData;
 import org.apache.openjpa.meta.QueryMetaData;
+import org.apache.openjpa.persistence.PersistenceStrategy;
 import org.apache.openjpa.persistence.XMLPersistenceMetaDataParser;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
@@ -802,6 +803,7 @@ public class XMLPersistenceMappingParser
         }
 
         if (_cols != null) {
+            boolean basic = currentStrategy() == PersistenceStrategy.BASIC;
             switch (fm.getDeclaredTypeCode()) {
                 case JavaTypes.ARRAY:
                     Class<?> type = fm.getDeclaredType();
@@ -812,14 +814,22 @@ public class XMLPersistenceMappingParser
                     }
                     // else no break
                 case JavaTypes.COLLECTION:
-                    if (!fm.getValue().isSerialized()) {
+                    // a serialized or <basic> value, such as one converted as
+                    // a whole, is one column of the attribute, not of its
+                    // elements; the converter itself is not known yet when an
+                    // @Convert annotation declares it
+                    if (!fm.getValue().isSerialized() && !basic) {
                         fm.getElementMapping().getValueInfo().setColumns(_cols);
                     } else  {
                         fm.getValueInfo().setColumns(_cols);
                     }
                     break;
                 case JavaTypes.MAP:
-                    fm.getElementMapping().getValueInfo().setColumns(_cols);
+                    if (!basic) {
+                        fm.getElementMapping().getValueInfo().setColumns(_cols);
+                    } else {
+                        fm.getValueInfo().setColumns(_cols);
+                    }
                     break;
                 default:
                     fm.getValueInfo().setColumns(_cols);
