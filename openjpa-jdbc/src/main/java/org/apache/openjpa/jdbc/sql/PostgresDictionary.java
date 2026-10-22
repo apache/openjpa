@@ -177,7 +177,7 @@ public class PostgresDictionary extends DBDictionary {
         fixedSizeTypeNameSet.addAll(Arrays.asList("BOOL", "BYTEA", "NAME", "INT8", "INT2", "INT2VECTOR", "INT4",
                 "REGPROC", "TEXT", "OID", "TID", "XID", "CID", "OIDVECTOR",
                 "SET", "FLOAT4", "FLOAT8", "ABSTIME", "RELTIME", "TINTERVAL",
-                "MONEY"));
+                "MONEY", "JSON", "JSONB"));
         booleanRepresentation = BooleanRepresentationFactory.BOOLEAN;
 
         supportsLockingWithDistinctClause = false;

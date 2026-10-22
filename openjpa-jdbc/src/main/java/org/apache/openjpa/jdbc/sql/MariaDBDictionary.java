@@ -134,7 +134,7 @@ public class MariaDBDictionary extends DBDictionary {
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
             "BOOL", "LONG VARBINARY", "MEDIUMBLOB", "LONGBLOB",
             "TINYBLOB", "LONG VARCHAR", "MEDIUMTEXT", "LONGTEXT", "TEXT",
-            "TINYTEXT", "DOUBLE PRECISION", "ENUM", "SET", "DATETIME",
+            "TINYTEXT", "DOUBLE PRECISION", "ENUM", "SET", "DATETIME", "JSON",
         }));
         reservedWordSet.addAll(Arrays.asList(new String[]{
             "AUTO_INCREMENT", "BINARY", "BLOB", "CHANGE", "ENUM", "INFILE",

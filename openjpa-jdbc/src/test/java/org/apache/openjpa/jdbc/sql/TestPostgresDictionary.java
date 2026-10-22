@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -26,11 +27,13 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.Types;
 
 import javax.sql.DataSource;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
+import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.junit.Test;
 
@@ -128,6 +131,19 @@ public class TestPostgresDictionary {
     }
 
     /**
+     * A column declared with <code>columnDefinition = "jsonb"</code> or
+     * <code>"json"</code> must not get the column length appended, PostgreSQL
+     * rejects a type modifier on these types (OPENJPA-3018).
+     */
+    @Test
+    public void testJsonColumnDefinitionHasNoSize() {
+        PostgresDictionary dict = newConfiguredDictionary(null);
+        assertEquals("jsonb", dict.getTypeName(column(Types.VARCHAR, "jsonb", 255)));
+        assertEquals("json", dict.getTypeName(column(Types.VARCHAR, "json", 255)));
+        assertEquals("VARCHAR(255)", dict.getTypeName(column(Types.VARCHAR, null, 255)));
+    }
+
+    /**
      * Creates a dictionary configured the same way user supplied
      * <code>openjpa.jdbc.DBDictionary=postgres(...)</code> plugin properties are applied.
      */
@@ -135,6 +151,16 @@ public class TestPostgresDictionary {
         PostgresDictionary dict = new PostgresDictionary();
         Configurations.configureInstance(dict, new JDBCConfigurationImpl(), props, "DBDictionary");
         return dict;
+    }
+
+    private static Column column(int type, String typeName, int size) {
+        Column col = new Column();
+        col.setType(type);
+        if (typeName != null) {
+            col.setTypeName(typeName);
+        }
+        col.setSize(size);
+        return col;
     }
 
     private static DataSource dataSource(final Connection conn) {

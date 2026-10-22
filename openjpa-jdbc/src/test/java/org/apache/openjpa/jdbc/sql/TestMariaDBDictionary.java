@@ -28,9 +28,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.Types;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.lib.conf.Configurations;
@@ -237,6 +239,27 @@ public class TestMariaDBDictionary {
         int seqIdx = sql.indexOf("UPPER(TABLE_NAME)");
         assertTrue(sql, schemaIdx > 0 && seqIdx > 0);
         assertTrue("getSequences() binds the schema first: " + sql, schemaIdx < seqIdx);
+    }
+
+    /**
+     * A column declared with <code>columnDefinition = "json"</code> must not
+     * get the column length appended, MariaDB rejects a size on JSON (OPENJPA-3018).
+     */
+    @Test
+    public void testJsonColumnDefinitionHasNoSize() {
+        MariaDBDictionary dict = newConfiguredDictionary(null);
+        assertEquals("json", dict.getTypeName(column(Types.VARCHAR, "json", 255)));
+        assertEquals("VARCHAR(255)", dict.getTypeName(column(Types.VARCHAR, null, 255)));
+    }
+
+    private static Column column(int type, String typeName, int size) {
+        Column col = new Column();
+        col.setType(type);
+        if (typeName != null) {
+            col.setTypeName(typeName);
+        }
+        col.setSize(size);
+        return col;
     }
 
     private static Sequence sequence() {
