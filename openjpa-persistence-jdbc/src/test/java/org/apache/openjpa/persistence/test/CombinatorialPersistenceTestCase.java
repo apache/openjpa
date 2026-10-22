@@ -32,9 +32,7 @@ import junit.framework.AssertionFailedError;
  * @author Pinaki Poddar
  *
  */
-public abstract class CombinatorialPersistenceTestCase
-	extends SQLListenerTestCase {
-	
+public abstract class CombinatorialPersistenceTestCase extends SQLListenerTestCase {
 	private static final Logger logger = Logger.getLogger(CombinatorialPersistenceTestCase.class.getCanonicalName());
 
 	protected static CombinatorialTestHelper helper;
@@ -100,14 +98,13 @@ public abstract class CombinatorialPersistenceTestCase
 
     @Override
     public void assertSQL(String sqlExp) {
-    	try {
-    		super.assertSQL(sqlExp);
-    	} catch (AssertionFailedError e) {
+        try {
+            super.assertSQL(sqlExp);
+        } catch (AssertionFailedError e) {
             String newMessage = "Combination\r\n"
                 + getHelper().getOptionsAsString()
                 + " failed \r\n " + e.getMessage();
-    		fail(newMessage);
-    	}
+            fail(newMessage);
+        }
     }
-
 }

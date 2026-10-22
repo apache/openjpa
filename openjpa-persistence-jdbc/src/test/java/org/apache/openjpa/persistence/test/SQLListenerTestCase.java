@@ -54,6 +54,9 @@ public abstract class SQLListenerTestCase
 
     /**
      * Confirm that the specified SQL has been executed.
+     * Exact SQL is being tested first, if there was no match reserved keyword delimiters
+     * are dropped and another check is performed.
+     * Different databases have different set of reserved keywords so SQL assertion should be relaxed.
      *
      * @param sqlExp the SQL expression. E.g., "SELECT FOO .*"
      */
