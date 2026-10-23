@@ -74,41 +74,67 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
 
     /**
      * Releases everything {@code setUp()} opened: the EntityManager, the audited SQL and the
-     * shared EntityManagerFactory, in that order and each step in its own {@code finally}, so
-     * that a failure releasing one resource cannot leave the next one open - an exception out
-     * of {@code em.close()} must not skip {@code emf.close()} and leak the whole connection
-     * pool. Every step is null-safe, because {@link #runBare()} calls {@code tearDown()} even
-     * when {@code setUp()} failed part way through, and the method is idempotent
+     * shared EntityManagerFactory, in that order. Every step runs even when an earlier one
+     * failed, so that a failure releasing one resource cannot leave the next one open - an
+     * exception out of {@code em.close()} must not skip {@code emf.close()} and leak the whole
+     * connection pool. The first failure is rethrown, with any later ones added to it as
+     * suppressed. Every step is null-safe, because {@link #runBare()} calls {@code tearDown()}
+     * even when {@code setUp()} failed part way through, and the method is idempotent
      * (OPENJPA-3016).
      * <p>
      * All three criteria base classes delegate here, so the guarantee {@link #runBare()}
      * relies on holds for each of them.
      */
     protected final void releaseResources() throws Exception {
-        try {
-            closeEntityManager();
-        } finally {
+        ReleaseStep[] steps = {
+            this::closeEntityManager,
+            this::clearAuditor,
+            this::closeEntityManagerFactory,
+            this::clearReferences,
+            this::clearDictionary,
+            super::tearDown,
+        };
+        Exception failure = null;
+        for (ReleaseStep step : steps) {
             try {
-                SQLAuditor auditor = getAuditor();
-                if (auditor != null) {
-                    auditor.clear();
-                }
-            } finally {
-                try {
-                    OpenJPAEntityManagerFactorySPI emf = getEntityManagerFactory();
-                    if (emf != null && emf.isOpen()) {
-                        emf.close();
-                    }
-                } finally {
-                    try {
-                        clearReferences();
-                    } finally {
-                        dict = null;
-                        super.tearDown();
-                    }
+                step.release();
+            } catch (Exception e) {
+                if (failure == null) {
+                    failure = e;
+                } else {
+                    failure.addSuppressed(e);
                 }
             }
         }
+        if (failure != null) {
+            throw failure;
+        }
+    }
+
+    /**
+     * One step of {@link #releaseResources()}.
+     */
+    @FunctionalInterface
+    private interface ReleaseStep {
+        void release() throws Exception;
+    }
+
+    private void clearAuditor() {
+        SQLAuditor auditor = getAuditor();
+        if (auditor != null) {
+            auditor.clear();
+        }
+    }
+
+    private void closeEntityManagerFactory() {
+        OpenJPAEntityManagerFactorySPI emf = getEntityManagerFactory();
+        if (emf != null && emf.isOpen()) {
+            emf.close();
+        }
+    }
+
+    private void clearDictionary() {
+        dict = null;
     }
 
     /**
@@ -450,7 +476,8 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
     /**
      * Mirrors {@link junit.framework.TestCase#runBare()} except that {@code setUp()} is
      * covered by the try/finally, so {@code tearDown()} always releases what {@code setUp()}
-     * opened. Both are called exactly once.
+     * opened. Both are called exactly once. A failure in {@code tearDown()} after the test
+     * already failed is added to the test's failure as suppressed, so it is not lost.
      */
     private void runBareReleasingResources() throws Throwable {
         Throwable exception = null;
@@ -465,6 +492,8 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
             } catch (Throwable tearingDown) {
                 if (exception == null) {
                     exception = tearingDown;
+                } else {
+                    exception.addSuppressed(tearingDown);
                 }
             }
         }
