@@ -149,6 +149,12 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     private SaveFieldManager _saved = null;
     private FieldManager _fm = null;
 
+    // converted value of each collection or map field that is converted as a
+    // whole, as last loaded or dirty checked; indexed by field, and set in
+    // _wholeConvertedSaved once saved
+    private Object[] _wholeConverted = null;
+    private BitSet _wholeConvertedSaved = null;
+
     // impldata; field impldata and intermediate data share the same array
     private Object _impl = null;
     protected Object[] _fieldImpl = null;
@@ -982,6 +988,53 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
                 }
             }
         }
+    }
+
+    /**
+     * Mark dirty each collection or map field that is converted as a whole
+     * and whose converted value differs from the one last seen. An element
+     * changed in place does not go through the proxy of the field, but it
+     * changes the converted column. Called by the broker before it flushes.
+     */
+    void dirtyCheckWholeConverted() {
+        FieldMetaData[] fmds = _meta.getWholeConvertedFields();
+        if (fmds.length == 0 || !isPersistent() || isDeleted())
+            return;
+
+        for (FieldMetaData fmd : fmds) {
+            int i = fmd.getIndex();
+            if (!_loaded.get(i))
+                continue;
+            // a new instance has no saved value until its first check
+            boolean saved = _wholeConvertedSaved != null
+                && _wholeConvertedSaved.get(i);
+            Object last = saved ? _wholeConverted[i] : null;
+            Object val = saveWholeConverted(i);
+            if (saved && !Objects.deepEquals(last, val))
+                dirty(i);
+        }
+    }
+
+    /**
+     * Remember the converted value of the given field if it is a collection
+     * or map that is converted as a whole, and return it.
+     */
+    private Object saveWholeConverted(int field) {
+        FieldMetaData[] fmds = _meta.getWholeConvertedFields();
+        for (FieldMetaData fmd : fmds) {
+            if (fmd.getIndex() == field) {
+                if (_wholeConverted == null) {
+                    _wholeConverted = new Object[_meta.getFields().length];
+                    _wholeConvertedSaved = new BitSet(_wholeConverted.length);
+                    _broker.addWholeConverted(this);
+                }
+                Object val = fetch(field);
+                _wholeConverted[field] = val;
+                _wholeConvertedSaved.set(field);
+                return val;
+            }
+        }
+        return null;
     }
 
     private boolean needsDirtyCheck() {
@@ -2809,6 +2862,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             _single.proxy(true, false);
             replaceField(_pc, _single, field);
             setLoaded(field, true);
+            saveWholeConverted(field);
             postLoad(field, null);
         } finally {
             unlock();
@@ -3414,8 +3468,13 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
 
         if (isLoaded)
             _loaded.set(field);
-        else
+        else {
             _loaded.clear(field);
+            if (_wholeConvertedSaved != null) {
+                _wholeConvertedSaved.clear(field);
+                _wholeConverted[field] = null;
+            }
+        }
     }
 
     /**
