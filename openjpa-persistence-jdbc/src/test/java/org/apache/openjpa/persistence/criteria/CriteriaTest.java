@@ -65,21 +65,15 @@ public abstract class CriteriaTest extends AbstractCriteriaTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        if (em != null && em.isOpen()) {
-        	if (em.getTransaction().isActive()) {
-        		em.getTransaction().rollback();
-        	}
-            em.close();
-        }
-        cb = null;
-        auditor.clear();
-        auditor = null;
+        releaseResources();
+    }
+
+    @Override
+    protected void clearReferences() {
         em = null;
-        if (emf != null && emf.isOpen()) {
-            emf.close();
-        }
+        cb = null;
+        auditor = null;
         emf = null;
-        super.tearDown();
     }
 
     @Override

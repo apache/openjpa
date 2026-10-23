@@ -69,9 +69,98 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
 
     @Override
     public void tearDown() throws Exception {
-        dict = null;
-        super.tearDown();
+        releaseResources();
     }
+
+    /**
+     * Releases everything {@code setUp()} opened: the EntityManager, the audited SQL and the
+     * shared EntityManagerFactory, in that order. Every step runs even when an earlier one
+     * failed, so that a failure releasing one resource cannot leave the next one open - an
+     * exception out of {@code em.close()} must not skip {@code emf.close()} and leak the whole
+     * connection pool. The first failure is rethrown, with any later ones added to it as
+     * suppressed. Every step is null-safe, because {@link #runBare()} calls {@code tearDown()}
+     * even when {@code setUp()} failed part way through, and the method is idempotent
+     * (OPENJPA-3016).
+     * <p>
+     * All three criteria base classes delegate here, so the guarantee {@link #runBare()}
+     * relies on holds for each of them.
+     */
+    protected final void releaseResources() throws Exception {
+        ReleaseStep[] steps = {
+            this::closeEntityManager,
+            this::clearAuditor,
+            this::closeEntityManagerFactory,
+            this::clearReferences,
+            this::clearDictionary,
+            super::tearDown,
+        };
+        Exception failure = null;
+        for (ReleaseStep step : steps) {
+            try {
+                step.release();
+            } catch (Exception e) {
+                if (failure == null) {
+                    failure = e;
+                } else {
+                    failure.addSuppressed(e);
+                }
+            }
+        }
+        if (failure != null) {
+            throw failure;
+        }
+    }
+
+    /**
+     * One step of {@link #releaseResources()}.
+     */
+    @FunctionalInterface
+    private interface ReleaseStep {
+        void release() throws Exception;
+    }
+
+    private void clearAuditor() {
+        SQLAuditor auditor = getAuditor();
+        if (auditor != null) {
+            auditor.clear();
+        }
+    }
+
+    private void closeEntityManagerFactory() {
+        OpenJPAEntityManagerFactorySPI emf = getEntityManagerFactory();
+        if (emf != null && emf.isOpen()) {
+            emf.close();
+        }
+    }
+
+    private void clearDictionary() {
+        dict = null;
+    }
+
+    /**
+     * Rolls back any transaction left active and closes the EntityManager {@code setUp()}
+     * opened, so the JDBC connection it retained goes back to the pool. Null-safe and
+     * idempotent; the caller is responsible for clearing the field afterwards.
+     */
+    protected final void closeEntityManager() {
+        EntityManager em = getEntityManager();
+        if (em == null || !em.isOpen()) {
+            return;
+        }
+        try {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
+     * Nulls the fields {@code setUp()} assigned, so that the next {@code setUp()} rebuilds
+     * them. Called from {@link #releaseResources()} once the resources themselves are closed.
+     */
+    protected abstract void clearReferences();
 
     /**
      * Create an entity manager factory for persistence unit <code>pu</code>. Put {@link #CLEAR_TABLES} in this list to
@@ -354,10 +443,23 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
         return "Can not extract SQL from exception " + e;
     }
 
+    /**
+     * Runs the test with {@code setUp()} inside the guarded block, so that {@code tearDown()}
+     * runs exactly once whether or not {@code setUp()} completed.
+     * <p>
+     * {@link junit.framework.TestCase#runBare()} calls {@code setUp()} <em>outside</em> its
+     * try/finally, so a failure there skips {@code tearDown()} altogether. The criteria tests
+     * open an {@link EntityManager} in {@link CriteriaTest#setUp()} and share one static
+     * EntityManagerFactory across every criteria test class, so each such failure used to
+     * leak that EntityManager together with the JDBC connection it had retained. With a pool
+     * of ten connections a dozen failures emptied it, and every later test in the same JVM
+     * then failed with "Cannot get a connection, pool error Timeout waiting for idle object"
+     * instead of with its own problem (OPENJPA-3016).
+     */
     @Override
     public void runBare() throws Throwable {
         try {
-            super.runBare();
+            runBareReleasingResources();
         } catch (Throwable t) {
             AllowFailure allowFailure = getAllowFailure();
             if (allowFailure != null && allowFailure.value()) {
@@ -368,6 +470,35 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
             } else {
                 throw t;
             }
+        }
+    }
+
+    /**
+     * Mirrors {@link junit.framework.TestCase#runBare()} except that {@code setUp()} is
+     * covered by the try/finally, so {@code tearDown()} always releases what {@code setUp()}
+     * opened. Both are called exactly once. A failure in {@code tearDown()} after the test
+     * already failed is added to the test's failure as suppressed, so it is not lost.
+     */
+    private void runBareReleasingResources() throws Throwable {
+        Throwable exception = null;
+        try {
+            setUp();
+            runTest();
+        } catch (Throwable running) {
+            exception = running;
+        } finally {
+            try {
+                tearDown();
+            } catch (Throwable tearingDown) {
+                if (exception == null) {
+                    exception = tearingDown;
+                } else {
+                    exception.addSuppressed(tearingDown);
+                }
+            }
+        }
+        if (exception != null) {
+            throw exception;
         }
     }
 

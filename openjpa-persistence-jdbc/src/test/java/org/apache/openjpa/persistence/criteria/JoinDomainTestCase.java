@@ -49,20 +49,15 @@ public abstract class JoinDomainTestCase extends AbstractCriteriaTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        if (auditor != null) {
-            auditor.clear();
-            auditor = null;
-        }
+        releaseResources();
+    }
+
+    @Override
+    protected void clearReferences() {
+        em = null;
         cb = null;
-        if (em != null && em.isOpen()) {
-            em.close();
-            em = null;
-        }
-        if (emf != null && emf.isOpen()) {
-            emf.close();
-            emf = null;
-        }
-        super.tearDown();
+        auditor = null;
+        emf = null;
     }
 
     @Override

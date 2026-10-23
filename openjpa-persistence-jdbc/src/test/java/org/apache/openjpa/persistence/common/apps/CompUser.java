@@ -31,10 +31,24 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import org.apache.openjpa.persistence.PersistentCollection;
 
+/**
+ * This hierarchy and the unrelated one rooted at
+ * {@code org.apache.openjpa.persistence.criteria.CompUser} would both default to a table
+ * called {@code CompUser}, with incompatible column types ({@code userid} nullable or not,
+ * {@code ADD_ID} INTEGER or BIGINT). Whichever test package runs second therefore makes
+ * {@code SynchronizeMappings=buildSchema(SchemaAction='drop,add')} drop and re-add every
+ * column of that table on every EntityManagerFactory it creates. MariaDB performs such an
+ * ADD/DROP COLUMN instantly and keeps the dropped columns in the record format, counting
+ * them towards the 8126 byte maximum row size, so after about a dozen rotations the next
+ * ALTER TABLE fails with "Row size too large" (OPENJPA-3016). An explicit, distinct table
+ * name keeps the two hierarchies apart and the suite independent of test ordering.
+ */
 @Entity
+@Table(name = "CMN_COMPUSER")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class CompUser {
     @Basic
