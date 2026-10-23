@@ -4350,17 +4350,23 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
 
     /**
      * Mark dirty the collection and map fields converted as a whole whose
-     * elements were changed in place. This is done once before a flush
-     * rather than on every dirty check, since it runs the converters.
+     * elements were changed in place. This is done before a flush and
+     * before a query decides whether to flush, rather than on every dirty
+     * check, since it runs the converters.
      */
-    private void dirtyCheckWholeConverted() {
+    void dirtyCheckWholeConverted() {
         if (_wholeConverted == null || _wholeConverted.isEmpty()
             || (_flags & FLAG_ACTIVE) == 0)
             return;
 
-        // iterate over a copy, since dirtying an instance enlists it again
-        for (StateManagerImpl sm : new ArrayList<>(_wholeConverted))
-            sm.dirtyCheckWholeConverted();
+        lock();
+        try {
+            // iterate over a copy, since dirtying an instance enlists it again
+            for (StateManagerImpl sm : new ArrayList<>(_wholeConverted))
+                sm.dirtyCheckWholeConverted();
+        } finally {
+            unlock();
+        }
     }
 
     /**

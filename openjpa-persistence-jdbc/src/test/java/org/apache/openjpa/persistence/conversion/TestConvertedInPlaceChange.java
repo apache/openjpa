@@ -31,7 +31,7 @@ public class TestConvertedInPlaceChange extends SQLListenerTestCase {
 
     @Override
     public void setUp() {
-        setUp(InPlaceConvertedEntity.class, CLEAR_TABLES);
+        setUp(InPlaceConvertedEntity.class, ReadOnlyConvertedEntity.class, CLEAR_TABLES);
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             InPlaceConvertedEntity e = new InPlaceConvertedEntity();
@@ -148,6 +148,91 @@ public class TestConvertedInPlaceChange extends SQLListenerTestCase {
         }
         try (EntityManager em = emf.createEntityManager()) {
             assertEquals(3, em.find(InPlaceConvertedEntity.class, 1L).getItems().size());
+        }
+    }
+
+    /**
+     * An element changed in place on a detached instance is written by merge,
+     * while an unchanged detached instance is merged without an update.
+     */
+    public void testElementOfDetachedConvertedListChangedInPlace() {
+        InPlaceConvertedEntity d;
+        try (EntityManager em = emf.createEntityManager()) {
+            d = em.find(InPlaceConvertedEntity.class, 1L);
+            d.getItems().size();
+            d.getItemsByKey().size();
+        }
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            em.merge(d);
+            resetSQL();
+            em.getTransaction().commit();
+        }
+        assertNotSQL("UPDATE .*");
+
+        d.getItems().get(0).setName("changed");
+        d.getItemsByKey().get("a").setName("changed");
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            em.merge(d);
+            em.getTransaction().commit();
+        }
+        try (EntityManager em = emf.createEntityManager()) {
+            InPlaceConvertedEntity e = em.find(InPlaceConvertedEntity.class, 1L);
+            assertEquals("changed", e.getItems().get(0).getName());
+            assertEquals("changed", e.getItemsByKey().get("a").getName());
+        }
+    }
+
+    /**
+     * A query that reads the type flushes an element changed in place first.
+     */
+    public void testElementOfConvertedListChangedInPlaceBeforeQuery() {
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            em.find(InPlaceConvertedEntity.class, 1L).getItems().get(0).setName("changed");
+            resetSQL();
+            em.createQuery("SELECT COUNT(e) FROM InPlaceConvertedEntity e").getSingleResult();
+            assertAllSQLInOrder("UPDATE InPlaceConvertedEntity .*", "SELECT COUNT.*");
+            em.getTransaction().rollback();
+        }
+    }
+
+    /**
+     * A new instance is converted once, when it is inserted, and not again
+     * by the check of the next flush when it is unchanged.
+     */
+    public void testNewConvertedListIsConvertedOnce() {
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            InPlaceConvertedEntity n = new InPlaceConvertedEntity();
+            n.setId(2L);
+            n.getItems().add(new Item("new"));
+            em.persist(n);
+            ItemListConverter.TO_DATABASE.set(0);
+            em.flush();
+            assertEquals(1, ItemListConverter.TO_DATABASE.get());
+            em.getTransaction().commit();
+            assertEquals(2, ItemListConverter.TO_DATABASE.get());
+        }
+    }
+
+    /**
+     * A converter that cannot convert to a column that is never written does
+     * not keep the instance from being loaded or a transaction from committing.
+     */
+    public void testReadOnlyConvertedList() {
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            em.createNativeQuery("INSERT INTO ReadOnlyConvertedEntity (id, ITEMS) VALUES (5, 'one')")
+                .executeUpdate();
+            em.getTransaction().commit();
+        }
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            ReadOnlyConvertedEntity e = em.find(ReadOnlyConvertedEntity.class, 5L);
+            assertEquals("one", e.getItems().get(0).getName());
+            em.getTransaction().commit();
         }
     }
 }

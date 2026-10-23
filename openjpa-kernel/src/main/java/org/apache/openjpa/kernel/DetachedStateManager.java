@@ -178,6 +178,24 @@ public class DetachedStateManager
             FetchConfiguration fc = broker.getFetchConfiguration();
             sm.loadFields(load, fc, fc.getWriteLockLevel(), null);
         }
+
+        // load the stored value of each field converted as a whole that is
+        // not dirty, to find an element changed in place while detached
+        BitSet whole = null;
+        for (FieldMetaData fmd : sm.getMetaData().getWholeConvertedFields()) {
+            int i = fmd.getIndex();
+            if (_loaded.get(i) && !_dirty.get(i)) {
+                if (whole == null)
+                    whole = new BitSet(fields.length);
+                whole.set(i);
+            }
+        }
+        if (whole != null) {
+            if (!postLoadOnMerge)
+                sm.setPostLoadCallback(false);
+            FetchConfiguration fc = broker.getFetchConfiguration();
+            sm.loadFields(whole, fc, fc.getWriteLockLevel(), null);
+        }
         Object origVersion = sm.getVersion();
         sm.setVersion(_version);
 
@@ -290,7 +308,10 @@ public class DetachedStateManager
                     objval = null;
                     if (coll != null)
                         coll = attachCollection(manager, coll, sm, fields[i]);
-                    if (_dirty.get(i))
+                    // an element changed in place does not mark the
+                    // field dirty, but changes a value converted as a whole
+                    if (_dirty.get(i) || (fields[i].convertsWholeValue()
+                        && sm.isWholeConvertedChanged(i, coll)))
                         sm.settingObjectField(pc, i, (!loaded.get(i)) ? null
                             : sm.fetchObjectField(i), coll, set);
                     else
@@ -301,7 +322,10 @@ public class DetachedStateManager
                     objval = null;
                     if (map != null)
                         map = attachMap(manager, map, sm, fields[i]);
-                    if (_dirty.get(i))
+                    // an element changed in place does not mark the
+                    // field dirty, but changes a value converted as a whole
+                    if (_dirty.get(i) || (fields[i].convertsWholeValue()
+                        && sm.isWholeConvertedChanged(i, map)))
                         sm.settingObjectField(pc, i, (!loaded.get(i)) ? null
                             : sm.fetchObjectField(i), map, set);
                     else
