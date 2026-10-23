@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import static org.apache.openjpa.jdbc.sql.Columns.column;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -26,6 +28,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.Types;
 
 import javax.sql.DataSource;
 
@@ -125,6 +128,19 @@ public class TestPostgresDictionary {
         DBDictionary auto = DBDictionaryFactory.newDBDictionary(conf, ds, null);
         assertTrue(auto instanceof PostgresDictionary);
         assertFalse("PostgreSQL 16 must default to native CHAR storage", auto.storeCharsAsNumbers);
+    }
+
+    /**
+     * A column declared with <code>columnDefinition = "jsonb"</code> or
+     * <code>"json"</code> must not get the column length appended, PostgreSQL
+     * rejects a type modifier on these types (OPENJPA-3018).
+     */
+    @Test
+    public void testJsonColumnDefinitionHasNoSize() {
+        PostgresDictionary dict = newConfiguredDictionary(null);
+        assertEquals("jsonb", dict.getTypeName(column(Types.VARCHAR, "jsonb", 255)));
+        assertEquals("json", dict.getTypeName(column(Types.VARCHAR, "json", 255)));
+        assertEquals("VARCHAR(255)", dict.getTypeName(column(Types.VARCHAR, null, 255)));
     }
 
     /**

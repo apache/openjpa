@@ -18,12 +18,14 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import static org.apache.openjpa.jdbc.sql.Columns.column;
 import static org.junit.Assert.assertEquals;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Types;
 
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfigurationImpl;
@@ -116,5 +118,16 @@ public class TestMySQLDictionary {
         fetch.setFetchBatchSize(1);
 
         sql.prepareCall(mockConnection, fetch, -1, -1);
+    }
+
+    /**
+     * A column declared with <code>columnDefinition = "json"</code> must not
+     * get the column length appended, MySQL rejects a size on JSON (OPENJPA-3018).
+     */
+    @Test
+    public void testJsonColumnDefinitionHasNoSize() {
+        DBDictionary db = new MySQLDictionary();
+        assertEquals("json", db.getTypeName(column(Types.VARCHAR, "json", 255)));
+        assertEquals("VARCHAR(255)", db.getTypeName(column(Types.VARCHAR, null, 255)));
     }
 }
