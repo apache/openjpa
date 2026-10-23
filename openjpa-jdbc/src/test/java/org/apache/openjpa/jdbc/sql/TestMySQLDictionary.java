@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import static org.apache.openjpa.jdbc.sql.Columns.column;
 import static org.junit.Assert.assertEquals;
 
 import java.sql.CallableStatement;
@@ -28,7 +29,6 @@ import java.sql.Types;
 
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfigurationImpl;
-import org.apache.openjpa.jdbc.schema.Column;
 import org.jmock.Expectations;
 import org.jmock.integration.junit4.JUnitRuleMockery;
 import org.junit.Rule;
@@ -129,15 +129,5 @@ public class TestMySQLDictionary {
         DBDictionary db = new MySQLDictionary();
         assertEquals("json", db.getTypeName(column(Types.VARCHAR, "json", 255)));
         assertEquals("VARCHAR(255)", db.getTypeName(column(Types.VARCHAR, null, 255)));
-    }
-
-    private static Column column(int type, String typeName, int size) {
-        Column col = new Column();
-        col.setType(type);
-        if (typeName != null) {
-            col.setTypeName(typeName);
-        }
-        col.setSize(size);
-        return col;
     }
 }

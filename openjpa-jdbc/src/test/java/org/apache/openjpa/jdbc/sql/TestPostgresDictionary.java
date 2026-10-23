@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import static org.apache.openjpa.jdbc.sql.Columns.column;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -33,7 +34,6 @@ import javax.sql.DataSource;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
-import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.junit.Test;
 
@@ -151,16 +151,6 @@ public class TestPostgresDictionary {
         PostgresDictionary dict = new PostgresDictionary();
         Configurations.configureInstance(dict, new JDBCConfigurationImpl(), props, "DBDictionary");
         return dict;
-    }
-
-    private static Column column(int type, String typeName, int size) {
-        Column col = new Column();
-        col.setType(type);
-        if (typeName != null) {
-            col.setTypeName(typeName);
-        }
-        col.setSize(size);
-        return col;
     }
 
     private static DataSource dataSource(final Connection conn) {

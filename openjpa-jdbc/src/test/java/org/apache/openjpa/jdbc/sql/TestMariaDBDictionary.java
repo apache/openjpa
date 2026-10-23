@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import static org.apache.openjpa.jdbc.sql.Columns.column;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -32,7 +33,6 @@ import java.sql.Types;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
-import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.lib.conf.Configurations;
@@ -250,16 +250,6 @@ public class TestMariaDBDictionary {
         MariaDBDictionary dict = newConfiguredDictionary(null);
         assertEquals("json", dict.getTypeName(column(Types.VARCHAR, "json", 255)));
         assertEquals("VARCHAR(255)", dict.getTypeName(column(Types.VARCHAR, null, 255)));
-    }
-
-    private static Column column(int type, String typeName, int size) {
-        Column col = new Column();
-        col.setType(type);
-        if (typeName != null) {
-            col.setTypeName(typeName);
-        }
-        col.setSize(size);
-        return col;
     }
 
     private static Sequence sequence() {
