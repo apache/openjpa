@@ -21,8 +21,10 @@ package org.apache.openjpa.persistence.conversion;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.Basic;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 
 /**
@@ -38,6 +40,10 @@ public class ConvertedListEntity {
     @Convert(converter = ItemListConverter.class)
     private List<Item> items = new ArrayList<>();
 
+    @Basic(fetch = FetchType.LAZY)
+    @Convert(converter = ItemListConverter.class)
+    private List<Item> lazyItems = new ArrayList<>();
+
     public long getId() {
         return id;
     }
@@ -48,5 +54,9 @@ public class ConvertedListEntity {
 
     public List<Item> getItems() {
         return items;
+    }
+
+    public List<Item> getLazyItems() {
+        return lazyItems;
     }
 }

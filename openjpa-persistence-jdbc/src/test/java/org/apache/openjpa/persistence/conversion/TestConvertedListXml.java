@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.conversion;
 
+import java.util.List;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -72,5 +74,26 @@ public class TestConvertedListXml extends SingleEMFTestCase {
             assertEquals("one", found.getItems().get(0).getName());
             assertEquals("two", found.getItems().get(1).getName());
         }
+    }
+
+    public void testTheListIsLoadedEagerly() {
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            XmlConvertedListEntity e = new XmlConvertedListEntity();
+            e.setId(1L);
+            e.getItems().add(new Item("one"));
+            e.getItems().add(new Item("two"));
+            em.persist(e);
+            em.getTransaction().commit();
+        }
+        XmlConvertedListEntity detached;
+        try (EntityManager em = emf.createEntityManager()) {
+            detached = em.find(XmlConvertedListEntity.class, 1L);
+        }
+        List<Item> items = detached.getItems();
+        assertNotNull("a basic attribute without a fetch type is eager", items);
+        assertEquals(2, items.size());
+        assertEquals("one", items.get(0).getName());
+        assertEquals("two", items.get(1).getName());
     }
 }

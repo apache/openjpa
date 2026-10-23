@@ -661,6 +661,13 @@ public class FieldMetaData
                         break;
                     case JavaTypes.COLLECTION:
                     case JavaTypes.MAP:
+                        // a collection converted as a whole is a basic
+                        // attribute, and basic attributes are eager
+                        if (convertsWholeValue())
+                            _dfg = DFG_TRUE;
+                        else
+                            _dfg = DFG_FALSE;
+                        break;
                     case JavaTypes.PC:
                     case JavaTypes.PC_UNTYPED:
                         _dfg = DFG_FALSE;

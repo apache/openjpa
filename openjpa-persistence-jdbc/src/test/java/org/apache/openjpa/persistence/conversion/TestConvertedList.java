@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.conversion;
 
+import java.util.List;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -65,6 +67,46 @@ public class TestConvertedList extends SingleEMFTestCase {
             assertEquals(2, found.getItems().size());
             assertEquals("one", found.getItems().get(0).getName());
             assertEquals("two", found.getItems().get(1).getName());
+        }
+    }
+
+    public void testTheListIsLoadedEagerly() {
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            ConvertedListEntity e = new ConvertedListEntity();
+            e.setId(1L);
+            e.getItems().add(new Item("one"));
+            e.getItems().add(new Item("two"));
+            em.persist(e);
+            em.getTransaction().commit();
+        }
+        ConvertedListEntity detached;
+        try (EntityManager em = emf.createEntityManager()) {
+            detached = em.find(ConvertedListEntity.class, 1L);
+        }
+        List<Item> items = detached.getItems();
+        assertNotNull("a converted attribute is basic and so eager", items);
+        assertEquals(2, items.size());
+        assertEquals("one", items.get(0).getName());
+        assertEquals("two", items.get(1).getName());
+    }
+
+    public void testAnExplicitLazyFetchIsHonoured() {
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            ConvertedListEntity e = new ConvertedListEntity();
+            e.setId(1L);
+            e.getLazyItems().add(new Item("one"));
+            em.persist(e);
+            em.getTransaction().commit();
+        }
+        try (EntityManager em = emf.createEntityManager()) {
+            ConvertedListEntity found = em.find(ConvertedListEntity.class, 1L);
+            assertTrue(emf.getPersistenceUnitUtil().isLoaded(found, "items"));
+            assertFalse("fetch = LAZY must keep the attribute out of the fetch",
+                emf.getPersistenceUnitUtil().isLoaded(found, "lazyItems"));
+            assertEquals(1, found.getLazyItems().size());
+            assertEquals("one", found.getLazyItems().get(0).getName());
         }
     }
 }
