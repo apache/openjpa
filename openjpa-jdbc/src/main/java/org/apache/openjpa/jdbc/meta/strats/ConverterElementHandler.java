@@ -28,7 +28,6 @@ import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.MetaDataException;
 
 /**
@@ -66,9 +65,10 @@ public class ConverterElementHandler extends AbstractValueHandler {
         DBIdentifier colName = DBIdentifier.newColumn(name,
             dict != null ? dict.delimitAll() : false);
 
+        ConverterValueHandler.adjustLobColumns(vm, _dbType);
         Column col = new Column();
         col.setIdentifier(colName);
-        col.setJavaType(JavaTypes.getTypeCode(_dbType));
+        col.setJavaType(ConverterValueHandler.getColumnJavaType(_dbType));
         return new Column[]{ col };
     }
 
