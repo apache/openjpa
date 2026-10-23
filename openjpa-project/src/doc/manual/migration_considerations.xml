@@ -888,6 +888,14 @@
                     <literal>autoApply</literal> converter from being applied.
                 </para>
                 <para>
+                    A change made in place to an element of a collection or map that is converted as
+                    a whole is now written at flush. To find it, the converted value of such an
+                    attribute is saved when it is loaded and compared before each flush, which
+                    calls <literal>convertToDatabaseColumn</literal> once per load and once per flush
+                    for every such instance in the persistence context. Clear the persistence context
+                    in long batch runs that flush repeatedly.
+                </para>
+                <para>
                     A converter is now also consulted for <literal>null</literal> in both
                     directions, as required by Jakarta Persistence 3.2; in 4.1.x a
                     <literal>null</literal> attribute or <literal>null</literal> column value
