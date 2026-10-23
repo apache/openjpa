@@ -41,6 +41,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 import jakarta.transaction.Status;
@@ -196,6 +197,10 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
     private Set<StateManagerImpl> _transAdditions = null;
     private Set<StateManagerImpl> _derefCache = null;
     private Set<StateManagerImpl> _derefAdditions = null;
+
+    // instances with a collection or map field that is converted as a whole,
+    // held weakly; checked at flush for elements changed in place
+    private transient Set<StateManagerImpl> _wholeConverted = null;
 
     // these are used for method-internal state only
     private transient Map<Object, StateManagerImpl> _loading = null;
@@ -2224,6 +2229,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
     protected void flush(int reason) {
         // this will enlist proxied states as necessary so we know whether we
         // have anything to flush
+        dirtyCheckWholeConverted();
         Collection transactional = getTransactionalStates();
 
         // do we actually have to flush?  only if our flags say so, or if
@@ -3662,6 +3668,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         if (_transCache != null) {
             _transCache.clear();
         }
+        _wholeConverted = null;
         if (_transAdditions != null) {
             _transAdditions.clear();
         }
@@ -4318,10 +4325,42 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
      * Return a copy of all dirty state managers.
      */
     protected Collection getDirtyStates() {
+        dirtyCheckWholeConverted();
         if (!hasTransactionalObjects())
             return Collections.EMPTY_SET;
 
         return _transCache.copyDirty();
+    }
+
+    /**
+     * Notify the broker that the given instance has a collection or map
+     * field that is converted as a whole, so that an element changed in
+     * place is found at flush.
+     */
+    void addWholeConverted(StateManagerImpl sm) {
+        lock();
+        try {
+            if (_wholeConverted == null)
+                _wholeConverted = Collections.newSetFromMap(new WeakHashMap<>());
+            _wholeConverted.add(sm);
+        } finally {
+            unlock();
+        }
+    }
+
+    /**
+     * Mark dirty the collection and map fields converted as a whole whose
+     * elements were changed in place. This is done once before a flush
+     * rather than on every dirty check, since it runs the converters.
+     */
+    private void dirtyCheckWholeConverted() {
+        if (_wholeConverted == null || _wholeConverted.isEmpty()
+            || (_flags & FLAG_ACTIVE) == 0)
+            return;
+
+        // iterate over a copy, since dirtying an instance enlists it again
+        for (StateManagerImpl sm : new ArrayList<>(_wholeConverted))
+            sm.dirtyCheckWholeConverted();
     }
 
     /**
@@ -4381,6 +4420,8 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
     void addToTransaction(StateManagerImpl sm) {
         // we only add clean instances now; dirty instances are added in
         // the setDirty callback
+        if (sm.getMetaData().getWholeConvertedFields().length > 0)
+            addWholeConverted(sm);
         if (sm.isDirty())
             return;
 
@@ -4407,6 +4448,8 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
                 _transCache.remove(sm);
             if (_derefCache != null && !sm.isPersistent())
                 _derefCache.remove(sm);
+            if (_wholeConverted != null && !sm.isPersistent())
+                _wholeConverted.remove(sm);
         } finally {
             unlock();
         }
@@ -4635,6 +4678,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         _updatedClss = null;
         _deletedClss = null;
         _derefCache = null;
+        _wholeConverted = null;
         _pending = null;
         _loader = null;
         _transEventManager = null;
