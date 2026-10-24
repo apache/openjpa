@@ -841,11 +841,16 @@ public class MappingRepository extends MetaDataRepository {
             return new HandlerFieldStrategy();
         }
 
-        // check for JPA @Convert / AttributeConverter (non-collection fields)
+        // check for JPA @Convert / AttributeConverter. A collection or map
+        // whose converter declares the collection itself as its attribute
+        // type is converted as one value into one column; one whose
+        // converter declares the element type converts its elements and is
+        // left to the element handler below.
         // Arrays (e.g. char[]) with an explicit converter are also handled.
         if (field.getConverter() != null) {
             int tc = field.getDeclaredTypeCode();
-            if (tc != JavaTypes.COLLECTION && tc != JavaTypes.MAP) {
+            if (tc != JavaTypes.COLLECTION && tc != JavaTypes.MAP
+                || field.convertsWholeValue()) {
                 Class<?> dbType = field.getConverterDatabaseType();
                 if (dbType != null && dbType != Object.class) {
                     if (installHandlers) {

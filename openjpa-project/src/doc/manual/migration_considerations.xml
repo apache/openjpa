@@ -870,6 +870,15 @@
                     yields an <literal>INTEGER</literal> column).
                 </para>
                 <para>
+                    A converter whose attribute type is the collection or map itself, for example
+                    <literal>AttributeConverter&lt;List&lt;Item&gt;, String&gt;</literal> on a
+                    <classname>List&lt;Item&gt;</classname> attribute, converts the attribute as a
+                    whole. Such an attribute is now mapped as a basic attribute to one column and is
+                    fetched eagerly unless it is declared <literal>LAZY</literal>. In 4.1.x it was
+                    left out of the mapping with only a warning, and its contents were not stored.
+                    Expect a new column for each such attribute.
+                </para>
+                <para>
                     One converter instance per attribute is created lazily through the no-argument
                     constructor and shared between threads, so converters must be stateless.
                     <classname>RuntimeException</classname>s thrown by a converter surface as

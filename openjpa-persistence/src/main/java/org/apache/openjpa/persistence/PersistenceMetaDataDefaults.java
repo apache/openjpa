@@ -52,6 +52,7 @@ import java.util.Set;
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
 import jakarta.persistence.Basic;
+import jakarta.persistence.Convert;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
@@ -273,7 +274,41 @@ public class PersistenceMetaDataDefaults
         }
         if (Serializable.class.isAssignableFrom(type))
             return BASIC;
+
+        // A declared converter is itself a persistence strategy: without this
+        // the field is silently left out of the mapping (OPENJPA-3017).
+        if (convertsWholeValue(el, type)) {
+            return BASIC;
+        }
         return null;
+    }
+
+    /**
+     * Whether the member carries a {@link Convert} whose converter declares
+     * the member's own type as its attribute type, so that the value is
+     * converted as a whole into a single column. A converter of the element
+     * type of a collection is not such a case; the specification applies it
+     * to the elements, which requires an {@link ElementCollection} and leaves
+     * the strategy to that annotation.
+     */
+    public static boolean convertsWholeValue(AnnotatedElement el, Class type) {
+        Convert convert = el.getAnnotation(Convert.class);
+        if (convert == null || convert.disableConversion()) {
+            return false;
+        }
+        // with an attributeName the converter applies to an attribute of an
+        // embeddable, not to this member
+        if (convert.attributeName() != null && !convert.attributeName().isEmpty()) {
+            return false;
+        }
+        Class<?> converter = convert.converter();
+        if (converter == null || converter == void.class) {
+            return false;
+        }
+        Class<?> attrType =
+            FieldMetaData.resolveConverterTypeArgument(converter, 0);
+        return attrType != null && attrType != Object.class
+            && attrType.isAssignableFrom(type);
     }
 
     /**
