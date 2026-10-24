@@ -69,8 +69,9 @@ public class ConverterValueHandler extends AbstractValueHandler {
      * is read and written as bytes, not as an object.
      */
     static int getColumnJavaType(Class<?> dbType) {
-        if (dbType == byte[].class)
+        if (dbType == byte[].class) {
             return JavaSQLTypes.BYTES;
+        }
         return JavaTypes.getTypeCode(dbType);
     }
 
@@ -84,16 +85,18 @@ public class ConverterValueHandler extends AbstractValueHandler {
      */
     static void adjustLobColumns(ValueMapping vm, Class<?> dbType) {
         int lobType;
-        if (dbType == String.class)
+        if (dbType == String.class) {
             lobType = Types.CLOB;
-        else if (dbType == byte[].class)
+        } else if (dbType == byte[].class) {
             lobType = Types.BLOB;
-        else
+        } else {
             return;
+        }
 
         for (Column col : vm.getValueInfo().getColumns()) {
-            if (col.getType() == Types.BLOB || col.getType() == Types.CLOB)
+            if (col.getType() == Types.BLOB || col.getType() == Types.CLOB) {
                 col.setType(lobType);
+            }
         }
     }
 
