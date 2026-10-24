@@ -914,6 +914,18 @@
                     <literal>IS NULL</literal>; compare against the substitute value instead.
                 </para>
                 <para>
+                    For a <literal>@Lob</literal> (or <literal>&lt;lob/&gt;</literal>) attribute with a
+                    converter, the kind of LOB now follows the converter's database type: a converter
+                    to <classname>String</classname> yields a CLOB (<literal>TEXT</literal> on
+                    PostgreSQL and MySQL) and a converter to <literal>byte[]</literal> a BLOB
+                    (<literal>BYTEA</literal> on PostgreSQL). In 4.1.x the attribute type decided,
+                    so a converter to <classname>String</classname> on any attribute type other than
+                    <classname>String</classname> produced a BLOB, and a converter to
+                    <literal>byte[]</literal> on a <classname>String</classname> attribute a CLOB.
+                    Tables created by 4.1.x for such attributes no longer match the mapping; alter
+                    the column type, or pin it with <literal>@Column(columnDefinition=...)</literal>.
+                </para>
+                <para>
                     Audit existing <literal>@Converter(autoApply=true)</literal> classes: attributes of
                     the matching type that were stored unconverted by 4.1.x are now written and read
                     through the converter and their generated column type changes. Remove

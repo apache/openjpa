@@ -18,7 +18,10 @@
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
+import java.sql.Types;
+
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
@@ -54,10 +57,47 @@ public class ConverterValueHandler extends AbstractValueHandler {
         DBIdentifier colName = DBIdentifier.newColumn(name,
             dict != null ? dict.delimitAll() : false);
 
+        adjustLobColumns(vm, _dbType);
         Column col = new Column();
         col.setIdentifier(colName);
-        col.setJavaType(JavaTypes.getTypeCode(_dbType));
+        col.setJavaType(getColumnJavaType(_dbType));
         return new Column[]{ col };
+    }
+
+    /**
+     * The column java type for the converter's database type. A byte array
+     * is read and written as bytes, not as an object.
+     */
+    static int getColumnJavaType(Class<?> dbType) {
+        if (dbType == byte[].class) {
+            return JavaSQLTypes.BYTES;
+        }
+        return JavaTypes.getTypeCode(dbType);
+    }
+
+    /**
+     * A {@code @Lob} or {@code <lob/>} column gets its CLOB or BLOB type from
+     * the declared type of the attribute, because the mapping parsers run
+     * before the converter is known. With a converter the stored value has
+     * the converter's database type, so choose the kind of LOB from that.
+     * Columns that are not LOBs, and LOBs whose database type is neither
+     * String nor byte[], are left alone.
+     */
+    static void adjustLobColumns(ValueMapping vm, Class<?> dbType) {
+        int lobType;
+        if (dbType == String.class) {
+            lobType = Types.CLOB;
+        } else if (dbType == byte[].class) {
+            lobType = Types.BLOB;
+        } else {
+            return;
+        }
+
+        for (Column col : vm.getValueInfo().getColumns()) {
+            if (col.getType() == Types.BLOB || col.getType() == Types.CLOB) {
+                col.setType(lobType);
+            }
+        }
     }
 
     @Override
