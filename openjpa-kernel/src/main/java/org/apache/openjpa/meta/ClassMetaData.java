@@ -218,6 +218,7 @@ public class ClassMetaData
     private FieldMetaData[] _allListingFields = null;
     private FieldMetaData[] _allProxyFields = null;
     private FieldMetaData[] _allLrsFields = null;
+    private FieldMetaData[] _allWholeConvertedFields = null;
     private FetchGroup[] _fgs = null;
     private FetchGroup[] _customFGs = null;
     private boolean _intercepting = false;
@@ -1051,6 +1052,35 @@ public class ClassMetaData
     }
 
     /**
+     * Return all collection and map fields whose value is converted as a
+     * whole by an AttributeConverter (see
+     * {@link FieldMetaData#convertsWholeValue()}). Their proxy tracks only
+     * structural changes, while the converted column also depends on the
+     * state of the elements. Will never return null.
+     */
+    public FieldMetaData[] getWholeConvertedFields() {
+        if (_allWholeConvertedFields == null) {
+            // Make sure _allFields has been initialized
+            if (_allFields == null) {
+                getFields();
+            }
+            List<FieldMetaData> res = new ArrayList<>();
+            for (FieldMetaData fmd : _allFields) {
+                switch (fmd.getDeclaredTypeCode()) {
+                    case JavaTypes.COLLECTION:
+                    case JavaTypes.MAP:
+                        if (fmd.convertsWholeValue()) {
+                            res.add(fmd);
+                        }
+                        break;
+                }
+            }
+            _allWholeConvertedFields = res.toArray(new FieldMetaData[0]);
+        }
+        return _allWholeConvertedFields;
+    }
+
+    /**
      * Return all large result set fields. Will never return null.
      */
     public FieldMetaData[] getLrsFields() {
@@ -1703,6 +1733,7 @@ public class ClassMetaData
         _allPKFields = null;
         _allProxyFields = null;
         _allLrsFields = null;
+        _allWholeConvertedFields = null;
         _definedFields = null;
         _listingFields = null;
         _allListingFields = null;
