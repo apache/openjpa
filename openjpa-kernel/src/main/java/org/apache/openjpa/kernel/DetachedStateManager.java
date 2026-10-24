@@ -185,14 +185,16 @@ public class DetachedStateManager
         for (FieldMetaData fmd : sm.getMetaData().getWholeConvertedFields()) {
             int i = fmd.getIndex();
             if (_loaded.get(i) && !_dirty.get(i)) {
-                if (whole == null)
+                if (whole == null) {
                     whole = new BitSet(fields.length);
+                }
                 whole.set(i);
             }
         }
         if (whole != null) {
-            if (!postLoadOnMerge)
+            if (!postLoadOnMerge) {
                 sm.setPostLoadCallback(false);
+            }
             FetchConfiguration fc = broker.getFetchConfiguration();
             sm.loadFields(whole, fc, fc.getWriteLockLevel(), null);
         }
@@ -311,11 +313,12 @@ public class DetachedStateManager
                     // an element changed in place does not mark the
                     // field dirty, but changes a value converted as a whole
                     if (_dirty.get(i) || (fields[i].convertsWholeValue()
-                        && sm.isWholeConvertedChanged(i, coll)))
+                        && sm.isWholeConvertedChanged(i, coll))) {
                         sm.settingObjectField(pc, i, (!loaded.get(i)) ? null
                             : sm.fetchObjectField(i), coll, set);
-                    else
+                    } else {
                         sm.storeObjectField(i, coll);
+                    }
                     break;
                 case JavaTypes.MAP:
                     Map map = (Map) objval;
@@ -325,11 +328,12 @@ public class DetachedStateManager
                     // an element changed in place does not mark the
                     // field dirty, but changes a value converted as a whole
                     if (_dirty.get(i) || (fields[i].convertsWholeValue()
-                        && sm.isWholeConvertedChanged(i, map)))
+                        && sm.isWholeConvertedChanged(i, map))) {
                         sm.settingObjectField(pc, i, (!loaded.get(i)) ? null
                             : sm.fetchObjectField(i), map, set);
-                    else
+                    } else {
                         sm.storeObjectField(i, map);
+                    }
                     break;
                 default:
                     if (_dirty.get(i))
