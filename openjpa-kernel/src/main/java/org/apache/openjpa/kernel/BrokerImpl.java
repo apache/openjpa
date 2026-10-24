@@ -4340,8 +4340,9 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
     void addWholeConverted(StateManagerImpl sm) {
         lock();
         try {
-            if (_wholeConverted == null)
+            if (_wholeConverted == null) {
                 _wholeConverted = Collections.newSetFromMap(new WeakHashMap<>());
+            }
             _wholeConverted.add(sm);
         } finally {
             unlock();
@@ -4356,14 +4357,16 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
      */
     void dirtyCheckWholeConverted() {
         if (_wholeConverted == null || _wholeConverted.isEmpty()
-            || (_flags & FLAG_ACTIVE) == 0)
+            || (_flags & FLAG_ACTIVE) == 0) {
             return;
+        }
 
         lock();
         try {
             // iterate over a copy, since dirtying an instance enlists it again
-            for (StateManagerImpl sm : new ArrayList<>(_wholeConverted))
+            for (StateManagerImpl sm : new ArrayList<>(_wholeConverted)) {
                 sm.dirtyCheckWholeConverted();
+            }
         } finally {
             unlock();
         }
@@ -4426,8 +4429,9 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
     void addToTransaction(StateManagerImpl sm) {
         // we only add clean instances now; dirty instances are added in
         // the setDirty callback
-        if (sm.getMetaData().getWholeConvertedFields().length > 0)
+        if (sm.getMetaData().getWholeConvertedFields().length > 0) {
             addWholeConverted(sm);
+        }
         if (sm.isDirty())
             return;
 
@@ -4454,8 +4458,9 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
                 _transCache.remove(sm);
             if (_derefCache != null && !sm.isPersistent())
                 _derefCache.remove(sm);
-            if (_wholeConverted != null && !sm.isPersistent())
+            if (_wholeConverted != null && !sm.isPersistent()) {
                 _wholeConverted.remove(sm);
+            }
         } finally {
             unlock();
         }

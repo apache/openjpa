@@ -901,8 +901,9 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         // a flush writes a dirty field from this value, so it is the one
         // the next check of a field converted as a whole compares with
         if (_dirty != null && _dirty.get(field) && _broker.isFlushing()
-            && isWholeConverted(field))
+            && isWholeConverted(field)) {
             saveWholeConverted(field, ext);
+        }
         return ext;
     }
 
@@ -1007,26 +1008,30 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
      */
     void dirtyCheckWholeConverted() {
         FieldMetaData[] fmds = _meta.getWholeConvertedFields();
-        if (fmds.length == 0 || !isPersistent() || isDeleted())
+        if (fmds.length == 0 || !isPersistent() || isDeleted()) {
             return;
+        }
 
         for (FieldMetaData fmd : fmds) {
             int i = fmd.getIndex();
-            if (!_loaded.get(i))
+            if (!_loaded.get(i)) {
                 continue;
+            }
             // a dirty field not yet flushed is written anyway, and the
             // value written is saved by fetch
             if (_dirty != null && _dirty.get(i)
-                && (_flush == null || !_flush.get(i)))
+                && (_flush == null || !_flush.get(i))) {
                 continue;
+            }
             // a new instance has no saved value until its first check
             boolean saved = _wholeConvertedSaved != null
                 && _wholeConvertedSaved.get(i);
             Object last = saved ? _wholeConverted[i] : null;
             Object val = toWholeConverted(i, fetchField(i, false));
             saveWholeConverted(i, val);
-            if (saved && !Objects.deepEquals(last, val))
+            if (saved && !Objects.deepEquals(last, val)) {
                 dirty(i);
+            }
         }
     }
 
@@ -1037,8 +1042,9 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
      * detached instance does not mark its field dirty.
      */
     boolean isWholeConvertedChanged(int field, Object val) {
-        if (!_loaded.get(field))
+        if (!_loaded.get(field)) {
             return true;
+        }
         Object cur = (_wholeConvertedSaved != null
             && _wholeConvertedSaved.get(field)) ? _wholeConverted[field]
             : toWholeConverted(field, fetchField(field, false));
@@ -1049,9 +1055,11 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
      * Whether the given field is a collection or map converted as a whole.
      */
     private boolean isWholeConverted(int field) {
-        for (FieldMetaData fmd : _meta.getWholeConvertedFields())
-            if (fmd.getIndex() == field)
+        for (FieldMetaData fmd : _meta.getWholeConvertedFields()) {
+            if (fmd.getIndex() == field) {
                 return true;
+            }
+        }
         return false;
     }
 
@@ -2908,9 +2916,10 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             _single.proxy(true, false);
             replaceField(_pc, _single, field);
             setLoaded(field, true);
-            if (isWholeConverted(field))
+            if (isWholeConverted(field)) {
                 saveWholeConverted(field,
                     toWholeConverted(field, fetchField(field, false)));
+            }
             postLoad(field, null);
         } finally {
             unlock();
@@ -3514,9 +3523,9 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
                 _fieldImpl[idx] = null;
         }
 
-        if (isLoaded)
+        if (isLoaded) {
             _loaded.set(field);
-        else {
+        } else {
             _loaded.clear(field);
             if (_wholeConvertedSaved != null) {
                 _wholeConvertedSaved.clear(field);
