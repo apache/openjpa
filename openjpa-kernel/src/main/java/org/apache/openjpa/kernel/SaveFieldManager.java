@@ -219,6 +219,12 @@ public class SaveFieldManager
                 _field = proxy.copyDate((Date) curVal);
                 break;
             case JavaTypes.OBJECT:
+                // a converted value is copied through its converter, and
+                // is not saved when that fails
+                if (fmd.isConvertedObject()) {
+                    _field = fmd.copyConvertedValue(curVal, _sm.getBroker());
+                    break;
+                }
                 _field = proxy.copyCustom(curVal);
                 if (_field == null)
                     _field = curVal;

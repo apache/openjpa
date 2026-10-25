@@ -149,9 +149,9 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     private SaveFieldManager _saved = null;
     private FieldManager _fm = null;
 
-    // converted value of each collection or map field that is converted as a
-    // whole, as last loaded or dirty checked; indexed by field, and set in
-    // _wholeConvertedSaved once saved
+    // converted value of each field that is converted as a whole (see
+    // ClassMetaData.getWholeConvertedFields), as last loaded or dirty
+    // checked; indexed by field, and set in _wholeConvertedSaved once saved
     private Object[] _wholeConverted = null;
     private BitSet _wholeConvertedSaved = null;
 
@@ -1001,10 +1001,11 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     }
 
     /**
-     * Mark dirty each collection or map field that is converted as a whole
-     * and whose converted value differs from the one last seen. An element
-     * changed in place does not go through the proxy of the field, but it
-     * changes the converted column. Called by the broker before it flushes.
+     * Mark dirty each field that is converted as a whole and whose converted
+     * value differs from the one last seen. An element changed in place
+     * does not go through the proxy of a collection or map, and a converted
+     * value of another type has no proxy, but the change alters the
+     * converted column. Called by the broker before it flushes.
      */
     void dirtyCheckWholeConverted() {
         FieldMetaData[] fmds = _meta.getWholeConvertedFields();
@@ -1036,9 +1037,9 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     }
 
     /**
-     * Return whether the given value of a collection or map field that is
-     * converted as a whole converts differently than the value loaded in
-     * this instance. Used on attach, since an element changed in place on a
+     * Return whether the given value of a field that is converted as a
+     * whole converts differently than the value loaded in this instance.
+     * Used on attach, since a value or element changed in place on a
      * detached instance does not mark its field dirty.
      */
     boolean isWholeConvertedChanged(int field, Object val) {
@@ -1052,9 +1053,10 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     }
 
     /**
-     * Whether the given field is a collection or map converted as a whole.
+     * Whether the given field is converted as a whole (see
+     * {@link ClassMetaData#getWholeConvertedFields}).
      */
-    private boolean isWholeConverted(int field) {
+    boolean isWholeConverted(int field) {
         for (FieldMetaData fmd : _meta.getWholeConvertedFields()) {
             if (fmd.getIndex() == field) {
                 return true;
@@ -1078,8 +1080,8 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     }
 
     /**
-     * Remember the given converted value of a collection or map field that
-     * is converted as a whole.
+     * Remember the given converted value of a field that is converted as a
+     * whole.
      */
     private void saveWholeConverted(int field, Object val) {
         if (_wholeConverted == null) {

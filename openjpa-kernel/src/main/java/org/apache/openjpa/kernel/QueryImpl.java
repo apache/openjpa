@@ -1474,8 +1474,8 @@ public class QueryImpl implements Query {
      * any dirty objects in the transaction.
      */
     private boolean isAccessPathDirty() {
-        // an element changed in place in a collection converted as a whole
-        // marks its instance dirty only once checked
+        // a value or element changed in place in a field converted as a
+        // whole marks its instance dirty only once checked
         _broker.dirtyCheckWholeConverted();
         return isAccessPathDirty(_broker, getAccessPathMetaDatas());
     }

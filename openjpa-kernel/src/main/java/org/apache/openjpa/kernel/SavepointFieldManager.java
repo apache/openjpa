@@ -221,7 +221,10 @@ class SavepointFieldManager
                 _field = proxy.copyDate((Date) curVal);
                 break;
             case JavaTypes.OBJECT:
-                _field = proxy.copyCustom(curVal);
+                // a converted value is copied through its converter
+                _field = (fmd.isConvertedObject())
+                    ? fmd.copyConvertedValue(curVal, _sm.getContext())
+                    : proxy.copyCustom(curVal);
                 if (_field == null)
                     _field = curVal;
                 break;

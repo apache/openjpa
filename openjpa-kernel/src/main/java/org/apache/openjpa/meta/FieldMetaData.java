@@ -1596,6 +1596,36 @@ public class FieldMetaData
     }
 
     /**
+     * Whether this field is of a type without a type code of its own (see
+     * {@link JavaTypes#OBJECT}) and is converted by an AttributeConverter.
+     * Its value is opaque to the provider: it is kept as the converter
+     * returned it instead of being replaced by a proxy, it is copied
+     * through the converter (see {@link #copyConvertedValue}), and a change
+     * made to it in place is found by converting it again at flush.
+     */
+    public boolean isConvertedObject() {
+        return getDeclaredTypeCode() == JavaTypes.OBJECT
+            && getConverter() != null;
+    }
+
+    /**
+     * Return a copy of the given value of a converted field, made by
+     * converting it to its database value and back, or null if the value is
+     * null or the converter fails. A copy made bean by bean would lose the
+     * state of the value that has no setter.
+     */
+    public Object copyConvertedValue(Object val, StoreContext ctx) {
+        if (val == null) {
+            return null;
+        }
+        try {
+            return getFieldValue(getExternalValue(val, ctx), ctx);
+        } catch (RuntimeException re) {
+            return null;
+        }
+    }
+
+    /**
      * Get (or create) the cached instance of the converter class.
      * <p>
      * A single converter instance is created lazily and shared by all

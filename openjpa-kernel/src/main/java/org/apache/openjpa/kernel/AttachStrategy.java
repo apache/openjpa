@@ -207,6 +207,14 @@ abstract class AttachStrategy
                 val = fetchObjectField(i);
                 if (val == null && !nullLoaded)
                     return false;
+                // the managed instance gets its own copy of a converted value
+                if (val != null && fmd.isConvertedObject()) {
+                    Object copy = fmd.copyConvertedValue(val,
+                        manager.getBroker());
+                    if (copy != null) {
+                        val = copy;
+                    }
+                }
                 sm.settingObjectField(into, i, sm.fetchObjectField(i), val,
                     set);
                 break;

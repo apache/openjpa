@@ -111,7 +111,9 @@ public class DetachedStateManager
         BrokerImpl broker = manager.getBroker();
         StateManagerImpl sm;
         if (_embedded) {
-            if (_dirty.length () > 0)
+            if (_dirty.length () > 0
+                || isEmbeddedWholeConvertedChanged(broker, meta, owner,
+                ownerMeta))
                 owner.dirty(ownerMeta.getFieldMetaData().getIndex());
             sm = (StateManagerImpl) broker.embed(_pc, _oid, owner, ownerMeta);
             ImplHelper.toPersistenceCapable(toAttach, broker.getConfiguration())
@@ -180,11 +182,14 @@ public class DetachedStateManager
         }
 
         // load the stored value of each field converted as a whole that is
-        // not dirty, to find an element changed in place while detached
+        // not dirty, and of each embedded field with such fields, to find a
+        // value or element changed in place while detached
         BitSet whole = null;
-        for (FieldMetaData fmd : sm.getMetaData().getWholeConvertedFields()) {
+        for (FieldMetaData fmd : fields) {
             int i = fmd.getIndex();
-            if (_loaded.get(i) && !_dirty.get(i)) {
+            if (_loaded.get(i) && !_dirty.get(i) && (sm.isWholeConverted(i)
+                || (fmd.isEmbeddedPC() && fmd.getEmbeddedMetaData()
+                .getWholeConvertedFields().length > 0))) {
                 if (whole == null) {
                     whole = new BitSet(fields.length);
                 }
@@ -207,8 +212,10 @@ public class DetachedStateManager
         for (int i = 0; i < fields.length; i++) {
             if (!_loaded.get(i))
                 continue;
-            // don't reload already loaded non-mutable objects
-            if (!_dirty.get(i) && loaded.get(i) && ignoreLoaded(fields[i]))
+            // don't reload already loaded non-mutable objects; a converted
+            // value may be mutable even when its column type is not
+            if (!_dirty.get(i) && loaded.get(i) && ignoreLoaded(fields[i])
+                && !fields[i].isConvertedObject())
                 continue;
 
             provideField(i);
@@ -336,11 +343,24 @@ public class DetachedStateManager
                     }
                     break;
                 default:
-                    if (_dirty.get(i))
+                    // the managed instance gets its own copy of a converted
+                    // value, as it does of a collection or map
+                    if (objval != null && fields[i].isConvertedObject()) {
+                        Object copy = fields[i].copyConvertedValue(objval,
+                            broker);
+                        if (copy != null) {
+                            objval = copy;
+                        }
+                    }
+                    // a converted value changed in place does not mark
+                    // the field dirty, but changes the converted column
+                    if (_dirty.get(i) || (fields[i].isConvertedObject()
+                        && sm.isWholeConvertedChanged(i, objval))) {
                         sm.settingObjectField(pc, i, (!loaded.get(i)) ? null
                             : sm.fetchObjectField(i), objval, set);
-                    else
+                    } else {
                         sm.storeObjectField(i, objval);
+                    }
                     objval = null;
             }
         }
@@ -364,6 +384,45 @@ public class DetachedStateManager
     protected Object getDetachedObjectId(AttachManager manager,
         Object toAttach) {
         return _oid;
+    }
+
+    /**
+     * Whether a field converted as a whole of this embedded instance
+     * converts differently than in the embedded instance its managed owner
+     * holds, since a value or element changed in place while detached does
+     * not mark the field dirty. Assumes a change when there is no such
+     * instance to compare with.
+     */
+    private boolean isEmbeddedWholeConvertedChanged(BrokerImpl broker,
+        ClassMetaData meta, OpenJPAStateManager owner,
+        ValueMetaData ownerMeta) {
+        FieldMetaData[] fmds = meta.getWholeConvertedFields();
+        if (fmds.length == 0) {
+            return false;
+        }
+        FieldMetaData ownerField = ownerMeta.getFieldMetaData();
+        if (ownerMeta != ownerField
+            || !owner.getLoaded().get(ownerField.getIndex())) {
+            return true;
+        }
+        OpenJPAStateManager cur = broker.getStateManager(
+            owner.fetchField(ownerField.getIndex(), false));
+        if (!(cur instanceof StateManagerImpl)) {
+            return true;
+        }
+        for (FieldMetaData fmd : fmds) {
+            int i = fmd.getIndex();
+            if (!_loaded.get(i)) {
+                continue;
+            }
+            provideField(i);
+            Object val = objval;
+            objval = null;
+            if (((StateManagerImpl) cur).isWholeConvertedChanged(i, val)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     void provideField(int field) {

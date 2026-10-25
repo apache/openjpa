@@ -896,6 +896,18 @@
                     in long batch runs that flush repeatedly.
                 </para>
                 <para>
+                    The value of a converted attribute whose type is not a basic, temporal,
+                    collection or map type is now the object returned by
+                    <literal>convertToEntityAttribute</literal>. In 4.1.x it was replaced by a
+                    generated subclass that copied the value through its getter and setter pairs,
+                    losing any state without a setter. A change made in place to such a value is
+                    found by the same check at flush as above. Where OpenJPA needs a copy of the
+                    value, for <literal>detachCopy</literal>, for merge, for restoring state on
+                    rollback and for the data cache, the copy is made by converting the value to
+                    its column value and back. The data cache holds the column value of such an
+                    attribute.
+                </para>
+                <para>
                     A converter is now also consulted for <literal>null</literal> in both
                     directions, as required by Jakarta Persistence 3.2; in 4.1.x a
                     <literal>null</literal> attribute or <literal>null</literal> column value

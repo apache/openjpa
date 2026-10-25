@@ -1054,9 +1054,13 @@ public class ClassMetaData
     /**
      * Return all collection and map fields whose value is converted as a
      * whole by an AttributeConverter (see
-     * {@link FieldMetaData#convertsWholeValue()}). Their proxy tracks only
-     * structural changes, while the converted column also depends on the
-     * state of the elements. Will never return null.
+     * {@link FieldMetaData#convertsWholeValue()}), and all converted fields
+     * of other types that are not proxied (see
+     * {@link FieldMetaData#isConvertedObject()}). The proxy of a collection
+     * or map tracks only structural changes, and a converted value of
+     * another type is not tracked at all, while the converted column also
+     * depends on the state of the elements or of the value. Will never
+     * return null.
      */
     public FieldMetaData[] getWholeConvertedFields() {
         if (_allWholeConvertedFields == null) {
@@ -1070,6 +1074,11 @@ public class ClassMetaData
                     case JavaTypes.COLLECTION:
                     case JavaTypes.MAP:
                         if (fmd.convertsWholeValue()) {
+                            res.add(fmd);
+                        }
+                        break;
+                    case JavaTypes.OBJECT:
+                        if (fmd.isConvertedObject()) {
                             res.add(fmd);
                         }
                         break;
