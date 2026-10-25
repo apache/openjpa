@@ -294,6 +294,7 @@ public class XMLPersistenceMetaDataParser
     private PersistenceStrategy _strategy = null;
     private Set<CascadeType> _cascades = null;
     private Set<CascadeType> _pkgCascades = null;
+    private ValueMetaData _orphanRemoval = null;
 
     private Class<?> _listener = null;
     private Collection<LifecycleCallbacks>[] _callbacks = null;
@@ -677,6 +678,7 @@ public class XMLPersistenceMetaDataParser
         _highs = null;
         _cascades = null;
         _pkgCascades = null;
+        _orphanRemoval = null;
     }
 
     @Override
@@ -1534,6 +1536,10 @@ public class XMLPersistenceMetaDataParser
         throws SAXException {
         FieldMetaData field = (FieldMetaData) popElement();
         setCascades(field);
+        if (_orphanRemoval != null) {
+            setOrphanRemoval(_orphanRemoval, true);
+            _orphanRemoval = null;
+        }
         if (isMappingOverrideMode())
             endFieldMapping(field);
         _strategy = null;
@@ -1733,7 +1739,9 @@ public class XMLPersistenceMetaDataParser
         fmd.setSerialized(false); // override any Lob annotation
         boolean orphanRemoval = Boolean.valueOf(attrs.getValue(
             "orphan-removal"));
-        setOrphanRemoval(fmd, orphanRemoval);
+        if (orphanRemoval) {
+            _orphanRemoval = fmd;
+        }
         String mapsId = attrs.getValue("maps-id");
         if (mapsId != null)
             fmd.setMappedByIdValue(mapsId);
@@ -1813,9 +1821,17 @@ public class XMLPersistenceMetaDataParser
         fmd.setSerialized(false); // override any Lob annotation
         boolean orphanRemoval = Boolean.valueOf(attrs.getValue(
             "orphan-removal"));
-        setOrphanRemoval(fmd.getElement(), orphanRemoval);
+        if (orphanRemoval) {
+            _orphanRemoval = fmd.getElement();
+        }
     }
 
+    /**
+     * Mark the value dependent if orphan removal is set. Called from
+     * {@link #finishField} after {@link #setCascades} so that a cascaded
+     * remove does not replace it; a dependent value is also removed
+     * together with its owner.
+     */
     protected void setOrphanRemoval(ValueMetaData vmd, boolean orphanRemoval) {
         if (orphanRemoval)
             vmd.setCascadeDelete(ValueMetaData.CASCADE_AUTO);
