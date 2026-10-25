@@ -229,6 +229,103 @@ public class TestConvertedBean extends SQLListenerTestCase {
         }
     }
 
+    /**
+     * On rollback, a value changed in place is restored to the value it had
+     * when it was loaded, whether or not a flush found the change.
+     */
+    public void testValueChangedInPlaceRestoredOnRollback() {
+        for (boolean flush : new boolean[] { false, true }) {
+            ConvertedBeanEntity e = changeInPlaceAndRollback(RestoreStateType.ALL, flush);
+            assertSettings(e.getSettings(), "crit", "user1");
+            assertEquals(1, e.getPoint().getX());
+            assertSettings(e.getHolder().getSettings(), "embedded", "user2");
+        }
+    }
+
+    /**
+     * With the default restore state, a value changed in place and not yet
+     * flushed is restored to the value it had when it was loaded. Once a
+     * flush found the change, the field is unloaded on rollback, as any
+     * other mutable field that was changed.
+     */
+    public void testValueChangedInPlaceUndoneOnRollback() {
+        ConvertedBeanEntity e = changeInPlaceAndRollback(RestoreStateType.IMMUTABLE, false);
+        assertSettings(e.getSettings(), "crit", "user1");
+        assertEquals(1, e.getPoint().getX());
+        assertSettings(e.getHolder().getSettings(), "embedded", "user2");
+
+        e = changeInPlaceAndRollback(RestoreStateType.IMMUTABLE, true);
+        assertNull(e.getSettings());
+        assertNull(e.getPoint());
+    }
+
+    /**
+     * Change the converted values of instance 1 in place, optionally flush,
+     * roll back, and return the instance.
+     */
+    private ConvertedBeanEntity changeInPlaceAndRollback(RestoreStateType restore, boolean flush) {
+        try (EntityManager em = emf.createEntityManager()) {
+            OpenJPAEntityManager oem = OpenJPAPersistence.cast(em);
+            oem.setRestoreState(restore);
+            ConvertedBeanEntity e = oem.find(ConvertedBeanEntity.class, 1L);
+            oem.getTransaction().begin();
+            e.getSettings().setCriteria("changed");
+            ((StaticSettings) e.getSettings()).getUsers().put("user3", "pw");
+            e.getPoint().setX(5);
+            ((StaticSettings) e.getHolder().getSettings()).getUsers().clear();
+            if (flush) {
+                oem.flush();
+            }
+            oem.getTransaction().rollback();
+            return e;
+        }
+    }
+
+    /**
+     * Rollback to a savepoint restores a value changed in place after the
+     * savepoint, and keeps a change made before it.
+     */
+    public void testValueChangedInPlaceRestoredOnSavepointRollback() {
+        try (EntityManager em = emf.createEntityManager()) {
+            OpenJPAEntityManager oem = OpenJPAPersistence.cast(em);
+            ConvertedBeanEntity e = oem.find(ConvertedBeanEntity.class, 1L);
+            oem.getTransaction().begin();
+            e.getSettings().setCriteria("before");
+            oem.setSavepoint("sp");
+            e.getSettings().setCriteria("after");
+            ((StaticSettings) e.getSettings()).getUsers().put("user3", "pw");
+            e.getPoint().setX(5);
+            oem.rollbackToSavepoint("sp");
+            assertSettings(e.getSettings(), "before", "user1");
+            assertEquals(1, e.getPoint().getX());
+            oem.getTransaction().commit();
+        }
+        try (EntityManager em = emf.createEntityManager()) {
+            ConvertedBeanEntity e = em.find(ConvertedBeanEntity.class, 1L);
+            assertSettings(e.getSettings(), "before", "user1");
+            assertEquals(1, e.getPoint().getX());
+        }
+    }
+
+    /**
+     * Rollback to a savepoint restores a value changed in place on an
+     * instance that was not yet part of the transaction.
+     */
+    public void testValueChangedInPlaceRestoredOnSavepointRollbackOfCleanInstance() {
+        try (EntityManager em = emf.createEntityManager()) {
+            OpenJPAEntityManager oem = OpenJPAPersistence.cast(em);
+            ConvertedBeanEntity e = oem.find(ConvertedBeanEntity.class, 1L);
+            oem.getTransaction().begin();
+            oem.setSavepoint("sp");
+            e.getSettings().setCriteria("after");
+            oem.rollbackToSavepoint("sp");
+            assertSettings(e.getSettings(), "crit", "user1");
+            resetSQL();
+            oem.getTransaction().commit();
+            assertNotSQL("UPDATE .*");
+        }
+    }
+
     static void assertSettings(Settings settings, String criteria, String user) {
         assertSame(StaticSettings.class, settings.getClass());
         assertEquals(criteria, settings.getCriteria());

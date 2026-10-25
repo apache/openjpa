@@ -1781,6 +1781,10 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
                 throw new UnsupportedException(_loc.get
                     ("savepoint-flush-not-supported"));
 
+            // an instance with a value or element changed in place in a
+            // field converted as a whole has to be saved as a dirty one
+            dirtyCheckWholeConverted();
+
             OpenJPASavepoint save = _spm.newSavepoint(name, this);
             if (_savepoints == null || _savepoints.isEmpty()) {
                 save.save(getTransactionalStates());
@@ -1882,6 +1886,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
 
             save = (OpenJPASavepoint) _savepoints.remove(index);
             Collection saved = save.rollback(_savepoints.values());
+            restoreWholeConverted();
             if (_savepointCache != null)
                 _savepointCache.clear();
             if (hasTransactionalObjects()) {
@@ -2550,6 +2555,12 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
                 stateManager.setDereferencedDependent(false, false);
             }
             _derefCache = null;
+        }
+
+        // a value or element changed in place in a field converted as a
+        // whole was not saved for rollback unless a flush found it
+        if (rollback) {
+            restoreWholeConverted();
         }
 
         // perform commit or rollback state transitions on each instance
@@ -4366,6 +4377,26 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             // iterate over a copy, since dirtying an instance enlists it again
             for (StateManagerImpl sm : new ArrayList<>(_wholeConverted)) {
                 sm.dirtyCheckWholeConverted();
+            }
+        } finally {
+            unlock();
+        }
+    }
+
+    /**
+     * Put back the values of fields converted as a whole that were changed
+     * in place and not yet found by a flush, since they were not saved for
+     * rollback. Done before the instances are rolled back.
+     */
+    private void restoreWholeConverted() {
+        if (_wholeConverted == null || _wholeConverted.isEmpty()) {
+            return;
+        }
+
+        lock();
+        try {
+            for (StateManagerImpl sm : new ArrayList<>(_wholeConverted)) {
+                sm.restoreWholeConverted();
             }
         } finally {
             unlock();

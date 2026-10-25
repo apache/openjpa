@@ -20,6 +20,9 @@ package org.apache.openjpa.persistence.conversion;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.RestoreStateType;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 /**
@@ -181,6 +184,30 @@ public class TestConvertedInPlaceChange extends SQLListenerTestCase {
             InPlaceConvertedEntity e = em.find(InPlaceConvertedEntity.class, 1L);
             assertEquals("changed", e.getItems().get(0).getName());
             assertEquals("changed", e.getItemsByKey().get("a").getName());
+        }
+    }
+
+    /**
+     * On rollback, an element changed in place is restored to the value it
+     * had when it was loaded, whether or not a flush found the change.
+     */
+    public void testElementOfConvertedListRestoredOnRollback() {
+        for (boolean flush : new boolean[] { false, true }) {
+            try (EntityManager em = emf.createEntityManager()) {
+                OpenJPAEntityManager oem = OpenJPAPersistence.cast(em);
+                oem.setRestoreState(RestoreStateType.ALL);
+                InPlaceConvertedEntity e = oem.find(InPlaceConvertedEntity.class, 1L);
+                oem.getTransaction().begin();
+                e.getItems().get(0).setName("changed");
+                e.getItemsByKey().get("a").setName("changed");
+                if (flush) {
+                    oem.flush();
+                }
+                oem.getTransaction().rollback();
+                assertEquals("one", e.getItems().get(0).getName());
+                assertEquals(2, e.getItems().size());
+                assertEquals("one", e.getItemsByKey().get("a").getName());
+            }
         }
     }
 

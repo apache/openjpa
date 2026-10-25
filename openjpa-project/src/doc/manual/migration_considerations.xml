@@ -908,6 +908,15 @@
                     attribute.
                 </para>
                 <para>
+                    Since such a value has no proxy, a change made to it in place, like a change to an
+                    element of a collection or map converted as a whole, does not mark the attribute
+                    dirty when it is made. The attribute is reported as dirty, for example by
+                    <methodname>OpenJPAStateManager.getDirty</methodname>, only once the change was
+                    found by a flush, by a query that checks for changes before it runs, or when a
+                    savepoint is set. On rollback, a value changed in place is restored from the
+                    converted value saved when it was loaded, also when no flush found the change.
+                </para>
+                <para>
                     A converter is now also consulted for <literal>null</literal> in both
                     directions, as required by Jakarta Persistence 3.2; in 4.1.x a
                     <literal>null</literal> attribute or <literal>null</literal> column value

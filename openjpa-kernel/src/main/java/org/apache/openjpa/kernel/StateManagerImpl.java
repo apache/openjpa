@@ -1029,10 +1029,12 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
                 && _wholeConvertedSaved.get(i);
             Object last = saved ? _wholeConverted[i] : null;
             Object val = toWholeConverted(i, fetchField(i, false));
-            saveWholeConverted(i, val);
+            // dirty the field before its new value is saved, so that the
+            // value saved for rollback is converted from the last one
             if (saved && !Objects.deepEquals(last, val)) {
                 dirty(i);
             }
+            saveWholeConverted(i, val);
         }
     }
 
@@ -1050,6 +1052,84 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             && _wholeConvertedSaved.get(field)) ? _wholeConverted[field]
             : toWholeConverted(field, fetchField(field, false));
         return !Objects.deepEquals(cur, toWholeConverted(field, val));
+    }
+
+    /**
+     * Return the value of the given field converted as a whole as it was
+     * when last loaded or dirty checked, converted back from its saved
+     * converted value. A value or element changed in place since then marks
+     * the field dirty only at the next check, so the current value may
+     * already hold the change. Return the current value when it converts
+     * the same, when there is no saved converted value, or when it cannot
+     * be converted back.
+     */
+    private Object fetchWholeConvertedOriginal(int field) {
+        Object cur = fetchField(field, false);
+        if (_wholeConvertedSaved == null || !_wholeConvertedSaved.get(field)) {
+            return cur;
+        }
+        Object last = _wholeConverted[field];
+        if (last == UNCONVERTIBLE
+            || Objects.deepEquals(last, toWholeConverted(field, cur))) {
+            return cur;
+        }
+        try {
+            return _meta.getField(field).getFieldValue(last, _broker);
+        } catch (RuntimeException re) {
+            return cur;
+        }
+    }
+
+    /**
+     * Put back the value of each field converted as a whole that was changed
+     * in place since it was last loaded or dirty checked, and that is
+     * therefore not dirty. Such a change is found only at flush, so it was
+     * not saved for rollback. Called by the broker on rollback, when the
+     * saved converted value is the one in the database, and on rollback to
+     * a savepoint, when it is the one checked as the savepoint was set. A
+     * value that cannot be converted back is kept.
+     */
+    void restoreWholeConverted() {
+        FieldMetaData[] fmds = _meta.getWholeConvertedFields();
+        if (fmds.length == 0 || _wholeConvertedSaved == null) {
+            return;
+        }
+
+        lock();
+        try {
+            for (FieldMetaData fmd : fmds) {
+                int i = fmd.getIndex();
+                if (!_loaded.get(i) || !_wholeConvertedSaved.get(i)
+                    || (_dirty != null && _dirty.get(i))) {
+                    continue;
+                }
+                Object orig = fetchWholeConvertedOriginal(i);
+                if (orig != fetchField(i, false)) {
+                    _single.storeObjectField(i, orig);
+                    _single.proxy(true, false);
+                    replaceField(_pc, _single, i);
+                }
+            }
+        } finally {
+            unlock();
+        }
+    }
+
+    /**
+     * Save the converted value of each loaded field converted as a whole
+     * that is not dirty, after its value was restored on rollback.
+     */
+    private void resetWholeConverted() {
+        if (_wholeConvertedSaved == null || !isPersistent()) {
+            return;
+        }
+        for (FieldMetaData fmd : _meta.getWholeConvertedFields()) {
+            int i = fmd.getIndex();
+            if (_loaded.get(i) && (_dirty == null || !_dirty.get(i))) {
+                saveWholeConverted(i,
+                    toWholeConverted(i, fetchField(i, false)));
+            }
+        }
     }
 
     /**
@@ -1330,6 +1410,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             setPCState(_state.rollbackRestore(this));
         else
             setPCState(_state.rollback(this));
+        resetWholeConverted();
     }
 
     /**
@@ -1349,6 +1430,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         _flush = savepoint.getFlushed();
         _version = savepoint.getVersion();
         _loadVersion = savepoint.getLoadVersion();
+        resetWholeConverted();
     }
 
     /**
@@ -3172,7 +3254,13 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         // copyable, immediately provide and replace it via the save field
         // manager, which will copy the mutable value to prevent by-ref mods
         if (_saved.saveField(field)) {
-            provideField(_pc, _saved, field);
+            // a field converted as a whole may already hold a change made in
+            // place, so save the value it had when last loaded or checked
+            if (isWholeConverted(field)) {
+                _saved.storeObjectField(field, fetchWholeConvertedOriginal(field));
+            } else {
+                provideField(_pc, _saved, field);
+            }
             replaceField(_saved.getState(), _saved, field);
         }
     }
