@@ -37,9 +37,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * - Remove of detached entity throwing IllegalArgumentException
  * - Persist of removed entity with cascade persist
  *
- * The root cause was that orphanRemoval=true was overwriting
- * cascade=REMOVE/ALL's CASCADE_IMMEDIATE with CASCADE_AUTO,
- * preventing immediate cascade of remove operations.
+ * The root cause was that a value marked CASCADE_AUTO by
+ * orphanRemoval=true was only deleted on flush when its owner was
+ * removed, instead of being removed together with the owner.
  */
 public class TestEntityLifecycleTCK extends SingleEMFTestCase {
 
