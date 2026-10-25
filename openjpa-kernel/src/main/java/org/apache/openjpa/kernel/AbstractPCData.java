@@ -69,6 +69,11 @@ public abstract class AbstractPCData
      */
     protected Object toField(OpenJPAStateManager sm, FieldMetaData fmd,
         Object data, FetchConfiguration fetch, Object context) {
+        // a converted value is cached in its database form, so the converter
+        // gives each persistence context its own copy of the value
+        if (fmd.isValueConverted()) {
+            return fmd.getFieldValue(copyDataValue(data), sm.getContext());
+        }
         if (data == null)
             return null;
 
@@ -76,8 +81,17 @@ public abstract class AbstractPCData
             case JavaTypes.COLLECTION:
                 ProxyDataList c = (ProxyDataList) data;
                 Collection c2 = (Collection) sm.newFieldProxy(fmd.getIndex());
-                c2 = toNestedFields(sm, fmd.getElement(), (Collection) data,
-                    fetch, context);
+                if (fmd.isElementConverted()) {
+                    // the elements are cached in their database form, so
+                    // convert each one again
+                    c2 = new ArrayList(c.size());
+                    for (Object datum : c) {
+                        c2.add(fmd.getElementFieldValue(copyDataValue(datum)));
+                    }
+                } else {
+                    c2 = toNestedFields(sm, fmd.getElement(),
+                        (Collection) data, fetch, context);
+                }
                 if (c2 instanceof Proxy) {
                     ChangeTracker ct = ((Proxy) c2).getChangeTracker();
                     if (ct != null)
@@ -241,6 +255,17 @@ public abstract class AbstractPCData
      * {@link #NULL} if unable to cache.
      */
     protected Object toData(FieldMetaData fmd, Object val, StoreContext ctx) {
+        // cache the database value of a converted field rather than the
+        // field value, which the persistence context can change in place
+        if (fmd.isValueConverted()) {
+            try {
+                return copyDataValue(fmd.getExternalValue(val, ctx));
+            } catch (RuntimeException re) {
+                // leave the field out of the cache; it is loaded from the
+                // database instead
+                return NULL;
+            }
+        }
         if (val == null)
             return null;
 
@@ -251,8 +276,10 @@ public abstract class AbstractPCData
                     return ProxyDataList.EMPTY_LIST;
                 ProxyDataList c2 = null;
                 int size;
+                boolean converted = fmd.isElementConverted();
                 for (Object value : c) {
-                    val = toNestedData(fmd.getElement(), value, ctx);
+                    val = converted ? toConvertedData(fmd, value)
+                        : toNestedData(fmd.getElement(), value, ctx);
                     if (val == NULL)
                         return NULL;
                     if (c2 == null) {
@@ -311,6 +338,38 @@ public abstract class AbstractPCData
             default:
                 return toNestedData(fmd, val, ctx);
         }
+    }
+
+    /**
+     * Return the database value of the given element of a collection whose
+     * elements are converted, or {@link #NULL} if the converter fails.
+     */
+    private static Object toConvertedData(FieldMetaData fmd, Object val) {
+        try {
+            return copyDataValue(fmd.getExternalElementValue(val));
+        } catch (RuntimeException re) {
+            // leave the field out of the cache; it is loaded from the
+            // database instead
+            return NULL;
+        }
+    }
+
+    /**
+     * Return a copy of the given database value if it is a mutable array or
+     * date, or the value itself otherwise.
+     */
+    private static Object copyDataValue(Object val) {
+        if (val instanceof Date) {
+            return ((Date) val).clone();
+        }
+        if (val != null && val.getClass().isArray()) {
+            int length = Array.getLength(val);
+            Object copy = Array.newInstance(val.getClass().getComponentType(),
+                length);
+            System.arraycopy(val, 0, copy, 0, length);
+            return copy;
+        }
+        return val;
     }
 
     /**

@@ -44,6 +44,9 @@ public class ConvertedListEntity {
     @Convert(converter = ItemListConverter.class)
     private List<Item> lazyItems = new ArrayList<>();
 
+    @Convert(converter = ItemConverter.class)
+    private Item item;
+
     public long getId() {
         return id;
     }
@@ -58,5 +61,13 @@ public class ConvertedListEntity {
 
     public List<Item> getLazyItems() {
         return lazyItems;
+    }
+
+    public Item getItem() {
+        return item;
+    }
+
+    public void setItem(Item item) {
+        this.item = item;
     }
 }
