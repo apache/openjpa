@@ -116,7 +116,9 @@ public class TestOpenJPA2330 extends SingleEMFTestCase {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             EntityA newA = em.find(EntityA.class, a.getId());
-            newA.getBs().remove(b1);
+            EntityB newB = newA.getBs().iterator().next();
+            assertTrue("newB should be removed successfully", newA.getBs().remove(newB));
+            assertEquals("There should be 2 Bs in a after removal", 2, newA.getBs().size());
             em.merge(newA);
             em.getTransaction().commit();
         }
