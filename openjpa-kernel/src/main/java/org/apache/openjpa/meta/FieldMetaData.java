@@ -1388,31 +1388,7 @@ public class FieldMetaData
         // JPA 3.2 3.11.3: the converter is also consulted for null, so a
         // converter that maps null to a column default is honoured here.
         if (isValueConverted()) {
-            try {
-                Object instance = getConverterInstance();
-                Method m = getConverterToDatabaseMethod();
-                return m.invoke(instance, val);
-            } catch (InvocationTargetException ite) {
-                Throwable cause = ite.getTargetException();
-                if (cause instanceof RuntimeException) {
-                    // JPA spec: converter RuntimeExceptions must be
-                    // wrapped in PersistenceException. Wrap in
-                    // StoreException so the persistence layer can
-                    // translate it, but keep the field and converter
-                    // identity in the message.
-                    throw new StoreException(_loc.get("converter-err", this,
-                        Exceptions.toString(val), cause.toString()))
-                        .setCause(cause);
-                }
-                throw new MetaDataException(_loc.get("converter-err", this,
-                    Exceptions.toString(val),
-                    cause.toString())).setCause(cause);
-            } catch (OpenJPAException ke) {
-                throw ke;
-            } catch (Exception e) {
-                throw new MetaDataException(_loc.get("converter-err", this,
-                    Exceptions.toString(val), e.toString())).setCause(e);
-            }
+            return invokeConverter(getConverterToDatabaseMethod(), val);
         }
 
         return val;
@@ -1476,31 +1452,7 @@ public class FieldMetaData
         // value, so a converter that maps null to an attribute default is
         // honoured here.
         if (isValueConverted()) {
-            try {
-                Object instance = getConverterInstance();
-                Method m = getConverterToEntityMethod();
-                return m.invoke(instance, val);
-            } catch (InvocationTargetException ite) {
-                Throwable cause = ite.getTargetException();
-                if (cause instanceof RuntimeException) {
-                    // JPA spec: converter RuntimeExceptions must be
-                    // wrapped in PersistenceException. Wrap in
-                    // StoreException so the persistence layer can
-                    // translate it, but keep the field and converter
-                    // identity in the message.
-                    throw new StoreException(_loc.get("converter-err", this,
-                        Exceptions.toString(val), cause.toString()))
-                        .setCause(cause);
-                }
-                throw new MetaDataException(_loc.get("converter-err", this,
-                    Exceptions.toString(val),
-                    cause.toString())).setCause(cause);
-            } catch (OpenJPAException ke) {
-                throw ke;
-            } catch (Exception e) {
-                throw new MetaDataException(_loc.get("converter-err", this,
-                    Exceptions.toString(val), e.toString())).setCause(e);
-            }
+            return invokeConverter(getConverterToEntityMethod(), val);
         }
 
         return val;
@@ -1548,7 +1500,7 @@ public class FieldMetaData
      * collection/map test before its array handling, so an array with a
      * converter is mapped by a single-value {@code ConverterValueHandler}.
      */
-    private boolean isValueConverted() {
+    public boolean isValueConverted() {
         if (getConverter() == null)
             return false;
         int tc = getDeclaredTypeCode();
@@ -1556,6 +1508,77 @@ public class FieldMetaData
             return true;
         }
         return convertsWholeValue();
+    }
+
+    /**
+     * Whether this collection field passes each of its elements through an
+     * AttributeConverter, as {@code ConverterElementHandler} does when the
+     * field is mapped.
+     */
+    public boolean isElementConverted() {
+        if (getConverter() == null
+            || getDeclaredTypeCode() != JavaTypes.COLLECTION
+            || convertsWholeValue()) {
+            return false;
+        }
+        Class dbType = getConverterDatabaseType();
+        return dbType != null && dbType != Object.class;
+    }
+
+    /**
+     * Convert the given element of a collection field to its database value
+     * through the field's converter. A null element stays null.
+     *
+     * @see #isElementConverted
+     */
+    public Object getExternalElementValue(Object val) {
+        if (val == null) {
+            return null;
+        }
+        return invokeConverter(getConverterToDatabaseMethod(), val);
+    }
+
+    /**
+     * Convert the given database value of an element of a collection field
+     * to its element value through the field's converter. A null value
+     * stays null.
+     *
+     * @see #isElementConverted
+     */
+    public Object getElementFieldValue(Object val) {
+        if (val == null) {
+            return null;
+        }
+        return invokeConverter(getConverterToEntityMethod(), val);
+    }
+
+    /**
+     * Pass the given value to the given method of the converter.
+     */
+    private Object invokeConverter(Method m, Object val) {
+        try {
+            return m.invoke(getConverterInstance(), val);
+        } catch (InvocationTargetException ite) {
+            Throwable cause = ite.getTargetException();
+            if (cause instanceof RuntimeException) {
+                // JPA spec: converter RuntimeExceptions must be
+                // wrapped in PersistenceException. Wrap in
+                // StoreException so the persistence layer can
+                // translate it, but keep the field and converter
+                // identity in the message.
+                throw new StoreException(_loc.get("converter-err", this,
+                    Exceptions.toString(val), cause.toString()))
+                    .setCause(cause);
+            }
+            throw new MetaDataException(_loc.get("converter-err", this,
+                Exceptions.toString(val),
+                cause.toString())).setCause(cause);
+        } catch (OpenJPAException ke) {
+            throw ke;
+        } catch (Exception e) {
+            throw new MetaDataException(_loc.get("converter-err", this,
+                Exceptions.toString(val), e.toString())).setCause(e);
+        }
     }
 
     /**

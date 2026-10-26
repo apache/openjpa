@@ -934,6 +934,22 @@
                     the column type, or pin it with <literal>@Column(columnDefinition=...)</literal>.
                 </para>
                 <para>
+                    With the data cache enabled, a converted attribute is now kept in the cache in
+                    its database form. The converter's <literal>convertToDatabaseColumn</literal>
+                    runs when an instance is put into the cache, and
+                    <literal>convertToEntityAttribute</literal> runs each time an instance is loaded
+                    from the cache, so every persistence context gets its own attribute value. This
+                    applies to attributes converted as a whole and to collections whose elements are
+                    converted. In 4.1.x the cache held the attribute value itself and handed the same
+                    objects to every persistence context without calling the converter, so a change
+                    made in place in one context showed up in the others. A converter that is costly
+                    or has side effects now runs on cache hits as well. A converter that throws while
+                    the cache is filled leaves that attribute out of the cache, and it is then loaded
+                    from the database; one that throws on a cache hit fails the load with a
+                    <classname>jakarta.persistence.PersistenceException</classname>, as a load from
+                    the database would.
+                </para>
+                <para>
                     Audit existing <literal>@Converter(autoApply=true)</literal> classes: attributes of
                     the matching type that were stored unconverted by 4.1.x are now written and read
                     through the converter and their generated column type changes. Remove
