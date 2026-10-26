@@ -61,13 +61,13 @@ public class TestOrphanRemovalXml extends SingleEMFTestCase {
     public void testOrphanRemovedFromCascadeAllCollection() {
         createParent(1);
 
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        OrphanXmlParent parent = em.find(OrphanXmlParent.class, 1);
-        assertEquals(2, parent.getChildren().size());
-        parent.getChildren().remove(0);
-        em.getTransaction().commit();
-        em.close();
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            OrphanXmlParent parent = em.find(OrphanXmlParent.class, 1);
+            assertEquals(2, parent.getChildren().size());
+            parent.getChildren().remove(0);
+            em.getTransaction().commit();
+        }
 
         assertEquals(1, count(OrphanXmlChild.class));
     }
@@ -75,13 +75,13 @@ public class TestOrphanRemovalXml extends SingleEMFTestCase {
     public void testOrphanRemovedFromCascadeRemoveCollection() {
         createParent(1);
 
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        OrphanXmlParent parent = em.find(OrphanXmlParent.class, 1);
-        assertEquals(2, parent.getItems().size());
-        parent.getItems().remove(0);
-        em.getTransaction().commit();
-        em.close();
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            OrphanXmlParent parent = em.find(OrphanXmlParent.class, 1);
+            assertEquals(2, parent.getItems().size());
+            parent.getItems().remove(0);
+            em.getTransaction().commit();
+        }
 
         assertEquals(1, count(OrphanXmlItem.class));
     }
@@ -89,13 +89,13 @@ public class TestOrphanRemovalXml extends SingleEMFTestCase {
     public void testOrphanRemovedFromCascadeAllOneToOne() {
         createParent(1);
 
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        OrphanXmlParent parent = em.find(OrphanXmlParent.class, 1);
-        assertNotNull(parent.getDetail());
-        parent.setDetail(null);
-        em.getTransaction().commit();
-        em.close();
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            OrphanXmlParent parent = em.find(OrphanXmlParent.class, 1);
+            assertNotNull(parent.getDetail());
+            parent.setDetail(null);
+            em.getTransaction().commit();
+        }
 
         assertEquals(1, count(OrphanXmlDetail.class));
     }
@@ -103,54 +103,54 @@ public class TestOrphanRemovalXml extends SingleEMFTestCase {
     public void testOrphanReplacedInCascadeAllOneToOne() {
         createParent(1);
 
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        OrphanXmlParent parent = em.find(OrphanXmlParent.class, 1);
-        parent.setDetail(new OrphanXmlDetail(2, "replacement"));
-        em.getTransaction().commit();
-        em.close();
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            OrphanXmlParent parent = em.find(OrphanXmlParent.class, 1);
+            parent.setDetail(new OrphanXmlDetail(2, "replacement"));
+            em.getTransaction().commit();
+        }
 
         assertEquals(2, count(OrphanXmlDetail.class));
-        em = emf.createEntityManager();
-        assertNull(em.find(OrphanXmlDetail.class, 1));
-        assertEquals(2, em.find(OrphanXmlParent.class, 1).getDetail().getId());
-        em.close();
+        try (EntityManager em = emf.createEntityManager()) {
+            assertNull(em.find(OrphanXmlDetail.class, 1));
+            assertEquals(2, em.find(OrphanXmlParent.class, 1).getDetail().getId());
+        }
     }
 
     public void testOrphanRemovedFromCascadeRemoveOneToOne() {
         createParent(1);
 
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        OrphanXmlParent parent = em.find(OrphanXmlParent.class, 1);
-        assertNotNull(parent.getExtra());
-        parent.setExtra(null);
-        em.getTransaction().commit();
-        em.close();
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            OrphanXmlParent parent = em.find(OrphanXmlParent.class, 1);
+            assertNotNull(parent.getExtra());
+            parent.setExtra(null);
+            em.getTransaction().commit();
+        }
 
         assertEquals(1, count(OrphanXmlDetail.class));
-        em = emf.createEntityManager();
-        assertNull(em.find(OrphanXmlDetail.class, 101));
-        em.close();
+        try (EntityManager em = emf.createEntityManager()) {
+            assertNull(em.find(OrphanXmlDetail.class, 101));
+        }
     }
 
     public void testRemoveOwnerRemovesDependents() {
         createParent(1);
 
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        OrphanXmlParent parent = em.find(OrphanXmlParent.class, 1);
-        OrphanXmlChild child = parent.getChildren().get(0);
-        OrphanXmlItem item = parent.getItems().get(0);
-        OrphanXmlDetail detail = parent.getDetail();
-        OrphanXmlDetail extra = parent.getExtra();
-        em.remove(parent);
-        assertFalse(em.contains(child));
-        assertFalse(em.contains(item));
-        assertFalse(em.contains(detail));
-        assertFalse(em.contains(extra));
-        em.getTransaction().commit();
-        em.close();
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            OrphanXmlParent parent = em.find(OrphanXmlParent.class, 1);
+            OrphanXmlChild child = parent.getChildren().get(0);
+            OrphanXmlItem item = parent.getItems().get(0);
+            OrphanXmlDetail detail = parent.getDetail();
+            OrphanXmlDetail extra = parent.getExtra();
+            em.remove(parent);
+            assertFalse(em.contains(child));
+            assertFalse(em.contains(item));
+            assertFalse(em.contains(detail));
+            assertFalse(em.contains(extra));
+            em.getTransaction().commit();
+        }
 
         assertEquals(0, count(OrphanXmlParent.class));
         assertEquals(0, count(OrphanXmlChild.class));
@@ -159,17 +159,17 @@ public class TestOrphanRemovalXml extends SingleEMFTestCase {
     }
 
     private void createParent(int id) {
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        OrphanXmlParent parent = new OrphanXmlParent(id);
-        for (int i = 1; i <= 2; i++) {
-            parent.getChildren().add(new OrphanXmlChild(id * 10 + i, "child" + i, parent));
-            parent.getItems().add(new OrphanXmlItem(id * 10 + i, "item" + i));
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            OrphanXmlParent parent = new OrphanXmlParent(id);
+            for (int i = 1; i <= 2; i++) {
+                parent.getChildren().add(new OrphanXmlChild(id * 10 + i, "child" + i, parent));
+                parent.getItems().add(new OrphanXmlItem(id * 10 + i, "item" + i));
+            }
+            parent.setDetail(new OrphanXmlDetail(id, "detail"));
+            parent.setExtra(new OrphanXmlDetail(id + 100, "extra"));
+            em.persist(parent);
+            em.getTransaction().commit();
         }
-        parent.setDetail(new OrphanXmlDetail(id, "detail"));
-        parent.setExtra(new OrphanXmlDetail(id + 100, "extra"));
-        em.persist(parent);
-        em.getTransaction().commit();
-        em.close();
     }
 }
