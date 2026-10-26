@@ -36,6 +36,7 @@ import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.LockLevels;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.PCState;
+import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.kernel.StoreManager;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -669,10 +670,13 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
     /**
      * Store the given fields, or all loaded fields if <code>fields</code> is
      * null, of the instance in the cached data. Fields with unflushed changes
-     * are left out, so that only state read from the database is cached.
+     * are left out, so that only state read from the database is cached. That
+     * includes a field converted as a whole whose element was changed in
+     * place, which is not dirty until the instance is checked at flush.
      */
     private static void storeLoadedState(DataCachePCData data, OpenJPAStateManager sm, BitSet fields) {
-        if (!sm.isDirty()) {
+        BitSet changed = (sm instanceof StateManagerImpl smi) ? smi.getWholeConvertedChanged() : null;
+        if (!sm.isDirty() && changed == null) {
             if (fields == null) {
                 data.store(sm);
             } else {
@@ -681,7 +685,12 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
             return;
         }
         BitSet clean = (BitSet) ((fields == null) ? sm.getLoaded() : fields).clone();
-        clean.andNot(sm.getDirty());
+        if (sm.isDirty()) {
+            clean.andNot(sm.getDirty());
+        }
+        if (changed != null) {
+            clean.andNot(changed);
+        }
         data.store(sm, clean);
     }
 
