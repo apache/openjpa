@@ -149,6 +149,15 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     private SaveFieldManager _saved = null;
     private FieldManager _fm = null;
 
+    // converted value of each collection or map field that is converted as a
+    // whole, as last loaded or dirty checked; indexed by field, and set in
+    // _wholeConvertedSaved once saved
+    private Object[] _wholeConverted = null;
+    private BitSet _wholeConvertedSaved = null;
+
+    // saved in place of the converted value when the converter fails
+    private static final Object UNCONVERTIBLE = new Object();
+
     // impldata; field impldata and intermediate data share the same array
     private Object _impl = null;
     protected Object[] _fieldImpl = null;
@@ -888,7 +897,14 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     @Override
     public Object fetch(int field) {
         Object val = fetchField(field, false);
-        return _meta.getField(field).getExternalValue(val, _broker);
+        Object ext = _meta.getField(field).getExternalValue(val, _broker);
+        // a flush writes a dirty field from this value, so it is the one
+        // the next check of a field converted as a whole compares with
+        if (_dirty != null && _dirty.get(field) && _broker.isFlushing()
+            && isWholeConverted(field)) {
+            saveWholeConverted(field, ext);
+        }
+        return ext;
     }
 
     @Override
@@ -982,6 +998,97 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
                 }
             }
         }
+    }
+
+    /**
+     * Mark dirty each collection or map field that is converted as a whole
+     * and whose converted value differs from the one last seen. An element
+     * changed in place does not go through the proxy of the field, but it
+     * changes the converted column. Called by the broker before it flushes.
+     */
+    void dirtyCheckWholeConverted() {
+        FieldMetaData[] fmds = _meta.getWholeConvertedFields();
+        if (fmds.length == 0 || !isPersistent() || isDeleted()) {
+            return;
+        }
+
+        for (FieldMetaData fmd : fmds) {
+            int i = fmd.getIndex();
+            if (!_loaded.get(i)) {
+                continue;
+            }
+            // a dirty field not yet flushed is written anyway, and the
+            // value written is saved by fetch
+            if (_dirty != null && _dirty.get(i)
+                && (_flush == null || !_flush.get(i))) {
+                continue;
+            }
+            // a new instance has no saved value until its first check
+            boolean saved = _wholeConvertedSaved != null
+                && _wholeConvertedSaved.get(i);
+            Object last = saved ? _wholeConverted[i] : null;
+            Object val = toWholeConverted(i, fetchField(i, false));
+            saveWholeConverted(i, val);
+            if (saved && !Objects.deepEquals(last, val)) {
+                dirty(i);
+            }
+        }
+    }
+
+    /**
+     * Return whether the given value of a collection or map field that is
+     * converted as a whole converts differently than the value loaded in
+     * this instance. Used on attach, since an element changed in place on a
+     * detached instance does not mark its field dirty.
+     */
+    boolean isWholeConvertedChanged(int field, Object val) {
+        if (!_loaded.get(field)) {
+            return true;
+        }
+        Object cur = (_wholeConvertedSaved != null
+            && _wholeConvertedSaved.get(field)) ? _wholeConverted[field]
+            : toWholeConverted(field, fetchField(field, false));
+        return !Objects.deepEquals(cur, toWholeConverted(field, val));
+    }
+
+    /**
+     * Whether the given field is a collection or map converted as a whole.
+     */
+    private boolean isWholeConverted(int field) {
+        for (FieldMetaData fmd : _meta.getWholeConvertedFields()) {
+            if (fmd.getIndex() == field) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Convert the given value of a field converted as a whole, or return
+     * {@link #UNCONVERTIBLE} when its converter fails, as one that only
+     * reads a column that is never written does. A field that is written
+     * fails at flush instead.
+     */
+    private Object toWholeConverted(int field, Object val) {
+        try {
+            return _meta.getField(field).getExternalValue(val, _broker);
+        } catch (RuntimeException re) {
+            return UNCONVERTIBLE;
+        }
+    }
+
+    /**
+     * Remember the given converted value of a collection or map field that
+     * is converted as a whole.
+     */
+    private void saveWholeConverted(int field, Object val) {
+        if (_wholeConverted == null) {
+            _wholeConverted = new Object[_meta.getFields().length];
+            _wholeConvertedSaved = new BitSet(_wholeConverted.length);
+            _broker.addWholeConverted(this);
+        }
+        _wholeConverted[field] = val;
+        _wholeConvertedSaved.set(field);
     }
 
     private boolean needsDirtyCheck() {
@@ -2809,6 +2916,10 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             _single.proxy(true, false);
             replaceField(_pc, _single, field);
             setLoaded(field, true);
+            if (isWholeConverted(field)) {
+                saveWholeConverted(field,
+                    toWholeConverted(field, fetchField(field, false)));
+            }
             postLoad(field, null);
         } finally {
             unlock();
@@ -3412,10 +3523,15 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
                 _fieldImpl[idx] = null;
         }
 
-        if (isLoaded)
+        if (isLoaded) {
             _loaded.set(field);
-        else
+        } else {
             _loaded.clear(field);
+            if (_wholeConvertedSaved != null) {
+                _wholeConvertedSaved.clear(field);
+                _wholeConverted[field] = null;
+            }
+        }
     }
 
     /**

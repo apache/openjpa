@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.conversion;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
@@ -31,8 +32,14 @@ import jakarta.persistence.Converter;
 @Converter
 public class ItemListConverter implements AttributeConverter<List<Item>, String> {
 
+    /**
+     * The number of conversions to the column.
+     */
+    public static final AtomicInteger TO_DATABASE = new AtomicInteger();
+
     @Override
     public String convertToDatabaseColumn(List<Item> attribute) {
+        TO_DATABASE.incrementAndGet();
         if (attribute == null) {
             return null;
         }

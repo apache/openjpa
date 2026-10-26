@@ -111,7 +111,7 @@ public class TestOpenJPA2330 extends SingleEMFTestCase {
             em.getTransaction().commit();
         }
         assertNotNull("A should be persisted", a.getId());
-        assertNotNull("B should be persisted", b1.getId());
+        assertNotNull("B1 should be persisted", b1.getId());
         assertEquals("There should be 3 Bs in a", 3, a.getBs().size());
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -125,6 +125,7 @@ public class TestOpenJPA2330 extends SingleEMFTestCase {
         try (EntityManager em = emf.createEntityManager()) {
             EntityA newA = em.find(EntityA.class, a.getId());
             assertEquals("There should be 2 Bs in a", 2, newA.getBs().size());
+            assertNull("B1 must be deleted", em.find(EntityB.class, b1.getId()));
         }
     }
 }
