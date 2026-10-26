@@ -38,7 +38,9 @@ public interface OpenJPAEntityManagerFactory
     extends EntityManagerFactory, Serializable {
 
     /**
-     * Return properties describing this runtime.
+     * Return properties describing this entity manager factory runtime. Entity-manager
+     * settings are available from {@link OpenJPAEntityManager#getProperties()} instead;
+     * returned runtime values are not guaranteed to be configuration inputs.
      */
     @Override Map<String, Object> getProperties();
 

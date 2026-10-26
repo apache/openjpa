@@ -161,16 +161,26 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
      * (as int) and in facade (as enum). The test verifies that {@link EntityManager#getProperties()}
      * return enum type rather than an integer.
      */
-    public void testEMFPropertyValueTypeIsPreserved() {
-        Map<String, Object> props = emf.getProperties();
+    public void testEMPropertyValueTypeIsPreserved() {
+        Map<String, Object> props = em.getProperties();
 
         Object autoClear = props.get("openjpa.AutoClear");
-        print("EMF Properties ", props);
         assertTrue("AutoClear " + autoClear + " is of " + autoClear.getClass(), autoClear instanceof AutoClearType);
         assertEquals(AutoClearType.DATASTORE, autoClear);
 
         Object ignoreChanges = props.get("openjpa.IgnoreChanges");
         assertTrue(ignoreChanges instanceof Boolean);
+    }
+
+    public void testFactoryPropertiesExcludeEntityManagerValues() {
+        Map<String, Object> props = emf.getProperties();
+
+        assertFalse("EntityManager fetch settings must not be reported as factory properties",
+            props.containsKey("FetchBatchSize"));
+        Object autoClear = props.get("openjpa.AutoClear");
+        assertNotNull(autoClear);
+        assertFalse("Factory configuration should not contain an EntityManager enum value",
+            autoClear instanceof AutoClearType);
     }
 
     public void testEMFPluginPropertyParameterIsPreserved() {
