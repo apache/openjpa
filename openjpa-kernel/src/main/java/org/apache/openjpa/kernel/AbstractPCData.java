@@ -359,8 +359,8 @@ public abstract class AbstractPCData
      * date, or the value itself otherwise.
      */
     private static Object copyDataValue(Object val) {
-        if (val instanceof Date) {
-            return ((Date) val).clone();
+        if (val instanceof Date valDate) {
+            return valDate.clone();
         }
         if (val != null && val.getClass().isArray()) {
             int length = Array.getLength(val);
