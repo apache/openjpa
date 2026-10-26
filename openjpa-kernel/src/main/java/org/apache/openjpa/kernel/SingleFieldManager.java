@@ -135,8 +135,9 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
             case JavaTypes.OBJECT:
                 // a converted value is kept as the converter returned it;
                 // a change made to it in place is found at flush
-                if (objval == null || fmd.isConvertedObject())
+                if (objval == null || fmd.isConvertedObject()) {
                     return false;
+                }
                 proxy = checkProxy(fmd);
                 if (proxy == null) {
                     proxy = getProxyManager().newCustomProxy(objval,

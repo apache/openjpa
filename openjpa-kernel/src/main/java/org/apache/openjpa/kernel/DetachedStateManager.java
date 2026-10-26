@@ -113,8 +113,9 @@ public class DetachedStateManager
         if (_embedded) {
             if (_dirty.length () > 0
                 || isEmbeddedWholeConvertedChanged(broker, meta, owner,
-                ownerMeta))
+                ownerMeta)) {
                 owner.dirty(ownerMeta.getFieldMetaData().getIndex());
+            }
             sm = (StateManagerImpl) broker.embed(_pc, _oid, owner, ownerMeta);
             ImplHelper.toPersistenceCapable(toAttach, broker.getConfiguration())
                 .pcReplaceStateManager(this);
@@ -215,8 +216,9 @@ public class DetachedStateManager
             // don't reload already loaded non-mutable objects; a converted
             // value may be mutable even when its column type is not
             if (!_dirty.get(i) && loaded.get(i) && ignoreLoaded(fields[i])
-                && !fields[i].isConvertedObject())
+                && !fields[i].isConvertedObject()) {
                 continue;
+            }
 
             provideField(i);
             switch (fields[i].getDeclaredTypeCode()) {
