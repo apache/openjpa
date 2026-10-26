@@ -626,8 +626,9 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
 
             cache = _mgr.selectCache(sm);
             if (cache == null || sm.isEmbedded() || hasUncommittedState(sm) || (failed != null
-                && failed.contains(sm.getId())))
+                && failed.contains(sm.getId()))) {
                 continue;
+            }
 
             // make sure that we're not trying to cache an old version
             cache.writeLock();

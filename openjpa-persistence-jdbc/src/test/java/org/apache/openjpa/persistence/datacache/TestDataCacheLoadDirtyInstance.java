@@ -38,8 +38,7 @@ public class TestDataCacheLoadDirtyInstance extends SQLListenerTestCase {
         super.setUp(CLEAR_TABLES, CachedLazyEntity.class, "openjpa.DataCache", "true",
             "openjpa.RefreshFromDataCache", "true");
 
-        OpenJPAEntityManager em = emf.createEntityManager();
-        try {
+        try (OpenJPAEntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             CachedLazyEntity e = new CachedLazyEntity();
             e.setId(ID);
@@ -48,64 +47,49 @@ public class TestDataCacheLoadDirtyInstance extends SQLListenerTestCase {
             e.getTags().add("one");
             em.persist(e);
             em.getTransaction().commit();
-        } finally {
-            em.close();
         }
         emf.getCache().evictAll();
 
         // cache the instance without its lazy fields
-        em = emf.createEntityManager();
-        try {
+        try (OpenJPAEntityManager em = emf.createEntityManager()) {
             em.find(CachedLazyEntity.class, ID);
-        } finally {
-            em.close();
         }
         assertTrue(emf.getCache().contains(CachedLazyEntity.class, ID));
     }
 
     public void testLoadFieldDoesNotCacheDirtyBasicField() {
-        OpenJPAEntityManager em = emf.createEntityManager();
-        try {
+        try (OpenJPAEntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             CachedLazyEntity e = em.find(CachedLazyEntity.class, ID);
             e.setName("dirty");
             assertEquals("note", e.getNote());
             em.getTransaction().rollback();
-        } finally {
-            em.close();
         }
 
-        em = emf.createEntityManager();
-        try {
+        try (OpenJPAEntityManager em = emf.createEntityManager()) {
             sql.clear();
             CachedLazyEntity e = em.find(CachedLazyEntity.class, ID);
             assertEquals("orig", e.getName());
             // the clean field loaded alongside the dirty one is still cached
             assertEquals("note", e.getNote());
             assertEquals(0, sql.size());
-        } finally {
-            em.close();
         }
     }
 
     public void testLoadFieldDoesNotCacheDirtyCollection() {
-        OpenJPAEntityManager em = emf.createEntityManager();
-        try {
+        try (OpenJPAEntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             CachedLazyEntity e = em.find(CachedLazyEntity.class, ID);
             e.getTags().add("bad");
             assertEquals("note", e.getNote());
             em.getTransaction().rollback();
-        } finally {
-            em.close();
         }
 
         assertCommittedState();
     }
 
     public void testFindAllDoesNotCacheDirtyField() {
-        OpenJPAEntityManager em = emf.createEntityManager();
-        try {
+        try (OpenJPAEntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             CachedLazyEntity e = em.find(CachedLazyEntity.class, ID);
             emf.getCache().evict(CachedLazyEntity.class, ID);
@@ -115,16 +99,13 @@ public class TestDataCacheLoadDirtyInstance extends SQLListenerTestCase {
             em.findAll(CachedLazyEntity.class, ID);
             assertTrue(emf.getCache().contains(CachedLazyEntity.class, ID));
             em.getTransaction().rollback();
-        } finally {
-            em.close();
         }
 
         assertCommittedState();
     }
 
     public void testLoadFieldOfFlushedInstanceDoesNotCacheIt() {
-        OpenJPAEntityManager em = emf.createEntityManager();
-        try {
+        try (OpenJPAEntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             CachedLazyEntity e = em.find(CachedLazyEntity.class, ID);
             emf.getCache().evict(CachedLazyEntity.class, ID);
@@ -133,16 +114,13 @@ public class TestDataCacheLoadDirtyInstance extends SQLListenerTestCase {
             assertEquals("note", e.getNote());
             assertFalse(emf.getCache().contains(CachedLazyEntity.class, ID));
             em.getTransaction().rollback();
-        } finally {
-            em.close();
         }
 
         assertCommittedState();
     }
 
     public void testRefreshOfFlushedInstanceDoesNotCacheIt() {
-        OpenJPAEntityManager em = emf.createEntityManager();
-        try {
+        try (OpenJPAEntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             CachedLazyEntity other = new CachedLazyEntity();
             other.setId(ID + 1);
@@ -161,23 +139,18 @@ public class TestDataCacheLoadDirtyInstance extends SQLListenerTestCase {
             assertEquals("dirty", e.getName());
             assertFalse(emf.getCache().contains(CachedLazyEntity.class, ID));
             em.getTransaction().rollback();
-        } finally {
-            em.close();
         }
 
         assertCommittedState();
     }
 
     private void assertCommittedState() {
-        OpenJPAEntityManager em = emf.createEntityManager();
-        try {
+        try (OpenJPAEntityManager em = emf.createEntityManager()) {
             CachedLazyEntity e = em.find(CachedLazyEntity.class, ID);
             assertEquals("orig", e.getName());
             assertEquals(1, e.getTags().size());
             assertEquals("one", e.getTags().get(0));
             assertEquals("note", e.getNote());
-        } finally {
-            em.close();
         }
     }
 }
