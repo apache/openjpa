@@ -411,7 +411,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
     }
 
     private void cacheStateManager(DataCache cache, OpenJPAStateManager sm, DataCachePCData data) {
-        if (sm.isFlushed()) {
+        if (hasUncommittedState(sm)) {
             return;
         }
         // make sure that we're not trying to cache an old version
@@ -428,7 +428,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
             if (isNew) {
                 data = newPCData(sm, cache);
             }
-            data.store(sm);
+            storeLoadedState(data, sm, null);
             if (isNew) {
                 cache.put(data);
             } else {
@@ -625,9 +625,10 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
             fields = entry.getValue();
 
             cache = _mgr.selectCache(sm);
-            if (cache == null || sm.isEmbedded() || (failed != null
-                && failed.contains(sm.getId())))
+            if (cache == null || sm.isEmbedded() || hasUncommittedState(sm) || (failed != null
+                && failed.contains(sm.getId()))) {
                 continue;
+            }
 
             // make sure that we're not trying to cache an old version
             cache.writeLock();
@@ -640,10 +641,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
                 isNew = data == null;
                 if (isNew)
                     data = newPCData(sm, cache);
-                if (fields == null)
-                    data.store(sm);
-                else
-                    data.store(sm, fields);
+                storeLoadedState(data, sm, fields);
                 if (isNew)
                     cache.put(data);
                 else
@@ -657,6 +655,34 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
             }
         }
         return failed;
+    }
+
+    /**
+     * Return whether the instance as a whole holds state that is not
+     * committed in the database: it is new, or its changes were flushed.
+     * Such an instance must not be cached when it is loaded.
+     */
+    private static boolean hasUncommittedState(OpenJPAStateManager sm) {
+        return sm.isNew() || sm.isFlushed();
+    }
+
+    /**
+     * Store the given fields, or all loaded fields if <code>fields</code> is
+     * null, of the instance in the cached data. Fields with unflushed changes
+     * are left out, so that only state read from the database is cached.
+     */
+    private static void storeLoadedState(DataCachePCData data, OpenJPAStateManager sm, BitSet fields) {
+        if (!sm.isDirty()) {
+            if (fields == null) {
+                data.store(sm);
+            } else {
+                data.store(sm, fields);
+            }
+            return;
+        }
+        BitSet clean = (BitSet) ((fields == null) ? sm.getLoaded() : fields).clone();
+        clean.andNot(sm.getDirty());
+        data.store(sm, clean);
     }
 
     /**
