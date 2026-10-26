@@ -33,7 +33,6 @@ import jakarta.persistence.OrderColumn;
 
 @Entity(name="oaopeEntityB")
 public class EntityB {
-    private static final long serialVersionUID = 0L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -75,8 +74,59 @@ public class EntityB {
     }
 
     public Set<EntityC> getCs() {
-        if (linacs == null)
+        if (linacs == null) {
             linacs = new HashSet<>();
+        }
         return linacs;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (id ^ (id >>> 32));
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((center == null) ? 0 : center.hashCode());
+        result = prime * result + ((linacs == null) ? 0 : linacs.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        EntityB other = (EntityB) obj;
+        if (id != other.id) {
+            return false;
+        }
+        if (name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!name.equals(other.name)) {
+            return false;
+        }
+        if (center == null) {
+            if (other.center != null) {
+                return false;
+            }
+        } else if (!center.equals(other.center)) {
+            return false;
+        }
+        if (linacs == null) {
+            if (other.linacs != null) {
+                return false;
+            }
+        } else if (!linacs.equals(other.linacs)) {
+            return false;
+        }
+        return true;
     }
 }

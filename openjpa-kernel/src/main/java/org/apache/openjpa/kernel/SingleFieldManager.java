@@ -334,8 +334,16 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
                 }
                 delete(fmd, objval, call);
             }
-            else if (fmd.getCascadeDelete() == ValueMetaData.CASCADE_AUTO)
-                dereferenceDependent(fmd.getExternalValue(objval, _broker));
+            else if (fmd.getCascadeDelete() == ValueMetaData.CASCADE_AUTO) {
+                // a dependent value is removed together with its owner;
+                // otherwise it is deleted on flush unless referenced again
+                Object external = fmd.getExternalValue(objval, _broker);
+                if (immediate) {
+                    delete(fmd, external, call);
+                } else {
+                    dereferenceDependent(external);
+                }
+            }
             return;
         }
 
@@ -348,7 +356,11 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
             external = fmd.getExternalValue(objval, _broker);
             if (external == null)
                 return;
-            dereferenceDependent(((Map) external).keySet());
+            if (immediate) {
+                delete(vmd, ((Map) external).keySet(), call);
+            } else {
+                dereferenceDependent(((Map) external).keySet());
+            }
         }
 
         vmd = fmd.getElement();
@@ -374,13 +386,25 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
 
             switch (fmd.getTypeCode()) {
                 case JavaTypes.COLLECTION:
-                    dereferenceDependent((Collection) external);
+                    if (immediate) {
+                        delete(vmd, (Collection) external, call);
+                    } else {
+                        dereferenceDependent((Collection) external);
+                    }
                     break;
                 case JavaTypes.ARRAY:
-                    dereferenceDependent((Object[]) external);
+                    if (immediate) {
+                        delete(vmd, (Object[]) external, call);
+                    } else {
+                        dereferenceDependent((Object[]) external);
+                    }
                     break;
                 case JavaTypes.MAP:
-                    dereferenceDependent(((Map) external).values());
+                    if (immediate) {
+                        delete(vmd, ((Map) external).values(), call);
+                    } else {
+                        dereferenceDependent(((Map) external).values());
+                    }
                     break;
             }
         }

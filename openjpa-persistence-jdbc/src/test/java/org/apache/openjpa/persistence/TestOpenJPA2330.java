@@ -21,13 +21,14 @@ package org.apache.openjpa.persistence;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.spi.LoadState;
 
+import java.util.List;
+
 import org.apache.openjpa.persistence.entity.EntityA;
 import org.apache.openjpa.persistence.entity.EntityB;
 import org.apache.openjpa.persistence.entity.EntityC;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 import org.junit.Assert;
-
 
 public class TestOpenJPA2330 extends SingleEMFTestCase {
 
@@ -37,64 +38,93 @@ public class TestOpenJPA2330 extends SingleEMFTestCase {
     }
 
     public void testOpenJPA2330() {
-        final EntityManager em = emf.createEntityManager();
+        try (final EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            EntityA a = new EntityA();
+            EntityB b = new EntityB(a);
+            // set back pointer
+            a.getBs().add(b);
 
-        em.getTransaction().begin();
-        EntityA a = new EntityA();
-        EntityB b = new EntityB(a);
-        // set back pointer
-        a.getBs().add(b);
+            EntityC c = new EntityC(b);
+            // set back pointer
+            b.getCs().add(c);
 
-        EntityC c = new EntityC(b);
-        // set back pointer
-        b.getCs().add(c);
+            em.persist(a);
+            em.persist(c);
+            em.getTransaction().commit();
 
-        em.persist(a);
-        em.persist(c);
-        em.getTransaction().commit();
-
-        assertEquals(LoadState.LOADED, OpenJPAPersistenceUtil.isLoaded(b, "center"));
-
-        em.close();
+            assertEquals(LoadState.LOADED, OpenJPAPersistenceUtil.isLoaded(b, "center"));
+        }
     }
 
     public void testOpenJPA2335() {
-        EntityManager em = emf.createEntityManager();
-
-        em.getTransaction().begin();
         EntityA a = new EntityA();
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
 
-        EntityB b1 = new EntityB(a);
-        b1.setName("b1");
+            EntityB b1 = new EntityB(a);
+            b1.setName("b1");
 
-        EntityB b2 = new EntityB(a);
-        b2.setName("b2");
+            EntityB b2 = new EntityB(a);
+            b2.setName("b2");
 
-        EntityB b3 = new EntityB(a);
-        b3.setName("b3");
+            EntityB b3 = new EntityB(a);
+            b3.setName("b3");
 
-        EntityB b4 = new EntityB(a);
-        b4.setName("b4");
+            EntityB b4 = new EntityB(a);
+            b4.setName("b4");
 
-        a.getBs().add(b1);
-        a.getBs().add(b2);
-        a.getBs().add(b3);
-        a.getBs().add(b4);
+            a.getBs().add(b1);
+            a.getBs().add(b2);
+            a.getBs().add(b3);
+            a.getBs().add(b4);
 
-        em.persist(a);
+            em.persist(a);
 
-        em.getTransaction().commit();
-        em.close();
+            em.getTransaction().commit();
+        }
 
         // now read all back in
-        em = emf.createEntityManager();
-        em.getTransaction().begin();
-        EntityA a2 = em.find(EntityA.class, a.getId());
-        Assert.assertNotNull(a2);
-        Assert.assertNotNull(a2.getBs());
-        Assert.assertEquals(4, a2.getBs().size());
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            EntityA a2 = em.find(EntityA.class, a.getId());
+            Assert.assertNotNull(a2);
+            Assert.assertNotNull(a2.getBs());
+            Assert.assertEquals(4, a2.getBs().size());
 
-        em.getTransaction().commit();
-        em.close();
+            em.getTransaction().commit();
+        }
+    }
+
+    public void testOrthanRemoval() {
+        EntityA a = new EntityA("testA_forRemoval");
+        EntityB b1 = new EntityB();
+        b1.setName("b1");
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            EntityB b2 = new EntityB();
+            b2.setName("b2");
+            EntityB b3 = new EntityB();
+            b3.setName("b3");
+            a.getBs().addAll(List.of(b1, b2, b3));
+            em.persist(a);
+            em.getTransaction().commit();
+        }
+        assertNotNull("A should be persisted", a.getId());
+        assertNotNull("B should be persisted", b1.getId());
+        assertEquals("There should be 3 Bs in a", 3, a.getBs().size());
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            EntityA newA = em.find(EntityA.class, a.getId());
+            EntityB newB = newA.getBs().iterator().next();
+            assertTrue("newB should be removed successfully", newA.getBs().remove(newB));
+            assertEquals("There should be 2 Bs in a after removal", 2, newA.getBs().size());
+            em.merge(newA);
+            em.getTransaction().commit();
+        }
+        try (EntityManager em = emf.createEntityManager()) {
+            EntityA newA = em.find(EntityA.class, a.getId());
+            assertEquals("There should be 2 Bs in a", 2, newA.getBs().size());
+        }
     }
 }

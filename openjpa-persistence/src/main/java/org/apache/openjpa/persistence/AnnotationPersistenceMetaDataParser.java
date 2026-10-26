@@ -1675,8 +1675,8 @@ public class AnnotationPersistenceMetaDataParser
             fmd.setMappedBy(anno.mappedBy());
         if (anno.targetEntity() != void.class)
             fmd.setTypeOverride(anno.targetEntity());
-        setOrphanRemoval(fmd, anno.orphanRemoval());
         setCascades(fmd, anno.cascade());
+        setOrphanRemoval(fmd, anno.orphanRemoval());
         fmd.setAssociationType(FieldMetaData.ONE_TO_ONE);
     }
 
@@ -1716,8 +1716,8 @@ public class AnnotationPersistenceMetaDataParser
             fmd.setMappedBy(anno.mappedBy());
         if (anno.targetEntity() != void.class)
             fmd.getElement().setDeclaredType(anno.targetEntity());
-        setOrphanRemoval(fmd.getElement(), anno.orphanRemoval());
         setCascades(fmd.getElement(), anno.cascade());
+        setOrphanRemoval(fmd.getElement(), anno.orphanRemoval());
         fmd.setAssociationType(FieldMetaData.ONE_TO_MANY);
     }
 
@@ -1949,6 +1949,11 @@ public class AnnotationPersistenceMetaDataParser
         }
     }
 
+    /**
+     * Mark the value dependent if orphan removal is set. Call after
+     * {@link #setCascades} so that a cascaded remove does not replace it;
+     * a dependent value is also removed together with its owner.
+     */
     private void setOrphanRemoval(ValueMetaData vmd, boolean orphanRemoval) {
         if (orphanRemoval)
             vmd.setCascadeDelete(ValueMetaData.CASCADE_AUTO);

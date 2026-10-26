@@ -39,117 +39,117 @@ public class TestMergeNew extends SQLListenerTestCase {
     }
 
     public void testMergeNewParent() {
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        ParentPK pk = new ParentPK(1);
-        pk.setKey1("K1");
-        Parent parent = em.find(Parent.class, pk);
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            ParentPK pk = new ParentPK(1);
+            pk.setKey1("K1");
+            Parent parent = em.find(Parent.class, pk);
 
-        Child child = new Child();
-        child.setChildKey(1);
-        child.setParent(parent);
-        parent.getChilds().add(child);
+            Child child = new Child();
+            child.setChildKey(1);
+            child.setParent(parent);
+            parent.getChilds().add(child);
 
-        GrandChild grandChild = new GrandChild();
-        grandChild.setGrandChildKey(1);
-        grandChild.setChild(child);
-        child.getGrandChilds().add(grandChild);
+            GrandChild grandChild = new GrandChild();
+            grandChild.setGrandChildKey(1);
+            grandChild.setChild(child);
+            child.getGrandChilds().add(grandChild);
 
-        Parent newParent = em.merge(parent);
-        assertNotNull(newParent);
+            Parent newParent = em.merge(parent);
+            assertNotNull(newParent);
 
-        // verify key fields
-        assertEquals(newParent.getKey1(), "K1");
-        assertEquals(newParent.getKey2(), Integer.valueOf(1));
+            // verify key fields
+            assertEquals(newParent.getKey1(), "K1");
+            assertEquals(newParent.getKey2(), Integer.valueOf(1));
 
-        // verify Child field
-        ArrayList<Child> childs = (ArrayList<Child>)newParent.getChilds();
-        assertNotNull(childs);
-        assertEquals(childs.size(), 1);
-        Child newChild = childs.get(0);
-        assertNotSame(child, newChild);
-        Parent childParent = newChild.getParent();
-        assertEquals(childParent, newParent);
-        assertEquals(newChild.getChildKey(), Integer.valueOf(1));
+            // verify Child field
+            ArrayList<Child> childs = (ArrayList<Child>)newParent.getChilds();
+            assertNotNull(childs);
+            assertEquals(childs.size(), 1);
+            Child newChild = childs.get(0);
+            assertNotSame(child, newChild);
+            Parent childParent = newChild.getParent();
+            assertEquals(childParent, newParent);
+            assertEquals(newChild.getChildKey(), Integer.valueOf(1));
 
-        // verify GrandChild field
-        ArrayList<GrandChild> grandChilds = (ArrayList<GrandChild>)newChild.getGrandChilds();
-        assertNotNull(grandChilds);
-        assertEquals(grandChilds.size(), 1);
-        GrandChild newGrandChild = grandChilds.get(0);
-        assertNotSame(newGrandChild, grandChild);
-        Child grandChildChild = newGrandChild.getChild();
-        assertEquals(grandChildChild, newChild);
+            // verify GrandChild field
+            ArrayList<GrandChild> grandChilds = (ArrayList<GrandChild>)newChild.getGrandChilds();
+            assertNotNull(grandChilds);
+            assertEquals(grandChilds.size(), 1);
+            GrandChild newGrandChild = grandChilds.get(0);
+            assertNotSame(newGrandChild, grandChild);
+            Child grandChildChild = newGrandChild.getChild();
+            assertEquals(grandChildChild, newChild);
 
-        em.getTransaction().commit();
-        em.close();
+            em.getTransaction().commit();
+        }
     }
 
     public void testMergeParentRoundTrip()throws ClassNotFoundException, IOException {
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        ParentPK pk = new ParentPK(1);
-        pk.setKey1("K1");
-        Parent parent = em.find(Parent.class, pk);
-
-        //Simulate an EJB Call to get the Parent from the server:
-        Parent p2 = (Parent) roundtrip(parent);
-
+        Parent p3;
         Child child = new Child();
-        child.setChildKey(1);
-        child.setParent(p2);
-       	p2.getChilds().add(child);
-
         GrandChild grandChild = new GrandChild();
-        grandChild.setChild(child);
-        grandChild.setGrandChildKey(1);
-       	child.getGrandChilds().add(grandChild);
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            ParentPK pk = new ParentPK(1);
+            pk.setKey1("K1");
+            Parent parent = em.find(Parent.class, pk);
 
-       	//Simulate an EJB Call to send the Parent back to the server:
-       	Parent p3 = (Parent) roundtrip(p2);
+            //Simulate an EJB Call to get the Parent from the server:
+            Parent p2 = (Parent) roundtrip(parent);
 
-        em = emf.createEntityManager();
-        em.getTransaction().begin();
+            child.setChildKey(1);
+            child.setParent(p2);
+            p2.getChilds().add(child);
 
-       	Parent newParent = em.merge(p3);
+            grandChild.setChild(child);
+            grandChild.setGrandChildKey(1);
+            child.getGrandChilds().add(grandChild);
 
-       	em.getTransaction().commit();
-       	assertNotNull(newParent);
+            //Simulate an EJB Call to send the Parent back to the server:
+            p3 = (Parent) roundtrip(p2);
+        }
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
 
-       	// verify key fields
-       	assertEquals(newParent.getKey1(), "K1");
-       	assertEquals(newParent.getKey2(), Integer.valueOf(1));
+            Parent newParent = em.merge(p3);
 
-       	// verify Child field
-       	ArrayList<Child> childs = (ArrayList<Child>)newParent.getChilds();
-       	assertNotNull(childs);
-       	assertEquals(childs.size(), 1);
-       	Child newChild = childs.get(0);
-       	assertNotSame(child, newChild);
-       	Parent childParent = newChild.getParent();
-       	assertNotNull(childParent);
-       	assertEquals(newChild.getChildKey(), Integer.valueOf(1));
+            em.getTransaction().commit();
+            assertNotNull(newParent);
 
-       	// verify GrandChild field
-       	ArrayList<GrandChild> grandChilds = (ArrayList<GrandChild>)newChild.getGrandChilds();
-       	assertNotNull(grandChilds);
-       	assertEquals(grandChilds.size(), 1);
-       	GrandChild newGrandChild = grandChilds.get(0);
-       	assertNotSame(newGrandChild, grandChild);
-       	Child grandChildChild = newGrandChild.getChild();
-       	assertNotNull(grandChildChild);
-       	em.close();
+            // verify key fields
+            assertEquals(newParent.getKey1(), "K1");
+            assertEquals(newParent.getKey2(), Integer.valueOf(1));
+
+            // verify Child field
+            ArrayList<Child> childs = (ArrayList<Child>)newParent.getChilds();
+            assertNotNull(childs);
+            assertEquals(childs.size(), 1);
+            Child newChild = childs.get(0);
+            assertNotSame(child, newChild);
+            Parent childParent = newChild.getParent();
+            assertNotNull(childParent);
+            assertEquals(newChild.getChildKey(), Integer.valueOf(1));
+
+            // verify GrandChild field
+            ArrayList<GrandChild> grandChilds = (ArrayList<GrandChild>)newChild.getGrandChilds();
+            assertNotNull(grandChilds);
+            assertEquals(grandChilds.size(), 1);
+            GrandChild newGrandChild = grandChilds.get(0);
+            assertNotSame(newGrandChild, grandChild);
+            Child grandChildChild = newGrandChild.getChild();
+            assertNotNull(grandChildChild);
+        }
     }
 
     private void populate() {
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        Parent p = new Parent();
-        p.setKey1("K1");
-        p.setKey2(1);
-        em.persist(p);
-        em.getTransaction().commit();
-        em.close();
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            Parent p = new Parent();
+            p.setKey1("K1");
+            p.setKey2(1);
+            em.persist(p);
+            em.getTransaction().commit();
+        }
     }
-
 }

@@ -38,61 +38,80 @@ import jakarta.persistence.Table;
 @IdClass(ChildPK.class)
 @Table(name = "MRG_CHILD")
 public class Child implements Serializable {
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  @Id
-  @JoinColumns({ @JoinColumn(name = "KEY_1", referencedColumnName = "KEY_1"),
-      @JoinColumn(name = "KEY_2", referencedColumnName = "KEY_2") })
-  @ManyToOne
-  private Parent parent;
+    @Id
+    @JoinColumns({ @JoinColumn(name = "KEY_1", referencedColumnName = "KEY_1"),
+            @JoinColumn(name = "KEY_2", referencedColumnName = "KEY_2") })
+    @ManyToOne
+    private Parent parent;
 
-  @Id
-  @Column(name = "KEY_3")
-  private Integer childKey;
+    @Id
+    @Column(name = "KEY_3")
+    private Integer childKey;
 
-  @OneToMany(mappedBy = "child", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-  private Collection<GrandChild> grandChilds = new ArrayList<>();
+    @OneToMany(mappedBy = "child", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Collection<GrandChild> grandChilds = new ArrayList<>();
 
-  public Parent getParent() { return parent;  }
-  public void setParent(Parent parent) { this.parent = parent;  }
-  public Integer getChildKey() { return childKey; }
-  public void setChildKey(Integer childKey) { this.childKey = childKey; }
-  public Collection<GrandChild> getGrandChilds() {  return grandChilds;  }
-  public void setGrandChilds(Collection<GrandChild> grandChilds) {   this.grandChilds = grandChilds; }
-@Override
-public int hashCode() {
-	final int prime = 31;
-	int result = 1;
-	result = prime * result + ((childKey == null) ? 0 : childKey.hashCode());
-	result = prime * result
-			+ ((grandChilds == null) ? 0 : grandChilds.hashCode());
-	result = prime * result + ((parent == null) ? 0 : parent.hashCode());
-	return result;
-}
-@Override
-public boolean equals(Object obj) {
-	if (this == obj)
-		return true;
-	if (obj == null)
-		return false;
-	if (getClass() != obj.getClass())
-		return false;
-	Child other = (Child) obj;
-	if (childKey == null) {
-		if (other.childKey != null)
-			return false;
-	} else if (!childKey.equals(other.childKey))
-		return false;
-	if (grandChilds == null) {
-		if (other.grandChilds != null)
-			return false;
-	} else if (!grandChilds.equals(other.grandChilds))
-		return false;
-	if (parent == null) {
-		if (other.parent != null)
-			return false;
-	} else if (!parent.equals(other.parent))
-		return false;
-	return true;
-}
+    public Parent getParent() {
+        return parent;
+    }
+
+    public void setParent(Parent parent) {
+        this.parent = parent;
+    }
+
+    public Integer getChildKey() {
+        return childKey;
+    }
+
+    public void setChildKey(Integer childKey) {
+        this.childKey = childKey;
+    }
+
+    public Collection<GrandChild> getGrandChilds() {
+        return grandChilds;
+    }
+
+    public void setGrandChilds(Collection<GrandChild> grandChilds) {
+        this.grandChilds = grandChilds;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((childKey == null) ? 0 : childKey.hashCode());
+        result = prime * result
+                + ((grandChilds == null) ? 0 : grandChilds.hashCode());
+        result = prime * result + ((parent == null) ? 0 : parent.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Child other = (Child) obj;
+        if (childKey == null) {
+            if (other.childKey != null)
+                return false;
+        } else if (!childKey.equals(other.childKey))
+            return false;
+        if (grandChilds == null) {
+            if (other.grandChilds != null)
+                return false;
+        } else if (!grandChilds.equals(other.grandChilds))
+            return false;
+        if (parent == null) {
+            if (other.parent != null)
+                return false;
+        } else if (!parent.equals(other.parent))
+            return false;
+        return true;
+    }
 }
