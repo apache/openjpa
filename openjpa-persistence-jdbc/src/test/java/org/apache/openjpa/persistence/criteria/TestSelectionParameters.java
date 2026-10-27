@@ -41,14 +41,11 @@ public class TestSelectionParameters extends SingleEMFTestCase {
     public void setUp() {
         super.setUp(CLEAR_TABLES, CompUser.class, Address.class);
         cb = emf.getCriteriaBuilder();
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.persist(new CompUser("Alice", "c1", null, 30));
             em.persist(new CompUser("Bob", "c2", null, 40));
             em.getTransaction().commit();
-        } finally {
-            em.close();
         }
     }
 
@@ -59,12 +56,9 @@ public class TestSelectionParameters extends SingleEMFTestCase {
         cq.select(cb.substring(u.get(CompUser_.name), cb.literal(1), len));
         cq.orderBy(cb.asc(u.get(CompUser_.name)));
 
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             List<String> result = em.createQuery(cq).setParameter("len", 2).getResultList();
             assertEquals(List.of("Al", "Bo"), result);
-        } finally {
-            em.close();
         }
     }
 
@@ -75,16 +69,13 @@ public class TestSelectionParameters extends SingleEMFTestCase {
         cq.multiselect(u.get(CompUser_.name), cb.sum(u.get(CompUser_.age), add));
         cq.orderBy(cb.asc(u.get(CompUser_.name)));
 
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             List<Object[]> result = em.createQuery(cq).setParameter("add", 5).getResultList();
             assertEquals(2, result.size());
             assertEquals("Alice", result.get(0)[0]);
             assertEquals(35, ((Number) result.get(0)[1]).intValue());
             assertEquals("Bob", result.get(1)[0]);
             assertEquals(45, ((Number) result.get(1)[1]).intValue());
-        } finally {
-            em.close();
         }
     }
 
@@ -95,13 +86,10 @@ public class TestSelectionParameters extends SingleEMFTestCase {
         cq.select(cb.prod(u.get(CompUser_.age), factor));
         cq.where(cb.equal(u.get(CompUser_.name), "Bob"));
 
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             List<Integer> result = em.createQuery(cq).setParameter(factor, 2).getResultList();
             assertEquals(1, result.size());
             assertEquals(80, result.get(0).intValue());
-        } finally {
-            em.close();
         }
     }
 
@@ -113,8 +101,7 @@ public class TestSelectionParameters extends SingleEMFTestCase {
         cq.multiselect(u.get(CompUser_.name), cb.sum(u.get(CompUser_.age), add));
         cq.where(cb.gt(u.get(CompUser_.age), minAge));
 
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             List<Object[]> result = em.createQuery(cq)
                 .setParameter("minAge", 35)
                 .setParameter("add", 1)
@@ -122,8 +109,6 @@ public class TestSelectionParameters extends SingleEMFTestCase {
             assertEquals(1, result.size());
             assertEquals("Bob", result.get(0)[0]);
             assertEquals(41, ((Number) result.get(0)[1]).intValue());
-        } finally {
-            em.close();
         }
     }
 
@@ -135,15 +120,12 @@ public class TestSelectionParameters extends SingleEMFTestCase {
             cb.concat(u.get(CompUser_.computerName), suffix).alias("c")));
         cq.orderBy(cb.asc(u.get(CompUser_.name)));
 
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             List<Tuple> result = em.createQuery(cq).setParameter("suffix", "-x").getResultList();
             assertEquals(2, result.size());
             assertEquals("Alice", result.get(0).get("n"));
             assertEquals("c1-x", result.get(0).get("c"));
             assertEquals("c2-x", result.get(1).get("c"));
-        } finally {
-            em.close();
         }
     }
 
@@ -154,14 +136,11 @@ public class TestSelectionParameters extends SingleEMFTestCase {
         cq.select(cb.construct(NameAndAge.class, u.get(CompUser_.name), cb.sum(u.get(CompUser_.age), add)));
         cq.where(cb.equal(u.get(CompUser_.name), "Alice"));
 
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             List<NameAndAge> result = em.createQuery(cq).setParameter("add", 10).getResultList();
             assertEquals(1, result.size());
             assertEquals("Alice", result.get(0).name);
             assertEquals(40, result.get(0).age);
-        } finally {
-            em.close();
         }
     }
 
@@ -173,16 +152,13 @@ public class TestSelectionParameters extends SingleEMFTestCase {
             cb.construct(NameAndAge.class, u.get(CompUser_.name), cb.sum(u.get(CompUser_.age), add)));
         cq.where(cb.equal(u.get(CompUser_.name), "Bob"));
 
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             List<Object[]> result = em.createQuery(cq).setParameter("add", 3).getResultList();
             assertEquals(1, result.size());
             assertEquals("Bob", result.get(0)[0]);
             NameAndAge dto = (NameAndAge) result.get(0)[1];
             assertEquals("Bob", dto.name);
             assertEquals(43, dto.age);
-        } finally {
-            em.close();
         }
     }
 
@@ -196,12 +172,9 @@ public class TestSelectionParameters extends SingleEMFTestCase {
         cq.select(group);
         cq.orderBy(cb.asc(u.get(CompUser_.name)));
 
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             List<String> result = em.createQuery(cq).setParameter("limit", 35).getResultList();
             assertEquals(List.of("young", "old"), result);
-        } finally {
-            em.close();
         }
     }
 
@@ -212,12 +185,9 @@ public class TestSelectionParameters extends SingleEMFTestCase {
         cq.select(cb.coalesce(u.get(CompUser_.computerName), fallback));
         cq.orderBy(cb.asc(u.get(CompUser_.name)));
 
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             List<String> result = em.createQuery(cq).setParameter("fallback", "none").getResultList();
             assertEquals(List.of("c1", "c2"), result);
-        } finally {
-            em.close();
         }
     }
 
@@ -234,12 +204,9 @@ public class TestSelectionParameters extends SingleEMFTestCase {
         assertTrue(cq.getParameters().contains(group));
         assertTrue(cq.getParameters().contains(order));
 
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             assertNotNull(em.createQuery(cq).getParameter("grp"));
             assertNotNull(em.createQuery(cq).getParameter("ord"));
-        } finally {
-            em.close();
         }
     }
 
@@ -250,14 +217,11 @@ public class TestSelectionParameters extends SingleEMFTestCase {
         cq.select(u.get(CompUser_.name));
         cq.orderBy(cb.asc(cb.prod(u.get(CompUser_.age), factor)));
 
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             assertEquals(List.of("Alice", "Bob"),
                 em.createQuery(cq).setParameter("factor", 1).getResultList());
             assertEquals(List.of("Bob", "Alice"),
                 em.createQuery(cq).setParameter("factor", -1).getResultList());
-        } finally {
-            em.close();
         }
     }
 
@@ -268,16 +232,13 @@ public class TestSelectionParameters extends SingleEMFTestCase {
         cq.select(cb.prod(u.get(CompUser_.age), factor));
         cq.orderBy(cb.asc(u.get(CompUser_.name)));
 
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             assertEquals(List.of(60, 80),
                 em.createQuery(cq).setParameter("factor", 2).getResultList());
 
             cq.select(u.get(CompUser_.age));
             assertTrue(cq.getParameters().isEmpty());
             assertEquals(List.of(30, 40), em.createQuery(cq).getResultList());
-        } finally {
-            em.close();
         }
     }
 
