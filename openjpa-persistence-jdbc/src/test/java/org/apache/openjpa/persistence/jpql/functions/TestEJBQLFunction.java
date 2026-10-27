@@ -22,6 +22,7 @@ import static org.junit.Assert.assertArrayEquals;
 
 import java.math.BigDecimal;
 import java.sql.Time;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoField;
 import java.util.List;
@@ -951,6 +952,39 @@ public class TestEJBQLFunction extends AbstractTestCase {
         assertEquals(-6f, (float) result.get(3));
         assertEquals(-13f, (float) result.get(4));
         assertEquals(-13f, (float) result.get(5));
+        endEm(em);
+    }
+
+    public void testExtractSecondKeepsFractionFromTimestamp() {
+        EntityManager em = currentEntityManager();
+
+        List<?> result = em.createQuery("SELECT EXTRACT(SECOND FROM {ts '2006-03-21 18:19:23.5'}), "
+            + "EXTRACT(SECOND FROM :ts) FROM CompUser AS c WHERE c.age = 23")
+            .setParameter("ts", LocalDateTime.of(2006, 3, 21, 18, 19, 30, 250_000_000))
+            .getResultList();
+
+        assertEquals(1, result.size());
+        Object[] row = (Object[]) result.get(0);
+        assertEquals(23.5f, (float) row[0]);
+        assertEquals(30.25f, (float) row[1]);
+        endEm(em);
+    }
+
+    public void testExtractSecondKeepsFractionFromTime() {
+        DBDictionary dict = getDbDictionary(getEmf());
+        if (dict instanceof DerbyDictionary || dict instanceof OracleDictionary) {
+            // Derby keeps only whole seconds in a TIME
+            // Oracle does not have TIME data type
+            return;
+        }
+        EntityManager em = currentEntityManager();
+
+        List<?> result = em.createQuery("SELECT EXTRACT(SECOND FROM :t) FROM CompUser AS c WHERE c.age = 23")
+            .setParameter("t", LocalTime.of(18, 19, 42, 750_000_000))
+            .getResultList();
+
+        assertEquals(1, result.size());
+        assertEquals(42.75f, (float) result.get(0));
         endEm(em);
     }
 
