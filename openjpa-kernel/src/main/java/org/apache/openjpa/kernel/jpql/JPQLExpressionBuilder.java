@@ -44,6 +44,7 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.kernel.ExpressionStoreQuery;
 import org.apache.openjpa.kernel.FillStrategy;
+import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.QueryContext;
 import org.apache.openjpa.kernel.QueryOperations;
 import org.apache.openjpa.kernel.ResultShape;
@@ -1267,25 +1268,25 @@ public class JPQLExpressionBuilder
                 val1 = getValue(left(node));
                 val2 = getValue(right(node));
                 setImplicitTypes(val1, val2, TYPE_NUMBER);
-                return factory.add(val1, val2);
+                return promoteSubInteger(factory.add(val1, val2));
 
             case JJTSUBTRACT: // x - y
                 val1 = getValue(left(node));
                 val2 = getValue(right(node));
                 setImplicitTypes(val1, val2, TYPE_NUMBER);
-                return factory.subtract(val1, val2);
+                return promoteSubInteger(factory.subtract(val1, val2));
 
             case JJTMULTIPLY: // x * y
                 val1 = getValue(left(node));
                 val2 = getValue(right(node));
                 setImplicitTypes(val1, val2, TYPE_NUMBER);
-                return factory.multiply(val1, val2);
+                return promoteSubInteger(factory.multiply(val1, val2));
 
             case JJTDIVIDE: // x / y
                 val1 = getValue(left(node));
                 val2 = getValue(right(node));
                 setImplicitTypes(val1, val2, TYPE_NUMBER);
-                return factory.divide(val1, val2);
+                return promoteSubInteger(factory.divide(val1, val2));
 
             case JJTBETWEEN: // x.field [NOT] BETWEEN 5 AND 10
                 val1 = getValue(child(node, 0, 3));
@@ -1741,6 +1742,19 @@ public class JPQLExpressionBuilder
         if (node.id != JJTIN)
             return false;
         return factory.isVerticalType(val);
+    }
+
+    /**
+     * Gives an arithmetic operation on Short or Byte operands the type
+     * Integer, as required by the numeric promotion rules of the
+     * specification.
+     */
+    private static Value promoteSubInteger(Value val) {
+        Class<?> type = Filters.wrap(val.getType());
+        if (type == Short.class || type == Byte.class) {
+            val.setImplicitType(Integer.class);
+        }
+        return val;
     }
 
     private Value getIntegerValue(JPQLNode node) {
