@@ -70,8 +70,19 @@ public enum DateTimeExtractField {
      * The field of a {@link java.time.temporal.Temporal} that holds the
      * value of this field. For {@link #SECOND} it holds the whole seconds only.
      */
-    public TemporalField getEquivalent() {
+    public TemporalField getTemporalField() {
         return equivalent;
+    }
+
+    /**
+     * The {@link ChronoField} that holds the value of this field, or null
+     * for {@link #QUARTER} and {@link #WEEK}, which have no {@link ChronoField}.
+     *
+     * @deprecated use {@link #getTemporalField()}
+     */
+    @Deprecated
+    public ChronoField getEquivalent() {
+        return equivalent instanceof ChronoField ? (ChronoField) equivalent : null;
     }
 
 }

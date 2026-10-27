@@ -26,7 +26,6 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.time.temporal.WeekFields;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -246,27 +245,74 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
     }
 
     /**
-     * OPENJPA-3042: EXTRACT(WEEK) evaluated in memory matches the database
-     * where the database computes the ISO-8601 week. H2 numbers the weeks
-     * of EXTRACT(WEEK) by the week definition of the default locale, which
-     * is the ISO one for a locale such as de_DE but not for en_US.
+     * OPENJPA-3042: EXTRACT(DATE) and EXTRACT(TIME) evaluated in memory, for
+     * each temporal type a persistent attribute or a parameter can hold.
+     */
+    public void testExtractDateAndTimeInMemory() {
+        EntityManager em = currentEntityManager();
+        List rsall = em.createQuery("SELECT e from CompUser e").getResultList();
+
+        LocalDateTime ldt = LocalDateTime.of(2021, 11, 3, 18, 19, 23, 250_000_000);
+        java.sql.Date date = java.sql.Date.valueOf("2021-11-03");
+        java.sql.Time time = java.sql.Time.valueOf("18:19:23");
+        Object[] values = {
+            ldt,
+            ldt.atOffset(ZoneOffset.ofHours(-7)),
+            ldt.atZone(ZoneId.of("Asia/Tokyo")),
+            Timestamp.valueOf(ldt),
+            new java.util.Date(Timestamp.valueOf(ldt).getTime()),
+            GregorianCalendar.from(ldt.atZone(ZoneId.systemDefault())),
+            ldt.atZone(ZoneId.systemDefault()).toInstant(),
+        };
+        for (Object value : values) {
+            assertExtract(em, rsall, "DATE", value, date);
+            assertExtract(em, rsall, "TIME", value, time);
+        }
+        assertExtract(em, rsall, "DATE", ldt.toLocalDate(), date);
+        assertExtract(em, rsall, "DATE", date, date);
+        assertExtract(em, rsall, "TIME", ldt.toLocalTime(), time);
+        assertExtract(em, rsall, "TIME", time, time);
+
+        // EXTRACT of null is null
+        org.apache.openjpa.persistence.QueryImpl q1 =
+            (org.apache.openjpa.persistence.QueryImpl) em.createQuery(
+                "SELECT EXTRACT(DATE FROM :d) FROM CompUser e");
+        ((QueryImpl) q1.getDelegate()).setCandidateCollection(rsall);
+        q1.setParameter("d", null);
+        assertNull(q1.getResultList().get(0));
+
+        endEm(em);
+    }
+
+    /**
+     * OPENJPA-3042: EXTRACT(WEEK) evaluated in memory matches the database.
+     * H2 numbers the weeks of a plain WEEK by the week definition of the
+     * default locale, so the default locale is set to one whose weeks are
+     * not the ISO-8601 ones.
      */
     public void testExtractWeekInMemoryMatchesDatabase() {
         EntityManager em = currentEntityManager();
         DBDictionary dict = ((JDBCConfiguration) ((OpenJPAEntityManagerSPI) em)
             .getConfiguration()).getDBDictionaryInstance();
-        if (!(dict instanceof H2Dictionary)
-            || !WeekFields.of(Locale.getDefault()).equals(WeekFields.ISO)) {
-            // Derby does not support EXTRACT, H2 computes the ISO week only
-            // for a locale whose week definition is the ISO one
+        if (!(dict instanceof H2Dictionary)) {
+            // Derby does not support EXTRACT
             endEm(em);
             return;
         }
         List rsall = em.createQuery("SELECT e from CompUser e").getResultList();
-        for (String date : new String[] { "2024-01-01", "2023-12-31", "2021-01-03" }) {
-            Object[] db = (Object[]) em.createQuery("SELECT EXTRACT(WEEK FROM {d '" + date
-                + "'}), e.userid FROM CompUser e").getResultList().get(0);
-            assertExtract(em, rsall, "WEEK", LocalDate.parse(date), ((Number) db[0]).intValue());
+        Locale locale = Locale.getDefault();
+        Locale.setDefault(Locale.US);
+        try {
+            String[] dates = { "2024-01-01", "2023-12-31", "2021-01-03" };
+            int[] weeks = { 1, 52, 53 };
+            for (int i = 0; i < dates.length; i++) {
+                Object[] db = (Object[]) em.createQuery("SELECT EXTRACT(WEEK FROM {d '"
+                    + dates[i] + "'}), e.userid FROM CompUser e").getResultList().get(0);
+                assertEquals("WEEK of " + dates[i], weeks[i], ((Number) db[0]).intValue());
+                assertExtract(em, rsall, "WEEK", LocalDate.parse(dates[i]), weeks[i]);
+            }
+        } finally {
+            Locale.setDefault(locale);
         }
         endEm(em);
     }

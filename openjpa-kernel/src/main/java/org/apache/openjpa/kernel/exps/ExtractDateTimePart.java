@@ -20,12 +20,10 @@ package org.apache.openjpa.kernel.exps;
 
 import java.sql.Date;
 import java.sql.Time;
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
+import java.time.temporal.Temporal;
+import java.time.temporal.TemporalQueries;
 
 import org.apache.openjpa.kernel.StoreContext;
 
@@ -68,32 +66,21 @@ class ExtractDateTimePart
         StoreContext ctx, Object[] params) {
 
         Object r = _val.eval(candidate, orig, ctx, params);
-        Class<?> clazz = r.getClass();
-        if (_part == DateTimeExtractPart.TIME) {
-            if (Time.class.isAssignableFrom(clazz)) {
-                return (Time) r;
-            } else if (Timestamp.class.isAssignableFrom(clazz)) {
-                return Time.valueOf(((Timestamp) r).toLocalDateTime().toLocalTime());
-            } else if (LocalDateTime.class.isAssignableFrom(clazz)) {
-                return Time.valueOf(((LocalDateTime) r).toLocalTime());
-            } else if (LocalTime.class.isAssignableFrom(clazz)) {
-                return Time.valueOf((LocalTime) r);
-            } else if (Instant.class.isAssignableFrom(clazz)) {
-                LocalDateTime ldt = LocalDateTime.ofInstant((Instant) r, ZoneId.systemDefault());
-                return Time.valueOf(ldt.toLocalTime());
-            }
-        } else if (_part == DateTimeExtractPart.DATE) {
-            if (Date.class.isAssignableFrom(clazz)) {
-                return (Date) r;
-            } else if (Timestamp.class.isAssignableFrom(clazz)) {
-                return Date.valueOf(((Timestamp) r).toLocalDateTime().toLocalDate());
-            } else if (LocalDateTime.class.isAssignableFrom(clazz)) {
-                return Date.valueOf(((LocalDateTime) r).toLocalDate());
-            } else if (LocalDate.class.isAssignableFrom(clazz)) {
-                return Date.valueOf((LocalDate) r);
-            } else if (Instant.class.isAssignableFrom(clazz)) {
-                LocalDateTime ldt = LocalDateTime.ofInstant((Instant) r, ZoneId.systemDefault());
-                return Date.valueOf(ldt.toLocalDate());
+        if (r == null) {
+            return null;
+        }
+        Temporal t = ExtractDateTimeField.toTemporal(r);
+        if (t != null) {
+            if (_part == DateTimeExtractPart.TIME) {
+                LocalTime time = t.query(TemporalQueries.localTime());
+                if (time != null) {
+                    return Time.valueOf(time);
+                }
+            } else if (_part == DateTimeExtractPart.DATE) {
+                LocalDate date = t.query(TemporalQueries.localDate());
+                if (date != null) {
+                    return Date.valueOf(date);
+                }
             }
         }
         throw new IllegalArgumentException();

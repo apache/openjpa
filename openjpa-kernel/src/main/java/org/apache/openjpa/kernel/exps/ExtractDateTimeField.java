@@ -80,7 +80,7 @@ class ExtractDateTimeField
             int nanos = t.get(ChronoField.NANO_OF_SECOND);
             return (float) (seconds + nanos / 1_000_000_000d);
         }
-        return t.get(_field.getEquivalent());
+        return t.get(_field.getTemporalField());
     }
 
     /**
@@ -89,7 +89,7 @@ class ExtractDateTimeField
      * instant on the time line is read in the default time zone, as the
      * JDBC driver writes it, a calendar in its own time zone.
      */
-    private static Temporal toTemporal(Object r) {
+    static Temporal toTemporal(Object r) {
         if (r instanceof Date) {
             return ((Date) r).toLocalDate();
         } else if (r instanceof Time) {
