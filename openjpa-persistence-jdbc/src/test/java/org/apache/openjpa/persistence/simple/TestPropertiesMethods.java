@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
 import org.apache.openjpa.lib.conf.ProductDerivations;
@@ -181,6 +182,19 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
         assertNotNull(autoClear);
         assertFalse("Factory configuration should not contain an EntityManager enum value",
             autoClear instanceof AutoClearType);
+    }
+
+    public void testFactoryPropertiesCanBeReusedToCreateFactory() {
+        EntityManagerFactory recreated = null;
+        try {
+            recreated = Persistence.createEntityManagerFactory(UNIT_NAME, emf.getProperties());
+            assertNotNull(recreated);
+            assertEquals(300, recreated.getProperties().get("openjpa.DataCacheTimeout"));
+        } finally {
+            if (recreated != null) {
+                recreated.close();
+            }
+        }
     }
 
     public void testEMFPluginPropertyParameterIsPreserved() {

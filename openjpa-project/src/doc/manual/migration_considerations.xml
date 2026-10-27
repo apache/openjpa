@@ -568,8 +568,9 @@
                     <literal>EntityManagerFactory.getProperties()</literal> no longer creates a temporary
                     <classname>EntityManager</classname> to merge <classname>EntityManager</classname>-level
                     defaults (lock timeout, cache modes, fetch plan settings) into its result, and
-                    <literal>null</literal>-valued entries are removed; read such defaults from
-                    <literal>EntityManager.getProperties()</literal> instead.
+                    <literal>null</literal>-valued entries are removed. This changes the behavior
+                    introduced by OPENJPA-849: applications that relied on those merged defaults should
+                    read them from <literal>EntityManager.getProperties()</literal> instead.
                     <literal>addNamedQuery()</literal> now replaces an existing definition of the same
                     name and records flush mode, max results and lock mode; a Criteria query keeps its
                     compiled criteria form and is replayed by <literal>createNamedQuery()</literal> as a
