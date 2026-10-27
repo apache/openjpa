@@ -47,27 +47,27 @@ public class TestExtractDateTimeField extends SingleEMFTestCase {
     public void setUp() {
         setUp(CLEAR_TABLES, Java8TimeTypes.class);
 
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
 
-        // 2024-01-01 is a Monday: ISO week 1, but week 0 when weeks start on Sunday
-        Java8TimeTypes e1 = new Java8TimeTypes();
-        e1.setId(1);
-        e1.setLocalDateField(LocalDate.of(2024, 1, 1));
-        e1.setLocalDateTimeField(LocalDateTime.of(2024, 5, 17, 13, 45, 30));
-        e1.setLocalTimeField(LocalTime.of(13, 45, 30));
-        em.persist(e1);
+            // 2024-01-01 is a Monday: ISO week 1, but week 0 when weeks start on Sunday
+            Java8TimeTypes e1 = new Java8TimeTypes();
+            e1.setId(1);
+            e1.setLocalDateField(LocalDate.of(2024, 1, 1));
+            e1.setLocalDateTimeField(LocalDateTime.of(2024, 5, 17, 13, 45, 30));
+            e1.setLocalTimeField(LocalTime.of(13, 45, 30));
+            em.persist(e1);
 
-        // 2023-12-31 is a Sunday: ISO week 52 of 2023, but week 53 when weeks start on Sunday
-        Java8TimeTypes e2 = new Java8TimeTypes();
-        e2.setId(2);
-        e2.setLocalDateField(LocalDate.of(2023, 12, 31));
-        e2.setLocalDateTimeField(LocalDateTime.of(2023, 11, 2, 7, 5, 9));
-        e2.setLocalTimeField(LocalTime.of(7, 5, 9));
-        em.persist(e2);
+            // 2023-12-31 is a Sunday: ISO week 52 of 2023, but week 53 when weeks start on Sunday
+            Java8TimeTypes e2 = new Java8TimeTypes();
+            e2.setId(2);
+            e2.setLocalDateField(LocalDate.of(2023, 12, 31));
+            e2.setLocalDateTimeField(LocalDateTime.of(2023, 11, 2, 7, 5, 9));
+            e2.setLocalTimeField(LocalTime.of(7, 5, 9));
+            em.persist(e2);
 
-        em.getTransaction().commit();
-        em.close();
+            em.getTransaction().commit();
+        }
     }
 
     public void testExtractYear() {
@@ -110,15 +110,12 @@ public class TestExtractDateTimeField extends SingleEMFTestCase {
     }
 
     public void testExtractSecond() {
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             List<?> result = em.createQuery("SELECT EXTRACT(SECOND FROM e.localDateTimeField) "
                     + "FROM Java8TimeTypes e ORDER BY e.id").getResultList();
             assertEquals(2, result.size());
             assertEquals(30d, ((Number) result.get(0)).doubleValue());
             assertEquals(9d, ((Number) result.get(1)).doubleValue());
-        } finally {
-            em.close();
         }
     }
 
@@ -126,14 +123,11 @@ public class TestExtractDateTimeField extends SingleEMFTestCase {
         if (getDBDictionary() instanceof OracleDictionary) {
             return;
         }
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             List<Integer> ids = em.createQuery("SELECT e.id FROM Java8TimeTypes e "
                     + "WHERE EXTRACT(QUARTER FROM e.localDateField) = 4 AND EXTRACT(DAY FROM e.localDateField) = 31",
                     Integer.class).getResultList();
             assertEquals(List.of(2), ids);
-        } finally {
-            em.close();
         }
     }
 
@@ -144,15 +138,12 @@ public class TestExtractDateTimeField extends SingleEMFTestCase {
             return;
         }
         if (dict instanceof DerbyDictionary) {
-            EntityManager em = emf.createEntityManager();
-            try {
+            try (EntityManager em = emf.createEntityManager()) {
                 em.createQuery("SELECT EXTRACT(WEEK FROM e.localDateField) FROM Java8TimeTypes e")
                         .getResultList();
                 fail("Expected EXTRACT(WEEK) to be rejected on Derby");
             } catch (RuntimeException ex) {
                 assertTrue(ex.getMessage(), ex.getMessage().contains("does not support \"EXTRACT(WEEK)\""));
-            } finally {
-                em.close();
             }
             return;
         }
@@ -160,8 +151,7 @@ public class TestExtractDateTimeField extends SingleEMFTestCase {
     }
 
     public void testCriteriaExtract() {
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
 
             CriteriaQuery<Integer> year = cb.createQuery(Integer.class);
@@ -188,14 +178,11 @@ public class TestExtractDateTimeField extends SingleEMFTestCase {
                         .orderBy(cb.asc(r4.get("id")));
                 assertEquals(List.of(45, 5), em.createQuery(minute).getResultList());
             }
-        } finally {
-            em.close();
         }
     }
 
     public void testExtractFromParameter() {
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             List<Integer> ids = em.createQuery("SELECT e.id FROM Java8TimeTypes e "
                     + "WHERE EXTRACT(YEAR FROM e.localDateField) = EXTRACT(YEAR FROM :d) "
                     + "AND EXTRACT(HOUR FROM e.localDateTimeField) = EXTRACT(HOUR FROM :ts)", Integer.class)
@@ -213,32 +200,24 @@ public class TestExtractDateTimeField extends SingleEMFTestCase {
                         .getResultList();
                 assertEquals(List.of(1), ids);
             }
-        } finally {
-            em.close();
         }
     }
 
     public void testCriteriaExtractFromLiteral() {
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Integer> q = cb.createQuery(Integer.class);
             Root<Java8TimeTypes> r = q.from(Java8TimeTypes.class);
             q.select(r.get("id")).where(cb.equal(cb.extract(LocalDateField.YEAR, r.get("localDateField")),
                     cb.extract(LocalDateField.YEAR, cb.literal(LocalDate.of(2024, 3, 3)))));
             assertEquals(List.of(1), em.createQuery(q).getResultList());
-        } finally {
-            em.close();
         }
     }
 
     private List<Integer> extract(String field, String attribute) {
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             return em.createQuery("SELECT EXTRACT(" + field + " FROM e." + attribute + ") "
                     + "FROM Java8TimeTypes e ORDER BY e.id", Integer.class).getResultList();
-        } finally {
-            em.close();
         }
     }
 }
