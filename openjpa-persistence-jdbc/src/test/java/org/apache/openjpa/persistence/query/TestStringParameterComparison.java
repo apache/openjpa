@@ -37,11 +37,11 @@ public class TestStringParameterComparison extends SingleEMTestCase {
     public void setUp() {
         super.setUp(SimpleEntity.class, CLEAR_TABLES);
 
-        EntityManager em1 = emf.createEntityManager();
-        em1.getTransaction().begin();
-        em1.persist(new SimpleEntity("foo", "bar"));
-        em1.getTransaction().commit();
-        em1.close();
+        try (EntityManager em1 = emf.createEntityManager()) {
+            em1.getTransaction().begin();
+            em1.persist(new SimpleEntity("foo", "bar"));
+            em1.getTransaction().commit();
+        }
     }
 
     public void testEqualityOfTwoStringParameters() {
