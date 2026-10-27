@@ -36,7 +36,7 @@ declare -A DOCKER_NAMES=(
     [mysql]=mysql
     [postgresql]=postgresql
     [mssql]=server
-    [oracle]=oracle
+    [oracle]=oracle-xe
 )
 
 declare -A VERSIONS=(
@@ -154,9 +154,7 @@ setProps() {
             DB_URL="jdbc:derby://${DB_HOST}/${DB_NAME};create=true"
             ;;
         oracle)
-            DB_NAME="XE"
-            JPROPS+=("-Dopenjpa.oracle.SID=${DB_NAME}")
-            DB_URL="jdbc:oracle:thin:@${DB_HOST}:${DB_NAME}"
+            DB_URL="jdbc:oracle:thin:@${DB_HOST}/${DB_NAME}"
             ;;
     esac
     JPROPS+=("-Ddocker.external.${DB_TYPE}.port=${DB_PORT}")

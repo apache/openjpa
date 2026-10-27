@@ -37,7 +37,7 @@ declare -A DOCKER_NAMES=(
 	[postgresql]=postgresql
 	[mssql]=server
 	[herddb]=herddb
-	[oracle]=oracle
+	[oracle]=oracle-xe
 )
 declare -A VERSIONS=(
 	[mysql]='8.0 8.4.8 9.4.0'

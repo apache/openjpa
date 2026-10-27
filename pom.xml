@@ -1589,10 +1589,10 @@
                 <docker.external.oracle.port>1521</docker.external.oracle.port>
 
                 <connection.driver.name>oracle.jdbc.driver.OracleDriver</connection.driver.name>
-                <openjpa.oracle.database>openjpatst</openjpa.oracle.database>
+                <openjpa.oracle.dbname>openjpatst</openjpa.oracle.dbname>
                 <openjpa.oracle.username>openjpatst</openjpa.oracle.username>
                 <openjpa.oracle.password>openjpatst</openjpa.oracle.password>
-                <openjpa.oracle.url>jdbc:oracle:thin:@localhost:${docker.external.oracle.port}/${openjpa.oracle.database}</openjpa.oracle.url>
+                <openjpa.oracle.url>jdbc:oracle:thin:@localhost:${docker.external.oracle.port}/${openjpa.oracle.dbname}</openjpa.oracle.url>
 
                 <connection.url>${openjpa.oracle.url}</connection.url>
                 <connection.username>${openjpa.oracle.username}</connection.username>
@@ -1628,7 +1628,7 @@
                                     <run>
                                         <env>
                                             <ORACLE_PASSWORD>${openjpa.oracle.password}</ORACLE_PASSWORD>
-                                            <ORACLE_DATABASE>${openjpa.oracle.database}</ORACLE_DATABASE>
+                                            <ORACLE_DATABASE>${openjpa.oracle.dbname}</ORACLE_DATABASE>
                                             <APP_USER>${openjpa.oracle.username}</APP_USER>
                                             <APP_USER_PASSWORD>${openjpa.oracle.password}</APP_USER_PASSWORD>
                                         </env>
