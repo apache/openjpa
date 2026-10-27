@@ -40,6 +40,7 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
+import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.StoreException;
@@ -493,6 +494,15 @@ public class H2Dictionary extends DBDictionary {
             return false;
         }
         return super.isFatalException(subtype, ex);
+    }
+
+    /**
+     * H2 numbers a plain WEEK by the week definition of the JVM default
+     * locale. ISO_WEEK is the ISO-8601 week that WEEK stands for.
+     */
+    @Override
+    public String getExtractField(DateTimeExtractField extField) {
+        return DateTimeExtractField.WEEK == extField ? "ISO_WEEK" : extField.name();
     }
 
     @Override

@@ -1510,6 +1510,9 @@
                     and <literal>@Column(columnDefinition="TIME WITH TIME ZONE")</literal> to restore
                     the previous behavior. On H2 2.x, table truncation now skips the
                     <literal>INFORMATION_SCHEMA</literal> meta tables.
+                    <literal>EXTRACT(WEEK FROM ...)</literal> is rendered as
+                    <literal>EXTRACT(ISO_WEEK FROM ...)</literal>, because H2 numbers a plain
+                    <literal>WEEK</literal> by the week definition of the JVM default locale.
                 </para>
             </section>
             <section id="jpa_4.2_SPIChanges">
