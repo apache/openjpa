@@ -270,6 +270,13 @@ public class DBDictionary
     public boolean requiresAliasForSubselect = false;
     public boolean requiresTargetForDelete = false;
     public boolean allowsAliasInBulkClause = true;
+    /**
+     * Whether a subquery in the WHERE clause of a bulk update or delete may
+     * read the table that the statement changes. When false, the statement
+     * matches the primary keys of the affected rows in a derived table
+     * instead, which the database materializes before changing any row.
+     */
+    public boolean allowsBulkTargetInSubselect = true;
     public boolean supportsMultipleNontransactionalResultSets = true;
     /**
      * Set to true for a database whose LIKE has a default escape character
@@ -2593,7 +2600,12 @@ public class DBDictionary
             SQLBuffer where = sel.getWhere();
             if (where != null && !where.isEmpty()) {
                 sql.append(" WHERE ");
-                sql.append(where);
+                if (allowsBulkTargetInSubselect
+                    || sel.getSubselects().isEmpty()) {
+                    sql.append(where);
+                } else {
+                    appendBulkPrimaryKeysIn(mapping, sel, sql);
+                }
             }
             return sql;
         }
@@ -2659,6 +2671,36 @@ public class DBDictionary
                 append(sel.toSelect(false, null)).append(")");
         }
         return sql;
+    }
+
+    /**
+     * Append a condition that matches the primary keys of the rows that the
+     * given select finds, collected in a derived table. The select is
+     * changed to select those keys.
+     *
+     * @param mapping the mapping against which we are operating
+     * @param sel the Select that holds the conditions of the bulk statement
+     * @param sql the bulk statement to append the condition to
+     */
+    protected void appendBulkPrimaryKeysIn(ClassMapping mapping, Select sel,
+        SQLBuffer sql) {
+        Column[] pks = mapping.getPrimaryKeyColumns();
+        sel.clearSelects();
+        if (pks.length > 1) {
+            sql.append("(");
+        }
+        for (int i = 0; i < pks.length; i++) {
+            if (i > 0) {
+                sql.append(", ");
+            }
+            sel.select(pks[i]);
+            sql.append(sel.getColumnAlias(pks[i]));
+        }
+        if (pks.length > 1) {
+            sql.append(")");
+        }
+        sql.append(" IN (SELECT * FROM (").append(sel.toSelect(false, null))
+            .append(") ").append(Select.FROM_SELECT_ALIAS).append(")");
     }
 
     protected Collection<String> getSelectTableAliases(Select sel) {

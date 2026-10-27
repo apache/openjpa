@@ -99,6 +99,7 @@ public class MySQLDictionary
         supportsMultipleNontransactionalResultSets = false;
         requiresAliasForSubselect = true; // new versions
         requiresTargetForDelete = true;
+        allowsBulkTargetInSubselect = false;
         supportsSelectStartIndex = true;
         supportsSelectEndIndex = true;
 
