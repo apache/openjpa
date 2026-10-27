@@ -18,12 +18,26 @@
  */
 package org.apache.openjpa.persistence.jpql.expressions;
 
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.temporal.WeekFields;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.H2Dictionary;
 import org.apache.openjpa.jdbc.sql.SybaseDictionary;
 import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.kernel.QueryImpl;
@@ -143,6 +157,129 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
         } finally {
             endEm(em);
         }
+    }
+
+    /**
+     * OPENJPA-3042: EXTRACT(WEEK) evaluated in memory returned the day of the
+     * week instead of the ISO-8601 week of the year.
+     */
+    public void testExtractWeekInMemory() {
+        EntityManager em = currentEntityManager();
+        List rsall = em.createQuery("SELECT e from CompUser e").getResultList();
+
+        // a Monday, first day of ISO week 1
+        assertExtract(em, rsall, "WEEK", LocalDate.of(2024, 1, 1), 1);
+        // a Sunday, still in ISO week 52 of 2023
+        assertExtract(em, rsall, "WEEK", LocalDate.of(2023, 12, 31), 52);
+        // a Sunday, in ISO week 53 of 2020
+        assertExtract(em, rsall, "WEEK", LocalDate.of(2021, 1, 3), 53);
+        assertExtract(em, rsall, "WEEK", LocalDate.of(2006, 3, 21), 12);
+
+        assertExtract(em, rsall, "WEEK", LocalDateTime.of(2021, 1, 3, 23, 59), 53);
+        assertExtract(em, rsall, "WEEK",
+            OffsetDateTime.of(2021, 1, 3, 23, 59, 0, 0, ZoneOffset.ofHours(5)), 53);
+        assertExtract(em, rsall, "WEEK", java.sql.Date.valueOf("2021-01-03"), 53);
+        assertExtract(em, rsall, "WEEK", Timestamp.valueOf("2021-01-03 23:59:00"), 53);
+
+        endEm(em);
+    }
+
+    /**
+     * OPENJPA-3042: every field of EXTRACT evaluated in memory, for each
+     * temporal type a persistent attribute or a parameter can hold.
+     */
+    public void testExtractFieldsInMemory() {
+        EntityManager em = currentEntityManager();
+        List rsall = em.createQuery("SELECT e from CompUser e").getResultList();
+
+        LocalDateTime ldt = LocalDateTime.of(2021, 11, 3, 18, 19, 23, 250_000_000);
+        Object[] values = {
+            ldt,
+            ldt.atOffset(ZoneOffset.ofHours(-7)),
+            Timestamp.valueOf(ldt),
+            new java.util.Date(Timestamp.valueOf(ldt).getTime()),
+            GregorianCalendar.from(ldt.atZone(ZoneId.systemDefault())),
+            ldt.atZone(ZoneId.systemDefault()).toInstant(),
+        };
+        for (Object value : values) {
+            assertExtract(em, rsall, "YEAR", value, 2021);
+            assertExtract(em, rsall, "QUARTER", value, 4);
+            assertExtract(em, rsall, "MONTH", value, 11);
+            assertExtract(em, rsall, "WEEK", value, 44);
+            assertExtract(em, rsall, "DAY", value, 3);
+            assertExtract(em, rsall, "HOUR", value, 18);
+            assertExtract(em, rsall, "MINUTE", value, 19);
+            assertExtract(em, rsall, "SECOND", value, 23.25f);
+        }
+
+        // a calendar is read in its own time zone
+        Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+        cal.clear();
+        cal.set(2021, Calendar.JANUARY, 3, 23, 30, 0);
+        assertExtract(em, rsall, "DAY", cal, 3);
+        assertExtract(em, rsall, "HOUR", cal, 23);
+
+        LocalDate ld = LocalDate.of(2021, 11, 3);
+        for (Object value : new Object[] { ld, java.sql.Date.valueOf(ld) }) {
+            assertExtract(em, rsall, "YEAR", value, 2021);
+            assertExtract(em, rsall, "QUARTER", value, 4);
+            assertExtract(em, rsall, "MONTH", value, 11);
+            assertExtract(em, rsall, "WEEK", value, 44);
+            assertExtract(em, rsall, "DAY", value, 3);
+        }
+
+        LocalTime lt = LocalTime.of(18, 19, 23, 500_000_000);
+        assertExtract(em, rsall, "HOUR", lt, 18);
+        assertExtract(em, rsall, "MINUTE", lt, 19);
+        assertExtract(em, rsall, "SECOND", lt, 23.5f);
+        assertExtract(em, rsall, "SECOND", java.sql.Time.valueOf("18:19:23"), 23f);
+
+        // EXTRACT of null is null
+        org.apache.openjpa.persistence.QueryImpl q1 =
+            (org.apache.openjpa.persistence.QueryImpl) em.createQuery(
+                "SELECT EXTRACT(WEEK FROM :d) FROM CompUser e");
+        ((QueryImpl) q1.getDelegate()).setCandidateCollection(rsall);
+        q1.setParameter("d", null);
+        assertNull(q1.getResultList().get(0));
+
+        endEm(em);
+    }
+
+    /**
+     * OPENJPA-3042: EXTRACT(WEEK) evaluated in memory matches the database
+     * where the database computes the ISO-8601 week. H2 numbers the weeks
+     * of EXTRACT(WEEK) by the week definition of the default locale, which
+     * is the ISO one for a locale such as de_DE but not for en_US.
+     */
+    public void testExtractWeekInMemoryMatchesDatabase() {
+        EntityManager em = currentEntityManager();
+        DBDictionary dict = ((JDBCConfiguration) ((OpenJPAEntityManagerSPI) em)
+            .getConfiguration()).getDBDictionaryInstance();
+        if (!(dict instanceof H2Dictionary)
+            || !WeekFields.of(Locale.getDefault()).equals(WeekFields.ISO)) {
+            // Derby does not support EXTRACT, H2 computes the ISO week only
+            // for a locale whose week definition is the ISO one
+            endEm(em);
+            return;
+        }
+        List rsall = em.createQuery("SELECT e from CompUser e").getResultList();
+        for (String date : new String[] { "2024-01-01", "2023-12-31", "2021-01-03" }) {
+            Object[] db = (Object[]) em.createQuery("SELECT EXTRACT(WEEK FROM {d '" + date
+                + "'}), e.userid FROM CompUser e").getResultList().get(0);
+            assertExtract(em, rsall, "WEEK", LocalDate.parse(date), ((Number) db[0]).intValue());
+        }
+        endEm(em);
+    }
+
+    private void assertExtract(EntityManager em, List candidates, String field,
+        Object value, Object expected) {
+        org.apache.openjpa.persistence.QueryImpl q1 =
+            (org.apache.openjpa.persistence.QueryImpl) em.createQuery(
+                "SELECT EXTRACT(" + field + " FROM :d) FROM CompUser e");
+        ((QueryImpl) q1.getDelegate()).setCandidateCollection(candidates);
+        q1.setParameter("d", value);
+        assertEquals(field + " of " + value + " (" + value.getClass().getName() + ")",
+            expected, q1.getResultList().get(0));
     }
 
     private Object first(EntityManager em, List candidates, String jpql) {

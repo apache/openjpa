@@ -21,8 +21,12 @@ package org.apache.openjpa.kernel.exps;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoField;
 import java.time.temporal.Temporal;
+import java.util.Calendar;
 
 import org.apache.openjpa.kernel.StoreContext;
 
@@ -64,30 +68,47 @@ class ExtractDateTimeField
         StoreContext ctx, Object[] params) {
 
         Object r = _val.eval(candidate, orig, ctx, params);
-        Temporal t = null;
-        if (Date.class.isAssignableFrom(r.getClass())) {
-            t = ((Date) r).toLocalDate();
-        } else if (Time.class.isAssignableFrom(r.getClass())) {
-            t = ((Time) r).toLocalTime();
-        } else if (Timestamp.class.isAssignableFrom(r.getClass())) {
-            t = ((Timestamp) r).toInstant();
-        } else if (Temporal.class.isAssignableFrom(r.getClass())) {
-            t = (Temporal) r;
+        if (r == null) {
+            return null;
         }
+        Temporal t = toTemporal(r);
         if (t == null) {
             throw new IllegalArgumentException();
         }
-        switch (_field) {
-            case QUARTER:
-                int month = t.get(ChronoField.MONTH_OF_YEAR);
-                return (int) Math.round(Math.ceil(month/3f));
-            case SECOND:
-                int seconds = t.get(ChronoField.SECOND_OF_MINUTE);
-                int mili = t.get(ChronoField.MILLI_OF_SECOND);
-                return (float) seconds + (float) (mili/1000f);
-            default:
-                return t.get(_field.getEquivalent());
+        if (_field == DateTimeExtractField.SECOND) {
+            int seconds = t.get(ChronoField.SECOND_OF_MINUTE);
+            int nanos = t.get(ChronoField.NANO_OF_SECOND);
+            return (float) (seconds + nanos / 1_000_000_000d);
         }
+        return t.get(_field.getEquivalent());
+    }
+
+    /**
+     * Convert the given value to a temporal whose date and time fields are
+     * the local date and time the value stands for. A value that is an
+     * instant on the time line is read in the default time zone, as the
+     * JDBC driver writes it, a calendar in its own time zone.
+     */
+    private static Temporal toTemporal(Object r) {
+        if (r instanceof Date) {
+            return ((Date) r).toLocalDate();
+        } else if (r instanceof Time) {
+            return ((Time) r).toLocalTime();
+        } else if (r instanceof Timestamp) {
+            return ((Timestamp) r).toLocalDateTime();
+        } else if (r instanceof java.util.Date) {
+            return LocalDateTime.ofInstant(((java.util.Date) r).toInstant(),
+                ZoneId.systemDefault());
+        } else if (r instanceof Calendar) {
+            Calendar cal = (Calendar) r;
+            return LocalDateTime.ofInstant(cal.toInstant(),
+                cal.getTimeZone().toZoneId());
+        } else if (r instanceof Instant) {
+            return LocalDateTime.ofInstant((Instant) r, ZoneId.systemDefault());
+        } else if (r instanceof Temporal) {
+            return (Temporal) r;
+        }
+        return null;
     }
 
     @Override
