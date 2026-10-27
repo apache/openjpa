@@ -27,13 +27,18 @@ import java.util.Arrays;
 import javax.sql.DataSource;
 
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
+import org.apache.openjpa.kernel.exps.DateTimeExtractField;
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.StoreException;
+import org.apache.openjpa.util.UnsupportedException;
 
 /**
  * Dictionary for Apache Derby (formerly Cloudscape).
  */
 public class DerbyDictionary
     extends AbstractDB2Dictionary {
+
+    private static final Localizer _loc = Localizer.forPackage(DerbyDictionary.class);
 
     /**
      * If true, we will shutdown the embedded database when closing
@@ -66,11 +71,12 @@ public class DerbyDictionary
         supportsDefaultDeleteAction = false;
         requiresCastForMathFunctions = true;
         requiresCastForComparisons = true;
+        requiresCastForExtractOperand = true;
         supportsSimpleCaseExpression = false;
         supportsNullUniqueColumn = false;
 
         supportsComments = true;
-        
+
         // Derby does still not support 'WITH TIMEZONE' from the SQL92 standard
 
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
@@ -112,6 +118,24 @@ public class DerbyDictionary
             // we still add them for compat reasons
             "COALESCE", "OVER", "ROW_NUMBER",
         }));
+    }
+
+    /**
+     * Derby has no EXTRACT, but a function per field. QUARTER is derived from the
+     * month. There is no function for the ISO week, so WEEK is rejected rather than
+     * rendered as invalid SQL.
+     */
+    @Override
+    public String getExtractDateTimeFieldFunction(DateTimeExtractField extField) {
+        switch (extField) {
+            case QUARTER:
+                return "((MONTH({1}) + 2) / 3)";
+            case WEEK:
+                throw new UnsupportedException(_loc.get("function-not-supported",
+                    getClass(), "EXTRACT(WEEK)"));
+            default:
+                return extField.name() + "({1})";
+        }
     }
 
     @Override

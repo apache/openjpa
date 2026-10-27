@@ -19,6 +19,10 @@
 package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.sql.SQLException;
+import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetTime;
 
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
@@ -143,20 +147,42 @@ public class ExtractDateTimeField extends AbstractVal {
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         DBDictionary dict = ctx.store.getDBDictionary();
-        String func = dict.extractDateTimeFieldFunction;
-
-        int fieldPart = func.indexOf("{0}");
-        int fromPart = func.indexOf("{1}");
-        String part1 = func.substring(0, fieldPart);
-        String part2 = func.substring(fieldPart + 3, fromPart);
-        String part3 = func.substring(fromPart + 3);
+        String func = dict.getExtractDateTimeFieldFunction(_field);
 
         ExtractDateTimeFieldExpState edtstate = (ExtractDateTimeFieldExpState) state;
-        sql.append(part1);
-        sql.append(dict.getExtractField(_field));
-        sql.append(part2);
-        _val.appendTo(sel, ctx, edtstate.valueState, sql, 0);
-        sql.append(part3);
+        String castType = getOperandCastType(ctx, edtstate.valueState, dict);
+        int start = 0;
+        for (int valPart = func.indexOf("{1}"); valPart != -1; valPart = func.indexOf("{1}", start)) {
+            sql.append(func.substring(start, valPart));
+            if (castType != null) {
+                sql.append("CAST(");
+            }
+            _val.appendTo(sel, ctx, edtstate.valueState, sql, 0);
+            if (castType != null) {
+                sql.append(" AS ").append(castType).append(")");
+            }
+            start = valPart + 3;
+        }
+        sql.append(func.substring(start));
+    }
+
+    /**
+     * Return the SQL type to cast the value to when it is bound as a parameter on a
+     * database that cannot type such an operand by itself, or null for no cast.
+     */
+    private String getOperandCastType(ExpContext ctx, ExpState valueState, DBDictionary dict) {
+        if (!dict.requiresCastForExtractOperand || !(_val instanceof Const)
+            || (_val instanceof Lit && ((Lit) _val).isRaw())) {
+            return null;
+        }
+        Object value = ((Const) _val).getValue(ctx, valueState);
+        if (value instanceof LocalDate || value instanceof java.sql.Date) {
+            return dict.dateTypeName;
+        }
+        if (value instanceof LocalTime || value instanceof OffsetTime || value instanceof Time) {
+            return dict.timeTypeName;
+        }
+        return dict.timestampTypeName;
     }
 
     @Override

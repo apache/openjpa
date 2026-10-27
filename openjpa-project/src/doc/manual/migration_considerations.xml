@@ -1538,9 +1538,11 @@
                     <literal>RightFunctionName</literal>, <literal>NaturalLogarithmFunction</literal>,
                     <literal>CeilingFunction</literal>, <literal>ExceptFunction</literal>,
                     <literal>TypecastToStringTypeName</literal>, <literal>IntegerCastTypeName</literal>,
-                    <literal>SupportsUnsizedCharOnCast</literal>) and hooks
+                    <literal>SupportsUnsizedCharOnCast</literal>,
+                    <literal>RequiresCastForExtractOperand</literal>) and hooks
                     (<literal>isDroppable(Sequence)</literal>, <literal>toJDBCEscapedDateTimeLiteral</literal>,
                     <literal>appendNullsPrecedence</literal>, <literal>getExtractField</literal>,
+                    <literal>getExtractDateTimeFieldFunction</literal>,
                     <literal>get/setMajorVersion</literal>, <literal>get/setMinorVersion</literal>).
                 </para>
             </section>
@@ -1568,8 +1570,11 @@
                             <classname>StoreQuery</classname> implementations) honours
                             <literal>NULLS FIRST/LAST</literal> and rejects
                             <literal>UNION</literal>/<literal>INTERSECT</literal>/<literal>EXCEPT</literal>;
-                            <literal>LEFT</literal>/<literal>RIGHT</literal>, <literal>CAST</literal> and
-                            <literal>EXTRACT</literal> are not available on Derby.
+                            <literal>LEFT</literal>/<literal>RIGHT</literal> and <literal>CAST</literal>
+                            are not available on Derby. Derby has no <literal>EXTRACT</literal>, so
+                            OpenJPA renders it with Derby's date and time functions;
+                            <literal>EXTRACT(WEEK)</literal> is rejected there, as Derby has no
+                            function for the ISO week.
                         </para></listitem>
                         <listitem><para>
                             <classname>EntityManager</classname>: <literal>find()</literal>,
