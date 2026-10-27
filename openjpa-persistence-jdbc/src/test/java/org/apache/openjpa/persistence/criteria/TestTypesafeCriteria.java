@@ -1793,10 +1793,6 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     public void testLeft() {
-    	if (getDictionary() instanceof DerbyDictionary) {
-    		// TODO Derby DB does not support LEFT, RIGHT or REPLACE functions
-    		return;
-    	}
     	String jpql = "select p from Person p where left(p.name, 4) = 'John'";
         em.getTransaction().begin();
         Person p = new Person();
@@ -1813,10 +1809,6 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     public void testRight() {
-    	if (getDictionary() instanceof DerbyDictionary) {
-    		// TODO Derby DB does not support LEFT, RIGHT or REPLACE functions
-    		return;
-    	}
     	String jpql = "select p from Person p where RIGHT(p.name, 3) = 'Doe'";
         em.getTransaction().begin();
         Person p = new Person();
@@ -1830,6 +1822,32 @@ public class TestTypesafeCriteria extends CriteriaTest {
     	em.createQuery(cq).getResultList();
 
     	assertEquivalence(cq, jpql);
+    }
+
+    public void testLeftAndRightWithParameters() {
+        em.getTransaction().begin();
+        Person p = new Person();
+        p.setName("John Fitzgerald Doe");
+        em.persist(p);
+        em.getTransaction().commit();
+
+        CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+        Root<Person> c = cq.from(Person.class);
+        ParameterExpression<Integer> len = cb.parameter(Integer.class, "len");
+        ParameterExpression<String> str = cb.parameter(String.class, "str");
+        cq.multiselect(cb.left(c.get("name"), 100), cb.right(c.get("name"), 100));
+        cq.where(cb.equal(cb.left(str, 4), cb.left(c.get("name"), 4)),
+            cb.equal(cb.right(cb.literal("Jane Doe"), 3), cb.right(c.get("name"), 3)),
+            cb.equal(cb.left(c.get("name"), len), "John"),
+            cb.equal(cb.right(c.get("name"), len), " Doe"));
+
+        List<Object[]> result = em.createQuery(cq).setParameter("len", 4).setParameter("str", "John Smith")
+            .getResultList();
+        assertFalse(result.isEmpty());
+        for (Object[] row : result) {
+            assertEquals("John Fitzgerald Doe", row[0]);
+            assertEquals("John Fitzgerald Doe", row[1]);
+        }
     }
 
     public void testReplace() {

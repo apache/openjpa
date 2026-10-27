@@ -26,6 +26,7 @@ import java.util.Arrays;
 
 import javax.sql.DataSource;
 
+import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.util.StoreException;
 
 /**
@@ -177,6 +178,76 @@ public class DerbyDictionary
     protected void appendLength(SQLBuffer buf, int type) {
         if (type == Types.VARCHAR) {
             buf.append("(").append(Integer.toString(varcharCastLength)).append(")");
+        }
+    }
+
+    /**
+     * Derby has no LEFT function, so render it with SUBSTR. SUBSTR fails when
+     * the length goes past the end of the string, where LEFT returns the whole
+     * string, so that case is handled separately.
+     */
+    @Override
+    public void left(SQLBuffer buf, FilterValue str, FilterValue length) {
+        buf.append("CASE WHEN LENGTH(");
+        appendStringValue(buf, str);
+        buf.append(") <= ");
+        appendIntegerValue(buf, length);
+        buf.append(" THEN ");
+        appendStringValue(buf, str);
+        buf.append(" ELSE SUBSTR(");
+        appendStringValue(buf, str);
+        buf.append(", 1, ");
+        appendIntegerValue(buf, length);
+        buf.append(") END");
+    }
+
+    /**
+     * Derby has no RIGHT function, so render it with SUBSTR. SUBSTR fails when
+     * the start goes before the beginning of the string, where RIGHT returns
+     * the whole string, so that case is handled separately.
+     */
+    @Override
+    public void right(SQLBuffer buf, FilterValue str, FilterValue length) {
+        buf.append("CASE WHEN LENGTH(");
+        appendStringValue(buf, str);
+        buf.append(") <= ");
+        appendIntegerValue(buf, length);
+        buf.append(" THEN ");
+        appendStringValue(buf, str);
+        buf.append(" ELSE SUBSTR(");
+        appendStringValue(buf, str);
+        buf.append(", LENGTH(");
+        appendStringValue(buf, str);
+        buf.append(") - ");
+        appendIntegerValue(buf, length);
+        buf.append(" + 1) END");
+    }
+
+    /**
+     * Append a literal or parameter cast to VARCHAR, as Derby cannot infer its
+     * type inside LENGTH or SUBSTR, and any other value as is.
+     */
+    private void appendStringValue(SQLBuffer buf, FilterValue val) {
+        if (val.isConstant()) {
+            buf.append("CAST(");
+            val.appendTo(buf);
+            buf.append(" AS VARCHAR(").append(Integer.toString(varcharCastLength)).append("))");
+        } else {
+            val.appendTo(buf);
+        }
+    }
+
+    /**
+     * Append a number literal as is and any other value cast to INTEGER, as
+     * Derby cannot infer the type of a parameter in these positions.
+     */
+    private void appendIntegerValue(SQLBuffer buf, FilterValue val) {
+        if (val.getValue() instanceof Number) {
+            buf.append(Long.toString(toLong(val)));
+        } else {
+            buf.append("CAST(");
+            val.appendTo(buf);
+            buf.append(" AS INTEGER)");
         }
     }
 

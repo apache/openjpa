@@ -352,10 +352,6 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testLeft() {
-        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
-            // Derby does not support LEFT
-            return;
-        }
         EntityManager em = currentEntityManager();
         String query = "SELECT LEFT(u.name, 3) FROM CompUser AS u WHERE LEFT(u.address.streetAd, 2) = '43'";
         List result = em.createQuery(query).getResultList();
@@ -367,10 +363,6 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testRight() {
-        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
-            // Derby does not support LEFT
-            return;
-        }
         EntityManager em = currentEntityManager();
         String query = "SELECT RIGHT(u.name, 3) FROM CompUser AS u WHERE right(u.address.streetAd, 4) = 'some'";
         List result = em.createQuery(query).getResultList();
@@ -378,6 +370,96 @@ public class TestEJBQLFunction extends AbstractTestCase {
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals("tha", (String) result.get(0));
+        endEm(em);
+    }
+
+    public void testLeftWithParameterLength() {
+        EntityManager em = currentEntityManager();
+        String query = "SELECT LEFT(u.name, :len) FROM CompUser AS u WHERE u.name = 'Seetha'";
+        List result = em.createQuery(query).setParameter("len", 4).getResultList();
+
+        assertEquals(1, result.size());
+        assertEquals("Seet", result.get(0));
+
+        result = em.createQuery(query).setParameter("len", 2).getResultList();
+        assertEquals(1, result.size());
+        assertEquals("Se", result.get(0));
+        endEm(em);
+    }
+
+    public void testLeftLongerThanString() {
+        EntityManager em = currentEntityManager();
+        String query = "SELECT LEFT(u.name, 10) FROM CompUser AS u WHERE u.name = 'Seetha'";
+        List result = em.createQuery(query).getResultList();
+        assertEquals(1, result.size());
+        assertEquals("Seetha", result.get(0));
+
+        query = "SELECT LEFT(u.name, :len) FROM CompUser AS u WHERE u.name = 'Seetha'";
+        result = em.createQuery(query).setParameter("len", 10).getResultList();
+        assertEquals(1, result.size());
+        assertEquals("Seetha", result.get(0));
+        endEm(em);
+    }
+
+    public void testLeftAndRightWithExpressionLength() {
+        EntityManager em = currentEntityManager();
+        String query = "SELECT LEFT(u.name, LENGTH(u.computerName)), RIGHT(u.name, LENGTH(u.computerName))"
+            + " FROM CompUser AS u WHERE u.name = 'Seetha'";
+        List<Object[]> result = em.createQuery(query).getResultList();
+
+        assertEquals(1, result.size());
+        assertEquals("See", result.get(0)[0]);
+        assertEquals("tha", result.get(0)[1]);
+        endEm(em);
+    }
+
+    public void testRightWithParameterLength() {
+        EntityManager em = currentEntityManager();
+        String query = "SELECT RIGHT(u.name, :len) FROM CompUser AS u WHERE u.name = 'Seetha'";
+        List result = em.createQuery(query).setParameter("len", 4).getResultList();
+
+        assertEquals(1, result.size());
+        assertEquals("etha", result.get(0));
+
+        result = em.createQuery(query).setParameter("len", 2).getResultList();
+        assertEquals(1, result.size());
+        assertEquals("ha", result.get(0));
+        endEm(em);
+    }
+
+    public void testRightLongerThanString() {
+        EntityManager em = currentEntityManager();
+        String query = "SELECT RIGHT(u.name, 10) FROM CompUser AS u WHERE u.name = 'Seetha'";
+        List result = em.createQuery(query).getResultList();
+        assertEquals(1, result.size());
+        assertEquals("Seetha", result.get(0));
+
+        query = "SELECT RIGHT(u.name, :len) FROM CompUser AS u WHERE u.name = 'Seetha'";
+        result = em.createQuery(query).setParameter("len", 10).getResultList();
+        assertEquals(1, result.size());
+        assertEquals("Seetha", result.get(0));
+        endEm(em);
+    }
+
+    public void testLeftAndRightOnStringLiteral() {
+        EntityManager em = currentEntityManager();
+        String query = "SELECT u.name FROM CompUser AS u WHERE LEFT('Seetha', 2) = LEFT(u.name, 2)"
+            + " AND RIGHT('Seetha', 3) = RIGHT(u.name, 3) AND LEFT('Seetha', 10) = u.name";
+        List result = em.createQuery(query).getResultList();
+
+        assertEquals(1, result.size());
+        assertEquals("Seetha", result.get(0));
+        endEm(em);
+    }
+
+    public void testLeftAndRightOnStringParameter() {
+        EntityManager em = currentEntityManager();
+        String query = "SELECT u.name FROM CompUser AS u WHERE LEFT(:s, :len) = LEFT(u.name, 2)"
+            + " AND RIGHT(:s, 3) = RIGHT(u.name, 3) AND RIGHT(:s, 10) = u.name";
+        List result = em.createQuery(query).setParameter("s", "Seetha").setParameter("len", 2).getResultList();
+
+        assertEquals(1, result.size());
+        assertEquals("Seetha", result.get(0));
         endEm(em);
     }
 
