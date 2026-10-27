@@ -24,13 +24,12 @@ TCK_BASE="${TCK_VERSION:0:3}"
 SCRIPT_ROOT=$(cd -- $(dirname "${0}") && pwd)
 PROJECT_ROOT="$(cd "${SCRIPT_ROOT}/../.." && pwd)"
 
-# derby is removed for now
-# mysql 8.0 is broken! db.delimiter='!' breaks connection
 declare -A FULL_DB_LIST=(
     [mysql]=mysql
     [postgresql]=postgresql
     [mssql]=mssqlserver
     [oracle]=oracle
+    [derby]=derby
 )
 
 declare -A DOCKER_NAMES=(
@@ -41,7 +40,7 @@ declare -A DOCKER_NAMES=(
 )
 
 declare -A VERSIONS=(
-    [mysql]='8.4.8' #  8.4.8 9.4.0
+    [mysql]='8.4.8' #  8.4.8 9.4.0 NOTE: 8.0 is broken! db.delimiter='!' breaks connection
     [postgresql]='16'
 )
 
@@ -61,7 +60,7 @@ declare -A VERSIONS=(
 # Prerequisites:
 #   - OpenJPA must be built and installed in local Maven repo
 #     (run 'mvn install -DskipTests' from the project root)
-#   - Java 17+ and Maven 3.x
+#   - Java 17+ and Maven 3.9.x (NOTE build will fail with Maven 3.10.0)
 #
 
 set -e
@@ -148,9 +147,15 @@ setProps() {
             DB_USER="SA"
             DB_URL="jdbc:sqlserver://${DB_HOST};sendTimeAsDatetime=false;trustServerCertificate=true"
             ;;
+        derby)
+            START_DOCKER=""
+            DB_HOST=localhost:1527
+            DB_NAME=derbyDB
+            DB_URL="jdbc:derby://${DB_HOST}/${DB_NAME};create=true"
+            ;;
         oracle)
-            JPROPS+=("-Dopenjpa.oracle.SID=${DB_NAME}")
             DB_NAME="XE"
+            JPROPS+=("-Dopenjpa.oracle.SID=${DB_NAME}")
             DB_URL="jdbc:oracle:thin:@${DB_HOST}:${DB_NAME}"
             ;;
     esac
