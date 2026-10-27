@@ -940,6 +940,16 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    public void testTypecastStringAsString() {
+        EntityManager em = currentEntityManager();
+        String query = "SELECT CAST(u.name AS STRING) FROM CompUser AS u WHERE CAST(u.name AS STRING) = 'Seetha'";
+        List result = em.createQuery(query).getResultList();
+
+        assertEquals(1, result.size());
+        assertEquals("Seetha", result.get(0));
+        endEm(em);
+    }
+
     public void testTypecastAsStringOnSelect() {
         if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
             // Derby does not support CAST from integer to VARCHAR

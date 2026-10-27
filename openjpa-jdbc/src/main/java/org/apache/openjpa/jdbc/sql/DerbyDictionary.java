@@ -158,6 +158,28 @@ public class DerbyDictionary
         }
     }
 
+    /**
+     * Derby rejects a VARCHAR without a length, so give the cast written for
+     * CAST(... AS STRING) the same length as the other VARCHAR casts of this
+     * dictionary.
+     */
+    @Override
+    public String getStringCastTypeName() {
+        return "VARCHAR(" + varcharCastLength + ")";
+    }
+
+    /**
+     * Derby rejects a VARCHAR without a length, so give the casts written for
+     * {@link #requiresCastForComparisons} and {@link #requiresCastForMathFunctions}
+     * the same length as the other VARCHAR casts of this dictionary.
+     */
+    @Override
+    protected void appendLength(SQLBuffer buf, int type) {
+        if (type == Types.VARCHAR) {
+            buf.append("(").append(Integer.toString(varcharCastLength)).append(")");
+        }
+    }
+
     @Override
     public void closeDataSource(DataSource dataSource) {
         super.closeDataSource(dataSource);
