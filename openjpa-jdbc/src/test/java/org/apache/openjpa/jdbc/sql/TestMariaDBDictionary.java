@@ -35,6 +35,7 @@ import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.Sequence;
+import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.junit.Test;
 
@@ -250,6 +251,13 @@ public class TestMariaDBDictionary {
         MariaDBDictionary dict = newConfiguredDictionary(null);
         assertEquals("json", dict.getTypeName(column(Types.VARCHAR, "json", 255)));
         assertEquals("VARCHAR(255)", dict.getTypeName(column(Types.VARCHAR, null, 255)));
+    }
+
+    @Test
+    public void testExtractWeekIsIsoWeek() {
+        DBDictionary dict = newConfiguredDictionary(null);
+        assertEquals("WEEK({1}, 3)", dict.getExtractDateTimeFieldFunction(DateTimeExtractField.WEEK));
+        assertEquals("EXTRACT(DAY FROM {1})", dict.getExtractDateTimeFieldFunction(DateTimeExtractField.DAY));
     }
 
     private static Sequence sequence() {

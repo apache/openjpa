@@ -1418,6 +1418,15 @@
                     <xref linkend="openjpa.jdbc.DBDictionary"/> is left untouched.
                 </para>
                 <para>
+                    <literal>EXTRACT(WEEK FROM ...)</literal> now returns the ISO week, as the
+                    specification defines it, by rendering <literal>WEEK(x, 3)</literal>. Before, MySQL
+                    and MariaDB computed it with weeks starting on Sunday, so queries on such dates
+                    return different values: for example 2024-01-01 is now week 1 instead of 0, and
+                    2023-12-31 is week 52 instead of 53. A configured
+                    <literal>ExtractDateTimeFieldFunction</literal> no longer applies to
+                    <literal>WEEK</literal> on these databases.
+                </para>
+                <para>
                     Since the version is now parsed from the server's reply even when a driver that is
                     not MariaDB aware passes it on with its <literal>5.5.5-</literal> replication
                     compatibility prefix, such a deployment reaches the features gated on 10.2 as well:

@@ -37,6 +37,7 @@ import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Index;
@@ -190,6 +191,18 @@ public class MySQLDictionary
         longCastTypeName = "SIGNED";
         // MySql supports CHAR data type
         storeCharsAsNumbers = isStoreCharsAsNumbersExplicit();
+    }
+
+    /**
+     * EXTRACT(WEEK) counts weeks from Sunday; mode 3 of WEEK gives the ISO week
+     * that JPA defines.
+     */
+    @Override
+    public String getExtractDateTimeFieldFunction(DateTimeExtractField extField) {
+        if (extField == DateTimeExtractField.WEEK) {
+            return "WEEK({1}, 3)";
+        }
+        return super.getExtractDateTimeFieldFunction(extField);
     }
 
     @Override
