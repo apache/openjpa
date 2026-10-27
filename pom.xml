@@ -2172,9 +2172,7 @@
                             <logViolationsToConsole>true</logViolationsToConsole>
                             <checkstyleRules>
                                 <module name="Checker">
-                                    <module name="NewlineAtEndOfFile">
-                                        <property name="lineSeparator" value="lf" />
-                                    </module>
+                                    <module name="NewlineAtEndOfFile"/>
                                     <module name="LineLength">
                                         <property name="max" value="150" />
                                     </module>
