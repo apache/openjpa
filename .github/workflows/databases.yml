@@ -22,6 +22,10 @@
 # container cannot be chosen per matrix entry. The credentials below are the ones
 # the corresponding profile in pom.xml expects.
 #
+# Each database runs against its oldest supported and its newest LTS release
+# (OPENJPA-3027), so that a dialect regression on an older server shows up as
+# well as a change in a new one. Short lived innovation releases are left out.
+#
 # A scheduled event only ever fires on the default branch, and the check job
 # below additionally refuses a scheduled run on any other branch; a manual run is
 # allowed anywhere, so a risky change can be tried on its branch before it lands.
@@ -75,10 +79,14 @@ jobs:
     needs: check
     if: needs.check.outputs.should_run == 'true'
     runs-on: ubuntu-latest
-    name: build (Java 21, test-mysql-docker)
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ['8.4', '9.7']
+    name: build (Java 21, test-mysql-docker, ${{ matrix.version }})
     services:
       mysql:
-        image: mysql:8.0
+        image: mysql:${{ matrix.version }}
         env:
           MYSQL_DATABASE: openjpatst
           MYSQL_USER: openjpatst
@@ -114,10 +122,14 @@ jobs:
     needs: check
     if: needs.check.outputs.should_run == 'true'
     runs-on: ubuntu-latest
-    name: build (Java 21, test-mariadb-docker)
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ['10.11', '12.3']
+    name: build (Java 21, test-mariadb-docker, ${{ matrix.version }})
     services:
       mariadb:
-        image: mariadb:11.8
+        image: mariadb:${{ matrix.version }}
         env:
           MARIADB_DATABASE: openjpatst
           MARIADB_ROOT_PASSWORD: openjpatst
@@ -151,10 +163,14 @@ jobs:
     needs: check
     if: needs.check.outputs.should_run == 'true'
     runs-on: ubuntu-latest
-    name: build (Java 21, test-postgresql-docker)
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ['15', '18']
+    name: build (Java 21, test-postgresql-docker, ${{ matrix.version }})
     services:
       postgres:
-        image: postgres:11
+        image: postgres:${{ matrix.version }}
         env:
           POSTGRES_DB: openjpatst
           POSTGRES_USER: postgres
