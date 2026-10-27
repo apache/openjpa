@@ -1,3 +1,4 @@
+-- Licensed under the Apache License, Version 2.0 (the "License") http://www.apache.org/licenses/LICENSE-2.0
 DROP TABLE AUTOINCPC1;
 DROP TABLE AUTOINCPC3;
 DROP TABLE CONJOINPC4;

@@ -210,47 +210,6 @@
                 <createSource>verify</createSource>
                 <createSources>true</createSources>
             </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.rat</groupId>
-                        <artifactId>apache-rat-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>check</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <excludeSubProjects>false</excludeSubProjects>
-                            <numUnapprovedLicenses>0</numUnapprovedLicenses>
-                            <excludes>
-                                <!-- comments are usupported in services files -->
-                                <exclude>**/jakarta.persistencespi.PersistenceProvider</exclude>
-                                <exclude>**/javax.annotation.processing.Processor</exclude>
-                                <!-- comments are usupported by our rsrc parser -->
-                                <exclude>**/*.rsrc</exclude>
-                                <!-- comments are usupported in these files -->
-                                <exclude>**/org.apache.openjpa.revision.properties</exclude>
-                                <exclude>scripts/*.list</exclude>
-                                <exclude>scripts/*.options</exclude>
-                                <exclude>scripts/*.dict</exclude>
-                                <!-- generated content -->
-                                <exclude>**/.*/**</exclude>
-                                <exclude>**/target/**/*</exclude>
-                                <exclude>**/dependency-reduced-pom.xml</exclude>
-                                <exclude>**/*.log</exclude>
-                                <exclude>**/maven-eclipse.xml</exclude>
-                                <exclude>**/rat.txt</exclude>
-                                <exclude>release.properties</exclude>
-                                <exclude>DEPENDENCIES</exclude>
-                            </excludes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
         </profile>
 
         <profile>
@@ -1765,7 +1724,7 @@
             <dependency>
                 <groupId>commons-logging</groupId>
                 <artifactId>commons-logging</artifactId>
-                <version>1.2</version>
+                <version>1.4.0</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.persistence</groupId>
@@ -1826,12 +1785,12 @@
             <dependency>
                 <groupId>jakarta.xml.bind</groupId>
                 <artifactId>jakarta.xml.bind-api</artifactId>
-                <version>4.0.2</version>
+                <version>4.0.5</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.xml.bind</groupId>
                 <artifactId>jaxb-impl</artifactId>
-                <version>4.0.5</version>
+                <version>4.0.9</version>
             </dependency>
             <dependency>
                 <groupId>org.hsqldb</groupId>
@@ -1988,7 +1947,7 @@
                 <plugin>
                     <groupId>io.fabric8</groupId>
                     <artifactId>docker-maven-plugin</artifactId>
-                    <version>0.48.1</version>
+                    <version>0.49.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -2003,7 +1962,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>buildnumber-maven-plugin</artifactId>
-                    <version>3.2.1</version>
+                    <version>3.3.1</version>
                     <configuration>
                         <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
                         <revisionOnScmFailure>offline</revisionOnScmFailure>
@@ -2021,11 +1980,6 @@
                             </goals>
                         </execution>
                     </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.rat</groupId>
-                    <artifactId>apache-rat-plugin</artifactId>
-                    <version>0.16.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -2052,19 +2006,9 @@
                     </configuration>
                 </plugin>
                 <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-antrun-plugin</artifactId>
-                    <version>3.2.0</version>
-                </plugin>
-                <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>taglist-maven-plugin</artifactId>
-                    <version>3.1.0</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-shade-plugin</artifactId>
-                    <version>3.6.0</version>
+                    <version>3.2.3</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -2098,7 +2042,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>5.1.9</version>
+                    <version>6.2.0</version>
                     <extensions>true</extensions>
                     <configuration>
                         <instructions>
@@ -2111,12 +2055,12 @@
                 <plugin>
                     <groupId>org.apache.karaf.tooling</groupId>
                     <artifactId>karaf-maven-plugin</artifactId>
-                    <version>4.4.6</version>
+                    <version>4.4.12</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>3.6.0</version>
+                    <version>3.6.2</version>
                 </plugin>
 
                 <plugin>
@@ -2233,13 +2177,17 @@
                 </executions>
                 <configuration>
                     <excludeSubProjects>false</excludeSubProjects>
-                    <numUnapprovedLicenses>0</numUnapprovedLicenses>
-                    <excludes>
+                    <counterMax>Unapproved:0</counterMax>
+                    <inputExcludes>
                         <!-- generated content -->
                         <exclude>**/.*/**</exclude>
                         <exclude>**/target/**/*</exclude>
-                    </excludes>
-                    <includes>
+                        <exclude>**/src/**/*.rsrc</exclude>
+                        <exclude>scripts/domain-class.list</exclude>
+                        <exclude>**/**/reference_schema.orig_xml</exclude>
+                        <exclude>dependency-reduced-pom.xml</exclude>
+                    </inputExcludes>
+                    <inputIncludes>
                         <!-- only check common source files -->
                         <include>**/src/**/*.bat</include>
                         <include>**/src/**/*.css</include>
@@ -2252,7 +2200,7 @@
                         <include>**/src/**/*.txt</include>
                         <include>**/src/**/*.vm</include>
                         <include>**/src/**/*.xml</include>
-                    </includes>
+                    </inputIncludes>
                 </configuration>
             </plugin>
         </plugins>
@@ -2263,7 +2211,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>3.0.0</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
