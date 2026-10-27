@@ -33,6 +33,13 @@ declare -A FULL_DB_LIST=(
     [oracle]=oracle
 )
 
+declare -A DOCKER_NAMES=(
+    [mysql]=mysql
+    [postgresql]=postgresql
+    [mssql]=server
+    [oracle]=oracle
+)
+
 declare -A VERSIONS=(
     [mysql]='8.4.8' #  8.4.8 9.4.0
     [postgresql]='16'
@@ -44,7 +51,8 @@ declare -A VERSIONS=(
 #
 # Usage:
 #   ./run-tck32.sh [--stop-all]                    # Run full TCK against postgres:16
-#       [optional] --stop-all will will stop all dockerized DB were running
+#       [optional] --stop-all - will stop all dockerized DB were running
+#       [optional] --no-docker - will NOT start any docker container
 #   DB_VERSION=18 ./run-tck32.sh                   # Run full TCK against postgres:18
 #   DB_TYPE=mysql ./run-tck32.sh                   # Run full TCK against mysql:8.4.8
 #   DB_HOST=myhost:5432 ./run-tck32.sh             # Custom DB host
@@ -75,16 +83,21 @@ fi
 stopAll() {
     for profile in ${!FULL_DB_LIST[@]}; do
         echo "Stopping dockerized ${profile}"
-        mvn -N -Ptest-${profile}-docker -f ${PROJECT_ROOT} -Ddocker.stopNamePattern=${profile:0:8}* docker:stop -Ddocker.showLogs
+        mvn -N -Ptest-${profile}-docker -f ${PROJECT_ROOT} -Ddocker.stopNamePattern=${DOCKER_NAMES[profile]:0:8}* docker:stop -Ddocker.showLogs
     done
 }
 
+START_DOCKER=1
 declare -a EXTRA_ARGS=()
 while [[ $# -gt 0 ]]; do
     case ${1} in
         --stop-all)
             shift
             stopAll
+            ;;
+        --no-docker)
+            shift
+            START_DOCKER=""
             ;;
         *)
             echo "GOT extra arg: ${1}"
@@ -101,16 +114,11 @@ TCK_ZIP="${TCK_DIR}/jakarta-persistence-tck-${TCK_VERSION}.zip"
 TCK_SIG="${TCK_ZIP}.sig"
 TCK_HOME="${TCK_DIR}/persistence-tck"
 OPENJPA_VERSION="${OPENJPA_VERSION:-4.2.0-SNAPSHOT}"
-START_DOCKER=
-
-if [[ -z "${DB_HOST}" ]]; then
-    START_DOCKER=1
-fi
 
 DB_TYPE="${DB_TYPE:-postgresql}"
 DB_HOST="${DB_HOST:-localhost:5555}"
 DB_USER="${DB_USER:-tcktest}"
-DB_PASSWORD="${DB_PASSWORD:-tcktest}"
+DB_PASSWORD="${DB_PASSWORD:-TcktestPwd13}"
 DB_NAME="${DB_NAME:-tcktest}"
 DB_URL=""
 declare -a JPROPS=()
@@ -137,7 +145,7 @@ setProps() {
             DB_URL="jdbc:postgresql://${DB_HOST}/${DB_NAME}"
             ;;
         mssql)
-            DB_NAME=""
+            DB_USER="SA"
             DB_URL="jdbc:sqlserver://${DB_HOST};sendTimeAsDatetime=false;trustServerCertificate=true"
             ;;
         oracle)
@@ -175,10 +183,10 @@ if [[ ! -f "${TCK_ZIP}" ]]; then
     echo "Downloading JPA ${TCK_BASE} TCK..."
     curl -fsL -o "${TCK_ZIP}" "${TCK_URL}"
     curl -fsL -o "${TCK_SIG}" "${TCK_SIG_URL}"
-    for server in hkp://ipv4.pool.sks-keyservers.net:80 \
+    for server in hkp://keyserver.ubuntu.com:80 \
+                  hkp://ipv4.pool.sks-keyservers.net:80 \
                   hkp://ha.pool.sks-keyservers.net:80 \
                   hkp://pgp.mit.edu:80 \
-                  hkp://keyserver.ubuntu.com:80 \
                   hkp://keyserver.pgp.com:80 \
     ; do
         gpg --keyserver "$server" --recv-keys ABE05725E77C2B44 && break || echo "Trying new server..."

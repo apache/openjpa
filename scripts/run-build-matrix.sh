@@ -31,6 +31,14 @@ declare -A FULL_DB_LIST=(
 	[herddb]=docker
 	[oracle]=docker
 )
+declare -A DOCKER_NAMES=(
+	[mysql]=mysql
+	[mariadb]=mariadb
+	[postgresql]=postgresql
+	[mssql]=server
+	[herddb]=herddb
+	[oracle]=oracle
+)
 declare -A VERSIONS=(
 	[mysql]='8.0 8.4.8 9.4.0'
 	[postgresql]='11 16 18'
@@ -120,7 +128,7 @@ done
 stopAll() {
 	for profile in ${MATRIX[@]}; do
 		if [[ "${FULL_DB_LIST[${profile}]}" == "docker" ]]; then
-			mvn -N -Ptest-${profile}-docker -Ddocker.stopNamePattern=${profile:0:8}* docker:stop -Ddocker.showLogs
+			mvn -N -Ptest-${profile}-docker -Ddocker.stopNamePattern=${DOCKER_NAMES[profile]:0:8}* docker:stop -Ddocker.showLogs
 		fi
 	done
 }
