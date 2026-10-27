@@ -293,7 +293,8 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         em2.find(Employee.class, 2, LockModeType.PESSIMISTIC_READ, map);
 
         em1.getTransaction().begin();
-        Query query = em1.createQuery("select e from Employee e where e.id < 10").setFirstResult(1);
+        // without ORDER BY the database may return Employee(2) first and skip it
+        Query query = em1.createQuery("select e from Employee e where e.id < 10 order by e.id").setFirstResult(1);
         // Lock all selected Employees, skip the first one, i.e should lock
         // Employee(2)
         query.setLockMode(LockModeType.PESSIMISTIC_READ);
