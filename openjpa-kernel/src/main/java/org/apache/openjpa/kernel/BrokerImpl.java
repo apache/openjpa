@@ -4395,7 +4395,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
 
         lock();
         try {
-            for (StateManagerImpl sm : new ArrayList<>(_wholeConverted)) {
+            for (StateManagerImpl sm : _wholeConverted) {
                 sm.restoreWholeConverted();
             }
         } finally {

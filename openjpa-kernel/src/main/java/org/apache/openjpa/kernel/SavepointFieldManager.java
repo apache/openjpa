@@ -222,7 +222,7 @@ class SavepointFieldManager
                 break;
             case JavaTypes.OBJECT:
                 // a converted value is copied through its converter
-                _field = (fmd.isConvertedObject())
+                _field = fmd.isConvertedObject()
                     ? fmd.copyConvertedValue(curVal, _sm.getContext())
                     : proxy.copyCustom(curVal);
                 if (_field == null)

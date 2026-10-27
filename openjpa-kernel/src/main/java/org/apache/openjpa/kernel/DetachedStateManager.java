@@ -407,9 +407,8 @@ public class DetachedStateManager
             || !owner.getLoaded().get(ownerField.getIndex())) {
             return true;
         }
-        OpenJPAStateManager cur = broker.getStateManager(
-            owner.fetchField(ownerField.getIndex(), false));
-        if (!(cur instanceof StateManagerImpl)) {
+        if (!(broker.getStateManager(owner.fetchField(ownerField.getIndex(),
+            false)) instanceof StateManagerImpl cur)) {
             return true;
         }
         for (FieldMetaData fmd : fmds) {
@@ -420,7 +419,7 @@ public class DetachedStateManager
             provideField(i);
             Object val = objval;
             objval = null;
-            if (((StateManagerImpl) cur).isWholeConvertedChanged(i, val)) {
+            if (cur.isWholeConvertedChanged(i, val)) {
                 return true;
             }
         }
