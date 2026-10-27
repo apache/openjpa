@@ -202,9 +202,10 @@ public class PreparedQueryImpl implements PreparedQuery {
             return new PreparedQueryCacheImpl.StrongExclusion(_id,
                 _loc.get("exclude-pagination", _id).getMessage());
 
-        if (select.getDictionary().requiresCastForComparisons && isComparingUntypedParameters())
+        if (select.getDictionary().requiresCastForComparisons && isComparingUntypedParameters()) {
             return new PreparedQueryCacheImpl.StrongExclusion(_id,
                 _loc.get("exclude-untyped-param-comparison", _id).getMessage());
+        }
 
         setTargetQuery(buffer.getSQL());
         setParameters(buffer.getParameters());

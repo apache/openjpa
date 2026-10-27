@@ -45,11 +45,11 @@ public class TestUntypedParameterComparison extends SingleEMFTestCase {
     public void setUp() {
         super.setUp(SimpleEntity.class, CLEAR_TABLES);
 
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        em.persist(new SimpleEntity("foo", "bar"));
-        em.getTransaction().commit();
-        em.close();
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            em.persist(new SimpleEntity("foo", "bar"));
+            em.getTransaction().commit();
+        }
     }
 
     public void testEqualStrings() {
@@ -141,8 +141,7 @@ public class TestUntypedParameterComparison extends SingleEMFTestCase {
     }
 
     public void testEqualUntypedCriteriaParameters() {
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<SimpleEntity> q = cb.createQuery(SimpleEntity.class);
             Root<SimpleEntity> root = q.from(SimpleEntity.class);
@@ -157,8 +156,6 @@ public class TestUntypedParameterComparison extends SingleEMFTestCase {
 
             query.setParameter(right, 7);
             assertEquals(0, query.getResultList().size());
-        } finally {
-            em.close();
         }
     }
 
@@ -168,8 +165,7 @@ public class TestUntypedParameterComparison extends SingleEMFTestCase {
      */
     public void testReexecuteWithOtherType() {
         String jpql = "SELECT s FROM simple s WHERE :a < :b";
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             Query q = em.createQuery(jpql);
             q.setParameter("a", "10");
             q.setParameter("b", "9");
@@ -182,8 +178,6 @@ public class TestUntypedParameterComparison extends SingleEMFTestCase {
             q.setParameter("a", 9);
             q.setParameter("b", 10);
             assertEquals(1, q.getResultList().size());
-        } finally {
-            em.close();
         }
     }
 
@@ -217,8 +211,7 @@ public class TestUntypedParameterComparison extends SingleEMFTestCase {
     }
 
     private void assertInMatches(boolean expected, Object value, Object first, Object second) {
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<SimpleEntity> q = cb.createQuery(SimpleEntity.class);
             Root<SimpleEntity> root = q.from(SimpleEntity.class);
@@ -233,35 +226,27 @@ public class TestUntypedParameterComparison extends SingleEMFTestCase {
             query.setParameter(c, second);
             assertEquals(value + " IN (" + first + ", " + second + ")",
                 expected ? 1 : 0, query.getResultList().size());
-        } finally {
-            em.close();
         }
     }
 
     private void assertCaseResult(String expected, String jpql, Object a, Object b) {
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             Query q = em.createQuery(jpql);
             q.setParameter("a", a);
             q.setParameter("b", b);
             assertEquals(jpql + " with [" + a + ", " + b + "]",
                 expected, q.getSingleResult());
-        } finally {
-            em.close();
         }
     }
 
     private void assertMatches(boolean expected, String jpql, Object... values) {
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             Query q = em.createQuery(jpql);
             for (int i = 0; i < values.length; i++) {
                 q.setParameter(String.valueOf((char) ('a' + i)), values[i]);
             }
             assertEquals(jpql + " with " + Arrays.toString(values),
                 expected ? 1 : 0, q.getResultList().size());
-        } finally {
-            em.close();
         }
     }
 }
