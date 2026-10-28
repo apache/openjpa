@@ -66,7 +66,7 @@ public class TestCharStorage extends PersistenceTestCase {
      * Char fields mapped to an existing CHAR(1) column, as created by the
      * schema of the Jakarta Persistence TCK, are written and read as
      * characters. Dictionaries that still store chars as numbers by default
-     * (such as H2) need StoreCharsAsNumbers=false for such a column.
+     * need StoreCharsAsNumbers=false for such a column.
      */
     public void testCharFieldsInPrecreatedCharColumn() throws Exception {
         OpenJPAEntityManagerFactorySPI emf = createEMF(CharStorageBase.class, CharStoragePrecreatedEntity.class);
@@ -119,7 +119,8 @@ public class TestCharStorage extends PersistenceTestCase {
      * Derby and SQL Server store chars as CHAR unless configured otherwise.
      */
     private static void assertDefault(DBDictionary dict) {
-        if (dict instanceof DerbyDictionary || dict instanceof SQLServerDictionary) {
+        if (dict instanceof DerbyDictionary || dict instanceof SQLServerDictionary
+            || dict instanceof H2Dictionary) {
             assertFalse(dict.platform + " must store chars as CHAR by default", dict.storeCharsAsNumbers);
         }
     }
