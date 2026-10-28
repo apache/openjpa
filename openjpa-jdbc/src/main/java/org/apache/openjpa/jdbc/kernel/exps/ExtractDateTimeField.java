@@ -171,11 +171,11 @@ public class ExtractDateTimeField extends AbstractVal {
      * database that cannot type such an operand by itself, or null for no cast.
      */
     private String getOperandCastType(ExpContext ctx, ExpState valueState, DBDictionary dict) {
-        if (!dict.requiresCastForExtractOperand || !(_val instanceof Const)
-            || (_val instanceof Lit && ((Lit) _val).isRaw())) {
+        if (!dict.requiresCastForExtractOperand || !(_val instanceof Const constVal)
+            || (_val instanceof Lit lit && lit.isRaw())) {
             return null;
         }
-        Object value = ((Const) _val).getValue(ctx, valueState);
+        Object value = constVal.getValue(ctx, valueState);
         if (value instanceof LocalDate || value instanceof java.sql.Date) {
             return dict.dateTypeName;
         }
