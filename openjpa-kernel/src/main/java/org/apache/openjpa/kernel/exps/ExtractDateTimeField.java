@@ -90,23 +90,22 @@ class ExtractDateTimeField
      * JDBC driver writes it, a calendar in its own time zone.
      */
     static Temporal toTemporal(Object r) {
-        if (r instanceof Date) {
-            return ((Date) r).toLocalDate();
-        } else if (r instanceof Time) {
-            return ((Time) r).toLocalTime();
-        } else if (r instanceof Timestamp) {
-            return ((Timestamp) r).toLocalDateTime();
-        } else if (r instanceof java.util.Date) {
-            return LocalDateTime.ofInstant(((java.util.Date) r).toInstant(),
+        if (r instanceof Date date) {
+            return date.toLocalDate();
+        } else if (r instanceof Time time) {
+            return time.toLocalTime();
+        } else if (r instanceof Timestamp ts) {
+            return ts.toLocalDateTime();
+        } else if (r instanceof java.util.Date date) {
+            return LocalDateTime.ofInstant(date.toInstant(),
                 ZoneId.systemDefault());
-        } else if (r instanceof Calendar) {
-            Calendar cal = (Calendar) r;
+        } else if (r instanceof Calendar cal) {
             return LocalDateTime.ofInstant(cal.toInstant(),
                 cal.getTimeZone().toZoneId());
-        } else if (r instanceof Instant) {
-            return LocalDateTime.ofInstant((Instant) r, ZoneId.systemDefault());
-        } else if (r instanceof Temporal) {
-            return (Temporal) r;
+        } else if (r instanceof Instant instant) {
+            return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+        } else if (r instanceof Temporal temporal) {
+            return temporal;
         }
         return null;
     }
