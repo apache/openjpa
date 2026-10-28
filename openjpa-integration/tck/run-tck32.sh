@@ -40,8 +40,8 @@ declare -A DOCKER_NAMES=(
 )
 
 declare -A VERSIONS=(
-    [mysql]='8.4.8' #  8.4.8 9.4.0 NOTE: 8.0 is broken! db.delimiter='!' breaks connection
-    [postgresql]='16'
+    [mysql]='8.4.8' #  8.4.8 9.4.0
+    [postgresql]='15'
 )
 
 #
@@ -49,9 +49,9 @@ declare -A VERSIONS=(
 # using DB selected.
 #
 # Usage:
-#   ./run-tck32.sh [--stop-all]                    # Run full TCK against postgres:16
-#       [optional] --stop-all - will stop all dockerized DB were running
-#       [optional] --no-docker - will NOT start any docker container
+#   ./run-tck32.sh [--stop-all] [--no-docker]      # Run full TCK against postgres:15
+#       [optional] --stop-all        - will stop all dockerized DB were running
+#       [optional] --no-docker       - will NOT start any docker container
 #   DB_VERSION=18 ./run-tck32.sh                   # Run full TCK against postgres:18
 #   DB_TYPE=mysql ./run-tck32.sh                   # Run full TCK against mysql:8.4.8
 #   DB_HOST=myhost:5432 ./run-tck32.sh             # Custom DB host
@@ -81,8 +81,11 @@ fi
 
 stopAll() {
     for profile in ${!FULL_DB_LIST[@]}; do
+        if [[ 'derby' == ${profile} ]]; then
+            continue
+        fi
         echo "Stopping dockerized ${profile}"
-        mvn -N -Ptest-${profile}-docker -f ${PROJECT_ROOT} -Ddocker.stopNamePattern=${DOCKER_NAMES[profile]:0:8}* docker:stop -Ddocker.showLogs
+        mvn -N -Ptest-${profile}-docker -f ${PROJECT_ROOT} -Ddocker.stopNamePattern=${DOCKER_NAMES[${profile}]:0:8}* docker:stop -Ddocker.showLogs
     done
 }
 

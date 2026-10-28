@@ -40,8 +40,9 @@ declare -A DOCKER_NAMES=(
 	[oracle]=oracle-xe
 )
 declare -A VERSIONS=(
-	[mysql]='8.0 8.4.8 9.4.0'
-	[postgresql]='11 16 18'
+	[mysql]='8.4.8 9.4.0 9.7'
+	[mariadb]='10.11 12.3'
+	[postgresql]='15 16 18'
 )
 COLOR_RED="\033[1;31m"
 COLOR_GREEN="\033[1;32m"
@@ -128,7 +129,7 @@ done
 stopAll() {
 	for profile in ${MATRIX[@]}; do
 		if [[ "${FULL_DB_LIST[${profile}]}" == "docker" ]]; then
-			mvn -N -Ptest-${profile}-docker -Ddocker.stopNamePattern=${DOCKER_NAMES[profile]:0:8}* docker:stop -Ddocker.showLogs
+			mvn -N -Ptest-${profile}-docker -Ddocker.stopNamePattern=${DOCKER_NAMES[${profile}]:0:8}* docker:stop -Ddocker.showLogs
 		fi
 	done
 }
