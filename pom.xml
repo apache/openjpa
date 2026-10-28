@@ -2186,6 +2186,7 @@
                         <exclude>scripts/domain-class.list</exclude>
                         <exclude>**/**/reference_schema.orig_xml</exclude>
                         <exclude>dependency-reduced-pom.xml</exclude>
+                        <exclude>**/appended-resources/META-INF/LICENSE.vm</exclude>
                     </inputExcludes>
                     <inputIncludes>
                         <!-- only check common source files -->
