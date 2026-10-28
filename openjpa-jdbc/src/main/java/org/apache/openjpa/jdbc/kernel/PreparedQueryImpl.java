@@ -326,8 +326,7 @@ public class PreparedQueryImpl implements PreparedQuery {
 
         @Override
         public void enter(Value val) {
-            if (val instanceof Math) {
-                Math math = (Math) val;
+            if (val instanceof Math math) {
                 _found |= isUntypedParameter(math.getVal1()) || isUntypedParameter(math.getVal2());
             }
         }
