@@ -103,8 +103,8 @@ class CompoundSelections {
             visitor.enter(this);
             visitor.exit(this);
             for (Selection<?> arg : _args) {
-                if (arg instanceof CriteriaExpression) {
-                    ((CriteriaExpression) arg).acceptVisit(visitor);
+                if (arg instanceof CriteriaExpression expArg) {
+                    expArg.acceptVisit(visitor);
                 }
             }
         }

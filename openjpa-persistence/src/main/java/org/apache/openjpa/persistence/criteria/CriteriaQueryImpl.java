@@ -871,17 +871,21 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
         if (_having != null) {
             _having.acceptVisit(visitor);
         }
-        if (_selection instanceof CriteriaExpression) {
-            ((CriteriaExpression) _selection).acceptVisit(visitor);
+        if (_selection instanceof CriteriaExpression criteriaSel) {
+            criteriaSel.acceptVisit(visitor);
         }
         if (_groups != null) {
             for (Expression<?> group : _groups) {
-                ((CriteriaExpression) group).acceptVisit(visitor);
+                if (group instanceof CriteriaExpression criteriaGroup) {
+                    criteriaGroup.acceptVisit(visitor);
+                }
             }
         }
         if (_orders != null) {
             for (Order order : _orders) {
-                ((CriteriaExpression) order).acceptVisit(visitor);
+                if (order instanceof CriteriaExpression criteriaOrder) {
+                    criteriaOrder.acceptVisit(visitor);
+                }
             }
         }
 
