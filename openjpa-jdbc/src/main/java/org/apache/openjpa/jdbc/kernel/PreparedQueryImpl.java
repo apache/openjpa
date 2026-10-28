@@ -49,6 +49,7 @@ import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.kernel.exps.AbstractExpressionVisitor;
 import org.apache.openjpa.kernel.exps.Expression;
 import org.apache.openjpa.kernel.exps.Literal;
+import org.apache.openjpa.jdbc.kernel.exps.Math;
 import org.apache.openjpa.kernel.exps.Parameter;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
@@ -239,6 +240,9 @@ public class PreparedQueryImpl implements PreparedQuery {
             if (isUsingExternalizedParameter(exp)) {
                 return new Object[]{null, _loc.get("exclude-externalized-param", _id)};
             }
+            if (UntypedMathParameterVisitor.isUsingUntypedMathParameter(exp)) {
+                return new Object[]{null, _loc.get("exclude-untyped-math-param", _id)};
+            }
         }
         if (_exps[0].projections.length == 0) {
             _projTypes = StoreQuery.EMPTY_CLASSES;
@@ -284,6 +288,53 @@ public class PreparedQueryImpl implements PreparedQuery {
                 return true;
         }
         return false;
+    }
+
+    /**
+     * Finds a math operation on a parameter that has no type of its own. The
+     * SQL of such an operation depends on the type of the value bound to the
+     * parameter, so it can not be reused for other values.
+     */
+    private static class UntypedMathParameterVisitor extends AbstractExpressionVisitor {
+        private boolean _found;
+
+        static boolean isUsingUntypedMathParameter(QueryExpressions exp) {
+            if (exp == null) {
+                return false;
+            }
+            UntypedMathParameterVisitor visitor = new UntypedMathParameterVisitor();
+            visit(exp.projections, visitor);
+            visit(exp.grouping, visitor);
+            visit(exp.ordering, visitor);
+            if (exp.filter != null) {
+                exp.filter.acceptVisit(visitor);
+            }
+            if (exp.having != null) {
+                exp.having.acceptVisit(visitor);
+            }
+            return visitor._found;
+        }
+
+        private static void visit(Value[] vals, UntypedMathParameterVisitor visitor) {
+            if (vals == null) {
+                return;
+            }
+            for (Value val : vals) {
+                val.acceptVisit(visitor);
+            }
+        }
+
+        @Override
+        public void enter(Value val) {
+            if (val instanceof Math) {
+                Math math = (Math) val;
+                _found |= isUntypedParameter(math.getVal1()) || isUntypedParameter(math.getVal2());
+            }
+        }
+
+        private static boolean isUntypedParameter(Value val) {
+            return val instanceof Parameter && val.getType() == Object.class;
+        }
     }
 
     private boolean isPaginated() {

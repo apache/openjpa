@@ -58,7 +58,19 @@ abstract class MathVal
         StoreContext ctx, Object[] params) {
         Object o1 = _val1.eval(candidate, orig, ctx, params);
         Object o2 = _val2.eval(candidate, orig, ctx, params);
-        return operate(o1, _val1.getType(), o2, _val2.getType());
+        return operate(o1, operandType(_val1, o1), o2, operandType(_val2, o2));
+    }
+
+    /**
+     * Return the type of the given operand. An operand without a known type,
+     * such as an input parameter, takes the type of its value.
+     */
+    private static Class operandType(Val val, Object o) {
+        Class type = val.getType();
+        if (type == Object.class && o != null) {
+            return o.getClass();
+        }
+        return type;
     }
 
     /**

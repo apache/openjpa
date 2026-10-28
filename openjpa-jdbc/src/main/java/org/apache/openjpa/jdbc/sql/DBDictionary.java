@@ -3523,8 +3523,8 @@ public class DBDictionary
     public void mathFunction(SQLBuffer buf, String op, FilterValue lhs, FilterValue rhs) {
         boolean castlhs = false;
         boolean castrhs = false;
-        Class<?> lc = Filters.wrap(lhs.getType());
-        Class<?> rc = Filters.wrap(rhs.getType());
+        Class<?> lc = Filters.wrap(mathOperandType(lhs));
+        Class<?> rc = Filters.wrap(mathOperandType(rhs));
         int type = 0;
         int rtype = 0;
         if (requiresCastForMathFunctions && (lc != rc || (lhs.isConstant() || rhs.isConstant()))) {
@@ -3575,6 +3575,22 @@ public class DBDictionary
         }
 
         buf.append(")");
+    }
+
+    /**
+     * Return the type of an operand of a math function. A constant without a
+     * known type, such as an input parameter, takes the type of its value, so
+     * that a cast of the operand does not truncate the value.
+     */
+    private static Class<?> mathOperandType(FilterValue val) {
+        Class<?> type = val.getType();
+        if (type == Object.class && val.isConstant()) {
+            Object o = val.getValue();
+            if (o != null) {
+                return o.getClass();
+            }
+        }
+        return type;
     }
 
     /**
