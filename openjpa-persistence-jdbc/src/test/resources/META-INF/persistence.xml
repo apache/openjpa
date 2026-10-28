@@ -56,6 +56,7 @@
         <mapping-file>org/apache/openjpa/persistence/entity/orm.xml</mapping-file>
         <mapping-file>META-INF/arrays-orm.xml</mapping-file>
         <mapping-file>META-INF/query-result-orm.xml</mapping-file>
+        <mapping-file>org/apache/openjpa/persistence/lifecycle/orphan-orm.xml</mapping-file>
         <properties>
             <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema(ForeignKeys=true)"/>
@@ -161,6 +162,18 @@
         <class>org.apache.openjpa.persistence.embed.attrOverrides.ZipcodeXml</class>
         <class>org.apache.openjpa.persistence.embed.attrOverrides.XMLOverEntity</class>
         <class>org.apache.openjpa.persistence.embed.attrOverrides.AnnoOverEmbed</class>
+        <properties>
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                  value="buildSchema(ForeignKeys=true)"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="orphan-xml-pu">
+        <mapping-file>org/apache/openjpa/persistence/lifecycle/orphan-orm.xml</mapping-file>
+        <class>org.apache.openjpa.persistence.lifecycle.entity.OrphanXmlParent</class>
+        <class>org.apache.openjpa.persistence.lifecycle.entity.OrphanXmlChild</class>
+        <class>org.apache.openjpa.persistence.lifecycle.entity.OrphanXmlItem</class>
+        <class>org.apache.openjpa.persistence.lifecycle.entity.OrphanXmlDetail</class>
         <properties>
             <property name="openjpa.jdbc.SynchronizeMappings"
                   value="buildSchema(ForeignKeys=true)"/>

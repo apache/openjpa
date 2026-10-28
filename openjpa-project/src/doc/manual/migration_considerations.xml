@@ -1175,10 +1175,12 @@
                     subclass-enhanced entities) and truly transient references may now fail later with
                     a foreign key error. Modifying an embeddable obtained from a query projection no
                     longer throws; the modification is silently not persisted. Re-persisting an entity
-                    after <literal>remove()</literal> and flush is tolerated. In addition,
-                    <literal>orphanRemoval=true</literal> no longer downgrades
-                    <literal>cascade=REMOVE</literal>/<literal>ALL</literal>, so removal is cascaded
-                    immediately when both are combined.
+                    after <literal>remove()</literal> and flush is tolerated. In addition, when
+                    <literal>orphanRemoval=true</literal> is combined with
+                    <literal>cascade=REMOVE</literal>/<literal>ALL</literal>, in annotations or in
+                    <literal>orm.xml</literal>, the related entities are removed immediately on
+                    <literal>remove()</literal> of the owner, and entities dropped from the relation
+                    are deleted as orphans at flush.
                 </para>
             </section>
             <section id="jpa_4.2_FlushOrdering">
