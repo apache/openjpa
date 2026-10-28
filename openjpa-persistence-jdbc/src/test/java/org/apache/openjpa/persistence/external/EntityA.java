@@ -45,10 +45,10 @@ public class EntityA implements java.io.Serializable {
 	private String s2;
 
 	/*
-	 * By default, OpenJPA stores Chars as Ints, so to force the use of
-	 * a char(1) field, you would need to override this processing via
-	 * a DBDictionary property:
-	 * -Dopenjpa.jdbc.DBDictionary=derby(StoreCharsAsNumbers=false)
+	 * Whether OpenJPA stores Chars as Ints or in a char(1) column depends
+	 * on the DBDictionary property StoreCharsAsNumbers, which defaults to
+	 * false on Derby, e.g. -Dopenjpa.jdbc.DBDictionary=h2(StoreCharsAsNumbers=false)
+	 * forces a char(1) column on H2.
 	 */
     @Column(name="USE_STREAMING")
     @ExternalValues({"true=T", "false=F"})
