@@ -198,8 +198,8 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
     private Set<StateManagerImpl> _derefCache = null;
     private Set<StateManagerImpl> _derefAdditions = null;
 
-    // instances with a collection or map field that is converted as a whole,
-    // held weakly; checked at flush for elements changed in place
+    // instances with a field that is converted as a whole, held weakly;
+    // checked at flush for values or elements changed in place
     private transient Set<StateManagerImpl> _wholeConverted = null;
 
     // these are used for method-internal state only
@@ -1781,6 +1781,10 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
                 throw new UnsupportedException(_loc.get
                     ("savepoint-flush-not-supported"));
 
+            // an instance with a value or element changed in place in a
+            // field converted as a whole has to be saved as a dirty one
+            dirtyCheckWholeConverted();
+
             OpenJPASavepoint save = _spm.newSavepoint(name, this);
             if (_savepoints == null || _savepoints.isEmpty()) {
                 save.save(getTransactionalStates());
@@ -1882,6 +1886,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
 
             save = (OpenJPASavepoint) _savepoints.remove(index);
             Collection saved = save.rollback(_savepoints.values());
+            restoreWholeConverted();
             if (_savepointCache != null)
                 _savepointCache.clear();
             if (hasTransactionalObjects()) {
@@ -2550,6 +2555,12 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
                 stateManager.setDereferencedDependent(false, false);
             }
             _derefCache = null;
+        }
+
+        // a value or element changed in place in a field converted as a
+        // whole was not saved for rollback unless a flush found it
+        if (rollback) {
+            restoreWholeConverted();
         }
 
         // perform commit or rollback state transitions on each instance
@@ -4333,9 +4344,9 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
     }
 
     /**
-     * Notify the broker that the given instance has a collection or map
-     * field that is converted as a whole, so that an element changed in
-     * place is found at flush.
+     * Notify the broker that the given instance has a field that is
+     * converted as a whole, so that a value or element changed in place is
+     * found at flush.
      */
     void addWholeConverted(StateManagerImpl sm) {
         lock();
@@ -4350,8 +4361,8 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
     }
 
     /**
-     * Mark dirty the collection and map fields converted as a whole whose
-     * elements were changed in place. This is done before a flush and
+     * Mark dirty the fields converted as a whole whose values or elements
+     * were changed in place. This is done before a flush and
      * before a query decides whether to flush, rather than on every dirty
      * check, since it runs the converters.
      */
@@ -4366,6 +4377,26 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             // iterate over a copy, since dirtying an instance enlists it again
             for (StateManagerImpl sm : new ArrayList<>(_wholeConverted)) {
                 sm.dirtyCheckWholeConverted();
+            }
+        } finally {
+            unlock();
+        }
+    }
+
+    /**
+     * Put back the values of fields converted as a whole that were changed
+     * in place and not yet found by a flush, since they were not saved for
+     * rollback. Done before the instances are rolled back.
+     */
+    private void restoreWholeConverted() {
+        if (_wholeConverted == null || _wholeConverted.isEmpty()) {
+            return;
+        }
+
+        lock();
+        try {
+            for (StateManagerImpl sm : _wholeConverted) {
+                sm.restoreWholeConverted();
             }
         } finally {
             unlock();

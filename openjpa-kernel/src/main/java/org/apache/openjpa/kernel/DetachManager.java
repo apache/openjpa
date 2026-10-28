@@ -801,8 +801,12 @@ public class DetachManager
                 newVal = (_copy) ? _proxy.copyDate((Date) curVal) : curVal;
                 return reproxy(newVal, field);
             case JavaTypes.OBJECT:
-                if (_copy)
+                // a converted value is copied through its converter
+                if (_copy && fmd.isConvertedObject()) {
+                    newVal = fmd.copyConvertedValue(curVal, sm.getContext());
+                } else if (_copy) {
                     newVal = _proxy.copyCustom(curVal);
+                }
                 return reproxy((newVal == null) ? curVal : newVal, field);
             case JavaTypes.PC:
             case JavaTypes.PC_UNTYPED:
