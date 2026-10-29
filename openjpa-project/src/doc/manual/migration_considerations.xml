@@ -156,6 +156,37 @@
                     explicit <literal>1L</literal> literal. No compatibility option exists.
                 </para>
             </section>
+            <section id="jpa_4.2_CriteriaArithmeticResultType">
+                <title>Criteria arithmetic takes its result type from both operands</title>
+                <para>
+                    The result type of <methodname>CriteriaBuilder.sum</methodname>,
+                    <methodname>diff</methodname>, <methodname>prod</methodname>,
+                    <methodname>quot</methodname> and <methodname>neg</methodname> now follows the
+                    numeric promotion rules of section 4.8.6 of the specification: Double if an
+                    operand is Double, else Float, BigDecimal, BigInteger, Long and Integer, in that
+                    order. Previous releases used the type of the first operand, or
+                    <classname>Number</classname> when the first operand was a literal, and did not
+                    convert the value the database returned. For example,
+                    <literal>cb.sum(intPath, longPath)</literal> now returns a
+                    <classname>Long</classname> instead of an <classname>Integer</classname>,
+                    <literal>cb.sum(intPath, 2.5)</literal> returns a <classname>Double</classname>
+                    instead of a truncated <classname>Integer</classname>, and
+                    <literal>cb.neg(intPath)</literal> returns an <classname>Integer</classname> on
+                    databases such as MySQL that compute integer arithmetic as
+                    <literal>BIGINT</literal>. <methodname>Expression.getJavaType()</methodname> of
+                    these expressions changes the same way.
+                </para>
+                <para>
+                    JPQL arithmetic is not changed apart from the promotion of
+                    <classname>Byte</classname> and <classname>Short</classname> to
+                    <classname>Integer</classname>. In particular, a JPQL operation on a
+                    <classname>BigDecimal</classname> and a <classname>Float</classname> or
+                    <classname>Double</classname> operand still returns a
+                    <classname>BigDecimal</classname>, where the Criteria API returns the
+                    floating point type. Application code that casts such results must be adapted
+                    to the new type or to <classname>Number</classname>.
+                </para>
+            </section>
             <section id="jpa_4.2_JPQLArithmeticAssociativity">
                 <title>JPQL arithmetic operators are left associative</title>
                 <para>

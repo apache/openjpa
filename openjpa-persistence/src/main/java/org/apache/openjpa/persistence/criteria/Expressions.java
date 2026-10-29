@@ -21,6 +21,8 @@ package org.apache.openjpa.persistence.criteria;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.ParameterizedType;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -38,6 +40,7 @@ import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Subquery;
 
+import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Literal;
@@ -84,6 +87,65 @@ class Expressions {
              return (Class<N>) Integer.class;
          }
          return type;
+     }
+
+     /**
+      * Gets the result type of an arithmetic operation on the given operands
+      * per JPA spec numeric promotion rules: Double, else Float, else
+      * BigDecimal, else BigInteger, else Long, else Integer.
+      * The type of a numeric literal is the class of its value. If the
+      * promoted type is the type of the first operand that is not a literal,
+      * that type is kept as it is, primitive or not. If the type of an operand
+      * is not a known numeric type, the type of the first operand is used.
+      */
+     @SuppressWarnings("unchecked")
+     static <N extends Number> Class<N> promoteNumeric(Expression<?> x, Expression<?> y) {
+         Class<N> fallback = promoteNumeric((Class<N>) x.getJavaType());
+         if (y == null) {
+             return fallback;
+         }
+         int rank1 = numericRank(numericType(x));
+         int rank2 = numericRank(numericType(y));
+         if (rank1 < 0 || rank2 < 0) {
+             return fallback;
+         }
+         Class<?> result = NUMERIC_PROMOTION_ORDER[java.lang.Math.max(rank1, rank2)];
+         Class<?> base = (isNumericLiteral(x) ? y : x).getJavaType();
+         if (Filters.wrap(base) == result) {
+             return (Class<N>) base;
+         }
+         return (Class<N>) result;
+     }
+
+     private static final Class<?>[] NUMERIC_PROMOTION_ORDER = { Integer.class, Long.class,
+         BigInteger.class, BigDecimal.class, Float.class, Double.class };
+
+     private static boolean isNumericLiteral(Expression<?> e) {
+         return e instanceof Constant && ((Constant<?>) e).arg instanceof Number;
+     }
+
+     private static Class<?> numericType(Expression<?> e) {
+         return isNumericLiteral(e) ? ((Constant<?>) e).arg.getClass() : e.getJavaType();
+     }
+
+     /**
+      * Gets the position of the given type in the numeric promotion order,
+      * or -1 if it is not a known numeric type.
+      */
+     private static int numericRank(Class<?> type) {
+         if (type == null) {
+             return -1;
+         }
+         Class<?> w = Filters.wrap(type);
+         if (w == Short.class || w == Byte.class) {
+             return 0;
+         }
+         for (int i = 0; i < NUMERIC_PROMOTION_ORDER.length; i++) {
+             if (NUMERIC_PROMOTION_ORDER[i] == w) {
+                 return i;
+             }
+         }
+         return -1;
      }
 
      static void setImplicitTypes(Value v1, Value v2, Class<?> expected, CriteriaQueryImpl<?> q) {
@@ -947,7 +1009,7 @@ class Expressions {
 
     public static class Sum<N extends Number> extends BinaryFunctionalExpression<N> {
         public Sum(Expression<? extends Number> x, Expression<? extends Number> y) {
-            super(promoteNumeric((Class<N>)x.getJavaType()), x, y);
+            super(promoteNumeric(x, y), x, y);
         }
 
         public Sum(Expression<? extends Number> x) {
@@ -983,7 +1045,7 @@ class Expressions {
 
     public static class Product<N extends Number> extends BinaryFunctionalExpression<N> {
         public Product(Expression<? extends Number> x, Expression<? extends Number> y) {
-            super(promoteNumeric((Class<N>)x.getJavaType()), x, y);
+            super(promoteNumeric(x, y), x, y);
         }
 
         public Product(Expression<? extends Number> x, Number y) {
@@ -996,9 +1058,13 @@ class Expressions {
 
         @Override
         public Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
-            return factory.multiply(
+            Value value = factory.multiply(
                 Expressions.toValue(e1, factory, q),
                 Expressions.toValue(e2, factory, q));
+            if (numericRank(getJavaType()) >= 0) {
+                value.setImplicitType(getJavaType());
+            }
+            return value;
         }
 
         @Override
@@ -1009,7 +1075,7 @@ class Expressions {
 
     public static class Diff<N extends Number> extends BinaryFunctionalExpression<N> {
         public Diff(Expression<? extends Number> x, Expression<? extends Number> y) {
-            super(promoteNumeric((Class<N>)x.getJavaType()), x, y);
+            super(promoteNumeric(x, y), x, y);
         }
 
         public Diff(Expression<? extends Number> x, Number y) {
@@ -1038,7 +1104,7 @@ class Expressions {
 
     public static class Quotient<N extends Number> extends BinaryFunctionalExpression<N> {
         public Quotient(Expression<? extends Number> x, Expression<? extends Number> y) {
-            super(promoteNumeric((Class<N>)x.getJavaType()), x, y);
+            super(promoteNumeric(x, y), x, y);
         }
 
         public Quotient(Expression<? extends Number> x, Number y) {
