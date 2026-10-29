@@ -643,7 +643,7 @@
                 <dbcp.maxIdle>5</dbcp.maxIdle>
                 <dbcp.minIdle>0</dbcp.minIdle>
 
-                <mysql.server.version>8.0</mysql.server.version>
+                <mysql.server.version>9.7</mysql.server.version>
             </properties>
 
             <build>
@@ -741,7 +741,7 @@
                 <dbcp.maxIdle>5</dbcp.maxIdle>
                 <dbcp.minIdle>0</dbcp.minIdle>
 
-                <mariadb.server.version>11.8</mariadb.server.version>
+                <mariadb.server.version>12.3</mariadb.server.version>
             </properties>
 
             <build>
@@ -844,7 +844,7 @@
                 <dbcp.minIdle>0</dbcp.minIdle>
                 <dbcp.maxTotal>20</dbcp.maxTotal>
 
-                <postgresql.server.version>11</postgresql.server.version>
+                <postgresql.server.version>18</postgresql.server.version>
             </properties>
 
             <build>
