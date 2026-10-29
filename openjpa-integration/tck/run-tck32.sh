@@ -24,18 +24,24 @@ TCK_BASE="${TCK_VERSION:0:3}"
 SCRIPT_ROOT=$(cd -- $(dirname "${0}") && pwd)
 PROJECT_ROOT="$(cd "${SCRIPT_ROOT}/../.." && pwd)"
 
-# derby is removed for now
-# mysql 8.0 is broken! db.delimiter='!' breaks connection
 declare -A FULL_DB_LIST=(
     [mysql]=mysql
     [postgresql]=postgresql
     [mssql]=mssqlserver
     [oracle]=oracle
+    [derby]=derby
+)
+
+declare -A DOCKER_NAMES=(
+    [mysql]=mysql
+    [postgresql]=postgresql
+    [mssql]=server
+    [oracle]=oracle-xe
 )
 
 declare -A VERSIONS=(
     [mysql]='8.4.8' #  8.4.8 9.4.0
-    [postgresql]='16'
+    [postgresql]='15'
 )
 
 #
@@ -43,8 +49,9 @@ declare -A VERSIONS=(
 # using DB selected.
 #
 # Usage:
-#   ./run-tck32.sh [--stop-all]                    # Run full TCK against postgres:16
-#       [optional] --stop-all will will stop all dockerized DB were running
+#   ./run-tck32.sh [--stop-all] [--no-docker]      # Run full TCK against postgres:15
+#       [optional] --stop-all        - will stop all dockerized DB were running
+#       [optional] --no-docker       - will NOT start any docker container
 #   DB_VERSION=18 ./run-tck32.sh                   # Run full TCK against postgres:18
 #   DB_TYPE=mysql ./run-tck32.sh                   # Run full TCK against mysql:8.4.8
 #   DB_HOST=myhost:5432 ./run-tck32.sh             # Custom DB host
@@ -53,7 +60,7 @@ declare -A VERSIONS=(
 # Prerequisites:
 #   - OpenJPA must be built and installed in local Maven repo
 #     (run 'mvn install -DskipTests' from the project root)
-#   - Java 17+ and Maven 3.x
+#   - Java 17+ and Maven 3.9.x (NOTE build will fail with Maven 3.10.0)
 #
 
 set -e
@@ -74,17 +81,25 @@ fi
 
 stopAll() {
     for profile in ${!FULL_DB_LIST[@]}; do
+        if [[ 'derby' == ${profile} ]]; then
+            continue
+        fi
         echo "Stopping dockerized ${profile}"
-        mvn -N -Ptest-${profile}-docker -f ${PROJECT_ROOT} -Ddocker.stopNamePattern=${profile:0:8}* docker:stop -Ddocker.showLogs
+        mvn -N -Ptest-${profile}-docker -f ${PROJECT_ROOT} -Ddocker.stopNamePattern=${DOCKER_NAMES[${profile}]:0:8}* docker:stop -Ddocker.showLogs
     done
 }
 
+START_DOCKER=1
 declare -a EXTRA_ARGS=()
 while [[ $# -gt 0 ]]; do
     case ${1} in
         --stop-all)
             shift
             stopAll
+            ;;
+        --no-docker)
+            shift
+            START_DOCKER=""
             ;;
         *)
             echo "GOT extra arg: ${1}"
@@ -101,16 +116,11 @@ TCK_ZIP="${TCK_DIR}/jakarta-persistence-tck-${TCK_VERSION}.zip"
 TCK_SIG="${TCK_ZIP}.sig"
 TCK_HOME="${TCK_DIR}/persistence-tck"
 OPENJPA_VERSION="${OPENJPA_VERSION:-4.2.0-SNAPSHOT}"
-START_DOCKER=
-
-if [[ -z "${DB_HOST}" ]]; then
-    START_DOCKER=1
-fi
 
 DB_TYPE="${DB_TYPE:-postgresql}"
 DB_HOST="${DB_HOST:-localhost:5555}"
 DB_USER="${DB_USER:-tcktest}"
-DB_PASSWORD="${DB_PASSWORD:-tcktest}"
+DB_PASSWORD="${DB_PASSWORD:-TcktestPwd13}"
 DB_NAME="${DB_NAME:-tcktest}"
 DB_URL=""
 declare -a JPROPS=()
@@ -137,13 +147,17 @@ setProps() {
             DB_URL="jdbc:postgresql://${DB_HOST}/${DB_NAME}"
             ;;
         mssql)
-            DB_NAME=""
+            DB_USER="SA"
             DB_URL="jdbc:sqlserver://${DB_HOST};sendTimeAsDatetime=false;trustServerCertificate=true"
             ;;
+        derby)
+            START_DOCKER=""
+            DB_HOST=localhost:1527
+            DB_NAME=derbyDB
+            DB_URL="jdbc:derby://${DB_HOST}/${DB_NAME};create=true"
+            ;;
         oracle)
-            JPROPS+=("-Dopenjpa.oracle.SID=${DB_NAME}")
-            DB_NAME="XE"
-            DB_URL="jdbc:oracle:thin:@${DB_HOST}:${DB_NAME}"
+            DB_URL="jdbc:oracle:thin:@${DB_HOST}/${DB_NAME}"
             ;;
     esac
     JPROPS+=("-Ddocker.external.${DB_TYPE}.port=${DB_PORT}")
@@ -175,10 +189,10 @@ if [[ ! -f "${TCK_ZIP}" ]]; then
     echo "Downloading JPA ${TCK_BASE} TCK..."
     curl -fsL -o "${TCK_ZIP}" "${TCK_URL}"
     curl -fsL -o "${TCK_SIG}" "${TCK_SIG_URL}"
-    for server in hkp://ipv4.pool.sks-keyservers.net:80 \
+    for server in hkp://keyserver.ubuntu.com:80 \
+                  hkp://ipv4.pool.sks-keyservers.net:80 \
                   hkp://ha.pool.sks-keyservers.net:80 \
                   hkp://pgp.mit.edu:80 \
-                  hkp://keyserver.ubuntu.com:80 \
                   hkp://keyserver.pgp.com:80 \
     ; do
         gpg --keyserver "$server" --recv-keys ABE05725E77C2B44 && break || echo "Trying new server..."
