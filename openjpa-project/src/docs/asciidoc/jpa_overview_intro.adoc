@@ -1,0 +1,36 @@
+[[_jpa_overview_intro]]
+=== Introduction
+
+(((EJB3 Persistence)))
+(((JPA))) The Java Persistence API (JPA) is a specification for the persistence of Java objects to any relational datastore.
+This document provides an overview of JPA 3.2.
+Unless otherwise noted, the information presented applies to all JPA implementations.
+
+[NOTE]
+====
+For coverage of OpenJPA's many extensions to the JPA specification, see the <<_ref_guide_intro,Reference Guide>>.
+====
+
+[[_jpa_overview_intro_audience]]
+==== Intended Audience
+
+This document is intended for developers who want to learn about JPA in order to use it in their applications.
+It assumes that you have a strong knowledge of object-oriented concepts and Java, including annotations and generics.
+It also assumes some experience with relational databases and the Structured Query Language (SQL).
+
+[[_jpa_overview_intro_transpers]]
+==== Lightweight Persistence
+(((lightweight persistence)))
+(((persistent data)))__Persistent data__ is information that can outlive the program that creates it.
+The majority of complex programs use persistent data: GUI applications need to store user preferences across program invocations, web applications track user movements and orders over long periods of time, etc.
+
+_Lightweight persistence_ is the storage and retrieval of persistent data with little or no work from you, the developer.
+For example, Java serialization
+(((serialization))) is a form of lightweight persistence because it can be used to persist Java objects directly to a file with very little effort.
+Serialization's capabilities as a lightweight persistence mechanism pale in comparison to those provided by JPA, however.
+The next chapter compares JPA to serialization and other available persistence mechanisms.
+
+ifdef::backend-docbook[]
+[index]
+== Index
+endif::backend-docbook[]

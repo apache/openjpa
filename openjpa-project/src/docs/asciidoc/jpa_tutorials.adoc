@@ -1,0 +1,1029 @@
+[[_jpa_tutorials]]
+=== JPA Tutorials
+
+[[_jpa_tutorials_intro]]
+==== OpenJPA Tutorials
+
+These tutorials provide step-by-step examples of how to use various facets of the OpenJPA system.
+They assume a general knowledge of JPA and Java.
+For more information on these subjects, see the following URLs:
+
+* http://java.sun.com/[Sun's Java site]
+* <<_jpa_overview_intro,JPA Overview Document>>
+* <<_jpa_resources,Links to JPA>>
+
+
+[[_jpa_tutorial_requirements]]
+===== Tutorial Requirements
+
+These tutorials require that JDK 1.5 or greater be installed on your computer, and that `java` and `javac` are in your ``PATH`` when you open a command shell.
+
+[[_jpa_tutorial]]
+==== OpenJPA Tutorial
+
+In this tutorial you will become familiar with the basic tools and development processes under OpenJPA by creating a simple JPA application.
+
+[[_jpa_tutorial_chapter1]]
+==== The Pet Shop
+
+Imagine that you have decided to create a software toolkit to be used by pet shop operators.
+This toolkit must provide a number of solutions to common problems encountered at pet shops.
+Industry analysts indicate that the three most desired features are inventory maintenance, inventory growth simulation, and behavioral analysis.
+Not one to question the sage advice of experts, you choose to attack these three problems first.
+
+According to the aforementioned experts, most pet shops focus on three types of animals only: dogs, rabbits, and snakes.
+This ontology suggests the following class hierarchy:
+
+
+----
+ Animal ^ | +--------------------+ | | | Dog Rabbit Snake
+----
+
+[[_jpa_tutorial_files]]
+====== Included Files
+
+We have provided an implementation of [class]``Animal`` and [class]``Dog`` classes, plus some helper classes and files to create the initial schema and populate the database with some sample dogs.
+Let's take a closer look at these classes.
+
+* link:../../../tutorial/persistence/AnimalMaintenance.java[ tutorial.persistence.AnimalMaintenance]: Provides some utility methods for examining and manipulating the animals stored in the database. We will fill in method definitions in <<_jpa_tutorial_chapter3>>.
+* link:../../../tutorial/persistence/Animal.java[ tutorial.persistence.Animal]: This is the superclass of all animals that this pet store software can handle.
+* link:../../../tutorial/persistence/Dog.java[ tutorial.persistence.Dog]: Contains data and methods specific to dogs.
+* link:../../../tutorial/persistence/Rabbit.java[ tutorial.persistence.Rabbit]: Contains data and methods specific to rabbits. It will be used in <<_jpa_tutorial_chapter4>> .
+* link:../../../tutorial/persistence/Snake.java[ tutorial.persistence.Snake]: Contains data and methods specific to snakes. It will be used in <<_jpa_tutorial_chapter5>> .
+* link:../../../META-INF/persistence.xml[ ../../META-INF/persistence.xml]: This XML file contains OpenJPA-specific and standard JPA configuration settings.
+
+It is important to load all persistent entity classes at startup so that OpenJPA can match database discriminator values to entity classes.
+Often this happens automatically.
+Some parts of this tutorial, however, do require that all entity classes be loaded explicitly.
+The JPA standard includes persistent class listings in its XML configuration format.
+Add the following lines to [path]_
+../../META-INF/persistence.xml_ between the `<provider> ` and the `<properties>` elements:
+
+
+[source]
+----
+
+<class>tutorial.persistence.Animal</class>
+<class>tutorial.persistence.Dog</class>
+----
+* link:../../../tutorial/persistence/solutions[solutions ]: The solutions directory contains the complete solutions to this tutorial, including finished versions of the [path]_.java_ files listed above.
+
+
+[[_jpa_tutorial_utilities]]
+====== Important Utilities
+
+* ``java``: Runs main methods in specified Java classes.
+* ``javac``: Compiles [path]_.java_ files into [path]_.class_ files that can be executed by ``java ``.
+* (((
+                                org.apache.openjpa.enhance.PCEnhancer
+                            )))``org.apache.openjpa.enhance.PCEnhancer``: Runs the OpenJPA enhancer against the specified classes.
+More information is available in <<_ref_guide_pc_enhance>> of the Reference Guide.
+* (((
+                                org.apache.openjpa.jdbc.meta.MappingTool
+                            )))``org.apache.openjpa.jdbc.meta.MappingTool``: A utility that can be used to create and maintain the object-relational mappings and schema of all persistent classes in a JDBC-compliant datastore.
+This functionality allows the underlying mappings and schema to be easily kept up-to-date with the Java classes in the system.
+See <<_ref_guide_mapping>> of the Reference Guide for more information.
+
+
+[[_jpa_tutorial_chapter2]]
+===== Getting Started
+
+Let's compile the initial classes and see them in action.
+To do so, we must compile the [path]_.java_ files, as we would with any Java project, and then optionally pass the resulting classes through the OpenJPA enhancer.
+
+[NOTE]
+====
+
+(((
+                        CLASSPATH
+                    ))) Be sure that your [var]``CLASSPATH`` is set correctly.
+Note that your OpenJPA install directory should be in the [var]``CLASSPATH``, as the tutorial classes are located in the ` tutorial/persistence` directory under your OpenJPA install directory, and are in the `
+tutorial.persistence` package.
+====
+
+. Make sure you are in the [path]_ tutorial/persistence_ directory. All examples throughout the tutorial assume that you are in this directory.
+. Examine [path]_Animal.java_, [path]_Dog.java_, and [path]_SeedDatabase.java_
+
+These files are good examples of the simplicity JPA engenders.
+As noted earlier, persisting an object or manipulating an object's persistent data requires almost no JPA-specific code.
+For a very simple example of creating persistent objects, please see the `seed` method of [path]_SeedDatabase.java
+_.
+Note the objects are created with normal Java constructors.
+The files [path]_Animal.java_ and [path]_Dog.java_ are also good examples of how JPA allows you to manipulate persistent data without writing any specific JPA code, by providing simple annotations.
+
+Let's take a look at the [path]_Animal.java_ file.
+Notice that the class is a Plain Old Java Object (POJO), with several annotations describing how the class is mapped into a relational database.
+First, let's examine the class level annotations:
+
+
+[source]
+----
+
+@Entity(name="Animal")
+@Table(name="JPA_TUT_ANIMAL")
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name="SPECIES", length=100)
+public abstract class Animal
+{
+    ...
+}
+----
+
+The annotations serve to map the class into the database.
+For more information on these and other annotations, see <<_jpa_overview_meta>> and <<_jpa_overview_mapping>>.
+.. ``@Entity``: This annotation indicates that instances of this class may be persistent entities. The value of the `name` attribute is the entity name, and is used in queries, etc.
+.. ``@Table``: This annotation is used to map the entity to a primary table. The value of the `name` attribute specifies the name of the relational table to use as the primary table.
+.. ``@Inheritance``: When multiple classes in an inheritance hierarchy are persistent entity types, it is important to describe how the inheritance hierarchy is mapped. Setting the value of the `strategy ` attribute to `InheritanceType.SINGLE_TABLE` indicates that the primary table for all subclasses shall be the same table as for the superclass.
+.. ``@DiscriminatorColumn``: With a `SINGLE_TABLE` inheritance mapping strategy, instances of multiple classes will be stored in the same table. This annotation describes a column in that table that is used to determine the type of an instance whose data is stored in a particular row. The ``name`` attribute is the name of the column, and the ` length` attribute indicates the size of the column. By default, the unqualified class name for the instance is stored in the discriminator column. To store a different value for a type, use the `@DiscriminatorValue ` annotation.
+
+
+Let's take a look at our class' field annotations.
+We have chosen to use __field access__ for our entities, meaning the persistence implementation will get and set persistent state directly through our class' declared fields.
+We could have chosen to use __ property access __, in which the implementation accesses persistent state through our JavaBean getter and setter methods.
+In that case, we would have annotated our getter methods rather than our fields.
+
+
+[source]
+----
+
+@Id
+@GeneratedValue
+@Column(name="ID")
+private long id;
+
+@Basic @Column(name="ANIMAL_NAME")
+private String name = null;
+
+@Basic @Column(name="COST")
+private float price = 0f;
+----
+
+The annotations serve to map the fields into the database.
+For more information on these and other annotations, see <<_jpa_overview_meta>>.
+.. ``@Id``: This annotation indicates that the field is to be mapped to a primary key column in the database.
+.. ``@GeneratedValue``: Indicates that the implementation will generate a value for the field automatically.
+.. ``@Column``: This annotation describes the column to which the field will be mapped. The `name` attribute specifies the name of the column.
+.. ``@Basic``: This annotation indicates that the field is simply mapped into a column. There are other annotations that indicate entity relationships and other more complex mappings.
+. Compile the [path]_.java_ files.
+
+
+[source]
+----
+
+javac *.java
+----
+
+You can use any Java compiler instead of ``javac``.
+. Enhance the persistent classes. (Optional)
+
+
+[source]
+----
+
+java org.apache.openjpa.enhance.PCEnhancer Animal.java Dog.java
+----
+
+This step runs the OpenJPA enhancer on the [path]_Animal.java_ and [path]_Dog.java_ files mentioned above.
+See <<_ref_guide_pc_enhance>> of the Reference Guide for more information on the enhancer, including alternatives to enhancement.
+
+
+[NOTE]
+====
+The `-p` flag points the enhancer to your [path]_
+persistence.xml_ configuration file.
+All OpenJPA tools look for default configuration in a resource called [path]_openjpa.xml_ or [path]_META-INF/openjpa.xml_.
+Thus you can avoid passing the ``-p`` argument to tools by using this configuration file name in place of [path]_persistence.xml_.
+See <<_ref_guide_conf>> in the Reference Guide for details on OpenJPA configuration.
+====
+
+
+[[_jpa_tutorial_chapter2_datastore]]
+====== Configuring the Datastore
+
+Now that we've compiled the source files, we're ready to set up the database. http://hsqldb.sourceforge.net[
+Hypersonic SQL], a pure Java relational database, is included in the OpenJPA distribution.
+We have included this database because it is simple to set up and has a small memory footprint; however, you can use this tutorial with any of the relational databases that we support.
+You can also write your own plugin for any database that we do not support.
+For the sake of simplicity, this tutorial only describes how to set up connectivity to a Hypersonic SQL database.
+For more information on how to connect to a different database or how to add support for other databases, see <<_ref_guide_dbsetup>> of the Reference Guide.
+
+.
+
+(((
+                                org.apache.openjpa.jdbc.meta.MappingTool
+                            ))) Create the object-relational mappings and database schema.
+
+
+[source]
+----
+
+java org.apache.openjpa.jdbc.meta.MappingTool Animal.java Dog.java
+----
+
+This command propagates the necessary schema for the specified classes to the database configured in [path]_persistence.xml_.
+If you are using the default Hypersonic SQL setup, the first time you run the mapping tool Hypersonic will create [path]_tutorial_database.properties_ and [path]_tutorial_database.script_ database files in your current directory.
+To delete the database, just delete these files.
+
+By default, JPA uses object-relational mapping information stored in annotations in your source files. <<_jpa_overview_mapping>> of the JPA Overview will help you understand mapping annotations.
+Additionally, <<_ref_guide_mapping>> of the Reference Guide describes your other mapping options in detail.
+
+
+If you are curious, you can view the schema OpenJPA created for the tutorial classes with OpenJPA's schema tool:
+
+
+[source]
+----
+
+java org.apache.openjpa.jdbc.schema.SchemaTool -a reflect -f tmp.schema
+----
+
+This will create a [path]_tmp.schema_ file with an XML representation of the database schema.
+The XML should be self explanatory; see <<_ref_guide_schema_xml>> of the Reference Guide for details.
+You may delete the [path]_tmp.schema_ file before proceeding.
+. Populate the database with sample data.
+
+
+[source]
+----
+
+java tutorial.persistence.SeedDatabase
+----
+
+Congratulations! You have now created an JPA-accessible persistent store, and seeded it with some sample data.
+
+[[_jpa_tutorial_chapter3]]
+===== Inventory Maintenance
+
+The most important element of a successful pet store product, say the experts, is an inventory maintenance mechanism.
+So, let's work on the [class]``Animal `` and [class]``Dog`` classes a bit to permit user interaction with the database.
+
+This chapter should familiarize you with some of the basics of the link:../../ejb-3_0-pr-spec-persistence.pdf[JPA specification] and the mechanics of compiling and enhancing persistent classes.
+You will also become familiar with the mapping tool for propagating the persistent schema into the database.
+
+First, let's add some code to [path]_AnimalMaintenance.java_ that allows us to examine the animals currently in the database.
+
+. Add code to [path]_AnimalMaintenance.java_.
+
+Modify the [method]``getAnimals`` method of [path]_
+AnimalMaintenance.java_ to look like this:
+
+
+[source]
+----
+
+    /**
+     *  Return a list of animals that match the specified query filter.
+     *
+     *  @param  filter      the JPQL filter to apply to the query
+     *  @param  cls         the class of animal to query on
+     *  @param  em          the EntityManager to obtain the query from
+     */
+    public static List getAnimals(String filter, EntityManager em)
+    {
+        // Execute a query for the specified filter.
+        Query query = em.createQuery(filter);
+        return query.getResultList();
+    }
+----
+. Compile [path]_AnimalMaintenance.java_.
+
+
+[source]
+----
+
+javac AnimalMaintenance.java
+----
+. Take a look at the animals in the database.
+
+
+[source]
+----
+
+java tutorial.persistence.AnimalMaintenance list Animal
+----
+
+Notice that [method]``list`` optionally takes a query filter.
+Let's explore the database some more, this time using filters:
+
+
+[source]
+----
+
+java tutorial.persistence.AnimalMaintenance list "select a from Animal a where a.name = 'Binney'"
+java tutorial.persistence.AnimalMaintenance list "select a from Animal a where a.price <= 50"
+----
+
+The Java Persistence Query Language (JPQL) is designed to look and behave much like an object oriented SQL dialect.
+The `name` and `
+price` fields identified in the above queries map to the member fields of those names in [class]`` tutorial.persistence.Animal``.
+More details on JPQL syntax is available in <<_jpa_overview_query>> of the JPA Overview.
+
+Great! Now that we can see the contents of the database, let's add some code that lets us add and remove animals.
+
+[[_jpa_tutorial_chapter3_persist]]
+====== Persisting Objects
+
+As new dogs are born or acquired, the store owner will need to add new records to the inventory database.
+In this section, we'll write the code to handle additions through the [class]``tutorial.persistence.AnimalMaintenance `` class.
+
+This section will familiarize you with the mechanism for storing persistent instances in a JPA entity manager.
+We will create a new dog, obtain a [class]``Transaction`` from a [class]``EntityManager``, and, within the transaction, make the new dog object persistent.
+
+[class]``tutorial.persistence.AnimalMaintenance`` provides a reflection-based facility for creating any type of animal, provided that the animal has a two-argument constructor whose first argument corresponds to the name of the animal and whose second argument is an implementation-specific primitive.
+This reflection-based system is in place to keep this tutorial short and remove repetitive creation mechanisms.
+It is not a required part of the JPA specification.
+
+. Add the following code to [path]_ AnimalMaintenance.java_.
+
+Modify the [method]``persistObject`` method of [path]_
+AnimalMaintenance.java_ to look like this:
+
+
+[source]
+----
+
+    /**
+     *  Performs the actual JPA work of putting <code>object</code>
+     *  into the data store.
+     *
+     *  @param  object  the object to persist in the data store
+     */
+    public static void persistObject(EntityManager em, Object object)
+    {
+        // Mark the beginning of the unit of work boundary.
+        em.getTransaction().begin();
+
+        em.persist(object);
+
+        // Mark the end of the unit of work boundary,
+        // and record all inserts in the database.
+        em.getTransaction().commit();
+        System.out.println("Added " + object);
+    }
+----
+
+
+[NOTE]
+====
+In the above code, we pass in an [class]``EntityManager``. [class]``EntityManager``s may be either container managed or application managed.
+In this tutorial, because we're operating outside a container, we're using application managed [class]``EntityManager`` s.
+In managed environments, [class]``EntityManager``s are typically container managed, and thus injected or looked up via JNDI.
+Application managed [class]``EntityManager``s can be used in both managed and unmanaged environments, and are created by an [class]``EntityManagerFactory`` . An [class]``EntityManagerFactory`` can be obtained from the [class]``jakarta.persistence.Persistence`` class.
+This class provides some convenience methods for obtaining an [class]``EntityManagerFactory ``.
+====
+. Recompile [path]_AnimalMaintenance.java_.
+
+
+[source]
+----
+
+javac AnimalMaintenance.java
+----
+
+You now have a mechanism for adding new dogs to the database.
+Go ahead and add some by running `java tutorial.persistence.AnimalMaintenance add Dog
+<name> <price>` For example:
+
+[source]
+----
+
+java tutorial.persistence.AnimalMaintenance add Dog Fluffy 35
+----
+
+You can view the contents of the database with:
+
+[source]
+----
+
+java tutorial.persistence.AnimalMaintenance list Dog
+----
+
+[[_jpa_tutorial_chapter3_delete]]
+====== Deleting Objects
+
+What if someone decides to buy one of the dogs? The store owner will need to remove that animal from the database, since it is no longer in the inventory.
+
+This section demonstrates how to remove data from the datastore.
+
+. Add the following code to [path]_AnimalMaintenance.java_.
+
+Modify the [method]``deleteObjects`` method of [path]_
+AnimalMaintenance.java_ to look like this:
+
+
+[source]
+----
+
+    /**
+     *  Performs the actual JPA work of removing
+     *  <code>objects</code> from the datastore.
+     *
+     *  @param  objects     the objects to persist in the datastore
+     *  @param  em          the EntityManager to delete with
+     */
+    public static void deleteObjects(Collection objects, EntityManager em)
+    {
+        // Mark the beginning of the unit of work boundary.
+        em.getTransaction().begin();
+
+        // This method removes the objects in 'objects' from the data store.
+        for (Object ob : objects)
+        {
+            System.out.println("Removed animal: " + ob);
+            em.remove(ob);
+        }
+
+        // Mark the end of the unit of work boundary, and record all
+        // deletes in the database.
+        em.getTransaction().commit();
+    }
+----
+. Recompile [path]_AnimalMaintenance.java_.
+
+
+[source]
+----
+
+javac AnimalMaintenance.java
+----
+. Remove some animals from the database.
+
+
+[source]
+----
+
+java tutorial.persistence.AnimalMaintenance remove <query>
+----
+
+Where [replaceable]``<query>`` is a query string like those used for listing animals above.
+
+All right.
+We now have a basic pet shop inventory management system.
+From this base, we will add some of the more advanced features suggested by our industry experts.
+
+[[_jpa_tutorial_chapter4]]
+===== Inventory Growth
+
+Now that we have the basic pet store framework in place, let's add support for the next pet in our list: the rabbit.
+The rabbit is a bit different than the dog; pet stores sell them all for the same price, but gender is critically important since rabbits reproduce rather easily and quickly.
+Let's put together a class representing a rabbit.
+
+In this chapter, you will see some more queries and write a bidirectional relation between objects.
+
+Provided with this tutorial is a file called [path]_Rabbit.java_ which contains a sample [class]``Rabbit`` implementation.
+
+. Examine [path]_Rabbit.java_.
+. The Rabbit class above contains a bidirectional relationship between parents and children. From the Java side of things, a bidirectional relationship is simply a pair of fields that are conceptually linked. There is no special Java work necessary to express bidirectionality. However, you must identify the relationship as bidirectional using JPA <<_jpa_overview_meta, annotations>> so the mapping tool can create the most efficient schema.
+
+Insert this snippet of code immediately _before_ the ``children`` field declaration in the [path]_Rabbit.java
+_ file.
+
+
+[source]
+----
+
+    @ManyToMany
+    @JoinTable(name="RABBIT_CHILDREN",
+        joinColumns=@JoinColumn(name="PARENT_ID"),
+        inverseJoinColumns=@JoinColumn(name="CHILD_ID"))
+----
+
+The `@ManyToMany` annotation indicates that `children ` is one side of a many-to-many relation. `@JoinTable` describes how this relation maps to a database join table.
+The annotation's ``joinColumns`` name the join table's foreign key columns linking to the owning instance (the parent). In this case, column `
+RABBIT_CHILDREN.PARENT_ID` is a foreign key to the parent's `
+ID` primary key column.
+Similarly, the `inverseJoinColumns ` attribute denotes the foreign key columns linking to the collection elements (the children). For more details on the `@JoinTable` annotation, see <<_jpa_overview_mapping>> of the JPA Overview.
+
+Now we'll map the other side of this bidirectional relation, the `
+parents` field.
+Insert the following snippet of code immediately __before__ the `parents` field declaration in the [path]_Rabbit.java_ file.
+The `mappedBy` attribute identifies the name of the owning side of the relation.
+
+
+[source]
+----
+
+    @ManyToMany(mappedBy="children")
+----
+. Compile [path]_Rabbit.java_.
+
+
+[source]
+----
+
+javac Rabbit.java
+----
+. Enhance the [class]``Rabbit`` class. (Optional)
+
+
+[source]
+----
+
+java org.apache.openjpa.enhance.PCEnhancer Rabbit.java
+----
+. Refresh the object-relational mappings and database schema.
+
+
+[source]
+----
+
+java org.apache.openjpa.jdbc.meta.MappingTool Rabbit.java
+----
+
+Now that we have a Rabbit class, let's get some preliminary rabbit data into the database.
+
+. Add a `<class>` entry for [class]`` Rabbit`` to [path]_../../META-INF/persistence.xml_.
+
+
+[source]
+----
+
+<class>tutorial.persistence.Rabbit</class>
+----
+. Create some rabbits.
+
+Run the following commands a few times to add some male and female rabbits to the database:
+
+
+[source]
+----
+
+java tutorial.persistence.AnimalMaintenance add Rabbit <name> false
+java tutorial.persistence.AnimalMaintenance add Rabbit <name> true
+----
+
+Now run some breeding iterations.
+
+
+[source]
+----
+
+java tutorial.persistence.Rabbit breed 2
+----
+. Look at your new rabbits.
+
+
+[source]
+----
+
+java tutorial.persistence.AnimalMaintenance list Rabbit
+java tutorial.persistence.AnimalMaintenance details "select r from Rabbit r where r.name = '<name>'"
+----
+
+
+[[_jpa_tutorial_chapter5]]
+===== Behavioral Analysis
+
+Often, pet stores sell snakes as well as rabbits and dogs.
+Pet stores are primarily concerned with a snake's length; much like rabbits, pet store operators usually sell them all for a flat rate.
+
+This chapter demonstrates more queries, schema manipulation, and additional relation types.
+
+Provided with this tutorial is a file called [path]_Snake.java_ which contains a sample [class]``Snake`` implementation.
+Let's get it compiled and loaded:
+
+. Examine and compile [path]_Snake.java_.
+
+
+[source]
+----
+
+javac Snake.java
+----
+. Enhance the class. (Optional)
+
+
+[source]
+----
+
+java org.apache.openjpa.enhance.PCEnhancer Snake.java
+----
+. Refresh the mappings and database.
+
+As we have created a new persistent class, we must map it to the database and change the schema to match.
+So run the mapping tool:
+
+
+[source]
+----
+
+java org.apache.openjpa.jdbc.meta.MappingTool Snake.java
+----
+. Add a `<class>` entry for [class]`` Snake`` to [path]_../../META-INF/persistence.xml_.
+
+
+[source]
+----
+
+<class>tutorial.persistence.Snake</class>
+----
+
+Once you have compiled everything, add a few snakes to the database using:
+
+[source]
+----
+
+java tutorial.persistence.AnimalMaintenance add Snake "name" <length>
+----
+
+Where [replaceable]``<length>`` is the length in feet for the new snake.
+To see the new snakes in the database, run:
+
+[source]
+----
+
+java tutorial.persistence.AnimalMaintenance list Snake
+----
+
+Unfortunately for the massively developing rabbit population, snakes often eat rabbits.
+Any good inventory system should be able to capture this behavior.
+So, let's add some code to [path]_Snake.java_ to support the snake's eating behavior.
+
+First, let's modify [path]_Snake.java_ to contain a list of eaten rabbits.
+
+. Add the following code snippets to [path]_Snake.java_.
+
+
+[source]
+----
+
+    // This list will be persisted into the database as
+    // a one-to-many relation.
+    @OneToMany(mappedBy="eater")
+    private Set<Rabbit> giTract = new HashSet<Rabbit> ();
+----
+
+Note that we specified a `mappedBy` attribute in this example.
+This is because the relation is bidirectional; that is, the rabbit has knowledge of which snake ate it.
+We could have left out the `eater` field and instead created a standard unidirectional relation.
+In fact, in a bidirectional many-to-one relation, the many side must always be the owner.
+
+For more information on types of relations, see <<_jpa_overview_mapping_field>> of the JPA Overview.
+
+Modify the `toString(boolean)` method to output the giTract list.
+
+
+[source]
+----
+
+    public String toString(boolean detailed)
+    {
+        StringBuffer buf = new StringBuffer(1024);
+        buf.append("Snake ").append(getName());
+
+        if (detailed)
+        {
+            buf.append(" (").append(length).append(" feet long) sells for ");
+            buf.append(getPrice()).append(" dollars.");
+            buf.append("  Its gastrointestinal tract contains:\n");
+            for (Rabbit rabbit : giTract)
+                buf.append("\t").append(rabbit).append("\n");
+        }
+        else
+            buf.append("; ate " + giTract.size() + " rabbits.");
+
+        return buf.toString();
+    }
+----
+
+Add the following methods.
+
+
+[source]
+----
+
+    /**
+     *  Kills the specified rabbit and eats it.
+     */
+    public void eat(Rabbit dinner)
+    {
+        // Consume the rabbit.
+        dinner.kill();
+        dinner.setEater(this);
+        giTract.add(dinner);
+        System.out.println("Snake " + getName() + " ate rabbit "
+            + dinner.getName() + ".");
+    }
+
+
+    /**
+     *  Locates the specified snake and tells it to eat a rabbit.
+     */
+    public static void eat(EntityManager em, String filter)
+    {
+        em.getTransaction().begin();
+
+        // Find the desired snake(s) in the data store.
+        Query query = em.createQuery(filter);
+        List<Snake> results = query.getResultList();
+        if (results.isEmpty())
+        {
+            System.out.println("No snakes matching '" + filter + "' found");
+            return;
+        }
+
+        Query uneatenQuery = em.createQuery
+            ("select r from Rabbit r where r.isDead = false");
+        Random random = new Random();
+        for (Snake snake : results)
+        {
+            // Run a query for a rabbit whose 'isDead' field indicates
+            // that it is alive.
+            List<Rabbit> menu = uneatenQuery.getResultList();
+            if (menu.isEmpty())
+            {
+                System.out.println("No live rabbits in DB.");
+                break;
+            }
+
+            // Select a random rabbit from the list.
+            Rabbit dinner = menu.get(random.nextInt(menu.size()));
+
+            // Perform the eating.
+            System.out.println(snake + " is eating:");
+            snake.eat(dinner);
+        }
+
+        em.getTransaction().commit();
+    }
+
+
+    public static void main(String[] args)
+    {
+        if (args.length == 2 && args[0].equals("eat"))
+        {
+            EntityManagerFactory emf = Persistence.
+                createEntityManagerFactory(null);
+            EntityManager em = emf.createEntityManager();
+            eat(em, args[1]);
+            em.close();
+            emf.close();
+            return;
+        }
+
+        // If we get here, something went wrong.
+        System.out.println("Usage:");
+        System.out.println("  java tutorial.persistence.Snake eat "
+            + "\"snakequery\"");
+    }
+----
+. Add an `eater` field to [path]_Rabbit.java_, and a getter and setter.
+
+
+[source]
+----
+
+    @ManyToOne @JoinColumn(name="EATER_ID")
+    private Snake eater;
+
+    ...
+
+    public Snake getEater()
+    {
+        return eater;
+    }
+
+
+    public void setEater(Snake snake)
+    {
+        eater = snake;
+    }
+----
+
+The `@ManyToOne` annotation indicates that this is the many side of the bidirectional relation.
+The many side must always be the owner in this type of relation.
+The `@JoinColumn` describes the foreign key that joins the rabbit table to the snake table.
+The rabbit table has an ``EATER_ID`` column that is a foreign key to the `ID ` primary key column of the snake table.
+. Compile [path]_Snake.java_ and [path]_Rabbit.java_ and optionally enhance the classes.
+
+
+[source]
+----
+
+javac Snake.java Rabbit.java
+java org.apache.openjpa.enhance.PCEnhancer Snake.java Rabbit.java
+----
+. Refresh the mappings and database.
+
+
+[source]
+----
+
+java org.apache.openjpa.jdbc.meta.MappingTool Snake.java Rabbit.java
+----
+
+Now, experiment with the following commands:
+
+[source]
+----
+
+java tutorial.persistence.Snake eat "select s from Snake s where s.name = '<name>'"
+java tutorial.persistence.AnimalMaintenance details "select s from Snake s where s.name = '<name>'"
+----
+
+[[_jpa_tutorial_chapter5_query]]
+====== Complex Queries
+
+Imagine that one of the snakes in the database was named Killer.
+To find out which rabbits Killer ate, we could run either of the following two queries:
+
+[source]
+----
+
+java tutorial.persistence.AnimalMaintenance details "select s from Snake s where s.name = 'Killer'"
+java tutorial.persistence.AnimalMaintenance list "select r from Rabbit r where r.eater.name = 'Killer'"
+----
+
+The first query is snake-centric - the query runs against the [class]``Snake `` class, looking for all snakes named Killer and providing a detailed listing of them.
+The second is rabbit-centric - it examines the rabbits in the database for instances whose `eater` is named Killer.
+This second query demonstrates that the simple Java 'dot' syntax is used when traversing a to-one field in a query.
+
+It is also possible to traverse collection fields.
+Imagine that there was a rabbit called Roger in the datastore and that one of the snakes ate it.
+In order to determine who ate Roger Rabbit, you could run a query like this:
+
+[source]
+----
+
+java tutorial.persistence.AnimalMaintenance details "select s from Snake s inner join s.giTract r where r.name = 'Roger'"
+----
+
+[[_jpa_tutorial_chapter6]]
+===== Extra Features
+
+Congratulations! You are now the proud author of a pet store inventory suite.
+Now that you have all the major features of the pet store software implemented, it's time to add some extra features.
+You're on your own; think of some features that you think a pet store should have, or just explore the features of JPA.
+
+Here are a couple of suggestions to get you started:
+
+* Animal pricing.
+
+Modify [class]``Animal`` to contain an inventory cost and a resale price.
+Calculate the real dollar amount eaten by the snakes (the sum of the inventory costs of all the consumed rabbits), and the cost assuming that all the eaten rabbits would have been sold had they been alive.
+Ignore the fact that the rabbits, had they lived, would have created more rabbits, and the implications of the reduced food costs due to the not-quite-as-hungry snakes and the smaller number of rabbits.
+* Dog categorization.
+
+Modify [class]``Dog`` to have a relation to a new class called [class]``Breed``, which contains a name identifying the breed of the dog and a description of the breed.
+Put together an admin tool for breeds and for associating dogs and breeds.
+
+
+[[_jpa_j2ee_tutorial]]
+==== J2EE Tutorial
+
+By deploying OpenJPA into a J2EE environment, you can maintain the simplicity and performance of OpenJPA, while leveraging J2EE technologies such as container managed transactions (JTA/JTS), enterprise objects with remote invocation (EJB), and managed deployment of multi-tiered applications via an application server.
+This tutorial will demonstrate how to deploy OpenJPA-based J2EE applications and showcase some basic enterprise JPA design techniques.
+The tutorial's sample application models a basic garage catalog system.
+While the application is relatively trivial, the code has been constructed to illustrate simple patterns and solutions to common problems when using OpenJPA in an enterprise environment.
+
+[[_jpa_j2ee_tutorial_requirements]]
+===== Prerequisites for the OpenJPA J2EE Tutorial
+
+This tutorial assumes that you have installed OpenJPA and setup your classpath according to the installation instructions appropriate for your platform.
+In addition, this tutorial requires that you have installed and configured a J2EE-compliant application server, such as WebLogic or JBoss, running on JDK 1.5.
+If you use a different application server not listed here, this tutorial may be adaptable to your application server with small changes; refer to your application server's documentation for any specific classpath and deployment descriptor requirements.
+
+This tutorial assumes a reasonable level of experience with OpenJPA and JPA.
+We provide a number of other tutorials for basic concepts, including enhancement, schema mapping, and configuration.
+This tutorial also assumes a basic level of experience with J2EE components, including session beans, JNDI, JSP, and EAR/WAR/JAR packaging.
+Sun and/or your application server company may provide tutorials to get familiar with these components.
+
+In addition, this tutorial uses Ant to build the deployment archives.
+While this is the preferred way of building a deployment of the tutorial, one can easily build the appropriate JAR, WAR, and EAR files by hand, although that is outside the scope of this document.
+
+[[_jpa_j2ee_tutorial_installation_types]]
+===== J2EE Installation Types
+
+Every application server has a different installation process for installing J2EE components.
+OpenJPA can be installed in a number of ways, which may or may not be appropriate to your application server.
+While this document focuses mainly upon using OpenJPA as a JCA resource, there are other ways to use OpenJPA in a J2EE environment.
+
+* ``JPA``: J2EE 5 allows for the automatic injection of [class]`` EntityManager`` instances into the J2EE context.
+* Manual Binding into JNDI: Your application may require some needs in initializing OpenJPA that go beyond the JPA and JCA specifications. In this case, you can manually instantiate OpenJPA and place it into the JNDI tree. This process, however, is not seamless and can require a fair bit of custom application server code to bind an instance of [class]`` org.apache.openjpa.persistence.EntityManagerFactoryImpl`` into JNDI.
+
+
+[[_jpa_j2ee_tutorial_installing_sample]]
+===== Installing the J2EE Sample Application
+
+Installing the sample application involves first compiling and building a deployment archive (.ear) file.
+This file then needs to be deployed into your application server.
+
+[[_jpa_j2ee_tutorial_building_sample]]
+====== Compiling and Building The Sample Application
+
+Navigate to the [path]_samples/persistence/j2ee_ directory of your OpenJPA installation.
+
+Ensure that the JNDI name in the setSessionContext() method in ejb/CarBean.java matches your JCA installation.
+This defaults to ``java:/openjpa-ejb ``, but the actual value will depend on the configuration of your JCA deploy and your application server's JNDI context.
+E.g.
+the default name for a WebLogic 9 install would be simply ``openjpa-ejb``.
+
+Compile the source files in place both in this base directory as well as the nested [path]_ejb_ and [path]_jsp_ directories:
+
+[source]
+----
+
+javac *.java  ejb/*.java jsp/*.java
+----
+
+Enhance the Car class.
+(Optional)
+
+[source]
+----
+
+java org.apache.openjpa.enhance.PCEnhancer Car.java
+----
+
+Run the mapping tool; make sure that your [path]_ META-INF/persistence.xml
+_ file includes the same connection information (e.g.
+Driver, URL, etc.) as your JCA installation.
+You should update your JCA configuration to include [class]``samples.persistence.j2ee.Car`` in the <<_openjpa.metadatafactory,MetaDataFactory>> property:
+
+[source]
+----
+
+<config-property name="MetaDataFactory">Types=samples.persistence.j2ee.Car</config-property/>
+----
+
+[source]
+----
+
+java org.apache.openjpa.jdbc.meta.MappingTool Car.java
+----
+
+Build an J2EE application archive by running Ant against the [path]_
+build.xml_.
+This will create [path]_
+openjpa-persistence-j2ee-sample.ear_.
+This ear can now be deployed to your appserver.
+Be sure to add the class [class]``samples.j2ee.Car`` to the `openjpa.PersistentClasses` OpenJPA configuration property.
+This will automatically register the Entity.
+
+[source]
+----
+
+ant -f build.xml
+----
+
+[[_jpa_j2ee_tutorial_sample_jboss]]
+====== Deploying Sample To JBoss
+
+Place the ear file in the [path]_deploy_ directory of your JBoss installation.
+You can use the above hints to view the JNDI tree to see if [class]``samples.j2ee.ejb.CarHome`` was deployed to JNDI.
+
+[[_jpa_j2ee_tutorial_sample_weblogic]]
+====== Deploying Sample To WebLogic 9
+
+Place the ear file in the [path]_autodeploy_ directory of your WebLogic domain.
+Production mode (see your startWebLogic.sh/cmd file) should be set to false to enable auto-deployment.
+If the application was installed correctly, you should see `openjpa-persistence-j2ee-sample ` listed in the Deployments section of the admin console.
+In addition you should find `CarHome` listed in the JNDI tree under `AdminServer->samples->j2ee->ejb` . Ensure that you have added the class [class]``samples.j2ee.Car`` to the `openjpa.PersistentClasses` OpenJPA configuration property in the `META-INF/ra.xml` file.
+
+[[_jpa_j2ee_tutorial_using]]
+===== Using The Sample Application
+
+The sample application installs itself into the web layer at the context root of sample.
+By browsing to ``
+http://yourserver:yourport/openjpa-persistence-j2ee-sample``, you should be presented with a simple list page with no cars.
+You can edit, add, delete car instances.
+In addition, you can query on the underlying [class]``
+Car`` instances by passing in an JPQL query into the marked form (such as `select car from Car car where car.model="Some Model" ` ).
+
+[[_jpa_j2ee_tutorial_architecture]]
+===== Sample Architecture
+
+The garage application is a simple enterprise application that demonstrates some of the basic concepts necessary when using OpenJPA in the enterprise layer.
+
+The core model wraps a stateless session bean facade around an entity.
+Using a session bean provides both a remote interface for various clients as well as providing a transactional context in which to work (and thus avoiding any explicit transactional code).
+
+This session bean uses the JPA's detachment capabilities to provide an automatic Data Transfer Object mechanism for the primary communication between the application server and the (possibly remote) client.
+The [class]``Car `` instance will be used as the primary object upon which the client will work.
+
+* ``samples/persistence/j2ee/Car.java``: The core of the sample application. This is the entity class that OpenJPA will use to persist the application data. Instances of this class will also fill the role of data transfer object (DTO) for EJB clients. To accomplish this, [class]``Car `` implements [class]``java.io.Serializable`` so that remote clients can access cars as parameters and return values from the EJB.
+* `` samples/persistence/j2ee/jsp/SampleUtilities.java``: This is a simple facade to aggregate some common J2EE behavior into some static methods. By placing all of the functionality into a single facade class, we can reduce code maintenance of our JSPs.
+* ``samples/persistence/j2ee/ejb/Car*.java``: The source for the [class]``CarEJB`` session bean. Clients can use the [class]`` CarHome`` and [class]``CarRemote`` interfaces to find, manipulate, and persist changes to [class]``Car`` transfer object instances. By using J2EE transactional features, the implementation code in [path]_CarBean.java_ can be focused almost entirely upon business and persistence logic without worrying about transactions.
+* ``samples/persistence/j2ee/jsp/*.jsp``: The web presentation client. These JSPs are not aware of the JPA; they simply use the [class]`` CarEJB`` session bean and the [class]``Car`` transfer object to do all the work.
+* ``samples/persistence/j2ee/resources/*``: Files required to deploy to the various appservers, including J2EE deployment descriptors, WAR/ EJB/ EAR descriptors, as well as appserver specific files.
+* ``samples/persistence/j2ee/build.xml``: A simple Ant build file to help in creating a J2EE EAR file.
+
+
+[[_jpa_j2ee_tutorial_notes]]
+===== Code Notes and J2EE Tips
+
+. Entity classes are excellent candidates for the Data Transfer Object Pattern. This pattern attempts to reduce network load, as well as group business logic into concise units. For example, [method]``CarBean.edit`` allows you to ensure that all values are correct before committing a transaction, instead of sequentially calling getters and setters on the session facade. This is especially true when using RMI such as from a Swing based application connecting to an application server.
+
+[class]``CarEJB`` works as a session bean facade to demarcate transactions, provide finder methods, and encapsulate complex business logic at the server level.
+. [method]``EntityManager.close()`` should be called at the end of every EJB method. In addition to ensuring that your code will not attempt to access a closed [class]``EntityManager``, it allows OpenJPA to free up unused resources. Since an [class]``EntityManager`` is created for every transaction, this can increase the scalability of your application.
+. You should not use [method]`` EntityManager.getTransaction()`` when using JTA to manage your transactions. Instead, OpenJPA will integrate with JTA to automatically govern transactions based on your EJB transaction configuration.
+. While serialization of entity instances is relatively straightforward, there are several things to keep in mind:
+** While "default fetch group" values will always be returned to the client upon serialization, lazily loaded fields will not as the [class]``EntityManager `` will have been closed before those fields attempt to serialize. You can either access those fields before serialization, configure the fetch type of the relationships, or configure your JPQL queries to eagerly fetch data.
+. It is not necessarily required that you use EJBs and container-managed transactions to demarcate transactions, although that is probably the most common method. In EJBs using bean managed transactions, you can control transactions through the [class]``javax.transaction.UserTransaction `` interface. Furthermore, outside of session beans you can control the JPA layer's transaction via the [class]`` jakarta.persistence.EntityTransaction`` interface.
+. [class]``EntityManager``s are allocated on a per-Transaction basis. Calling [method]``getEntityManager`` from the same [class]`` EntityManagerFactory`` within the same EJB method call will always return the same entity manager, although the user-visible object may be proxied, so might not compare equal using the `==` operator.
+
+
+ifdef::backend-docbook[]
+[index]
+== Index
+endif::backend-docbook[]

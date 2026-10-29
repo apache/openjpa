@@ -1,0 +1,71 @@
+= Apache OpenJPA {project-version} User's Guide
+The Apache Software Foundation
+:description: Official User Guide for Apache OpenJPA.
+:keywords: Apache OpenJPA, User Guide
+:toc: left
+:toclevels: 10
+:icons: font
+:sectlinks:
+
+:sectnums:
+:sectnumlevels: 10
+
+[[_introduction]]
+== Introduction
+
+include::openjpa_intro.adoc[]
+include::openjpa_legal.adoc[]
+
+[[_jpa_overview]]
+== Java Persistence API
+
+include::jpa_overview_intro.adoc[]
+include::jpa_overview_why.adoc[]
+include::jpa_overview_arch.adoc[]
+include::jpa_overview_pc.adoc[]
+include::jpa_overview_meta.adoc[]
+include::jpa_overview_persistence.adoc[]
+include::jpa_overview_emfactory.adoc[]
+include::jpa_overview_em.adoc[]
+include::jpa_overview_trans.adoc[]
+include::jpa_overview_query.adoc[]
+include::jpa_overview_criteria.adoc[]
+include::jpa_overview_sqlquery.adoc[]
+include::jpa_overview_mapping.adoc[]
+include::jpa_overview_conclusion.adoc[]
+
+//[[_tutorials]]
+//== Tutorials
+//
+//include::jpa_tutorials.adoc[]
+
+[[_ref_guide]]
+== Reference Guide
+
+include::ref_guide_intro.adoc[]
+include::ref_guide_conf.adoc[]
+include::ref_guide_logging.adoc[]
+include::ref_guide_dbsetup.adoc[]
+include::ref_guide_pc.adoc[]
+include::ref_guide_meta.adoc[]
+include::ref_guide_mapping.adoc[]
+include::ref_guide_deploy.adoc[]
+include::ref_guide_runtime.adoc[]
+include::ref_guide_caching.adoc[]
+include::ref_guide_encryption.adoc[]
+include::ref_guide_remote.adoc[]
+include::ref_guide_slice.adoc[]
+include::ref_guide_integration.adoc[]
+include::ref_guide_optimization.adoc[]
+include::ref_guide_instrumentation.adoc[]
+
+//[[_samples_guide_part]]
+//== Samples
+//
+//include::samples_guide.adoc[]
+
+== Appendices
+
+include::jpa_resources.adoc[]
+include::supported_databases.adoc[]
+include::migration_considerations.adoc[]

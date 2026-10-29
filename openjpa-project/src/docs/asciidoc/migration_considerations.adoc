@@ -1,0 +1,990 @@
+
+:sectnums!:
+
+[appendix]
+[[_migration_considerations]]
+= Migration Considerations
+
+[[_jpa_4.2]]
+== OpenJPA 4.2.0
+
+[[_jpa_4.2_incompatibilities]]
+=== Incompatibilities
+
+OpenJPA 4.2.0 implements the Jakarta Persistence 3.2 specification and passes the Jakarta Persistence 3.2 TCK.
+The following sections indicate changes that are incompatible between OpenJPA 4.1.x releases and the 4.2.0 release.
+Most of them align OpenJPA with the specification and cannot be switched off; where a configuration option restores the previous behavior, it is mentioned in the respective section.
+Open follow-up items from the review of this work are tracked under OPENJPA-2945.
+
+[[_jpa_4.2_requirements]]
+==== Platform and Dependency Requirements
+
+OpenJPA 4.2.0 requires Java 17 or later at build and run time (4.1.x required Java 11). All jars contain Java 17 class files.
+Java 21 and Java 25 runtimes are supported; class files of newer JDKs are read through `xbean-asm9-shaded` 4.30.
+
+The `jakarta.persistence:jakarta.persistence-api` dependency was raised from 3.1.0 to 3.2.0 (Jakarta EE 11 level). Applications must update explicit dependencies on the API and recompile.
+Custom wrappers implementing `jakarta.persistence` interfaces (``EntityManager``, ``EntityManagerFactory``, ``Query``, ``CriteriaBuilder``, ``PersistenceUnitInfo``, ...) must implement the new 3.2 methods.
+The `persistence_3_2.xsd` and `orm_3_2.xsd` schemas are bundled and selected for documents declaring ``version="3.2"``; `version="3.1"` documents are still not accepted (use 3.0 or 3.2).
+
+XML column mapping (``XMLValueHandler``) and the detection of XML-mapped value classes now use `jakarta.xml.bind` (JAXB 4) instead of `javax.xml.bind` (JAXB 2). The optional dependencies are `jakarta.xml.bind:jakarta.xml.bind-api` 4.0.x and a JAXB 4 runtime such as `com.sun.xml.bind:jaxb-impl` 4.0.x.
+Value classes that are still annotated with `javax.xml.bind.annotation` annotations are no longer recognized as XML column types and silently fall back to the default (serialized) mapping.
+Migrate such classes to ``jakarta.xml.bind.annotation``.
+
+The managed JDBC driver versions used for testing were raised: MySQL Connector/J 9.x (``com.mysql:mysql-connector-j``, driver class ``com.mysql.cj.jdbc.Driver``), MariaDB Connector/J 3.5.x, Microsoft `mssql-jdbc` 13.x and Derby 10.16.x (which itself requires Java 17). `MySQLDictionary` now also recognises `com.mysql.cj.jdbc.exceptions.MySQLTimeoutException` as a timeout exception, so lock and query timeouts are classified correctly with Connector/J 8 and later.
+Drivers are not shipped with OpenJPA; see <<_dbcompatible>> for the tested database and driver versions.
+
+Build-only changes: the Maven profile `test-h2-2` was removed (use ``test-h2``), and the legacy JPA 1.0 / 2.0 TCK profiles in `openjpa-integration/tck` were replaced by the Jakarta Persistence 3.2 TCK runner (``-Ptck32-profile``, ``run-tck32.sh``).
+
+[[_jpa_4.2_securitymanager]]
+==== SecurityManager Support Removed
+
+All `AccessController.doPrivileged(...)` calls were removed from OpenJPA.
+Running OpenJPA under a Java `SecurityManager` with a policy that grants permissions only to the OpenJPA jars is no longer supported (the `SecurityManager` is deprecated for removal since Java 17 and permanently disabled since Java 24, JEP 486).
+
+As a consequence the public `PrivilegedAction` factory methods of `org.apache.openjpa.lib.util.J2DoPrivHelper` (for example ``getForNameAction``, ``getClassLoaderAction``, ``newInstanceAction``, ``getContextClassLoaderAction``) were removed; only ``getLineSeparator()``, ``getPathSeparator()``, `newInstance(Class)` and `newDeamonThread(Runnable, String)` remain.
+Third-party code (custom product derivations, dictionaries, plugins, application server integrations) using these helpers must call the JDK API directly.
+Plugin classes instantiated through `J2DoPrivHelper.newInstance` may now have a non-public no-argument constructor.
+
+[[_jpa_4.2_jpqlreservedidentifiers]]
+==== New JPQL Reserved Identifiers
+
+The JPQL grammar now knows the Jakarta Persistence 3.2 keywords ``ID``, ``VERSION``, ``FIRST``, ``LAST``, ``ON``, ``NULLS``, ``CAST``, ``STRING``, ``INTEGER``, ``LONG``, ``FLOAT``, ``DOUBLE``, ``TREAT``, ``UNION``, ``INTERSECT``, ``EXCEPT``, `RIGHT` and `REPLACE` (case-insensitive), as well as the `||` concatenation operator.
+In previous releases these words could be used as identification variables and result aliases, for example `SELECT e.id AS id FROM E e ORDER BY id` or ``SELECT first FROM Foo first``.
+Such queries are now rejected with a parse error, as required by section 4.4.1 of the specification.
+
+With the exception of ``INTEGER``, ``LONG``, `FLOAT` and `DOUBLE` the new keywords may still be used as path components, so attributes named ``id``, ``version``, `first` or `replace` can still be navigated (``o.version``). Attributes named ``integer``, ``long``, `float` or `double` can no longer be referenced in a JPQL path expression; rename them or access them through the Criteria API or native SQL.
+Rename identification variables and aliases that collide with the new keywords (most commonly ``id``, ``version``, ``first``, `last` and ``on``). There is no soft-keyword mode and no compatibility option.
+
+[[_jpa_4.2_jpqlintegerliterals]]
+==== JPQL Integer Literals are typed Integer
+
+Previous releases always created JPQL integer literals as [class]``java.lang.Long``, so `SELECT 1 FROM ...` or `e.intField + 1` produced [class]``Long`` results.
+As required by section 4.8.5 of the specification, an integer literal without an ``l``/``L`` suffix that fits into the `int` range is now a [class]``java.lang.Integer``; arithmetic on [class]``Byte``, [class]``Short`` and [class]``Integer`` operands is promoted to [class]``Integer`` (also in the Criteria API).
+
+Application code that casts such results to [class]``Long`` must be adapted to [class]``Integer`` or [class]``Number``, or use an explicit `1L` literal.
+No compatibility option exists.
+
+[[_jpa_4.2_criteriaarithmeticresulttype]]
+==== Criteria arithmetic takes its result type from both operands
+
+The result type of [method]``CriteriaBuilder.sum``, [method]``diff``, [method]``prod``, [method]``quot`` and [method]``neg`` now follows the numeric promotion rules of section 4.8.6 of the specification: Double if an operand is Double, else Float, BigDecimal, BigInteger, Long and Integer, in that order.
+Previous releases used the type of the first operand, or [class]``Number`` when the first operand was a literal, and did not convert the value the database returned.
+For example, `cb.sum(intPath, longPath)` now returns a [class]``Long`` instead of an [class]``Integer``, `cb.sum(intPath, 2.5)` returns a [class]``Double`` instead of a truncated [class]``Integer``, and `cb.neg(intPath)` returns an [class]``Integer`` on databases such as MySQL that compute integer arithmetic as ``BIGINT``. [method]``Expression.getJavaType()`` of these expressions changes the same way.
+
+JPQL arithmetic is not changed apart from the promotion of [class]``Byte`` and [class]``Short`` to [class]``Integer``.
+In particular, a JPQL operation on a [class]``BigDecimal`` and a [class]``Float`` or [class]``Double`` operand still returns a [class]``BigDecimal``, where the Criteria API returns the floating point type.
+Application code that casts such results must be adapted to the new type or to [class]``Number``.
+
+[[_jpa_4.2_jpqlarithmeticassociativity]]
+==== JPQL arithmetic operators are left associative
+
+Operators of equal precedence in a JPQL arithmetic expression are now evaluated from left to right, as required by section 4.8.1 of the specification.
+Previous releases parsed them right associatively, so `a - b - c` was evaluated as `a - (b - c)` and `a / b * c` as ``a / (b * c)``.
+For example, `SELECT c.age - 10 - 20 FROM CompUser c` returned `29` for an age of `19` and now returns ``-11``.
+
+Relative precedence of the additive and the multiplicative operators is unchanged.
+Queries that relied on the previous grouping have to be parenthesized explicitly.
+No compatibility option exists.
+
+[[_jpa_4.2_queryvalueconversion]]
+==== Query value conversion
+
+A [class]``String`` literal compared with a numeric path or parameter (``WHERE e.intField = '1'``, ``cb.equal(path, "12")``) is now parsed as a number of the path's type; previously a one-character literal was compared as a [class]``Character`` and longer literals were rejected.
+The character comparison is only used when the literal cannot be parsed as a number.
+Selecting a collection- or map-valued attribute (``SELECT e.addresses FROM
+                    Employee e``, ``query.select(root.get("addresses"))``) is treated as an implicit join and returns one row per element, typed as the element type, instead of a collection-typed projection. [class]``java.sql.Date`` values are no longer implicitly converted to [class]``java.sql.Time`` or [class]``java.sql.Timestamp`` when query values are compared (the same rule already applied to [class]``java.util.Date``). Enum names read from padded `CHAR` columns are trimmed before ``Enum.valueOf()``.
+No compatibility option exists.
+
+[[_jpa_4.2_extractweek]]
+==== EXTRACT(WEEK) is the ISO-8601 week
+
+`EXTRACT(WEEK FROM ...)` evaluated in memory, for example over a candidate collection, returned the day of the week instead of the week of the year.
+It now returns the ISO-8601 week, so `2023-12-31` is in week `52` and `2021-01-03` in week ``53``.
+On H2 the function is rendered as ``EXTRACT(ISO_WEEK FROM ...)``, because H2 numbers a plain `WEEK` by the week definition of the JVM default locale.
+In memory, [class]``java.util.Date``, [class]``java.util.Calendar`` and [class]``java.time.Instant`` values are now accepted by `EXTRACT` and are read in the default time zone (a calendar in its own time zone), and `EXTRACT` of null is null.
+
+[method]``DateTimeExtractField.getEquivalent()`` is deprecated and returns null for `QUARTER` and ``WEEK``, which have no [class]``ChronoField``.
+Use [method]``getTemporalField()`` instead.
+
+[[_jpa_4.2_queryresultlist]]
+==== Query.getResultList() returns a materialized ArrayList
+
+`Query.getResultList()` previously returned a lazy [class]``org.apache.openjpa.lib.rop.ResultList`` wrapper that streamed rows on demand (see <<_openjpa.fetchbatchsize>>) and became invalid when the query or the [class]``EntityManager`` was closed.
+Jakarta Persistence 3.2 requires a mutable [class]``List``, so the result is now copied into a [class]``java.util.ArrayList``: all rows are fetched immediately, the list stays usable after the [class]``EntityManager`` is closed, and it is no longer an instance of [class]``ResultList``. `Query.getResultStream()` also materializes the complete result first.
+Large result set collections on entity fields (<<_ref_guide_pc_scos_proxy_lrs>>) are not affected.
+
+The memory and performance implication is that the whole result set is held in memory at once: a query that previously streamed rows in <<_openjpa.fetchbatchsize>> sized windows now allocates one list entry per row before `getResultList()` returns.
+Applications that scan very large result sets should use `setFirstResult()` / `setMaxResults()` paging, or obtain the kernel query via `OpenJPAQuery.getDelegate()` for lazy semantics.
+Code that casts the result to [class]``ResultList`` or [class]``DelegatingResultList`` must be changed.
+
+Applications that depend on the previous streaming behaviour can restore it with the `MaterializeQueryResultList` compatibility option:
+
+[source]
+----
+
+<property name="openjpa.Compatibility" value="MaterializeQueryResultList=false"/>
+----
+
+With the option disabled, `Query.getResultList()` again returns the lazy [class]``ResultList`` that honours <<_openjpa.fetchbatchsize>> and becomes invalid once the query or the [class]``EntityManager`` is closed.
+The option defaults to ``true``, which is the behaviour since 4.2.0.
+
+[[_jpa_4.2_bulkdeletenocascade]]
+==== Bulk DELETE no longer cascades
+
+In previous releases a JPQL or Criteria bulk `DELETE` against an entity with a single-valued cascade-delete relation - a `@OneToOne` or `@ManyToOne` with `cascade=REMOVE` or ``orphanRemoval=true``, or OpenJPA's own `@Dependent` - was executed in memory: every instance was loaded and removed through the persistence context, cascading to related entities and, as a side effect, cleaning up the rows of the join tables and element collection tables of the candidate.
+As required by section 4.10 of the specification, bulk operations do not cascade.
+Related entities are left untouched by a `DELETE` query and will cause foreign key violations unless the database defines ``ON DELETE CASCADE``.
+
+A candidate _without_ such a relation - one that only has an ``@ElementCollection``, or a collection whose cascade is declared on the elements, as ``@OneToMany(cascade=REMOVE)``, `orphanRemoval=true` and `@ElementDependent` do - already took the bulk SQL path, and the rows of its join tables and element collection tables were left behind on the deleted primary keys.
+Those rows are now removed, so for such a candidate the behaviour described below is a fix rather than a replacement for cascading that was lost.
+
+The rows of the join tables and element collection tables owned by the deleted entities are not entities themselves and are removed.
+A `DELETE` query against a candidate that owns such a table therefore executes as a sequence of statements rather than as one: the criteria are evaluated once by a ``SELECT DISTINCT <pk> FROM <entity table> WHERE ...``, then a `DELETE FROM <owned table> WHERE <join column> IN (...)` is issued for every owned table and finally a `DELETE FROM <entity table> WHERE <pk> IN (...)` for the entity rows.
+The keys are materialized before anything is deleted, so no statement re-evaluates the criteria against an already modified database, and the `IN` lists are split into chunks the database accepts.
+The reported update count is the number of deleted entity rows.
+A candidate with a composite primary key, or with a join foreign key that does not consist of a single column referencing that primary key, is executed in memory instead.
+
+A `DELETE` query that carries no criteria at all - no `WHERE` clause and no discriminator or subclass condition - matches every candidate row, so every row of every owned table belongs to a deleted candidate.
+Such a query skips the key select and issues an unqualified `DELETE FROM <owned table>` for every owned table, followed by the unqualified delete of the entity table.
+Any condition whatsoever falls back to the key based path described above.
+
+Three consequences are worth noting for a filtered delete.
+The primary keys of all matching candidates are held in memory while the query runs, so a delete that matches millions of rows now needs memory proportional to the number of matches.
+A configured query timeout is applied to each statement, which turns it into a per-chunk budget rather than a budget for the whole operation.
+And the criteria are evaluated by a statement of their own, separate from the deletes, so under `READ COMMITTED` a row that stops matching between the key select and the delete is still deleted.
+
+One case is not covered: for a uni-directional self-referencing `@ManyToMany` the join table is only cleaned by the owner column, so rows whose inverse column references a deleted primary key remain.
+This is a pre-existing limitation; delete those rows explicitly or define `ON DELETE CASCADE` on both foreign keys.
+
+Set `openjpa.Compatibility=CleanupOwnedTablesOnBulkDelete=false` (default ``true``) to suppress the cleanup.
+This does not restore the behavior of any released version - the cleanup ships with 4.2.0 - it only leaves the rows of the owned tables behind.
+Note that a candidate which owns a bi-directional join table can only be bulk deleted in SQL when the cleanup is enabled; with the option turned off such a query is executed in memory, which loads the matching instances and deletes them one row at a time - a `SELECT` of the candidates followed by one `DELETE FROM <entity table> WHERE <pk> = ?` per instance instead of a single bulk statement - and, because the rows of a bi-directional join table are maintained by the inverse side, still leaves those join table rows behind.
+
+Delete dependent entities explicitly (separate bulk deletes or ``em.remove()``) or rely on database-level cascades.
+A bulk `UPDATE` or `DELETE` that still has to be executed in memory now flushes the persistence context, which is described in <<_jpa_4.2_inmemorybulkflush>>.
+See also <<_jpa_langref_bulk_ops>>.
+
+[[_jpa_4.2_inmemorybulkflush]]
+==== An in-memory bulk operation flushes the persistence context
+
+Not every bulk `UPDATE` or `DELETE` can be expressed as a single statement.
+A delete whose candidate is mapped to more than one table, a candidate with delete lifecycle listeners, a candidate whose owned tables cannot be cleaned by a single key column and a query that was handed its candidates with `OpenJPAQuery.setCandidateCollection()` are executed in memory instead: OpenJPA loads the matching instances and applies the operation to them one by one.
+The result is a modified persistence context, not a modified database.
+
+Such an operation now flushes the persistence context when it has matched at least one instance, so the count returned by `executeUpdate()` has reached the database by the time the call returns.
+Previously nothing was written until the next flush or the commit, which meant that an `em.clear()` before the commit discarded the operation altogether while the count had already been reported, and that a `find()` in the same transaction after a `clear()` still saw the old row.
+
+The flush is not restricted to the instances the operation touched.
+The kernel flushes the transactional cache as a whole - there is no public API for flushing single instances - so pending changes that have nothing to do with the bulk operation are written as well, and the locks, triggers and constraint checks they imply happen earlier than before.
+
+Under the default `FlushModeType.AUTO` this is usually not a change of its own, because the query that loads the candidates flushes the context before the operation starts - but note that this pre-flush of _unrelated_ pending changes is itself new in 4.2.0, see <<_jpa_4.2_flushbeforequeries>>.
+The trailing flush is the only flush, and therefore a side effect in its own right, in two cases:
+
+* when the query never reaches the datastore at all, which is the case whenever its candidates were handed over with `OpenJPAQuery.setCandidateCollection()` - such a query is executed in memory from the start and does not pre-flush under any flush mode, including ``AUTO``;
+* with ``FlushModeType.COMMIT``, or <<_openjpa.flushbeforequeries>>``=false`` or `with-connection` while no connection is open, where a dirty instance of a type that is not on the query's access path used to stay pending.
+
+The flush also moves the lifecycle callbacks of the instances the operation itself touched: `@PostRemove` and `@PostUpdate` fire during a flush, so they now run inside ``executeUpdate()``.
+This is not an exotic case - a candidate with delete lifecycle listeners is one of the reasons a bulk delete is executed in memory in the first place.
+
+Nothing in the specification requires either behaviour.
+Jakarta Persistence 3.1 section 4.10 states that "the persistence context is not synchronized with the result of the bulk update or delete" and recommends that "bulk update and delete operations should only be performed within a transaction in a new persistence context or before fetching or accessing entities whose state might be affected by such operations". The flush is therefore a choice: a reported row count that has not reached the database is the worse of the two, so it is the default.
+
+Set `openjpa.Compatibility=FlushAfterInMemoryBulkOperation=false` (default ``true``) to restore the 4.1.x timing.
+This only suppresses the flush, not the operation: the matching instances are still modified or marked for deletion in the persistence context and are written by the next flush or at commit, together with their `@PostRemove` and `@PostUpdate` callbacks.
+An `em.clear()` before that flush loses the operation, which is the behaviour this option restores.
+
+The same fallback applies when the context cannot be flushed at all: a store manager that does not support incremental flushing (the default of [class]``AbstractStoreManager``, so every bulk operation of such a store takes the in-memory path), or a savepoint set through a <<_openjpa.savepointmanager>> that cannot flush incrementally - which the default `in-mem` manager cannot.
+The flush after the operation is then skipped and logged at `INFO` rather than raising an exception, so the operation behaves as if the option had been turned off: it is applied in the context and written at commit, but the row count `executeUpdate()` returned has not reached the database when the call returns.
+
+Note that this covers only the flush after the operation.
+The flush _before_ the candidate query, described in <<_jpa_4.2_flushbeforequeries>>, is guarded against an unsupported store but not against a savepoint, so a bulk operation issued with pending changes and a savepoint set still fails with the [class]``SavepointManager`` message, exactly as in earlier releases.
+
+[[_jpa_4.2_flushbeforequeries]]
+==== Completed access paths for Criteria and collection-valued queries
+
+As before, a query with `FlushModeType.AUTO` (the default, <<_openjpa.flushbeforequeries>>``=true``) flushes pending changes only when a new, dirty or deleted instance belongs to a type in the query's access path, that is to a type the query actually reads.
+This is what section 3.10.8 of the specification asks for: the duty covers the updates "which could potentially affect the result of the query", and the provider may discharge it "by flushing those entities to the database or by some other means".
+
+What changed is that the access paths themselves are now complete, so queries that failed to flush a relevant change do so.
+For a Criteria query a type reached through an implicit join (a path navigated with [method]``Path.get``), through a join of a join, through a fetch join, inside a subquery or behind a join of a correlated join used to be left out.
+For JPQL, a collection- or map-valued path used without a join variable - ``SIZE(x.coll)``, `x.coll IS EMPTY` - did not contribute its element and key types, because the declared type of such a field is [class]``Collection`` or [class]``Map``.
+A dirty instance of any of those types was not flushed before the query ran, which could yield a stale result; such a query now flushes where it did not before.
+
+<<_openjpa.ignorechanges>>``=true`` is unchanged and keeps its documented effect for every ``SELECT``, whatever the flush mode of the query is.
+It is an OpenJPA extension that deliberately opts a `SELECT` out of the visibility guarantee of section 3.10.8; the specification states that guarantee equally for a flush mode set on the query object and for one inherited from the persistence context, so the option is not overridden by either.
+
+[[_jpa_4.2_rollbackonexception]]
+==== Exceptions mark the transaction rollback-only; closed EntityManager checks
+
+As required by section 3.3.7.1 of the specification, every [class]``RuntimeException`` raised by an [class]``EntityManager`` or [class]``Query`` method now marks the active transaction for rollback, except [class]``NoResultException``, [class]``NonUniqueResultException``, [class]``LockTimeoutException`` and [class]``QueryTimeoutException``.
+In previous releases the transaction remained committable after, for example, an [class]``IllegalArgumentException`` from ``find()``, `createNamedQuery()` or an invalid [class]``CriteriaQuery``.
+Applications that caught such an exception and committed the same transaction now receive a [class]``RollbackException`` and must restart the transaction.
+
+Operations on a closed [class]``EntityManager`` or its [class]``Query`` objects now consistently throw [class]``IllegalStateException``.
+This includes ``getEntityManagerFactory()``, ``getCriteriaBuilder()``, ``getMetamodel()``, ``getDelegate()``, ``setProperty()``, ``isJoinedToTransaction()``, ``createEntityGraph()``, `createQuery(CriteriaQuery)` and ``Query.getHints()``, ``getLockMode()``, `closeAll()` and the parameter accessors, which used to work on a closed [class]``EntityManager``.
+Further changes: ``getLockMode()``/``setLockMode()`` on a bulk ``UPDATE``/``DELETE`` query and `executeUpdate()` on a `SELECT` query throw [class]``IllegalStateException``; `createQuery(CriteriaQuery)` snapshots the criteria state, so modifying the [class]``CriteriaQuery`` afterwards no longer affects the created [class]``Query``; `isJoinedToTransaction()` returns `true` for an active resource-local transaction.
+
+[[_jpa_4.2_findargumentvalidation]]
+==== Argument validation in find(), getReference(), detach(), contains(), remove()
+
+`find(cls, null)` previously returned ``null``, a primary key of the wrong type or a non-entity class surfaced later as an OpenJPA [class]``ArgumentException`` or a failed lookup, and removing a detached unenhanced entity could be silently ignored.
+These methods now validate their arguments as required by the specification and throw [class]``IllegalArgumentException`` (marking the transaction for rollback) for `null` keys, non-entity classes, primary keys of an incompatible type (numeric widening such as [class]``Integer`` to [class]``Long`` is accepted, narrowing is rejected), non-entities passed to ``detach()``/``contains()``, and detached instances passed to ``remove()``. `getReference()` throws [class]``EntityNotFoundException`` also for unenhanced entities.
+
+Guard against `null` keys, pass keys of the declared `@Id` type and `merge()` detached instances before removing them.
+No compatibility option exists.
+
+[[_jpa_4.2_closewithactivetransaction]]
+==== EntityManager.close() with an active resource-local transaction
+
+Previously `EntityManager.close()` threw an [class]``InvalidStateException`` while a resource-local transaction was active; a deferred close existed only for managed (JTA) transactions with the `CloseOnManagedCommit` compatibility flag.
+As required by sections 3.3.2 and 7.7 of the specification, `close()` now always returns and the persistence context is released when the transaction completes: `isOpen()` reports `false` immediately while ``em.getTransaction().commit()``/``rollback()`` remain callable.
+
+Code that relied on the exception to detect a leaked open transaction must check `em.getTransaction().isActive()` itself and end the transaction explicitly.
+There is no option to restore the exception.
+
+[[_jpa_4.2_entitymanagerfactorylifecycle]]
+==== EntityManagerFactory lifecycle and properties
+
+`EntityManagerFactory.close()` could previously be called more than once, and methods of a closed factory either worked or failed deep inside the kernel.
+Now ``getProperties()``, ``createEntityManager()``, ``getCriteriaBuilder()``, ``getMetamodel()``, `getPersistenceUnitUtil()` and `getSchemaManager()` throw [class]``IllegalStateException`` after ``close()``, and a second `close()` throws as well. `createEntityManager(SynchronizationType.UNSYNCHRONIZED)` throws [class]``IllegalStateException`` instead of [class]``UnsupportedOperationException`` (it is forbidden for `RESOURCE_LOCAL` units and still unimplemented for JTA units).
+
+`EntityManagerFactory.getProperties()` no longer creates a temporary [class]``EntityManager`` to merge [class]``EntityManager``-level defaults (lock timeout, cache modes, fetch plan settings) into its result, and ``null``-valued entries are removed; read such defaults from `EntityManager.getProperties()` instead. `addNamedQuery()` now replaces an existing definition of the same name and records flush mode, max results and lock mode; a Criteria query keeps its compiled criteria form and is replayed by `createNamedQuery()` as a Criteria query instead of being re-labelled as JPQL, so renderings that are not parseable JPQL (unescaped string literals, unparenthesized subqueries) work as well. `getQueryString()` on the recreated query still returns the CQL rendering; as that rendering is not a query string the query can be parsed from, such a query is neither registered in the prepared query cache nor rebuilt from an entry that another query left there under the same text.
+The retained criteria form is transient, so a Criteria query registered at runtime is not recoverable from a serialized metadata repository.
+
+[[_jpa_4.2_queryparameters]]
+==== Query parameter API
+
+Reading an unbound parameter via `getParameterValue()` now throws [class]``IllegalStateException`` (previously [class]``IllegalArgumentException`` or ``null``); [class]``Parameter`` objects obtained from another query are rejected with [class]``IllegalArgumentException``; `getParameter(String, Class)` now correctly accepts an exact or wider type (the positional variant `getParameter(int, Class)` still only accepts the exact type or a subtype). A parameter bound with `TemporalType.DATE` is converted to [class]``java.sql.Date`` (time of day dropped) instead of being passed through unchanged.
+
+Catch [class]``IllegalStateException`` for unbound parameters and expect [class]``java.sql.Date`` semantics for ``DATE``-typed parameters compared against `TIMESTAMP` columns.
+
+[[_jpa_4.2_storedprocedurequery]]
+==== StoredProcedureQuery semantics
+
+Positional stored procedure parameters are now resolved 1-based (previously the 0-based column index was used as fallback, so position 1 could match the second `IN` column), and only ``IN``/``INOUT``/ `OUT` columns are registered, so positional indexes shift for PostgreSQL functions with a return value.
+When a procedure declares `OUT` parameters the connection is kept open (with auto-commit temporarily disabled) until the result list is closed, so that `REF_CURSOR` results can be consumed; consume and close such result lists promptly.
+
+`executeUpdate()` now requires an active transaction ([class]``TransactionRequiredException``) and `getUpdateCount()` returns `-1` after it; ``setLockMode()``/``getLockMode()`` throw [class]``IllegalStateException``; `getOutputParameterValue()` throws [class]``IllegalArgumentException`` for unknown names or positions; [class]``NoResultException`` and [class]``NonUniqueResultException`` propagate unwrapped; procedure metadata lookup retries with the lower-cased name; an `orm.xml```named-stored-procedure-query`` overrides an annotation of the same name.
+
+[[_jpa_4.2_criteriametamodel]]
+==== Criteria API and Metamodel
+
+Several OpenJPA extensions and lenient behaviors of the Criteria API were tightened to the specification: ``CriteriaBuilder.array()``/``tuple()`` reject nested compound selections and ``multiselect()``/``select()`` reject duplicate aliases with [class]``IllegalArgumentException``; `cb.literal(null)` throws [class]``IllegalArgumentException`` (use ``nullLiteral(Class)``); `Path.get()` on a basic path and `From.getCorrelationParent()` on a non-correlated [class]``From`` throw [class]``IllegalStateException``; ``Metamodel.entity(Class)``/``embeddable(Class)`` throw [class]``IllegalArgumentException`` for unknown types instead of returning ``null``; `ParameterExpression.getPosition()` returns `null` (previously threw an internal exception).
+
+Embeddable-typed attributes are no longer reported as associations (``isAssociation()`` is ``false``, `getBindableType()` is ``SINGULAR_ATTRIBUTE``), `getBindableJavaType()` returns the declared attribute type, and ``getId(Class)``/``getDeclaredId(Class)`` require strict type assignability. `cb.treat(Root, Class)` is now implemented; `treat()` on joins and paths returns the argument unchanged without narrowing, and `TREAT` only matches the exact treated class, not its subclasses.
+Flatten nested selections, use unique aliases and adjust catch blocks and `null` checks accordingly.
+
+Rejecting nested compound selections removes a documented OpenJPA extension that supported arbitrarily nested tuple and array selections.
+Applications relying on it can restore the previous behavior with the compatibility option ``AllowNestedCompoundSelection``:
+
+[source]
+----
+<property name="openjpa.Compatibility" value="AllowNestedCompoundSelection=true"/>
+----
+
+[[_jpa_4.2_persistenceunitutilidentifier]]
+==== PersistenceUnitUtil.getIdentifier() returns the plain identifier
+
+`PersistenceUnitUtil.getIdentifier()` previously returned the internal [class]``org.apache.openjpa.util.OpenJPAId`` wrapper ([class]``LongId``, [class]``StringId``, ...) for managed entities and `null` for new, detached or unenhanced entities and for non-entities.
+It now returns the raw identifier value (the plain key or the `IdClass` instance for compound identity), also for new, detached and unenhanced entities, and throws [class]``IllegalArgumentException`` for objects that are not entities.
+Code that cast the result to [class]``OpenJPAId`` must use the plain value or call ``OpenJPAEntityManager.getObjectId()``.
+
+[[_jpa_4.2_cachemodeproperties]]
+==== Cache mode properties on EntityManager.setProperty()
+
+`EntityManager.setProperty("jakarta.persistence.cache.retrieveMode", ...)` and `"jakarta.persistence.cache.storeMode"` previously accepted the enum constants as well as their [class]``String`` names.
+The new Jakarta Persistence 3.2 setters `setCacheRetrieveMode()` and `setCacheStoreMode()` are now used to apply these properties, and a [class]``String`` value is passed to the setter unconverted, which fails with an [class]``IllegalArgumentException`` (argument type mismatch); previously the call succeeded.
+Pass the [class]``CacheRetrieveMode``/[class]``CacheStoreMode`` enum constant, or call the setters directly. [class]``String`` values given as ``find()``, `refresh()` or query hints continue to work.
+
+[[_jpa_4.2_mapkeycolumn]]
+==== Default map key column renamed to <field>_KEY
+
+For [class]``Map``-valued fields without `@MapKeyColumn` the key column was previously named `KEY` (which most dictionaries turned into `KEY0` because `KEY` is a reserved word). As required by section 11.1.35 of the specification, the default is now the field name followed by `\_KEY` (for example ``PHONES_KEY``). Schemas created by earlier releases no longer match: schema validation fails, `SynchronizeMappings=buildSchema` adds a new column and existing key data reads back as ``null``.
+
+Declare the existing column explicitly, for example ``@MapKeyColumn(name="KEY0")``, or rename the column in the database.
+Alternatively, set the <<_openjpa.compatibility>> option `UseSpecDefaultMapKeyColumnName` to ``false``, which restores the old default for all map fields that do not declare a key column:
+
+[source]
+----
+
+<property name="openjpa.Compatibility" value="UseSpecDefaultMapKeyColumnName=false"/>
+----
+
+An explicit `@MapKeyColumn` is honoured regardless of the setting.
+See also <<_jpa_overview_mapping_map>>.
+
+[[_jpa_4.2_mappingresolution]]
+==== Attribute overrides, @OrderBy and inverse map keys
+
+`@AttributeOverride` on an entity now also applies to the entity's own declared fields (previously only mapped superclass fields were overridden), and an override name without ``key.``/``value.`` prefix on an element collection [class]``Map`` refers to the map value instead of failing.
+Attribute names in `@OrderBy` and overrides are resolved case-insensitively as a fallback. `@MapKeyColumn` on the inverse side of a `@OneToMany(mappedBy)` map is now written to the target entity's table (additional `UPDATE` statements), and an `@ElementCollection` whose table coincides with an entity's primary table is no longer written separately.
+
+Verify the column names produced by overrides that were previously ignored or rejected, and `@OrderBy` values that differ from attribute names only in case.
+
+[[_jpa_4.2_sequencegeneratorname]]
+==== @SequenceGenerator without sequenceName
+
+A `@SequenceGenerator` annotation without `sequenceName` previously fell back to the OpenJPA default sequence ``OPENJPA_SEQUENCE``, so all such generators shared one database sequence.
+As defined by the specification, the generator name is now used as the database sequence name, and DDL generation creates one sequence per generator. `orm.xml```sequence-generator`` elements are not affected.
+
+For existing databases either add `sequenceName="OPENJPA_SEQUENCE"` (or the previously used name) to each generator, or create the new per-generator sequences.
+See <<_jpa_overview_mapping_sequence_seqgen>>.
+
+[[_jpa_4.2_sequencegeneratorwithoutsequences]]
+==== @SequenceGenerator on a database without sequences
+
+A named `@SequenceGenerator` previously failed outright on every database whose dictionary defines no `NextSequenceQuery` - MySQL, MariaDB before 10.3, Apache Derby, Microsoft SQL Server and Sybase as configured by OpenJPA, and any other dictionary that declares none - with ``Error instantiating named sequence "...": Your database dictionary does
+                    not support native sequences``, and there was no property that avoided it.
+Such a generator is now backed by a [class]``org.apache.openjpa.jdbc.kernel.ValueTableJDBCSeq`` instead: a counter row in ``OPENJPA_SEQUENCES_TABLE``, whose `initialValue` and `allocationSize` are honoured, so the identifiers are unique and allocated in blocks as they would be from a real sequence.
+This is a design decision with a compatibility dimension, not something Jakarta Persistence demands; the specification leaves the realisation of a generator to the provider, and the observable contract is the uniqueness of the identifiers.
+
+What this means in practice:
+
+* The `OPENJPA_SEQUENCES_TABLE` has to exist. The schema tool and `openjpa.jdbc.SynchronizeMappings` create it, but a hand-maintained schema has to add it, since nothing creates it otherwise.
+* The counter row is keyed by the sequence name, so entities sharing one generator share one counter, as they would share a sequence object. The generator's `schema` and `catalog` qualify that key - they do not place the table, which stays in the default schema. The schema is the one a sequence object would have been created in, which is the persistence unit default schema when the generator declares none, so changing that default moves the counter just as it would move the sequence object.
+* Each allocation takes a row lock on the shared counter row for the duration of its transaction. Like every [class]``org.apache.openjpa.jdbc.kernel.TableJDBCSeq`` derived sequence it therefore behaves best with <<_openjpa.connectionfactory2>> configured, so that the allocation runs on a connection of its own.
+* Some of these databases do have sequence objects even though the dictionary declares none - Microsoft SQL Server has had them since 2012. Where a generator is meant to draw from a sequence the database already has, which is also the way to keep sharing it with anything else that draws from it, configure that dictionary with a `NextSequenceQuery` in <<_openjpa.jdbc.dbdictionary>>, for instance ``openjpa.jdbc.DBDictionary=sqlserver(NextSequenceQuery="SELECT NEXT VALUE FOR {0}")``; the generator then keeps the native path.
+* The substitution is logged once per generator as a warning, and `openjpa.Compatibility=EmulateNativeSequences=false` restores the previous hard failure.
+* A dictionary that only learns from the server version whether the database has sequence objects - [class]``MariaDBDictionary`` does - is asked for a connection while the generator is resolved, so that the answer does not depend on whether anything else has touched the database first. If no connection can be obtained, resolving the generator fails with that failure as its cause rather than picking a backing store that cannot be revised later. Dictionaries that declare a `NextSequenceQuery` in their constructor - Oracle, DB2, PostgreSQL, H2, HSQL, Informix, Firebird, Ingres - are resolved without a connection, as before.
+
+
+[[_jpa_4.2_attributeconverters]]
+==== AttributeConverter handling
+
+Support for `jakarta.persistence.AttributeConverter` was reworked. `@Converter(autoApply=true)` classes found on the classpath are now registered and applied to every basic attribute whose declared type matches (excluding identifiers, version fields, relations, collections and maps) unless the attribute declares its own ``@Convert``; previously `autoApply` was ignored.
+Class-level ``@Convert(attributeName=...)``/``@Converts``, converters on embedded attributes, on mapped superclass attributes and on element collection elements are honored (previously ignored or rejected). The database column type is now derived from the converter's database type `Y` instead of the attribute type `X` (a [class]``Boolean`` to [class]``Integer`` converter now yields an `INTEGER` column).
+
+A converter whose attribute type is the collection or map itself, for example `AttributeConverter<List<Item>, String>` on a [class]``List<Item>`` attribute, converts the attribute as a whole.
+Such an attribute is now mapped as a basic attribute to one column and is fetched eagerly unless it is declared ``LAZY``.
+In 4.1.x it was left out of the mapping with only a warning, and its contents were not stored.
+Expect a new column for each such attribute.
+
+One converter instance per attribute is created lazily through the no-argument constructor and shared between threads, so converters must be stateless. [class]``RuntimeException``s thrown by a converter surface as [class]``jakarta.persistence.PersistenceException`` instead of [class]``MetaDataException``. `@Convert(disableConversion=true)` only cancels an explicit converter on that attribute; it does not prevent an `autoApply` converter from being applied.
+
+A change made in place to an element of a collection or map that is converted as a whole is now written at flush.
+To find it, the converted value of such an attribute is saved when it is loaded and compared before each flush, which calls `convertToDatabaseColumn` once per load and once per flush for every such instance in the persistence context.
+Clear the persistence context in long batch runs that flush repeatedly.
+
+The value of a converted attribute whose type is not a basic, temporal, collection or map type is now the object returned by ``convertToEntityAttribute``.
+In 4.1.x it was replaced by a generated subclass that copied the value through its getter and setter pairs, losing any state without a setter.
+A change made in place to such a value is found by the same check at flush as above.
+Where OpenJPA needs a copy of the value, for ``detachCopy``, for merge, for restoring state on rollback and for the data cache, the copy is made by converting the value to its column value and back.
+The data cache holds the column value of such an attribute.
+
+Since such a value has no proxy, a change made to it in place, like a change to an element of a collection or map converted as a whole, does not mark the attribute dirty when it is made.
+The attribute is reported as dirty, for example by [method]``OpenJPAStateManager.getDirty``, only once the change was found by a flush, by a query that checks for changes before it runs, or when a savepoint is set.
+On rollback, a value changed in place is restored from the converted value saved when it was loaded, also when no flush found the change.
+
+A converter is now also consulted for `null` in both directions, as required by Jakarta Persistence 3.2; in 4.1.x a `null` attribute or `null` column value bypassed the converter.
+Converter implementations must therefore be null-safe.
+A converter written without null checks throws on the first `null` it sees, which surfaces as a [class]``jakarta.persistence.PersistenceException``.
+This also changes the stored data where a converter maps `null` to a column default: a `null` attribute is written as `convertToDatabaseColumn(null)` and a `null` column value is read as ``convertToEntityAttribute(null)``.
+Converters on attributes of an embeddable are no exception; note that an embeddable without a mapped null-indicator column is materialized from its all-null columns, so its converted attributes are loaded from a `null` column value.
+
+Queries are unaffected: a `null` in a query always means SQL `NULL` and is never passed through the converter, so ``x IS NULL``, ``x = :nullParameter``, `SET x = NULL` and `SET x = :nullParameter` keep the same meaning as in 4.1.x.
+A converter that maps `null` to a column default can therefore not be queried for its null attributes by ``IS NULL``; compare against the substitute value instead.
+
+For a `@Lob` (or ``<lob/>``) attribute with a converter, the kind of LOB now follows the converter's database type: a converter to [class]``String`` yields a CLOB (``TEXT`` on PostgreSQL and MySQL) and a converter to `byte[]` a BLOB (``BYTEA`` on PostgreSQL). In 4.1.x the attribute type decided, so a converter to [class]``String`` on any attribute type other than [class]``String`` produced a BLOB, and a converter to `byte[]` on a [class]``String`` attribute a CLOB.
+Tables created by 4.1.x for such attributes no longer match the mapping; alter the column type, or pin it with ``@Column(columnDefinition=...)``.
+
+With the data cache enabled, a converted attribute is now kept in the cache in its database form.
+The converter's `convertToDatabaseColumn` runs when an instance is put into the cache, and `convertToEntityAttribute` runs each time an instance is loaded from the cache, so every persistence context gets its own attribute value.
+This applies to attributes converted as a whole and to collections whose elements are converted.
+In 4.1.x the cache held the attribute value itself and handed the same objects to every persistence context without calling the converter, so a change made in place in one context showed up in the others.
+A converter that is costly or has side effects now runs on cache hits as well.
+A converter that throws while the cache is filled leaves that attribute out of the cache, and it is then loaded from the database; one that throws on a cache hit fails the load with a [class]``jakarta.persistence.PersistenceException``, as a load from the database would.
+
+Audit existing `@Converter(autoApply=true)` classes: attributes of the matching type that were stored unconverted by 4.1.x are now written and read through the converter and their generated column type changes.
+Remove ``autoApply``, declare an explicit converter, or pin the column type with `@Column(columnDefinition=...)` where the old behavior is required.
+
+[[_jpa_4.2_accesstype]]
+==== Access type determination and property accessors
+
+Implicit access type determination now follows the specification: only access-defining annotations (``@Id``, ``@EmbeddedId``, ``@Version``, ``@Basic``, ``@Embedded``, the relationship annotations, ``@ElementCollection``, ``@Transient``) decide the access type; supplementary annotations such as `@Column` or `@Temporal` only count when no access-defining annotation is present.
+A getter whose backing field is `@Transient` is a per-attribute property override and no longer makes the class "mixed"; an attribute annotated on both field and getter uses property access; a subclass whose implicit access conflicts with its persistent superclass inherits the superclass access type (previously an error); `@Basic` may be combined with a more specific mapping annotation; records always use field access; types declared as `embeddable` only in `orm.xml` are mapped as embedded rather than serialized.
+
+Boolean getters must have an upper-case character after `is` (``island()`` or `isaBoolean()` are no longer persistent properties), and the setter for a property is derived from the actual getter suffix (``getdescription()``/``setdescription()`` pairs are accepted). Entities that previously failed to load may now load with a different access type than intended; add an explicit `@Access` where fields and getters are both annotated, and review unusual boolean accessor names.
+No compatibility option exists.
+
+[[_jpa_4.2_instantyearmapping]]
+==== java.time.Instant and java.time.Year mapping
+
+[class]``java.time.Instant`` and [class]``java.time.Year`` are now first-class persistent types: [class]``Instant`` maps to a `TIMESTAMP` column and [class]``Year`` to an `INTEGER` column.
+Previous releases had no type code for them and stored such attributes through the generic object strategy as serialized binary data.
+Existing columns created for such attributes are incompatible with the new mapping: migrate the columns and data, or keep them serialized explicitly with `@Lob` or an externalizer. [class]``java.util.Calendar`` may now be used as a single-field identifier.
+
+[[_jpa_4.2_generatedddl]]
+==== Generated DDL changes
+
+The DDL produced by the mapping tool, <<_openjpa.jdbc.synchronizemappings>> and the new `SchemaManager` differs from previous releases:
+
+* `jakarta.persistence.ForeignKey` on ``@JoinColumn``, `@JoinTable` and `@SecondaryTable` is now parsed. A named constraint (``ConstraintMode.CONSTRAINT``) is emitted as a physical foreign key even for relations that OpenJPA treats as logical; `NO_CONSTRAINT` suppresses the key; `PROVIDER_DEFAULT` keeps the 4.1.x behavior. Expect additional `ALTER TABLE ... ADD CONSTRAINT` statements and a stricter drop order.
+* Every declared `@SecondaryTable` is created, even if no field is mapped to it.
+* The table-level comment is no longer emitted in `CREATE TABLE` (column comments remain).
+* `@Index(columnList="col DESC")` is honored, `@JoinTable.indexes` are created, `@Table(options)` and `@Column(options)` are appended verbatim, and `@Column(secondPrecision)` takes precedence over `scale` and the dictionary's `DateFractionDigits` for temporal columns.
+
+Compare generated DDL against existing schemas before enabling schema synchronization in production.
+
+[[_jpa_4.2_schemageneration]]
+==== Jakarta Persistence schema generation and SQL scripts
+
+The `jakarta.persistence.schema-generation.*` properties are now honored as described by the specification: `scripts.action` is mapped to schema tool actions on its own (previously only `database.action` was considered) and scripts are generated or executed when the [class]``EntityManagerFactory`` is created rather than lazily with the first [class]``EntityManager``; explicit ``create-source``/``drop-source`` values are respected; [class]``java.io.Writer``/[class]``Reader`` targets and sources, `file:` URIs and absolute paths are accepted.
+When [class]``Writer``/[class]``Reader`` objects are supplied, the corresponding keys are removed from the caller's property map, so the map must be mutable. `Persistence.generateSchema()` defaults `database.action=create` only if neither `database.action` nor `scripts.action` is given.
+A table dropped by an executed drop script is skipped by the next ``buildSchema``/``add`` run in the same JVM (once by default; until an [class]``EntityManagerFactory`` with schema-generation properties starts when ``openjpa.SpecCompliantSchemaGeneration=true``) instead of being silently re-created.
+
+SQL scripts (create, drop and load scripts) are now parsed as ``;``-terminated statements that may span several lines, with ``--``, `//` and `/* ... */` comments stripped (string literals are not recognized). Previously every line was one statement.
+Errors in scripts executed through schema generation are logged as warnings on the <<_openjpa.jdbc.schema>> channel instead of failing start-up.
+Terminate every statement with `;` and check the log for script errors.
+Related [class]``SchemaTool`` changes: table truncation continues after failing statements, dropping the last column of a table drops the whole table, and the new `DBDictionary.isDroppable(Sequence)` hook excludes system sequences.
+
+Two options were added. `openjpa.SpecCompliantSchemaGeneration=true` (also available as ``openjpa.Compatibility=SpecCompliantSchemaGeneration=true``, default ``false``) enables strict Jakarta Persistence semantics: a schema-generation configuration that resolves to no action (for example ``database.action=none``) also disables ``openjpa.jdbc.SynchronizeMappings``, `@MapsId` foreign key columns are named ``<relation>_<targetPk>``, and on PostgreSQL identifiers are never quoted.
+Do not enable it on existing databases created by earlier releases.
+The option `openjpa.jdbc.SyncMappingsExcludeTypes=a.B;c.D` (or ``SynchronizeMappings=buildSchema(ExcludeTypes=a.B;c.D)``) excludes entity classes from schema synchronization and drops their existing tables; only list entities whose tables may be destroyed.
+See <<_ref_guide_mapping_synch>> and <<_ref_guide_schema_schematool_script>>.
+
+[[_jpa_4.2_columntypeconflicts]]
+==== Numeric versus character column type conflicts
+
+When two mappings, or the mapping and the reflected database column, disagreed on an incompatible column type, previous releases failed with a `-bad-col`[class]``MetaDataException`` (or logged a warning with ``disableSchemaFactoryColumnTypeErrors``). Conflicts between numeric and character types are now silently resolved to ``VARCHAR``, and values are converted on read and write.
+As a side effect, `SynchronizeMappings=validate` and `SchemaManager.validate()` no longer report numeric versus `VARCHAR` drift; verify such columns manually.
+All other incompatible combinations still fail as before.
+
+[[_jpa_4.2_deletecountzero]]
+==== DELETE affecting zero rows tolerated for unversioned entities
+
+A `DELETE` statement reporting an update count of zero previously always raised an [class]``OptimisticException``, including rows already removed by a database-level ``ON DELETE CASCADE``.
+For entities without a version strategy (no `@Version` and no state comparison versioning) such a delete is now silently accepted.
+Entities with a version strategy behave as before.
+Applications that relied on the exception to detect a concurrently deleted unversioned row should add a `@Version` attribute; subclasses of [class]``PreparedStatementManagerImpl`` may override ``hasVersion(RowImpl)``.
+
+[[_jpa_4.2_nonentityclasses]]
+==== Non-entity classes in persistence.xml
+
+Listing a class without persistence metadata in a persistence unit (``class`` element) previously failed at start-up with "No registered metadata for type", in the runtime enhancer, in `getMetamodel()` and during schema synchronization.
+Such a class is now skipped instead, because a persistence unit may legitimately list classes that are not managed types.
+The skip is logged as a warning on the `openjpa.MetaData` log when the metamodel is built and on the `openjpa.jdbc.Schema` log during schema synchronization, so a forgotten `@Entity` annotation remains diagnosable.
+
+Note that with the default `openjpa.RuntimeUnenhancedClasses=unsupported` such a class is still rejected at start-up, by the runtime enhancer, with "This configuration disallows runtime optimization"; the skip described above applies once that check passes.
+
+[[_jpa_4.2_kernelleniency]]
+==== Relaxed kernel checks
+
+Several early exceptions were relaxed to satisfy the specification: a non-cascaded relation pointing at an object without a state manager is no longer rejected at flush with "cant-cascade-persist"; the referenced row is looked up in the database during flush (an extra `SELECT` for unenhanced or subclass-enhanced entities) and truly transient references may now fail later with a foreign key error.
+Modifying an embeddable obtained from a query projection no longer throws; the modification is silently not persisted.
+Re-persisting an entity after `remove()` and flush is tolerated.
+In addition, when `orphanRemoval=true` is combined with ``cascade=REMOVE``/``ALL``, in annotations or in ``orm.xml``, the related entities are removed immediately on `remove()` of the owner, and entities dropped from the relation are deleted as orphans at flush.
+
+[[_jpa_4.2_flushordering]]
+==== Insert ordering across logical foreign keys
+
+Flush ordering previously delayed an insert only for physical (constraint-backed) foreign keys.
+Rows related through logical foreign keys (no constraint declared in the mapping, for example an externally created schema with real constraints) are now also delayed until the referenced new row has been inserted.
+Statement order at flush time may therefore change; tests asserting an exact SQL order may need to be adjusted.
+There is no configuration switch.
+
+[[_jpa_4.2_enhancer]]
+==== Enhancer and runtime enhancement
+
+Classes enhanced by this release call new runtime methods (for example `ApplicationIds.getRelatedObjectId()` for derived identities) and fail on a 4.1.x runtime, while classes enhanced by 4.1.x still load but miss the fixes of this release.
+Re-run the build-time enhancer (<<_ref_guide_pc_enhance>>) with 4.2.0 when upgrading.
+
+Runtime enhancement (<<_openjpa.runtimeunenhancedclasses>> and the Java agent) changed: class redefinition uses `Instrumentation.redefineClasses()` and, if it fails, OpenJPA logs "redefineClasses failed" at `INFO` and silently falls back to subclass enhancement instead of throwing. `getClass()` calls in user ``equals()``/``hashCode()`` implementations of subclass-enhanced entities now see the entity class instead of the generated subclass, and generated `writeReplace()` methods work with non-public no-argument constructors.
+
+[[_jpa_4.2_delayedproxies]]
+==== Delayed collection proxies on Java 21
+
+The delay-loading collection proxies (``openjpa.ProxyManager=default(DelayCollectionLoading=true)``, see <<_ref_guide_pc_scos_proxy>>) now declare the Java 21 [class]``SequencedCollection`` methods explicitly. `addFirst()` and `addLast()` both delegate to ``add()``, so `addFirst()` appends instead of prepending (previously [class]``DelayedLinkedListProxy`` prepended after loading the collection), and `reversed()` returns a copy rather than a write-through view for list and [class]``LinkedHashSet`` proxies.
+Load the collection and reorder it explicitly where the position matters.
+The ASM-generated non-delayed proxies are unchanged.
+
+[[_jpa_4.2_metamodelgenerator]]
+==== Static metamodel generator output
+
+Generated `X_` classes now contain the Jakarta Persistence 3.2 `class_` field and `QUERY_<NAME>` / `MAPPING_<NAME>` constants for named queries and result set mappings declared on the type, and are annotated with `javax.annotation.processing.Generated` instead of `jakarta.annotation.Generated` when available.
+Regenerate the metamodel classes and watch for name clashes with attributes named ``class_``.
+
+[[_jpa_4.2_lifecyclecallbacks]]
+==== Lifecycle callbacks and listeners
+
+Default entity listeners declared in several mapping files are now registered once instead of once per file, and a callback declared both by annotation and in `orm.xml` for the same method is registered once with the XML declaration taking precedence.
+Callback parameter types are matched more leniently, and listeners receive the managed entity instance (not the internal [class]``ReflectingPersistenceCapable`` wrapper) on `AFTER_DELETE_PERFORMED` for unenhanced entities.
+Applications that depended on duplicate invocations must be adjusted.
+
+[[_jpa_4.2_persistencexml]]
+==== persistence.xml resource handling
+
+An I/O error while reading a `persistence.xml` resource from the classpath previously aborted ``createEntityManagerFactory()``.
+Such resources are now logged ("unreadable-persistence-xml") and skipped; schema validation errors still abort.
+A unit that only exists in a skipped resource surfaces later as a missing persistence unit.
+Resource streams are opened with URL connection caching disabled.
+The 3.2 elements `scope` and `qualifier` are exposed through ``PersistenceUnitInfo``.
+
+[[_jpa_4.2_locale]]
+==== Locale-independent case conversion
+
+Identifier normalization, JPQL parsing, in-memory ``LOWER()``/ `UPPER()` evaluation and SQL formatting used the JVM default locale for case conversion.
+They now use `Locale.ROOT` (``Locale.ENGLISH`` for reserved word matching). This is only observable under locales with special casing rules (Turkish, Azeri, Lithuanian), where generated identifiers containing ``i``/``I`` may now differ from those generated by earlier releases; use explicit ``@Table``/``@Column`` names in that case.
+
+[[_jpa_4.2_reservedwords]]
+==== Reserved word handling and MySQL delimiting
+
+Reserved word detection is now case-insensitive for all dictionaries, so generated (defaulted) column, table and sequence names that equal a reserved word in a different case may now receive a `0` suffix. [class]``H2Dictionary`` additionally feeds its H2 2.x keyword list into the naming rules.
+On MySQL ([class]``MySQLDictionary``, not [class]``MariaDBDictionary``) reserved word identifiers are now automatically delimited with back-ticks in all generated SQL, so previously failing names such as ``KEY``, `TEXT` or `LIBRARY` work without manual delimiting.
+Tools comparing SQL text must ignore the delimiters.
+Use explicit ``@Table``/``@Column`` names if an old generated name must be kept.
+See <<_ref_guide_dbsetup_dbsupport_delim_id>>.
+
+[[_jpa_4.2_likeescape]]
+==== LIKE without an ESCAPE clause
+
+A `LIKE` pattern with no `ESCAPE` clause now has no escape character on any database, as Jakarta Persistence requires: only `%` and `\_` are special and a backslash in the pattern matches a backslash.
+On H2, MySQL, MariaDB and PostgreSQL, whose `LIKE` defaults to a backslash escape, OpenJPA now emits an explicit `ESCAPE` clause to say so, and [class]``H2Dictionary`` sets `RequiresSearchStringEscapeForLike` to `true` for that reason.
+The clause holds the new `SearchStringNoEscape` expression, by default the empty string literal ``''``, a non-standard spelling of "no escape character" which H2 and PostgreSQL accept.
+MySQL rejects that literal when `sql_mode` contains `NO_BACKSLASH_ESCAPES` and MariaDB ignores it altogether and keeps its backslash escape, so both use ``CHAR(0)``, an escape character which cannot occur in a pattern unless the pattern contains a NUL character.
+A pattern which relied on the implicit backslash escape, such as `foo\_bar` meant to match a literal underscore, now matches a backslash followed by any character and must add an explicit `ESCAPE '\'` clause to the query.
+On MySQL and MariaDB such a clause is rendered from `SearchStringEscape` as a doubled backslash, which those servers only accept while `sql_mode` contains no ``NO_BACKSLASH_ESCAPES``; with that mode they fail the statement with ``ERROR 1210``, so a query which has to run against it should name an escape character other than a backslash.
+
+`SearchStringEscape` is now only the SQL literal rendering of a backslash escape character supplied by the query; it never gives a pattern character an escape meaning, so configuring it to another character no longer makes that character escape inside a pattern.
+For dictionary subclasses: [class]``JDBCExpressionFactory`` no longer injects the dictionary escape character into the `matches()` expression, so the escape of a query without an `ESCAPE` clause stays ``null``.
+
+[[_jpa_4.2_storecharsasnumbers]]
+==== char attributes are stored as CHAR(1)
+
+`StoreCharsAsNumbers` now defaults to `false` on PostgreSQL 9 and later (OPENJPA-2971), MySQL (OPENJPA-3001), Apache Derby, H2 and Microsoft SQL Server (OPENJPA-3033), as it already did on DB2.
+Java ``char``/[class]``Character`` attributes are then written and read as characters and map to `CHAR(1)` columns instead of `INTEGER` columns holding the code point.
+A pre-existing `CHAR(1)` column, such as the one in the Jakarta Persistence TCK schema, now works on these databases.
+On every database that stores chars as ``CHAR``, a generated column for a `char` or [class]``Character`` attribute without an explicit length is now `CHAR(1)` instead of `CHAR` sized by `CharacterColumnSize` (255), which Derby rejected.
+Existing wider `CHAR` columns keep working.
+
+Schemas created by earlier releases on PostgreSQL, MySQL, Derby, H2 or SQL Server hold such attributes in `INTEGER` columns, which now fail validation or return wrong values.
+Either migrate them to `CHAR(1)` or restore the previous mapping with an explicit ``StoreCharsAsNumbers=true``, for example ``openjpa.jdbc.DBDictionary=derby(StoreCharsAsNumbers=true)``; an explicitly configured value is always respected.
+Oracle, Sybase and the other databases keep storing chars as numbers by default.
+
+The reverse mapping tool follows the same setting.
+On these databases it now maps a `CHAR(1)` column to a `char` or [class]``Character`` field instead of a [class]``String`` field.
+Set `StoreCharsAsNumbers=true` while running the tool to keep generating [class]``String`` fields.
+
+[[_jpa_4.2_postgresql]]
+==== PostgreSQL
+
+Delimited identifiers: [class]``PostgresDictionary`` now strips the double quotes from a quoted identifier whose inner text is a plain identifier (letters, digits and underscores, not starting with a digit). PostgreSQL then folds the name to lower case, so `@Table(name="\"MyTable\"")` now addresses `mytable` and quoted reserved words such as `"Order"` become bare keywords.
+Identifiers containing spaces or other special characters keep their quotes.
+Do not rely on delimited identifiers to preserve mixed case or to use reserved words as names on PostgreSQL; rename the objects, or subclass [class]``PostgresDictionary`` and override ``toDBName()``.
+There is no configuration switch.
+
+``char``/[class]``Character`` attributes are stored in `CHAR(1)` columns on PostgreSQL 9 and later, and the Java default `'\0'` is stored as SQL ``NULL``; see <<_jpa_4.2_storecharsasnumbers>>.
+
+Further fixes: [class]``java.util.UUID`` parameters are bound so that both native `uuid` and `varchar` columns work (on other databases a UUID is bound as `VARCHAR` unless the column is a native UUID column); `@Lob` columns of type `oid` are read and written through the large object API, which performs an implicit `COMMIT` when reading in auto-commit mode; reflected `bool` columns are reported as ``BOOLEAN``, so schema validation may now report boolean versus varchar drift that was previously tolerated; `DROP SEQUENCE IF EXISTS` is emitted.
+
+[[_jpa_4.2_mysqlmariadb]]
+==== MySQL and MariaDB
+
+On MySQL 5.7+ and MariaDB 10.2+ temporal columns are now created as `DATETIME(6)` and `TIME(6)` (``DateFractionDigits=6``) instead of whole-second precision, so that `@Version` attributes of type [class]``Instant`` or [class]``LocalDateTime`` can distinguish updates within the same second.
+The value is set at connection time and overrides a `DateFractionDigits` value given in <<_openjpa.jdbc.dbdictionary>>.
+Existing columns keep working, but schema validation or refresh may report or alter the precision.
+Use `@Column(secondPrecision=0)` on individual columns, or subclass the dictionary and reset `dateFractionDigits` after ``connectedConfiguration()``, to keep whole seconds.
+
+[class]``MariaDBDictionary`` no longer replaces a configured positive <<_openjpa.fetchbatchsize>> with `Integer.MIN_VALUE` (the Connector/J 2.x streaming mode); the configured value is passed to the driver unchanged. [class]``MySQLDictionary`` keeps the streaming behavior.
+Subclass [class]``MariaDBDictionary`` and override `getBatchFetchSize(int)` to restore streaming.
+
+MariaDB 10.3 introduced sequence objects, and [class]``MariaDBDictionary`` now reports sequence support on 10.3 and later, where it previously declared none.
+A `@SequenceGenerator` is therefore backed by a real sequence, so the schema tool issues `CREATE SEQUENCE` and `DROP SEQUENCE` for it and the database user needs the privilege to do so.
+The sequences are created ``NOCACHE``, because OpenJPA caches values itself in blocks of the generator's allocation size, and the server-side cache of 1000 increments - 1000 times the allocation size in identifiers, which is 50000 for an `allocationSize` of 50 - would only add gaps, since the `ALTER SEQUENCE ... INCREMENT BY` that OpenJPA issues per sequence instance discards the rest of the cached range.
+MariaDB 10.2 and earlier keep the sequence table fallback described in <<_jpa_4.2_sequencegeneratorwithoutsequences>>; a `NextSequenceQuery` configured in <<_openjpa.jdbc.dbdictionary>> is left untouched.
+
+`EXTRACT(WEEK FROM ...)` now returns the ISO week, as the specification defines it, by rendering ``WEEK(x, 3)``.
+Before, MySQL and MariaDB computed it with weeks starting on Sunday, so queries on such dates return different values: for example 2024-01-01 is now week 1 instead of 0, and 2023-12-31 is week 52 instead of 53.
+A configured `ExtractDateTimeFieldFunction` no longer applies to `WEEK` on these databases.
+
+Since the version is now parsed from the server's reply even when a driver that is not MariaDB aware passes it on with its `5.5.5-` replication compatibility prefix, such a deployment reaches the features gated on 10.2 as well: temporal columns are generated as `DATETIME(6)` rather than ``DATETIME``, as they already were for the same server reached through ``mariadb-java-client``.
+A schema created by an earlier release keeps whole-second `DATETIME` columns until they are altered, and reading them is unaffected.
+The version gate assigns `timestampTypeName` and `dateFractionDigits` outright, so a value configured in <<_openjpa.jdbc.dbdictionary>> does not survive it; subclass [class]``MariaDBDictionary`` to generate the previous types.
+
+There is no upgrade path from an earlier release to migrate: a named `@SequenceGenerator` failed outright on every MariaDB before 4.2.0, so no counter exists to move.
+The case that needs care is a server upgrade under 4.2.0.
+An application that ran on MariaDB 10.2 or earlier has its counters in ``OPENJPA_SEQUENCES_TABLE``; once the server is 10.3 or later the same generator is backed by a sequence object, which `openjpa.jdbc.SynchronizeMappings` or the schema tool creates starting at the generator's `initialValue` and which therefore hands out identifiers that are already in use.
+Before upgrading the server, either create each sequence with `START WITH` above the highest identifier in use, or keep the existing counter by declaring the generator's `sequenceName` as a `value-table(PrimaryKeyValue=...)` plugin string, which <<_jpa_4.2_sequencegeneratorwithoutsequences>> leaves alone.
+Emptying the dictionary's `NextSequenceQuery` does not pin the old backing store, because an empty value is normalised to none and then set again for a 10.3 server.
+
+[[_jpa_4.2_sqlserver]]
+==== Microsoft SQL Server
+
+`CURRENT_DATE` and `CURRENT_TIME` are now translated to `CONVERT(DATE, GETDATE())` and `CONVERT(TIME, GETDATE())` instead of plain ``GETDATE()``, so the results are ``DATE``/``TIME`` typed and comparisons against `datetime` columns may behave differently. `EXTRACT` uses `DATEPART` and JPQL time literals are rendered as ``CAST('hh:mm:ss' AS TIME)``.
+To restore the previous SQL set ``openjpa.jdbc.DBDictionary=sqlserver(CurrentDateFunction=GETDATE(),CurrentTimeFunction=GETDATE())``.
+
+[class]``SQLServerDictionary`` declares no ``NextSequenceQuery``, although SQL Server has had sequence objects since 2012, so a named `@SequenceGenerator` that used to fail is now backed by a counter row instead of by the sequence it names.
+To draw from that sequence, configure the query - see <<_jpa_4.2_sequencegeneratorwithoutsequences>>.
+
+[[_jpa_4.2_oracle]]
+==== Oracle
+
+Identity column sequences (``ISEQ$$_*``) are treated as system sequences and excluded from drop actions, `AUDSYS` is treated as a system schema, an `@Index` duplicating the primary key is skipped, `CEILING()` is translated to ``CEIL()``, and the new Jakarta Persistence 3.2 functions are mapped to Oracle syntax (``EXCEPT`` as `MINUS` before Oracle 21, ``LEFT``/``RIGHT`` via ``SUBSTR``). These are fixes; workarounds for the old behavior can be removed.
+
+[[_jpa_4.2_hsqldb]]
+==== HSQLDB
+
+[class]``HSQLDictionary`` no longer disables ``SupportsSelectForUpdate``, so pessimistic locks now emit ``SELECT ... FOR UPDATE``; query timeouts are disabled (``SupportsQueryTimeout=false``); [class]``OffsetTime`` attributes are created as `TIME` instead of ``TIME WITH TIME ZONE``; numeric casts are sized `NUMERIC(128,32)` so fractional digits are no longer truncated; `INFORMATION_SCHEMA` and `SYSTEM_LOBS` are treated as system schemas.
+Use `openjpa.jdbc.DBDictionary=hsql(SupportsSelectForUpdate=false,SupportsQueryTimeout=true)` and `@Column(columnDefinition="TIME WITH TIME ZONE")` to restore the previous behavior.
+On H2 2.x, table truncation now skips the `INFORMATION_SCHEMA` meta tables. `EXTRACT(WEEK FROM ...)` is rendered as ``EXTRACT(ISO_WEEK FROM ...)``, because H2 numbers a plain `WEEK` by the week definition of the JVM default locale, and `EXTRACT(SECOND)` now includes the fraction of the second, as the specification requires, instead of the whole seconds only.
+
+[[_jpa_4.2_spichanges]]
+==== SPI changes for custom store, dictionary and expression implementations
+
+Implementors of OpenJPA SPI interfaces must recompile and implement new methods: `BrokerFactory` (``createPersistenceStructure``, ``dropPersistenceStructure``, ``validatePersistenceStructure``, ``truncateData``; [class]``AbstractBrokerFactory`` throws [class]``UnsupportedOperationException`` by default), `ExpressionFactory` (``newTypecastAsString``, ``newTypecastAsNumber``, ``left``, ``right``, ``replace``, ``getNativeObjectId``, ``version``), `Result` (``getInstant``, ``getYear``), `Select` (``appendNullsPrecedence``, ``addSetOperatorSQL``, ``getSetOperatorBuffer``), `OpenJPAConfiguration` (schema generation script accessors, ``isSchemaGenerationExplicit``, ``isSpecCompliantSchemaGeneration``) and `JDBCConfiguration` (``get/setSyncMappingsExcludeTypes``).
+
+`DBDictionary.SerializedData` is now a record (``bytes()`` instead of the `bytes` field); `IdentifierRule.setReservedWords` takes a [class]``Collection`` and matches case-insensitively, so subclasses overriding the [class]``Set`` variant no longer override; `JavaTypes.INSTANT` (39) and `JavaTypes.YEAR` (40) were added and must be handled by custom value handlers and strategies; `QueryExpressions` gained ``nullPrecedence``, `setOperationType` and ``setOperands``, which only the JDBC store consumes, so a custom `StoreQuery` silently ignores `NULLS FIRST/LAST` and set operations unless it is extended. [class]``DBDictionary`` gained a number of public configuration fields (``ReplaceFunctionName``, ``LeftFunctionName``, ``RightFunctionName``, ``NaturalLogarithmFunction``, ``CeilingFunction``, ``ExceptFunction``, ``TypecastToStringTypeName``, ``IntegerCastTypeName``, ``SupportsUnsizedCharOnCast``, ``RequiresCastForExtractOperand``) and hooks (``isDroppable(Sequence)``, ``toJDBCEscapedDateTimeLiteral``, ``appendNullsPrecedence``, ``getExtractField``, ``getExtractDateTimeFieldFunction``, ``get/setMajorVersion``, ``get/setMinorVersion``).
+
+[[_jpa_4.2_newfeatures]]
+==== Notable new features
+
+The following Jakarta Persistence 3.2 features are new in this release.
+They are opt-in and do not change existing behavior unless noted:
+
+* JPQL: `ID()` and `VERSION()` functions, ``CAST``, ``LEFT``, ``RIGHT``, ``REPLACE``, the `||` operator, ``UNION``/``INTERSECT``/``EXCEPT [ALL]``, ``NULLS FIRST/LAST``, `TREAT` in joins and paths, ``JOIN ... ON``, ``EXTRACT``, ``LOCAL DATE/TIME/DATETIME``, additional math functions, an optional `SELECT` clause and the implicit `this` identification variable (bound automatically when a `FROM` item declares no identification variable). See <<_jpa_langref_typecasts_expressions>>. As defined by the specification grammar, `ID()` and `VERSION()` may only be compared with `=` or ``<>``; other operators are rejected with a parse error. In-memory query execution (and custom [class]``StoreQuery`` implementations) honours `NULLS FIRST/LAST` and rejects ``UNION``/``INTERSECT``/``EXCEPT``; ``LEFT``/``RIGHT`` and `CAST` are not available on Derby. Derby has no ``EXTRACT``, so OpenJPA renders it with Derby's date and time functions; `EXTRACT(WEEK)` is rejected there, as Derby has no function for the ISO week.
+* [class]``EntityManager``: ``find()``, `lock()` and `refresh()` with ``FindOption``/``LockOption``/``RefreshOption``, ``getReference(entity)``, cache mode and timeout accessors, ``runWithConnection()``/``callWithConnection()``, ``createQuery(CriteriaSelect)``; [class]``Query``: ``getSingleResultOrNull()``, cache mode and timeout setters.
+* [class]``EntityManagerFactory``: ``runInTransaction()``/``callInTransaction()`` (exceptions are rethrown wrapped in [class]``org.apache.openjpa.persistence.PersistenceException``), ``getSchemaManager()``, ``getName()``, ``getTransactionType()``, ``getNamedEntityGraphs()``; [class]``PersistenceUnitUtil``: ``getVersion()``, ``isInstance()``, ``getClass()``, ``load()``; programmatic bootstrap via `Persistence.createEntityManagerFactory(PersistenceConfiguration)` and the `jakarta.persistence.dataSource` property. ``EntityManager.find(EntityGraph, ...)``, ``createQuery(TypedQueryReference)``, `getNamedQueries()` and `SynchronizationType.UNSYNCHRONIZED` are not yet implemented.
+* Entity graphs (``@NamedEntityGraph``, ``createEntityGraph()``, ``getEntityGraph()``), [class]``CriteriaUpdate``, [class]``CriteriaDelete``, [class]``CriteriaSelect`` set operations, ``Join.on()``, ``CriteriaBuilder.cast()``/ ``left()``/``right()``/``replace()``/ `extract()` and ``treat(Root)``, all of which previously threw [class]``UnsupportedOperationException``.
+* Mapping: Java records as `@Embeddable` (records are always treated as managed types, regardless of ``openjpa.RuntimeUnenhancedClasses``), `@EnumeratedValue` (an enum declaring such a field changes its stored representation), `@Version` on [class]``java.time.Instant`` and [class]``java.time.LocalDateTime`` (give such columns at least microsecond precision), ``@Column(secondPrecision, options)``, ``@Table(options)``, repeatable ``@SequenceGenerator``/``@TableGenerator``, `ConstructorResult` in result set mappings, inline result mappings on ``@NamedNativeQuery``, `orm.xml` version 3.2, id classes without a public no-argument constructor, and `@MapsId` with non-embeddable id classes.
+* ``jakarta.persistence.ForeignKey``, `@Index` sort order, `@JoinTable.indexes` and `@Converter(autoApply=true)` are honored (see the respective sections above for the effect on existing schemas).
+* The bundled Jakarta Persistence schemas are now included under the Eclipse Foundation Specification License 1.1 instead of the CDDL.
+
+
+[[_jpa_3.2]]
+== OpenJPA 3.2.0
+
+[[_jpa_3.2_incompatibilities]]
+=== Incompatibilities
+
+The following sections indicate changes that are incompatible between OpenJPA 3.1.x releases and the 3.2.0 release.
+
+[[_jpa_3.2_sumdouble]]
+==== SUM now always returns Double
+
+We did fix the SUM operation to always return [class]``Double`` as requested by the spec.
+Previously we did return whatever Numeric the JDBC driver did serve, resulting in non portable code.
+
+[[_jpa_3.2_invalidcolumnnames]]
+==== Invalid Column Name Changes
+
+We did review and update the list of invalid column names for most [class]``DBDicationary``.
+The list of tested reserved words got enriched with previously forbidden column names to avoid backward incompatibility issues.
+The list can ge retrieved and configured via link:../../apidocs/org/apache/openjpa/jdbc/sql/DBDictionary.html#getInvalidColumnWordSet()[DBDictionary.getInvalidColumnWordSet]
+
+[[_jpa_3.2_hsqlmappingtool]]
+==== MappingTool Behavior for HSQLDB
+
+There have been 2 changes for Hypersonic (HSQLDB). We fixed a bug which did cause [class]``long`` fields getting mapped to `INTEGER` instead of ``BIGINT``.
+
+Java [class]``double`` fields previously got mapped to `NUMERIC` which does lack fraction digits.
+Thus the value `7.3425343` got truncated to ``7``.
+We now map [class]``double`` fields in Entities to `DOUBLE` SQL column types.
+
+[[_jpa_3.2_oracletimestampprecision]]
+==== Respect TIMESTAMP precision in Oracle
+
+Due to a bug we did hardcoded round at 3 digits precision.
+So we essentially only allowed millis, even on a TIMESTAMP(6) field.
+The new code does respect the second fractions and now defaults to 6.
+It should be compatible but it might behave very subtle different.
+
+[[_jpa_3.2_unaryops]]
+==== Unary Operations return types
+
+Before OpenJPA-3.2.0 Unary Operations like ``MIN``, ``MAX``, ``SUM``, etc did return whatever type got returned by the JDBC driver.
+For certain column types this could also have been internal classes of that very JDBC driver.
+E.g.
+a `SELECT MAX(a.someLocalDateField) ..` might have returned an instance of types [class]``com.oracle.jdbc....`` or ``com.microsoft.sqlserver...``, etc.
+We now use the respective link:../../apidocs/org/apache/openjpa/jdbc/sql/DBDictionary.html[DBDictionary] to request the correct type from the [class]``ResultSet``.
+
+[[_jpa_3.2_postgresqlquerytimeout]]
+==== PostgreSQL now supports setQueryTimeOut
+
+PostgreSQL does now support client side setQueryTimeout.
+User might see this come alive and now return different when the situation occurs.
+This flag is automatically enabled if running against PostgreSQL 10 or later.
+It can also be configured manually via `DBDictionary.supportsQueryTimeout`
+
+[[_jpa_2.3]]
+== OpenJPA 2.3.0
+
+[[_jpa_2.3_incompatibilities]]
+=== Incompatibilities
+
+The following sections indicate changes that are incompatible between OpenJPA 2.2.x releases and the 2.3.0 release.
+
+[[_jpa_2.3_mappingtool]]
+==== MappingTool Behavior for DB2 and Derby
+
+In previous releases, the MappingTool mapped `java.math.BigDecimal` fields to the database type DOUBLE, and as such, ignored `column` and `precision` values that might have been specified via the `jakarta.persistence.Column` annotation.
+
+From the 2.3.0 release, `java.math.BigDecimal` fields are now mapped to the database type DECIMAL and it is very likely that you will need to specify `column` and `precision` via the `jakarta.persistence.Column` annotation.
+
+[[_jpa_2.3_requiressearchstringescapeforlike]]
+==== RequiresSearchStringEscapeForLike DBDictionary Property
+
+In previous releases, the default value for the property RequiresSearchStringEscapeForLike is true and caused the unexpected escape clause appended to the SQL statement.
+For example, user created a named query like this:
+[source]
+----
+ SELECT o.computerName FROM CompUser o WHERE o.name LIKE ?
+----
+At run time the following query is generated:
+[source]
+----
+ SELECT t0.computerName FROM CompUser t0 WHERE (t0.name LIKE ? ESCAPE '\')
+----
+ESCAPE '\' shouldn't be appended to the query.
+
+From the 2.3.0 release, RequiresSearchStringEscapeForLike property is set to false by default.
+You can configure RequiresSearchStringEscapeForLike property to be true if the old behavior is desired.
+
+[[_returnnullonemptyaggregateresult]]
+==== Return value of aggregate functions in SELECT clause
+
+The JPA specification states "If SUM, AVG, MAX, or MIN is used, and there are no values to which the aggregate function can be applied, the result of the aggregate function is NULL."  Prior to this update, OpenJPA incorrectly returned 0 for SUM, AVG, MIN, and MAX when a state field being aggregated is numeric.
+This behavior affects both JPQL and Criteria queries.
+With this update, OpenJPA will return a null result value for these aggregate functions when a query returns no result.
+
+To re-enable the prior behavior, you need to set the following persistence property in your persistence.xml or when creating an EntityManagerFactory.
+[source]
+----
+
+    <property name="openjpa.Compatibility" value="ReturnNullOnAggregateResult=false"/>
+----
+
+[[_jpa_2.2]]
+== OpenJPA 2.2.0
+
+[[_jpa_2.2_incompatibilities]]
+=== Incompatibilities
+
+The following sections indicate changes that are incompatible between OpenJPA 2.1.x releases and the 2.2.0 release.
+
+[[_jpa_2.2_allocationsize]]
+==== allocationSize Property of Sequence Generator
+
+In previous releases, specifying the `allocationSize` property of <<_jpa_overview_mapping_sequence_seqgen,sequence generator>> affected only sequence definition in the database.
+During schema creation, the `INCREMENT BY` clause of `CREATE SEQUENCE` statement always had a value of 1 and on DB2, Oracle and PostgreSQL databases a `CACHE` clause was added with the value of `allocationSize` property.
+Such a statement caused sequence values being cached in the database.
+Starting with OpenJPA 2.2.0, sequence values are cached in the jvm memory and the `allocationSize` property determines size of that cache.
+The `CACHE` clause is no longer used, instead the `INCREMENT BY` clause gets its value equal to the `allocationSize` property.
+Such a strategy reduces the number of database roundtrips required for retrieving sequence values considerably.
+
+In order for the existing applications to work with OpenJPA 2.2.0, you have to manually recreate or redefine sequences, specifying the correct `INCREMENT BY` value and, possibly, correct initial sequence value.
+Note that the default value of the `allocationSize` property is 50 and that value is used if the property is not specified.
+
+The requirement for sequence modification applies to all databases that support sequences, regardless of the `CACHE` clause being supported.
+The only exception is Firebird database - since with this database the increment step is determined during sequence value fetch, no migration activity is needed.
+
+To maintain the old behavior of sequence generator in OpenJPA 2.2.0, you can:
+
+* Set the `allocationSize` property value to 1.
+* Additionally, if the `CACHE` clause has to be emitted in sequence definition, this can be accomplished by overriding the link:../../apidocs/org/apache/openjpa/jdbc/sql/DBDictionary.html#getCreateSequenceSQL(org.apache.openjpa.jdbc.schema.Sequence)[ DBDictionary.getCreateSequenceSQL] method.
+
+
+[[_jpa_2.2_metamodelarrays]]
+==== MetaModel Attributes for Arrays
+
+In previous releases OpenJPA's MetaModel implementation generated a ListAttribute for every array.
+This behavior is correct if the array is annotated as a PersistentCollection, but not correct for un-annotated arrays (e.g.
+byte[], char[]). In OpenJPA 2.2.0 this behavior was corrected so that arrays which are not stored as PersistentCollections will use a SingularAttribute instead of a ListAttribute.
+
+If your application uses the MetaModel API and your entities contain arrays of any of the following types: byte[], Byte[], char[], Character[] and do not use the @PersistentCollection annotation with those fields you will need to update your application to use OpenJPA 2.2.0.
+
+In order for the existing applications to work with OpenJPA you may:
+
+* Regenerate the canonical metamodel classes
+* Set the Compatibility property `UseListAttributeForArrays` to `true` in persistence.xml
+
+[source]
+----
+ <property name="openjpa.Compatibility" value="UseListAttributeForArrays=true"/>
+----
+
+
+[[_jpa_2.2_supportssetclob]]
+==== supportsSetClob Property.
+
+In OpenJPA 2.2.0, code was added to allow the setting of CLOB or XML data larger than 4000 bytes.
+This functionality was eventually back ported to previous releases, and enabled by the `supportsSetClob` property on the OracleDictionary.
+Setting this property has no effect in 2.2.0 and later releases and any occurrence of it should be removed.
+
+[[_jpa_2.2_usenativesequencecache]]
+==== useNativeSequenceCache Property.
+
+In OpenJPA 2.2.0, code was added which changed the way sequences were generated, please see <<_jpa_2.2_allocationsize>> for details.
+This functionality was eventually back ported to previous releases, and enabled by the `useNativeSequenceCache` property on the DBDictionary.
+Setting this property has no effect in 2.2.0 and later releases and any occurrence of it should be removed.
+If previous behavior is desired (i.e. ``useNativeSequenceCache=true``), please see the details described in section <<_jpa_2.2_allocationsize>>.
+
+[[_jpa_2.2_cascadepersist]]
+==== Cascade persist behavior
+
+In previous releases, OpenJPA would check the database for the existence of the related Entity before persisting the relationship to that Entity.
+This resulted in an extra Select being sent to the database.
+In 2.2.0, code was added so that when cascading a persist to a related Entity without persistence state, the persist (insert) will happen without first checking the database.
+This may result in an EntityExistsException if the related Entity already exists in the database.
+To revert this behavior to the previous release, set the value of the `openjpa.Compatibility` property `CheckDatabaseForCascadePersistToDetachedEntity` to ``true``.
+
+This property does not cover a relation without cascade that refers to a manageable instance which has no persistence state in the current context, for example an entity of a runtime enhanced (subclassed) type that was detached when a previous transaction committed.
+Such an instance is looked up in the database irrespective of the value of ``CheckDatabaseForCascadePersistToDetachedEntity``, because the lookup is the only available evidence that the instance was persisted before.
+The lookup is skipped if the primary key values of the instance show that it never was assigned an identity; the relation is then reported as a reference to an unmanaged instance.
+
+[[_jpa_2.2_lifecycleeventmanager]]
+==== Life Cycle Event Manager Callback Behavior
+
+Life cycle event manager is used to manage entity's life cycle event callback.
+In previous releases, Life cycle event manager is scoped to EntityManagerFactory.
+This means listeners registered to an individual EntityManager may get life cycle event callbacks for entity that it does not manage.
+
+From 2.2.1 release, the default callback behavior of the life cycle event manager is changed to scope to each EntityManager.
+To revert this behavior to the previous release, set the value of the `openjpa.Compatibility` property `SingletonLifecycleEventManager` to ``true``.
+
+[[_jpa_2.2_sharedcachemode]]
+==== shared-cache-mode Property
+
+In the previous release, when the shared-cache-mode is enabled and the DataCache property is not set or set to false, there will be no data caching.
+
+From 2.2.2 release, the caching will be turned on if the shared-cache-mode is enabled.
+Please see the details described in section <<_ref_guide_shared_cache_mode_integration>>.
+
+[[_jpa_2.0]]
+== OpenJPA 2.0.0
+
+[[_jpa_2.0_incompatibilities]]
+=== Incompatibilities
+
+The following sections indicate changes that are incompatible between OpenJPA 1.x.x releases and the 2.0 release.
+Some may require application changes.
+Others can be remedied through the use of compatibility options.
+If your application uses a version 1.0 persistence.xml, compatibility options will be set appropriately to maintain backward compatibility.
+OpenJPA 2.0 applications using a version 2.0 persistence.xml and requiring OpenJPA 1.x.x compatibility may need to configure the appropriate compatibility options to get the desired behavior.
+
+[[_getproperties]]
+==== getProperties()
+
+The OpenJPAEntityManagerFactory interface getProperties() method was changed to return a Map instead of a Properties object.
+This change was made in order to support the getProperties() method defined in the JPA 2.0 specification.
+
+[[_migration_detach_behavior]]
+==== Detach Behavior
+
+The detach behavior has changed in several ways:
+
+* In the 1.x.x release, managed entities were flushed to the database as part of the detach operation. This is no longer done in 2.0.
+* In the 1.x.x release, entities were copied and returned. In 2.0, for those methods that have return values, the original entities are returned.
+* In the 1.x.x release, managed entities still exist in the persistent context. In 2.0, they are removed.
+* In the 1.x.x release, the detach operation is recursively cascaded to all referenced entities. In 2.0, the detach operation is only cascaded to those entities for which Cascade=detach has been specified.
+
+Applications that use a 1.0 persistence.xml will automatically maintain OpenJPA 1.x.x behavior.
+It is possible for a version 2.0 application to revert back to the 1.x.x behavior for some of these items by setting the openjpa.Compatibility property as follows:
+// <simplelist>
+//                         <member>CopyOnDetach=true</member>
+//                         <member>FlushBeforeDetach=true</member>
+//                         <member>CascadeWithDetach=true</member>
+//                     </simplelist>
+
+In addition, a new method has been provided on the link:../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html[OpenJPAEntityManager] interface to return a copy of the entity:
+[source]
+----
+
+    public <T> T detachCopy(T pc):
+----
+
+[[_private_persistent_properties]]
+==== Use of private persistent properties
+
+In 1.x.x releases of OpenJPA, if property access was used, private properties were considered persistent.
+This is contrary to the JPA specification, which states that persistent properties must be public or protected.
+In OpenJPA 2.0 and later, private properties will not be persistent by default.
+
+Applications that use a 1.0 persistence.xml will automatically maintain OpenJPA 1.x.x behavior.
+It is possible for a version 2.0 application to revert back to the 1.x.x behavior by setting the value of the `openjpa.Compatibility` property `PrivatePersistentProperties` to ``true``.
+If compile time enhancement is used, this property must be specified at the time of enhancement and at runtime.
+
+[[_setparameter]]
+==== Query.setParameter()
+
+The Query interface setParameter() method behavior has changed to throw an IllegalArgumentException (as required by the JPA specification) if more parameter substitutions are supplied than defined in the createQuery(), createNamedQuery(), or createNativeQuery() invocation.
+OpenJPA 1.2.x and prior versions silently ignored these extraneous parameter substitutions and allowed the Query to be processed.
+
+[[_serialization]]
+==== Serialization of Entities
+
+In 1.x.x releases of OpenJPA, when an entity was serialized after calling EntityManager.find(), detach() or detachAll() then all <<_ref_guide_pc_scos_proxy>> references were removed as expected, but when the same entity instance was serialized after calling EntityManager.clear() the proxy classes were not removed.
+
+This has two side-effects: when entities are remoted across JVM boundaries (RPC) or deserialized the OpenJPA runtime must be available on the classpath (both client and server containers); when entities are deserialized the OpenJPA runtime must be the exact same revision as used to serialize the entities due to the proxy classes using dynamically generated serialVersionUID values.
+
+Starting with OpenJPA 2.0, this behavior has been modified, so that by default all proxies will be removed during serialization.
+See <<_ref_guide_pc_scos_proxy_serial>> on how the behavior changes based on the `DetachedStateField` setting along with <<_ref_guide_detach_state>> for more details on how to override the default `DetachedStateField` setting.
+
+Applications that use a 1.0 persistence.xml will automatically maintain the old behavior.
+It is possible for a version 2.0 application to revert back to the prior 1.x.x behavior by setting the following openjpa.Compatibility property as follows:
+// <simplelist>
+//                         <member>IgnoreDetachedStateFieldForProxySerialization=true</member>
+//                     </simplelist>
+
+
+[[_querysqlcache]]
+==== openjpa.jdbc.QuerySQLCache
+
+In prior 1.x.x releases, the openjpa.jdbc.QuerySQLCache configuration property for Prepared SQL Cache accepted value `all` to never drop items from the cache, but this option is no longer supported and will cause a PersistenceException with a root cause of a ParseException to be thrown.
+See <<_ref_guide_cache_querysql>> for details on the available configuration values.
+
+[[_disabling autooff collection tracking]]
+=== Disabling AutoOff Collection Tracking
+
+The default behavior of OpenJPA in tracking collections is that if the number of modifications to the collection exceeds the current number of elements in collection then OpenJPA will disable tracking the collections.
+OpenJPA 2.0 added a compatibility property to disable turning off the collection tracking.
+
+The behavior of Auto disabling of collection tracking can be avoided by setting the value of the `openjpa.Compatibility` property `autoOff` to ``false``.
+The default behavior of auto disabling the collection tracking is not changed.
+But when the above property is set then the collection tracking will not be disabled automatically.
+
+[[_internal_differences]]
+=== Internal Behavioral Differences
+
+The following sections indicate internal changes between OpenJPA 1.x.x releases and the 2.0 release.
+As these are internal implementation specific behaviors not covered by the JPA specification, no changes should be required for applications that did not use or depend upon OpenJPA specific APIs or behavior.
+
+[[_prepostupdate]]
+==== PreUpdate/PostUpdate Life Cycle Callbacks
+
+If an entity was updated between the persist() and commit() operations in OpenJPA 1.x, then any PreUpdate and PostUpdate life cycle callback methods would be executed.
+Starting in OpenJPA 1.3 and 2.0, these callbacks will not get executed.
+
+The JPA 2.0 specification section on "Semantics of the Life Cycle Callback Methods for Entities" has been updated to include a Note that the callback behavior for updating an entity after the persist operation is implementation specific and should not be relied upon.
+
+[[_createemf]]
+==== createEntityManagerFactory Exceptions
+
+The JPA 2.0 specification section on "Bootstrapping in Java SE Environments" states that persistence providers must return null if they are not a qualified provider for the given persistence unit.
+
+However, OpenJPA may throw a RuntimeException if an error occurs while trying to create a qualified persistence unit, like for invalid openjpa.* specific configuration settings or for schema validation failures.
+
+If the Apache Geronimo JPA 2.0 Spec APIs are used, then any exceptions returned by a persistence provider will be wrapped within a PersistenceException.
+When the JPA 2.0 API reference implementation is used, any RuntimeExceptions will be returned to the calling application without being wrapped.
+Other JPA 2.0 API and implementation providers or versions may behave differently.
+
+[[_querycache]]
+==== openjpa.QueryCache default
+
+In previous releases, the default value for the openjpa.QueryCache property was `true` when the openjpa.DataCache was enabled.
+Depending on application characteristics, this default QueryCache enablement actually could negate much of the potential gains achieved by using the DataCache.
+Thus, the default value for the openjpa.QueryCache property is now __``__false__``__.
+
+To re-enable the default QueryCache behavior, you need to include the following property in your persistence.xml configuration.
+[source]
+----
+
+    <property name="openjpa.QueryCache" value="true"/>
+----
+
+If your configuration had previously enabled the QueryCache explicitly, then you might have to include the `true` value into your configuration (if you relied on the previous default).  Otherwise, your current QueryCache enablement will continue to work.
+[source]
+----
+
+    <property name="openjpa.QueryCache" value="true(CacheSize=1000, SoftReferenceSize=100)"/>
+----
+
+:sectnums:

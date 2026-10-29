@@ -1,0 +1,2104 @@
+[[_ref_guide_dbsetup]]
+=== JDBC
+(((
+            JDBC
+        )))
+
+OpenJPA uses a relational database for object persistence.
+It communicates with the database using the Java DataBase Connectivity (JDBC) APIs.
+This chapter describes how to configure OpenJPA to work with the JDBC driver for your database, and how to access JDBC functionality at runtime.
+
+[[_ref_guide_dbsetup_builtin]]
+==== Using the OpenJPA DataSource
+(((
+                DataSource
+            ,
+                OpenJPA
+            )))
+
+OpenJPA defines a [class]``org.apache.openjpa.jdbc.schema.DriverDataSource`` interface, which provides a simple [class]``javax.sql.DataSource`` wrapper implementation for the normal cases where `openjpa.ConnectionDriverName` refers to a [class]``java.sql.Driver``.
+See <<_openjpa.jdbc.driverdatasource,`openjpa.jdbc.DriverDataSource`>> for the list of provided implementations.
+
+[[_ref_guide_dbsetup_auto]]
+===== Optional Connection Pooling
+(((
+                    Pooling
+                ,
+                    DataSource
+                )))
+
+Starting with OpenJPA 2.1, a new [class]``org.apache.openjpa.jdbc.schema.AutoDriverDataSource`` is provided as the default, which will automatically select between the old [class]``SimpleDriverDataSource`` and a new [class]``DBCPDriverDataSource`` implementation based on if https://commons.apache.org/dbcp/[Apache Commons DBCP2] has been provided on the classpath and OpenJPA is not running in a container managed mode or with managed transactions.
+Note, that only the `openjpa-all.jar` includes Commons DBCP2, so you will need to include the `commons-dbcp2.jar` from the OpenJPA binary distribution if you are using the normal ``openjpa.jar``.
+
+To disable the automatic usage of Apache Commons DBCP when it is discovered on the classpath, set ``openjpa.jdbc.DriverDataSource=simple``, which will revert OpenJPA to the prior behavior of using [class]``org.apache.openjpa.jdbc.schema.SimpleDriverDataSource``
+
+To force usage of Apache Commons DBCP2, which will cause a fatal exception to be thrown if it cannot be loaded from the classpath, set ``openjpa.jdbc.DriverDataSource=dbcp``, which will cause OpenJPA to use [class]``org.apache.commons.dbcp2.BasicDataSource``
+
+[[_ref_guide_dbsetup_config]]
+===== Configuring the OpenJPA DataSource
+(((
+                    Configure
+                ,
+                    DataSource
+                )))
+
+If you choose to use OpenJPA's [class]``DataSource``, then you must specify the following properties:
+
+* ``openjpa.ConnectionUserName``: The JDBC user name for connecting to the database.
+* (((
+                        ConnectionPassword
+                    )))``openjpa.ConnectionPassword``: The JDBC password for the above user.
+* (((
+                        ConnectionURL
+                    )))``openjpa.ConnectionURL``: The JDBC URL for the database.
+* (((
+                        ConnectionDriverName
+                    )))``openjpa.ConnectionDriverName``: The JDBC driver class.
+
+To configure advanced features, use the following optional properties.
+The syntax of these property strings follows the syntax of OpenJPA plugin parameters described in <<_ref_guide_conf_plugins>>.
+
+* (((
+                        ConnectionProperties
+                    )))<<_openjpa.connectionproperties,`openjpa.ConnectionProperties`>>: If the listed driver is an instance of [class]``java.sql.Driver``, this string will be parsed into a [class]``Properties`` instance, which will then be used to obtain database connections through the [method]``Driver.connect(String url,
+Properties props)`` method.
+If, on the other hand, the listed driver is a [class]`` javax.sql.DataSource``, the string will be treated as a plugin properties string, and matched to the bean setter methods of the [class]``DataSource`` instance.
+* (((
+                        ConnectionFactoryProperties
+                    )))<<_openjpa.connectionfactoryproperties,`openjpa.ConnectionFactoryProperties`>>: OpenJPA's built-in [class]``DataSource`` allows you to set the following options via this plugin string:
+* (((
+                                JDBC
+                            ,
+                                QueryTimeout
+                            )))``QueryTimeout``: The maximum number of seconds the JDBC driver will wait for a statement to execute.
+* ``PrettyPrint``: Boolean indicating whether to pretty-print logged SQL statements.
+* (((
+                                SQL
+                            ,
+                                PrettyPrintLineLength
+                            )))``PrettyPrintLineLength``: The maximum number of characters in each pretty-printed SQL line.
+* ``PrintParameters``: A boolean indicating whether SQL parameter values will be included in exception text and when logging is enabled. Since the parameter values may contain sensitive information the default value is false.
+
+
+.Properties for the OpenJPA DataSource
+====
+[source]
+----
+
+<property name="openjpa.ConnectionUserName" value="user"/>
+<property name="openjpa.ConnectionPassword" value="pass"/>
+<property name="openjpa.ConnectionURL" value="jdbc:hsqldb:db-hypersonic"/>
+<property name="openjpa.ConnectionDriverName" value="org.hsqldb.jdbcDriver"/>
+<property name="openjpa.ConnectionFactoryProperties"
+    value="PrettyPrint=true, PrettyPrintLineLength=80, PrintParameters=true"/>
+----
+====
+
+[[_ref_guide_dbsetup_dbcp]]
+===== Configuring Apache Commons DBCP
+(((
+                    DBCP
+                ,
+                    DataSource
+                )))
+
+Additional Commons DBCP arguments can be provided in ``openjpa.connectionProperties``, such as:
+[source]
+----
+
+    MaxTotal=10,MaxIdle=5,MinIdle=2,MaxWait=60000
+----
+Please visit the Commons DBCP website for the entire list of http://commons.apache.org/dbcp/configuration.html[configuration options] and explanations.
+
+[[_ref_guide_dbsetup_thirdparty]]
+==== Using a Third-Party DataSource
+
+You can use OpenJPA with any third-party [class]``javax.sql.DataSource ``.
+There are multiple ways of telling OpenJPA about a [class]``
+DataSource``:
+
+* (((
+                        ConnectionFactory
+                    ))) Set the [class]``DataSource`` into the map passed to [method]``
+Persistence.createEntityManagerFactory`` under the <<_openjpa.connectionfactory,`openjpa.ConnectionFactory `>> key.
+* (((
+                        ConnectionFactoryName
+                    ))) Bind the [class]``DataSource`` into JNDI, and then specify its location in the `jta-data-source` or ``non-jta-data-source`` element of the <<_jpa_overview_persistence_xml,JPA XML format>> (depending on whether the [class]``DataSource`` is managed by JTA), or in the <<_openjpa.connectionfactoryname,`openjpa.ConnectionFactoryName`>> property.
+* (((
+                        ConnectionDriverName
+                    ))) Specify the full class name of the [class]``DataSource`` implementation in the <<_openjpa.connectiondrivername,`openjpa.ConnectionDriverName`>> property in place of a JDBC driver.
+In this configuration OpenJPA will instantiate an instance of the named class via reflection.
+It will then configure the [class]``DataSource `` with the properties in the <<_openjpa.connectionproperties,`openjpa.ConnectionProperties`>> setting.
+
+The features of OpenJPA's own [class]``DataSource`` can also be used with third-party implementations.
+OpenJPA layers on top of the third-party [class]``DataSource`` to provide the extra functionality.
+To configure these features use the <<_openjpa.connectionfactoryproperties,`openjpa.ConnectionFactoryProperties`>> property described in the previous section.
+
+.Properties File for a Third-Party DataSource
+====
+[source]
+----
+
+<property name="openjpa.ConnectionDriverName" value="oracle.jdbc.pool.OracleDataSource"/>
+<property name="openjpa.ConnectionProperties"
+    value="PortNumber=1521, ServerName=saturn, DatabaseName=solarsid, DriverType=thin"/>
+<property name="openjpa.ConnectionFactoryProperties" value="QueryTimeout=5000"/>
+----
+
+You can also force the Apache Commons DBCP BasicDataSource to be used for connection pooling when provided on the classpath by substituting it as the ``ConnectionDriverName`` and setting ``ConnectionProperties=DriverClassName`` to the actual JDBC driver value -
+
+[source]
+----
+
+<property name="openjpa.ConnectionDriverName" value="org.apache.commons.dbcp.BasicDataSource"/>
+<property name="openjpa.ConnectionProperties"
+    value="DriverClassName=oracle.jdbc.pool.OracleDataSource, PortNumber=1521, ServerName=saturn, DatabaseName=solarsid, DriverType=thin, MaxIdle=0"/>
+<property name="openjpa.ConnectionFactoryProperties" value="QueryTimeout=5000"/>
+----
+====
+
+[[_ref_guide_dbsetup_thirdparty_enlist]]
+===== Managed and XA DataSources
+(((
+                    DataSource
+                ,
+                    managed
+                )))
+
+
+(((
+                    ConnectionFactoryMode
+                ))) Certain application servers automatically enlist their [class]`` DataSource ``s in global transactions.
+When this is the case, OpenJPA should not attempt to commit the underlying connection, leaving JDBC transaction completion to the application server.
+To notify OpenJPA that your third-party [class]``
+DataSource`` is managed by the application server, use the ``jta-data-source`` element of your [path]_
+persistence.xml_ file or set the <<_openjpa.connectionfactorymode,`openjpa.ConnectionFactoryMode`>> property to ``managed``.
+
+Note that OpenJPA can only use managed [class]``DataSource``s when it is also integrating with the application server's managed transactions.
+Also note that all XA [class]``DataSource``s are enlisted, and you must set this property when using any XA [class]`` DataSource``.
+
+When using a managed [class]``DataSource``, you should also configure a second unmanaged [class]``DataSource`` that OpenJPA can use to perform tasks that are independent of the global transaction.
+The most common of these tasks is updating the sequence table OpenJPA uses to generate unique primary key values for your datastore identity objects.
+Configure the second [class]``DataSource`` using the `non-jta-data-source `[path]_persistence.xml_ element, or OpenJPA's various "2" connection properties, such as `openjpa.ConnectionFactory2Name ` or ``openjpa.Connection2DriverName``.
+These properties are outlined in <<_ref_guide_conf>>.
+
+.Managed DataSource Configuration
+====
+[source]
+----
+
+<!-- managed DataSource -->
+<jta-data-source>java:/OracleXASource</jta-data-source>
+<properties>
+    <!-- use OpenJPA's built-in DataSource for unmanaged connections -->
+    <property name="openjpa.Connection2UserName" value="scott"/>
+    <property name="openjpa.Connection2Password" value="tiger"/>
+    <property name="openjpa.Connection2URL" value="jdbc:oracle:thin:@CROM:1521:OpenJPADB"/>
+    <property name="openjpa.Connection2DriverName" value="oracle.jdbc.driver.OracleDriver"/>
+</properties>
+----
+====
+
+[[_ref_guide_dbsetup_setdsatruntime]]
+===== Setting the DataSource at runtime
+(((connections,override configuration)))
+
+As mentioned above, the JTA and Non-JTA DataSources may be passed in as configuration properties at EntityManagerFactory creation.
+Either the JPA standard properties ( ``jakarta.persistence.jtaDataSource``, ``java.persistence.nonJtaDataSource``) or their OpenJPA specific equivalents (``openjpa.ConnectionFactoryName``, ``openjpa.ConnectionFactory2Name``) may be used.
+One use case for this function is to store production connection information in configuration files but override the value when testing.
+
+
+
+.Setting DataSource at Runtime
+====
+[source]
+----
+Map<Object,Object> props = new HashMap<Object,Object>();
+props.put("jakarta.persistence.jtaDataSource", "jdbc/myDataSource");
+props.put("jakarta.persistence.nonJtaDataSource", "jdbc/myNonJTADataSource");
+emf = Persistence.createEntityManagerFactory("example", props);
+----
+====
+
+[[_ref_guide_dbsetup_setdsperem]]
+====== Using different DataSources for each EntityManager
+
+The JPA specification allows the DataSource (ConnectionFactory) to be specified on the EntityManagerFactory.
+OpenJPA extends this support and allows each EntityManager to override the DataSource from the EntityManagerFactory.
+It's expected that the EntityManagerFactory will also be configured with a valid JTA / Non-JTA DataSource.
+The DataSource configured on the EntityManagerFactory will be used to obtain a DBDictionary and (rarely) to gather some information about the database in use (e.g.
+version, JDBC driver version).
+
+If the EntityManagerFactory is not configured with a valid DataSource there are a few additional caveats.
+
+* The `openjpa.DBDictionary` property must be used to ensure the correct DBDictionary is used.
+* OpenJPA will always attempt to obtain a DataSource from JNDI based on the configuration for the EntityManagerFactory. When a JNDI name is specified on the EntityManager this lookup happens slightly earlier than normal. If the lookup fails the JNDI name provided at EntityManager creation will be set into the EntityManagerFactory's configuration and used in subsequent attempts.
+
+
+[[_ref_guide_dbsetup_setdsbenefits]]
+====== Benefits
+
+In effect this option allows a single set of entity definitions to be shared between multiple database instances or schemas within an instance.
+This can be highly beneficial when there are a large number of entity definitions (e.g.
+> 200), or a large number of databases / schemas in use.
+
+[[_ref_guide_dbsetup_setdslimitations]]
+====== Limitations
+
+
+
+* The same database type and version must be used by each EntityManager. OpenJPA will use the same DBDictionary for each EntityManager and will make no attempt to alter SQL syntax between EntityManager instances.
+* It is the application's responsibility to ensure that the schema is identical on each database.
+* The application may not specify schema names for individual entities.
+* The DataSource (ConnectionFactory) name may only be specified when the EntityManager is created. The DataSource may not be switched while an EntityManager is in use.
+* The L2 cache (DataCache) should not be used if different DataSources are specified for each EntityManager
+* SynchronizeMappings should not be used with this feature.
+* Table and Sequence generators should not be used with this feature.
+* It is not required, but is recommended that the `openjpa.DBDictionary` property be specified when using this feature
+
+
+[[_ref_guide_dbsetup_setdserror]]
+====== Error handling
+
+If a JTA DataSource is not available when the EntityManager is created, an `IllegalArgumentException` will be thrown.
+The EntityManager will not fall back to the JTA DataSource defined in the configuration.
+
+The same logic applies if a Non-JTA DataSource is not available when the EntityManager is created.
+OpenJPA will not fall back to the configured Non-JTA DataSource.
+
+[[_ref_guide_dbsetup_sqlconn]]
+==== Runtime Access to DataSource
+(((
+                JDBC
+            ,
+                accessing DataSource
+            )))
+
+The JPA standard defines how to access JDBC connections from enterprise beans.
+OpenJPA also provides APIs to retrieve a connection directly from the [class]``
+EntityManagerFactory``'s [class]``DataSource``.
+
+The [method]``EntityManager.unwrap(java.sql.Connection.class)`` method returns an [class]``EntityManager``'s connection.
+If the [class]``
+EntityManager`` does not already have a connection, it will obtain one.
+The returned connection is only guaranteed to be transactionally consistent with other [class]``EntityManager`` operations if the [class]``
+EntityManager`` is in a managed or non-optimistic transaction, if the [class]``EntityManager`` has flushed in the current transaction, or if you have used the [method]``OpenJPAEntityManager.beginStore`` method to ensure that a datastore transaction is in progress.
+Always close the returned connection before attempting any other [class]``EntityManager `` operations.
+OpenJPA will ensure that the underlying native connection is not released if a datastore transaction is in progress.
+
+.Using the EntityManager's Connection
+====
+[source]
+----
+
+import java.sql.Connection;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+
+...
+
+EntityManager em = emf.createEntityManager();
+Connection conn = (Connection) em.unwrap(java.sql.Connection.class);
+
+// do JDBC stuff
+
+conn.close();
+----
+====
+
+The example below shows how to use a connection directly from the [class]``
+DataSource``, rather than using an [class]`` EntityManager ``'s connection.
+
+.Using the EntityManagerFactory's DataSource
+====
+[source]
+----
+
+import java.sql.*;
+import javax.sql.*;
+import org.apache.openjpa.conf.*;
+import org.apache.openjpa.persistence.*;
+
+...
+
+OpenJPAEntityManagerFactory kemf = OpenJPAPersistence.cast(emf);
+OpenJPAConfiguration conf = kemf.getConfiguration();
+DataSource dataSource = (DataSource) conf.getConnectionFactory();
+Connection conn = dataSource.getConnection();
+
+// do JDBC stuff
+
+conn.close();
+----
+====
+
+[[_ref_guide_dbsetup_dbsupport]]
+==== Database Support
+(((
+                relational database
+            ,
+                OpenJPA support
+            )))
+
+OpenJPA can take advantage of any JDBC 2.x compliant driver, making almost any major database a candidate for use.
+See our officially supported database list in <<_supported_databases>> for more information.
+Typically, OpenJPA auto-configures its JDBC behavior and SQL dialect for your database, based on the values of your connection-related configuration properties.
+
+If OpenJPA cannot detect what type of database you are using, or if you are using an unsupported database, you will have to tell OpenJPA what link:../../apidocs/org/apache/openjpa/jdbc/sql/DBDictionary.html[
+org.apache.openjpa.jdbc.sql.DBDictionary] to use.
+The [class]``DBDictionary`` abstracts away the differences between databases.
+You can plug a dictionary into OpenJPA using the <<_openjpa.jdbc.dbdictionary,`openjpa.jdbc.DBDictionary `>> configuration property.
+The built-in dictionaries are listed below.
+If you are using an unsupported database, you may have to write your own [class]``DBDictionary`` subclass, a simple process.
+
+* ``access``: Dictionary for Microsoft Access. This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/sql/AccessDictionary.html[ org.apache.openjpa.jdbc.sql.AccessDictionary] class.
+* (((
+                        DB2
+                    )))``db2``: Dictionary for IBM's DB2 database.
+This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/sql/DB2Dictionary.html[
+org.apache.openjpa.jdbc.sql.DB2Dictionary] class.
+* (((
+                        Derby
+                    )))``derby``: Dictionary for the Apache Derby database.
+This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/sql/DerbyDictionary.html[
+org.apache.openjpa.jdbc.sql.DerbyDictionary class.
+]
+* (((
+                        Empress
+                    )))``empress``: Dictionary for Empress database This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/sql/EmpressDictionary.html[
+org.apache.openjpa.jdbc.sql.EmpressDictionary] class.
+* (((
+                        FoxPro
+                    )))``foxpro``: Dictionary for Microsoft Visual FoxPro.
+This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/sql/FoxProDictionary.html[
+org.apache.openjpa.jdbc.sql.FoxProDictionary] class.
+* (((
+                        H2
+                    )))``h2``: Dictionary for the H2 Database Engine.
+This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/sql/H2Dictionary.html[
+org.apache.openjpa.jdbc.sql.H2Dictionary] class.
+* (((
+                        Hypersonic SQL
+                    )))``hsql``: Dictionary for the Hypersonic SQL database.
+This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/sql/HSQLDictionary.html[
+org.apache.openjpa.jdbc.sql.HSQLDictionary] class.
+* (((
+                        Informix
+                    )))``informix``: Dictionary for the Informix database.
+This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/sql/InformixDictionary.html[
+org.apache.openjpa.jdbc.sql.InformixDictionary] class.
+* (((
+                        Ingres
+                    )))``ingres``: Dictionary for Ingres.
+This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/sql/IngresDictionary.html[
+org.apache.openjpa.jdbc.sql.IngresDictionary] class.
+* (((
+                        JDataStore
+                    )))``jdatastore``: Dictionary for Borland JDataStore.
+This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/sql/JDataStoreDictionary.html[
+org.apache.openjpa.jdbc.sql.JDataStoreDictionary] class.
+* (((
+                        MariaDB
+                    )))``mariadb``: Dictionary for the MariaDB database.
+This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/sql/MariaDBDictionary.html[
+org.apache.openjpa.jdbc.sql.MariaDBDictionary] class.
+* (((
+                        MySQL
+                    )))``mysql``: Dictionary for the MySQL database.
+This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/sql/MySQLDictionary.html[
+org.apache.openjpa.jdbc.sql.MySQLDictionary] class.
+* (((
+                        Oracle
+                    )))``oracle``: Dictionary for Oracle.
+This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/sql/OracleDictionary.html[
+org.apache.openjpa.jdbc.sql.OracleDictionary] class.
+* (((
+                        Pointbase
+                    )))``pointbase``: Dictionary for Pointbase Embedded database.
+This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/sql/PointbaseDictionary.html[
+org.apache.openjpa.jdbc.sql.PointbaseDictionary] class.
+* (((
+                        PostgreSQL
+                    )))``postgres``: Dictionary for PostgreSQL.
+This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/sql/PostgresDictionary.html[
+org.apache.openjpa.jdbc.sql.PostgresDictionary] class.
+* (((
+                        SolidDB
+                    )))``soliddb``: Dictionary for IBM's SolidDB database.
+This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/sql/SolidDBDictionary.html[
+org.apache.openjpa.jdbc.sql.SolidDBDictionary] class.
+* (((
+                        SQL Server
+                    )))``sqlserver``: Dictionary for Microsoft's SQL Server database.
+This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/sql/SQLServerDictionary.html[
+org.apache.openjpa.jdbc.sql.SQLServerDictionary] class.
+* (((
+                        Sybase
+                    )))``sybase``: Dictionary for Sybase.
+This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/sql/SybaseDictionary.html[
+org.apache.openjpa.jdbc.sql.SybaseDictionary] class.
+
+The example below demonstrates how to set a dictionary and configure its properties in your configuration file.
+The `DBDictionary` property uses OpenJPA's <<_ref_guide_conf_plugins,plugin syntax >>.
+
+.Specifying a DBDictionary
+====
+[source]
+----
+
+<property name="openjpa.jdbc.DBDictionary" value="hsql(SimulateLocking=true)"/>
+----
+====
+
+[[_ref_guide_dbsetup_dbdictprops]]
+===== DBDictionary Properties
+
+The standard dictionaries all recognize the following properties.
+These properties will usually not need to be overridden, since the dictionary implementation should use the appropriate default values for your database.
+You typically won't use these properties unless you are designing your own [class]``DBDictionary`` for an unsupported database.
+
+* (((
+                            SQL
+                        ,
+                            AllowsAliasInBulkClause
+                        )))``AllowsAliasInBulkClause``: When true, SQL delete and update statements may use table aliases.
+* ``AllowsBulkTargetInSubselect``: When true, a subquery in the WHERE clause of an SQL delete or update statement may read the table that the statement changes. When false, the statement matches the primary keys of the affected rows in a derived table instead.
+* (((
+                            DDL
+                        ,
+                            ArrayTypeName
+                        )))``ArrayTypeName``: The overridden default column type for ``java.sql.Types.ARRAY``.
+This is used only when the schema is generated by the ``mappingtool``.
+* ``AutoAssignClause``: The column definition clause to append to a creation statement. For example, `"AUTO_INCREMENT"` for MySQL. This property is set automatically in the dictionary, and should not need to be overridden, and is only used when the schema is generated using the ``mappingtool``.
+* (((
+                            DDL
+                        ,
+                            AutoAssignTypeName
+                        )))``AutoAssignTypeName``: The column type name for auto-increment columns.
+For example, `"BIGSERIAL"` for PostgreSQL.
+This property is set automatically in the dictionary and should not need to be overridden.
+It is used only when the schema is generated using the ``mappingtool``.
+* (((
+                            JDBC
+                        ,
+                            BatchLimit
+                        )))``BatchLimit``: The default batch limit for sending multiple SQL statements at once to the database.
+A value of -1 indicates unlimited batching, and any positive integer indicates the maximum number of SQL statements to batch together.
+Defaults to 0 which disables batching.
+* ``BigintTypeName``: The overridden default column type for ``java.sql.Types.BIGINT``. This is used only when the schema is generated by the ``mappingtool``.
+* (((
+                            DDL
+                        ,
+                            BinaryTypeName
+                        )))``BinaryTypeName``: The overridden default column type for ``java.sql.Types.BINARY``.
+This is used only when the schema is generated by the ``mappingtool``.
+* ``BitTypeName``: The overridden default column type for ``java.sql.Types.BIT``. This is used only when the schema is generated by the ``mappingtool``.
+* (((
+                            BLOB
+                        ,
+                            BlobBufferSize
+                        )))``BlobBufferSize``: This property establishes the buffer size in the `INSERT/UPDATE` operations with an ``java.io.InputStream``.
+This is only used with OpenJPA's <<_ref_guide_streamsupport>>.
+Defaults to 50000.
+* (((
+                            BLOB
+                        ,
+                            BlobTypeName
+                        )))``BlobTypeName``: The overridden default column type for ``java.sql.Types.BLOB``.
+This is used only when the schema is generated by the ``mappingtool``.
+* ``BooleanRepresentation``: The overridden default representation for `java.lang.Boolean` or ``boolean`` fields in JPA Entities. A link:../../apidocs/org/apache/openjpa/jdbc/sql/BooleanRepresentation.html[ org.apache.openjpa.jdbc.sql.BooleanRepresentation] describes how Boolean values in entities get mapped into the database by default. Note that you additionally might need to define the `BooleanTypeName```BitTypeName`` settings to fit your selected BooleanRepresenation.
+* (((
+                            DDL
+                        ,
+                            BooleanTypeName
+                        )))``BooleanTypeName``: The overridden default column type for ``java.sql.Types.BOOLEAN``.
+This is used only when the schema is generated by the ``mappingtool``.
+* ``CastFunction``: The SQL function call to cast a value to another SQL type. Use the tokens `{0}` and `{1}` to represent the two arguments. The result of the function is convert the ``{0}`` value to a `{1}` type. The default is ``"CAST({0} AS {1})"``.
+* (((
+                            SQL
+                        ,
+                            CatalogSeparator
+                        )))``CatalogSeparator``: The string the database uses to delimit between the schema name and the table name.
+This is typically ``"." ``, which is the default.
+* ``CharTypeName``: The overridden default column type for ``java.sql.Types.CHAR``. This is used only when the schema is generated by the ``mappingtool``.
+* (((
+                            DDL
+                        ,
+                            CharacterColumnSize
+                        )))``CharacterColumnSize``: The default size of `varchar ` and `char` columns.
+Typically 255.
+* ``ClobBufferSize``: This property establish the buffer size in the `INSERT/UPDATE` operations with a ``java.io.Reader``. This is only used with OpenJPA's <<_ref_guide_streamsupport>>. Defaults to 50000.
+* (((
+                            DDL
+                        ,
+                            ClobTypeName
+                        )))``ClobTypeName``: The overridden default column type for ``java.sql.Types.CLOB``.
+This is used only when the schema is generated by the ``mappingtool``.
+* (((
+                            JDBC
+                        ,
+                            ClosePoolSQL
+                        )))``ClosePoolSQL``: A special command to issue to the database when shutting down the pool.
+Usually the pool of connections to the database is closed when the application is ending.
+For embedded databases, whose lifecycle is coterminous with the application, there may be a special command, usually ``"SHUTDOWN"``, that will cause the embedded database to close cleanly.
+Defaults to ``null``.
+* ``ConcatenateFunction``: The SQL function call or operation to concatenate two strings. Use the tokens `{0}` and `{1}` to represent the two arguments. The result of the function or operation is to concatenate the `{1}` string to the end of the `{0}` string. Defaults to ``"({0}||{1})"``.
+* (((
+                            DDL
+                        ,
+                            ConstraintNameMode
+                        )))``ConstraintNameMode``: When creating constraints, whether to put the constraint name before the definition (``"before"``), just after the constraint type name (``"mid"``), or after the constraint definition (``"after"``). Defaults to ``"before"``.
+* ``CreatePrimaryKeys``: When false, do not create database primary keys for identifiers. Defaults to ``true ``.
+* (((
+                            joins
+                        ,
+                            CrossJoinClause
+                        )))``CrossJoinClause``: The clause to use for a cross join (cartesian product). Defaults to ``"CROSS JOIN"``.
+* ``CurrentDateFunction``: The SQL function call to obtain the current date from the database. Defaults to ``"CURRENT_DATE"``.
+* (((
+                            SQL
+                        ,
+                            CurrentTimeFunction
+                        )))``CurrentTimeFunction``: The SQL function call to obtain the current time from the database.
+Defaults to ``"CURRENT_TIME"``.
+* ``CurrentTimestampFunction``: The SQL function call to obtain the current timestamp from the database. Defaults to ``"CURRENT_TIMESTAMP"``.
+* (((
+                                JDBC
+                            ,
+                                DateFractionDigits
+                            )))``DateFractionDigits`` Some databases support to store sub-second fraction values.
+The digits to store can sometimes be configured.
+This value defines the default number of digits to store in the database.
+A `dateFractionDigits=3` will e.g.
+lead to a `DATETIME(3)` on some databases.
+Note that this default can be overwritten to an integer value n per column via ``@Column(scale=n)``.
+A `@Column(scale=-1)` will set the fraction digits to zero.
+* ``DatePrecision``: The database is able to store time values to this degree of precision, which is expressed in nanoseconds. This value is usually one million, meaning that the database is able to store time values with a precision of one millisecond. Particular databases may have more or less precision. OpenJPA will round all time values to this degree of precision before storing them in the database. This property can be set to one of the following precisions:
+** ``DECI``: 100000000
+** ``CENIT``: 10000000
+** ``MILLI (default precision)``: 1000000
+** ``MICRO``: 1000
+** ``NANO (max precision)``: 1
+* (((
+                            JDBC
+                        ,
+                            DateMillisecondBehavior
+                        )))``DateMillisecondBehavior``: When retrieving a `Date` value from a database which stores the value in a TIMESTAMP column, the values retrieved will be rounded to the nearest millisecond.
+So a date of '2010-01-01 12:00:00.687701' stored in the database will become '2010-01-01 12:00:00.688' in the `Date` field of the entity.
+The following date stored in the database as '9999-12-31 23:59:59.9999' will become '10000-01-01 00:00:00.000'.  This rounding may not be desirable.
+With this property, a user has options which will direct OpenJPA how to handle the milliseconds.
+This property can be set to one of the enums defined in ``DBDictionary.DateMillisecondBehaviors``.
+The options defined in ``DBDictionary.DateMillisecondBehaviors`` are as follows:
+** ``DateMillisecondBehaviors.ROUND``: This is the default. The ``Date`` will be rounded to the nearest millisecond, as described above.
+** ``DateMillisecondBehaviors.DROP``: The milliseconds will be dropped, thus rounding is not performed. As an example, a date of '2010-01-01 12:00:00.687701' stored in the database will become '2010-01-01 12:00:00.000' in the `Date` field of the entity.
+** ``DateMillisecondBehaviors.RETAIN``: The milliseconds will not be rounded, but will be retained. As an example, a date of '2010-01-01 12:00:00.687701' stored in the database will become '2010-01-01 12:00:00.687' in the `Date` field of the entity.
+* ``DateTypeName``: The overridden default column type for ``java.sql.Types.DATE``. This is used only when the schema is generated by the ``mappingtool``.
+* (((
+                            DDL
+                        ,
+                            DecimalTypeName
+                        )))``DecimalTypeName``: The overridden default column type for ``java.sql.Types.DECIMAL``.
+This is used only when the schema is generated by the ``mappingtool``.
+* ``DelimitedCase``: The case to use when querying the database about identifiers that have been delimited. It defaults to preserving the case of the originally specified name. Available values are: ``upper, lower, preserve.``
+* (((
+                            SQL
+                        ,
+                            DisableAlterSeqenceIncrementBy
+                        )))``DisableAlterSeqenceIncrementBy``: OpenJPA attempts to execute an ALTER SEQUENCE....INCREMENT BY SQL statement for a user defined sequence.
+This is done to ensure that the 'allocationSize' value defined by the entity's sequence, or default value, matches the sequence defined in the database.
+For example, with an allocationSize of 1000 for a sequence named 'SEQ_JPASAMPLE', the following SQL will be generated (the SQL might vary slightly depending on the databases): ``ALTER SEQUENCE SEQ_JPASAMPLE INCREMENT BY 1000``.
+If the user executing this command doesn't have permissions to execute the command, it will fail and in turn OpenJPA will disable sequence caching.
+If a user wants to disable this SQL command, this property can be set to true.
+However, the user must ensure that the entities defined sequence is kept in synch with the sequence defined in the database.
+Defaults to false.
+* ``DisableSchemaFactoryColumnTypeErrors``: When something other than the default SchemaFactory is used, up-front mapping validation is performed against the database schema. As part of the validation, OpenJPA will verify a persistence class column's type against the column type defined in the database schema. If a mismatch is found, OpenJPA will throw an exception to flag the mismatch types and will not allow processing to continue. This can be limiting, especially if the JDBC driver and/or database can properly handle the mismatch. Set this property to true to disable column type mismatch errors. Defaults to false.
+* (((
+                            SQL
+                        ,
+                            DistinctCountColumnSeparator
+                        )))``DistinctCountColumnSeparator``: The string the database uses to delimit between column expressions in a `SELECT COUNT(DISTINCT
+column-list)` clause.
+Defaults to `null` for most databases, meaning that multiple columns in a distinct COUNT clause are not supported.
+* ``DistinctTypeName``: The overridden default column type for ``java.sql.Types.DISTINCT``. This is used only when the schema is generated by the ``mappingtool``.
+* (((
+                            DDL
+                        ,
+                            DoubleTypeName
+                        )))``DoubleTypeName``: The overridden default column type for ``java.sql.Types.DOUBLE``.
+This is used only when the schema is generated by the ``mappingtool``.
+* ``DriverVendor``: The vendor of the particular JDBC driver you are using. Some dictionaries must alter their behavior depending on the driver vendor. Dictionaries usually detect the driver vendor and set this property themselves. See the `VENDOR_XXX` constants defined in the [class]``DBDictionary`` Javadoc for available options.
+* (((
+                            SQL
+                        ,
+                            DropTableSQL
+                        )))``DropTableSQL``: The SQL statement used to drop a table.
+Use the token `{0}` as the argument for the table name.
+Defaults to ``"DROP TABLE {0}"``.
+* ``FixedSizeTypeNames``: A comma separated list of additional database types that have a size defined by the database. In other words, when a column of a fixed size type is declared, its size cannot be defined by the user. Common examples would be ``DATE``, ``FLOAT``, and ``INTEGER``. Each database dictionary has its own internal set of fixed size type names that include the names mentioned here and many others. Names added to this property are added to the dictionary's internal set. Defaults to ``null``.
+* (((
+                            DDL
+                        ,
+                            FloatTypeName
+                        )))``FloatTypeName``: The overridden default column type for ``java.sql.Types.FLOAT``.
+This is used only when the schema is generated by the ``mappingtool``.
+* (((
+                            locking
+                        ,
+                            ForUpdateClause
+                        )))``ForUpdateClause``: The clause to append to `SELECT ` statements to issue queries that obtain pessimistic locks.
+Defaults to ``"FOR UPDATE"``.
+* (((
+                            JDBC
+                        ,
+                            GetStringVal
+                        )))``GetStringVal``: A special function to return the value of an XML column in a select statement.
+For example, Oracle uses ``".getClobVal()"``, as in ``"SELECT t0.xmlcol.getClobVal() FROM xmltab t0"``.
+Defaults to the empty string.
+* ``InClauseLimit``: The maximum number of elements in an `IN` clause. OpenJPA works around cases where the limit is exceeded. Defaults to -1 meaning no limit.
+* (((
+                                DDL
+                            ,
+                                IndexPhysicalForeignKeys
+                            )))``IndexPhysicalForeignKeys``: Whether a search Index should automatically get created on a physical foreign key.
+Some databases, like MySQL, handle this internally, so we do not need to generate an explicit Index in our DDL.
+Other databases need an explicit serach index on foreign key columns to improve performance.
+IndexPhysicalForeignKeys defaults to true for Oracle, MS-SQL and PostgreSQL.
+* (((
+                            SQL
+                        ,
+                            InitializationSQL
+                        )))``InitializationSQL``: A piece of SQL to issue against the database whenever a connection is retrieved from the [class]``DataSource ``.
+* ``InnerJoinClause``: The clause to use for an inner join. Defaults to ``"INNER JOIN"``.
+* (((
+                            DDL
+                        ,
+                            IntegerTypeName
+                        )))``IntegerTypeName``: The overridden default column type for ``java.sql.Types.INTEGER``.
+This is used only when the schema is generated by the ``mappingtool``.
+* ``JavaObjectTypeName``: The overridden default column type for ``java.sql.Types.JAVAOBJECT``. This is used only when the schema is generated by the ``mappingtool``.
+* (((
+                            joins
+                        ,
+                            JoinSyntax
+                        )))``JoinSyntax``: The SQL join syntax to use in select statements.
+See <<_ref_guide_dbsetup_sql92>>.
+* ``LastGeneratedKeyQuery``: The query to issue to obtain the last automatically generated key for an auto-increment column. For example, ``"SELECT LAST_INSERT_ID()"`` for MySQL. This property is set automatically in the dictionary, and should not need to be overridden. If `SupportsGetGeneratedKeys` is true, the query will not be issued but a more efficient JDBC 3.0 mechanism for obtaining generated keys will be used instead.
+* (((
+                			delimited identifiers
+                		,
+                			LeadingDelimiter
+                		)))``LeadingDelimiter``: The characters to use as the leading delimiter for a delimited identifier.
+The default value is a double quote, ``(")``.
+See <<_ref_guide_dbsetup_dbsupport_delim_id>> for the default value for some specific databases.
+* ``LongVarbinaryTypeName``: The overridden default column type for ``java.sql.Types.LONGVARBINARY``. This is used only when the schema is generated by the ``mappingtool``.
+* (((
+                            DDL
+                        ,
+                            LongVarcharTypeName
+                        )))``LongVarcharTypeName``: The overridden default column type for ``java.sql.Types.LONGVARCHAR``.
+This is used only when the schema is generated by the ``mappingtool``.
+* ``MaxAutoAssignNameLength``: Set this property to the maximum length of the sequence name used for auto-increment columns. Names longer than this value are truncated. Defaults to 31.
+* (((
+                            DDL
+                        ,
+                            MaxColumnNameLength
+                        )))``MaxColumnNameLength``: The maximum number of characters in a column name.
+Defaults to 128.
+* ``MaxConstraintNameLength``: The maximum number of characters in a constraint name. Defaults to 128.
+* (((
+                            SQL
+                        ,
+                            MaxEmbeddedBlobSize
+                        )))``MaxEmbeddedBlobSize``: When greater than -1, the maximum size of a `BLOB` value that can be sent directly to the database within an insert or update statement.
+Values whose size is greater than `MaxEmbeddedBlobSize` force OpenJPA to work around this limitation.
+A value of -1 means that there is no limitation.
+Defaults to -1.
+* ``MaxEmbeddedClobSize``: When greater than -1, the maximum size of a `CLOB` value that can be sent directly to the database within an insert or update statement. Values whose size is greater than `MaxEmbeddedClobSize` force OpenJPA to work around this limitation. A value of -1 means that there is no limitation. Defaults to -1.
+* (((
+                            DDL
+                        ,
+                            MaxIndexNameLength
+                        )))``MaxIndexNameLength``: The maximum number of characters in an index name.
+Defaults to 128.
+* (((
+                            indexes
+                        ,
+                            MaxIndexesPerTable
+                        )))``MaxIndexesPerTable``: The maximum number of indexes that can be placed on a single table.
+Defaults to no limit.
+* ``MaxTableNameLength``: The maximum number of characters in a table name. Defaults to 128.
+* (((
+                			DBDictionary
+                		,
+                			NameConcatenator
+                		)))``NameConcatenator``: The value used when names are concatenated to create a generated name.
+The default value is the underscore ``"_"``.
+* ``NextSequenceQuery``: A SQL string for obtaining a native sequence value. May use a placeholder of `{0}` for the variable sequence name and `{1}` for sequence increment. Defaults to a database-appropriate value. For example, ``"SELECT {0}.NEXTVAL FROM DUAL"`` for Oracle database.
+* (((
+                            DDL
+                        ,
+                            NullTypeName
+                        )))``NullTypeName``: The overridden default column type for ``java.sql.Types.NULL``.
+This is used only when the schema is generated by the ``mappingtool``.
+* ``NumericTypeName``: The overridden default column type for ``java.sql.Types.NUMERIC``. This is used only when the schema is generated by the ``mappingtool``.
+* (((
+                            DDL
+                        ,
+                            OtherTypeName
+                        )))``OtherTypeName``: The overridden default column type for ``java.sql.Types.OTHER``.
+This is used only when the schema is generated by the ``mappingtool``.
+* ``OuterJoinClause``: The clause to use for an left outer join. Defaults to ``"LEFT OUTER JOIN"``.
+* (((
+                            JDBC
+                        ,
+                            Platform
+                        )))``Platform``: The name of the database that this dictionary targets.
+Defaults to ``"Generic"``, but all dictionaries override this value.
+* ``RangePosition``: Indicates where to specify in the SQL select statement the range, if any, of the result rows to be returned. When limiting the number of returned result rows to a subset of all those that satisfy the query's conditions, the position of the range clause varies by database. Defaults to 0, meaning that the range is expressed at the end of the select statement but before any locking clause. See the RANGE_XXX constants defined in [class]``DBDictionary``.
+* (((
+                            DDL
+                        ,
+                            RealTypeName
+                        )))``RealTypeName``: The overridden default column type for ``java.sql.Types.REAL``.
+This is used only when the schema is generated by the ``mappingtool``.
+* ``RefTypeName``: The overridden default column type for ``java.sql.Types.REF``. This is used only when the schema is generated by the ``mappingtool``.
+* (((
+                            SQL
+                        ,
+                            RequiresAliasForSubselect
+                        )))``RequiresAliasForSubselect``: When true, the database requires that subselects in a FROM clause be assigned an alias.
+* (((
+                            schema
+                        ,
+                            reflection
+                        ,
+                            RequiresAutoCommitForMetaData
+                        )))``RequiresAutoCommitForMetadata``: When true, the JDBC driver requires that autocommit be enabled before any schema interrogation operations can take place.
+* ``RequiresCastForComparisons``: When true, comparisons of two values of different types or of two literals requires a cast in the generated SQL. Defaults to ``false``.
+* ``RequiresCastForMathFunctions``: When true, math operations on two values of different types or on two literals requires a cast in the generated SQL. Defaults to ``false``.
+* (((
+                            SQL
+                        ,
+                            RequiresCastForExtractOperand
+                        )))``RequiresCastForExtractOperand``: When true, a parameter or literal operand of `EXTRACT` that is bound as a parameter is cast to ``DATE``, `TIME` or ``TIMESTAMP`` in the generated SQL.
+Defaults to ``false``.
+* ``RequiresConditionForCrossJoin``: Some databases require that there always be a conditional statement for a cross join. If set, this parameter ensures that there will always be some condition to the join clause.
+* (((
+                            SQL
+                        ,
+                            RequiresTargetForDelete
+                        )))``RequiresTargetForDelete``: When true, the database requires a target for delete statements.
+Defaults to ``false``.
+* ``ReservedWords``: A comma-separated list of reserved words for this database, beyond the standard SQL92 keywords.
+* (((
+                            schema
+                        ,
+                            reflection
+                        ,
+                            SchemaCase
+                        )))``SchemaCase``: The case to use when querying the database metadata about schema components.
+Defaults to making all names upper case.
+Available values are: ``upper, lower, preserve``.
+* ``SearchStringEscape``: The SQL string literal rendering of the backslash escape character, written into the `ESCAPE` clause of a generated SQL `LIKE` when the query itself supplies a backslash as its escape character. A database which consumes a backslash while parsing a string literal needs it doubled here. On MySQL and MariaDB that doubling is only correct while ``sql_mode`` contains no ``NO_BACKSLASH_ESCAPES``; with that mode the server stops consuming backslashes and rejects the clause with ``ERROR 1210``, so a query which runs against it has to pick an escape character other than a backslash. Defaults to `"\\"` (a single backslash in Java speak). Note: this character never gains an escape meaning inside a query pattern. A ``LIKE`` without an `ESCAPE` clause has no escape character at all, as Jakarta Persistence requires.
+* ``SearchStringNoEscape``: The SQL expression written into the `ESCAPE` clause of a generated SQL `LIKE` whose query supplied no escape character, used when `RequiresSearchStringEscapeForLike` is true. Defaults to ``"''"``, the empty string literal, which is a non-standard spelling of "no escape character" accepted by H2 and PostgreSQL, and by MySQL only while `sql_mode` contains no ``NO_BACKSLASH_ESCAPES``; a standard conforming database such as Derby rejects it, since the standard wants exactly one character. A dictionary which turns `RequiresSearchStringEscapeForLike` on therefore has to supply a value its database accepts. MySQL uses ``"CHAR(0)"`` because of the `sql_mode` above, and MariaDB because it ignores an empty escape clause altogether and keeps its backslash escape; that expression has the same effect for every pattern which does not contain a NUL character.
+* (((
+                            SQL
+                        ,
+                            RequiresSearchStringEscapeForLike
+                        )))``RequiresSearchStringEscapeForLike``: When true, the database requires an explicit `ESCAPE` clause for queries that use ``LIKE``, because its ``LIKE`` defaults to an escape character of its own (a backslash on H2, MySQL, MariaDB and PostgreSQL).  OpenJPA then writes the ``SearchStringNoEscape`` expression into an ``ESCAPE`` clause, which gives such a database the no escape character behaviour Jakarta Persistence requires.
+Defaults to ``false``.
+* ``SelectWords``: A comma-separated list of keywords which may be used to start a SELECT statement for this database. If an application executes a native SQL statement which begins with SelectWords OpenJPA will treat the statement as a SELECT statement rather than an UPDATE statement.
+* (((
+                            schema
+                        ,
+                            reflection
+                        ,
+                            SequenceNameSQL
+                        )))``SequenceNameSQL``: Additional phrasing to use with ``SequenceSQL``.
+Defaults to ``null``.
+* ``SequenceSQL``: General structure of the SQL query to use when interrogating the database for sequence names. As there is no standard way to obtain sequence names, it defaults to ``null``.
+* ``SequenceSchemaSQL``: Additional phrasing to use with ``SequenceSQL``. Defaults to ``null``.
+* (((
+                            locking
+                        ,
+                            SimulateLocking
+                        )))``SimulateLocking``: Some databases do not support pessimistic locking, which will result in an exception when you attempt a transaction while using the pessimistic lock manager.
+Setting this property to `true` suppresses the locking of rows in the database, thereby allowing pessimistic transactions even on databases that do not support locking.
+At the same time, setting this property to `true` means that you do not obtain the semantics of a pessimistic transaction with the database.
+Defaults to ``false``.
+* ``SmallintTypeName``: The overridden default column type for ``java.sql.Types.SMALLINT``. This is used only when the schema is generated by the ``mappingtool``.
+* (((
+                            persistent fields
+                        ,
+                            StorageLimitationsFatal
+                        )))``StorageLimitationsFatal``: When true, any data truncation/rounding that is performed by the dictionary in order to store a value in the database will be treated as a fatal error, rather than just issuing a warning.
+* ``StoreCharsAsNumbers``: Set this property to `false ` to store Java `char` fields as `CHAR ` values rather than numbers. Defaults to ``true``, except on DB2, Apache Derby, H2, Microsoft SQL Server, MySQL and PostgreSQL 9 and later, where the default is `false` (native `CHAR(1) ` storage). An explicitly configured value is always respected. Schemas created by earlier OpenJPA releases on PostgreSQL, MySQL, Derby, H2 or SQL Server store `char` fields in numeric columns and require ``StoreCharsAsNumbers=true``.
+* (((
+                            persistent fields
+                        ,
+                            StoreLargeNumbersAsStrings
+                        )))``StoreLargeNumbersAsStrings``: When true, the dictionary prefers to store Java fields of type [class]``BigInteger`` and [class]``BigDecimal`` as string values in the database.
+Likewise, the dictionary will instruct the mapping tool to map these Java types to character columns.
+Because some databases have limitations on the number of digits that can be stored in a numeric column (for example, Oracle can only store 38 digits), this option may be necessary for some applications.
+Note that this option may prevent OpenJPA from executing meaningful numeric queries against the columns.
+Defaults to ``false``.
+* ``StringLengthFunction``: Name of the SQL function for getting the length of a string. Use the token `{0}` to represent the argument.
+* (((
+                            DDL
+                        ,
+                            StructTypeName
+                        )))``StructTypeName``: The overridden default column type for ``java.sql.Types.STRUCT``.
+This is used only when the schema is generated by the ``mappingtool``.
+* ``SubstringFunctionName``: Name of the SQL function for getting the substring of a string.
+* (((
+                            DDL
+                        ,
+                            SupportsAlterTableWithAddColumn
+                        )))``SupportsAlterTableWithAddColumn``: When true, the database supports adding a new column in an ALTER TABLE statement.
+Defaults to ``true``.
+* ``SupportsAlterTableWithDropColumn``: When true, the database supports dropping a column in an ALTER TABLE statement. Defaults to ``true``.
+* (((
+                            SQL
+                        ,
+                            SupportsAutoAssign
+                        )))``SupportsAutoAssign``: When true, the database supports auto-assign columns, where the value of column is assigned upon insertion of the row into the database.
+Defaults to ``false``.
+* ``SupportsCascadeDeleteAction``: When true, the database supports the `CASCADE` delete action on foreign keys. Defaults to ``true``.
+* (((
+                            foreign keys
+                        ,
+                            SupportsCascadeUpdateAction
+                        )))``SupportsCascadeUpdateAction``: When true, the database supports the `CASCADE` update action on foreign keys.
+Defaults to ``true``.
+* ``SupportsComments``: When true, comments can be associated with the table in the table creation statement. Defaults to ``false``.
+* (((
+                            SQL
+                        ,
+                            SupportsCorrelatedSubselect
+                        )))``SupportsCorrelatedSubselect``: When true, the database supports correlated subselects.
+Correlated subselects are select statements nested within select statements that refers to a column in the outer select statement.
+For performance reasons, correlated subselects are generally a last resort.
+Defaults to ``true``.
+* ``SupportsDefaultDeleteAction``: When true, the database supports the `SET DEFAULT` delete action on foreign keys. Defaults to ``true``.
+* (((
+                            foreign keys
+                        ,
+                            SupportsDefaultUpdateAction
+                        )))``SupportsDefaultUpdateAction``: When true, the database supports the `SET DEFAULT` update action on foreign keys.
+Defaults to ``true``.
+* ``SupportsDeferredConstraints``: When true, the database supports deferred constraints. The database supports deferred constraints by checking for constraint violations when the transaction commits, rather than checking for violations immediately after receiving each SQL statement within the transaction. Defaults to ``true``.
+* (((
+							delimited identifiers
+						,
+							SupportsDelimitedIdentifiers
+						)))``SupportsDelimitedIdentifiers``: When true, the database supports delimited identifiers.
+It defaults to ``true``.
+* ``SupportsForeignKeys``: When true, the database supports foreign keys. Defaults to ``true``.
+* (((
+                            foreign keys
+                        ,
+                            SupportsForeignKeysComposite
+                        )))``SupportsForeignKeysComposite``: When true, the database supports composite foreign keys.
+Defaults to ``true``.
+* ``SupportsGetGeneratedKeys``: When true, OpenJPA will use [method]``java.sql.Statement.getGeneratedKeys`` method to obtain values of auto-increment columns. When false, a query specified by ``LastGeneratedKeyQuery`` will be used for that purpose. If not set, the value will be auto-detected by querying the JDBC driver. Setting the value to true requires that the JDBC driver supports version 3.0 or higher of the JDBC specification and supports the [method]``java.sql.Statement.getGeneratedKeys`` method.
+* (((
+                            aggregates
+                        ,
+                            having
+                        ,
+                            SupportsHaving
+                        )))``SupportsHaving``: When true, the database supports HAVING clauses in selects.
+* ``SupportsLockingWithDistinctClause``: When true, the database supports `FOR UPDATE` select clauses with ``DISTINCT`` clauses.
+* ``SupportsLockingWithInnerJoin``: When true, the database supports `FOR UPDATE` select clauses with inner join queries.
+* (((
+                            locking
+                        ,
+                            SupportsLockingWithMultipleTables
+                        )))``SupportsLockingWithMultipleTables``: When true, the database supports `FOR UPDATE` select clauses that select from multiple tables.
+* ``SupportsLockingWithOrderClause``: When true, the database supports `FOR UPDATE` select clauses with `ORDER BY ` clauses.
+* (((
+                            locking
+                        ,
+                            SupportsLockingWithOuterJoin
+                        )))``SupportsLockingWithOuterJoin``: When true, the database supports `FOR UPDATE` select clauses with outer join queries.
+* ``SupportsLockingWithSelectRange``: When true, the database supports `FOR UPDATE` select clauses with queries that select a range of data using ``LIMIT``, `TOP` or the database equivalent. Defaults to ``true``.
+* (((
+                            SQL
+                        ,
+                            SupportsModOperator
+                        )))``SupportsModOperator``: When true, the database supports the modulus operator (``%``) instead of the `MOD` function.
+Defaults to ``false``.
+* ``SupportsMultipleNontransactionalResultSets``: When true, a nontransactional connection is capable of having multiple open [class]``ResultSet`` instances.
+* ``SupportsNullDeleteAction``: When true, the database supports the `SET NULL` delete action on foreign keys. Defaults to ``true``.
+* (((
+                            schema
+                        ,
+                            reflection
+                        ,
+                            SupportsNullTableForGetColumns
+                        )))``SupportsNullTableForGetColumns``: When true, the database supports passing a `null` parameter to [method]``
+DatabaseMetaData.getColumns`` as an optimization to get information about all the tables.
+Defaults to ``true``.
+* ``SupportsNullTableForGetImportedKeys``: When true, the database supports passing a `null` parameter to [method]`` DatabaseMetaData.getImportedKeys`` as an optimization to get information about all the tables. Defaults to ``false``.
+* ``SupportsNullTableForGetIndexInfo``: When true, the database supports passing a `null` parameter to [method]`` DatabaseMetaData.getIndexInfo`` as an optimization to get information about all the tables. Defaults to ``false``.
+* (((
+                            schema
+                        ,
+                            reflection
+                        ,
+                            SupportsNullTableForGetPrimaryKeys
+                        )))``SupportsNullTableForGetPrimaryKeys``: When true, the database supports passing a `null` parameter to [method]``
+DatabaseMetaData.getPrimaryKeys`` as an optimization to get information about all the tables.
+Defaults to ``false``.
+* ``SupportsNullUpdateAction``: When true, the database supports the `SET NULL` update action on foreign keys. Defaults to ``true``.
+* ``SupportsQueryTimeout``: When true, the JDBC driver supports calls to [method]`` java.sql.Statement.setQueryTimeout``.
+* (((
+                            JDBC
+                        ,
+                            QueryTimeout
+                        ,
+                            AllowQueryTimeoutOnFindUpdate
+                        )))``AllowQueryTimeoutOnFindUpdate``: The JPA Specification defines the jakarta.persistence.query.timeout, in milliseconds, as a hint to the provider.
+The hint is used for Query operations.
+This property, when set to true, will allow the query timeout hint to apply to EntityManager operations.
+For example, when a 'find' is executed and the resultant entity updated, the query timeout will apply to the SQL update operation.
+This property defaults to false.
+* ``SupportsRestrictDeleteAction``: When true, the database supports the `RESTRICT` delete action on foreign keys. Defaults to ``true``.
+* ``SupportsRestrictUpdateAction``: When true, the database supports the `RESTRICT` update action on foreign keys. Defaults to ``true``.
+* (((
+                            schema
+                        ,
+                            reflection
+                        ,
+                            SupportsSchemaForGetColumns
+                        )))``SupportsSchemaForGetColumns``: When false, the database driver does not support using the schema name for schema reflection on column names.
+* ``SupportsSchemaForGetTables``: If false, then the database driver does not support using the schema name for schema reflection on table names.
+* ``SupportsSelectEndIndex``: When true, the database can create a select that is limited to the first N results.
+* (((
+                            locking
+                        ,
+                            SupportsSelectForUpdate
+                        )))``SupportsSelectForUpdate``: When true, the database supports ``SELECT`` statements with a pessimistic locking (``FOR UPDATE``) clause.
+Defaults to ``true``.
+* ``SupportsSelectStartIndex``: When true, the database can create a select that skips the first N results.
+* (((
+                            SQL
+                        ,
+                            SupportsSimpleCaseExpression
+                        )))``SupportsSimpleCaseExpression``: When true, the database supports the simple form of `CASE` expression: ``CASE <a> WHEN <b> THEN <c> WHEN <d> THEN <e> ELSE <f> END``.
+When false, the general form of `CASE` expression will be used: ``CASE WHEN <a> = <b> THEN <c> WHEN <a> = <d> THEN <e> ELSE <f> END``.
+Defaults to ``true``.
+* (((
+                            JPQL
+                        ,
+                            subselects
+                        ,
+                            SupportsSubselect
+                        )))``SupportsSubselect``: When true, the database supports subselects in queries.
+* ``SupportsTimestampNanos``: When true, the database supports nanoseconds with TIMESTAMP columns. Defaults to ``true``.
+* ``SupportsUniqueConstraints``: When true, the database supports unique constraints. Defaults to ``true``.
+* (((
+                            DDL
+                        ,
+                            SupportsXMLColumn
+                        )))``SupportsXMLColumn``: When true, the database supports an XML column type.
+See <<_ref_guide_xmlmapping>> for information on using this capability.
+Defaults to ``false``.
+* ``SystemSchemas``: A comma-separated list of schema names that should be ignored.
+* (((
+                            schema
+                        ,
+                            reflection
+                        ,
+                            SystemTables
+                        )))``SystemTables``: A comma-separated list of table names that should be ignored.
+* ``TableForUpdateClause``: The clause to append to the end of each table alias in queries that obtain pessimistic locks. Defaults to ``null``.
+* (((
+                            SQL
+                        ,
+                           tableLengthIncludesSchema
+                        )))``tableLengthIncludesSchema``: Whether the max length for a table name includes the table's schema.
+Defaults to ``false``.
+* ``TableTypes``: Comma-separated list of table types to use when looking for tables during schema reflection, as defined in the [method]`` java.sql.DatabaseMetaData.getTableInfo`` JDBC method. An example is: ``"TABLE,VIEW,ALIAS"``. Defaults to ``"TABLE"``.
+* (((
+                            DDL
+                        ,
+                            TimeTypeName
+                        )))``TimeTypeName``: The overridden default column type for ``java.sql.Types.TIME``.
+This is used only when the schema is generated by the ``mappingtool``.
+* ``TimestampTypeName``: The overridden default column type for ``java.sql.Types.TIMESTAMP``. This is used only when the schema is generated by the ``mappingtool``.
+* (((
+                            DDL
+                        ,
+                            TinyintTypeName
+                        )))``TinyintTypeName``: The overridden default column type for ``java.sql.Types.TINYINT``.
+This is used only when the schema is generated by the ``mappingtool``.
+* ``ToLowerCaseFunction``: Name of the SQL function for converting a string to lower case. Use the token `{0}` to represent the argument.
+* (((
+                            SQL
+                        ,
+                            ToUpperCaseFunction
+                        )))``ToUpperCaseFunction``: SQL function call for converting a string to upper case.
+Use the token `{0}` to represent the argument.
+* ``TrailingDelimiter``: The characters to use as the trailing delimiter for a delimited identifier. The default value is a double quote, ``(")``. See <<_ref_guide_dbsetup_dbsupport_delim_id>> for the default value for some specific databases.
+* (((
+                            SQL
+                        ,
+                            TrimBothFunction
+                        )))``TrimBothFunction``: The SQL function call to trim any number of a particular character from both the start and end of a string.
+Note: some databases do not support specifying the character in which case only spaces or whitespace can be trimmed.
+Use the token `{1}` when possible to represent the character, and the token `{0}` to represent the string.
+Defaults to ``"TRIM(BOTH {1} FROM {0})"``.
+* ``TrimLeadingFunction``: The SQL function call to trim any number of a particular character from the start of a string. Note: some databases do not support specifying the character in which case only spaces or whitespace can be trimmed. Use the token `{1}` when possible to represent the character, and the token `{0}` to represent the string. Defaults to ``"TRIM(LEADING {1} FROM {0})"``.
+* (((
+                            String
+                        ,
+                            TrimStringColumns
+                        )))``TrimStringColumns``: When ``true``, the resulting String from [method]``ResultSet.getString`` will be trimmed of trailing white space.
+Defaults to ``false``.
+* ``TrimTrailingFunction``: The SQL function call to trim any number of a particular character from the end of a string. Note: some databases do not support specifying the character in which case only spaces or whitespace can be trimmed. Use the token `{1}` when possible to represent the character, and the token `{0}` to represent the string. Defaults to ``"TRIM(TRAILING {1} FROM {0})"``.
+* (((
+                            schema
+                        ,
+                            reflection
+                        ,
+                            UseGetBestRowIdentifierForPrimaryKeys
+                        )))``UseGetBestRowIdentifierForPrimaryKeys``: When true, metadata queries will use [method]``DatabaseMetaData.getBestRowIdentifier `` to obtain information about primary keys, rather than [method]``
+DatabaseMetaData.getPrimaryKeys``.
+* ``UseGetBytesForBlobs``: When true, [method]`` ResultSet.getBytes`` will be used to obtain blob data rather than [method]``ResultSet.getBinaryStream``.
+* ``UseGetObjectForBlobs``: When true, [method]`` ResultSet.getObject`` will be used to obtain blob data rather than [method]``ResultSet.getBinaryStream``.
+* (((
+                            CLOB
+                        ,
+                            UseGetStringForClobs
+                        )))``UseGetStringForClobs``: When true, [method]``
+ResultSet.getString`` will be used to obtain clob data rather than [method]``ResultSet.getCharacterStream``.
+* ``UseJDBC4SetBinaryStream``: When true, an attempt will be made to obtain a JDBC 4.0 version of [method]``PreparedStatement.setBinaryStream``. When false, a [method]``setBinaryStream`` is used which takes the length of the stream. OpenJPA uses a -1 for the length since OpenJPA doesn't know the length of the stream. A few JDBC drivers check the length and throw an exception when the length is less than zero. When this property is set to true, and an applicable JDK and JDBC 4.0 driver is available, a version of [method]``setBinaryStream`` will be used which does not take a length. The default value of this property is true.
+* (((
+                            Sequence
+                        ,
+                            UseNativeSequenceCache
+                        )))``UseNativeSequenceCache``: This property was introduced in the 2.1.2 release to indicate (when set to ``false``) that OpenJPA should not use the `CACHE` clause when creating a native sequence; instead the `INCREMENT BY` clause gets its value equal to the allocationSize property.
+In the 2.2.0 release, code was added to allow said functionality by default (see OPENJPA-1376). For forward compatibility, this property still remains, however it has been deprecated and will eventually be removed.
+Setting this property has no effect and any occurrence of it should be removed.
+* ``UseSchemaName``: If ``false``, then avoid including the schema name in table name references. Defaults to ``true ``.
+* (((
+                            BLOB
+                        ,
+                            UseSetBytesForBlobs
+                        )))``UseSetBytesForBlobs``: When true, [method]``
+PreparedStatement.setBytes`` will be used to set blob data, rather than [method]``PreparedStatement.setBinaryStream``.
+* ``UseSetStringForClobs``: When true, [method]`` PreparedStatement.setString`` will be used to set clob data, rather than [method]``PreparedStatement.setCharacterStream``.
+* (((
+                            SQL
+                        ,
+                            UseWildCardForCount
+                        )))``UseWildCardForCount``: When true, the JPQL `COUNT` aggregate function will be translated into SQL `COUNT(*)` expression if the SQL query does not involve joins.
+Defaults to ``false``.
+* (((
+                            SQL
+                        ,
+                            ValidationSQL
+                        )))``ValidationSQL``: The SQL used to validate that a connection is still in a valid state.
+For example, `"SELECT SYSDATE FROM DUAL" ` for Oracle.
+* ``VarbinaryTypeName``: The overridden default column type for ``java.sql.Types.VARBINARY``. This is used only when the schema is generated by the ``mappingtool``.
+* (((
+                            DDL
+                        ,
+                            VarcharTypeName
+                        )))``VarcharTypeName``: The overridden default column type for ``java.sql.Types.VARCHAR``.
+This is used only when the schema is generated by the ``mappingtool``.
+* ``XmlTypeName``: The column type name for XML columns. This property is set automatically in the dictionary and should not need to be overridden. It is used only when the schema is generated using the ``mappingtool``. Defaults to ``"XML"``.
+
+
+[[_ref_guide_dbsetup_dbsupport_firebird]]
+===== FirebirdDictionary Properties
+(((
+                    Firebird
+                )))
+
+The `firebird` dictionary understands the following additional properties:
+
+* (((
+                            Firebird
+                        ,
+                            FirebirdVersion
+                        )))``FirebirdVersion``: The database version OpenJPA connects to.
+This property affects the SQL statements executed by OpenJPA.
+Available values are: 15, 20 and 21 - they indicate Firebird versions 1.5, 2.0 and 2.1 respectively.
+If not set, the value will be auto-detected.
+* ``IndexedVarcharMaxSizeFB15``: Firebird 1.5 imposes tight limits on index size. In particular, an indexed ``VARCHAR`` column size cannot exceed 252. When <<_ref_guide_mapping_mappingtool,schema is created>>, OpenJPA will use this property to reduce the size of indexed `VARCHAR` columns. Defaults to 252 but you might want to decrease this value if multi-column indexes are used. If the Firebird version is 2.0 or later or schema creation is not used, this property does not matter.
+* (((
+                            Firebird
+                        ,
+                            RangeSyntax
+                        )))``RangeSyntax``: Firebird 2.0 and later support two ways of handling queries that select a range of data: ``"FIRST <p> SKIP <q>"`` and ``"ROWS <m> TO <n>"``.
+Earlier versions support only ``"FIRST <p> SKIP <q>"`` syntax.
+This property determines the syntax to be used.
+Available values are: ``"firstskip"`` and ``"rows"``.
+Defaults to using `"ROWS <m> TO <n>"` if the Firebird version is 2.0 or later, and ``"FIRST <p> SKIP <q>"`` otherwise.
+
+
+[[_ref_guide_dbsetup_dbsupport_mysql]]
+===== MySQLDictionary Properties
+
+The `mysql` dictionary also understands the following properties:
+
+* (((
+                                MySQL
+                            ,
+                                DateFractionDigits
+                            )))``DateFractionDigits``: Since MySQL 5.8 a timestamp (``DATETIME``) can store up to 6 sub-second fractions.
+The default in MySQL and OpenJPA is 0 for backward compatibility reasons.
+This default can be changed by setting `DateFractionDigits` to the number of sub-second fraction digits to be stored.
+This will e.g.
+result in a `DATETIME(6)` column.
+The number of fraction digits to be generated can also be tweaked via the `@Column(scale=n)` annotation, where n is the number of digits.
+This setting has primarily an impact on the generated SQL.
+* ``DriverDeserializesBlobs``: Many older MySQL drivers automatically deserialize BLOBs on calls to [method]``ResultSet.getObject``. The [class]``MySQLDictionary`` overrides the standard [method]`` DBDictionary.getBlobObject`` method to take this into account. Defaults to `true` if driver version is less than 5.0, ``false`` otherwise. If your driver deserializes automatically, you may want to set this property to ``true``.
+* (((
+                            MySQL
+                        ,
+                            TableType
+                        )))``TableType``: The MySQL table type to use when creating tables.
+Defaults to ``"innodb"``.
+* ``UseClobs``: Some older versions of MySQL do not handle CLOBs correctly. To disable CLOB functionality, set this to ``false``. Defaults to ``true``.
+* (((
+                            MySQL
+                        ,
+                            OptimizeMultiTableDeletes
+                        )))``OptimizeMultiTableDeletes``: MySQL as of version 4.0.0 supports multiple tables in `DELETE` statements.
+When this option is set, OpenJPA will use that syntax when doing bulk deletes from multiple tables.
+This can happen when the ``deleteTableContents````SchemaTool`` action is used.
+(See <<_ref_guide_schema_schematool>> for more info about ``deleteTableContents``.) Defaults to ``false``, since the statement may fail if using InnoDB tables and delete constraints.
+
+Starting with Connector/J 3.1.7, MySQL supports a variant of the driver ``com.mysql.jdbc.ReplicationDriver`` that automatically sends queries to a read/write master, or a failover or round-robin load balanced set of slaves based on the state of read-only status of the connection.
+See http://dev.mysql.com/doc/refman/5.1/en/connector-j-reference-replication-connection.html[
+MySQL Reference] for more details.
+
+This replication feature can be used transparently with OpenJPA application by following configuration:
+
+* `openjpa.ConnectionDriverName: com.mysql.jdbc.ReplicationDriver`
+* `openjpa.ConnectionFactoryProperties: autoReconnect=true,roundRobinLoadBalance=true`
+
+OpenJPA will use a read-only connection with replicated database configuration and will automatically switch the connection to a non-readonly mode if the transaction is writing to the database.
+
+
+[[_ref_guide_dbsetup_dbsupport_oracle]]
+===== OracleDictionary Properties
+
+The `oracle` dictionary understands the following additional properties:
+
+* (((
+                            Oracle
+                        ,
+                            UseTriggersForAutoAssign
+                        )))``UseTriggersForAutoAssign``: When true, OpenJPA will allow simulation of auto-increment columns by the use of Oracle triggers.
+OpenJPA will assume that the current sequence value from the sequence specified in the ``AutoAssignSequenceName`` parameter will hold the value of the new primary key for rows that have been inserted.
+For more details on auto-increment support, see <<_ref_guide_pc_oid_pkgen_autoinc>> .
+* (((
+                            Oracle
+                        ,
+                            AutoAssignSequenceName
+                        )))``AutoAssignSequenceName``: The global name of the sequence that OpenJPA will assume to hold the value of primary key value for rows that use auto-increment.
+If left unset, OpenJPA will use a sequence named ``
+"<table name>_<column name>_SEQ"``.
+* (((
+                            Oracle
+                        ,
+                            MaxEmbeddedBlobSize
+                        )))``MaxEmbeddedBlobSize``: Oracle is unable to persist BLOBs using the embedded update method when BLOBs get over a certain size.
+The size depends on database configuration, e.g.
+encoding.
+This property defines the maximum size BLOB to persist with the embedded method.
+Defaults to 4000 bytes.
+* (((
+                            Oracle
+                        ,
+                            MaxEmbeddedClobSize
+                        )))``MaxEmbeddedClobSize``: Oracle is unable to persist CLOBs using the embedded update method when CLOBs get over a certain size.
+The size depends on database configuration, e.g.
+encoding.
+This property defines the maximum size CLOB to persist with the embedded method.
+Defaults to 4000 characters.
+* ``SupportsSetClob``: This property was used in releases previous to OpenJPA 2.2.0 to indicate that OpenJPA should attempt to use a Reader-based JDBC 4.0 method to set CLOB or XML data. It allowed XMLType and CLOB values larger than 4000 bytes to be used. For OpenJPA 2.2.0 and later releases, code was added to allow said functionality by default (see OPENJPA-1691).  For forward compatibility, this property still remains, however it has been deprecated and will eventually be removed. Setting this property has no effect and any occurrence of it should be removed.
+* ``UseSetFormOfUseForUnicode``: Prior to Oracle 10i, statements executed against unicode capable columns (the ``NCHAR``, ``NVARCHAR``, `NCLOB` Oracle types) required special handling to be able to store unicode values. Setting this property to ``true`` (the default) will cause OpenJPA to attempt to detect when the column is one of these types, and if so, will attempt to correctly configure the statement using the [method]`` OraclePreparedStatement.setFormOfUse``. For more details, see the Oracle http://download.oracle.com/docs/cd/B19306_01/server.102/b14225/ch7progrunicode.htm#i1006858[ JDBC Programming with Unicode]. Note that this can only work if OpenJPA is able to access the underlying [class]``OraclePreparedStatement`` instance, which may not be possible when using some third-party datasources. If OpenJPA detects that this is the case, a warning will be logged.
+
+
+[[_ref_guide_dbsetup_dbsupport_sybase]]
+===== SybaseDictionary Properties
+(((
+                    Sybase
+                )))
+
+The `sybase` dictionary understands the following additional properties:
+
+* (((
+                            Sybase
+                        ,
+                            IgnoreNumericTruncation
+                        )))``IgnoreNumericTruncation``: If true, Sybase will ignore numeric truncation on SQL operations.
+Otherwise, if numeric truncation is detected, the operation will fail.
+
+
+[[_ref_guide_dbsetup_dbsupport_db2]]
+===== DB2 Properties
+
+The `db2` dictionary understands the following additional properties:
+
+* (((
+                            DB2
+                        ,
+                            AppendExtendedExceptionText
+                        )))``AppendExtendedExceptionText``: If false, OpenJPA will not call back to the database to get extended exception text.
+* ``SupportsRowNum``: If true, OpenJPA will use `ROWNUM` facility for range based queries that set an offset and/or limit via `setFirstResult()` and `setMaxResult()` query methods. This property must be set to `true` alongwith
+
+// <lietral>SupportsSelectStartIndex</lietral>
+ and
+// <lietral>SupportsSelectEndIndex</lietral>
+$$.$$
+By default, `SupportsRowNum` is set to ``false``.
+It is appropriate to set `SupportsRowNum` to `true` only when DB2 version being used is 9.7 or later.
+
+
+[[_ref_guide_dbsetup_dbsupport_delim_id]]
+===== Delimited Identifiers Support
+
+OpenJPA provides support for delimited identifiers as defined in the JPA 2.0 specification.
+Identifiers can either be automatically delimited or individually manually delimited.
+To have OpenJPA automatically delimit identifiers, add the ``<delimited-identifiers/>`` tag to the mapping file as documented in the JPA specification.
+
+You can manually delimit individual identifiers either in the annotations or in the definitions in the mapping file.
+To delimit an identifier element in an annotation, surround it with double quotes.
+In a mapping file, add ``&quote;`` to both the beginning and end of the element.
+
+When delimited identifiers has been specified, OpenJPA will delimit SQL identifiers in the generated SQL statements.
+It will use database-specific delimiters as defined in the appropriate database dictionary.
+By default, the leading and trailing delimiters are both double quotes, ``(")``.
+Different defaults for other dictionaries provided by OpenJPA are in the following table.
+
+.Default delimiters for delimited identifiers
+[cols="1,1,1", options="header"]
+|===
+|
+                        		Dictionary
+
+|
+                    			Leading Delimiter
+
+|
+                    			Trailing Delimiter
+
+
+|
+                    			MySQLDictionary
+|
+                    			`
+|
+                    			`
+
+|
+                    			AccessDictionary
+|
+                    			[
+|
+                    			]
+
+|
+                    			HerdDBDictionary
+|
+                    			`
+|
+                    			`
+|===
+
+Some databases support more than one set of delimiters, often based on configuration.
+If you need values different than the default values, you can set the <<_dbdicationary.leadingdelimiter,`LeadingDelimiter`>> and the <<_dbdicationary.trailingdelimiter,`TrailingDelimiter`>> dictionary properties.
+
+You can specify whether or not the particular database that you are using supports delimited identifiers by setting the <<_dbdictionary.supportsdelimitedidentifiers,`SupportsDelimitedIdentifiers`>> dictionary property.
+If this value is set to ``false``, identifiers will not be automatically delimited, even if the `<delimited-identifiers/>` tag is specified in the mapping file.
+
+`Limitation:` The `columnDefinition` elements in identifiers are not automatically delimited by OpenJPA when using the ``<delimited-identifiers/>`` tag in the mapping file.
+If you want these to be delimited, you must manually delimit them in the annotation or mapping file definitions.
+
+[[_ref_guide_dbsetup_isolation]]
+==== Setting the Transaction Isolation
+(((
+                transactions
+            ,
+                isolation
+            )))
+(((
+                TransactionIsolation
+            )))
+
+OpenJPA typically retains the default transaction isolation level of the JDBC driver.
+However, you can specify a transaction isolation level to use through the <<_openjpa.jdbc.transactionisolation,`
+openjpa.jdbc.TransactionIsolation`>> configuration property.
+The following is a list of standard isolation levels.
+Note that not all databases support all isolation levels.
+
+* ``default``: Use the JDBC driver's default isolation level. OpenJPA uses this option if you do not explicitly specify any other.
+* ``none``: No transaction isolation.
+* ``read-committed``: Dirty reads are prevented; non-repeatable reads and phantom reads can occur.
+* ``read-uncommitted``: Dirty reads, non-repeatable reads and phantom reads can occur.
+* ``repeatable-read``: Dirty reads and non-repeatable reads are prevented; phantom reads can occur.
+* ``serializable``: Dirty reads, non-repeatable reads, and phantom reads are prevented.
+openjpa-project/src/doc/manual/ref_guide_dbsetup.xml
+
+.Specifying a Transaction Isolation
+====
+[source]
+----
+
+<property name="openjpa.jdbc.TransactionIsolation" value="repeatable-read"/>
+----
+====
+
+[[_ref_guide_dbsetup_sql92]]
+==== Setting the SQL Join Syntax
+(((
+                joins
+            ,
+                syntax options
+            )))
+
+Object queries often involve using SQL joins behind the scenes.
+You can configure OpenJPA to use either SQL 92-style join syntax, in which joins are placed in the SQL FROM clause, the traditional join syntax, in which join criteria are part of the WHERE clause, or a database-specific join syntax mandated by the <<_ref_guide_dbsetup_dbdict,[class]``
+DBDictionary``>>.
+OpenJPA only supports outer joins when using SQL 92 syntax or a database-specific syntax with outer join support.
+
+The <<_openjpa.jdbc.dbdictionary,`
+openjpa.jdbc.DBDictionary`>> plugin accepts the `
+JoinSyntax` property to set the system's default syntax.
+The available values are:
+
+* ``traditional``: Traditional SQL join syntax; outer joins are not supported.
+* ``database``: The database's native join syntax. Databases that do not have a native syntax will default to one of the other options.
+* ``sql92``: ANSI SQL92 join syntax. Outer joins are supported. Not all databases support this syntax.
+
+You can change the join syntax at runtime through the OpenJPA fetch configuration API, which is described in <<_ref_guide_runtime>>.
+
+.Specifying the Join Syntax Default
+====
+[source]
+----
+
+<property name="openjpa.jdbc.DBDictionary" value="JoinSyntax=sql92"/>
+----
+====
+
+.Specifying the Join Syntax at Runtime
+====
+[source]
+----
+
+import org.apache.openjpa.persistence.jdbc.*;
+
+...
+
+Query q = em.createQuery("select m from Magazine m where m.title = 'JDJ'");
+OpenJPAQuery kq = OpenJPAPersistence.cast(q);
+JDBCFetchPlan fetch = (JDBCFetchPlan) kq.getFetchPlan();
+fetch.setJoinSyntax(JoinSyntax.SQL92);
+List results = q.getResultList();
+----
+====
+
+[[_ref_guide_dbsetup_multidb]]
+==== Accessing Multiple Databases
+(((
+                relational database
+            ,
+                accessing multiple databases
+            )))
+
+Through the properties we've covered thus far, you can configure each [class]``EntityManagerFactory`` to access a different database.
+If your application accesses multiple databases, we recommend that you maintain a separate persistence unit for each one.
+This will allow you to easily load the appropriate resource for each database at runtime, and to give the correct configuration file to OpenJPA's command-line tools during development.
+
+[[_ref_guide_dbsetup_retain]]
+==== Configuring the Use of JDBC Connections
+
+In its default configuration, OpenJPA obtains JDBC connections on an as-needed basis.
+OpenJPA [class]``EntityManager``s do not retain a connection to the database unless they are in a datastore transaction or there are open [class]``Query`` results that are using a live JDBC result set.
+At all other times, including during optimistic transactions, [class]``
+EntityManager``s request a connection for each query, then immediately release the connection back to the pool.
+
+
+(((
+                ConnectionRetainMode
+            ))) In some cases, it may be more efficient to retain connections for longer periods of time.
+You can configure OpenJPA's use of JDBC connections through the <<_openjpa.connectionretainmode,`
+openjpa.ConnectionRetainMode`>> configuration property.
+The property accepts the following values:
+
+* ``always``: Each [class]``EntityManager`` obtains a single connection and uses it until the [class]``EntityManager`` closes. Great care should be taken when using this property if the application cannot close the EntityManager (i.e. container-managed EntityManagers in a JEE Application Server). In this case the connection will remain open for an undefined time and the application may not be able to recover from a terminated connection (for example, if a TCP/IP timeout severs the connection to the database). For this reason the `always` option should not be used with container-managed EntityManagers.
+* ``transaction``: A connection is obtained when each transaction begins (optimistic or datastore), and is released when the transaction completes. Non-transactional connections are obtained on-demand.
+* ``on-demand``: Connections are obtained only when needed. This option is equivalent to the `transaction` option when datastore transactions are used. For optimistic transactions, though, it means that a connection will be retained only for the duration of the datastore flush and commit process.
+
+You can also specify the connection retain mode of individual [class]``
+EntityManager``s when you retrieve them from the [class]``
+EntityManagerFactory``.
+See <<_ref_guide_runtime_emfactory>> for details.
+
+
+(((
+                FlushBeforeQueries
+            ))) The <<_openjpa.flushbeforequeries,`
+openjpa.FlushBeforeQueries`>> configuration property controls another aspect of connection usage: whether to flush transactional changes before executing object queries.
+This setting only applies to queries that would otherwise have to be executed in-memory because the <<_openjpa.ignorechanges,`IgnoreChanges`>> property is set to false and the query may involve objects that have been changed in the current transaction.
+Legal values are:
+
+* ``true``: Always flush rather than executing the query in-memory. If the current transaction is optimistic, OpenJPA will begin a non-locking datastore transaction. This is the default.
+* ``false``: Never flush before a query.
+* ``with-connection``: Flush only if the [class]``EntityManager `` has already established a dedicated connection to the datastore, otherwise execute the query in-memory. This option is useful if you use long-running optimistic transactions and want to ensure that these transactions do not consume database resources until commit. OpenJPA's behavior with this option is dependent on the transaction status and mode, as well as the configured connection retain mode described earlier in this section.
+
+The flush mode can also be varied at runtime using the OpenJPA fetch configuration API, discussed in <<_ref_guide_runtime>>.
+
+
+(((
+                flush
+            ,
+                automatic
+            ))) The table below describes the behavior of automatic flushing in various situations.
+In all cases, flushing will only occur if OpenJPA detects that you have made modifications in the current transaction that may affect the query's results.
+
+.OpenJPA Automatic Flush Behavior
+[cols="1,1,1,1,1", options="header"]
+|===
+|
+
+|
+FlushBeforeQueries = false
+
+|
+FlushBeforeQueries = true
+
+|
+FlushBeforeQueries = with-connection;
+ConnectionRetainMode = on-demand
+
+|
+FlushBeforeQueries = with-connection;
+ConnectionRetainMode = transaction or always
+
+
+|**
+IgnoreChanges = true **
+|
+no flush
+|
+no flush
+|
+no flush
+|
+no flush
+
+|**
+IgnoreChanges = false; no tx active **
+|
+no flush
+|
+no flush
+|
+no flush
+|
+no flush
+
+|**
+IgnoreChanges = false; datastore tx active **
+|
+no flush
+|
+flush
+|
+flush
+|
+flush
+
+|**
+IgnoreChanges = false; optimistic tx active **
+|
+no flush
+|
+flush
+|
+no flush unless [method]``flush`` has already been invoked
+|
+flush
+|===
+
+.Specifying Connection Usage Defaults
+====
+[source]
+----
+
+<property name="openjpa.ConnectionRetainMode" value="on-demand"/>
+<property name="openjpa.FlushBeforeQueries" value="true"/>
+----
+====
+
+.Specifying Connection Usage at Runtime
+====
+[source]
+----
+
+import org.apache.openjpa.persistence.*;
+
+// obtaining an em with a certain connection retain mode
+Map props = new HashMap();
+props.put("openjpa.ConnectionRetainMode", "always");
+EntityManager em = emf.createEntityManager(props);
+----
+====
+
+[[_ref_guide_dbsetup_stmtbatch]]
+==== Statement Batching
+(((
+                JDBC
+            ,
+                statement batching
+            )))
+
+In addition to connection pooling and prepared statement caching, OpenJPA employs statement batching to speed up JDBC updates.
+Statement batching is enabled by default for any JDBC driver that supports it.
+When batching is on, OpenJPA automatically orders its SQL statements to maximize the size of each batch.
+This can result in large performance gains for transactions that modify a lot of data.
+
+You configure statement batching through the system DBDictionary, which is controlled by the openjpa.jdbc.DBDictionary configuration property.
+You can enable the statement batching by setting the batchLimit in the value.
+The batch limit is the maximum number of statements OpenJPA will ever batch together.
+A value has the following meaning:
+
+* ``-1``: Unlimited number of statements for a batch.
+* ``0``: Disable batch support. This is the default for most dictionaries.
+* ``any positive number``: Maximum number of statements for a batch.
+
+
+[NOTE]
+====
+By default, the batch support is based on each Dictionary to define the default batch limit.
+Currently only DB2 and Oracle dictionaries are set the default batch limit to 100.
+The default batch limit for the rest of the dictionaries is set to zero (disabled).
+====
+
+The example below shows how to enable and disable statement batching via your configuration properties.
+
+.Enable SQL statement batching
+====
+[source]
+----
+
+<property name="openjpa.jdbc.DBDictionary" value="db2(batchLimit=25)"/>
+<property name="openjpa.jdbc.DBDictionary" value="oracle(batchLimit=-1)"/>
+Or
+<property name="openjpa.jdbc.DBDictionary" value="batchLimit=25"/>
+<property name="openjpa.jdbc.DBDictionary" value="batchLimit=-1"/>
+----
+====
+
+.Disable SQL statement batching
+====
+[source]
+----
+
+<property name="openjpa.jdbc.DBDictionary" value="db2(batchLimit=0)"/>
+Or
+<property name="openjpa.jdbc.DBDictionary" value="batchLimit=0"/>
+----
+====
+
+By default, org.apache.openjpa.jdbc.kernel.BatchingConstraintUpdateManager is the default statement batching implementation.
+OPENJPA also provides another update manager org.apache.openjpa.jdbc.kernel.BatchingOperationOrderUpdateManager for the statements that required ordering.
+You can plug-in this update manager through the "openjpa.jdbc.UpdateManager" property.
+Or you can plug-in your own statement batching implementation by providing the implementation that extends from AbstractUpdateManager, ConstraitUpdateManager or OperationOrderUpdateManager.
+Add this implementation class as a property in the persistence.xml file.
+For example, a custom statement batching implementation mycomp.MyUpdateManager extends ConstraitUpdateManager.
+You specify this implementation in the persistence.xml file as the following example:
+
+.Plug-in custom statement batching implementation
+====
+[source]
+----
+
+<property name="openjpa.jdbc.UpdateManager" value="mycomp.MyUpdateManager"/>
+----
+====
+
+[[_ref_guide_dbsetup_lrs]]
+==== Large Result Sets
+(((
+                JDBC
+            ,
+                large result sets
+            )))
+
+By default, OpenJPA uses standard forward-only JDBC result sets, and completely instantiates the results of database queries on execution.
+When using a JDBC driver that supports version 2.0 or higher of the JDBC specification, however, you can configure OpenJPA to use scrolling result sets that may not bring all results into memory at once.
+You can also configure the number of result objects OpenJPA keeps references to, allowing you to traverse potentially enormous amounts of data without exhausting JVM memory.
+
+[NOTE]
+====
+You can also configure on-demand loading for individual collection and map fields via large result set proxies.
+See <<_ref_guide_pc_scos_proxy_lrs>>.
+====
+
+Use the following properties to configure OpenJPA's handling of result sets:
+
+* <<_openjpa.fetchbatchsize,`openjpa.FetchBatchSize`>>: The number of objects to instantiate at once when traversing a result set. This number will be set as the fetch size on JDBC [class]``Statement `` objects used to obtain result sets. It also factors in to the number of objects OpenJPA will maintain a hard reference to when traversing a query result.
+
+The fetch size defaults to -1, meaning all results will be instantiated immediately on query execution.
+A value of 0 means to use the JDBC driver's default batch size.
+Thus to enable large result set handling, you must set this property to 0 or to a positive number.
+* (((
+                        ResultSetType
+                    )))<<_openjpa.jdbc.resultsettype,` openjpa.jdbc.ResultSetType `>>: The type of result set to use when executing database queries.
+This property accepts the following values, each of which corresponds exactly to the same-named [class]``java.sql.ResultSet`` constant:
+** ``forward-only``: This is the default.
+** `scroll-sensitive`
+** `scroll-insensitive`
+
+
+Different JDBC drivers treat the different result set types differently.
+Not all drivers support all types.
+* (((
+                        FetchDirection
+                    )))<<_openjpa.jdbc.fetchdirection,`
+openjpa.jdbc.FetchDirection`>>: The expected order in which you will access the query results.
+This property affects the type of data structure OpenJPA will use to hold the results, and is also given to the JDBC driver in case it can optimize for certain access patterns.
+This property accepts the following values, each of which corresponds exactly to the same-named [class]``java.sql.ResultSet`` FETCH constant:
+** ``forward``: This is the default.
+** `reverse`
+** `unknown`
+
+
+Not all drivers support all fetch directions.
+* (((
+                        LRSSize
+                    )))<<_openjpa.jdbc.lrssize,` openjpa.jdbc.LRSSize`>>: The strategy OpenJPA will use to determine the size of result sets.
+This property is *only* used if you change the fetch batch size from its default of -1, so that OpenJPA begins to use on-demand result loading.
+Available values are:
+** ``query``: This is the default. The first time you ask for the size of a query result, OpenJPA will perform a `SELECT COUNT(*) ` query to determine the number of expected results. Note that depending on transaction status and settings, this can mean that the reported size is slightly different than the actual number of results available.
+** ``last``: If you have chosen a scrollable result set type, this setting will use the [method]``ResultSet.last`` method to move to the last element in the result set and get its index. Unfortunately, some JDBC drivers will bring all results into memory in order to access the last one. Note that if you do not choose a scrollable result set type, then this will behave exactly like ``unknown``. The default result set type is ``forward-only``, so you must change the result set type in order for this property to have an effect.
+** ``unknown``: Under this setting OpenJPA will return ` Integer.MAX_VALUE` as the size for any query result that uses on-demand loading.
+
+
+.Specifying Result Set Defaults
+====
+[source]
+----
+
+<property name="openjpa.FetchBatchSize" value="20"/>
+<property name="openjpa.jdbc.ResultSetType" value="scroll-insensitive"/>
+<property name="openjpa.jdbc.FetchDirection" value="forward"/>
+<property name="openjpa.jdbc.LRSSize" value="last"/>
+----
+====
+
+Many <<_ref_guide_runtime,OpenJPA runtime components>> also have methods to configure these properties on a case-by-case basis through their fetch configuration.
+See <<_ref_guide_runtime>>.
+
+.Specifying Result Set Behavior at Runtime
+====
+[source]
+----
+
+import java.sql.*;
+import org.apache.openjpa.persistence.jdbc.*;
+
+...
+
+Query q = em.createQuery("select m from Magazine m where m.title = 'JDJ'");
+OpenJPAQuery kq = OpenJPAPersistence.cast(q);
+JDBCFetchPlan fetch = (JDBCFetchPlan) kq.getFetchPlan();
+fetch.setFetchBatchSize(20);
+fetch.setResultSetType(ResultSetType.SCROLL_INSENSITIVE);
+fetch.setFetchDirection(FetchDirection.FORWARD);
+fetch.setLRSSizeAlgorithm(LRSSizeAlgorithm.LAST);
+List results = q.getResultList();
+----
+====
+
+[[_ref_guide_schema_def]]
+==== Default Schema
+(((
+                schema
+            ,
+                default
+            )))
+
+It is common to duplicate a database model in multiple schemas.
+You may have one schema for development and another for production, or different database users may access different schemas.
+OpenJPA facilitates these patterns with the <<_openjpa.jdbc.schema,`openjpa.jdbc.Schema`>> configuration property.
+This property establishes a default schema for any unqualified table names, allowing you to leave schema names out of your mapping definitions.
+
+The `Schema` property also establishes the default schema for new tables created through OpenJPA tools, such as the mapping tool covered in <<_ref_guide_mapping_mappingtool>>.
+
+If the entities are mapped to the same table name but with different schema name within one `PersistenceUnit` intentionally, and the strategy of `GeneratedType.AUTO` is used to generate the ID for each entity, a schema name for each entity must be explicitly declared either through the annotation or the mapping.xml file.
+Otherwise, the mapping tool only creates the tables for those entities with the schema names under each schema.
+In addition, there will be only one ``OPENJPA_SEQUENCE_TABLE`` created for all the entities within the `PersistenceUnit` if the entities are not identified with the schema name.
+Read <<_ref_guide_sequence>> in the Reference Guide.
+
+[[_ref_guide_schema_info]]
+==== Schema Reflection
+
+OpenJPA needs information about your database schema for two reasons.
+First, it can use schema information at runtime to validate that your schema is compatible with your persistent class definitions.
+Second, OpenJPA requires schema information during development so that it can manipulate the schema to match your object model.
+OpenJPA uses the `SchemaFactory` interface to provide runtime mapping information, and the [class]``SchemaTool `` for development-time data.
+Each is presented below.
+
+[[_ref_guide_schema_info_list]]
+===== Schemas List
+(((
+                    Schemas
+                )))
+(((
+                    schema
+                ,
+                    schemas list
+                )))
+
+By default, schema reflection acts on all the schemas your JDBC driver can "see". You can limit the schemas and tables OpenJPA acts on with the `
+openjpa.jdbc.Schemas` configuration property.
+This property accepts a comma-separated list of schemas and tables.
+To list a schema, list its name.
+To list a table, list its full name in the form ``
+<schema-name>.<table-name>``.
+If a table does not have a schema or you do not know its schema, list its name as `
+.<table-name>` (notice the preceding '.'). For example, to list the `BUSOBJS` schema, the `ADDRESS` table in the `GENERAL` schema, and the `SYSTEM_INFO` table, regardless of what schema it is in, use the string:
+
+[source]
+----
+
+BUSOBJS,GENERAL.ADDRESS,.SYSTEM_INFO
+----
+
+[NOTE]
+====
+Some databases are case-sensitive with respect to schema and table names.
+Oracle, for example, requires names in all upper case.
+====
+
+[[_ref_guide_schema_info_factory]]
+===== Schema Factory
+
+OpenJPA relies on the link:../../apidocs/org/apache/openjpa/jdbc/schema/SchemaFactory.html[
+openjpa.jdbc.SchemaFactory] interface for runtime schema information.
+You can control the schema factory OpenJPA uses through the ``openjpa.jdbc.SchemaFactory`` property.
+There are several built-in options to choose from:
+
+* ``dynamic``: This is the default setting. It is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/schema/DynamicSchemaFactory.html[ org.apache.openjpa.jdbc.schema.DynamicSchemaFactory]. The [class]``DynamicSchemaFactory`` is the most performant schema factory, because it does not validate mapping information against the database. Instead, it assumes all object-relational mapping information is correct, and dynamically builds an in-memory representation of the schema from your mapping metadata. When using this factory, it is important that your mapping metadata correctly represent your database's foreign key constraints so that OpenJPA can order its SQL statements to meet them.
+* ``native``: This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/schema/LazySchemaFactory.html[ org.apache.openjpa.jdbc.schema.LazySchemaFactory] . As persistent classes are loaded by the application, OpenJPA reads their metadata and object-relational mapping information. This factory uses the [class]``java.sql.DatabaseMetaData`` interface to reflect on the schema and ensure that it is consistent with the mapping data being read. Use this factory if you want up-front validation that your mapping metadata is consistent with the database during development. This factory accepts the following important properties:
+** ``ForeignKeys``: Set to `true` to automatically read foreign key information during schema validation.
+* ``table``: This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/schema/TableSchemaFactory.html[ org.apache.openjpa.jdbc.schema.TableSchemaFactory] . This schema factory stores schema information as an XML document in a database table it creates for this purpose. If your JDBC driver doesn't support the [class]``java.sql.DatabaseMetaData`` standard interface, but you still want some schema validation to occur at runtime, you might use this factory. It is not recommended for most users, though, because it is easy for the stored XML schema definition to get out-of-synch with the actual database. This factory accepts the following properties:
+** ``Table``: The name of the table to create to store schema information. Defaults to ``OPENJPA_SCHEMA``.
+** ``PrimaryKeyColumn``: The name of the table's numeric primary key column. Defaults to ``ID``.
+** ``SchemaColumn``: The name of the table's string column for holding the schema definition as an XML string. Defaults to ``SCHEMA_DEF ``.
+* ``file``: This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/schema/FileSchemaFactory.html[ org.apache.openjpa.jdbc.schema.FileSchemaFactory] . This factory is a lot like the [class]``TableSchemaFactory``, and has the same advantages and disadvantages. Instead of storing its XML schema definition in a database table, though, it stores it in a file. This factory accepts the following properties:
+** ``File``: The resource name of the XML schema file. By default, the factory looks for a resource called [path]_ package.schema_, located in any top-level directory of the `CLASSPATH` or in the top level of any jar in your ``CLASSPATH``.
+
+You can switch freely between schema factories at any time.
+The XML file format used by some factories is detailed in <<_ref_guide_schema_xml>> . As with any OpenJPA plugin, you can also implement your own schema factory if you have needs not met by the existing options.
+
+[[_ref_guide_schema_schematool]]
+==== Schema Tool
+(((
+                schema
+            ,
+                schema tool
+            )))
+(((
+                SQL
+            ,
+                DDL
+            )))
+
+Most users will only access the schema tool indirectly, through the interfaces provided by other tools.
+You may find, however, that the schema tool is a powerful utility in its own right.
+The schema tool has two functions:
+
+. To reflect on the current database schema, optionally translating it to an XML representation for further manipulation.
+. To take in an XML schema definition, calculate the differences between the XML and the existing database schema, and apply the necessary changes to make the database match the XML.
+
+The <<_ref_guide_schema_xml,XML format>> used by the schema tool abstracts away the differences between SQL dialects used by different database vendors.
+The tool also automatically adapts its SQL to meet foreign key dependencies.
+Thus the schema tool is useful as a general way to manipulate schemas.
+
+You can invoke the schema tool through its Java class, link:../../apidocs/org/apache/openjpa/jdbc/schema/SchemaTool.html[
+org.apache.openjpa.jdbc.schema.SchemaTool].
+In addition to the universal flags of the <<_ref_guide_conf,
+configuration framework>>, the schema tool accepts the following command line arguments:
+
+* ``-ignoreErrors/-i <true/t | false/f>``: If ``false ``, an exception will be thrown if the tool encounters any database errors. Defaults to ``false``.
+* ``-file/-f <stdout | output file>``: Use this option to write a SQL script for the planned schema modifications, rather them committing them to the database. When used in conjunction with the `export ` or `reflect` actions, the named file will be used to write the exported schema XML. If the file names a resource in the `` CLASSPATH``, data will be written to that resource. Use `stdout ` to write to standard output. Defaults to ``stdout``.
+* ``-openjpaTables/-ot <true/t | false/f>``: When reflecting on the schema, whether to reflect on tables and sequences whose names start with ``OPENJPA_``. Certain OpenJPA components may use such tables - for example, the `table` schema factory option covered in <<_ref_guide_schema_info_factory>>. When using other actions, `openjpaTables` controls whether these tables can be dropped. Defaults to ``false``.
+* ``-rollbackBeforeDDL/-rbddl <true/t | false/f>``: Set this option to ``true`` to send an initail rollback on the connection before any DDL statement is sent.
+* ``-dropTables/-dt <true/t | false/f>``: Set this option to ``true`` to drop tables that appear to be unused during ` retain` and `refresh` actions. Defaults to `` true``.
+* ``-dropSequences/-dsq <true/t | false/f>``: Set this option to `true` to drop sequences that appear to be unused during `retain` and `refresh` actions. Defaults to ``true``.
+* ``-sequences/-sq <true/t | false/f>``: Whether to manipulate sequences. Defaults to ``true``.
+* ``-indexes/-ix <true/t | false/f>``: Whether to manipulate indexes on existing tables. Defaults to ``true``.
+* ``-primaryKeys/-pk <true/t | false/f>``: Whether to manipulate primary keys on existing tables. Defaults to ``true``.
+* ``-foreignKeys/-fk <true/t | false/f>``: Whether to manipulate foreign keys on existing tables. Defaults to ``true``.
+* ``-record/-r <true/t | false/f>``: Use `false ` to prevent writing the schema changes made by the tool to the current <<_ref_guide_schema_info_factory,`schema factory`>>. Defaults to ``true``.
+* ``-schemas/-s <schema list>``: A list of schema and table names that OpenJPA should access during this run of the schema tool. This is equivalent to setting the <<_openjpa.jdbc.schemas, openjpa.jdbc.Schemas>> property for a single run.
+
+The schema tool also accepts an `-action` or `-a ` flag.
+Multiple actions can be composed in a comma-separated list.
+The available actions are:
+
+* ``add``: This is the default action if you do not specify one. It brings the schema up-to-date with the given XML document by adding tables, columns, indexes, etc. This action never drops any schema components.
+* ``retain``: Keep all schema components in the given XML definition, but drop the rest from the database. This action never adds any schema components.
+* ``drop``: Drop all schema components in the schema XML. Tables will only be dropped if they would have 0 columns after dropping all columns listed in the XML.
+* ``refresh``: Equivalent to ``retain``, then ``add``.
+* ``build``: Generate SQL to build a schema matching the one in the given XML file. Unlike ``add``, this option does not take into account the fact that part of the schema defined in the XML file might already exist in the database. Therefore, this action is typically used in conjunction with the `-file` flag to write a SQL script. This script can later be used to recreate the schema in the XML.
+* ``reflect``: Generate an XML representation of the current database schema.
+* ``createDB``: Generate SQL to re-create the current database. This action is typically used in conjunction with the `-file` flag to write a SQL script that can be used to recreate the current schema on a fresh database.
+* ``dropDB``: Generate SQL to drop the current database. Like ``createDB``, this action can be used with the `-file ` flag to script a database drop rather than perform it.
+* ``import``: Import the given XML schema definition into the current schema factory. Does nothing if the factory does not store a record of the schema.
+* ``export``: Export the current schema factory's stored schema definition to XML. May produce an empty file if the factory does not store a record of the schema.
+* ``deleteTableContents``: Execute SQL to delete all rows from all tables that OpenJPA knows about.
+
+
+[NOTE]
+====
+The schema tool manipulates tables, columns, indexes, constraints, and sequences.
+It cannot create or drop the database schema objects in which the tables reside, however.
+If your XML documents refer to named database schemas, those schemas must exist.
+====
+
+We present some examples of schema tool usage below.
+
+.Schema Creation
+====
+(((
+                    schema
+                ,
+                    create with schema tool
+                )))
+Add the necessary schema components to the database to match the given XML document, but don't drop any data:
+
+[source]
+----
+
+java org.apache.openjpa.jdbc.schema.SchemaTool targetSchema.xml
+----
+====
+
+.SQL Scripting
+====
+Repeat the same action as the first example, but this time don't change the database.
+Instead, write any planned changes to a SQL script:
+
+[source]
+----
+
+java org.apache.openjpa.jdbc.schema.SchemaTool -f script.sql targetSchema.xml
+----
+
+Write a SQL script that will re-create the current database:
+
+[source]
+----
+
+java org.apache.openjpa.jdbc.schema.SchemaTool -a createDB -f script.sql
+----
+====
+
+.Table Cleanup
+====
+(((
+                    testing
+                ,
+                    refresh schema and delete all contents of all tables
+                )))
+Refresh the schema and delete all contents of all tables that OpenJPA knows about:
+
+[source]
+----
+
+java org.apache.openjpa.jdbc.schema.SchemaTool -a refresh,deleteTableContents
+----
+====
+
+.Schema Drop
+====
+Drop the current database:
+
+[source]
+----
+
+java org.apache.openjpa.jdbc.schema.SchemaTool -a dropDB
+----
+====
+
+.Schema Reflection
+====
+Write an XML representation of the current schema to file [path]_schema.xml
+_.
+
+[source]
+----
+
+java org.apache.openjpa.jdbc.schema.SchemaTool -a reflect -f schema.xml
+----
+====
+
+[[_ref_guide_schema_xml]]
+==== XML Schema Format
+(((
+                schema
+            ,
+                XML representation
+            )))
+
+The <<_ref_guide_schema_schematool,schema tool>> and <<_ref_guide_schema_info_factory, schema factories>> all use the same XML format to represent database schema.
+The Document Type Definition (DTD) for schema information is presented below, followed by examples of schema definitions in XML.
+
+[source]
+----
+
+<!ELEMENT schemas (schema)+>
+<!ELEMENT schema (table|sequence)+>
+<!ATTLIST schema name CDATA #IMPLIED>
+
+<!ELEMENT sequence EMPTY>
+<!ATTLIST sequence name CDATA #REQUIRED>
+<!ATTLIST sequence initial-value CDATA #IMPLIED>
+<!ATTLIST sequence increment CDATA #IMPLIED>
+<!ATTLIST sequence allocate CDATA #IMPLIED>
+
+<!ELEMENT table (column|index|pk|fk|unique)+>
+<!ATTLIST table name CDATA #REQUIRED>
+
+<!ELEMENT column EMPTY>
+<!ATTLIST column name CDATA #REQUIRED>
+<!ATTLIST column type (array | bigint | binary | bit | blob | char | clob
+    | date | decimal | distinct | double | float | integer | java_object
+    | longvarbinary | longvarchar | null | numeric | other | real | ref
+    | smallint | struct | time | timestamp | tinyint | varbinary | varchar)
+    #REQUIRED>
+<!ATTLIST column not-null (true|false) "false">
+<!ATTLIST column auto-assign (true|false) "false">
+<!ATTLIST column default CDATA #IMPLIED>
+<!ATTLIST column size CDATA #IMPLIED>
+<!ATTLIST column decimal-digits CDATA #IMPLIED>
+
+<!-- the type-name attribute can be used when you want OpenJPA to   -->
+<!-- use a particular SQL type declaration when creating the     -->
+<!-- column. It is up to you to ensure that this type is         -->
+<!-- compatible with the JDBC type used in the type attribute.   -->
+<!ATTLIST column type-name CDATA #IMPLIED>
+
+<!-- the 'column' attribute of indexes, pks, and fks can be used -->
+<!-- when the element has only one column (or for foreign keys,  -->
+<!-- only one local column); in these cases the on/join child    -->
+<!-- elements can be omitted                                     -->
+<!ELEMENT index (on)*>
+<!ATTLIST index name CDATA #REQUIRED>
+<!ATTLIST index column CDATA #IMPLIED>
+<!ATTLIST index unique (true|false) "false">
+
+<!-- the 'logical' attribute of pks should be set to 'true' if   -->
+<!-- the primary key does not actually exist in the database,    -->
+<!-- but the given column should be used as a primary key for    -->
+<!-- O-R purposes                                                -->
+<!ELEMENT pk (on)*>
+<!ATTLIST pk name CDATA #IMPLIED>
+<!ATTLIST pk column CDATA #IMPLIED>
+<!ATTLIST pk logical (true|false) "false">
+
+<!ELEMENT on EMPTY>
+<!ATTLIST on column CDATA #REQUIRED>
+
+<!-- fks with a delete-action of 'none' are similar to logical   -->
+<!-- pks; they do not actually exist in the database, but        -->
+<!-- represent a logical relation between tables (or their       -->
+<!-- corresponding Java classes)                                 -->
+<!ELEMENT fk (join)*>
+<!ATTLIST fk name CDATA #IMPLIED>
+<!ATTLIST fk deferred (true|false) "false">
+<!ATTLIST fk to-table CDATA #REQUIRED>
+<!ATTLIST fk column CDATA #IMPLIED>
+<!ATTLIST fk delete-action (cascade|default|exception|none|null) "none">
+
+<!ELEMENT join EMPTY>
+<!ATTLIST join column CDATA #REQUIRED>
+<!ATTLIST join to-column CDATA #REQUIRED>
+<!ATTLIST join value CDATA #IMPLIED>
+
+<!-- unique constraint -->
+<!ELEMENT unique (on)*>
+<!ATTLIST unique name CDATA #IMPLIED>
+<!ATTLIST unique column CDATA #IMPLIED>
+<!ATTLIST unique deferred (true|false) "false">
+----
+
+.Basic Schema
+====
+A very basic schema definition.
+
+[source]
+----
+
+<schemas>
+    <schema>
+        <sequence name="S_ARTS"/>
+        <table name="ARTICLE">
+            <column name="TITLE" type="varchar" size="255" not-null="true"/>
+            <column name="AUTHOR_FNAME" type="varchar" size="28">
+            <column name="AUTHOR_LNAME" type="varchar" size="28">
+            <column name="CONTENT" type="clob">
+        </table>
+        <table name="AUTHOR">
+            <column name="FIRST_NAME" type="varchar" size="28" not-null="true">
+            <column name="LAST_NAME" type="varchar" size="28" not-null="true">
+        </table>
+    </schema>
+</schemas>
+----
+====
+
+.Full Schema
+====
+Expansion of the above schema with primary keys, constraints, and indexes, some of which span multiple columns.
+
+[source]
+----
+
+<schemas>
+    <schema>
+        <sequence name="S_ARTS"/>
+        <table name="ARTICLE">
+            <column name="TITLE" type="varchar" size="255" not-null="true"/>
+            <column name="AUTHOR_FNAME" type="varchar" size="28">
+            <column name="AUTHOR_LNAME" type="varchar" size="28">
+            <column name="CONTENT" type="clob">
+            <pk column="TITLE"/>
+            <fk to-table="AUTHOR" delete-action="exception">
+                <join column="AUTHOR_FNAME" to-column="FIRST_NAME"/>
+                <join column="AUTHOR_LNAME" to-column="LAST_NAME"/>
+            </fk>
+            <index name="ARTICLE_AUTHOR">
+                <on column="AUTHOR_FNAME"/>
+                <on column="AUTHOR_LNAME"/>
+            </index>
+        </table>
+        <table name="AUTHOR">
+            <column name="FIRST_NAME" type="varchar" size="28" not-null="true">
+            <column name="LAST_NAME" type="varchar" size="28" not-null="true">
+            <pk>
+                <on column="FIRST_NAME"/>
+                <on column="LAST_NAME"/>
+            </pk>
+        </table>
+    </schema>
+</schemas>
+----
+====
+
+ifdef::backend-docbook[]
+[index]
+== Index
+endif::backend-docbook[]

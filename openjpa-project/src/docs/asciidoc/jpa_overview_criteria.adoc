@@ -1,0 +1,117 @@
+[[_jpa_overview_criteria]]
+=== JPA Criteria
+(((
+            JP Criteria
+        )))
+(((
+            queries
+        )))
+
+JPA 2.0 specification introduced a new API to define queries dynamically via construction of an object-based [class]``jakarta.persistence.CriteriaQuery`` instance, rather than string-based approach used in JPQL (Java Persistence Query Language). This dynamic query definition capability, referred as Criteria API, is based on the abstract persistent schema of the entities, their embedded objects and their relationships.
+The syntax is designed to construct a _Query Tree_ whose nodes represent the semantic query elements such as projections, conditional predicates of WHERE clause or GROUP BY elements etc.
+
+==== Constructing a CriteriaQuery
+
+The CriteriaBuilder interface is the factory for CriteriaQuery.
+A CriteriaBuilder is obtained from either an EntityManagerFactory or an EntityManager as follows:
+[source]
+----
+
+EntityManager em = ... ;
+CriteriaBuilder queryBuilder = em.getCriteriaBuilder();
+CriteriaQuery qdef = queryBuilder.createQuery();
+----	The first step in constructing a query definition is specification of query roots.
+Query roots specify the domain objects on which the query is evaluated.
+Query root is an instance of the Root<T> interface.
+A query root is added to a CriteriaQuery by [method]``addRoot(Class c)`` method.
+[source]
+----
+
+    	Root<Customer> customer = qdef.from(Customer.class);
+----	A query domain can be further refined by joining to other domain objects.
+For example, for the above query definition to operate over customers and their orders, use [method]``join(String attribute)``:
+[source]
+----
+
+Root<Order> order = customer.join(customer.get(Customer_.orders));
+----		where Customer_.orders represent a field of canonical metamodel class for Customer.
+These canonical metamodel classes are generated during compilation by processing the persistent annotation in the source code of Customer.java.
+
+The condition of a query definition is set via [method]``where(Predicate p)`` where the argument designates a conditional predicate.
+Conditional predicates are often composed of one or more comparisons between the attribute values of the domain objects and some variable.
+For example, to select the Customer whose name is _"John Doe"_ and has orders that are not yet delivered, you can build the predicate and set it to the query definition as:
+[source]
+----
+
+           qdef.where(customer.get(Customer_.name).equal("John Doe")
+               .and(order.get(Order_.status).equal(OrderStatus.DELIVERED).not()));
+----		The [method]``select()`` method defines the result of the query.
+If left unspecified, the select projection is assumed to be the root domain object.
+However, you can specify the selected projections explicitly as a list:
+[source]
+----
+
+            qdef.select(customer.get(Customer_.name), order.get(Order_.status));
+----
+
+An attribute of a domain object can also be specified by navigating via [method]``get(String attr)``.
+The attribute _should_ refer to a valid persistent property of the receiving domain object, however no such validation is enforced during the construction of the query definition.
+All validation is deferred until the query is actually executed.
+On the other hand, using canonical metamodel for path navigate enforces compile type checking.
+
+==== Executing a CriteriaQuery
+
+A CriteriaQuery is executed in a similar fashion to a string-based JPQL query via the EntityManager and Query interfaces.
+[source]
+----
+
+EntityManager em = ...
+Query query = em.createQuery(qdef);
+List result = query.getResultList();
+----
+
+A query definition can use named parameters, and the parameter values are set as usual in the Query instance.
+
+https://developer.ibm.com/articles/j-typesafejpa/[A developerworks article] explains details and further usage of Criteria API and its OpenJPA extensions.
+
+==== Extension to Criteria API
+
+Criteria API has provided an alternative means to string-based JPQL to execute a query.
+However, JPA 2.0 specification has not explicitly specified any equivalence between a dynamically constructed CriteriaQuery and a JPQL string.
+OpenJPA provides a mechanism to convert a CriteriaQuery to an equivalent JPQL query string via the extended OpenJPACriteriaQuery API.
+[source]
+----
+
+public interface OpenJPACriteriaQuery extends CriteriaQuery {
+    /**
+     * Gets equivalent JPQL String for the given CriteriaQuery.
+     */
+    public String toCQL();
+}
+----
+
+==== Generation of Canonical MetaModel classes
+
+Annotation processing tool generates source code for a metamodel class given the annotated source code of persistent entity.
+This tool is invoked during compilation for JDK6 compiler if OpenJPA and JPA libraries are specified in the compiler `-classpath` option _and_ Annotation processor option `-Aopenjpa.metamodel=true` is specified.
+[source]
+----
+
+ $ javac -classpath path/to/openjpa-all.jar -Aopenjpa.metamodel=true mypackage/MyEntity.java
+----
+will generate source code for canonical meta-model class ``mypackage.MyEntity_``.
+The source code is generated relative to the directory specified in `-s` option of `javac` compiler and defaulted to the current directory.
+
+The Annotation Processor recognizes the following options specified in the command-line with `-A` (none of them are mandatory).
+
+* -Aopenjpa.log=TRACE|INFO|WARN|ERROR : The logging level. Default is ``WARN``.
+* -Aopenjpa.source=<n> : where <n> denotes the integral number for Java source version of the generated code. Default is ``6``.
+* -Aopenjpa.naming=class name : fully-qualified name of a class implementing `org.apache.openjpa.meta.MetaDataFactory` that determines the name of a meta-class given the name of the original persistent Java entity class. Defaults to ``org.apache.openjpa.persistence.PersistenceMetaDataFactory`` which appends an underscore character (``\_``) to the original Java class name.
+* -Aopenjpa.header=<url> : A url whose content will appear as comment header to the generated file(s). Recognizes special value `ASL` for Apache Source License header as comment. By default, adds an OpenJPA proprietary text as comment block.
+* -Aopenjpa.addGeneratedAnnotation=auto|force|false : Configure whether the annotation `jakarta.annotation.Generated` should be added to the generated metamodel classes. This annotation is not available on Java 9 upwards unless the `jakarta.annotation-api` is in the classpath. The default is ``auto``. Set to `force` to add the annotation even if it is not in the classpath or to `false` to never add it to the generated class.
+
+
+ifdef::backend-docbook[]
+[index]
+== Index
+endif::backend-docbook[]

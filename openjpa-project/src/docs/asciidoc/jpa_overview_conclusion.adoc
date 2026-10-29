@@ -1,0 +1,4 @@
+[[_jpa_overview_conclusion]]
+=== Conclusion
+
+This concludes our overview of the JPA specification. The <<_ref_guide_intro,OpenJPA Reference Guide>> contains detailed documentation on all aspects of the OpenJPA implementation and core development tools.

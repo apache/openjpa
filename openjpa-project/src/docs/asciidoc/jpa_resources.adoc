@@ -1,0 +1,14 @@
+
+:sectnums!:
+
+[appendix]
+[[_jpa_resources]]
+=== JPA Resources
+
+* https://jakarta.ee/specifications/persistence/3.2/[ Java Persistence 3.2 page]
+* http://jcp.org/en/jsr/detail?id=318[Enterprise JavaBeans 3.1 page]
+* https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/module-summary[ jakarta.persistence Javadoc]
+* link:../../apidocs/index.html[OpenJPA Javadoc]
+
+
+:sectnums:

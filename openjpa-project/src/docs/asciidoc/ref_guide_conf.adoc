@@ -1,0 +1,2372 @@
+[[_ref_guide_conf]]
+=== Configuration
+(((
+            configuration
+        )))
+
+[[_ref_guide_conf_intro]]
+==== Introduction
+
+This chapter describes the OpenJPA configuration framework.
+It concludes with descriptions of all the configuration properties recognized by OpenJPA.
+You may want to browse these properties now, but it is not necessary.
+Most of them will be referenced later in the documentation as we explain the various features they apply to.
+
+[[_ref_guide_conf_specify]]
+==== Runtime Configuration
+(((
+                configuration
+            ,
+                runtime
+            )))
+
+The OpenJPA runtime includes a comprehensive system of configuration defaults and overrides:
+
+* OpenJPA first looks for an optional [path]_openjpa.xml_ resource. OpenJPA searches for this resource in each top-level directory of your `` CLASSPATH``. OpenJPA will also find the resource if you place it within a [path]_META-INF_ directory in any top-level directory of the ``CLASSPATH``. The [path]_openjpa.xml_ resource contains property settings in <<_jpa_overview_persistence_xml, JPA's XML format>>.
+* You can customize the name or location of the above resource by specifying the correct resource path in the `openjpa.properties` System property.
+* You can override any value defined in the above resource by setting the System property of the same name to the desired value.
+* (((
+                        Persistence
+                    ,
+                        createEntityManagerFactory
+                    ))) In JPA, the values in the standard [path]_ META-INF/persistence.xml
+_ bootstrapping file used by the <<_jpa_overview_persistence,[class]``Persistence``>> class at runtime override the values in the above resource, as well as any System property settings.
+The [class]``Map`` passed to [method]``Persistence.createEntityManagerFactory`` at runtime also overrides previous settings, including properties defined in [path]_
+persistence.xml_.
+* In JPA, The [class]``Map`` passed to the methods defined in the [class]``Query`` and [class]``EntityManager`` interfaces at runtime also overrides previous settings, including properties defined in [path]_persistence.xml_. The [class]``Map`` is in effect only during the method invocation.
+* When using JCA deployment the `config-property` values in your [path]_ra.xml_ file override other settings.
+* All OpenJPA command-line tools accept flags that allow you to specify the configuration resource to use, and to override any property. <<_ref_guide_conf_devtools>> describes these flags.
+
+
+[NOTE]
+====
+Internally, the OpenJPA runtime environment and development tools manipulate property settings through a general link:../../apidocs/org/apache/openjpa/lib/conf/Configuration.html[
+Configuration] interface, and in particular its link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html[
+OpenJPAConfiguration] and link:../../apidocs/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html[
+JDBCConfiguration] subclasses.
+For advanced customization, OpenJPA's extended runtime interfaces and its development tools allow you to access these interfaces directly.
+See the link:../../apidocs/[
+Javadoc] for details.
+====
+
+[[_ref_guide_conf_devtools]]
+==== Command Line Configuration
+
+OpenJPA development tools share the same set of configuration defaults and overrides as the runtime system.
+They also allow you to specify property values on the command line:
+
+* ``-properties/-p <configuration file or resource>``: Use the `-properties` flag, or its shorter `-p` form, to specify a configuration file to use. Note that OpenJPA always searches the default file locations described above, so this flag is only needed when you do not have a default resource in place, or when you wish to override the defaults. The given value can be the path to a file, or the resource name of a file somewhere in the ``CLASSPATH``. OpenJPA will search the given location as well as the location prefixed by [path]_ META-INF/ _. Thus, to point an OpenJPA tool at [path]_ META-INF/my-persistence.xml_, you can use:
+
+
+[source]
+----
+
+<tool> -p my-persistence.xml
+----
+
+If you want to run a tool against just one particular persistence unit in a configuration file, you can do so by specifying an anchor along with the resource.
+If you do not specify an anchor, the tools will run against all the persistence units defined within the specified resource, or the default resource if none is specified.
+If the persistence unit is defined within the default resource location, then you can just specify the raw anchor itself:
+
+
+[source]
+----
+
+<tool> -p my-persistence.xml#sales-persistence-unit
+<tool> -p #invoice-persistence-unit
+----
+* ``-<property name> <property value>``: Any configuration property that you can specify in a configuration file can be overridden with a command line flag. The flag name is always the last token of the corresponding property name, with the first letter in either upper or lower case. For example, to override the `openjpa.ConnectionUserName` property, you could pass the `-connectionUserName <value> ` flag to any tool. Values set this way override both the values in the configuration file and values set via System properties.
+
+
+[[_ref_guide_conf_devtools_format]]
+===== Code Formatting
+(((
+                    code formatting
+                )))
+
+Some OpenJPA development tools generate Java code.
+These tools share a common set of command-line flags for formatting their output to match your coding style.
+All code formatting flags can begin with either the `codeFormat ` or `cf` prefix.
+
+* ``-codeFormat./-cf.tabSpaces <spaces>``: The number of spaces that make up a tab, or 0 to use tab characters. Defaults to using tab characters.
+* ``-codeFormat./-cf.spaceBeforeParen <true/t | false/f>``: Whether or not to place a space before opening parentheses on method calls, if statements, loops, etc. Defaults to ``false``.
+* ``-codeFormat./-cf.spaceInParen <true/t | false/f>``: Whether or not to place a space within parentheses; i.e. ``method( arg) ``. Defaults to ``false``.
+* ``-codeFormat./-cf.braceOnSameLine <true/t | false/f>``: Whether or not to place opening braces on the same line as the declaration that begins the code block, or on the next line. Defaults to `true` .
+* `-codeFormat./-cf.braceAtSameTabLevel <true/t | false/f>` : When the `braceOnSameLine` option is disabled, you can choose whether to place the brace at the same tab level of the contained code. Defaults to ``false``.
+* ``-codeFormat./-cf.scoreBeforeFieldName <true/t | false/f> ``: Whether to prefix an underscore to names of private member variables. Defaults to ``false``.
+* ``-codeFormat./-cf.linesBetweenSections <lines>``: The number of lines to skip between sections of code. Defaults to 1.
+
+
+.Code Formatting with the Application Id Tool
+====
+[source]
+----
+
+java org.apache.openjpa.enhance.ApplicationIdTool -cf.spaceBeforeParen true -cf.tabSpaces 4
+----
+====
+
+[[_ref_guide_conf_plugins]]
+=== Plugin Configuration
+(((
+                configuration
+            ,
+                plugins
+            )))
+
+Because OpenJPA is a highly customizable environment, many configuration properties relate to the creation and configuration of system plugins.
+Plugin properties have a syntax very similar to that of Java annotations.
+They allow you to specify both what class to use for the plugin and how to configure the public fields or bean properties of the instantiated plugin instance.
+The easiest way to describe the plugin syntax is by example:
+
+OpenJPA has a pluggable L2 caching mechanism that is controlled by the `
+openjpa.DataCache` configuration property.
+Suppose that you have created a new class, [class]``com.xyz.MyDataCache``, that you want OpenJPA to use for caching.
+You've made instances of `MyDataCache ` configurable via two methods, [method]``setCacheSize(int size) `` and [method]``setRemoteHost(String host)``.
+The sample below shows how you would tell OpenJPA to use an instance of your custom plugin with a max size of 1000 and a remote host of ``cacheserver ``.
+
+[source]
+----
+
+<property name="openjpa.DataCache"
+    value="com.xyz.MyDataCache(CacheSize=1000, RemoteHost=cacheserver)"/>
+----
+
+As you can see, plugin properties take a class name, followed by a comma-separated list of values for the plugin's public fields or bean properties in parentheses.
+OpenJPA will match each named property to a field or setter method in the instantiated plugin instance, and set the field or invoke the method with the given value (after converting the value to the right type, of course). The first letter of the property names can be in either upper or lower case.
+The following would also have been valid:
+
+[source]
+----
+
+com.xyz.MyDataCache(cacheSize=1000, remoteHost=cacheserver)
+----
+
+If you do not need to pass any property settings to a plugin, you can just name the class to use:
+
+[source]
+----
+
+com.xyz.MyDataCache
+----
+
+Similarly, if the plugin has a default class that you do not want to change, you can simply specify a list of property settings, without a class name.
+For example, OpenJPA's query cache companion to the data cache has a default implementation suitable to most users, but you still might want to change the query cache's size.
+It has a `CacheSize` property for this purpose:
+
+[source]
+----
+
+CacheSize=1000
+----
+
+Finally, many of OpenJPA's built-in options for plugins have short alias names that you can use in place of the full class name.
+The data cache property, for example, has an available alias of `true` for the standard cache implementation.
+The property value simply becomes:
+
+[source]
+----
+
+true
+----
+
+The standard cache implementation class also has a `CacheSize` property, so to use the standard implementation and configure the size, specify:
+
+[source]
+----
+
+true(CacheSize=1000)
+----
+
+The remainder of this chapter reviews the set of configuration properties OpenJPA recognizes.
+
+[[_ref_guide_conf_openjpa]]
+==== OpenJPA Properties
+(((
+                configuration
+            ,
+                of OpenJPA properties
+            )))
+
+OpenJPA defines many configuration properties.
+Most of these properties are provided for advanced users who wish to customize OpenJPA's behavior; the majority of developers can omit them.
+The following properties apply to any OpenJPA back-end, though the given descriptions are tailored to OpenJPA's default JDBC store.
+
+A few of the properties recognized by OpenJPA have been standardized in JPA 2.0 specification using equivalent names.
+These properties can be specified either by the JPA standard key or equivalent OpenJPA key.
+Specifying the same key once as JPA standard key and again as equivalent OpenJPA key in the same configuration, however, is not allowed.
+The following table lists these standard JPA properties and their OpenJPA equivalent.
+
+.Standard JPA Properties and OpenJPA equivalents
+[cols="1,1", options="header"]
+|===
+| Standard JPA 2.0
+| OpenJPA Equivalent
+
+|jakarta.persistence.jdbc.driver
+|openjpa.ConnectionDriverName
+
+|jakarta.persistence.jdbc.url
+|openjpa.ConnectionURL
+
+|jakarta.persistence.jdbc.user
+|openjpa.ConnectionUserName
+
+|jakarta.persistence.jdbc.password
+|openjpa.ConnectionPassword
+|===
+
+[[_openjpa.autoclear]]
+===== openjpa.AutoClear
+(((
+                    transactions
+                ,
+                    AutoClear
+                ,
+                    AutoClear
+                )))
+
+**Property name: **``openjpa.AutoClear ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getAutoClear()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getAutoClear
+]
+
+*Resource adaptor config-property: *``
+AutoClear``
+
+**Default: **``datastore``
+
+**Possible values: **``datastore``, ``all``
+
+*Description:* When to automatically clear instance state: on entering a datastore transaction, or on entering any transaction.
+
+[[_openjpa.autodetach]]
+===== openjpa.AutoDetach
+
+**Property name: **``openjpa.AutoDetach ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getAutoDetach()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getAutoDetach
+]
+
+*Resource adaptor config-property: *``
+AutoDetach``
+
+*Default:* - null
+
+**Possible values: **``close``, ``commit``, ``nontx-read``, ``rollback``, `none`
+
+*Description:* A comma-separated list of events when managed instances will be automatically detached.
+When using the OpenJPA EntityManager this defaults to ``close``, and `rollback` per the JPA spec.
+If you need to change this setting, you need to set it directly on an instantiated EntityManager.
+
+`none` option is exclusive.
+It can not be specified with any other option. ``none`` option implies that managed objects will not be detached from the persistence context, the second-class object fields such as collections or date will _not_ be proxied unlike normal circumstances.
+This option is relevant for specific use cases where the user application would not refer to the managed objects after the transaction and/or the context ends e.g.
+typical batch insertion scenario.
+
+[[_openjpa.brokerfactory]]
+===== openjpa.BrokerFactory
+(((
+                    BrokerFactory
+                )))
+
+**Property name: **``openjpa.BrokerFactory ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getBrokerFactory()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getBrokerFactory
+]
+
+*Resource adaptor config-property: *``
+BrokerFactory``
+
+**Default: **``jdbc``
+
+**Possible values: **``jdbc``, ``abstractstore``, `remote`
+
+*Description:* A plugin string (see <<_ref_guide_conf_plugins>>) describing the link:../../apidocs/org/apache/openjpa/kernel/BrokerFactory.html[
+org.apache.openjpa.kernel.BrokerFactory] type to use.
+
+[[_openjpa.brokerimpl]]
+===== openjpa.BrokerImpl
+(((
+                    BrokerImpl
+                )))
+(((
+                    Broker
+                ,
+                    BrokerImpl
+                )))
+
+**Property name: **``openjpa.BrokerImpl ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getBrokerImpl()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getBrokerImpl
+]
+
+*Resource adaptor config-property: *``
+BrokerImpl``
+
+**Default: **``default``
+
+*Description:* A plugin string (see <<_ref_guide_conf_plugins>>) describing the link:../../apidocs/org/apache/openjpa/kernel/Broker.html[
+org.apache.openjpa.kernel.Broker] type to use at runtime.
+See <<_ref_guide_runtime_broker_extension>> on for details.
+
+[[_openjpa.callbacks]]
+===== openjpa.Callbacks
+(((Callbacks)))
+
+**Property name: **``openjpa.Callbacks``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getCallbackOptionsInstance()[
+     org.apache.openjpa.conf.OpenJPAConfiguration.getCallbackOptionsInstance]
+
+**Resource adaptor config-property: **``Callbacks``
+
+**Default: **``default``
+
+*Description:* A plugin string (see <<_ref_guide_conf_plugins>>) to fine tune some of the configurable properties related to callbacks.
+The plug-in supports two boolean properties:
+
+* ``PostPersistCallbackImmediate``: whether the post-persist callback is invoked as soon as a new instance is managed. The default is ``false``, implies that the post-persist callback is invoked after the instance been committed or flushed to the datastore.
+* ``AllowsMultipleMethodsForSameCallback``: whether multiple methods of the same class can handle the same callback event. Defaults to ``false``.
+
+
+[[_openjpa.classresolver]]
+===== openjpa.ClassResolver
+(((
+                    ClassResolver
+                )))
+(((
+                    class loading
+                )))
+
+**Property name: **``openjpa.ClassResolver ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getClassResolver()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getClassResolver
+]
+
+*Resource adaptor config-property: *``
+ClassResolver``
+
+**Default: **``default``
+
+*Description:* A plugin string (see <<_ref_guide_conf_plugins>>) describing the link:../../apidocs/org/apache/openjpa/util/ClassResolver.html[
+org.apache.openjpa.util.ClassResolver] implementation to use for class name resolution.
+You may wish to plug in your own resolver if you have special classloading needs.
+
+[[_openjpa.compatibility]]
+===== openjpa.Compatibility
+(((
+                    Compatibility
+                )))
+(((
+                    backwards compatibility
+                )))
+
+**Property name: **``openjpa.Compatibility ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getCompatibility()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getCompatibility
+]
+
+*Resource adaptor config-property: *``
+Compatibility``
+
+*Default:* -
+
+*Description:* Encapsulates options to mimic the behavior of previous OpenJPA releases.
+
+[[_openjpa.connectiondrivername]]
+===== openjpa.ConnectionDriverName
+(((
+                    ConnectionDriverName
+                )))
+(((
+                    connections
+                ,
+                    ConnectionDriverName
+                )))
+
+*Property name: *``
+openjpa.ConnectionDriverName``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionDriverName()[
+
+org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionDriverName
+]
+
+*Resource adaptor config-property: *``
+ConnectionDriverName``
+
+*Default:* -
+
+*Description:* The full class name of either the JDBC [class]``java.sql.Driver``, or a [class]``
+javax.sql.DataSource`` implementation to use to connect to the database.
+See <<_ref_guide_dbsetup>> for details.
+
+[[_openjpa.connection2drivername]]
+===== openjpa.Connection2DriverName
+(((
+                    connections
+                ,
+                    Connection2DriverName
+                )))
+
+*Property name: *``
+openjpa.Connection2DriverName``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnection2DriverName()[
+
+org.apache.openjpa.conf.OpenJPAConfiguration.getConnection2DriverName
+]
+
+*Resource adaptor config-property: *``
+Connection2DriverName``
+
+*Default:* -
+
+*Description:* This property is equivalent to the ``openjpa.ConnectionDriverName`` property described in <<_openjpa.connectiondrivername>>, but applies to the alternate connection factory used for unmanaged connections.
+See <<_ref_guide_dbsetup_thirdparty_enlist>> for details.
+
+[[_openjpa.connectionfactory]]
+===== openjpa.ConnectionFactory
+(((
+                    connections
+                ,
+                    ConnectionFactory
+                )))
+
+*Property name: *``
+openjpa.ConnectionFactory``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionFactory()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionFactory
+]
+
+*Resource adaptor config-property: *``
+ConnectionFactory``
+
+*Default:* -
+
+*Description:* A [class]``javax.sql.DataSource `` to use to connect to the database.
+See <<_ref_guide_dbsetup>> for details.
+
+[[_openjpa.connectionfactory2]]
+===== openjpa.ConnectionFactory2
+(((
+                    connections
+                ,
+                    ConnectionFactory2
+                )))
+
+*Property name: *``
+openjpa.ConnectionFactory2``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionFactory2()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionFactory2
+]
+
+*Resource adaptor config-property: *``
+ConnectionFactory2``
+
+*Default:* -
+
+*Description:* An unmanaged [class]``
+javax.sql.DataSource`` to use to connect to the database.
+See <<_ref_guide_dbsetup>> for details.
+
+[[_openjpa.connectionfactoryname]]
+===== openjpa.ConnectionFactoryName
+(((
+                    connections
+                ,
+                    ConnectionFactoryName
+                )))
+
+*Property name: *``
+openjpa.ConnectionFactoryName``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionFactoryName()[
+
+org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionFactoryName
+]
+
+*Resource adaptor config-property: *``
+ConnectionFactoryName``
+
+*Default:* -
+
+*Description:* The JNDI location of a [class]``
+javax.sql.DataSource`` to use to connect to the database.
+See <<_ref_guide_dbsetup>> for details.
+
+[[_openjpa.connectionfactory2name]]
+===== openjpa.ConnectionFactory2Name
+(((
+                    connections
+                ,
+                    ConnectionFactory2Name
+                )))
+
+*Property name: *``
+openjpa.ConnectionFactory2Name``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionFactory2Name()[
+
+org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionFactory2Name
+]
+
+*Resource adaptor config-property: *``
+ConnectionFactory2Name``
+
+*Default:* -
+
+*Description:* The JNDI location of an unmanaged [class]``javax.sql.DataSource`` to use to connect to the database.
+See <<_ref_guide_enterprise_xa>> for details.
+
+[[_openjpa.connectionfactorymode]]
+===== openjpa.ConnectionFactoryMode
+(((
+                    connections
+                ,
+                    ConnectionFactoryMode
+                )))
+
+*Property name: *``
+openjpa.ConnectionFactoryMode``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionFactoryMode()[
+
+org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionFactoryMode
+]
+
+*Resource adaptor config-property: *``
+ConnectionFactoryMode``
+
+**Default: **``local``
+
+**Possible values: **``local``, ``managed``
+
+*Description:* The connection factory mode to use when integrating with the application server's managed transactions.
+See <<_ref_guide_dbsetup_thirdparty_enlist>> for details.
+
+[[_openjpa.connectionfactoryproperties]]
+===== openjpa.ConnectionFactoryProperties
+(((
+                    connections
+                ,
+                    ConnectionFactoryProperties
+                )))
+
+*Property name: *``
+openjpa.ConnectionFactoryProperties``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionFactoryProperties()[
+
+org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionFactoryProperties
+]
+
+*Resource adaptor config-property: *``
+ConnectionFactoryProperties``
+
+*Default:* -
+
+*Description:* A plugin string (see <<_ref_guide_conf_plugins>>) listing properties for configuration of the datasource in use.
+See the <<_ref_guide_dbsetup>> for details.
+
+[[_openjpa.connectionfactory2properties]]
+===== openjpa.ConnectionFactory2Properties
+(((
+                    connections
+                ,
+                    ConnectionFactory2Properties
+                )))
+
+*Property name: *``
+openjpa.ConnectionFactory2Properties``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionFactory2Properties()[
+
+org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionFactory2Properties
+]
+
+*Resource adaptor config-property: *``
+ConnectionFactory2Properties``
+
+*Default:* -
+
+*Description:* This property is equivalent to the ``openjpa.ConnectionFactoryProperties`` property described in <<_openjpa.connectionfactoryproperties>>, but applies to the alternate connection factory used for unmanaged connections.
+See <<_ref_guide_dbsetup_thirdparty_enlist>> for details.
+
+[[_openjpa.connectionpassword]]
+===== openjpa.ConnectionPassword
+(((
+                    connections
+                ,
+                    ConnectionPassword
+                )))
+
+*Property name: *``
+openjpa.ConnectionPassword``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionPassword()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionPassword
+]
+
+*Resource adaptor config-property: *``
+ConnectionPassword``
+
+*Default:* -
+
+*Description:* The password for the user specified in the `ConnectionUserName` property.
+See <<_ref_guide_dbsetup>> for details.
+
+[[_openjpa.connection2password]]
+===== openjpa.Connection2Password
+(((
+                    connections
+                ,
+                    Connection2Password
+                )))
+
+*Property name: *``
+openjpa.Connection2Password``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnection2Password()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getConnection2Password
+]
+
+*Resource adaptor config-property: *``
+Connection2Password``
+
+*Default:* -
+
+*Description:* This property is equivalent to the ``openjpa.ConnectionPassword`` property described in <<_openjpa.connectionpassword>>, but applies to the alternate connection factory used for unmanaged connections.
+See <<_ref_guide_dbsetup_thirdparty_enlist>> for details.
+
+[[_openjpa.connectionproperties]]
+===== openjpa.ConnectionProperties
+(((
+                    connections
+                ,
+                    ConnectionProperties
+                )))
+
+*Property name: *``
+openjpa.ConnectionProperties``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionProperties()[
+
+org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionProperties
+]
+
+*Resource adaptor config-property: *``
+ConnectionProperties``
+
+*Default:* -
+
+*Description:* A plugin string (see <<_ref_guide_conf_plugins>>) listing properties to configure the driver listed in the `ConnectionDriverName` property described below.
+See <<_ref_guide_dbsetup>> for details.
+
+[[_openjpa.connection2properties]]
+===== openjpa.Connection2Properties
+(((
+                    connections
+                ,
+                    Connection2Properties
+                )))
+
+*Property name: *``
+openjpa.Connection2Properties``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnection2Properties()[
+
+org.apache.openjpa.conf.OpenJPAConfiguration.getConnection2Properties
+]
+
+*Resource adaptor config-property: *``
+Connection2Properties``
+
+*Default:* -
+
+*Description:* This property is equivalent to the ``openjpa.ConnectionProperties`` property described in <<_openjpa.connectionproperties>>, but applies to the alternate connection factory used for unmanaged connections.
+See <<_ref_guide_dbsetup_thirdparty_enlist>> for details.
+
+[[_openjpa.connectionurl]]
+===== openjpa.ConnectionURL
+(((
+                    connections
+                ,
+                    ConnectionURL
+                )))
+
+**Property name: **``openjpa.ConnectionURL ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionURL()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionURL
+]
+
+*Resource adaptor config-property: *``
+ConnectionURL``
+
+*Default:* -
+
+*Description:* The JDBC URL for the database.
+See <<_ref_guide_dbsetup>> for details.
+
+[[_openjpa.connection2url]]
+===== openjpa.Connection2URL
+(((
+                    connections
+                ,
+                    Connection2URL
+                )))
+
+**Property name: **``openjpa.Connection2URL ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnection2URL()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getConnection2URL
+]
+
+*Resource adaptor config-property: *``
+Connection2URL``
+
+*Default:* -
+
+*Description:* This property is equivalent to the ``openjpa.ConnectionURL`` property described in <<_openjpa.connectionurl>>, but applies to the alternate connection factory used for unmanaged connections.
+See <<_ref_guide_dbsetup_thirdparty_enlist>> for details.
+
+[[_openjpa.connectionusername]]
+===== openjpa.ConnectionUserName
+(((
+                    connections
+                ,
+                    ConnectionUserName
+                )))
+
+*Property name: *``
+openjpa.ConnectionUserName``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionUserName()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionUserName
+]
+
+*Resource adaptor config-property: *``
+ConnectionUserName``
+
+*Default:* -
+
+*Description:* The user name to use when connecting to the database.
+See the <<_ref_guide_dbsetup>> for details.
+
+[[_openjpa.connection2username]]
+===== openjpa.Connection2UserName
+(((
+                    connections
+                ,
+                    Connection2UserName
+                )))
+
+*Property name: *``
+openjpa.Connection2UserName``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnection2UserName()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getConnection2UserName
+]
+
+*Resource adaptor config-property: *``
+Connection2UserName``
+
+*Default:* -
+
+*Description:* This property is equivalent to the ``openjpa.ConnectionUserName`` property described in <<_openjpa.connectionusername>>, but applies to the alternate connection factory used for unmanaged connections.
+See <<_ref_guide_dbsetup_thirdparty_enlist>> for details.
+
+[[_openjpa.connectionretainmode]]
+===== openjpa.ConnectionRetainMode
+(((
+                    connections
+                ,
+                    ConnectionRetainMode
+                )))
+
+*Property name: *``
+openjpa.ConnectionRetainMode``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionRetainMode()[
+
+org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionRetainMode
+]
+
+*Resource adaptor config-property: *``
+ConnectionRetainMode``
+
+**Default: **``on-demand``
+
+*Description:* Controls how OpenJPA uses datastore connections.
+This property can also be specified for individual sessions.
+See <<_ref_guide_dbsetup_retain>> for details.
+
+[[_openjpa.datacache]]
+===== openjpa.DataCache
+(((
+                    caching
+                ,
+                    DataCache
+                )))
+
+**Property name: **``openjpa.DataCache ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getDataCache()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getDataCache
+]
+
+*Resource adaptor config-property: *``
+DataCache``
+
+**Default: **``false``
+
+*Description:* A plugin list string (see <<_ref_guide_conf_plugins>>) describing the link:../../apidocs/org/apache/openjpa/datacache/DataCache.html[
+org.apache.openjpa.datacache.DataCache]s to use for data caching.
+See <<_ref_guide_cache_conf>> for details.
+
+[[_openjpa.datacachemanager]]
+===== openjpa.DataCacheManager
+(((
+                    caching
+                ,
+                    DataCacheManager
+                )))
+
+*Property name: *``
+openjpa.DataCacheManager``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getDataCacheManager()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getDataCacheManager
+]
+
+*Resource adaptor config-property: *``
+DataCacheManager``
+
+**Default: **``default``
+
+*Description:* A plugin string (see <<_ref_guide_conf_plugins>>) describing the link:../../apidocs/org/apache/openjpa/datacache/DataCacheManager.html[
+openjpa.datacache.DataCacheManager] that manages the system data caches.
+See <<_ref_guide_cache>> for details on data caching.
+
+[[_openjpa.datacachemode]]
+===== openjpa.DataCacheMode
+(((
+                    caching
+                ,
+                    DataCacheTimeout
+                )))
+
+*Property name: *``
+openjpa.DataCacheMode``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getDataCacheMode()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getDataCacheMode
+]
+
+*Resource adaptor config-property: *``
+DataCacheMode``
+
+**Default: **``DataCacheMode.UNSPECIFIED (see javadoc for details)``
+
+**Description:**Determines which entities will be included in the DataCache.
+May be any of the values defined in link:../../apidocs/org/apache/openjpa/datacache/DataCacheMode.html.
+
+[[_openjpa.datacachetimeout]]
+===== openjpa.DataCacheTimeout
+(((
+                    caching
+                ,
+                    DataCacheTimeout
+                )))
+
+*Property name: *``
+openjpa.DataCacheTimeout``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getDataCacheTimeout()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getDataCacheTimeout
+]
+
+*Resource adaptor config-property: *``
+DataCacheTimeout``
+
+**Default: **``-1``
+
+*Description:* The number of milliseconds that data in the data cache is valid.
+Set this to -1 to indicate that data should not expire from the cache.
+This property can also be specified for individual classes.
+See <<_ref_guide_cache_conf>> for details.
+
+[[_openjpa.detachstate]]
+===== openjpa.DetachState
+(((
+                    detach
+                ,
+                    DetachState
+                ,
+                    DetachState
+                )))
+
+**Property name: **``openjpa.DetachState ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfigurationImpl.html#getDetachState()[
+org.apache.openjpa.conf.OpenJPAConfigurationImpl.getDetachState
+]
+
+*Resource adaptor config-property: *``
+DetachState``
+
+**Default: **``loaded``
+
+**Possible values: **``loaded``, ``fetch-groups``, `all`
+
+*Description:* Determines which fields are part of the detached graph and related options.
+For more details, see <<_ref_guide_detach_graph>>.
+
+[[_openjpa.dynamicdatastructs]]
+===== openjpa.DynamicDataStructs
+(((
+                    remote
+                ,
+                    DynamicDataStructs
+                )))
+
+*Property name: *``
+openjpa.DynamicDataStructs``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getDynamicDataStructs()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getDynamicDataStructs
+]
+
+*Resource adaptor config-property: *``
+DynamicDataStructs``
+
+**Default: **``false``
+
+*Description:* Whether to dynamically generate customized structs to hold persistent data.
+Both the OpenJPA data cache and the remote framework rely on data structs to cache and transfer persistent state.
+With dynamic structs, OpenJPA can customize data storage for each class, eliminating the need to generate primitive wrapper objects.
+This saves memory and speeds up certain runtime operations.
+The price is a longer warm-up time for the application - generating and loading custom classes into the JVM takes time.
+Therefore, only set this property to `true` if you have a long-running application where the initial cost of class generation is offset by memory and speed optimization over time.
+
+[[_openjpa.dynamicenhancementagent]]
+===== openjpa.DynamicEnhancementAgent
+
+*Property name: *``openjpa.DynamicEnhancementAgent``
+
+*Configuration API: *link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getDynamicEnhancementAgent()[org.apache.openjpa.conf.OpenJPAConfiguration.getDynamicEnhancementAgent]
+
+*Resource adaptor config property:* DynamicEnhancementAgent
+
+*Default: *``true``
+
+*Description:* The DynamicEnhancementAgent property controls whether or not OpenJPA will attempt to dynamically load the PCEnhancer javaagent.
+
+See the reference guide for more information <<_ref_guide_pc_enhance_dynamic>>
+
+[[_openjpa.fetchbatchsize]]
+===== openjpa.FetchBatchSize
+(((
+                    large result sets
+                ,
+                    FetchBatchSize
+                )))
+
+**Property name: **``openjpa.FetchBatchSize ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getFetchBatchSize()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getFetchBatchSize
+]
+
+*Resource adaptor config-property: *``
+FetchBatchSize``
+
+**Default: **``-1``
+
+*Description:* The number of rows to fetch at once when scrolling through a result set.
+The fetch size can also be set at runtime.
+See <<_ref_guide_dbsetup_lrs>> for details.
+
+[[_openjpa.encryptionprovider]]
+===== openjpa.EncryptionProvider
+(((
+                    encryption
+                )))
+
+**Property name: **``openjpa.EncryptionProvider``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getEncryptionProvider()[
+			org.apache.openjpa.conf.OpenJPAConfiguration.getEncryptionProvider
+		]
+
+*Resource adaptor config-property: *``EncryptionProvider``
+
+**Default: **``false``
+
+*Description:* A plugin list string (see <<_ref_guide_conf_plugins>>) describing the link:../../apidocs/org/apache/openjpa/lib/encryption/EncryptionProvider.html[
+org.apache.openjpa.lib.encryption.EncryptionProvider]s to use for connection password encryption.
+See <<_ref_guide_encryption>> for details.
+
+[[_openjpa.fetchgroups]]
+===== openjpa.FetchGroups
+(((
+                    fetch groups
+                ,
+                    FetchGroups
+                )))
+
+**Property name: **``openjpa.FetchGroups ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getFetchGroups()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getFetchGroups
+]
+
+*Resource adaptor config-property: *``
+FetchGroups``
+
+*Default:* -
+
+*Description:* A comma-separated list of fetch group names that are to be loaded when retrieving objects from the datastore.
+Fetch groups can also be set at runtime.
+See <<_ref_guide_fetch>> for details.
+
+[[_openjpa.flushbeforequeries]]
+===== openjpa.FlushBeforeQueries
+(((
+                    Query
+                ,
+                    FlushBeforeQueries
+                )))
+
+*Property name: *``
+openjpa.FlushBeforeQueries``
+
+*Property name: *``
+openjpa.FlushBeforeQueries``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getFlushBeforeQueries()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getFlushBeforeQueries
+]
+
+*Resource adaptor config-property: *``
+FlushBeforeQueries``
+
+**Default: **``true``
+
+*Description:* Whether or not to flush any changes made in the current transaction to the datastore before executing a query.
+See <<_ref_guide_dbsetup_retain>> for details.
+
+[[_openjpa.ignorechanges]]
+===== openjpa.IgnoreChanges
+(((
+                    IgnoreChanges
+                )))
+
+**Property name: **``openjpa.IgnoreChanges ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getIgnoreChanges()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getIgnoreChanges
+]
+
+*Resource adaptor config-property: *``
+IgnoreChanges``
+
+**Default: **``false``
+
+*Description:* Whether to consider modifications to persistent objects made in the current transaction when evaluating queries.
+Setting this to `true` allows OpenJPA to ignore changes and execute the query directly against the datastore.
+A value of `false ` forces OpenJPA to consider whether the changes in the current transaction affect the query, and if so to either evaluate the query in-memory or flush before running it against the datastore.
+
+Note that `true` is an OpenJPA extension that deliberately opts every `SELECT` out of the guarantee of section 3.10.8 of the specification that pending updates which could affect a query's result are visible to it.
+The opt-out applies whatever the flush mode of the query is, including ``FlushModeType.AUTO`` set on the [class]``Query`` object itself.
+
+[[_openjpa.id]]
+===== openjpa.Id
+(((Id)))
+
+*Property name:*``openjpa.Id``
+
+*Resource adaptor config-property:*``Id``
+
+*Default:* none
+
+*Description:* An environment-specific identifier for this configuration.
+This might correspond to a JPA persistence-unit name, or to some other more-unique value available in the current environment.
+
+[[_openjpa.initializeeagerly]]
+===== openjpa.InitializeEagerly
+(((
+                    InverseManager
+                )))
+(((
+                    Initialization
+                ,
+                    Configuration
+                )))
+
+**Property name: **``openjpa.InitializeEagerly ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#isInitializeEagerly()[
+org.apache.openjpa.conf.OpenJPAConfiguration.isInitializeEagerly
+]
+
+*Resource adaptor config-property: *``
+InitializeEagerly``
+
+**Default: **``false``
+
+**Possible values: **``false``, ``true``
+
+*Description:* Controls whether initialization is eager or lazy.
+Eager initialization imply all persistent classes, their mapping information, database connectivity and all other resources specified in the configuration of a persistence unit will be initialized when a persistent unit is constructed.
+The default behavior is lazy i.e.
+persistent classes, database and other resources are initialized only when the application refers to a resource for the first time.
+
+[[_openjpa.instrumentation]]
+===== openjpa.Instrumentation
+(((
+                    Instrumentation
+                )))
+
+*Property name: *``
+openjpa.Instrumentation``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getInstrumentation()[
+
+org.apache.openjpa.conf.OpenJPAConfiguration.getInstrumentation
+]
+
+*Resource adaptor config-property: *``
+Instrumentation``
+
+**Default: **``-``
+
+**Possible values: **``jmx``, ``custom plugin string``
+
+*Description:* A plugin string (see <<_ref_guide_conf_plugins>>) describing one or more instances of link:../../apidocs/org/apache/openjpa/lib/instrumentation/InstrumentationProvider.html[
+org.apache.openjpa.lib.instrumentation.InstrumentationProvider] and specific instruments to enable.
+See <<_ref_guide_instrumentation>> for details.
+
+[[_openjpa.inversemanager]]
+===== openjpa.InverseManager
+(((
+                    InverseManager
+                )))
+(((
+                    bidirectional relation
+                ,
+                    InverseManager
+                )))
+
+**Property name: **``openjpa.InverseManager ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getInverseManager()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getInverseManager
+]
+
+*Resource adaptor config-property: *``
+InverseManager``
+
+**Default: **``false``
+
+**Possible values: **``false``, ``true``
+
+*Description:* A plugin string (see <<_ref_guide_conf_plugins>>) describing a link:../../apidocs/org/apache/openjpa/kernel/InverseManager.html[
+org.apache.openjpa.kernel.InverseManager] to use for managing bidirectional relations upon a flush.
+See <<_ref_guide_inverses>> for usage documentation.
+
+[[_openjpa.lockmanager]]
+===== openjpa.LockManager
+(((
+                    locking
+                ,
+                    LockManager
+                )))
+
+**Property name: **``openjpa.LockManager ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getLockManager()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getLockManager
+]
+
+*Resource adaptor config-property: *``
+LockManager``
+
+**Default: **``mixed``
+
+**Possible values: **``none``, ``version``, ``pessimistic``, `mixed`
+
+*Description:* A plugin string (see <<_ref_guide_conf_plugins>>) describing a link:../../apidocs/org/apache/openjpa/kernel/LockManager.html[
+org.apache.openjpa.kernel.LockManager] to use for acquiring locks on persistent instances during transactions.
+See <<_ref_guide_locking_lockmgr>> for more information.
+
+[[_openjpa.locktimeout]]
+===== openjpa.LockTimeout
+(((
+                    locking
+                ,
+                    LockTimeout
+                )))
+
+**Property name: **``openjpa.LockTimeout ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getLockTimeout()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getLockTimeout
+]
+
+*Resource adaptor config-property: *``
+LockTimeout``
+
+**Default: **``-1``
+
+*Description:* The number of milliseconds to wait for an object lock before throwing an exception, or -1 for no limit.
+See <<_ref_guide_locking>> for details.
+
+[[_openjpa.log]]
+===== openjpa.Log
+(((
+                    logging
+                ,
+                    Log
+                )))
+
+**Property name: **``openjpa.Log``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/lib/conf/Configuration.html#getLog()[
+org.apache.openjpa.lib.conf.Configuration.getLog
+]
+
+**Resource adaptor config-property: **``Log ``
+
+**Default: **``true``
+
+**Possible values: **``openjpa``, ``commons``, ``log4j``, ``slf4j``, ``none``
+
+*Description:* A plugin string (see <<_ref_guide_conf_plugins>>) describing a link:../../apidocs/org/apache/openjpa/lib/log/LogFactory.html[
+org.apache.openjpa.lib.log.LogFactory] to use for logging.
+For details on logging, see <<_ref_guide_logging>>.
+
+[[_openjpa.managedruntime]]
+===== openjpa.ManagedRuntime
+(((
+                    transactions
+                ,
+                    managed
+                ,
+                    ManagedRuntime
+                )))
+
+**Property name: **``openjpa.ManagedRuntime ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getManagedRuntime()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getManagedRuntime
+]
+
+*Resource adaptor config-property: *``
+ManagedRuntime``
+
+**Default: **``auto``
+
+*Description:* A plugin string (see <<_ref_guide_conf_plugins>>) describing the link:../../apidocs/org/apache/openjpa/ee/ManagedRuntime.html[
+org.apache.openjpa.ee.ManagedRuntime] implementation to use for obtaining a reference to the [class]``TransactionManager`` in an enterprise environment.
+
+[[_openjpa.mapping]]
+===== openjpa.Mapping
+
+**Property name: **``openjpa.Mapping ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getMapping()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getMapping
+]
+
+*Resource adaptor config-property: *``
+Mapping``
+
+*Default:* -
+
+*Description:* The symbolic name of the object-to-datastore mapping to use.
+
+[[_openjpa.maxfetchdepth]]
+===== openjpa.MaxFetchDepth
+(((
+                    eager fetching
+                ,
+                    MaxFetchDepth
+                )))
+
+**Property name: **``openjpa.MaxFetchDepth ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getMaxFetchDepth()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getMaxFetchDepth
+]
+
+*Resource adaptor config-property: *``
+MaxFetchDepth``
+
+**Default: **``-1``
+
+*Description:* The maximum depth of relations to traverse when eager fetching.
+Use -1 for no limit.
+Defaults to no limit.
+See <<_ref_guide_perfpack_eager>> for details on eager fetching.
+
+[[_openjpa.metadatafactory]]
+===== openjpa.MetaDataFactory
+(((
+                    metadata
+                ,
+                    MetaDataFactory
+                )))
+
+**Property name: **``openjpa.MetaDataFactory ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getMetaDataFactory()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getMetaDataFactory
+]
+
+*Resource adaptor config-property: *``
+MetaDataFactory``
+
+*Default:*``jpa``
+
+*Description:* A plugin string (see <<_ref_guide_conf_plugins>>) describing the link:../../apidocs/org/apache/openjpa/meta/MetaDataFactory.html[
+openjpa.meta.MetaDataFactory] to use to store and retrieve metadata for your persistent classes.
+See <<_ref_guide_meta_factory>> for details.
+
+[[_openjpa.metadatarepository]]
+===== openjpa.MetaDataRepository
+(((
+                    metadata
+                ,
+                    MetaDataRepository
+                )))
+
+**Property name: **``openjpa.MetaDataRepository ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getMetaDataRepository()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getMetaDataRepository
+]
+
+*Resource adaptor config-property: *``
+MetaDataRepository``
+
+**Default:**none````
+
+*Description:* A plugin string (see <<_ref_guide_conf_plugins>>) describing the link:../../apidocs/org/apache/openjpa/meta/MetaDataRepository.html[
+openjpa.meta.MetaDataRepository] to use to store and retrieve metadata for your persistent classes.
+See <<_ref_guide_meta_repository>> for details.
+
+[[_openjpa.multithreaded]]
+===== openjpa.Multithreaded
+(((
+                    threading
+                ,
+                    Multithreaded
+                )))
+
+**Property name: **``openjpa.Multithreaded ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getMultithreaded()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getMultithreaded
+]
+
+*Resource adaptor config-property: *``
+Multithreaded``
+
+**Default: **``false``
+
+*Description:* Whether persistent instances and OpenJPA components other than the [class]``EntityManagerFactory`` will be accessed by multiple threads at once.
+
+[[_openjpa.optimistic]]
+===== openjpa.Optimistic
+(((
+                    transactions
+                ,
+                    optimistic
+                )))
+
+**Property name: **``openjpa.Optimistic ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getOptimistic()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getOptimistic
+]
+
+*Resource adaptor config-property: *``
+Optimistic``
+
+**Default: **``true``
+
+*Description:* Selects between optimistic and pessimistic (datastore) transactional modes.
+
+[[_openjpa.optimizeidcopy]]
+===== openjpa.OptimizeIdCopy
+(((
+                    id
+                ,
+                    enhancement
+                )))
+
+**Property name: **``openjpa.OptimizeIdCopy ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getOptimizeIdCopy()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getOptimizeIdCopy
+]
+
+*Resource adaptor config-property: *``
+OptimizeIdCopy``
+
+**Default: **``false``
+
+*Description:* Attempt to optimize id class copy operations used internally by the provider during various ORM operations.
+This optimization is only applicable for entities using simple id classes (via @IdClass or XML equivalent) that do not have public setters, provide a public constructor with exact matching parameter types, and perform direct assignments to id class fields within the constructor.
+If these conditions are met, OpenJPA will use a public constructor during internal id copy operations instead of less optimal reflection.
+Optimization of id copy occurs during the enhancement phase.
+If the enhancer determines optimization cannot occur, it will fallback to the normal behavior.
+A side effect of enabling this property is that an id class constructor will be called by the provider during runtime operations.
+If there is logic in the constructor in addition to field initialization, (parameter verification, for example) that logic will also be executed during the operation, which could result in a change in runtime behavior.
+
+[[_openjpa.orphanedkeyaction]]
+===== openjpa.OrphanedKeyAction
+(((
+                    foreign keys
+                ,
+                    OrphanedKeyAction
+                )))
+
+*Property name: *``
+openjpa.OrphanedKeyAction``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getOrphanedKeyAction()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getOrphanedKeyAction
+]
+
+*Resource adaptor config-property: *``
+OrphanedKeyAction``
+
+**Default: **``log``
+
+**Possible values: **``log``, ``exception``, `none`
+
+*Description:* A plugin string (see <<_ref_guide_conf_plugins>>) describing a link:../../apidocs/org/apache/openjpa/event/OrphanedKeyAction.html[
+org.apache.openjpa.event.OrphanedKeyAction] to invoke when OpenJPA discovers an orphaned datastore key.
+See <<_ref_guide_orphan>> for details.
+
+[[_openjpa.nontransactionalread]]
+===== openjpa.NontransactionalRead
+
+*Property name: *``
+openjpa.NontransactionalRead``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getNontransactionalRead()[
+
+org.apache.openjpa.conf.OpenJPAConfiguration.getNontransactionalRead
+]
+
+*Resource adaptor config-property: *``
+NontransactionalRead``
+
+**Default: **``true``
+
+*Description:* Whether the OpenJPA runtime will allow you to read data outside of a transaction.
+
+[[_openjpa.nontransactionalwrite]]
+===== openjpa.NontransactionalWrite
+(((
+                    NontransactionalWrite
+                )))
+
+*Property name: *``
+openjpa.NontransactionalWrite``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getNontransactionalWrite()[
+
+org.apache.openjpa.conf.OpenJPAConfiguration.getNontransactionalWrite
+]
+
+*Resource adaptor config-property: *``
+NontransactionalWrite``
+
+*Default:*``true``
+
+*Description:* Whether you can modify persistent objects and perform persistence operations outside of a transaction.
+Changes will take effect on the next transaction.
+
+[[_openjpa.proxymanager]]
+===== openjpa.ProxyManager
+(((
+                    ProxyManager
+                )))
+(((
+                    proxies
+                ,
+                    ProxyManager
+                )))
+
+**Property name: **``openjpa.ProxyManager ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getProxyManager()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getProxyManager
+]
+
+*Resource adaptor config-property: *``
+ProxyManager``
+
+**Default: **``default``
+
+*Description:* A plugin string (see <<_ref_guide_conf_plugins>>) describing a link:../../apidocs/org/apache/openjpa/util/ProxyManager.html[
+org.apache.openjpa.util.ProxyManager] to use for proxying mutable second class objects.
+See <<_ref_guide_pc_scos_proxy_custom>> for details.
+
+[[_openjpa.postloadonmerge]]
+===== openjpa.PostLoadOnMerge
+
+*Property name: *``
+                openjpa.PostLoadOnMerge``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getPostLoadOnMerge()[
+
+                        org.apache.openjpa.conf.OpenJPAConfiguration.getPostLoadOnMerge
+                    ]
+
+*Resource adaptor config-property: *``
+                PostLoadOnMerge``
+
+**Default: **``false``
+
+*Description:* Whether the OpenJPA runtime will trigger a PostLoad lifecycle event for EntityManager#merge(). If you enable this option, OpenJPA will also ensure that the whole entity from the database will get passed to the PostLoad entity listener.
+
+[[_openjpa.querycache]]
+===== openjpa.QueryCache
+(((
+                    QueryCache
+                )))
+(((
+                    caching
+                ,
+                    QueryCache
+                )))
+
+**Property name: **``openjpa.QueryCache ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getQueryCache()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getQueryCache
+]
+
+*Resource adaptor config-property: *``
+QueryCache``
+
+**Default: **``false``
+
+*Description:* A plugin string (see <<_ref_guide_conf_plugins>>) describing the link:../../apidocs/org/apache/openjpa/datacache/QueryCache.html[
+org.apache.openjpa.datacache.QueryCache] implementation to use for caching of queries loaded from the data store.
+See <<_ref_guide_cache_query>> for details.
+
+[[_openjpa.querycompilationcache]]
+===== openjpa.QueryCompilationCache
+(((
+                    caching
+                ,
+                    QueryCompilationCache
+                )))
+
+*Property name:*``openjpa.QueryCompilationCache``
+
+*Resource adaptor config-property:*``QueryCompilationCache``
+
+*Default:*``true``.
+
+*Description:* A plugin string (see <<_ref_guide_conf_plugins>>) describing the [class]``java.util.Map`` to use for caching of data used during query compilation.
+See <<_ref_guide_cache_querycomp>> for details.
+
+[[_openjpa.readlocklevel]]
+===== openjpa.ReadLockLevel
+(((
+                    locking
+                ,
+                    ReadLockLevel
+                )))
+
+**Property name: **``openjpa.ReadLockLevel ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getReadLockLevel()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getReadLockLevel
+]
+
+*Resource adaptor config-property: *``
+ReadLockLevel``
+
+**Default: **``read``
+
+**Possible values: **``none``, ``read``, ``write``, ``optimistic``, ``optimistic-force-increment``, ``pessimistic-read``, ``pessimistic-write``, ``pessimistic-force-increment``, numeric values for lock-manager specific lock levels
+
+*Description:* The default level at which to lock objects retrieved during a non-optimistic transaction.
+Note that for the default JDBC lock manager, ` read` and `write` lock levels are equivalent.
+Lock levels ``pessimistic-read``, ``pessimistic-write`` and ``pessimistic-force-increment`` are in effect only when the ``mixed`` lock manager is used.
+
+[[_openjpa.remotecommitprovider]]
+===== openjpa.RemoteCommitProvider
+(((
+                    caching
+                ,
+                    RemoteCommitProvider
+                )))
+
+*Property name: *``
+openjpa.RemoteCommitProvider``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getRemoteCommitProvider()[
+
+org.apache.openjpa.conf.OpenJPAConfiguration.getRemoteCommitProvider
+]
+
+*Resource adaptor config-property: *``
+RemoteCommitProvider``
+
+*Default:* - If `openjpa.DataCache` is enabled, the default value is ``sjvm``.
+
+*Description:* A plugin string (see <<_ref_guide_conf_plugins>>) describing the link:../../apidocs/org/apache/openjpa/event/RemoteCommitProvider.html[
+org.apache.openjpa.event.RemoteCommitProvider] implementation to use for distributed event notification.
+See <<_ref_guide_event_conf>> for more information.
+
+[[_openjpa.restorestate]]
+===== openjpa.RestoreState
+(((
+                    RestoreState
+                )))
+
+**Property name: **``openjpa.RestoreState ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getRestoreState()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getRestoreState
+]
+
+*Resource adaptor config-property: *``
+RestoreState``
+
+**Default: **``none``
+
+**Possible values: **``none``, ``immutable``, `all`
+
+*Description:* Whether to restore managed fields to their pre-transaction values when a rollback occurs.
+
+[[_openjpa.retainstate]]
+===== openjpa.RetainState
+(((
+                    RetainState
+                )))
+
+**Property name: **``openjpa.RetainState ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getRetainState()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getRetainState
+]
+
+*Resource adaptor config-property: *``
+RetainState``
+
+**Default: **``true``
+
+*Description:* Whether persistent fields retain their values on transaction commit.
+
+[[_openjpa.retryclassregistration]]
+===== openjpa.RetryClassRegistration
+(((
+                    RetryClassRegistration
+                )))
+(((
+                    metadata
+                ,
+                    RetryClassRegistration
+                )))
+
+*Property name: *``
+openjpa.RetryClassRegistration``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getRetryClassRegistration()[
+
+org.apache.openjpa.conf.OpenJPAConfiguration.getRetryClassRegistration
+]
+
+*Resource adaptor config-property: *``
+RetryClassRegistration``
+
+**Default: **``false``
+
+*Description:* Controls whether to log a warning and defer registration instead of throwing an exception when a persistent class cannot be fully processed.
+This property should _only_ be used in complex classloader situations where security is preventing OpenJPA from reading registered classes.
+Setting this to true unnecessarily may obscure more serious problems.
+
+[[_openjpa.runtimeunenhancedclasses]]
+===== openjpa.RuntimeUnenhancedClasses
+
+*Property name: *``openjpa.RuntimeUnenhancedClasses``
+
+*Configuration API: *link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getRuntimeUnenhancedClasses()[org.apache.openjpa.conf.OpenJPAConfiguration.getRuntimeUnenhancedClasses]
+
+*Resource adaptor config property:* RuntimeUnenhancedClasses
+
+*Default: *``unsupported``
+
+*Possible values:*``supported``, ``unsupported``, `warn`
+
+*Description:* The RuntimeUnenhancedClasses property controls how OpenJPA handles classes that have not been enhanced by the PCEnhancer tool or automatically by a javaagent.
+If RuntimeUnenhancedClasses is set to `supported` OpenJPA will automatically create subclasses for unenhanced entity classes.
+If set to `unsupported` OpenJPA will not create subclasses for unenhanced entity classes and will throw an exception when they are detected.
+If set to `warn` OpenJPA will not create subclasses for unenhanced entity classes but will log a warning message.
+
+This function is often useful for rapid prototyping but is not _generally_ recommended for use in production.
+Please consult the reference guide before changing the default value.
+
+See the reference guide section on unenhanced types for more information <<_ref_guide_pc_enhance_unenhanced_types>>
+
+[[_openjpa.savepointmanager]]
+===== openjpa.SavepointManager
+
+*Property name: *``
+openjpa.SavepointManager``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getSavepointManager()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getSavepointManager]
+
+*Resource adaptor config-property:* SavepointManager
+
+**Default: **``in-mem``
+
+**Possible values: **``in-mem``, ``jdbc``
+
+*Description:* A plugin string (see <<_ref_guide_conf_plugins>>) describing a link:../../apidocs/org/apache/openjpa/kernel/SavepointManager.html[
+org.apache.openjpa.kernel.SavepointManager] to use for managing transaction savepoints.
+See <<_ref_guide_savepoints>> for details.
+
+[[_openjpa.sequence]]
+===== openjpa.Sequence
+
+**Property name: **``openjpa.Sequence ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getSequence()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getSequence
+]
+
+*Resource adaptor config-property: *``
+Sequence``
+
+**Default: **``table``
+
+*Description:* A plugin string (see <<_ref_guide_conf_plugins>>) describing the link:../../apidocs/org/apache/openjpa/kernel/Seq.html[
+org.apache.openjpa.kernel.Seq] implementation to use for the system sequence.
+See <<_ref_guide_sequence>> for more information.
+
+[[_openjpa.specification]]
+===== openjpa.Specification
+(((
+                    Specification
+                )))
+
+**Property name: **``openjpa.Specification ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getSpecificationInstance()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getSpecificationInstance
+]
+
+*Resource adaptor config-property: *``
+Specification``
+
+**Default: **``table``
+
+*Description:* A formatted string describing the Specification to use for the default configuration options.
+The format of the Specifcation string is ``name [major.[minor]]`` where `name` denotes the name of the Specification such as `JPA` or ``JDO``, `major` denotes the major integral version number of the Specification and `minor` denotes a minor version which can be an arbitrary string.
+See <<_ref_guide_spec_compatibility>> for more information.
+
+[[_openjpa.transactionmode]]
+===== openjpa.TransactionMode
+(((
+                    TransactionMode
+                )))
+(((
+                    transactions
+                ,
+                    TransactionMode
+                )))
+
+**Property name: **``openjpa.TransactionMode ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getTransactionMode()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getTransactionMode
+]
+
+*Resource adaptor config-property: *``
+TransactionMode``
+
+**Default: **``local``
+
+**Possible values: **``local``, ``managed``
+
+*Description:* The default transaction mode to use.
+You can override this setting per-session.
+
+[[_openjpa.usetcclinselectnew]]
+===== openjpa.UseTCCLinSelectNew
+(((
+                    classloading
+                ,
+                    UseTCCLinSelectNew
+                )))
+
+**Property name: **``openjpa.UseTCCLinSelectNew``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getUseTCCLinSelectNew()[
+                org.apache.openjpa.conf.OpenJPAConfiguration.getUseTCCLinSelectNew
+                ]
+
+**Resource adaptor config-property: **``UseTCCLinSelectNew``
+
+**Default: **``false``
+
+**Since: **``OpenJPA-2.4.2``
+
+**Possible values: **``true``, `false`
+
+*Description:* Whether to try to use the ThreadContextClassLoader as fallback if the given class in a `SELECT NEW` statement could not be found with the default ClassLoader.
+This is mostly useful in EAR and OSGi environments.
+By default the ClassLoader of the entity is used.
+
+[[_openjpa.writelocklevel]]
+===== openjpa.WriteLockLevel
+(((
+                    locking
+                ,
+                    WriteLockLevel
+                )))
+
+**Property name: **``openjpa.WriteLockLevel ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getWriteLockLevel()[
+org.apache.openjpa.conf.OpenJPAConfiguration.getWriteLockLevel
+]
+
+*Resource adaptor config-property: *``
+WriteLockLevel``
+
+**Default: **``write``
+
+**Possible values: **``none``, ``read``, ``write``, ``optimistic``, ``optimistic-force-increment``, ``pessimistic-read``, ``pessimistic-write``, ``pessimistic-force-increment``, numeric values for lock-manager specific lock levels.
+
+*Description:* The default level at which to lock objects changed during a non-optimistic transaction.
+Note that for the default JDBC lock manager, ` read` and `write` lock levels are equivalent.
+Lock levels ``pessimistic-read``, ``pessimistic-write`` and ``pessimistic-force-increment`` are in effect only when the ``mixed`` lock manager is used.
+
+[[_ref_guide_conf_jdbc]]
+==== OpenJPA JDBC Properties
+
+The following properties apply exclusively to the OpenJPA JDBC back-end.
+
+[[_openjpa.jdbc.connectiondecorators]]
+===== openjpa.jdbc.ConnectionDecorators
+(((
+                    ConnectionDecorators
+                )))
+(((
+                    connections
+                ,
+                    ConnectionDecorators
+                )))
+
+*Property name: *``
+openjpa.jdbc.ConnectionDecorators``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getConnectionDecorators()[
+
+org.apache.openjpa.jdbc.conf.JDBCConfiguration.getConnectionDecorators
+]
+
+*Resource adaptor config-property: *``
+ConnectionDecorators``
+
+*Default:* -
+
+*Description:* A comma-separated list of plugin strings (see <<_ref_guide_conf_plugins>>) describing link:../../apidocs/org/apache/openjpa/lib/jdbc/ConnectionDecorator.html[
+org.apache.openjpa.lib.jdbc.ConnectionDecorator] instances to install on the connection factory.
+These decorators can wrap connections passed from the underlying [class]``DataSource`` to add functionality.
+OpenJPA will pass all connections through the list of decorators before using them.
+Note that by default OpenJPA employs all of the built-in decorators in the [class]``org.apache.openjpa.lib.jdbc `` package already; you do not need to list them here.
+
+[[_openjpa.jdbc.dbdictionary]]
+===== openjpa.jdbc.DBDictionary
+(((
+                    JDBC
+                ,
+                    DBDictionary
+                )))
+
+*Property name: *``
+openjpa.jdbc.DBDictionary``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getDBDictionary()[
+org.apache.openjpa.jdbc.conf.JDBCConfiguration.getDBDictionary
+]
+
+*Resource adaptor config-property: *``
+DBDictionary``
+
+*Default:* Based on the <<_openjpa.connectionurl,`openjpa.ConnectionURL`>><<_openjpa.connectiondrivername,`
+openjpa.ConnectionDriverName`>>
+
+*Description:* A plugin string (see <<_ref_guide_conf_plugins>>) describing the link:../../apidocs/org/apache/openjpa/jdbc/sql/DBDictionary.html[
+org.apache.openjpa.jdbc.sql.DBDictionary] to use for database interaction.
+OpenJPA typically auto-configures the dictionary based on the JDBC URL, but you may have to set this property explicitly if you are using an unrecognized driver, to plug in your own dictionary for a database OpenJPA does not support out-of-the-box, or if you like to change the default configuration of an existing dictionary.
+See <<_ref_guide_dbsetup_dbsupport>> for details.
+
+[[_openjpa.jdbc.driverdatasource]]
+===== openjpa.jdbc.DriverDataSource
+(((
+                    JDBC
+                ,
+                    DriverDataSource
+                )))
+
+*Property name: *``
+openjpa.jdbc.DriverDataSource``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getDriverDataSource()[
+org.apache.openjpa.jdbc.conf.JDBCConfiguration.getDriverDataSource
+]
+
+*Resource adaptor config-property: *``
+DriverDataSource``
+
+**Default: **``auto``
+
+**Possible values: **``auto``, ``dbcp``, `simple`
+
+*Description:* The alias or full class name of the link:../../apidocs/org/apache/openjpa/jdbc/schema/DriverDataSource.html[
+org.apache.openjpa.jdbc.schema.DriverDataSource] implementation to use to wrap JDBC Driver classes with javax.sql.DataSource instances.
+The [class]``org.apache.commons.dbcp2.BasicDataSource`` Apache Commons DBCP2 to be available on the classpath and provides connection pooling.
+
+[[_openjpa.jdbc.eagerfetchmode]]
+===== openjpa.jdbc.EagerFetchMode
+(((
+                    eager fetching
+                ,
+                    EagerFetchMode
+                )))
+
+*Property name: *``
+openjpa.jdbc.EagerFetchMode``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getEagerFetchMode()[
+org.apache.openjpa.jdbc.conf.JDBCConfiguration.getEagerFetchMode
+]
+
+*Resource adaptor config-property: *``
+EagerFetchMode``
+
+**Default: **``parallel``
+
+**Possible values: **``parallel``, ``join``, `none`
+
+*Description:* Optimizes how OpenJPA loads persistent relations.
+This setting can also be varied at runtime.
+See <<_ref_guide_perfpack_eager>> for details.
+
+[[_openjpa.jdbc.fetchdirection]]
+===== openjpa.jdbc.FetchDirection
+(((
+                    large result sets
+                ,
+                    FetchDirection
+                )))
+
+*Property name: *``
+openjpa.jdbc.FetchDirection``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getFetchDirection()[
+org.apache.openjpa.jdbc.conf.JDBCConfiguration.getFetchDirection
+]
+
+*Resource adaptor config-property: *``
+FetchDirection``
+
+**Default: **``forward``
+
+**Possible values: **``forward``, ``reverse``, `unknown`
+
+*Description:* The expected order in which query result lists will be accessed.
+This property can also be varied at runtime.
+See <<_ref_guide_dbsetup_lrs>> for details.
+
+[[_openjpa.jdbc.jdbclisteners]]
+===== openjpa.jdbc.JDBCListeners
+(((
+                    JDBC
+                ,
+                    JDBCListeners
+                )))
+
+*Property name: *``
+openjpa.jdbc.JDBCListeners``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getJDBCListeners()[
+org.apache.openjpa.jdbc.conf.JDBCConfiguration.getJDBCListeners
+]
+
+*Resource adaptor config-property: *``
+JDBCListeners``
+
+*Default:* -
+
+*Description:* A comma-separated list of plugin strings (see <<_ref_guide_conf_plugins>>) describing link:../../apidocs/org/apache/openjpa/lib/jdbc/JDBCListener.html[
+org.apache.openjpa.lib.jdbc.JDBCListener] event listeners to install.
+These listeners will be notified on various JDBC-related events.
+
+[[_openjpa.jdbc.lrssize]]
+===== openjpa.jdbc.LRSSize
+(((
+                    large result sets
+                ,
+                    LRSSize
+                )))
+
+**Property name: **``openjpa.jdbc.LRSSize ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getLRSSize()[
+org.apache.openjpa.jdbc.conf.JDBCConfiguration.getLRSSize
+]
+
+*Resource adaptor config-property: *``
+LRSSize``
+
+**Default: **``query``
+
+**Possible values: **``query``, ``last``, `unknown`
+
+*Description:* The strategy to use to calculate the size of a result list.
+This property can also be varied at runtime.
+See <<_ref_guide_dbsetup_lrs>> for details.
+
+[[_openjpa.jdbc.mappingdefaults]]
+===== openjpa.jdbc.MappingDefaults
+(((
+                    mapping metadata
+                ,
+                    MappingDefaults
+                )))
+
+*Property name: *``
+openjpa.jdbc.MappingDefaults``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getMappingDefaults()[
+org.apache.openjpa.jdbc.conf.JDBCConfiguration.getMappingDefaults
+]
+
+*Resource adaptor config-property: *``
+MappingDefaults``
+
+*Default:* jpa
+
+*Description:* A plugin string (see <<_ref_guide_conf_plugins>>) describing the link:../../apidocs/org/apache/openjpa/jdbc/meta/MappingDefaults.html[
+org.apache.openjpa.jdbc.meta.MappingDefaults] to use to define default column names, table names, and constraints for your persistent classes.
+See <<_ref_guide_mapping_factory>> for details.
+
+[[_openjpa.jdbc.mappingfactory]]
+===== openjpa.jdbc.MappingFactory
+(((
+                    mapping metadata
+                ,
+                    MappingFactory
+                )))
+
+*Property name: *``
+openjpa.jdbc.MappingFactory``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getMappingFactory()[
+org.apache.openjpa.jdbc.conf.JDBCConfiguration.getMappingFactory
+]
+
+*Resource adaptor config-property: *``
+MappingFactory``
+
+*Default:* -
+
+*Description:* A plugin string (see <<_ref_guide_conf_plugins>>) describing the link:../../apidocs/org/apache/openjpa/meta/MetaDataFactory.html[
+org.apache.openjpa.meta.MetaDataFactory] to use to store and retrieve object-relational mapping information for your persistent classes.
+See <<_ref_guide_mapping_factory>> for details.
+
+[[_openjpa.jdbc.querysqlcache]]
+===== openjpa.jdbc.QuerySQLCache
+(((
+                    caching
+                ,
+                    QuerySQLCache
+                )))
+
+*Property name:*``openjpa.jdbc.QuerySQLCache``
+
+*Resource adaptor config-property:*``QuerySQLCache``
+
+*Default:*``true``.
+
+*Description:* A plugin string (see <<_ref_guide_conf_plugins>>) describing the options to cache and reuse SQL statements generated for JPQL queries.
+See <<_ref_guide_cache_querysql>> for details.
+
+[[_openjpa.jdbc.resultsettype]]
+===== openjpa.jdbc.ResultSetType
+(((
+                    large result sets
+                ,
+                    ResultSetType
+                )))
+
+*Property name: *``
+openjpa.jdbc.ResultSetType``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getResultSetType()[
+org.apache.openjpa.jdbc.conf.JDBCConfiguration.getResultSetType
+]
+
+*Resource adaptor config-property: *``
+ResultSetType``
+
+**Default: **``forward-only``
+
+**Possible values: **``forward-only`` , ``scroll-sensitive``, `scroll-insensitive`
+
+*Description:* The JDBC result set type to use when fetching result lists.
+This property can also be varied at runtime.
+See <<_ref_guide_dbsetup_lrs>> for details.
+
+[[_openjpa.jdbc.schema]]
+===== openjpa.jdbc.Schema
+
+**Property name: **``openjpa.jdbc.Schema ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getSchema()[
+org.apache.openjpa.jdbc.conf.JDBCConfiguration.getSchema
+]
+
+*Resource adaptor config-property: *``
+Schema``
+
+*Default:* -
+
+*Description:* The default schema name to prepend to unqualified table names.
+Also, the schema in which OpenJPA will create new tables.
+See <<_ref_guide_schema_def>> for details.
+
+[[_openjpa.jdbc.schemafactory]]
+===== openjpa.jdbc.SchemaFactory
+(((
+                    SchemaFactory
+                )))
+(((
+                    schema
+                ,
+                    SchemaFactory
+                )))
+
+*Property name: *``
+openjpa.jdbc.SchemaFactory``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getSchemaFactory()[
+org.apache.openjpa.jdbc.conf.JDBCConfiguration.getSchemaFactory
+]
+
+*Resource adaptor config-property: *``
+SchemaFactory``
+
+**Default: **``dynamic``
+
+**Possible values: **``dynamic``, ``native``, ``file``, ``table``, others
+
+*Description:* A plugin string (see <<_ref_guide_conf_plugins>>) describing the link:../../apidocs/org/apache/openjpa/jdbc/schema/SchemaFactory.html[
+org.apache.openjpa.jdbc.schema.SchemaFactory] to use to store and retrieve information about the database schema.
+See <<_ref_guide_schema_info_factory>> for details.
+
+[[_openjpa.jdbc.schemas]]
+===== openjpa.jdbc.Schemas
+
+**Property name: **``openjpa.jdbc.Schemas ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getSchemas()[
+org.apache.openjpa.jdbc.conf.JDBCConfiguration.getSchemas
+]
+
+*Resource adaptor config-property: *``
+Schemas``
+
+*Default:* -
+
+*Description:* A comma-separated list of the schemas and/or tables used for your persistent data.
+See <<_ref_guide_schema_info_list>> for details.
+
+[[_openjpa.jdbc.sqlfactory]]
+===== openjpa.jdbc.SQLFactory
+(((
+                    SQLFactory
+                )))
+(((
+                    SQL
+                ,
+                    SQLFactory
+                )))
+
+**Property name: **``openjpa.jdbc.SQLFactory ``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getSQLFactory()[
+org.apache.openjpa.jdbc.conf.JDBCConfiguration.getSQLFactory
+]
+
+*Resource adaptor config-property: *``
+SQLFactory``
+
+**Default: **``default``
+
+*Description:* A plugin string (see <<_ref_guide_conf_plugins>>) describing the link:../../apidocs/org/apache/openjpa/jdbc/sql/SQLFactory.html[
+org.apache.openjpa.jdbc.sql.SQLFactory] to use to abstract common SQL constructs.
+
+[[_openjpa.jdbc.subclassfetchmode]]
+===== openjpa.jdbc.SubclassFetchMode
+(((
+                    eager fetching
+                ,
+                    SubclassFetchMode
+                )))
+
+*Property name: *``
+openjpa.jdbc.SubclassFetchMode``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getSubclassFetchMode()[
+org.apache.openjpa.jdbc.conf.JDBCConfiguration.getSubclassFetchMode
+]
+
+*Resource adaptor config-property: *``
+SubclassFetchMode``
+
+**Default: **``parallel``
+
+**Possible values: **``parallel``, ``join``, `none`
+
+*Description:* How to select subclass data when it is in other tables.
+This setting can also be varied at runtime.
+See <<_ref_guide_perfpack_eager>>.
+
+[[_openjpa.jdbc.synchronizemappings]]
+===== openjpa.jdbc.SynchronizeMappings
+(((
+                    SynchronizeMappings
+                )))
+(((
+                    mapping metadata
+                ,
+                    SynchronizeMappings
+                )))
+
+*Property name: *``
+openjpa.jdbc.SynchronizeMappings``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getSynchronizeMappings()[
+
+org.apache.openjpa.jdbc.conf.JDBCConfiguration.getSynchronizeMappings
+]
+
+*Resource adaptor config-property: *``
+SynchronizeMappings``
+
+*Default:* -
+
+*Description:* Controls whether OpenJPA will attempt to run the mapping tool on all persistent classes to synchronize their mappings and schema at runtime.
+Useful for rapid test/debug cycles.
+See <<_ref_guide_mapping_synch>> for more information.
+
+[[_openjpa.jdbc.transactionisolation]]
+===== openjpa.jdbc.TransactionIsolation
+(((
+                    transactions
+                ,
+                    TransactionIsolation
+                )))
+
+*Property name: *``
+openjpa.jdbc.TransactionIsolation``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getTransactionIsolation()[
+
+org.apache.openjpa.jdbc.conf.JDBCConfiguration.getTransactionIsolation
+]
+
+*Resource adaptor config-property: *``
+TransactionIsolation``
+
+**Default: **``default``
+
+**Possible values: **``default``, ``none``, ``read-committed``, ``
+read-uncommitted``, ``repeatable-read``, `
+serializable`
+
+*Description:* The JDBC transaction isolation level to use.
+See <<_ref_guide_dbsetup_isolation>> for details.
+
+[[_openjpa.jdbc.updatemanager]]
+===== openjpa.jdbc.UpdateManager
+(((
+                    UpdateManager
+                )))
+(((
+                    JDBC
+                ,
+                    UpdateManager
+                )))
+
+*Property name: *``
+openjpa.jdbc.UpdateManager``
+
+*Configuration API:*link:../../apidocs/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getUpdateManager()[
+org.apache.openjpa.jdbc.conf.JDBCConfiguration.getUpdateManager
+]
+
+*Resource adaptor config-property: *``
+UpdateManager``
+
+**Default: **``batching-constraint``
+
+**Possible values: **``default``, ``operation-order``, ``constraint``, ``
+batching-constraint``, `batching-operation-order`
+
+*Description:* The full class name of the link:../../apidocs/org/apache/openjpa/jdbc/kernel/UpdateManager.html[
+org.apache.openjpa.jdbc.kernel.UpdateManager] to use to flush persistent object changes to the datastore.
+The provided default implementation is link:../../apidocs/org/apache/openjpa/jdbc/kernel/BatchingConstraintUpdateManager[
+org.apache.openjpa.jdbc.kernel.BatchingConstraintUpdateManager
+].
+
+[[_ref_guide_spec_compatibility]]
+===== Compatibility with Specification
+
+The default behavior of certain OpenJPA API methods can evolve to align with the behaviors defined in JPA specification.
+To maintain backward compatibility, OpenJPA allows configuration options such that while the default behavior changes to align with current JPA specification, the previous behaviors can always be emulated.
+
+For example, JPA 2.0 specification introduces a new API `void EntityManager.detach(Object entity)` that detaches the given entity from the current persistence context.
+OpenJPA has provided similar feature via `<T> T OpenJPAEntityManager.detach(T entity)` prior to JPA 2.0.
+OpenJPA ``detach()``, however, has different default behavior than what JPA 2.0 specification mandates.
+Firstly, OpenJPA creates a copy of the given entity as a detached instance and returns it, whereas JPA 2.0 behavior requires the same given entity instance be detached.
+Secondly, the given instance is removed from the persistence context for JPA 2.0, whereas OpenJPA `detach()` method, prior to JPA 2.0, does not remove the instance from the persistence context as a copy is returned.
+Thirdly, OpenJPA will flush before detaching a dirty instance so that the detached instance can later be merged, whereas JPA 2.0 `detach()` semantics does not require a dirty instance be flushed before detach.
+
+A user application running with OpenJPA that is compliant to a specific version of JPA specification can emulate the older behavior by configuring OpenJPA compatibility options.
+For example, `openjpa.Compatibility=FlushBeforeDetach=false,CopyOnDetach=true` will emulate the older behavior of detach even when running with OpenJPA that is compliant to JPA 2.0 specification.
+The configuration can also be set to a different version of the specification.
+For example, `openjpa.Specification="JPA 1.0"` configuration setting will emulate default OpenJPA behavior as it were for JPA specification version 1.0.
+Setting ``openjpa.Specification`` is a shorthand for more fine-grained control available via ``openjpa.Compatibility``.
+
+ifdef::backend-docbook[]
+[index]
+== Index
+endif::backend-docbook[]

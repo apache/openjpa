@@ -1,0 +1,97 @@
+[[_ref_guide_instrumentation]]
+=== Instrumentation
+(((
+            instrumentation
+        )))
+
+OpenJPA provides the ability to instrument various aspects of runtime operation.
+Instrumentation involves an instrumentation provider for base instrumentation capabilities and instruments for instrumenting various aspects of OpenJPA.
+OpenJPA includes a default instrumentation provider for JMX Platform MBeans.
+MBean-based instruments are provided for the data cache, query cache, and query SQL cache.
+When enabled, JMX-based remote monitoring tools such as https://openjdk.org/tools/svc/jconsole/[
+    JConsole] can be used to monitor various metrics tracked by OpenJPA's caches by accessing MBeans registered under domain [class]``org.apache.openjpa``.
+Additionally, custom applications can gather metrics by using the JMX API to query OpenJPA's MBeans.
+The [class]``openjpa-integration-jmx`` integration module contains an example of how to access the cache MBeans within program code.
+
+[[_ref_guide_instrumentation_config]]
+==== Configuration
+(((
+                configuration
+            )))
+
+Instrumentation is enabled using the <<_openjpa.instrumentation,`openjpa.Instrumentation`>> configuration property.
+The base value is the instrumentation provider.
+The alias "jmx" enables the JMX Platform MBean provider.
+Instruments are specified on the `Instrument` attribute of the provider.
+Multiple instruments can be specified by enclosing the value in single quotes and specifying each instrument or instrument alias as a comma separated list.
+For example:
+
+[source]
+----
+
+            <!--  Enable caches and cache statistics -->
+            <property name="openjpa.DataCache" value="true(EnableStatistics=true)"/>
+            <property name="openjpa.QueryCache" value="true(EnableStatistics=true)"/>
+            <property name="openjpa.jdbc.QuerySQLCache" value="true(EnableStatistics=true)"/>
+
+            <!--  Enable jmx provider and instruments for Data, Query, and QuerySQL caches -->
+            <property name="openjpa.Instrumentation" value="jmx(Instrument='DataCache,QueryCache,QuerySQLCache')"/>
+----
+
+[[_ref_guide_instrumentation_config_jmx]]
+===== JMX Platform MBean Enablement
+(((
+                    configuration
+                ,
+                    jmx
+                )))
+
+The built-in JMX Platform MBean provider can be used to monitor OpenJPA runtime information out-of-band.
+This provider is based upon the Platform MBean support included in the JDK.
+The JDK provides options for enabling secure connectivity and authentication.
+These options require additional configuration options and may require encryption keys to be installed on the local and remote systems.
+To enable simple, non-secure, non-authenticated monitoring of your application, specify the -Dcom.sun.management.jmxremote.authenticate=false and -Dcom.sun.management.jmxremote.ssl=false directives on the java command line invocation.
+To enable remote instrumentation on a specific port, specify which port to use on the directive -Dcom.sun.management.jmxremote.port=<port>. For example:
+[source]
+----
+
+            java -cp openjpa-all-2.2.0.jar:myApplication.jar -Dcom.sun.management.jmxremote.authenticate=false
+            -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=8888 com.my.app.Main
+----
+
+Additional information regarding the use and configuration of JMX Platform MBeans can be found in the https://openjdk.org/groups/jmx/[
+            Java Management Extensions (JMX) Technology Overview].
+
+[[_ref_guide_instrumentation_custom]]
+==== Custom Providers and Instruments
+
+OpenJPA includes built-in support for a JMX Platform MBean provider, but a custom instrumentation providers can be created by implementing the link:../../apidocs/org/apache/openjpa/lib/instrumentation/InstrumentationProvider.html[
+        InstrumentationProvider] interface or more simply by extending link:../../apidocs/org/apache/openjpa/lib/instrumentation/AbstractInstrumentationProvider.html[
+        AbstractInstrumentationProvider].
+To use the custom instrumentation provider, include the class in your classpath and specify the class name as the base value on the <<_openjpa.instrumentation,`openjpa.Instrumentation`>> configuration property.
+
+OpenJPA includes instruments for various caches, but you can also create your own instruments.
+To create a custom instrument you need to implement the link:../../apidocs/org/apache/openjpa/lib/instrumentation/Instrument.html[
+        Instrument] interface or more simply extend link:../../apidocs/org/apache/openjpa/lib/instrumentation/AbstractInstrument.html[
+        AbstractInstrument].
+If you are building a Platform MBean JMX-based instrument this effort can be simplified by extending link:../../apidocs/org/apache/openjpa/instrumentation/jmx/JMXInstrument.html[
+        JMXInstrument].
+If you create your own custom provider, class name aliases can be registered within the provider to simplify configuration.
+For example, the instrument [class]``com.my.app.MySQLInstrument`` could be aliased as [class]``MySQLInstrument`` within custom provider [class]``com.my.app.InstrumentationProvider``.
+
+OpenJPA provides the ability to plug in custom instruments and gives instruments direct access to the configuration, but it is up to the creator of the instrument to add the internal monitoring.
+This often requires modifying or extending base OpenJPA classes (such as the Broker) or using a byte-code weaving tool such as AspectJ to produce aspect-based instruments.
+
+Here is an example of how a custom instrumentation provider could be enabled with an instrument class aliased by the provider as [class]``MySQLInstrument``.
+
+[source]
+----
+
+            <!--  Enable custom provider and instrument -->
+            <property name="openjpa.Instrumentation" value="com.my.app.InstrumentationProvider(Instrument='MySQLInstrument')"/>
+----
+
+ifdef::backend-docbook[]
+[index]
+== Index
+endif::backend-docbook[]

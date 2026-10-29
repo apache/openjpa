@@ -1,0 +1,391 @@
+[[_ref_guide_integration]]
+=== Third Party Integration
+
+OpenJPA provides a number of mechanisms for integrating with third-party tools.
+The following chapter will illustrate these integration features.
+
+[[_ref_guide_integration_ant]]
+==== Apache Ant
+(((
+                Ant
+            )))
+
+Ant is a very popular tool for building Java projects.
+It is similar to the ``make`` command, but is Java-centric and has more modern features.
+Ant is open source, and can be downloaded from Apache's Ant web page at http://ant.apache.org/[ http://ant.apache.org/
+].
+Ant has become the de-facto standard build tool for Java, and many commercial integrated development environments provide some support for using Ant build files.
+The remainder of this section assumes familiarity with writing Ant [path]_build.xml_ files.
+
+OpenJPA provides pre-built Ant task definitions for all bundled tools:
+
+* <<_ref_guide_integration_enhance,Enhancer Task>>
+* <<_ref_guide_integration_appidtool,Application Identity Tool Task >>
+* <<_ref_guide_integration_mappingtool,Mapping Tool Task>>
+* <<_ref_guide_integration_revmappingtool,Reverse Mapping Tool Task >>
+* <<_ref_guide_integration_schematool,Schema Tool Task>>
+
+The source code for all the Ant tasks is provided with the distribution under the [path]_src_ directory.
+This allows you to customize various aspects of the Ant tasks in order to better integrate into your development environment.
+
+[[_ref_guide_integration_conf]]
+===== Common Ant Configuration Options
+(((
+                    Ant
+                ,
+                    configuration options
+                )))
+
+All OpenJPA tasks accept a nested `config` element, which defines the configuration environment in which the specified task will run.
+The attributes for the `config` tag are defined by the link:../../apidocs/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html[
+JDBCConfiguration] bean methods.
+Note that excluding the `config` element will cause the Ant task to use the default system configuration mechanism, such as the configuration defined in the [path]_org.apache.openjpa.xml_ file.
+
+Following is an example of how to use the nested `config` tag in a [path]_build.xml_ file:
+
+.Using the <config> Ant Tag
+====
+[source]
+----
+
+<mappingtool>
+  <fileset dir="${basedir}">
+    <include name="**/model/*.java" />
+  </fileset>
+  <config connectionUserName="scott" connectionPassword="tiger"
+    connectionURL="jdbc:oracle:thin:@saturn:1521:solarsid"
+    connectionDriverName="oracle.jdbc.driver.OracleDriver" />
+</mappingtool>
+----
+====
+
+It is also possible to specify a `properties` or `
+propertiesFile` attribute on the `config` tag, which will be used to locate a properties resource or file.
+The resource will be loaded relative to the current CLASSPATH.
+
+.Using the Properties Attribute of the <config> Tag
+====
+[source]
+----
+
+<mappingtool>
+  <fileset dir="${basedir}">
+    <include name="**/model/*.java"/>
+  </fileset>
+  <config properties="openjpa-dev.xml"/>
+</mappingtool>
+----
+====
+
+.Using the PropertiesFile Attribute of the <config> Tag
+====
+[source]
+----
+
+<mappingtool>
+  <fileset dir="${basedir}">
+    <include name="**/model/*.java"/>
+  </fileset>
+  <config propertiesFile="../conf/openjpa-dev.xml"/>
+</mappingtool>
+----
+====
+
+Tasks also accept a nested `classpath` element, which you can use in place of the default classpath.
+The `classpath` argument behaves the same as it does for Ant's standard `javac` element.
+It is sometimes the case that projects are compiled to a separate directory than the source tree.
+If the target path for compiled classes is not included in the project's classpath, then a `classpath` element that includes the target class directory needs to be included so the enhancer and mapping tool can locate the relevant classes.
+
+Following is an example of using a `classpath` tag:
+
+.Using the <classpath> Ant Tag
+====
+[source]
+----
+
+<openjpac>
+  <fileset dir="${basedir}/source">
+    <include name="**/model/*.java" />
+  </fileset>
+  <classpath>
+    <pathelement location="${basedir}/classes"/>
+    <pathelement location="${basedir}/source"/>
+    <pathelement path="${java.class.path}"/>
+  </classpath>
+</openjpac>
+----
+====
+
+Finally, tasks that invoke code-generation tools like the application identity tool and reverse mapping tool accept a nested `codeformat` element.
+See the code formatting documentation in <<_ref_guide_conf_devtools_format>> for a list of code formatting attributes.
+
+.Using the <codeformat> Ant Tag
+====
+[source]
+----
+
+<reversemappingtool package="com.xyz.jdo" directory="${basedir}/src">
+  <codeformat tabSpaces="4" spaceBeforeParen="true" braceOnSameLine="false"/>
+</reversemappingtool>
+----
+====
+
+[[_ref_guide_integration_enhance]]
+===== Enhancer Ant Task
+(((
+                    enhancer
+                ,
+                    Ant task
+                )))
+
+The enhancer task allows you to invoke the OpenJPA enhancer directly from within the Ant build process.
+The task's parameters correspond exactly to the long versions of the command-line arguments to the <<_ref_guide_pc_enhance,[class]``
+org.apache.openjpa.enhance.PCEnhancer``>>.
+
+The enhancer task accepts a nested `fileset` tag to specify the files that should be processed.
+You can specify [path]_.java_ or [path]_.class_ files.
+If you do not specify any files, the task will run on the classes listed in your [path]_persistence.xml_ or <<_openjpa.metadatafactory,`
+openjpa.MetaDataFactory`>> property.
+You must, however, supply the classpath you wish the enhancer to run with.
+This classpath must include, at minimum, the openjpa jar(s), persistence.xml and the target classes.
+
+Following is an example of using the enhancer task in a [path]_build.xml
+_ file:
+
+.Invoking the Enhancer from Ant
+====
+[source]
+----
+
+
+<target name="enhance">
+    <!-- Define the classpath to include the necessary files. -->
+    <!-- ex. openjpa jars, persistence.xml, orm.xml, and target classes  -->
+    <path id="jpa.enhancement.classpath">
+        <!-- Assuming persistence.xml/orm.xml are in resources/META-INF -->
+        <pathelement location="resources/" />
+
+        <!-- Location of the .class files -->
+        <pathelement location="bin/" />
+
+        <!-- Add the openjpa jars -->
+        <fileset dir=".">
+            <include name="**/lib/*.jar" />
+        </fileset>
+    </path>
+
+
+    <!-- define the openjpac task; this can be done at the top of the -->
+    <!-- build.xml file, so it will be available for all targets -->
+    <taskdef name="openjpac" classname="org.apache.openjpa.ant.PCEnhancerTask" classpathref="jpa.enhancement.classpath" />
+
+    <!-- invoke enhancer on all .class files below the model directory -->
+    <openjpac>
+        <classpath refid="jpa.enhancement.classpath" />
+        <fileset dir=".">
+            <include name="**/model/*.class" />
+        </fileset>
+    </openjpac>
+    <echo message="Enhancement complete" />
+</target>
+----
+====
+
+[[_ref_guide_integration_appidtool]]
+===== Application Identity Tool Ant Task
+(((
+                    application identity tool
+                ,
+                    Ant task
+                )))
+
+The application identity tool task allows you to invoke the application identity tool directly from within the Ant build process.
+The task's parameters correspond exactly to the long versions of the command-line arguments to the <<_ref_guide_pc_appid_appidtool,[class]``
+org.apache.openjpa.enhance.ApplicationIdTool``>>.
+
+The application identity tool task accepts a nested `fileset` tag to specify the files that should be processed.
+You can specify [path]_
+.java_ or [path]_.class_ files.
+If you do not specify any files, the task will run on the classes listed in your [path]_persistence.xml
+_ file or <<_openjpa.metadatafactory,`
+openjpa.MetaDataFactory`>> property.
+
+Following is an example of using the application identity tool task in a [path]_build.xml_ file:
+
+.Invoking the Application Identity Tool from Ant
+====
+[source]
+----
+
+<target name="appids">
+  <!-- define the appidtool task; this can be done at the top of     -->
+  <!-- the build.xml file, so it will be available for all targets   -->
+  <taskdef name="appidtool" classname="org.apache.openjpa.ant.ApplicationIdToolTask"/>
+
+  <!-- invoke tool on all .jdo files below the current directory     -->
+  <appidtool>
+    <fileset dir=".">
+      <include name="**/model/*.java" />
+    </fileset>
+    <codeformat spaceBeforeParen="true" braceOnSameLine="false"/>
+  </appidtool>
+</target>
+----
+====
+
+[[_ref_guide_integration_mappingtool]]
+===== Mapping Tool Ant Task
+(((
+                    mapping tool
+                ,
+                    Ant task
+                )))
+
+The mapping tool task allows you to directly invoke the mapping tool from within the Ant build process.
+It is useful for making sure that the database schema and object-relational mapping data is always synchronized with your persistent class definitions, without needing to remember to invoke the mapping tool manually.
+The task's parameters correspond exactly to the long versions of the command-line arguments to the <<_ref_guide_mapping_mappingtool,[class]``org.apache.openjpa.jdbc.meta.MappingTool``>>.
+
+The mapping tool task accepts a nested `fileset` tag to specify the files that should be processed.
+You can specify [path]_.java_ or [path]_.class_ files.
+If you do not specify any files, the task will run on the classes listed in your [path]_persistence.xml_ file or <<_openjpa.metadatafactory,`
+openjpa.MetaDataFactory`>> property.
+
+Following is an example of a [path]_build.xml_ target that invokes the mapping tool:
+
+.Invoking the Mapping Tool from Ant
+====
+[source]
+----
+
+<target name="refresh">
+  <!-- define the mappingtool task; this can be done at the top of -->
+  <!-- the build.xml file, so it will be available for all targets -->
+  <taskdef name="mappingtool" classname="org.apache.openjpa.jdbc.ant.MappingToolTask"/>
+
+  <!-- add the schema components for all .jdo files below the      -->
+  <!-- current directory                                           -->
+  <mappingtool action="buildSchema">
+    <fileset dir=".">
+      <include name="**/*.jdo" />
+    </fileset>
+  </mappingtool>
+</target>
+----
+====
+
+[[_ref_guide_integration_revmappingtool]]
+===== Reverse Mapping Tool Ant Task
+(((
+                    reverse mapping tool
+                ,
+                    Ant task
+                )))
+
+The reverse mapping tool task allows you to directly invoke the reverse mapping tool from within Ant.
+While many users will only run the reverse mapping process once, others will make it part of their build process.
+The task's parameters correspond exactly to the long versions of the command-line arguments to the <<_ref_guide_pc_reverse_reversemappingtool,[class]``
+org.apache.openjpa.jdbc.meta.ReverseMappingTool``>>.
+
+Following is an example of a [path]_build.xml_ target that invokes the reverse mapping tool:
+
+.Invoking the Reverse Mapping Tool from Ant
+====
+[source]
+----
+
+<target name="reversemap">
+  <!-- define the reversemappingtool task; this can be done at the top of -->
+  <!-- the build.xml file, so it will be available for all targets        -->
+  <taskdef name="reversemappingtool"
+    classname="org.apache.openjpa.jdbc.ant.ReverseMappingToolTask"/>
+
+  <!-- reverse map the entire database -->
+  <reversemappingtool package="com.xyz.model" directory="${basedir}/src"
+    customizerProperties="${basedir}/conf/reverse.properties">
+    <codeformat tabSpaces="4" spaceBeforeParen="true" braceOnSameLine="false"/>
+  </reversemappingtool>
+</target>
+----
+====
+
+[[_ref_guide_integration_schematool]]
+===== Schema Tool Ant Task
+(((
+                    schema tool
+                ,
+                    Ant task
+                )))
+
+The schema tool task allows you to directly invoke the schema tool from within the Ant build process.
+The task's parameters correspond exactly to the long versions of the command-line arguments to the <<_ref_guide_schema_schematool,[class]``
+org.apache.openjpa.jdbc.schema.SchemaTool``>>.
+
+Following is an example of a [path]_build.xml_ target that invokes the schema tool:
+
+.Invoking the Schema Tool from Ant
+====
+[source]
+----
+
+<target name="schema">
+  <!-- define the schematool task; this can be done at the top of  -->
+  <!-- the build.xml file, so it will be available for all targets -->
+  <taskdef name="schematool" classname="org.apache.openjpa.jdbc.ant.SchemaToolTask"/>
+
+  <!-- add the schema components for all .schema files below the   -->
+  <!-- current directory                                           -->
+  <schematool action="add">
+    <fileset dir=".">
+      <include name="**/*.schema" />
+    </fileset>
+  </schematool>
+</target>
+----
+====
+
+[[_ref_guide_integration_dbcp]]
+==== Apache Commons DBCP
+
+OpenJPA does not provide its own JDBC connection pooling, as this should already be supplied to applications running in a Java EE application server in container managed mode.
+For Java SE or applications running in application managed mode, the OpenJPA aggregate `openjpa-all.jar` artifact and the binary assembly contains copies of http://commons.apache.org/dbcp/[Apache Commons DBCP], which provides a robust connection pooling implementation.
+
+[[_ref_guide_integration_dbcp_conf]]
+===== Apache Commons DBCP Configuration Options
+(((
+                    DBCP
+                ,
+                    configuration options
+                )))
+
+The <<_ref_guide_dbsetup_thirdparty,JDBC DataSource configuration options>> that we will need to modify in order to use Apache Commons DBCP for connection pooling are:
+[source]
+----
+
+    connectionDriverName="org.apache.commons.dbcp.BasicDataSource"
+    connectionProperties="DriverClassName=<prior connectionDriverName>, ..."
+----
+Additional Commons DBCP arguments can be provided in the connectionProperties value, such as:
+[source]
+----
+
+    MaxTotal=10,MaxIdle=5,MinIdle=2,MaxWait=60000
+----
+Please visit the Commons DBCP website for the entire list of http://commons.apache.org/dbcp/configuration.html[configuration options] and explanations.
+
+.Using Commons DBCP with Apache Derby
+====
+For example, to use Commons DBCP with an Apache Derby database server, we would need to provide the following settings, as either settings in the persistence.xml or as system environment overrides:
+[source]
+----
+
+<property name="openjpa.ConnectionDriverName" value="org.apache.commons.dbcp.BasicDataSource"/>
+<property name="openjpa.ConnectionProperties" value="DriverClassName=org.apache.derby.jdbc.EmbeddedDriver, Url=jdbc:derby://localhost:1527/openjpa, Username=uid, Password=pwd"/>
+----
+
+Notice that we supplied Username and Password settings, which are required by Commons DBCP for connecting to a database over the network, but can be dummy values if database security is not enabled.
+====
+
+ifdef::backend-docbook[]
+[index]
+== Index
+endif::backend-docbook[]
