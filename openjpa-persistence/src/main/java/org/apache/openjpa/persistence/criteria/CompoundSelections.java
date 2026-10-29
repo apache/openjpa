@@ -95,6 +95,20 @@ class CompoundSelections {
 
         abstract FillStrategy<X> getFillStrategy();
 
+        /**
+         * Visits this node and then each of its selection terms.
+         */
+        @Override
+        public void acceptVisit(CriteriaExpressionVisitor visitor) {
+            visitor.enter(this);
+            visitor.exit(this);
+            for (Selection<?> arg : _args) {
+                if (arg instanceof CriteriaExpression expArg) {
+                    expArg.acceptVisit(visitor);
+                }
+            }
+        }
+
         @Override
         public StringBuilder asValue(AliasContext q) {
             StringBuilder buffer = new StringBuilder();

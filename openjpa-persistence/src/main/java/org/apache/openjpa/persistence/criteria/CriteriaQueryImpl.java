@@ -282,6 +282,7 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
      */
     @Override
     public CriteriaQuery<T> multiselect(Selection<?>... selections) {
+        invalidateCompilation();
         checkDuplicateAliases(Arrays.asList(selections));
         _selections = Arrays.asList(selections); // do not telescope
         _selection  = new CompoundSelections.MultiSelection(_resultClass, selections);
@@ -322,6 +323,7 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
 
     @Override
     public CriteriaQuery<T> groupBy(Expression<?>... grouping) {
+        invalidateCompilation();
         if (grouping == null) {
             _groups = null;
             return this;
@@ -333,6 +335,7 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
 
     @Override
     public CriteriaQuery<T> groupBy(List<Expression<?>> grouping) {
+        invalidateCompilation();
         if (grouping == null) {
             _groups = null;
             return this;
@@ -348,12 +351,14 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
 
     @Override
     public CriteriaQuery<T> having(Expression<Boolean> restriction) {
+        invalidateCompilation();
         _having = (PredicateImpl)restriction;
         return this;
     }
 
     @Override
     public CriteriaQuery<T> having(Predicate... restrictions) {
+        invalidateCompilation();
         if (restrictions == null) {
             _having = null;
             return this;
@@ -367,6 +372,7 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
 
     @Override
     public CriteriaQuery<T> orderBy(Order... orders) {
+        invalidateCompilation();
         if (orders == null) {
             _orders = null;
             return this;
@@ -378,6 +384,7 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
 
     @Override
     public CriteriaQuery<T> orderBy(List<Order> orders) {
+        invalidateCompilation();
         if (orders == null) {
             _orders = null;
             return this;
@@ -398,6 +405,7 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
      */
     @Override
     public CriteriaQuery<T> select(Selection<? extends T> selection) {
+        invalidateCompilation();
         if (selection != null && selection.isCompoundSelection()) {
             checkDuplicateAliases(selection.getCompoundSelectionItems());
         }
@@ -862,6 +870,23 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
         }
         if (_having != null) {
             _having.acceptVisit(visitor);
+        }
+        if (_selection instanceof CriteriaExpression criteriaSel) {
+            criteriaSel.acceptVisit(visitor);
+        }
+        if (_groups != null) {
+            for (Expression<?> group : _groups) {
+                if (group instanceof CriteriaExpression criteriaGroup) {
+                    criteriaGroup.acceptVisit(visitor);
+                }
+            }
+        }
+        if (_orders != null) {
+            for (Order order : _orders) {
+                if (order instanceof CriteriaExpression criteriaOrder) {
+                    criteriaOrder.acceptVisit(visitor);
+                }
+            }
         }
 
         if (_subqueries != null) {

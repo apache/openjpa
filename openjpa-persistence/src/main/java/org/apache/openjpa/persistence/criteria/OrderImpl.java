@@ -69,6 +69,9 @@ class OrderImpl implements Order, CriteriaExpression {
         if (!visitor.isVisited(this)) {
             visitor.enter(this);
             visitor.exit(this);
+            if (e != null) {
+                e.acceptVisit(visitor);
+            }
         }
     }
 
