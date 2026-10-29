@@ -1391,6 +1391,40 @@
                     query without an <literal>ESCAPE</literal> clause stays <literal>null</literal>.
                 </para>
             </section>
+            <section id="jpa_4.2_StoreCharsAsNumbers">
+                <title>char attributes are stored as CHAR(1)</title>
+                <para>
+                    <literal>StoreCharsAsNumbers</literal> now defaults to <literal>false</literal> on
+                    PostgreSQL 9 and later (OPENJPA-2971), MySQL (OPENJPA-3001), Apache Derby, H2 and
+                    Microsoft SQL Server (OPENJPA-3033), as it already did on DB2. Java
+                    <literal>char</literal>/<classname>Character</classname> attributes are then written
+                    and read as characters and map to <literal>CHAR(1)</literal> columns instead of
+                    <literal>INTEGER</literal> columns holding the code point. A pre-existing
+                    <literal>CHAR(1)</literal> column, such as the one in the Jakarta Persistence TCK
+                    schema, now works on these databases. On every database that stores chars as
+                    <literal>CHAR</literal>, a generated column for a <literal>char</literal> or
+                    <classname>Character</classname> attribute without an explicit length is now
+                    <literal>CHAR(1)</literal> instead of <literal>CHAR</literal> sized by
+                    <literal>CharacterColumnSize</literal> (255), which Derby rejected. Existing wider
+                    <literal>CHAR</literal> columns keep working.
+                </para>
+                <para>
+                    Schemas created by earlier releases on PostgreSQL, MySQL, Derby, H2 or SQL Server hold
+                    such attributes in <literal>INTEGER</literal> columns, which now fail validation or
+                    return wrong values. Either migrate them to <literal>CHAR(1)</literal> or restore the
+                    previous mapping with an explicit <literal>StoreCharsAsNumbers=true</literal>, for
+                    example <literal>openjpa.jdbc.DBDictionary=derby(StoreCharsAsNumbers=true)</literal>;
+                    an explicitly configured value is always respected. Oracle, Sybase and the other
+                    databases keep storing chars as numbers by default.
+                </para>
+                <para>
+                    The reverse mapping tool follows the same setting. On these databases it now maps a
+                    <literal>CHAR(1)</literal> column to a <literal>char</literal> or
+                    <classname>Character</classname> field instead of a <classname>String</classname>
+                    field. Set <literal>StoreCharsAsNumbers=true</literal> while running the tool to keep
+                    generating <classname>String</classname> fields.
+                </para>
+            </section>
             <section id="jpa_4.2_PostgreSQL">
                 <title>PostgreSQL</title>
                 <para>
@@ -1406,16 +1440,10 @@
                     <literal>toDBName()</literal>. There is no configuration switch.
                 </para>
                 <para>
-                    <literal>char</literal>/<classname>Character</classname> attributes: on PostgreSQL 9
-                    and later <literal>StoreCharsAsNumbers</literal> now defaults to
-                    <literal>false</literal>, so such attributes map to <literal>CHAR(1)</literal>
-                    columns instead of <literal>INTEGER</literal> columns holding code points, and the
-                    Java default <literal>'\0'</literal> is stored as SQL <literal>NULL</literal>.
-                    Existing <literal>INTEGER</literal> columns created by earlier releases fail
-                    validation or return wrong values. Either migrate them to
-                    <literal>CHAR(1)</literal> or restore the previous mapping with
-                    <literal>openjpa.jdbc.DBDictionary=postgres(StoreCharsAsNumbers=true)</literal>;
-                    an explicitly configured value is respected (OPENJPA-2971).
+                    <literal>char</literal>/<classname>Character</classname> attributes are stored in
+                    <literal>CHAR(1)</literal> columns on PostgreSQL 9 and later, and the Java default
+                    <literal>'\0'</literal> is stored as SQL <literal>NULL</literal>; see
+                    <xref linkend="jpa_4.2_StoreCharsAsNumbers"/>.
                 </para>
                 <para>
                     Further fixes: <classname>java.util.UUID</classname> parameters are bound so that

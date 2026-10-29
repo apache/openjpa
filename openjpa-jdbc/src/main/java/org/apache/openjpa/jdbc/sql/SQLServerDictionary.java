@@ -87,6 +87,11 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
 
         indexPhysicalForeignKeys = true; // MS-SQLServer does not automatically create an index for a foreign key so we will
 
+        // SQL Server supports CHAR, so Java char fields are stored as CHAR(1)
+        // rather than as their numeric code point. Schemas created by earlier
+        // releases need an explicit StoreCharsAsNumbers=true (OPENJPA-3033).
+        storeCharsAsNumbers = false;
+
         // reservedWordSet subset that CANNOT be used as valid column names
         // (i.e., without surrounding them with double-quotes)
         // generated at 2021-05-02T16:15:30.630 via org.apache.openjpa.reservedwords.ReservedWordsIT

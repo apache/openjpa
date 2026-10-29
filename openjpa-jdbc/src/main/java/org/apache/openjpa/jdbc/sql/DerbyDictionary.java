@@ -63,6 +63,10 @@ public class DerbyDictionary
 
         useGetBytesForBlobs = true;
         useSetBytesForBlobs = true;
+        // Derby supports CHAR, so Java char fields are stored as CHAR(1)
+        // rather than as their numeric code point. Schemas created by earlier
+        // releases need an explicit StoreCharsAsNumbers=true (OPENJPA-3033).
+        storeCharsAsNumbers = false;
 
         allowsAliasInBulkClause = false;
         supportsDeferredConstraints = false;

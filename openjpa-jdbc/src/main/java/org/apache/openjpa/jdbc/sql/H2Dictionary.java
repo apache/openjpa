@@ -163,6 +163,10 @@ public class H2Dictionary extends DBDictionary {
 
     public H2Dictionary() {
         platform = "H2";
+        // H2 supports CHAR, so Java char fields are stored as CHAR(1)
+        // rather than as their numeric code point. Schemas created by earlier
+        // releases need an explicit StoreCharsAsNumbers=true (OPENJPA-3033).
+        storeCharsAsNumbers = false;
         validationSQL = "CALL 1";
         closePoolSQL = "SHUTDOWN";
 

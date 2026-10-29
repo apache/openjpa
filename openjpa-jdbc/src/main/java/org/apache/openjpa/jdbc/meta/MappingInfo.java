@@ -771,9 +771,16 @@ public abstract class MappingInfo implements Serializable {
 
         // default char column size if original type is char (test original
         // type rather than final type because orig might be clob, translated
-        // to an unsized varchar, which is supported by some dbs)
-        if (size == 0 && (otype == Types.VARCHAR || otype == Types.CHAR))
-            size = dict.characterColumnSize;
+        // to an unsized varchar, which is supported by some dbs); a Java
+        // char stored as CHAR holds a single character (OPENJPA-3033)
+        if (size == 0 && (otype == Types.VARCHAR || otype == Types.CHAR)) {
+            if (otype == Types.CHAR && (tmplate.getJavaType() == JavaTypes.CHAR
+                || tmplate.getJavaType() == JavaTypes.CHAR_OBJ)) {
+                size = 1;
+            } else {
+                size = dict.characterColumnSize;
+            }
+        }
 
         // create column, or make sure existing column matches expected type
         if (col == null) {
