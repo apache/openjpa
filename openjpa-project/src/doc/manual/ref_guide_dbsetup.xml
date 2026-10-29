@@ -992,6 +992,22 @@ typically won't use these properties unless you are designing your own
 When true, SQL delete and update statements may use table aliases.
                     </para>
                 </listitem>
+                <listitem id="DBDictionary.AllowsBulkTargetInSubselect">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            SQL
+                        </primary>
+                        <secondary>
+                            AllowsBulkTargetInSubselect
+                        </secondary>
+                    </indexterm>
+<literal>AllowsBulkTargetInSubselect</literal>:
+When true, a subquery in the WHERE clause of an SQL delete or update statement
+may read the table that the statement changes. When false, the statement
+matches the primary keys of the affected rows in a derived table instead.
+                    </para>
+                </listitem>
                 <listitem id="DBDictionary.ArrayTypeName">
                     <para>
                     <indexterm>
