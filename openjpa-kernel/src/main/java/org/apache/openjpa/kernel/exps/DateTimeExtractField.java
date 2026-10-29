@@ -19,6 +19,8 @@
 package org.apache.openjpa.kernel.exps;
 
 import java.time.temporal.ChronoField;
+import java.time.temporal.IsoFields;
+import java.time.temporal.TemporalField;
 
 /**
  * Type identifiers used by EXTRACT function
@@ -32,7 +34,7 @@ public enum DateTimeExtractField {
     /**
      * Means the calendar quarter, numbered from 1 to 4
      */
-    QUARTER,
+    QUARTER(IsoFields.QUARTER_OF_YEAR),
     /**
      * Means the calendar month of the year, numbered from 1
      */
@@ -40,7 +42,7 @@ public enum DateTimeExtractField {
     /**
      * Means the ISO-8601 week number
      */
-    WEEK(ChronoField.ALIGNED_DAY_OF_WEEK_IN_YEAR),
+    WEEK(IsoFields.WEEK_OF_WEEK_BASED_YEAR),
     /**
      * Means the calendar day of the month, numbered from 1
      */
@@ -58,18 +60,29 @@ public enum DateTimeExtractField {
      */
     SECOND(ChronoField.SECOND_OF_MINUTE);
     
-    private final ChronoField equivalent;
+    private final TemporalField equivalent;
 
-    private DateTimeExtractField() {
-        this.equivalent = null;
-    }
-
-    private DateTimeExtractField(ChronoField equivalent) {
+    private DateTimeExtractField(TemporalField equivalent) {
         this.equivalent = equivalent;
     }
 
-    public ChronoField getEquivalent() {
+    /**
+     * The field of a {@link java.time.temporal.Temporal} that holds the
+     * value of this field. For {@link #SECOND} it holds the whole seconds only.
+     */
+    public TemporalField getTemporalField() {
         return equivalent;
+    }
+
+    /**
+     * The {@link ChronoField} that holds the value of this field, or null
+     * for {@link #QUARTER} and {@link #WEEK}, which have no {@link ChronoField}.
+     *
+     * @deprecated use {@link #getTemporalField()}
+     */
+    @Deprecated
+    public ChronoField getEquivalent() {
+        return equivalent instanceof ChronoField ? (ChronoField) equivalent : null;
     }
 
 }

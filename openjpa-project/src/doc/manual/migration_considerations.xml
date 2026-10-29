@@ -194,6 +194,29 @@
                     No compatibility option exists.
                 </para>
             </section>
+            <section id="jpa_4.2_ExtractWeek">
+                <title>EXTRACT(WEEK) is the ISO-8601 week</title>
+                <para>
+                    <literal>EXTRACT(WEEK FROM ...)</literal> evaluated in memory, for example
+                    over a candidate collection, returned the day of the week instead of the week
+                    of the year. It now returns the ISO-8601 week, so
+                    <literal>2023-12-31</literal> is in week <literal>52</literal> and
+                    <literal>2021-01-03</literal> in week <literal>53</literal>. On H2 the
+                    function is rendered as <literal>EXTRACT(ISO_WEEK FROM ...)</literal>, because
+                    H2 numbers a plain <literal>WEEK</literal> by the week definition of the JVM
+                    default locale. In memory, <classname>java.util.Date</classname>,
+                    <classname>java.util.Calendar</classname> and
+                    <classname>java.time.Instant</classname> values are now accepted by
+                    <literal>EXTRACT</literal> and are read in the default time zone (a calendar in
+                    its own time zone), and <literal>EXTRACT</literal> of null is null.
+                </para>
+                <para>
+                    <methodname>DateTimeExtractField.getEquivalent()</methodname> is deprecated and
+                    returns null for <literal>QUARTER</literal> and <literal>WEEK</literal>, which
+                    have no <classname>ChronoField</classname>. Use
+                    <methodname>getTemporalField()</methodname> instead.
+                </para>
+            </section>
             <section id="jpa_4.2_QueryResultList">
                 <title>Query.getResultList() returns a materialized ArrayList</title>
                 <para>
