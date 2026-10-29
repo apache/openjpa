@@ -295,6 +295,12 @@ public class DBDictionary
     public String searchStringNoEscape = "''";
     public boolean requiresCastForMathFunctions = false;
     public boolean requiresCastForComparisons = false;
+    /**
+     * If true, a parameter or bound literal operand of EXTRACT is cast to DATE, TIME
+     * or TIMESTAMP, for databases whose date and time functions reject an untyped
+     * parameter.
+     */
+    public boolean requiresCastForExtractOperand = false;
     public boolean supportsModOperator = false;
     public boolean supportsXMLColumn = false;
     public boolean supportsCaseConversionForLob = false;
@@ -6422,6 +6428,17 @@ public class DBDictionary
 
     public String getExtractField(DateTimeExtractField extField) {
         return extField.name();
+    }
+
+    /**
+     * Return the SQL that extracts the given field from a date or time value, where
+     * {1} stands for the value and may occur more than once. By default this is
+     * {@link #extractDateTimeFieldFunction} with {0} replaced by
+     * {@link #getExtractField}. Override for databases that need a different
+     * function per field.
+     */
+    public String getExtractDateTimeFieldFunction(DateTimeExtractField extField) {
+        return extractDateTimeFieldFunction.replace("{0}", getExtractField(extField));
     }
 
     protected boolean isUsingRange(long start, long end) {

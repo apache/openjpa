@@ -1418,6 +1418,15 @@
                     <xref linkend="openjpa.jdbc.DBDictionary"/> is left untouched.
                 </para>
                 <para>
+                    <literal>EXTRACT(WEEK FROM ...)</literal> now returns the ISO week, as the
+                    specification defines it, by rendering <literal>WEEK(x, 3)</literal>. Before, MySQL
+                    and MariaDB computed it with weeks starting on Sunday, so queries on such dates
+                    return different values: for example 2024-01-01 is now week 1 instead of 0, and
+                    2023-12-31 is week 52 instead of 53. A configured
+                    <literal>ExtractDateTimeFieldFunction</literal> no longer applies to
+                    <literal>WEEK</literal> on these databases.
+                </para>
+                <para>
                     Since the version is now parsed from the server's reply even when a driver that is
                     not MariaDB aware passes it on with its <literal>5.5.5-</literal> replication
                     compatibility prefix, such a deployment reaches the features gated on 10.2 as well:
@@ -1501,6 +1510,9 @@
                     and <literal>@Column(columnDefinition="TIME WITH TIME ZONE")</literal> to restore
                     the previous behavior. On H2 2.x, table truncation now skips the
                     <literal>INFORMATION_SCHEMA</literal> meta tables.
+                    <literal>EXTRACT(WEEK FROM ...)</literal> is rendered as
+                    <literal>EXTRACT(ISO_WEEK FROM ...)</literal>, because H2 numbers a plain
+                    <literal>WEEK</literal> by the week definition of the JVM default locale.
                 </para>
             </section>
             <section id="jpa_4.2_SPIChanges">
@@ -1538,9 +1550,11 @@
                     <literal>RightFunctionName</literal>, <literal>NaturalLogarithmFunction</literal>,
                     <literal>CeilingFunction</literal>, <literal>ExceptFunction</literal>,
                     <literal>TypecastToStringTypeName</literal>, <literal>IntegerCastTypeName</literal>,
-                    <literal>SupportsUnsizedCharOnCast</literal>) and hooks
+                    <literal>SupportsUnsizedCharOnCast</literal>,
+                    <literal>RequiresCastForExtractOperand</literal>) and hooks
                     (<literal>isDroppable(Sequence)</literal>, <literal>toJDBCEscapedDateTimeLiteral</literal>,
                     <literal>appendNullsPrecedence</literal>, <literal>getExtractField</literal>,
+                    <literal>getExtractDateTimeFieldFunction</literal>,
                     <literal>get/setMajorVersion</literal>, <literal>get/setMinorVersion</literal>).
                 </para>
             </section>
@@ -1568,8 +1582,11 @@
                             <classname>StoreQuery</classname> implementations) honours
                             <literal>NULLS FIRST/LAST</literal> and rejects
                             <literal>UNION</literal>/<literal>INTERSECT</literal>/<literal>EXCEPT</literal>;
-                            <literal>LEFT</literal>/<literal>RIGHT</literal>, <literal>CAST</literal> and
-                            <literal>EXTRACT</literal> are not available on Derby.
+                            <literal>LEFT</literal>/<literal>RIGHT</literal> and <literal>CAST</literal>
+                            are not available on Derby. Derby has no <literal>EXTRACT</literal>, so
+                            OpenJPA renders it with Derby's date and time functions;
+                            <literal>EXTRACT(WEEK)</literal> is rejected there, as Derby has no
+                            function for the ISO week.
                         </para></listitem>
                         <listitem><para>
                             <classname>EntityManager</classname>: <literal>find()</literal>,

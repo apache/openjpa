@@ -29,6 +29,7 @@ import java.sql.Types;
 
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfigurationImpl;
+import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.jmock.Expectations;
 import org.jmock.integration.junit4.JUnitRuleMockery;
 import org.junit.Rule;
@@ -129,5 +130,12 @@ public class TestMySQLDictionary {
         DBDictionary db = new MySQLDictionary();
         assertEquals("json", db.getTypeName(column(Types.VARCHAR, "json", 255)));
         assertEquals("VARCHAR(255)", db.getTypeName(column(Types.VARCHAR, null, 255)));
+    }
+
+    @Test
+    public void testExtractWeekIsIsoWeek() {
+        DBDictionary dict = new MySQLDictionary();
+        assertEquals("WEEK({1}, 3)", dict.getExtractDateTimeFieldFunction(DateTimeExtractField.WEEK));
+        assertEquals("EXTRACT(DAY FROM {1})", dict.getExtractDateTimeFieldFunction(DateTimeExtractField.DAY));
     }
 }

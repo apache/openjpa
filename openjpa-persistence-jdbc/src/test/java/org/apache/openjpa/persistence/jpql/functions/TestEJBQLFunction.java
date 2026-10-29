@@ -824,10 +824,6 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractYear() {
-        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
-            // Derby does not support EXTRACT
-            return;
-        }
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT (YEAR FROM {d '2006-03-21'}) > 2005";
@@ -840,10 +836,6 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractBirthYear() {
-        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
-            // Derby does not support EXTRACT
-            return;
-        }
         EntityManager em = currentEntityManager();
 
         String query = "SELECT EXTRACT(YEAR FROM {d '2025-01-23'}) - c.age FROM CompUser AS c ORDER BY c.userid";
@@ -863,8 +855,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
 
     public void testExtractQUARTER() {
         DBDictionary dict = getDbDictionary(getEmf());
-        if (dict instanceof DerbyDictionary || dict instanceof OracleDictionary) {
-            // Derby does not support EXTRACT
+        if (dict instanceof OracleDictionary) {
             // Oracle does not support EXTRACT(QUARTER)
             return;
         }
@@ -880,10 +871,6 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractMONTH() {
-        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
-            // Derby does not support EXTRACT
-            return;
-        }
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT (MONTH FROM {d '2006-03-21'}) <= 3";
@@ -898,7 +885,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     public void testExtractWEEK() {
         DBDictionary dict = getDbDictionary(getEmf());
         if (dict instanceof DerbyDictionary || dict instanceof OracleDictionary) {
-            // Derby does not support EXTRACT
+            // Derby has no function for the ISO week, see TestExtractDateTimeField
             // Oracle does not support EXTRACT(WEEK) (https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/EXTRACT-datetime.html)
             return;
         }
@@ -914,10 +901,6 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractDAY() {
-        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
-            // Derby does not support EXTRACT
-            return;
-        }
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT (DAY FROM {ts '2006-03-21 18:19:23'}) = 21";
@@ -930,10 +913,6 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractHOUR() {
-        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
-            // Derby does not support EXTRACT
-            return;
-        }
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT (HOUR FROM {ts '2006-03-21 18:19:23'}) <> 18";
@@ -946,10 +925,6 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractMINUTE() {
-        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
-            // Derby does not support EXTRACT
-            return;
-        }
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT(MINUTE FROM {ts '2006-03-21 18:19:23'}) = 19";
@@ -962,10 +937,6 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractSECOND() {
-        if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
-            // Derby does not support EXTRACT
-            return;
-        }
         EntityManager em = currentEntityManager();
 
         String query = "SELECT EXTRACT(SECOND FROM {ts '2006-03-21 18:19:23'}) - c.age FROM CompUser AS c ORDER BY c.age";
@@ -985,8 +956,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
 
     public void testExtractHourFromLocalTime() {
         DBDictionary dict = getDbDictionary(getEmf());
-        if (dict instanceof DerbyDictionary || dict instanceof OracleDictionary) {
-            // Derby does not support EXTRACT
+        if (dict instanceof OracleDictionary) {
             // Oracle does not have TIME data type
             return;
         }

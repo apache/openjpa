@@ -2342,6 +2342,23 @@ on two literals requires a cast in the generated SQL.
 Defaults to <literal>false</literal>.
                     </para>
                 </listitem>
+                <listitem id="DBDictionary.RequiresCastForExtractOperand">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            SQL
+                        </primary>
+                        <secondary>
+                            RequiresCastForExtractOperand
+                        </secondary>
+                    </indexterm>
+<literal>RequiresCastForExtractOperand</literal>:
+When true, a parameter or literal operand of <literal>EXTRACT</literal> that is bound
+as a parameter is cast to <literal>DATE</literal>, <literal>TIME</literal> or
+<literal>TIMESTAMP</literal> in the generated SQL.
+Defaults to <literal>false</literal>.
+                    </para>
+                </listitem>
                 <listitem id="DBDictionary.RequiresConditionForCrossJoin">
                     <para>
                     <indexterm>
