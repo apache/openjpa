@@ -78,8 +78,8 @@ To enable the basic single-factory cache set the <<_openjpa.datacache,`openjpa.D
 ----
 ====
 
-To configure the data cache to remain up-to-date in a distributed environment, set the <<_openjpa.remotecommitprovider,`
-openjpa.RemoteCommitProvider`>> property appropriately, or integrate OpenJPA with a third-party caching solution.
+To configure the data cache to remain up-to-date in a distributed environment, set the <<_openjpa.remotecommitprovider,
+`openjpa.RemoteCommitProvider`>> property appropriately, or integrate OpenJPA with a third-party caching solution.
 Remote commit providers are described in <<_ref_guide_event>>.
 
 OpenJPA's default implementation maintains a map of object ids to cache data.
@@ -515,7 +515,7 @@ Also each method that accepts Class argument, treats null argument as [class]``j
 ===== Query Cache
 (((Query , result caching)))
 
-In addition to the data cache, the `org.apache.openjpa.datacache ` package defines service provider interfaces for a query cache.
+In addition to the data cache, the `org.apache.openjpa.datacache`  package defines service provider interfaces for a query cache.
 The query cache is disabled by default and needs to be enabled separately from the data cache.
 The query cache stores the object ids returned by query executions.
 When you run a query, OpenJPA assembles a key based on the query properties and the parameters used at execution time, and checks for a cached query result.
@@ -545,7 +545,7 @@ QueryResultCache qcache = oemf.getQueryResultCache();
 The default query cache implementation caches 100 query executions in a least-recently-used cache.
 This can be changed by setting the cache size in the ``CacheSize`` plugin property.
 Like the data cache, the query cache also has a backing soft reference map.
-The `SoftReferenceSize ` property controls the size of this map.
+The `SoftReferenceSize`  property controls the size of this map.
 It is disabled by default.
 
 .Query Cache Size
@@ -557,7 +557,7 @@ It is disabled by default.
 ----
 ====
 
-To disable the query cache (default), set the `openjpa.QueryCache ` property to ``false``:
+To disable the query cache (default), set the `openjpa.QueryCache`  property to ``false``:
 
 .Disabling the Query Cache
 ====
@@ -782,8 +782,8 @@ Iterator cachedIterator = extentQuery.getResultList().iterator();
 
 The query compilation cache is a [class]``Map`` used to cache parsed query strings.
 As a result, most queries are only parsed once in OpenJPA, and cached thereafter.
-You can control the compilation cache through the <<_openjpa.querycompilationcache,`
-openjpa.QueryCompilationCache`>> configuration property.
+You can control the compilation cache through the <<_openjpa.querycompilationcache,
+`openjpa.QueryCompilationCache`>> configuration property.
 This property accepts a plugin string (see <<_ref_guide_conf_plugins>>) describing the [class]``Map`` used to associate query strings and their parsed form.
 This property accepts the following aliases:
 

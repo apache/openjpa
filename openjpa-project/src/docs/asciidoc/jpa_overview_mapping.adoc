@@ -54,8 +54,8 @@ It has the following attributes, which correspond to the annotation properties a
 * `schema`
 * `catalog`
 
-The `table` element also accepts nested `
-unique-constraint` elements representing unique constraints.
+The `table` element also accepts nested 
+`unique-constraint` elements representing unique constraints.
 We will detail unique constraints shortly.
 
 Sometimes, some of the fields in a class are mapped to secondary tables.
@@ -63,7 +63,7 @@ In that case, use the class' [class]``Table`` annotation to name what you consid
 Later, we will see how to map certain fields to other tables.
 
 The example below maps classes to tables to separate schemas.
-The ``CONTRACT``, ``SUB``, and `LINE_ITEM ` tables are in the `CNTRCT` schema; all other tables are in the default schema.
+The ``CONTRACT``, ``SUB``, and `LINE_ITEM`  tables are in the `CNTRCT` schema; all other tables are in the default schema.
 
 .Mapping Classes
 ====
@@ -221,13 +221,13 @@ The JPA runtime must ensure that the SQL deleting `A` is sent to the database be
 * ``String name``: The name of the constraint. OpenJPA will choose a name if you do not provide one, or will create an anonymous constraint.
 * ``String[] columnNames``: The names of the columns the constraint spans.
 
-In XML, unique constraints are represented by nesting `
-unique-constraint` elements within the ` table` element.
+In XML, unique constraints are represented by nesting 
+`unique-constraint` elements within the  `table` element.
 Each `unique-constraint` element in turn nests ``column-name`` text elements to enumerate the constraint's columns.
 
 .Defining a Unique Constraint
 ====
-The following defines a unique constraint on the ` TITLE` column of the `ART` table:
+The following defines a unique constraint on the  `TITLE` column of the `ART` table:
 
 [source]
 ----
@@ -270,7 +270,7 @@ Defaults to the field name.
 * ``int length``: The column length. This property is typically only used during table creation, though some vendors might use it to validate data before flushing. `CHAR` and `VARCHAR` columns typically default to a length of 255; other column types use the database default.
 * (((mapping metadata , Column , precision property)))``int precision``: The precision of a numeric column.
 This property is often used in conjunction with `scale` to form the proper column type name during table creation.
-* ``int scale``: The number of decimal digits a numeric column can hold. This property is often used in conjunction with `precision ` to form the proper column type name during table creation.
+* ``int scale``: The number of decimal digits a numeric column can hold. This property is often used in conjunction with `precision`  to form the proper column type name during table creation.
 * ``boolean nullable``: Whether the column can store null values. Vendors may use this property both for table creation and at runtime; however, it is never required. Defaults to ``true``.
 * (((mapping metadata , Column , insertable property)))``boolean insertable``: By setting this property to ``
 false``, you can omit the column from SQL `INSERT` statements.
@@ -298,7 +298,7 @@ This element has attributes that are exactly equivalent to the [class]`` Column`
 
 With our new knowledge of columns, we can map the identity fields of our entities.
 The diagram below now includes primary key columns for our model's tables.
-The primary key column for [class]``Author`` uses nonstandard type `` INTEGER64``, and the `Magazine.isbn ` field is mapped to a `VARCHAR(9)` column instead of a `VARCHAR(255)` column, which is the default for string fields.
+The primary key column for [class]``Author`` uses nonstandard type `` INTEGER64``, and the `Magazine.isbn`  field is mapped to a `VARCHAR(9)` column instead of a `VARCHAR(255)` column, which is the default for string fields.
 We do not need to point out either one of these oddities to the JPA implementation for runtime use.
 If, however, we want to use the JPA implementation to create our tables for us, it needs to know about any desired non-default column types.
 Therefore, the example following the diagram includes this data in its encoding of our mappings.
@@ -477,8 +477,8 @@ If you do not name a schema, JPA uses the default schema for the database connec
 [NOTE]
 ====
 OpenJPA allows you to use one of OpenJPA's built-in generator implementations in the `sequenceName` property.
-You can also set the `sequenceName` to `system` to use the system sequence defined by the <<_openjpa.sequence,`
-openjpa.Sequence`>> configuration property.
+You can also set the `sequenceName` to `system` to use the system sequence defined by the <<_openjpa.sequence,
+`openjpa.Sequence`>> configuration property.
 See the Reference Guide's <<_ref_guide_sequence>> for details.
 ====
 
@@ -493,8 +493,8 @@ Its attributes mirror the above annotation's properties:
 
 To use a sequence generator, set your [class]``GeneratedValue`` annotation's `strategy` property to ``
 GenerationType.SEQUENCE``, and its `generator` property to the sequence generator's declared name.
-Or equivalently, set your `
-generated-value` XML element's `strategy` attribute to ``SEQUENCE`` and its `generator` attribute to the generator name.
+Or equivalently, set your 
+`generated-value` XML element's `strategy` attribute to ``SEQUENCE`` and its `generator` attribute to the generator name.
 
 [[_jpa_overview_mapping_sequence_tablegen]]
 ===== Table Generator
@@ -514,8 +514,8 @@ This property is required.
 If unspecified, your implementation will choose a default.
 * ``String valueColumnName``: The name of the column that holds the sequence value. If unspecified, your implementation will choose a default.
 * (((TableGenerator , pkColumnValue property)))``String pkColumnValue``: The primary key column value of the row in the generator table holding this sequence value.
-You can use the same generator table for multiple logical sequences by supplying different `
-pkColumnValue` s.
+You can use the same generator table for multiple logical sequences by supplying different 
+`pkColumnValue` s.
 If you do not specify a value, the implementation will supply a default.
 * ``int initialValue``: The value of the generator's first issued number.
 * (((TableGenerator , allocationSize property)))``int allocationSize``: The number of values to allocate in memory for each trip to the database.
@@ -538,8 +538,8 @@ This element's attributes correspond exactly to the above annotation's propertie
 
 To use a table generator, set your [class]``GeneratedValue`` annotation's `strategy` property to ``
 GenerationType.TABLE``, and its `generator` property to the table generator's declared name.
-Or equivalently, set your `
-generated-value` XML element's `strategy` attribute to ``TABLE`` and its `generator` attribute to the generator name.
+Or equivalently, set your 
+`generated-value` XML element's `strategy` attribute to ``TABLE`` and its `generator` attribute to the generator name.
 
 [[_jpa_overview_mapping_sequence_genex]]
 ===== Example
@@ -705,7 +705,7 @@ The same metadata for `Article` and `Author` expressed in XML form:
 (((inheritance , mapping)))
 (((impedance mismatch)))
 
-In the 1990's programmers coined the term _impedance mismatch _ to describe the difficulties in bridging the object and relational worlds.
+In the 1990's programmers coined the term _impedance mismatch_  to describe the difficulties in bridging the object and relational worlds.
 Perhaps no feature of object modeling highlights the impedance mismatch better than inheritance.
 There is no natural, efficient way to represent an inheritance relationship in a relational database.
 
@@ -735,8 +735,8 @@ The `InheritanceType.SINGLE_TABLE` strategy maps all classes in the hierarchy to
 
 image::img/inher-superclass-table.png[]
 
-In our model, [class]``Subscription`` is mapped to the `
-CNTRCT.SUB` table. [class]`` LifetimeSubscription``, which extends [class]`` Subscription``, adds its field data to this table as well.
+In our model, [class]``Subscription`` is mapped to the 
+`CNTRCT.SUB` table. [class]`` LifetimeSubscription``, which extends [class]`` Subscription``, adds its field data to this table as well.
 
 .Single Table Mapping
 ====
@@ -779,7 +779,7 @@ Thus, we could omit the ``@Inheritance`` annotation in the example above and get
 [NOTE]
 ====
 
-(((inheritance , flat))) Mapping subclass state to the superclass table is often called _flat _ inheritance mapping.
+(((inheritance , flat))) Mapping subclass state to the superclass table is often called _flat_  inheritance mapping.
 ====
 
 [[_jpa_overview_mapping_inher_single_adv]]
@@ -814,7 +814,7 @@ Thus to load a subclass instance, the JPA implementation must read from the subc
 image::img/jpa-inher-joined.png[]
 
 [class]``PrimaryKeyJoinColumn`` annotations tell the JPA implementation how to join each subclass table record to the corresponding record in its direct superclass table.
-In our model, the `LINE_ITEM.ID ` column joins to the `CONTRACT.ID` column.
+In our model, the `LINE_ITEM.ID`  column joins to the `CONTRACT.ID` column.
 The [class]``PrimaryKeyJoinColumn`` annotation has the following properties:
 
 * ``String name``: The name of the subclass table column. When there is a single identity field, defaults to that field's column name.
@@ -897,7 +897,7 @@ public static class LineItem
 }
 ----
 
-In XML, simply list as many ` primary-key-join-column` elements as necessary.
+In XML, simply list as many  `primary-key-join-column` elements as necessary.
 
 [[_jpa_overview_mapping_inher_joined_adv]]
 ====== Advantages
@@ -926,8 +926,8 @@ When executing a select against a hierarchy that uses joined subclass table inhe
 ===== Table Per Class
 (((mapping metadata , inheritance , TABLE_PER_CLASS strategy)))
 
-Like the `JOINED` strategy, the `
-InheritanceType.TABLE_PER_CLASS` strategy uses a different table for each class in the hierarchy.
+Like the `JOINED` strategy, the 
+`InheritanceType.TABLE_PER_CLASS` strategy uses a different table for each class in the hierarchy.
 Unlike the `JOINED` strategy, however, each table includes all state for an instance of the corresponding class.
 Thus to load a subclass instance, the JPA implementation must only read from the subclass table; it does not need to join to superclass tables.
 
@@ -1260,7 +1260,7 @@ Its attributes mirror the annotation properties above:
 The [class]``DiscriminatorValue`` annotation specifies the discriminator value for each class.
 Though this annotation's value is always a string, the implementation will parse it according to the [class]``
 DiscriminatorColumn``'s `discriminatorType` property above.
-The type defaults to ``DiscriminatorType.STRING``, but may be ` DiscriminatorType.CHAR` or ``
+The type defaults to ``DiscriminatorType.STRING``, but may be  `DiscriminatorType.CHAR` or ``
 DiscriminatorType.INTEGER``.
 If you do not specify a [class]``
 DiscriminatorValue``, the provider will choose an appropriate default.
@@ -1276,7 +1276,7 @@ OpenJPA assumes your model employs a discriminator column if any of the followin
 . The base entity sets a discriminator value.
 . The base entity declares a discriminator column.
 
-Only `SINGLE_TABLE` inheritance hierarchies require a discriminator column and values. ` JOINED` hierarchies can use a discriminator to make some operations more efficient, but do not require one. ``TABLE_PER_CLASS`` hierarchies have no use for a discriminator.
+Only `SINGLE_TABLE` inheritance hierarchies require a discriminator column and values.  `JOINED` hierarchies can use a discriminator to make some operations more efficient, but do not require one. ``TABLE_PER_CLASS`` hierarchies have no use for a discriminator.
 
 OpenJPA defines additional discriminator strategies; see <<_ref_guide_mapping_jpa>> in the Reference Guide for details.
 OpenJPA also supports final entity classes.
@@ -1968,7 +1968,7 @@ The same metadata expressed in XML:
 (((mapping metadata , secondary table fields)))
 
 Sometimes a logical record is spread over multiple database tables.
-JPA calls a class' declared table the _primary_ table, and calls other tables that make up a logical record _secondary _ tables.
+JPA calls a class' declared table the _primary_ table, and calls other tables that make up a logical record _secondary_  tables.
 You can map any persistent field to a secondary table.
 Just write the standard field mapping, then perform these two additional steps:
 
@@ -1976,7 +1976,7 @@ Just write the standard field mapping, then perform these two additional steps:
 . Define the secondary table on the entity class declaration.
 
 You define secondary tables with the [class]``SecondaryTable`` annotation.
-This annotation has all the properties of the [class]``Table `` annotation covered in <<_jpa_overview_mapping_table>> , plus a ` pkJoinColumns` property.
+This annotation has all the properties of the [class]``Table `` annotation covered in <<_jpa_overview_mapping_table>> , plus a  `pkJoinColumns` property.
 
 The `pkJoinColumns` property is an array of [class]``
 PrimaryKeyJoinColumn``s dictating how to join secondary table records to their owning primary table records.
@@ -2072,8 +2072,8 @@ It has a single `name` attribute to name the field being overridden, and one or 
 
 To declare multiple relation overrides, use the [class]`` AssociationOverrides `` annotation, whose value is an array of [class]``
 AssociationOverride`` s.
-In XML, simply list multiple `
-association-override` elements in succession.
+In XML, simply list multiple 
+`association-override` elements in succession.
 
 .Embedded Field Mapping
 ====
@@ -2237,7 +2237,7 @@ The [class]``JoinColumn`` annotation exposes the following properties:
 * ``String referencedColumnName``: The name of the primary key column being joined to. If there is only one identity field in the related entity class, the join column name defaults to the name of the identity field's column.
 * ``boolean unique``: Whether this column is guaranteed to hold unique values for all rows. Defaults to false.
 
-[class]``JoinColumn`` also has the same ` nullable` , ``insertable``, `` updatable``, ``
+[class]``JoinColumn`` also has the same  `nullable` , ``insertable``, `` updatable``, ``
 columnDefinition``, and `table` properties as the [class]`` Column`` annotation.
 See <<_jpa_overview_mapping_column>> for details on these properties.
 
@@ -2383,8 +2383,8 @@ The same metadata expressed in XML form:
 ====
 
 When the entities in a one to one relation join on shared primary key values rather than separate foreign key columns, use the [class]``
-PrimaryKeyJoinColumn(s)`` annotation or `
-primary-key-join-column` elements in place of [class]``JoinColumn(s) `` / ` join-column` elements.
+PrimaryKeyJoinColumn(s)`` annotation or 
+`primary-key-join-column` elements in place of [class]``JoinColumn(s) `` /  `join-column` elements.
 
 [[_jpa_overview_mapping_assoccoll]]
 ===== Join Table
@@ -2538,8 +2538,8 @@ The same metadata expressed in XML:
 
 <<_jpa_overview_meta_mappedby>> introduced bidirectional relations.
 To map a bidirectional relation, you map one field normally using the annotations we have covered throughout this chapter.
-Then you use the `
-mappedBy` property of the other field's metadata annotation or the corresponding `mapped-by` XML attribute to refer to the mapped field.
+Then you use the 
+`mappedBy` property of the other field's metadata annotation or the corresponding `mapped-by` XML attribute to refer to the mapped field.
 Look for this pattern in these bidirectional relations as you peruse the complete mappings below:
 
 * `Magazine.publisher` and ``Company.mags``.
@@ -2568,7 +2568,7 @@ image::img/jpa-map.png[]
 
 The example below maps [class]``Subscription``'s map of [class]``
 LineItem``s to the `SUB_ITEMS` join table.
-The key for each map entry is the [class]`` LineItem``'s `num ` field value.
+The key for each map entry is the [class]`` LineItem``'s `num`  field value.
 
 .Join Table Map Mapping
 ====

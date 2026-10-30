@@ -8,7 +8,7 @@ This chapter discusses OpenJPA's extensions to standard JPA metadata.
 ==== Metadata Factory
 (((metadata , loading and storing)))
 
-The <<_openjpa.metadatafactory,`openjpa.MetaDataFactory `>> configuration property controls metadata loading and storing.
+The <<_openjpa.metadatafactory,`openjpa.MetaDataFactory` >> configuration property controls metadata loading and storing.
 This property takes a plugin string (see <<_ref_guide_conf_plugins>>) describing a concrete link:../../apidocs/org/apache/openjpa/meta/MetaDataFactory.html[
 org.apache.openjpa.meta.MetaDataFactory] implementation.
 A metadata factory can load mapping information as well as persistence metadata, or it can leave mapping information to a separate __mapping factory__ (see <<_ref_guide_mapping_factory>>). OpenJPA recognizes the following built-in metadata factories:
@@ -81,7 +81,7 @@ We cover how to map your datastore identity primary key column in <<_ref_guide_m
 [[_ref_guide_meta_jpa_version]]
 ===== Surrogate Version
 
-Just as OpenJPA can maintain your entity's identity without any `Id ` fields, OpenJPA can maintain your entity's optimistic version without any `Version` fields. <<_ref_guide_mapping_jpa_version>> shows you how to map surrogate version columns.
+Just as OpenJPA can maintain your entity's identity without any `Id`  fields, OpenJPA can maintain your entity's optimistic version without any `Version` fields. <<_ref_guide_mapping_jpa_version>> shows you how to map surrogate version columns.
 
 [[_ref_guide_meta_jpa_persistent]]
 ===== Persistent Field Values
@@ -97,7 +97,7 @@ It has the following properties:
 * ``CascadeType[] cascade``: Array of enum values defining cascade behavior for this field. Corresponds exactly to the same-named property of standard JPA annotations such as <<_jpa_overview_meta_manytoone,[class]`` ManyToOne``>>. Defaults to empty array.
 * ``String mappedBy``: Names the field in the related entity that maps this bidirectional relation. Corresponds to the same-named property of standard JPA annotations such as <<_jpa_overview_meta_onetoone,[class]`` OneToOne``>>.
 * ``boolean optional``: Whether the value can be null. Corresponds to the same-named property of standard JPA annotations such as <<_jpa_overview_meta_manytoone,[class]`` ManyToOne``>>, but can apply to non-entity object values as well. Defaults to ``true``.
-* ``boolean embedded``: Set this property to `true ` if the field value is stored as an embedded object.
+* ``boolean embedded``: Set this property to `true`  if the field value is stored as an embedded object.
 
 Though you can use the [class]``Persistent`` annotation in place of most of the standard direct field annotations mentioned above, we recommend primarily using it for non-standard and custom types for which no standard JPA annotation exists.
 For example, <<_ref_guide_mapping_jpa_columns>> demonstrates the use of the [class]``Persistent`` annotation to denote a persistent [class]``java.awt.Point`` field.
@@ -106,8 +106,8 @@ For example, <<_ref_guide_mapping_jpa_columns>> demonstrates the use of the [cla
 ===== Persistent Collection Fields
 (((persistent fields,collection metadata)))
 
-JPA standardizes support for collections of entities with the `
-OneToMany` and `ManyToMany` persistence strategies.
+JPA standardizes support for collections of entities with the 
+`OneToMany` and `ManyToMany` persistence strategies.
 OpenJPA supports these strategies, and may be extended for other strategies as well.
 For extended strategies, use the link:../../apidocs/org/apache/openjpa/persistence/PersistentCollection.html[
 org.apache.openjpa.persistence.PersistentCollection] metadata annotation to represents any persistent collection field.
@@ -117,7 +117,7 @@ It has the following properties:
 * ``FetchType fetch``: Whether to load the collection eagerly or lazily. Corresponds exactly to the same-named property of standard JPA annotations such as <<_jpa_overview_meta_basic,[class]`` Basic``>>. Defaults to ``FetchType.LAZY``.
 * ``String mappedBy``: Names the field in the related entity that maps this bidirectional relation. Corresponds to the same-named property of standard JPA annotations such as <<_jpa_overview_meta_manytomany,[class]``ManyToMany``>>.
 * ``CascadeType[] elementCascade``: Array of enum values defining cascade behavior for the collection elements. Corresponds exactly to the ``cascade`` property of standard JPA annotations such as <<_jpa_overview_meta_manytomany,[class]`` ManyToMany``>>. Defaults to empty array.
-* ``boolean elementEmbedded``: Set this property to `true ` if the elements are stored as embedded objects.
+* ``boolean elementEmbedded``: Set this property to `true`  if the elements are stored as embedded objects.
 
 
 [[_ref_guide_meta_jpa_persistent_map]]
@@ -131,10 +131,10 @@ It has the following properties:
 * ``Class keyType``: The class of the map keys. This information is usually taken from the parameterized map key type. You must supply it explicitly, however, if your field isn't a parameterized type.
 * ``Class elementType``: The class of the map values. This information is usually taken from the parameterized map value type. You must supply it explicitly, however, if your field isn't a parameterized type.
 * ``FetchType fetch``: Whether to load the collection eagerly or lazily. Corresponds exactly to the same-named property of standard JPA annotations such as <<_jpa_overview_meta_basic,[class]`` Basic``>>. Defaults to ``FetchType.LAZY``.
-* ``CascadeType[] keyCascade``: Array of enum values defining cascade behavior for the map keys. Corresponds exactly to the `cascade ` property of standard JPA annotations such as <<_jpa_overview_meta_manytoone,[class]`` ManyToOne``>>. Defaults to empty array.
+* ``CascadeType[] keyCascade``: Array of enum values defining cascade behavior for the map keys. Corresponds exactly to the `cascade`  property of standard JPA annotations such as <<_jpa_overview_meta_manytoone,[class]`` ManyToOne``>>. Defaults to empty array.
 * ``CascadeType[] elementCascade``: Array of enum values defining cascade behavior for the map values. Corresponds exactly to the ``cascade`` property of standard JPA annotations such as <<_jpa_overview_meta_manytoone,[class]`` ManyToOne``>>. Defaults to empty array.
-* ``boolean keyEmbedded``: Set this property to `true ` if the map keys are stored as embedded objects.
-* ``boolean elementEmbedded``: Set this property to ` true` if the map values are stored as embedded objects.
+* ``boolean keyEmbedded``: Set this property to `true`  if the map keys are stored as embedded objects.
+* ``boolean elementEmbedded``: Set this property to  `true` if the map values are stored as embedded objects.
 
 
 [[_ref_guide_meta_ext]]
@@ -169,7 +169,7 @@ org.apache.openjpa.persistence.DataCache] annotation for caching information.
 This annotation has the following properties:
 
 * ``boolean enabled``: Whether to cache data for instances of the class. Defaults to `true` for base classes, or the superclass value for subclasses. If you set this property to ``false``, all other properties are ignored.
-* ``int timeout``: The number of milliseconds data for the class remains valid. Use -1 for no timeout. Defaults to the <<_openjpa.datacachetimeout,` openjpa.DataCacheTimeout `>> property value.
+* ``int timeout``: The number of milliseconds data for the class remains valid. Use -1 for no timeout. Defaults to the <<_openjpa.datacachetimeout, `openjpa.DataCacheTimeout` >> property value.
 
 
 [[_detached_state_field]]
@@ -198,8 +198,8 @@ OpenJPA recognizes the following field extensions:
 ====== Dependent
 
 In a _dependent_ relation, the referenced object is deleted whenever the owning object is deleted, or whenever the relation is severed by nulling or resetting the owning field.
-For example, if the `
-Magazine.coverArticle` field is marked dependent, then setting ``Magazine.coverArticle`` to a new [class]``Article`` instance will automatically delete the old [class]``Article`` stored in the field.
+For example, if the 
+`Magazine.coverArticle` field is marked dependent, then setting ``Magazine.coverArticle`` to a new [class]``Article`` instance will automatically delete the old [class]``Article`` stored in the field.
 Similarly, deleting a [class]``Magazine`` object will automatically delete its current cover [class]``Article``.
 (This latter processing is analogous to using JPA's CascadeType.REMOVE functionality as described in <<_jpa_overview_meta_cascade>>.) You can prevent an orphaned dependent object from being automatically deleted by assigning it to another relation in the same transaction.
 

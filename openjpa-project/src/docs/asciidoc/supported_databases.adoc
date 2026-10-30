@@ -597,7 +597,7 @@ openjpa.ConnectionURL: \
 [[_dbsupport_sqlserver_issues]]
 ===== Known issues with SQL Server
 
-* When using a Microsoft SQL Server JDBC Driver v1.2 or earlier, the ConnectionURL must always contain the `selectMethod=cursor ` string, which is necessary for the driver to properly support large result sets.
+* When using a Microsoft SQL Server JDBC Driver v1.2 or earlier, the ConnectionURL must always contain the `selectMethod=cursor`  string, which is necessary for the driver to properly support large result sets.
 * When using a Microsoft SQL Server JDBC Driver v1.2 or earlier, the JDBC driver has bugs that manifest themselves when prepared statements are pooled. Please disable prepared statement pooling by including the ``MaxCachedStatements=0`` configuration property in your org.apache.openjpa.ConnectionFactoryProperties.
 * SQL Server date fields are accurate only to the nearest 3 milliseconds, possibly resulting in precision loss in stored dates.
 * Adding `sendStringParametersAsUnicode=false` to the ConnectionURL may significantly increase performance.
@@ -692,7 +692,7 @@ List results = query.getResultList();
 
 * As of MariaDB 10.2 the `DATETIME` data type supports sub-second fractions. The default of MariaDB internally is to use no fractions. The number of fractions can be explicitly set via scale: `@Column(scale=6)` will lead to a `DATETIME(6)` column and able to store microseconds. A value of `@Column(scale=-1)` will explicitly turn off all fractions.
 * As of MariaDB 10.7 the `UUID` data type is supported, but the JDBC driver does not writes the object directly, so UUID field support is made through UUID to String conversion.
-* MariaDB's InnoDB performs `ALTER TABLE ... ADD COLUMN` and `ALTER TABLE ... DROP COLUMN` instantly and keeps the dropped columns in the clustered index record format, where they continue to count towards the 8126 byte maximum row size. Re-synchronising a mapping with a drop/add schema action against the same table - either <<_ref_guide_mapping_synch,` openjpa.jdbc.SynchronizeMappings`>> set to ``buildSchema(SchemaAction='drop,add')``, or `mappingtool -action refresh` in a deployment script - therefore accumulates that metadata on every cycle and eventually fails with
+* MariaDB's InnoDB performs `ALTER TABLE ... ADD COLUMN` and `ALTER TABLE ... DROP COLUMN` instantly and keeps the dropped columns in the clustered index record format, where they continue to count towards the 8126 byte maximum row size. Re-synchronising a mapping with a drop/add schema action against the same table - either <<_ref_guide_mapping_synch, `openjpa.jdbc.SynchronizeMappings`>> set to ``buildSchema(SchemaAction='drop,add')``, or `mappingtool -action refresh` in a deployment script - therefore accumulates that metadata on every cycle and eventually fails with
 
 
 [source]
@@ -755,7 +755,7 @@ openjpa.jdbc.DBDictionary: oracle(batchLimit=0)
 * Oracle cannot store numbers with more than 38 digits in numeric columns.
 * Floats and doubles may lose precision when stored.
 * CLOB columns cannot be used in queries.
-* The use of LOBs with persistent attributes of a streaming data type (ex. ``java.io.InputStream`` or ``java.io.Reader``) may require the same connection to be used over the life of the transaction or entity manager. If the same connection is not used for persistent operations a `java.io.IOException` with message `Closed Connection ` may result. The OpenJPA property `openjpa.ConnectionRetainMode` can be used to control how OpenJPA uses datastore connections. See <<_ref_guide_dbsetup_retain>> for details.
+* The use of LOBs with persistent attributes of a streaming data type (ex. ``java.io.InputStream`` or ``java.io.Reader``) may require the same connection to be used over the life of the transaction or entity manager. If the same connection is not used for persistent operations a `java.io.IOException` with message `Closed Connection`  may result. The OpenJPA property `openjpa.ConnectionRetainMode` can be used to control how OpenJPA uses datastore connections. See <<_ref_guide_dbsetup_retain>> for details.
 
 
 .Property to retain connection over the lifetime of the entity manager
@@ -787,7 +787,7 @@ openjpa.ConnectionURL: \
 [[_dbsupport_pointbase_issues]]
 ===== Known issues with Pointbase
 
-* Fields of type BLOB and CLOB are limited to 1M. Set the `BlobTypeName ` and/or `ClobTypeName` properties of the ``openjpa.jdbc.DBDictionary`` setting to override.
+* Fields of type BLOB and CLOB are limited to 1M. Set the `BlobTypeName`  and/or `ClobTypeName` properties of the ``openjpa.jdbc.DBDictionary`` setting to override.
 
 
 [[_dbsupport_postgresql]]

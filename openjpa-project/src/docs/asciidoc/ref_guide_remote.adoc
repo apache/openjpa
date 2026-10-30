@@ -81,8 +81,8 @@ These strategies will be assigned on a per-instance basis, such that during the 
 
 If you attempt to attach a versioned instance whose representation has changed in the datastore since detachment, OpenJPA will throw an optimistic concurrency exception upon commit or flush, just as if a normal optimistic conflict was detected.
 When attaching an instance whose database record has been deleted since detaching, or when attaching a detached instance into a manager that has a stale version of the object, OpenJPA will throw an optimistic concurrency exception from the attach method.
-In these cases, OpenJPA sets the `
-RollbackOnly` flag on the transaction.
+In these cases, OpenJPA sets the 
+`RollbackOnly` flag on the transaction.
 
 [[_ref_guide_detach_graph]]
 ===== Defining the Detached Object Graph
@@ -124,7 +124,7 @@ This setting piggybacks on the `DetachedStateField` setting above.
 If your detached state field is transient, the detached state manager will also be transient.
 If the detached state field is disabled, the detached state manager will also be disabled.
 This is typically what you'll want.
-By setting ` DetachedStateField` to true (or transient) and setting this property to false, however, you can use a detached state field **without** using a detached state manager.
+By setting  `DetachedStateField` to true (or transient) and setting this property to false, however, you can use a detached state field **without** using a detached state manager.
 This may be useful for debugging or for legacy OpenJPA users who find differences between OpenJPA's behavior with a detached state manager and OpenJPA's older behavior without one.
 * ``AccessUnloaded``: Whether to allow access to unloaded fields of detached objects. Defaults to true. Set to false to throw an exception whenever an unloaded field is accessed. This option is only available when you use detached state managers, as determined by the settings above.
 * ``LiteAutoDetach``: *This option is ONLY valid for the ``**loaded**`` DetachState setting.* Detach all fields and relations as described by the loaded property when an explicit detach is requested or when a single Entity is being detached as part of serialization. When the entire persistence context is being auto-detached ( `openjpa.AutoDetach` ), the minimal amount of work will be completed to disassociate all Entities from the persistence context. **It is highly recommended that all Entities have a @Version field when using this property**. In addition, care needs to be taken when this value is set to true as the following caveats apply:
@@ -216,14 +216,14 @@ OpenJPA includes built in remote commit providers for JMS and TCP communication.
 [[_ref_guide_event_conf_jms]]
 ====== JMS
 
-The JMS remote commit provider can be configured by setting the <<_openjpa.remotecommitprovider,`
-openjpa.RemoteCommitProvider`>> property to contain the appropriate configuration properties.
+The JMS remote commit provider can be configured by setting the <<_openjpa.remotecommitprovider,
+`openjpa.RemoteCommitProvider`>> property to contain the appropriate configuration properties.
 The JMS provider understands the following properties:
 
 * ``Topic``: The topic that the remote commit provider should publish notifications to and subscribe to for notifications sent from other JVMs. Defaults to `topic/OpenJPACommitProviderTopic`
 * ``TopicConnectionFactory``: The JNDI name of a [class]`` jakarta.jms.TopicConnectionFactory`` factory to use for finding topics. Defaults to `` java:/ConnectionFactory``. This setting may vary depending on the application server in use; consult the application server's documentation for details of the default JNDI name for the [class]`` jakarta.jms.TopicConnectionFactory`` instance. For example, under Weblogic, the JNDI name for the TopicConnectionFactory is `` jakarta.jms.TopicConnectionFactory``.
 * ``ExceptionReconnectAttempts``: The number of times to attempt to reconnect if the JMS system notifies OpenJPA of a serious connection error. Defaults to 0, meaning OpenJPA will log the error but otherwise ignore it, hoping the connection is still valid.
-* ``\*``: All other configuration properties will be interpreted as settings to pass to the JNDI [class]``InitialContext`` on construction. For example, you might set the `java.naming.provider.url ` property to the URL of the context provider.
+* ``\*``: All other configuration properties will be interpreted as settings to pass to the JNDI [class]``InitialContext`` on construction. For example, you might set the `java.naming.provider.url`  property to the URL of the context provider.
 
 To configure a factory to use the JMS provider, your properties might look like the following:
 
@@ -249,16 +249,16 @@ If you do not do so, a daemon thread will stay up in the JVM, preventing the JVM
 (((remote , events , TCP)))
 
 The TCP remote commit provider has several options that are defined as host specifications containing a host name or IP address and an optional port separated by a colon.
-For example, the host specification `
-saturn.bea.com:1234` represents an [class]``InetAddress`` retrieved by invoking [method]``InetAddress.getByName("saturn.bea.com") `` and a port of 1234.
+For example, the host specification 
+`saturn.bea.com:1234` represents an [class]``InetAddress`` retrieved by invoking [method]``InetAddress.getByName("saturn.bea.com") `` and a port of 1234.
 
-The TCP provider can be configured by setting the `
-openjpa.RemoteCommitProvider` plugin property to contain the appropriate configuration settings.
+The TCP provider can be configured by setting the 
+`openjpa.RemoteCommitProvider` plugin property to contain the appropriate configuration settings.
 The TCP provider understands the following properties:
 
 * ``Port``: The TCP port that the provider should listen on for commit notifications. Defaults to 5636.
 * ``Addresses``: A semicolon-separated list of IP addresses to which notifications should be sent. No default value.
-* ``NumBroadcastThreads``: The number of threads to create for the purpose of transmitting events to peers. You should increase this value as the number of concurrent transactions increases. The maximum number of concurrent transactions is a function of the size of the connection pool. See the ``MaxTotal`` property of ` openjpa.ConnectionFactoryProperties` in <<_ref_guide_dbsetup_builtin>>. Setting a value of 0 will result in behavior where the thread invoking [method]``commit`` will perform the broadcast directly. Defaults to 2.
+* ``NumBroadcastThreads``: The number of threads to create for the purpose of transmitting events to peers. You should increase this value as the number of concurrent transactions increases. The maximum number of concurrent transactions is a function of the size of the connection pool. See the ``MaxTotal`` property of  `openjpa.ConnectionFactoryProperties` in <<_ref_guide_dbsetup_builtin>>. Setting a value of 0 will result in behavior where the thread invoking [method]``commit`` will perform the broadcast directly. Defaults to 2.
 * ``RecoveryTimeMillis``: Amount of time to wait in milliseconds before attempting to reconnect to a peer of the cluster when connectivity to the peer is lost. Defaults to 15000.
 * ``MaxIdle``: The number of TCP sockets (channels) to keep open to each peer in the cluster for the transmission of events. Defaults to 2.
 * ``MaxTotal``: Total allowed number of TCP sockets (channels) to open simultaneously between each peer in the cluster. Defaults to 2.

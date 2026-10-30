@@ -111,7 +111,7 @@ OpenJPA supports final classes and final methods.
 (((persistent classes , JPA id requirement)))
 
 All entity classes must declare one or more fields which together form the persistent identity of an instance.
-These are called _identity _ or _primary key_ fields.
+These are called _identity_  or _primary key_ fields.
 In our [class]``
 Magazine`` class, `isbn` and `title` are identity fields, because no two magazine records in the datastore can have the same `isbn` and `title` values. <<_jpa_overview_meta_id>> will show you how to denote your identity fields in JPA metadata. <<_jpa_overview_pc_identity>> below examines persistent identity.
 
@@ -277,7 +277,7 @@ Always treat embeddable identity instances as immutable objects in your applicat
 
 
 (((identity , uniqueness requirement))) If you are dealing with a single persistence context (see <<_jpa_overview_emfactory_perscontext>>), then you do not have to compare identity fields to test whether two entity references represent the same state in the datastore.
-There is a much easier way: the `== ` operator.
+There is a much easier way: the `==`  operator.
 JPA requires that each persistence context maintain only one JVM object to represent each unique datastore record.
 Thus, entity identity is equivalent to numeric identity within a persistence context.
 This is referred to as the __uniqueness requirement__.

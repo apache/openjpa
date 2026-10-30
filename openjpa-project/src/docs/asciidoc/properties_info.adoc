@@ -1,4 +1,4 @@
 
 There are two sets of properties that may be specified: those that are specific to OpenJPA and those that have been defined by the JPA specification.
 In some cases, two properties may be equivalent, but have different keys.
-For example, _openjpa.LockTimeout _ and _jakarta.persistence.lock.timeout_ are two different keys for the same property. 
+For example, _openjpa.LockTimeout_  and _jakarta.persistence.lock.timeout_ are two different keys for the same property. 

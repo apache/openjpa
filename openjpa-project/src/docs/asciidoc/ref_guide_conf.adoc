@@ -65,7 +65,7 @@ If the persistence unit is defined within the default resource location, then yo
 <tool> -p my-persistence.xml#sales-persistence-unit
 <tool> -p #invoice-persistence-unit
 ----
-* ``-<property name> <property value>``: Any configuration property that you can specify in a configuration file can be overridden with a command line flag. The flag name is always the last token of the corresponding property name, with the first letter in either upper or lower case. For example, to override the `openjpa.ConnectionUserName` property, you could pass the `-connectionUserName <value> ` flag to any tool. Values set this way override both the values in the configuration file and values set via System properties.
+* ``-<property name> <property value>``: Any configuration property that you can specify in a configuration file can be overridden with a command line flag. The flag name is always the last token of the corresponding property name, with the first letter in either upper or lower case. For example, to override the `openjpa.ConnectionUserName` property, you could pass the `-connectionUserName <value>`  flag to any tool. Values set this way override both the values in the configuration file and values set via System properties.
 
 
 [[_ref_guide_conf_devtools_format]]
@@ -74,7 +74,7 @@ If the persistence unit is defined within the default resource location, then yo
 
 Some OpenJPA development tools generate Java code.
 These tools share a common set of command-line flags for formatting their output to match your coding style.
-All code formatting flags can begin with either the `codeFormat ` or `cf` prefix.
+All code formatting flags can begin with either the `codeFormat`  or `cf` prefix.
 
 * ``-codeFormat./-cf.tabSpaces <spaces>``: The number of spaces that make up a tab, or 0 to use tab characters. Defaults to using tab characters.
 * ``-codeFormat./-cf.spaceBeforeParen <true/t | false/f>``: Whether or not to place a space before opening parentheses on method calls, if statements, loops, etc. Defaults to ``false``.
@@ -103,10 +103,10 @@ Plugin properties have a syntax very similar to that of Java annotations.
 They allow you to specify both what class to use for the plugin and how to configure the public fields or bean properties of the instantiated plugin instance.
 The easiest way to describe the plugin syntax is by example:
 
-OpenJPA has a pluggable L2 caching mechanism that is controlled by the `
-openjpa.DataCache` configuration property.
+OpenJPA has a pluggable L2 caching mechanism that is controlled by the 
+`openjpa.DataCache` configuration property.
 Suppose that you have created a new class, [class]``com.xyz.MyDataCache``, that you want OpenJPA to use for caching.
-You've made instances of `MyDataCache ` configurable via two methods, [method]``setCacheSize(int size) `` and [method]``setRemoteHost(String host)``.
+You've made instances of `MyDataCache`  configurable via two methods, [method]``setCacheSize(int size) `` and [method]``setRemoteHost(String host)``.
 The sample below shows how you would tell OpenJPA to use an instance of your custom plugin with a max size of 1000 and a remote host of ``cacheserver ``.
 
 [source]
@@ -895,7 +895,7 @@ IgnoreChanges``
 
 *Description:* Whether to consider modifications to persistent objects made in the current transaction when evaluating queries.
 Setting this to `true` allows OpenJPA to ignore changes and execute the query directly against the datastore.
-A value of `false ` forces OpenJPA to consider whether the changes in the current transaction affect the query, and if so to either evaluate the query in-memory or flush before running it against the datastore.
+A value of `false`  forces OpenJPA to consider whether the changes in the current transaction affect the query, and if so to either evaluate the query in-memory or flush before running it against the datastore.
 
 Note that `true` is an OpenJPA extension that deliberately opts every `SELECT` out of the guarantee of section 3.10.8 of the specification that pending updates which could affect a query's result are visible to it.
 The opt-out applies whatever the flush mode of the query is, including ``FlushModeType.AUTO`` set on the [class]``Query`` object itself.
@@ -1326,7 +1326,7 @@ ReadLockLevel``
 **Possible values: **``none``, ``read``, ``write``, ``optimistic``, ``optimistic-force-increment``, ``pessimistic-read``, ``pessimistic-write``, ``pessimistic-force-increment``, numeric values for lock-manager specific lock levels
 
 *Description:* The default level at which to lock objects retrieved during a non-optimistic transaction.
-Note that for the default JDBC lock manager, ` read` and `write` lock levels are equivalent.
+Note that for the default JDBC lock manager,  `read` and `write` lock levels are equivalent.
 Lock levels ``pessimistic-read``, ``pessimistic-write`` and ``pessimistic-force-increment`` are in effect only when the ``mixed`` lock manager is used.
 
 [[_openjpa.remotecommitprovider]]
@@ -1540,7 +1540,7 @@ WriteLockLevel``
 **Possible values: **``none``, ``read``, ``write``, ``optimistic``, ``optimistic-force-increment``, ``pessimistic-read``, ``pessimistic-write``, ``pessimistic-force-increment``, numeric values for lock-manager specific lock levels.
 
 *Description:* The default level at which to lock objects changed during a non-optimistic transaction.
-Note that for the default JDBC lock manager, ` read` and `write` lock levels are equivalent.
+Note that for the default JDBC lock manager,  `read` and `write` lock levels are equivalent.
 Lock levels ``pessimistic-read``, ``pessimistic-write`` and ``pessimistic-force-increment`` are in effect only when the ``mixed`` lock manager is used.
 
 [[_ref_guide_conf_jdbc]]
@@ -1583,8 +1583,8 @@ org.apache.openjpa.jdbc.conf.JDBCConfiguration.getDBDictionary
 *Resource adaptor config-property: *``
 DBDictionary``
 
-*Default:* Based on the <<_openjpa.connectionurl,`openjpa.ConnectionURL`>><<_openjpa.connectiondrivername,`
-openjpa.ConnectionDriverName`>>
+*Default:* Based on the <<_openjpa.connectionurl,`openjpa.ConnectionURL`>><<_openjpa.connectiondrivername,
+`openjpa.ConnectionDriverName`>>
 
 *Description:* A plugin string (see <<_ref_guide_conf_plugins>>) describing the link:../../apidocs/org/apache/openjpa/jdbc/sql/DBDictionary.html[
 org.apache.openjpa.jdbc.sql.DBDictionary] to use for database interaction.
@@ -1906,8 +1906,8 @@ TransactionIsolation``
 **Default: **``default``
 
 **Possible values: **``default``, ``none``, ``read-committed``, ``
-read-uncommitted``, ``repeatable-read``, `
-serializable`
+read-uncommitted``, ``repeatable-read``, 
+`serializable`
 
 *Description:* The JDBC transaction isolation level to use.
 See <<_ref_guide_dbsetup_isolation>> for details.

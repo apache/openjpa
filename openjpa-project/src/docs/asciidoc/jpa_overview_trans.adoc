@@ -39,8 +39,8 @@ public void transferFunds(User from, User to, double amnt) {
 ----
 
 Now suppose that user Alice wants to transfer 100 dollars to user Bob.
-No problem; you simply invoke your [method]``transferFunds`` method, supplying Alice in the `from` parameter, Bob in the `
-to` parameter, and `100.00` as the ``amnt ``.
+No problem; you simply invoke your [method]``transferFunds`` method, supplying Alice in the `from` parameter, Bob in the 
+`to` parameter, and `100.00` as the ``amnt ``.
 The first line of the method is executed, and 100 dollars is subtracted from Alice's account.
 But then, something goes wrong.
 An unexpected exception occurs, or the hardware fails, and your method never completes.
@@ -123,7 +123,7 @@ All managed entities will be detached from the [class]``EntityManager``.
 public boolean isActive();
 ----
 
-Finally, the [method]``isActive`` method returns `true ` if the transaction is in progress ([method]``begin`` has been called more recently than [method]``commit`` or [method]``rollback``), and `false` otherwise.
+Finally, the [method]``isActive`` method returns `true`  if the transaction is in progress ([method]``begin`` has been called more recently than [method]``commit`` or [method]``rollback``), and `false` otherwise.
 
 .Grouping Operations with Transactions
 ====

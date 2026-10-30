@@ -134,7 +134,7 @@ OpenJPA allows a persistent class to be both an entity and an embeddable class.
 Instances of the class will act as entities when persisted explicitly or assigned to non-embedded fields of entities.
 Instances will act as embedded values when assigned to embedded fields of entities.
 
-To signal that a class is both an entity and an embeddable class in OpenJPA, simply add both the `@Entity` and the `@Embeddable ` annotations to the class.
+To signal that a class is both an entity and an embeddable class in OpenJPA, simply add both the `@Entity` and the `@Embeddable`  annotations to the class.
 ====
 
 [[_jpa_overview_meta_entity_listeners]]
@@ -323,7 +323,7 @@ You must also define the following setter method:
 void setP(T value);
 ----
 
-To implicitly use property access for an entire class by default, set your ``entity`` element's ` access` attribute to ``PROPERTY``, or place your metadata and mapping annotations on the getter method:
+To implicitly use property access for an entire class by default, set your ``entity`` element's  `access` attribute to ``PROPERTY``, or place your metadata and mapping annotations on the getter method:
 
 [source]
 ----
@@ -339,7 +339,7 @@ private void setPublisher(Company publisher) { ... }
 
 
 (((metadata , explicit access)))
-(((persistent attributes))) The access type of a class or individual persistent attributes can be specified explicitly using the `@Access` annotation or `access ` attribute on the XML elements used to define persistent attributes.
+(((persistent attributes))) The access type of a class or individual persistent attributes can be specified explicitly using the `@Access` annotation or `access`  attribute on the XML elements used to define persistent attributes.
 When explicitly defining access, specify the explicit access type for the class and then apply the `@Access` annotation or ``access ``XML attribute to individual fields or properties.
 If explicit ``FIELD`` or `PROPERTY` is specified at the class level, all eligible non-transient fields or properties will be persistent.
 If using class level `FIELD` access, non-persistent fields must be `transient` or annotated with ``@Transient``.
@@ -473,9 +473,9 @@ The equivalent XML element is ``generated-value``, which includes the following 
 [NOTE]
 ====
 OpenJPA allows you to use the [class]``GeneratedValue`` annotation on any field, not just identity fields.
-Before using the `IDENTITY ` generation strategy, however, read <<_ref_guide_pc_oid_pkgen_autoinc>> in the Reference Guide.
+Before using the `IDENTITY`  generation strategy, however, read <<_ref_guide_pc_oid_pkgen_autoinc>> in the Reference Guide.
 
-OpenJPA also offers additional generator strategies for non-numeric fields, which you can access by setting `strategy` to `AUTO ` (the default), and setting the `generator` string to:
+OpenJPA also offers additional generator strategies for non-numeric fields, which you can access by setting `strategy` to `AUTO`  (the default), and setting the `generator` string to:
 
 * (((mapping metadata , uuid-string)))``uuid-string``: OpenJPA will generate a 128-bit type 1 UUID unique within the network, represented as a 16-character string.
 For more information on UUIDs, see the IETF UUID draft specification at: http://www.ics.uci.edu/~ejw/authoring/uuid-guid/[
@@ -484,7 +484,7 @@ http://www.ics.uci.edu/~ejw/authoring/uuid-guid/]
 * (((mapping metadata , uuid-type4-string)))``uuid-type4-string``: OpenJPA will generate a 128-bit type 4 pseudo-random UUID, represented as a 16-character string.
 For more information on UUIDs, see the IETF UUID draft specification at: http://www.ics.uci.edu/~ejw/authoring/uuid-guid/[
 http://www.ics.uci.edu/~ejw/authoring/uuid-guid/]
-* (((mapping metadata , uuid-type4-hex)))``uuid-type4-hex``: Same as ` uuid-type4-string` , but represents the type 4 UUID as a 32-character hexadecimal string.
+* (((mapping metadata , uuid-type4-hex)))``uuid-type4-hex``: Same as  `uuid-type4-string` , but represents the type 4 UUID as a 32-character hexadecimal string.
 
 These string constants are defined in link:../../apidocs/org/apache/openjpa/persistence/Generator.html[
 org.apache.openjpa.persistence.Generator].
@@ -500,8 +500,8 @@ Read <<_ref_guide_sequence>> and <<_ref_guide_schema_def>> in the Reference Guid
 (((EmbeddedId)))
 (((metadata , EmbeddedId)))
 
-If your entity has multiple identity values, you may declare multiple `
-@Id` fields, or you may declare a single `@EmbeddedId` field.
+If your entity has multiple identity values, you may declare multiple 
+`@Id` fields, or you may declare a single `@EmbeddedId` field.
 The type of a field annotated with [class]``EmbeddedId`` must be an embeddable entity class.
 The fields of this embeddable class are considered the identity values of the owning entity.
 We explore entity identity and identity fields in <<_jpa_overview_pc_id>>.
@@ -605,8 +605,8 @@ When an entity `A` references a single entity ``
 B``, and other ``A``s might also reference the same ``B``, we say there is a _many to one_ relation from `A` to ``B``.
 In our sample model, for example, each magazine has a reference to its publisher.
 Multiple magazines might have the same publisher.
-We say, then, that the `
-Magazine.publisher` field is a many to one relation from magazines to publishers.
+We say, then, that the 
+`Magazine.publisher` field is a many to one relation from magazines to publishers.
 
 JPA indicates many to one relations between entities with the [class]``
 ManyToOne`` annotation.
@@ -632,12 +632,12 @@ It accepts the following attributes:
 (((metadata , CascadeType)))
 
 We introduce the JPA [class]``EntityManager`` in <<_jpa_overview_em>>.
-The [class]``EntityManager `` has APIs to persist new entities, remove (delete) existing entities, refresh entity state from the datastore, and merge _detached _ entity state back into the persistence context.
+The [class]``EntityManager `` has APIs to persist new entities, remove (delete) existing entities, refresh entity state from the datastore, and merge _detached_  entity state back into the persistence context.
 We explore all of these APIs in detail later in the overview.
 
 When the [class]``EntityManager`` is performing the above operations, you can instruct it to automatically cascade the operation to the entities held in a persistent field with the `cascade` property of your metadata annotation.
 This process is recursive.
-The `cascade ` property accepts an array of [class]``CascadeType`` enum values.
+The `cascade`  property accepts an array of [class]``CascadeType`` enum values.
 
 * ``CascadeType.PERSIST``: When persisting an entity, also persist the entities held in this field. We suggest liberal application of this cascade rule, because if the [class]``EntityManager`` finds a field that references a new entity during flush, and the field does not use `` CascadeType.PERSIST``, it is an error.
 * ``CascadeType.REMOVE``: When deleting an entity, also delete the entities held in this field.
@@ -705,8 +705,8 @@ When an entity `A` references multiple `B` entities, and no two ``A``s reference
 B``, we say there is a _one to many_ relation from ``A`` to ``B``.
 
 One to many relations are the exact inverse of the many to one relations we detailed in the preceding section.
-In that section, we said that the `
-Magazine.publisher` field is a many to one relation from magazines to publishers.
+In that section, we said that the 
+`Magazine.publisher` field is a many to one relation from magazines to publishers.
 Now, we see that the `Company.mags` field is the inverse - a one to many relation from publishers to magazines.
 Each company may publish multiple magazines, but each magazine can have only one publisher.
 
@@ -726,8 +726,8 @@ The equivalent XML element is ``one-to-many``, which includes the following attr
 * ``fetch``: One of `EAGER` or `` LAZY``.
 * ``mapped-by``: The name of the field or property that owns the relation. See <<_jpa_overview_meta_field>>.
 
-You may also nest the `cascade` element within a `
-one-to-many` element.
+You may also nest the `cascade` element within a 
+`one-to-many` element.
 
 [[_jpa_overview_meta_mappedby]]
 ====== Bidirectional Relations
@@ -737,7 +737,7 @@ one-to-many` element.
 
 When two fields are logical inverses of each other, they form a __
 bidirectional relation__.
-Our model contains two bidirectional relations: `Magazine.publisher` and `Company.mags ` form one bidirectional relation, and `Article.authors ` and `Author.articles` form the other.
+Our model contains two bidirectional relations: `Magazine.publisher` and `Company.mags`  form one bidirectional relation, and `Article.authors`  and `Author.articles` form the other.
 In both cases, there is a clear link between the two fields that form the relationship.
 A magazine refers to its publisher while the publisher refers to all its published magazines.
 An article refers to its authors while each author refers to her written articles.
@@ -745,7 +745,7 @@ An article refers to its authors while each author refers to her written article
 When the two fields of a bidirectional relation share the same datastore mapping, JPA formalizes the connection with the `mappedBy` property.
 Marking `Company.mags` as `mappedBy```Magazine.publisher`` means two things:
 
-. `Company.mags` uses the datastore mapping for `` Magazine.publisher``, but inverses it. In fact, it is illegal to specify any additional mapping information when you use the `mappedBy ` property. All mapping information is read from the referenced field. We explore mapping in depth in <<_jpa_overview_mapping>>.
+. `Company.mags` uses the datastore mapping for `` Magazine.publisher``, but inverses it. In fact, it is illegal to specify any additional mapping information when you use the `mappedBy`  property. All mapping information is read from the referenced field. We explore mapping in depth in <<_jpa_overview_mapping>>.
 . `Magazine.publisher` is the "owner" of the relation. The field that specifies the mapping data is always the owner. This means that changes to the `Magazine.publisher` field are reflected in the datastore, while changes to the `Company.mags` field alone are not. Changes to `Company.mags` may still affect the JPA implementation's cache, however. Thus, it is very important that you keep your object model consistent by properly maintaining both sides of your bidirectional relations at all times.
 
 You should always take advantage of the `mappedBy` property rather than mapping each field of a bidirectional relation independently.
@@ -788,8 +788,8 @@ The equivalent XML element is `one-to-one` which understands the following attri
 * ``fetch``: One of `EAGER` or `` LAZY``.
 * ``mapped-by``: The field that owns the relation. See <<_jpa_overview_meta_field>>.
 
-You may also nest the `cascade` element within a `
-one-to-one` element.
+You may also nest the `cascade` element within a 
+`one-to-one` element.
 
 [[_jpa_overview_meta_manytomany]]
 ===== Many To Many
@@ -799,7 +799,7 @@ one-to-one` element.
 When an entity `A` references multiple `B` entities, and other ``A``s might reference some of the same ``B``s, we say there is a _many to many_ relation between `A` and ``B``.
 In our sample model, for example, each article has a reference to all the authors that contributed to the article.
 Other articles might have some of the same authors.
-We say, then, that [class]``Article`` and [class]``Author `` have a many to many relation through the `Article.authors ` field.
+We say, then, that [class]``Article`` and [class]``Author `` have a many to many relation through the `Article.authors`  field.
 
 JPA indicates many to many relations between entities with the [class]``
 ManyToMany`` annotation.
@@ -818,8 +818,8 @@ It accepts the following attributes:
 * ``fetch``: One of `EAGER` or `` LAZY``.
 * ``mapped-by``: The field that owns the relation. See <<_jpa_overview_meta_field>>.
 
-You may also nest the `cascade` element within a `
-many-to-many` element.
+You may also nest the `cascade` element within a 
+`many-to-many` element.
 
 [[_jpa_overview_meta_orderby]]
 ===== Order By
@@ -843,7 +843,7 @@ Each `<field name>` is the name of a persistent field in the collection's elemen
 You can optionally follow each field by the keyword `ASC` for ascending order, or `DESC` for descending order.
 If the direction is omitted, it defaults to ascending.
 
-The equivalent XML element is `order-by` which can be listed as a sub-element of the `one-to-many` or `many-to-many ` elements.
+The equivalent XML element is `order-by` which can be listed as a sub-element of the `one-to-many` or `many-to-many`  elements.
 The text within this element is parsed as the order by string.
 
 [[_jpa_overview_meta_mapkey]]
@@ -859,7 +859,7 @@ It has the following properties:
 
 * ``String name``: The name of a field in the related entity class to use as the map key. If no name is given, defaults to the identity field of the related entity class.
 
-The equivalent XML element is `map-key` which can be listed as a sub-element of the `one-to-many` or `many-to-many ` elements.
+The equivalent XML element is `map-key` which can be listed as a sub-element of the `one-to-many` or `many-to-many`  elements.
 The `map-key` element has the following attributes:
 
 * ``name``: The name of the field in the related entity class to use as the map key.
@@ -870,8 +870,8 @@ The `map-key` element has the following attributes:
 
 In the absence of any of the annotations above, JPA defines the following default behavior for declared fields:
 
-. Fields declared ``static, transient``, or `final ` default to non-persistent.
-. Fields of any primitive type, primitive wrapper type, [class]`` java.lang.String``, [class]``byte[]``, [class]`` Byte[]``, [class]``char[]``, [class]`` Character[]``, [class]``java.math.BigDecimal``, [class]``java.math.BigInteger``, [class]`` java.util.Date``, [class]`` java.util.Calendar``, [class]``java.sql.Date``, [class]``java.sql.Timestamp``, or any [class]``Serializable`` type default to persistent, as if annotated with <<_jpa_overview_meta_basic,` @Basic`>>.
+. Fields declared ``static, transient``, or `final`  default to non-persistent.
+. Fields of any primitive type, primitive wrapper type, [class]`` java.lang.String``, [class]``byte[]``, [class]`` Byte[]``, [class]``char[]``, [class]`` Character[]``, [class]``java.math.BigDecimal``, [class]``java.math.BigInteger``, [class]`` java.util.Date``, [class]`` java.util.Calendar``, [class]``java.sql.Date``, [class]``java.sql.Timestamp``, or any [class]``Serializable`` type default to persistent, as if annotated with <<_jpa_overview_meta_basic, `@Basic`>>.
 . Fields of an embeddable type default to persistent, as if annotated with <<_jpa_overview_meta_embedded,`@Embedded`>>.
 . All other fields default to non-persistent.
 

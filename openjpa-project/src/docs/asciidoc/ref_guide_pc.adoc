@@ -17,8 +17,8 @@ However, there are certain situations in which providing OpenJPA with a persiste
 * When OpenJPA manipulates classes in a persistent inheritance hierarchy, OpenJPA must be aware of all the classes in the hierarchy. If some of the classes have not been loaded into the JVM yet, OpenJPA may not know about them, and queries may return incorrect results.
 * If you configure OpenJPA to create the needed database schema on startup (see <<_ref_guide_mapping_synch>>), OpenJPA must know all of your persistent classes up-front.
 
-When any of these conditions are a factor in your JPA application, use the ``class``, ``mapping-file``, and `
-jar-file` elements of JPA's standard XML format to list your persistent classes.
+When any of these conditions are a factor in your JPA application, use the ``class``, ``mapping-file``, and 
+`jar-file` elements of JPA's standard XML format to list your persistent classes.
 See <<_jpa_overview_persistence_xml>> for details.
 
 Alternately, you can tell OpenJPA to search through your classpath for persistent types.
@@ -118,8 +118,8 @@ Searching for metadata for every class loaded by the JVM can slow application in
 One way to speed things up is to take advantage of the optional persistent class list described in <<_ref_guide_pc_pcclasses>>.
 If you declare a persistent class list, OpenJPA will only search for metadata for classes in that list.
 
-To employ the OpenJPA agent, invoke `java` with the `
--javaagent` set to the path to your OpenJPA jar file.
+To employ the OpenJPA agent, invoke `java` with the 
+`-javaagent` set to the path to your OpenJPA jar file.
 
 .Using the OpenJPA Agent for Runtime Enhancement
 ====
@@ -272,8 +272,8 @@ OpenJPA manages the identity of your persistent objects for you through a surrog
 
 You can control how your JPA datastore identity value is generated through OpenJPA's link:../../apidocs/org/apache/openjpa/persistence/DataStoreId.html[
 org.apache.openjpa.persistence.DataStoreId] class annotation.
-This annotation has `strategy` and `
-generator` properties that mirror the same-named properties on the standard [class]``jakarta.persistence.GeneratedValue`` annotation described in <<_jpa_overview_meta_id>> of the JPA Overview.
+This annotation has `strategy` and 
+`generator` properties that mirror the same-named properties on the standard [class]``jakarta.persistence.GeneratedValue`` annotation described in <<_jpa_overview_meta_id>> of the JPA Overview.
 
 To retrieve the identity value of a datastore identity entity, use the [method]``OpenJPAEntityManager.getObjectId(Object entity)`` method.
 See <<_ref_guide_runtime_em>> for more information on the [class]``OpenJPAEntityManager``.
@@ -441,8 +441,8 @@ Before you can run the application identity tool on a persistent class, the clas
 All primary key fields must be marked as such in the metadata.
 
 In JPA metadata, do not attempt to specify the `@IdClass` annotation unless you are using the application identity tool to overwrite an existing identity class.
-Attempting to set the value of the `@IdClass ` to a non-existent class will prevent your persistent class from compiling.
-Instead, use the `-name` or `-suffix ` options described below to tell OpenJPA what name to give your generated identity class.
+Attempting to set the value of the `@IdClass`  to a non-existent class will prevent your persistent class from compiling.
+Instead, use the `-name` or `-suffix`  options described below to tell OpenJPA what name to give your generated identity class.
 Once the application identity tool has generated the class code, you can set the `@IdClass` annotation.
 
 The application identity tool can be invoked via its Java class, link:../../apidocs/org/apache/openjpa/enhance/ApplicationIdTool[
@@ -594,8 +594,8 @@ Therefore, you can use custom comparators on your persistent field simply by set
 
 .Using Initial Field Values
 ====
-Though the annotations are left out for simplicity, assume `
-employeesBySal` and `departments` are persistent fields in the class below.
+Though the annotations are left out for simplicity, assume 
+`employeesBySal` and `departments` are persistent fields in the class below.
 
 [source]
 ----
@@ -658,7 +658,7 @@ Some persistent fields, however, might represent huge amounts of data, to the po
 OpenJPA uses special proxy types to represent these "large result set" fields.
 OpenJPA's large result set proxies do not cache any data in memory.
 Instead, each operation on the proxy offloads the work to the database and returns the proper result.
-For example, the [method]``contains`` method of a large result set collection will perform a ` SELECT COUNT(*)` query with the proper `WHERE` conditions to find out if the given element exists in the database's record of the collection.
+For example, the [method]``contains`` method of a large result set collection will perform a  `SELECT COUNT(*)` query with the proper `WHERE` conditions to find out if the given element exists in the database's record of the collection.
 Similarly, each time you obtain an iterator OpenJPA performs the proper query using the current <<_ref_guide_dbsetup_lrs,large result set settings>>, as discussed in the <<_ref_guide_dbsetup,JDBC>> chapter.
 As you invoke [method]``Iterator.next``, OpenJPA instantiates the result objects on-demand.
 
@@ -747,7 +747,7 @@ Your custom types must, however, meet the following criteria:
 If you have custom classes that must be proxied and do not meet these requirements, OpenJPA allows you to define your own proxy classes and your own proxy manager.
 See the `openjpa.util` package link:../../apidocs/[Javadoc] for details on the interfaces involved, and the utility classes OpenJPA provides to assist you.
 
-You can plug your custom proxy manager into the OpenJPA runtime through the <<_openjpa.proxymanager,` openjpa.ProxyManager`>> configuration property.
+You can plug your custom proxy manager into the OpenJPA runtime through the <<_openjpa.proxymanager, `openjpa.ProxyManager`>> configuration property.
 
 .Configuring the Proxy Manager
 ====
@@ -968,7 +968,7 @@ results = q.getResultList();
 
 Externalization often takes simple constant values and transforms them to constant values of a different type.
 An example would be storing a [class]``
-boolean`` field as a [class]``char``, where `true ` and `false` would be stored in the database as ``'T'`` and `'F'` respectively.
+boolean`` field as a [class]``char``, where `true`  and `false` would be stored in the database as ``'T'`` and `'F'` respectively.
 
 OpenJPA allows you to define these simple translations in metadata, so that the field behaves as in <<_ref_guide_pc_extern,full-fledged
 externalization>> without requiring externalizer and factory methods.
@@ -1039,7 +1039,7 @@ org.apache.openjpa.persistence.FetchAttribute] within a [class]``FetchGroup`` in
 Each [class]``FetchAttribute`` has the following properties:
 
 * ``String name``: The name of the persistent field or property to include in the fetch group.
-* ``recursionDepth``: If the attribute represents a relation, the maximum number of same-typed relations to eager-fetch from this field. Defaults to 1. For example, consider an [class]``Employee`` class with a ``manager`` field, also of type [class]``Employee``. When we load an [class]``Employee`` and the ` manager` field is in an active fetch group, the recursion depth (along with the max fetch depth setting, described below) determines whether we only retrieve the target [class]``Employee`` and his manager (depth 1), or whether we also retrieve the manager's manager (depth 2), or the manager's manager's manager (depth 3), etc. Use -1 for unlimited depth.
+* ``recursionDepth``: If the attribute represents a relation, the maximum number of same-typed relations to eager-fetch from this field. Defaults to 1. For example, consider an [class]``Employee`` class with a ``manager`` field, also of type [class]``Employee``. When we load an [class]``Employee`` and the  `manager` field is in an active fetch group, the recursion depth (along with the max fetch depth setting, described below) determines whether we only retrieve the target [class]``Employee`` and his manager (depth 1), or whether we also retrieve the manager's manager (depth 2), or the manager's manager's manager (depth 3), etc. Use -1 for unlimited depth.
 
 
 .Custom Fetch Group Metadata
@@ -1123,7 +1123,7 @@ OpenJPA's [class]``OpenJPAEntityManager`` and [class]``
 OpenJPAQuery`` extensions to the standard [class]``EntityManager `` and [class]``Query`` interfaces provide access to a link:../../apidocs/org/apache/openjpa/persistence/FetchPlan.html[
 org.apache.openjpa.persistence.FetchPlan] object.
 The [class]``FetchPlan`` maintains the set of active fetch groups and the maximum fetch depth.
-It begins with the groups and depth defined in the ``openjpa.FetchGroups`` and `openjpa.MaxFetchDepth ` properties, but allows you to add or remove groups and change the maximum fetch depth for an individual [class]``EntityManager`` or [class]``Query`` through the methods below.
+It begins with the groups and depth defined in the ``openjpa.FetchGroups`` and `openjpa.MaxFetchDepth`  properties, but allows you to add or remove groups and change the maximum fetch depth for an individual [class]``EntityManager`` or [class]``Query`` through the methods below.
 
 [source]
 ----
@@ -1195,7 +1195,7 @@ So, if the field `publisher` is defined in base class [class]``Publication`` rat
 This is stricter than Java's default field-masking algorithms, which would allow the latter method behavior if ``Magazine`` did not also define a field called ``
 publisher``.
 
-To include the fields defined in a super class by the subclass or to distinguish between fields that are defined in _both_ super- and subclass, set `setExtendedPathLookup(boolean)` on `FetchPlan ` to ``true``.
+To include the fields defined in a super class by the subclass or to distinguish between fields that are defined in _both_ super- and subclass, set `setExtendedPathLookup(boolean)` on `FetchPlan`  to ``true``.
 By default, this option is set to ``false``, to reduce more extensive lookups for predominant use cases.
 
 In order to avoid the cost of reflection, OpenJPA does not perform any validation of the field name / class name pairs that you put into the fetch configuration.
@@ -1259,7 +1259,7 @@ As you'll see below, subclass data fetching is configured separately from relati
 [NOTE]
 ====
 Some databases may not support outer joins.
-Also, OpenJPA can not use outer joins if you have set the <<_openjpa.jdbc.dbdictionary,` DBDictionary`>>'s `JoinSyntax` to ``traditional``.
+Also, OpenJPA can not use outer joins if you have set the <<_openjpa.jdbc.dbdictionary, `DBDictionary`>>'s `JoinSyntax` to ``traditional``.
 See <<_ref_guide_dbsetup_sql92>>.
 ====
 * (((eager fetching , parallel mode)))``parallel``: Under this mode, OpenJPA selects to-one relations and joined collections as outlined in the `join` mode description above.
@@ -1281,8 +1281,8 @@ Rather than outer-joining to subclass tables, OpenJPA will issue the query separ
 In all other situations, parallel subclass fetch mode acts just like join mode in regards to vertically-mapped subclasses.
 
 When OpenJPA knows that it is selecting for a single object only, it never uses ``parallel`` mode, because the additional selects can be made lazily just as efficiently.
-This mode only increases efficiency over `
-join` mode when multiple objects with eager relations are being loaded, or when multiple selects might be faster than joining to all possible subclasses.
+This mode only increases efficiency over 
+`join` mode when multiple objects with eager relations are being loaded, or when multiple selects might be faster than joining to all possible subclasses.
 
 
 [[_ref_guide_perfpack_eager_conf]]
@@ -1291,9 +1291,9 @@ join` mode when multiple objects with eager relations are being loaded, or when 
 
 (((EagerFetchMode)))
 (((SubclassFetchMode)))
-(((eager fetching , EagerFetchMode))) You can control OpenJPA's default eager fetch mode through the <<_openjpa.jdbc.eagerfetchmode,`
-openjpa.jdbc.EagerFetchMode`>> and <<_openjpa.jdbc.subclassfetchmode,`
-openjpa.jdbc.SubclassFetchMode`>> configuration properties.
+(((eager fetching , EagerFetchMode))) You can control OpenJPA's default eager fetch mode through the <<_openjpa.jdbc.eagerfetchmode,
+`openjpa.jdbc.EagerFetchMode`>> and <<_openjpa.jdbc.subclassfetchmode,
+`openjpa.jdbc.SubclassFetchMode`>> configuration properties.
 Set each of these properties to one of the mode names described in the previous section: ``none, join, parallel``.
 If left unset, the eager fetch mode defaults to `parallel` and the subclass fetch mode defaults to `join` These are generally the most robust and performant strategies.
 
@@ -1342,11 +1342,11 @@ But an extension value of ``join`` won't cause any eager joining if the fetch co
 There are several important points that you should consider when using eager fetching:
 
 * (((eager fetching , with large result sets))) When you are using `parallel` eager fetch mode and you have large result sets enabled (see <<_ref_guide_dbsetup_lrs>>) or you place a range on a query, OpenJPA performs the needed parallel selects on one page of results at a time.
-For example, suppose your `
-FetchBatchSize` is set to 20, and you perform a large result set query on a class that has collection fields in the configured fetch groups.
+For example, suppose your 
+`FetchBatchSize` is set to 20, and you perform a large result set query on a class that has collection fields in the configured fetch groups.
 OpenJPA will immediately cache the first `20` results of the query using `join` mode eager fetching only.
 Then, it will issue the extra selects needed to eager fetch your collection fields according to ``parallel`` mode.
-Each select will use a SQL `IN ` clause (or multiple `OR` clauses if your class has a compound primary key) to limit the selected collection elements to those owned by the 20 cached results.
+Each select will use a SQL `IN`  clause (or multiple `OR` clauses if your class has a compound primary key) to limit the selected collection elements to those owned by the 20 cached results.
 
 Once you iterate past the first 20 results, OpenJPA will cache the next 20 and again issue any needed extra selects for collection fields, and so on.
 This pattern ensures that you get the benefits of eager fetching without bringing more data into memory than anticipated.

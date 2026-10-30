@@ -57,7 +57,7 @@ Often this happens automatically.
 Some parts of this tutorial, however, do require that all entity classes be loaded explicitly.
 The JPA standard includes persistent class listings in its XML configuration format.
 Add the following lines to [path]_
-../../META-INF/persistence.xml_ between the `<provider> ` and the `<properties>` elements:
+../../META-INF/persistence.xml_ between the `<provider>`  and the `<properties>` elements:
 
 
 [source]
@@ -91,8 +91,8 @@ To do so, we must compile the [path]_.java_ files, as we would with any Java pro
 ====
 
 (((CLASSPATH))) Be sure that your [var]``CLASSPATH`` is set correctly.
-Note that your OpenJPA install directory should be in the [var]``CLASSPATH``, as the tutorial classes are located in the ` tutorial/persistence` directory under your OpenJPA install directory, and are in the `
-tutorial.persistence` package.
+Note that your OpenJPA install directory should be in the [var]``CLASSPATH``, as the tutorial classes are located in the  `tutorial/persistence` directory under your OpenJPA install directory, and are in the 
+`tutorial.persistence` package.
 ====
 
 . Make sure you are in the [path]_ tutorial/persistence_ directory. All examples throughout the tutorial assume that you are in this directory.
@@ -127,8 +127,8 @@ The annotations serve to map the class into the database.
 For more information on these and other annotations, see <<_jpa_overview_meta>> and <<_jpa_overview_mapping>>.
 .. ``@Entity``: This annotation indicates that instances of this class may be persistent entities. The value of the `name` attribute is the entity name, and is used in queries, etc.
 .. ``@Table``: This annotation is used to map the entity to a primary table. The value of the `name` attribute specifies the name of the relational table to use as the primary table.
-.. ``@Inheritance``: When multiple classes in an inheritance hierarchy are persistent entity types, it is important to describe how the inheritance hierarchy is mapped. Setting the value of the `strategy ` attribute to `InheritanceType.SINGLE_TABLE` indicates that the primary table for all subclasses shall be the same table as for the superclass.
-.. ``@DiscriminatorColumn``: With a `SINGLE_TABLE` inheritance mapping strategy, instances of multiple classes will be stored in the same table. This annotation describes a column in that table that is used to determine the type of an instance whose data is stored in a particular row. The ``name`` attribute is the name of the column, and the ` length` attribute indicates the size of the column. By default, the unqualified class name for the instance is stored in the discriminator column. To store a different value for a type, use the `@DiscriminatorValue ` annotation.
+.. ``@Inheritance``: When multiple classes in an inheritance hierarchy are persistent entity types, it is important to describe how the inheritance hierarchy is mapped. Setting the value of the `strategy`  attribute to `InheritanceType.SINGLE_TABLE` indicates that the primary table for all subclasses shall be the same table as for the superclass.
+.. ``@DiscriminatorColumn``: With a `SINGLE_TABLE` inheritance mapping strategy, instances of multiple classes will be stored in the same table. This annotation describes a column in that table that is used to determine the type of an instance whose data is stored in a particular row. The ``name`` attribute is the name of the column, and the  `length` attribute indicates the size of the column. By default, the unqualified class name for the instance is stored in the discriminator column. To store a different value for a type, use the `@DiscriminatorValue`  annotation.
 
 
 Let's take a look at our class' field annotations.
@@ -306,8 +306,8 @@ java tutorial.persistence.AnimalMaintenance list "select a from Animal a where a
 ----
 
 The Java Persistence Query Language (JPQL) is designed to look and behave much like an object oriented SQL dialect.
-The `name` and `
-price` fields identified in the above queries map to the member fields of those names in [class]`` tutorial.persistence.Animal``.
+The `name` and 
+`price` fields identified in the above queries map to the member fields of those names in [class]`` tutorial.persistence.Animal``.
 More details on JPQL syntax is available in <<_jpa_overview_query>> of the JPA Overview.
 
 Great! Now that we can see the contents of the database, let's add some code that lets us add and remove animals.
@@ -480,14 +480,14 @@ _ file.
         inverseJoinColumns=@JoinColumn(name="CHILD_ID"))
 ----
 
-The `@ManyToMany` annotation indicates that `children ` is one side of a many-to-many relation. `@JoinTable` describes how this relation maps to a database join table.
-The annotation's ``joinColumns`` name the join table's foreign key columns linking to the owning instance (the parent). In this case, column `
-RABBIT_CHILDREN.PARENT_ID` is a foreign key to the parent's `
-ID` primary key column.
-Similarly, the `inverseJoinColumns ` attribute denotes the foreign key columns linking to the collection elements (the children). For more details on the `@JoinTable` annotation, see <<_jpa_overview_mapping>> of the JPA Overview.
+The `@ManyToMany` annotation indicates that `children`  is one side of a many-to-many relation. `@JoinTable` describes how this relation maps to a database join table.
+The annotation's ``joinColumns`` name the join table's foreign key columns linking to the owning instance (the parent). In this case, column 
+`RABBIT_CHILDREN.PARENT_ID` is a foreign key to the parent's 
+`ID` primary key column.
+Similarly, the `inverseJoinColumns`  attribute denotes the foreign key columns linking to the collection elements (the children). For more details on the `@JoinTable` annotation, see <<_jpa_overview_mapping>> of the JPA Overview.
 
-Now we'll map the other side of this bidirectional relation, the `
-parents` field.
+Now we'll map the other side of this bidirectional relation, the 
+`parents` field.
 Insert the following snippet of code immediately __before__ the `parents` field declaration in the [path]_Rabbit.java_ file.
 The `mappedBy` attribute identifies the name of the owning side of the relation.
 
@@ -785,7 +785,7 @@ Add the following methods.
 The `@ManyToOne` annotation indicates that this is the many side of the bidirectional relation.
 The many side must always be the owner in this type of relation.
 The `@JoinColumn` describes the foreign key that joins the rabbit table to the snake table.
-The rabbit table has an ``EATER_ID`` column that is a foreign key to the `ID ` primary key column of the snake table.
+The rabbit table has an ``EATER_ID`` column that is a foreign key to the `ID`  primary key column of the snake table.
 . Compile [path]_Snake.java_ and [path]_Rabbit.java_ and optionally enhance the classes.
 
 
@@ -969,7 +969,7 @@ You can use the above hints to view the JNDI tree to see if [class]``samples.j2e
 
 Place the ear file in the [path]_autodeploy_ directory of your WebLogic domain.
 Production mode (see your startWebLogic.sh/cmd file) should be set to false to enable auto-deployment.
-If the application was installed correctly, you should see `openjpa-persistence-j2ee-sample ` listed in the Deployments section of the admin console.
+If the application was installed correctly, you should see `openjpa-persistence-j2ee-sample`  listed in the Deployments section of the admin console.
 In addition you should find `CarHome` listed in the JNDI tree under `AdminServer->samples->j2ee->ejb` . Ensure that you have added the class [class]``samples.j2ee.Car`` to the `openjpa.PersistentClasses` OpenJPA configuration property in the `META-INF/ra.xml` file.
 
 [[_jpa_j2ee_tutorial_using]]
@@ -980,7 +980,7 @@ By browsing to ``
 http://yourserver:yourport/openjpa-persistence-j2ee-sample``, you should be presented with a simple list page with no cars.
 You can edit, add, delete car instances.
 In addition, you can query on the underlying [class]``
-Car`` instances by passing in an JPQL query into the marked form (such as `select car from Car car where car.model="Some Model" ` ).
+Car`` instances by passing in an JPQL query into the marked form (such as `select car from Car car where car.model="Some Model"`  ).
 
 [[_jpa_j2ee_tutorial_architecture]]
 ===== Sample Architecture

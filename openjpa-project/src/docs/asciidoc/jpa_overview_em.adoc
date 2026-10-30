@@ -155,7 +155,7 @@ See <<_ref_guide_detach>> in the Reference Guide for details.
 For a given entity ``A``, the [method]``merge`` method behaves as follows:
 
 * If `A` is a detached entity, its state is copied into existing managed instance `A'` of the same entity identity, or a new managed copy of `A` is created.
-* If `A` is a new entity, a new managed entity `A' ` is created and the state of `A` is copied into ``A'``.
+* If `A` is a new entity, a new managed entity `A'`  is created and the state of `A` is copied into ``A'``.
 * If `A` is an existing managed entity, it is ignored. However, the merge operation still cascades as defined below.
 * If `A` is a removed entity, an [class]`` IllegalArgumentException`` is thrown.
 * The merge operation recurses on all relation fields of `A` whose <<_jpa_overview_meta_cascade,cascades>> include ``CascadeType.MERGE``.

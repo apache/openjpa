@@ -55,7 +55,7 @@ createEntityManager``:
 * `openjpa.ConnectionPassword`
 * `openjpa.ConnectionRetainMode`
 * `openjpa.TransactionMode`
-* ``openjpa.<property>``, where _<property> _ is any JavaBean property of the link:../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html[ org.apache.openjpa.persistence.OpenJPAEntityManager].
+* ``openjpa.<property>``, where _<property>_  is any JavaBean property of the link:../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html[ org.apache.openjpa.persistence.OpenJPAEntityManager].
 
 The last option uses reflection to configure any property of OpenJPA's [class]``EntityManager`` implementation with the value supplied in your map.
 The first options correspond exactly to the same-named OpenJPA configuration keys described in <<_ref_guide_conf>> of the Reference Guide.
@@ -86,7 +86,7 @@ OpenJPA offers several features related to detaching entities.
 See <<_ref_guide_detach>> in the Reference Guide. <<_ref_guide_detach_graph>> in particular describes how to use the `DetachState` setting to boost the performance of merging detached entities.
 ====
 
-Injected [class]``EntityManager``s have a _transaction _ persistence context, while [class]`` EntityManager``s obtained through the [class]``EntityManagerFactory`` have an _extended _ persistence context.
+Injected [class]``EntityManager``s have a _transaction_  persistence context, while [class]`` EntityManager``s obtained through the [class]``EntityManagerFactory`` have an _extended_  persistence context.
 We describe these persistence context types below.
 
 [[_jpa_overview_emfactory_perscontext_trans]]

@@ -33,7 +33,7 @@ The optional map contains vendor-specific property settings used to further conf
 
 [path]_persistence.xml_ files define [class]``
 EntityManagerFactories``.
-The [method]``createEntityManagerFactory `` methods search for [path]_persistence.xml_ files within the [path]_META-INF_ directory of any `CLASSPATH ` element.
+The [method]``createEntityManagerFactory `` methods search for [path]_persistence.xml_ files within the [path]_META-INF_ directory of any `CLASSPATH`  element.
 For example, if your `CLASSPATH` contains the [path]_conf_ directory, you could place an [class]``
 EntityManagerFactory`` definition in [path]_
 conf/META-INF/persistence.xml_.
@@ -371,8 +371,8 @@ Version 1.0 of the persistence schema can be found at http://java.sun.com/xml/ns
 ----
 
 The root element of a [path]_persistence.xml_ file is ``
-persistence``, which then contains one or more `
-persistence-unit` definitions.
+persistence``, which then contains one or more 
+`persistence-unit` definitions.
 The root element should include the version attribute with the appropriate version, `1.0` for a version 1.0 file and `2.0` for a version 2.0 file.
 Each persistence unit describes the configuration for the entity managers created by the persistence unit's entity manager factory.
 The persistence unit can specify these elements and attributes.
@@ -392,7 +392,7 @@ org.apache.openjpa.persistence.PersistenceProviderImpl`` to use OpenJPA.
 * ``mapping-file``*: The resource names of XML mapping files for entities and embeddable classes. You can also specify mapping information in an [path]_orm.xml_ file in your [path]_META-INF_ directory. If present, the [path]_orm.xml_ mapping file will be read automatically.
 * ``jar-file``*: The names of jar files containing entities and embeddable classes. The implementation will scan the jar for annotated classes.
 * ``class``*: The class names of entities and embeddable classes.
-* ``properties``: This element contains nested `property ` elements used to specify vendor-specific settings. Each ` property` has a name attribute and a value attribute.
+* ``properties``: This element contains nested `property`  elements used to specify vendor-specific settings. Each  `property` has a name attribute and a value attribute.
 
 
 [NOTE]

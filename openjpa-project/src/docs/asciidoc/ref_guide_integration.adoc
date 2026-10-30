@@ -53,8 +53,8 @@ Following is an example of how to use the nested `config` tag in a [path]_build.
 ----
 ====
 
-It is also possible to specify a `properties` or `
-propertiesFile` attribute on the `config` tag, which will be used to locate a properties resource or file.
+It is also possible to specify a `properties` or 
+`propertiesFile` attribute on the `config` tag, which will be used to locate a properties resource or file.
 The resource will be loaded relative to the current CLASSPATH.
 
 .Using the Properties Attribute of the <config> Tag
@@ -134,8 +134,8 @@ org.apache.openjpa.enhance.PCEnhancer``>>.
 
 The enhancer task accepts a nested `fileset` tag to specify the files that should be processed.
 You can specify [path]_.java_ or [path]_.class_ files.
-If you do not specify any files, the task will run on the classes listed in your [path]_persistence.xml_ or <<_openjpa.metadatafactory,`
-openjpa.MetaDataFactory`>> property.
+If you do not specify any files, the task will run on the classes listed in your [path]_persistence.xml_ or <<_openjpa.metadatafactory,
+`openjpa.MetaDataFactory`>> property.
 You must, however, supply the classpath you wish the enhancer to run with.
 This classpath must include, at minimum, the openjpa jar(s), persistence.xml and the target classes.
 
@@ -193,8 +193,8 @@ The application identity tool task accepts a nested `fileset` tag to specify the
 You can specify [path]_
 .java_ or [path]_.class_ files.
 If you do not specify any files, the task will run on the classes listed in your [path]_persistence.xml
-_ file or <<_openjpa.metadatafactory,`
-openjpa.MetaDataFactory`>> property.
+_ file or <<_openjpa.metadatafactory,
+`openjpa.MetaDataFactory`>> property.
 
 Following is an example of using the application identity tool task in a [path]_build.xml_ file:
 
@@ -229,8 +229,8 @@ The task's parameters correspond exactly to the long versions of the command-lin
 
 The mapping tool task accepts a nested `fileset` tag to specify the files that should be processed.
 You can specify [path]_.java_ or [path]_.class_ files.
-If you do not specify any files, the task will run on the classes listed in your [path]_persistence.xml_ file or <<_openjpa.metadatafactory,`
-openjpa.MetaDataFactory`>> property.
+If you do not specify any files, the task will run on the classes listed in your [path]_persistence.xml_ file or <<_openjpa.metadatafactory,
+`openjpa.MetaDataFactory`>> property.
 
 Following is an example of a [path]_build.xml_ target that invokes the mapping tool:
 

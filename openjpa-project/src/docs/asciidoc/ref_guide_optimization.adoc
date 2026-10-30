@@ -10,7 +10,7 @@ Depending on the particular characteristics of your application, the optimal set
 
 In the following table, each row is labeled with a list of italicized keywords.
 These keywords identify what characteristics the row in question may improve upon.
-Many of the rows are marked with one or both of the _performance _ and _scalability_ labels.
+Many of the rows are marked with one or both of the _performance_  and _scalability_ labels.
 It is important to bear in mind the differences between performance and scalability (for the most part, we are referring to system-wide scalability, and not necessarily only scalability within a single JVM). The performance-related hints will probably improve the performance of your application for a given user load, whereas the scalability-related hints will probably increase the total number of users that your application can service.
 Sometimes, increasing performance will decrease scalability, and vice versa.
 Typically, options that reduce the amount of work done on the database server will improve scalability, whereas those that push more work onto the server will have a negative impact on scalability.
@@ -115,14 +115,14 @@ OpenJPA's performance, these options should all be disabled.
 
 _performance vs. scalability_
 |
-When both the <<_openjpa.ignorechanges,`
-openjpa.IgnoreChanges`>> and <<_openjpa.flushbeforequeries,`openjpa.FlushBeforeQueries `>> properties are set to false, OpenJPA needs to consider
+When both the <<_openjpa.ignorechanges,
+`openjpa.IgnoreChanges`>> and <<_openjpa.flushbeforequeries,`openjpa.FlushBeforeQueries` >> properties are set to false, OpenJPA needs to consider
 in-memory dirty instances during queries.  This can sometimes result in OpenJPA
 needing to evaluate the entire extent objects in order to return the correct
 query results, which can have drastic performance consequences.  If it is
-appropriate for your application, configuring `FlushBeforeQueries ` to automatically flush before queries involving dirty objects will
+appropriate for your application, configuring `FlushBeforeQueries`  to automatically flush before queries involving dirty objects will
 ensure that this never happens. Setting `IgnoreChanges` to
-false will result in a small performance hit even if `FlushBeforeQueries ` is true, as incremental flushing is not as efficient overall as
+false will result in a small performance hit even if `FlushBeforeQueries`  is true, as incremental flushing is not as efficient overall as
 delaying all flushing to a single operation during commit.
 
 Setting `IgnoreChanges` to `true` will help performance, since dirty objects can be ignored for queries, meaning that incremental flushing or client-side processing is not necessary.
@@ -134,7 +134,7 @@ On the other hand, setting `IgnoreChanges` to `false` will have a negative impac
 
 _performance vs. scalability_
 |
-The <<_openjpa.connectionretainmode,`ConnectionRetainMode `>> configuration option controls when OpenJPA will obtain a
+The <<_openjpa.connectionretainmode,`ConnectionRetainMode` >> configuration option controls when OpenJPA will obtain a
 connection, and how long it will hold that connection. The optimal settings for
 this option will vary considerably depending on the particular behavior of
 your application. You may even benefit from using different retain modes for
@@ -223,7 +223,7 @@ The downside of using a detached state manager across tiers is that your enhance
 _performance, scalability_
 |
 When possible and appropriate, re-using [class]``EntityManager``s
-and setting the <<_openjpa.retainstate,`RetainState `>> configuration option to `true` may result in
+and setting the <<_openjpa.retainstate,`RetainState` >> configuration option to `true` may result in
 significant performance gains, since the [class]``EntityManager``'s
 built-in object cache will be used.
 
@@ -232,8 +232,8 @@ built-in object cache will be used.
 
 _performance_
 |
-OpenJPA respects the <<_openjpa.multithreaded,`
-openjpa.Multithreaded`>> option in that it does not impose as
+OpenJPA respects the <<_openjpa.multithreaded,
+`openjpa.Multithreaded`>> option in that it does not impose as
 much synchronization overhead for applications that do not set this value to ``true``. If your application is guaranteed to only use
 single-threaded access to OpenJPA resources and persistent objects, leaving
 this option as `false` will reduce synchronization overhead,
@@ -265,8 +265,8 @@ require it, consider disabling it again.  Some JDBC drivers and databases
 
 _performance, validation_
 |
-If you are using an <<_openjpa.jdbc.schemafactory,`
-openjpa.jdbc.SchemaFactory`>> setting of something other than
+If you are using an <<_openjpa.jdbc.schemafactory,
+`openjpa.jdbc.SchemaFactory`>> setting of something other than
 the default of ``dynamic``, consider switching back.  While other
 factories can ensure that object-relational mapping information is valid when
 a persistent class is first used, this can be a slow process.  Though the

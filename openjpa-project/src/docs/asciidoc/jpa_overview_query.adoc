@@ -95,8 +95,8 @@ But it could not be expressed as:
 SELECT x FROM Magazine x WHERE x.TITLE = 'JDJ'
 ----
 
-As with the `select` clause, alias names in the `where ` clause are resolved to the entity declared in the `from ` clause.
-The query above could be described in English as "for all [class]``Magazine`` instances ``x``, return a list of every `x` such that ``x``'s `title ` field is equal to 'JDJ'".
+As with the `select` clause, alias names in the `where`  clause are resolved to the entity declared in the `from`  clause.
+The query above could be described in English as "for all [class]``Magazine`` instances ``x``, return a list of every `x` such that ``x``'s `title`  field is equal to 'JDJ'".
 
 JPQL uses SQL-like syntax for query criteria.
 The `and` and ``or`` logical operators chain multiple criteria together:
@@ -107,7 +107,7 @@ The `and` and ``or`` logical operators chain multiple criteria together:
 SELECT x FROM Magazine x WHERE x.title = 'JDJ' OR x.title = 'JavaPro'
 ----
 
-The `=` operator tests for equality. `<> ` tests for inequality.
+The `=` operator tests for equality. `<>`  tests for inequality.
 JPQL also supports the following arithmetic operators for numeric comparisons: ``>, >=, <, <=``.
 For example:
 
@@ -210,7 +210,7 @@ For example:
 SELECT x FROM Magazine x WHERE x.articles is empty
 ----
 
-This statement will return all magazines whose ` articles` member contains no elements.
+This statement will return all magazines whose  `articles` member contains no elements.
 * (((IS NULL expressions)))``IS [NOT] NULL``: Specifies that the field is equal to null.
 For example:
 
@@ -252,8 +252,8 @@ For example, if the Magazine class has a field named "publisher" of type Company
 SELECT x FROM Magazine x WHERE x.publisher.name = 'Random House'
 ----
 
-This query returns all [class]``Magazine`` instances whose `
-publisher` field is set to a [class]``Company`` instance whose name is "Random House".
+This query returns all [class]``Magazine`` instances whose 
+`publisher` field is set to a [class]``Company`` instance whose name is "Random House".
 
 Single-valued relation traversal implies that the relation is not null.
 In SQL terms, this is known as an __inner join__.
@@ -280,8 +280,8 @@ This query says that for each [class]``Magazine```` x ``, traverse the `articles
 ====
 The `IN()` syntax can also be expressed with the keywords ``inner join``.
 The statements `SELECT x FROM Magazine
-x, IN(x.articles) y WHERE y.authorName = 'John Doe'` and `
-SELECT x FROM Magazine x inner join x.articles y WHERE y.authorName = 'John Doe' ` are synonymous.
+x, IN(x.articles) y WHERE y.authorName = 'John Doe'` and 
+`SELECT x FROM Magazine x inner join x.articles y WHERE y.authorName = 'John Doe'`  are synonymous.
 ====
 
 [[_jpa_overview_query_embeddables]]
@@ -475,7 +475,7 @@ SELECT x FROM Magazine x WHERE LN(x.price) >= 10
 
 SELECT x FROM Magazine x WHERE SQRT(x.price) >= 1.00
 ----
-* (((MOD function)))``MOD(number, divisor)``: Returns the modulo of `number ` and ``divisor``.
+* (((MOD function)))``MOD(number, divisor)``: Returns the modulo of `number`  and ``divisor``.
 
 
 [source]
@@ -611,7 +611,7 @@ q.setParameter("titleParam", "JDJ").setParameter("priceParam", 5.0);
 ListMagazine results = (ListMagazine) q.getResultList();
 ----
 
-This code substitutes `JDJ` for the ` :titleParam ` parameter and `5.0` for the `:priceParam ` parameter, then executes the query with those values.
+This code substitutes `JDJ` for the  `:titleParam`  parameter and `5.0` for the `:priceParam`  parameter, then executes the query with those values.
 
 All input parameters must be single-valued, except in IN expressions (see <<_jpa_langref_in_expressions>>), which support the use of collection-valued input parameters.
 
@@ -775,7 +775,7 @@ q.setHint("openjpa.LockTimeout", 3000);
 ===== Ordering
 
 JPQL queries may optionally contain an `order by` clause which specifies one or more fields to order by when returning query results.
-You may follow the `order by field` clause with the `asc ` or `desc` keywords, which indicate that ordering should be ascending or descending, respectively.
+You may follow the `order by field` clause with the `asc`  or `desc` keywords, which indicate that ordering should be ascending or descending, respectively.
 If the direction is omitted, ordering is ascending by default.
 
 [source]
@@ -817,7 +817,7 @@ Number result = (Number) q.getSingleResult();
 [[_jpa_overview_query_named]]
 ===== Named Queries
 
-Query templates can be statically declared using the ` NamedQuery ` and `NamedQueries` annotations.
+Query templates can be statically declared using the  `NamedQuery`  and `NamedQueries` annotations.
 For example:
 
 [source]
@@ -835,7 +835,7 @@ public class Magazine {
 }
 ----
 
-These declarations will define two named queries called `magsOverPrice ` and ``magsByTitle``.
+These declarations will define two named queries called `magsOverPrice`  and ``magsByTitle``.
 
 [source]
 ----
@@ -1037,8 +1037,8 @@ Although predefined reserved identifiers, such as ``DISTINCT``, ``
 FROM``, ``AS``, ``JOIN``, ``
 WHERE``, and `FALSE` appear in upper case in this example, predefined reserved identifiers are case insensitive.
 
-The `
-SELECT` clause of this example designates the return type of this query to be of type ``Magazine``.
+The 
+`SELECT` clause of this example designates the return type of this query to be of type ``Magazine``.
 
 Because the same persistence unit defines the abstract persistence schemas of the related entities, the developer can also specify a query over articles that utilizes the abstract schema type for products, and hence the state-fields and association-fields of both the abstract schema types `Magazine` and ``Author``.
 For example, if the abstract schema type `Author` has a state-field named ``firstName``, a query over articles can be specified using this state-field.
@@ -1062,7 +1062,7 @@ An identification variable is an identifier declared in the `FROM` clause of a q
 The domain of the query may be constrained by path expressions (See section <<_jpa_langref_path>>.
 
 Identification variables designate instances of a particular entity abstract schema type.
-The `FROM ` clause can contain multiple identification variable declarations separated by a comma (,).
+The `FROM`  clause can contain multiple identification variable declarations separated by a comma (,).
 
 * from_clause ::= FROM identification_variable_declaration {, {identification_variable_declaration | collection_member_declaration}}*
 * identification_variable_declaration ::= range_variable_declaration { join | fetch_join }*
@@ -1197,7 +1197,7 @@ BIT_LENGTH, CHAR_LENGTH, CHARACTER_LENGTH, POSITION, and UNKNOWN are not current
 [[_jpa_langref_from_vars]]
 ====== JPQL Identification Variables
 
-An identification variable is a valid identifier declared in the `FROM ` clause of a query.
+An identification variable is a valid identifier declared in the `FROM`  clause of a query.
 
 All identification variables must be declared in the `FROM` clause.
 Identification variables cannot be declared in other clauses.
@@ -1212,10 +1212,10 @@ For example, consider the previous query:
 ----
 SELECT DISTINCT mag FROM Magazine mag JOIN mag.articles art JOIN art.author auth WHERE auth.firstName = 'John'
 ----
-In the `FROM` clause declaration `
-mag.articles```art``, the identification variable ``art`` evaluates to any `Article` value directly reachable from ``Magazine``.
-The association-field ``articles`` is a collection of instances of the abstract schema type `Article` and the identification variable `art ` refers to an element of this collection.
-The type of `auth ` is the abstract schema type of ``Author``.
+In the `FROM` clause declaration 
+`mag.articles```art``, the identification variable ``art`` evaluates to any `Article` value directly reachable from ``Magazine``.
+The association-field ``articles`` is a collection of instances of the abstract schema type `Article` and the identification variable `art`  refers to an element of this collection.
+The type of `auth`  is the abstract schema type of ``Author``.
 
 An identification variable can range over an entity, embeddable, or basic abstract schema type.
 An identification variable designates an instance of an entity abstract schema type or an element of a collection of entity abstract schema type instances.
@@ -1250,11 +1250,11 @@ A range variable must not designate an embeddable class abstract schema type.
 
 Range variable declarations allow the developer to designate a "root" for objects which may not be reachable by navigation.
 
-In order to select values by comparing more than one instance of an entity abstract schema type, more than one identification variable ranging over the abstract schema type is needed in the `FROM` clause.
+In order to select values by comparing more than one instance of an entity abstract schema type, more than one identification variable ranging over the abstract schema type is needed in the` FROM `clause.
 
 The following query returns magazines whose price is greater than the price of magazines published by "Adventure" publishers.
-This example illustrates the use of two different identification variables in the `FROM` clause, both of the abstract schema type Magazine.
-The `SELECT` clause of this query determines that it is the magazines with prices greater than those of "Adventure" publisher's that are returned.
+This example illustrates the use of two different identification variables in the` FROM `clause, both of the abstract schema type Magazine.
+The` SELECT` clause of this query determines that it is the magazines with prices greater than those of "Adventure" publisher's that are returned.
 
 [source]
 ----
@@ -1354,8 +1354,8 @@ An identification variable used in a ``single_valued_object_path_expression`` or
 * general_identification_variable ::= identification_variable | KEY(identification_variable) | VALUE(identification_variable)
 
 It is syntactically illegal to compose a path expression from a path expression that evaluates to a collection.
-For example, if `mag ` designates ``Magazine``, the path expression `
-mag.articles.author` is illegal since navigation to authors results in a collection.
+For example, if `mag`  designates ``Magazine``, the path expression 
+`mag.articles.author` is illegal since navigation to authors results in a collection.
 This case should produce an error when the query string is verified.
 To handle such a navigation, an identification variable must be declared in the `FROM` clause to range over the elements of the ``articles`` collection.
 Another path expression must be used to navigate over each such element in the `WHERE` clause of the query, as in the following query which returns all authors that have any articles in any magazines:
@@ -1372,7 +1372,7 @@ See <<_jpa_langref_empty_comp>>, <<_jpa_langref_collection_member>>, and <<_jpa_
 [[_jpa_langref_joins]]
 ====== JPQL Joins
 
-An inner join may be implicitly specified by the use of a cartesian product in the `FROM` clause and a join condition in the `WHERE ` clause.
+An inner join may be implicitly specified by the use of a cartesian product in the `FROM` clause and a join condition in the `WHERE`  clause.
 In the absence of a join condition, this reduces to the cartesian product.
 
 The main use case for this generalized style of join is when a join condition does not involve a foreign key relationship that is mapped to an entity relationship, for example:
@@ -1470,7 +1470,7 @@ The syntax for a fetch join is
 
 * fetch_join ::= [ LEFT [OUTER] | INNER ] JOIN FETCH join_association_path_expression
 
-The association referenced by the right side of the `FETCH JOIN ` clause must be an association that belongs to an entity that is returned as a result of the query.
+The association referenced by the right side of the `FETCH JOIN`  clause must be an association that belongs to an entity that is returned as a result of the query.
 It is not permitted to specify an identification variable for the entities referenced by the right side of the ``FETCH JOIN`` clause, and hence references to the implicitly fetched entities cannot appear elsewhere in the query.
 
 The following query returns a set of magazines.
@@ -1540,7 +1540,7 @@ FROM Order AS o JOIN o.lineItems l JOIN l.product p
 ====== JPQL Polymorphism
 
 Java Persistence queries are automatically polymorphic.
-The `FROM ` clause of a query designates not only instances of the specific entity classes to which explicitly refers but of subclasses as well.
+The `FROM`  clause of a query designates not only instances of the specific entity classes to which explicitly refers but of subclasses as well.
 The instances returned by a query include instances of the subclasses that satisfy the query criteria.
 
 Non-polymorphic queries or queries whose polymorphism is restricted can be specified using entity type expressions in the `WHERE` clause to restrict the domain of the query.
@@ -1559,7 +1559,7 @@ A `WHERE` clause is defined as follows:
 The `GROUP BY` construct enables the aggregation of values according to the properties of an entity class.
 The `HAVING` construct enables conditions to be specified that further restrict the query result as restrictions upon the groups.
 
-The syntax of the `HAVING ` clause is as follows:
+The syntax of the `HAVING`  clause is as follows:
 
 * having_clause ::= HAVING conditional_expression
 
@@ -1568,8 +1568,8 @@ The `GROUP BY` and `HAVING` constructs are further discussed in <<_jpa_langref_g
 [[_jpa_langref_cond]]
 ===== JPQL Conditional Expressions
 
-The following sections describe the language constructs that can be used in a conditional expression of the `WHERE` clause or `
-HAVING` clause.
+The following sections describe the language constructs that can be used in a conditional expression of the `WHERE` clause or 
+`HAVING` clause.
 
 State-fields that are mapped in serialized form or as LOBs may not be portably used in conditional expressions.
 
@@ -1616,19 +1616,19 @@ Although reserved literals appear in upper case, they are case insensitive.
 [[_jpa_langref_idvar]]
 ====== JPQL Identification Variables
 
-All identification variables used in the `WHERE` or `
-HAVING` clause of a `SELECT` or `DELETE ` statement must be declared in the `FROM` clause, as described in <<_jpa_langref_from_vars>>.
-The identification variables used in the `WHERE` clause of an `UPDATE ` statement must be declared in the `UPDATE` clause.
+All identification variables used in the `WHERE` or 
+`HAVING` clause of a `SELECT` or `DELETE`  statement must be declared in the `FROM` clause, as described in <<_jpa_langref_from_vars>>.
+The identification variables used in the `WHERE` clause of an `UPDATE`  statement must be declared in the `UPDATE` clause.
 
-Identification variables are existentially quantified in the `WHERE ` and `HAVING` clause.
+Identification variables are existentially quantified in the `WHERE`  and `HAVING` clause.
 This means that an identification variable represents a member of a collection or an instance of an entity's abstract schema type.
 An identification variable never designates a collection in its entirety.
 
 [[_jpa_langref_path_exp]]
 ====== JPQL Path Expressions
 
-It is illegal to use a `collection_valued_path_expression` within a `
-WHERE` or `HAVING` clause as part of a conditional expression except in an ``empty_collection_comparison_expression``, in a ``collection_member_expression``, or as an argument to the `SIZE` operator.
+It is illegal to use a `collection_valued_path_expression` within a 
+`WHERE` or `HAVING` clause as part of a conditional expression except in an ``empty_collection_comparison_expression``, in a ``collection_member_expression``, or as an argument to the `SIZE` operator.
 
 [[_jpa_langref_input_params]]
 ====== JPQL Input Parameters
@@ -1678,8 +1678,8 @@ The scalar expressions described in <<_jpa_langref_scalar_expressions>> can be u
 
 Standard bracketing () for ordering expression evaluation is supported.
 
-Aggregate functions can only be used in conditional expressions in a `
-HAVING` clause.
+Aggregate functions can only be used in conditional expressions in a 
+`HAVING` clause.
 See <<_jpa_langref_group>>.
 
 Conditional expressions are defined as follows:
@@ -1829,8 +1829,8 @@ NOT ((o.country = 'UK') OR (o.country = 'US') OR (o.country = 'France'))
 
 There must be at least one element in the comma separated list that defines the set of values for the `IN` expression.
 
-If the value of a `state_field_path_expression` or `in_item` in an `IN` or `
-NOT IN` expression is `NULL` or unknown, the value of the expression is unknown.
+If the value of a `state_field_path_expression` or `in_item` in an `IN` or 
+`NOT IN` expression is `NULL` or unknown, the value of the expression is unknown.
 
 Note that use of a collection-valued input parameter will mean that a static query cannot be precompiled.
 
@@ -1866,8 +1866,8 @@ aword.underscored LIKE '\_%' ESCAPE '\'
 address.phone NOT LIKE '12%3'
 ---- is false for '123' and '12993' and true for '1234'.
 
-If the value of the `string_expression` or ``pattern_value`` is `NULL` or unknown, the value of the `
-LIKE` expression is unknown.
+If the value of the `string_expression` or ``pattern_value`` is `NULL` or unknown, the value of the 
+`LIKE` expression is unknown.
 If the `escape_character` is specified and is ``NULL``, the value of the `LIKE` expression is unknown.
 
 [[_jpa_langref_null]]
@@ -1911,8 +1911,8 @@ The syntax for the use of the comparison operator `MEMBER OF` in an `collection_
 This expression tests whether the designated value is a member of the collection specified by the collection-valued path expression.
 
 
-If the collection valued path expression designates an empty collection, the value of the `
-MEMBER OF` expression is `FALSE` and the value of the ``NOT MEMBER OF`` expression is ``TRUE``.
+If the collection valued path expression designates an empty collection, the value of the 
+`MEMBER OF` expression is `FALSE` and the value of the ``NOT MEMBER OF`` expression is ``TRUE``.
 Otherwise, if the value of the `collection_valued_path_expression` or ``entity_or_value_expression`` in the collection member expression is `NULL` or unknown, the value of the collection member expression is unknown.
 
 The use of the reserved word OF is optional in this expression.
@@ -1956,7 +1956,7 @@ The keyword `SOME` is synonymous with ``ANY``.
 
 The comparison operators used with ``ALL`` or `ANY` conditional expressions are =, , =, , =, . The result of the subquery must be like that of the other argument to the comparison operator in type.
 See <<_jpa_langref_equality>>.
-The syntax of an `ALL ` or `ANY` expression is specified as follows:
+The syntax of an `ALL`  or `ANY` expression is specified as follows:
 
 * all_or_any_expression ::= { ALL | ANY | SOME} (subquery)
 
@@ -1970,7 +1970,7 @@ SELECT auth FROM Author auth
 [[_jpa_langref_subqueries]]
 ====== JPQL Subqueries
 
-Subqueries may be used in the `WHERE` or `HAVING ` clause.
+Subqueries may be used in the `WHERE` or `HAVING`  clause.
 The syntax for subqueries is as follows:
 
 * subquery ::= simple_select_clause subquery_from_clause [where_clause] [groupby_clause] [having_clause]
@@ -1981,8 +1981,8 @@ The syntax for subqueries is as follows:
 * derived_path_expression ::= superquery_identification_variable.{single_valued_object_field.}*collection_valued_field | superquery_identification_variable.{single_valued_object_field.}*single_valued_object_field
 * derived_collection_member_declaration ::= IN superquery_identification_variable.{single_valued_object_field.}*collection_valued_field
 
-Subqueries are restricted to the `WHERE` and `HAVING ` clauses in this release.
-Support for subqueries in the `FROM ` clause will be considered in a later release of the specification.
+Subqueries are restricted to the `WHERE` and `HAVING`  clauses in this release.
+Support for subqueries in the `FROM`  clause will be considered in a later release of the specification.
 
 Examples:
 [source]
@@ -2050,7 +2050,7 @@ JPQL includes the built-in functions described in subsections <<_jpa_langref_str
 
 The `CONCAT` function returns a string that is a concatenation of its arguments.
 
-The second and third arguments of the `SUBSTRING ` function denote the starting position and length of the substring to be returned.
+The second and third arguments of the `SUBSTRING`  function denote the starting position and length of the substring to be returned.
 These arguments are integers.
 The third argument is optional.
 If it is not specified, the substring from the start position to the end of the string is returned.
@@ -2059,8 +2059,8 @@ The `SUBSTRING` function returns a string.
 
 The ``TRIM`` function trims the specified character from a string.
 If the character to be trimmed is not specified, it is assumed to be space (or blank). The optional trim_character is a single-character string literal or a character-valued input parameter (i.e., char or Character). If a trim specification is not provided, `BOTH` is assumed.
-The `
-TRIM` function returns the trimmed string.
+The 
+`TRIM` function returns the trimmed string.
 
 The `LOWER` and `UPPER` functions convert a string to lower and upper case, respectively.
 They return a string.
@@ -2073,7 +2073,7 @@ If the string is not found, 0 is returned.
 Note that not all databases support the use of a trim character other than the space character; use of this argument may result in queries that are not portable.
 Note that not all databases support the use of the third argument to ``LOCATE``; use of this argument may result in queries that are not portable.
 
-The `LENGTH ` function returns the length of the string in characters as an integer.
+The `LENGTH`  function returns the length of the string in characters as an integer.
 
 [[_jpa_langref_arithmetic]]
 ====== JPQL Arithmetic Functions
@@ -2097,8 +2097,8 @@ The `POWER` function accepts two numeric arguments and returns a double.
 Numeric arguments to these functions may correspond to the numeric Java object types as well as the primitive numeric types.
 
 The `SIZE` function returns an integer value, the number of elements of the collection.
-If the collection is empty, the `
-SIZE` function evaluates to zero.
+If the collection is empty, the 
+`SIZE` function evaluates to zero.
 Numeric arguments to these functions may correspond to the numeric Java object types as well as the primitive numeric types.
 
 The INDEX function returns an integer value corresponding to the position of its argument in an ordered list.
@@ -2300,7 +2300,7 @@ BY` and `HAVING` clauses is as follows:
 * having_clause ::= HAVING conditional_expression
 
 If a query contains both a `WHERE` clause and a `GROUP
-BY` clause, the effect is that of first applying the where clause, and then forming the groups and filtering them according to the `HAVING ` clause.
+BY` clause, the effect is that of first applying the where clause, and then forming the groups and filtering them according to the `HAVING`  clause.
 The `HAVING` clause causes those groups to be retained that satisfy the condition of the `HAVING` clause.
 
 The requirements for the `SELECT` clause when `GROUP
@@ -2314,7 +2314,7 @@ Grouping by embeddables is not supported.
 
 The `HAVING` clause must specify search conditions over the grouping items or aggregate functions that apply to grouping items.
 
-If there is no `GROUP BY` clause and the `HAVING ` clause is used, the result is treated as a single group, and the select list can only consist of aggregate functions.
+If there is no `GROUP BY` clause and the `HAVING`  clause is used, the result is treated as a single group, and the select list can only consist of aggregate functions.
 The use of `HAVING` in the absence of ``GROUP BY`` is not required to be supported by a JPA implementation.
 Portable applications should not rely on `HAVING` without the use of ``GROUP BY``.
 
@@ -2460,7 +2460,7 @@ SELECT NEW com.company.PublisherInfo(mag)
 If the result of a query corresponds to a association-field or state-field whose value is null, that null value is returned in the result of the query method.
 The `IS NOT NULL` construct can be used to eliminate such null values from the result set of the query.
 
-Note, however, that state-field types defined in terms of Java numeric primitive types cannot produce `NULL ` values in the query result.
+Note, however, that state-field types defined in terms of Java numeric primitive types cannot produce `NULL`  values in the query result.
 A query that returns such a state-field type as a result type must not return a null value.
 
 [[_jpa_langref_embeddables]]
@@ -2511,7 +2511,7 @@ For all aggregate functions except ``COUNT``, the path expression that is the ar
 The path expression argument to `COUNT` may terminate in either a state-field or a association-field, or the argument to `COUNT` may be an identification variable.
 
 Arguments to the functions `SUM` and ``AVG`` must be numeric.
-Arguments to the functions `MAX ` and `MIN` must correspond to orderable state-field types (i.e., numeric types, string types, character types, or date types).
+Arguments to the functions `MAX`  and `MIN` must correspond to orderable state-field types (i.e., numeric types, string types, character types, or date types).
 
 The Java type that is contained in the result of a query using an aggregate function is as follows:
 
@@ -2520,17 +2520,17 @@ The Java type that is contained in the result of a query using an aggregate func
 * `AVG` returns Double.
 * `SUM` returns Long when applied to state-fields of integral types (other than BigInteger); Double when applied to state-fields of floating point types; BigInteger when applied to state-fields of type BigInteger; and BigDecimal when applied to state-fields of type BigDecimal.
 
-If ``SUM ``, ``AVG``, ``MAX``, or `MIN ` is used, and there are no values to which the aggregate function can be applied, the result of the aggregate function is ``NULL``.
+If ``SUM ``, ``AVG``, ``MAX``, or `MIN`  is used, and there are no values to which the aggregate function can be applied, the result of the aggregate function is ``NULL``.
 
-If `COUNT` is used, and there are no values to which `
-COUNT` can be applied, the result of the aggregate function is 0.
+If `COUNT` is used, and there are no values to which 
+`COUNT` can be applied, the result of the aggregate function is 0.
 
-The argument to an aggregate function may be preceded by the keyword `
-DISTINCT` to specify that duplicate values are to be eliminated before the aggregate function is applied.
+The argument to an aggregate function may be preceded by the keyword 
+`DISTINCT` to specify that duplicate values are to be eliminated before the aggregate function is applied.
 It is legal to specify `DISTINCT` with `MAX` or ``MIN``, but it does not affect the result.
 
-Null values are eliminated before the aggregate function is applied, regardless of whether the keyword `
-DISTINCT` is specified.
+Null values are eliminated before the aggregate function is applied, regardless of whether the keyword 
+`DISTINCT` is specified.
 
 The use of `DISTINCT` with `COUNT` is not supported for arguments of embeddable types or map entry types.
 
@@ -2576,7 +2576,7 @@ The result of a case expression, coalesce expression, nullif expression, or arit
 ===== JPQL ORDER BY Clause
 
 The `ORDER BY` clause allows the objects or values that are returned by the query to be ordered.
-The syntax of the `ORDER BY ` clause is
+The syntax of the `ORDER BY`  clause is
 
 
 
@@ -2668,7 +2668,7 @@ The ordering of the query result is preserved in the result of the query method 
 [[_jpa_langref_bulk_ops]]
 ===== JPQL Bulk Update and Delete
 
-Bulk update and delete operations apply to entities of a single entity class (together with its subclasses, if any). Only one entity abstract schema type may be specified in the `FROM` or `UPDATE ` clause.
+Bulk update and delete operations apply to entities of a single entity class (together with its subclasses, if any). Only one entity abstract schema type may be specified in the `FROM` or `UPDATE`  clause.
 The syntax of these operations is as follows:
 
 
@@ -2714,7 +2714,7 @@ UPDATE Publisher pub SET pub.status = 'outstanding'
 ===== JPQL Null Values
 
 When the target of a reference does not exist in the database, its value is regarded as ``NULL``.
-SQL 92 `NULL` semantics defines the evaluation of conditional expressions containing `NULL ` values.
+SQL 92 `NULL` semantics defines the evaluation of conditional expressions containing `NULL`  values.
 The following is a brief description of these semantics:
 
 
@@ -2726,7 +2726,7 @@ The following is a brief description of these semantics:
 
 Note: The JPQL defines the empty string, "", as a string with 0 length, which is not equal to a `NULL` value.
 However, `NULL` values and empty strings may not always be distinguished when queries are mapped to some databases.
-Application developers should therefore not rely on the semantics of query comparisons involving the empty string and `NULL ` value.
+Application developers should therefore not rely on the semantics of query comparisons involving the empty string and `NULL`  value.
 
 [[_jpa_langref_equality]]
 ===== JPQL Equality and Comparison Semantics
@@ -2769,7 +2769,7 @@ The following is the BNF for the Jakarta Persistence query language, from sectio
 * range_variable_declaration ::= entity_name [ `AS` ] identification_variable
 * join ::= join_spec join_association_path_expression [ `AS` ] identification_variable [join_conition]
 * fetch_join ::= join_spec `FETCH` join_association_path_expression
-* join_spec ::= [ `LEFT` [ `OUTER` ]| ` INNER` ] `JOIN`
+* join_spec ::= [ `LEFT` [ `OUTER` ]|  `INNER` ] `JOIN`
 * join_condition ::= ON conditional_expression
 * join_association_path_expression ::= join_collection_valued_path_expression | join_single_valued_path_expression | ``TREAT``(join_collection_valued_path_expression AS subtype) | ``TREAT``(join_single_valued_path_expression AS subtype)
 * join_collection_valued_path_expression ::= identification_variable.{single_valued_embeddable_object_field.}* collection_valued_field
@@ -2786,7 +2786,7 @@ The following is the BNF for the Jakarta Persistence query language, from sectio
 * state_valued_path_expression ::= state_field_path_expression | general_identification_variable
 * single_valued_object_path_expression ::= general_subpath.single_valued_object_field
 * collection_valued_path_expression ::= general_subpath.{collection_valued_field}
-* update_clause ::= `UPDATE` entity_name [[ `AS ` ] identification_variable] `SET` update_item {, update_item}*
+* update_clause ::= `UPDATE` entity_name [[ `AS`  ] identification_variable] `SET` update_item {, update_item}*
 * update_item ::= [identification_variable.]{single_valued_embeddable_object_field.}* {state_field | single_valued_object_field} = new_value
 * new_value ::= scalar_expression | simple_entity_expression | `NULL`
 * delete_clause ::= ``DELETE````FROM`` entity_name [[ `AS` ] identification_variable]
@@ -2796,7 +2796,7 @@ select_item ::= select_expression [[AS] result_variable] *
 * select_expression ::=  single_valued_path_expression | scalar_expression | aggregate_expression | identification_variable | `OBJECT` (identification_variable) | constructor_expression
 * constructor_expression ::= `NEW` constructor_name( constructor_item {, constructor_item}*)
 * constructor_item ::= single_valued_path_expression | scalar_expression | aggregate_expression | identification_variable
-* aggregate_expression ::= { `AVG` | `MAX` | ``MIN`` | `SUM` }([ `DISTINCT` ] state_field_path_expression) | `COUNT` ([ `DISTINCT ` ] identification_variable | state_field_path_expression | single_valued_object_path_expression) | function_invocation
+* aggregate_expression ::= { `AVG` | `MAX` | ``MIN`` | `SUM` }([ `DISTINCT` ] state_field_path_expression) | `COUNT` ([ `DISTINCT`  ] identification_variable | state_field_path_expression | single_valued_object_path_expression) | function_invocation
 * where_clause ::= `WHERE` conditional_expression
 * groupby_clause ::= ``GROUP````BY`` groupby_item {, groupby_item}*
 * groupby_item ::= single_valued_path_expression | identification_variable
@@ -2805,7 +2805,7 @@ select_item ::= select_expression [[AS] result_variable] *
 * orderby_item ::= state_field_path_expression | general_identification_variable |  result_variable [ `ASC` | ``DESC`` ]
 * subquery ::= simple_select_clause subquery_from_clause [where_clause] [groupby_clause] [having_clause]
 * subquery_from_clause ::= `FROM` subselect_identification_variable_declaration {, subselect_identification_variable_declaration | collection_member_declaration}*
-* subselect_identification_variable_declaration ::= identification_variable_declaration | derived_path_expression [ `AS ` ] identification_variable | derived_collection_member_declaration
+* subselect_identification_variable_declaration ::= identification_variable_declaration | derived_path_expression [ `AS`  ] identification_variable | derived_collection_member_declaration
 * derived_path_expression ::= general_derived_path.single_valued_object_field | general_derived_path.collection_valued_field
 * general_derived_path ::= simple_derived_path | treated_derived_path{.single_valued_object_field}*
 * simple_derived_path ::= superquery_identification_variable{.single_valued_object_field}*
@@ -2814,15 +2814,15 @@ select_item ::= select_expression [[AS] result_variable] *
 * simple_select_clause ::= `SELECT` [ `DISTINCT` ] simple_select_expression
 * simple_select_expression ::= single_valued_path_expression | scalar_expression | aggregate_expression | identification_variable
 * scalar_expression ::= arithmetic_expression | string_expression | enum_expression | datetime_expression | boolean_expression | case_expression | entity_type_expression
-* conditional_expression ::= conditional_term | conditional_expression ` OR` conditional_term
-* conditional_term ::= conditional_factor | conditional_term `AND ` conditional_factor
+* conditional_expression ::= conditional_term | conditional_expression  `OR` conditional_term
+* conditional_term ::= conditional_factor | conditional_term `AND`  conditional_factor
 * conditional_factor ::= [ `NOT` ] conditional_primary
 * conditional_primary ::= simple_cond_expression | (conditional_expression)
 * simple_cond_expression ::= comparison_expression | between_expression | in_expression | like_expression | null_comparison_expression | empty_collection_comparison_expression | collection_member_expression | exists_expression
-* between_expression ::= arithmetic_expression [ `NOT` ] ``BETWEEN`` arithmetic_expression `AND` arithmetic_expression | string_expression [ `NOT` ] ` BETWEEN` string_expression `AND` string_expression | datetime_expression [ `NOT` ] `BETWEEN` datetime_expression `AND` datetime_expression
+* between_expression ::= arithmetic_expression [ `NOT` ] ``BETWEEN`` arithmetic_expression `AND` arithmetic_expression | string_expression [ `NOT` ]  `BETWEEN` string_expression `AND` string_expression | datetime_expression [ `NOT` ] `BETWEEN` datetime_expression `AND` datetime_expression
 * in_expression ::= {state_field_path_expression | type_discriminator} [ `NOT` ] ``IN`` {( in_item {, in_item}*) | (subquery) | collection_valued_input_parameter }
 * in_item ::= literal | single_valued_input_parameter
-* like_expression ::= string_expression [ `NOT` ] `LIKE ` pattern_value [ `ESCAPE` escape_character]
+* like_expression ::= string_expression [ `NOT` ] `LIKE`  pattern_value [ `ESCAPE` escape_character]
 * null_comparison_expression ::= {single_valued_path_expression | input_parameter} ``IS`` [ `NOT` ] `NULL`
 * empty_collection_comparison_expression ::= collection_valued_path_expression ``IS`` [ `NOT` ] `EMPTY`
 * collection_member_expression ::= entity_expression [ `NOT` ] ``MEMBER`` [ `OF` ] collection_valued_path_expression
@@ -2845,10 +2845,10 @@ select_item ::= select_expression [[AS] result_variable] *
 * entity_type_expression ::= type_discriminator | entity_type_literal | input_parameter
 * type_discriminator ::= ``TYPE``(identification_variable | single_valued_object_path_expression | input_parameter)
 * arithmetic_cast_function::= CAST(string_expression AS {INTEGER | LONG | FLOAT | DOUBLE})
-* functions_returning_numerics ::= `LENGTH` (string_primary)| ``LOCATE`` (string_primary,string_primary [, arithmetic_expression]) | `ABS` (arithmetic_expression) | `CEILING` (arithmetic_expression) | `EXP` (arithmetic_expression) | `FLOOR` (arithmetic_expression) | `LN` (arithmetic_expression) | `SIGN` (arithmetic_expression) | `SQRT` (arithmetic_expression) | `MOD` (arithmetic_expression, arithmetic_expression) | `POWER` (arithmetic_expression) | `ROUND` (arithmetic_expression, arithmetic_expression) | `SIZE ` (collection_valued_path_expression) | ``INDEX``(identification_variable) | extract_datetime_field
-* functions_returning_datetime ::= `CURRENT_DATE` | ` CURRENT_TIME` | `CURRENT_TIMESTAMP` | ``LOCAL DATE`` | ``LOCAL TIME`` | ``LOCAL DATETIME`` | extract_datetime_part
+* functions_returning_numerics ::= `LENGTH` (string_primary)| ``LOCATE`` (string_primary,string_primary [, arithmetic_expression]) | `ABS` (arithmetic_expression) | `CEILING` (arithmetic_expression) | `EXP` (arithmetic_expression) | `FLOOR` (arithmetic_expression) | `LN` (arithmetic_expression) | `SIGN` (arithmetic_expression) | `SQRT` (arithmetic_expression) | `MOD` (arithmetic_expression, arithmetic_expression) | `POWER` (arithmetic_expression) | `ROUND` (arithmetic_expression, arithmetic_expression) | `SIZE`  (collection_valued_path_expression) | ``INDEX``(identification_variable) | extract_datetime_field
+* functions_returning_datetime ::= `CURRENT_DATE` |  `CURRENT_TIME` | `CURRENT_TIMESTAMP` | ``LOCAL DATE`` | ``LOCAL TIME`` | ``LOCAL DATETIME`` | extract_datetime_part
 * string_cast_function::= CAST(scalar_expression AS STRING)
-* functions_returning_strings ::= `CONCAT` (string_expression, string_expression) | `SUBSTRING` (string_expression, arithmetic_expression[,arithmetic_expression])| `TRIM ` ([[trim_specification] [trim_character] `FROM` ] string_expression) | `LOWER` (string_expression) | `UPPER ` (string_expression)``REPLACE``(string_expression, string_expression, string_expression) | ``LEFT``(string_expression, arithmetic_expression) | ``RIGHT``(string_expression, arithmetic_expression)
+* functions_returning_strings ::= `CONCAT` (string_expression, string_expression) | `SUBSTRING` (string_expression, arithmetic_expression[,arithmetic_expression])| `TRIM`  ([[trim_specification] [trim_character] `FROM` ] string_expression) | `LOWER` (string_expression) | `UPPER`  (string_expression)``REPLACE``(string_expression, string_expression, string_expression) | ``LEFT``(string_expression, arithmetic_expression) | ``RIGHT``(string_expression, arithmetic_expression)
 * trim_specification ::= `LEADING` | `TRAILING` | `BOTH`
 * function_invocation ::= ``FUNCTION``(function_name{, function_arg}*)
 * extract_datetime_field := ``EXTRACT``(datetime_field FROM datetime_expression)

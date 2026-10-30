@@ -56,7 +56,7 @@ As a <<_ref_guide_conf_plugins,plugin string>>, this property can be used to con
 
 Additionally, some advanced users may want to add capabilities to OpenJPA's internal link:../../apidocs/org/apache/openjpa/kernel/BrokerImpl.html[
 org.apache.openjpa.kernel.BrokerImpl].
-You can configure OpenJPA to use a custom subclass of [class]``BrokerImpl`` with the <<_openjpa.brokerimpl,`openjpa.BrokerImpl `>> configuration property.
+You can configure OpenJPA to use a custom subclass of [class]``BrokerImpl`` with the <<_openjpa.brokerimpl,`openjpa.BrokerImpl` >> configuration property.
 Set this property to the full class name of your custom subclass.
 When implementing your subclass, consider the finalization issues mentioned in <<_ref_guide_runtime_broker_finalization>>.
 It may be appropriate to create a subtype of both link:../../apidocs/org/apache/openjpa/kernel/BrokerImpl.html[
@@ -214,16 +214,16 @@ This section describes OpenJPA's APIs for explicit locking, as well as its rules
 
 
 (((ReadLockLevel)))
-(((WriteLockLevel))) You can control OpenJPA's default transactional read and write lock levels through the <<_openjpa.readlocklevel,`
-openjpa.ReadLockLevel`>> and <<_openjpa.writelocklevel,`openjpa.WriteLockLevel`>> configuration properties.
+(((WriteLockLevel))) You can control OpenJPA's default transactional read and write lock levels through the <<_openjpa.readlocklevel,
+`openjpa.ReadLockLevel`>> and <<_openjpa.writelocklevel,`openjpa.WriteLockLevel`>> configuration properties.
 Each property accepts a value of ``
 none``, ``read``, ``write``, ``optimistic``, ``optimistic-force-increment``, ``pessimistic-read``, ``pessimistic-write``, ``pessimistic-force-increment``, or a number corresponding to a lock level defined by the <<_ref_guide_locking_lockmgr,lock manager>> in use.
 These properties apply only to non-optimistic transactions; during optimistic transactions, OpenJPA never locks objects by default.
 
 
 (((LockTimeout)))
-(((locking , timeout))) You can control the default amount of time OpenJPA will wait when trying to obtain locks through the <<_openjpa.locktimeout,`
-openjpa.LockTimeout`>> configuration property.
+(((locking , timeout))) You can control the default amount of time OpenJPA will wait when trying to obtain locks through the <<_openjpa.locktimeout,
+`openjpa.LockTimeout`>> configuration property.
 Set this property to the number of milliseconds you are willing to wait for a lock before OpenJPA will throw an exception, or to -1 for no limit.
 It defaults to -1.
 
@@ -357,8 +357,8 @@ oem.getTransaction().commit();
 
 (((LockManager))) OpenJPA delegates the actual work of locking objects to the system's link:../../apidocs/org/apache/openjpa/kernel/LockManager.html[
 org.apache.openjpa.kernel.LockManager].
-This plugin is controlled by the <<_openjpa.lockmanager,`
-openjpa.LockManager`>> configuration property.
+This plugin is controlled by the <<_openjpa.lockmanager,
+`openjpa.LockManager`>> configuration property.
 You can write your own lock manager, or use one of the bundled options:
 
 * ``mixed``: This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/kernel/MixedLockManager.html[ org.apache.openjpa.jdbc.kernel.MixedLockManager ], which implements the JPA 2.0 specification entity locking behaviors. It combines both the optimistic and pessimistic semantics controlled by lock mode argument in methods define in the EntityManager and Query interfaces or OpenJPA lock level properties.
@@ -369,8 +369,8 @@ For example: `VersionCheckOnReadLock` and ``VersionUpdateOnWriteLock`` propertie
 This is the default `openjpa.LockManager` setting in OpenJPA.
 * ``pessimistic``: This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/kernel/PessimisticLockManager.html[ org.apache.openjpa.jdbc.kernel.PessimisticLockManager ], which uses SELECT FOR UPDATE statements (or the database's equivalent) to lock the database rows corresponding to locked objects. This lock manager does not distinguish between read locks and write locks; all locks are write locks.
 
-The `pessimistic` LockManager can be configured to additionally perform the version checking and incrementing behavior of the `version ` lock manager described below by setting its `
-VersionCheckOnReadLock` and `VersionUpdateOnWriteLock` properties:
+The `pessimistic` LockManager can be configured to additionally perform the version checking and incrementing behavior of the `version`  lock manager described below by setting its 
+`VersionCheckOnReadLock` and `VersionUpdateOnWriteLock` properties:
 
 
 [source]
@@ -423,8 +423,8 @@ You should be aware of the issues outlined in this section, as they may affect y
 
 When using the pessimistic lock manager, the case above can only occur when OpenJPA cannot issue the state-loading SELECT as a locking statement due to database limitations.
 For example, some databases cannot lock SELECTs that use joins.
-The pessimistic lock manager will log an INFO message to the `
-openjpa.Runtime` logging channel whenever it cannot lock the initial SELECT due to database limitations.
+The pessimistic lock manager will log an INFO message to the 
+`openjpa.Runtime` logging channel whenever it cannot lock the initial SELECT due to database limitations.
 By paying attention to these log messages, you can see where you might consider using an object refresh to guarantee that you have the most recent state, or where you might rethink the way you load the state in question to circumvent the database limitations that prevent OpenJPA from issuing a locking SELECT in the first place.
 * When using the pessimistic lock manager and named queries you will see the following ``WARNING`` message logged if you do not specify a lockMode on the named query or you explicitly set it to ``LockModeType.NONE``. When using the pessimistic lock manager a `LockModeType.NONE` will always be promoted to ``LockModeType.READ``.
 
@@ -535,7 +535,7 @@ OpenJPA includes the following [class]``SavepointManager `` plugins:
 (((Query , MethodQL)))
 
 If JPQL and SQL queries do not match your needs, OpenJPA also allows you to name a Java method to use to load a set of objects.
-In a _MethodQL _ query, the query string names a static method to invoke to determine the matching objects:
+In a _MethodQL_  query, the query string names a static method to invoke to determine the matching objects:
 
 [source]
 ----
@@ -699,8 +699,8 @@ This property accepts a plugin string describing a [class]``Seq`` instance.
 ----
 ====
 
-In JPA, set your `GeneratedValue` annotation's `
-strategy` attribute to `AUTO` to use the configured system sequence.
+In JPA, set your `GeneratedValue` annotation's 
+`strategy` attribute to `AUTO` to use the configured system sequence.
 Or, because `AUTO` is the default strategy, use the annotation without attributes:
 
 [source]
@@ -749,8 +749,8 @@ public void removeTransactionListener(Object listener);
 These [class]``OpenJPAEntityManagerSPI`` methods allow you to add and remove listeners.
 These methods are outside the bounds of the published OpenJPA APIs, and are subject to change in the future.
 
-For details on the transaction framework, see the `
-org.apache.openjpa.event` package link:../../apidocs/org/apache/openjpa/event/package-summary.html[Javadoc].
+For details on the transaction framework, see the 
+`org.apache.openjpa.event` package link:../../apidocs/org/apache/openjpa/event/package-summary.html[Javadoc].
 Also see <<_ref_guide_event>> for a description of OpenJPA's remote event support.
 
 [[_ref_guide_enterprise_abstractstore]]
@@ -759,7 +759,7 @@ Also see <<_ref_guide_event>> for a description of OpenJPA's remote event suppor
 It is possible to adapt OpenJPA to access a non-relational datastore by creating an implementation of the link:../../apidocs/org/apache/openjpa/kernel/StoreManager.html[
 org.apache.openjpa.kernel.StoreManager] interface.
 OpenJPA provides an abstract `StoreManager` implementation to facilitate this process.
-See the `org.apache.openjpa.abstractstore ` package link:../../apidocs/org/apache/openjpa/abstractstore/package-summary.html[
+See the `org.apache.openjpa.abstractstore`  package link:../../apidocs/org/apache/openjpa/abstractstore/package-summary.html[
 Javadoc] for details.
 
 ifdef::backend-docbook[]
