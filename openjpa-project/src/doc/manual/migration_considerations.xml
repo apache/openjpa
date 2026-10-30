@@ -1595,7 +1595,9 @@
                     <literal>INFORMATION_SCHEMA</literal> meta tables.
                     <literal>EXTRACT(WEEK FROM ...)</literal> is rendered as
                     <literal>EXTRACT(ISO_WEEK FROM ...)</literal>, because H2 numbers a plain
-                    <literal>WEEK</literal> by the week definition of the JVM default locale.
+                    <literal>WEEK</literal> by the week definition of the JVM default locale, and
+                    <literal>EXTRACT(SECOND)</literal> now includes the fraction of the second, as the
+                    specification requires, instead of the whole seconds only.
                 </para>
             </section>
             <section id="jpa_4.2_SPIChanges">

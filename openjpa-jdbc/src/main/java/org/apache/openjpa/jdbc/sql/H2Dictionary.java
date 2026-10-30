@@ -466,6 +466,20 @@ public class H2Dictionary extends DBDictionary {
         return rs.getObject(column, OffsetDateTime.class);
     }
 
+    /**
+     * EXTRACT(SECOND) returns the whole seconds only; the fraction of the second
+     * that JPA includes is added from EXTRACT(NANOSECOND). Both parts are built
+     * from {@link #extractDateTimeFieldFunction}.
+     */
+    @Override
+    public String getExtractDateTimeFieldFunction(DateTimeExtractField extField) {
+        if (extField == DateTimeExtractField.SECOND) {
+            return "(" + super.getExtractDateTimeFieldFunction(extField) + " + "
+                + extractDateTimeFieldFunction.replace("{0}", "NANOSECOND") + " / 1000000000.0)";
+        }
+        return super.getExtractDateTimeFieldFunction(extField);
+    }
+
     @Override
     protected void appendSelectRange(SQLBuffer buf, long start, long end,
         boolean subselect) {

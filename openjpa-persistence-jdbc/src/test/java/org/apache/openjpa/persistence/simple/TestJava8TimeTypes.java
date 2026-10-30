@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.simple;
 
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.H2Dictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -283,6 +284,41 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         assertNotNull(times);
         assertFalse(times.isEmpty());
         em.close();
+    }
+
+    public void testExtractSecondKeepsFractionFromColumns() {
+        if (!(getDbDictionary(emf) instanceof H2Dictionary)) {
+            // the default column types of other databases may drop the fraction of a second
+            return;
+        }
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            Java8TimeTypes entity3 = new Java8TimeTypes();
+            entity3.setId(3);
+            entity3.setLocalDateTimeField(LocalDateTime.of(2019, 1, 1, 1, 0, 23, 500_000_000));
+            entity3.setLocalTimeField(LocalTime.of(4, 57, 42, 750_000_000));
+            em.persist(entity3);
+            em.getTransaction().commit();
+            em.clear();
+
+            Object[] row = (Object[]) em.createQuery("select EXTRACT(SECOND FROM t.localDateTimeField), "
+                + "EXTRACT(SECOND FROM t.localTimeField) from Java8TimeTypes AS t where t.id = 3")
+                .getSingleResult();
+            assertEquals(23.5f, (float) row[0]);
+            assertEquals(42.75f, (float) row[1]);
+
+            List<Integer> ids = em.createQuery("select t.id from Java8TimeTypes AS t "
+                + "where EXTRACT(SECOND FROM t.localDateTimeField) > 23 "
+                + "and EXTRACT(SECOND FROM t.localTimeField) = 42.75", Integer.class)
+                .getResultList();
+            assertEquals(List.of(3), ids);
+
+            List<Object[]> ordered = em.createQuery("select t.id, EXTRACT(SECOND FROM t.localDateTimeField) AS s "
+                + "from Java8TimeTypes AS t order by s desc", Object[].class)
+                .getResultList();
+            assertEquals(3, ordered.get(0)[0]);
+            assertEquals(23.5f, (float) ordered.get(0)[1]);
+        }
     }
 
     public void testReadInstant() {
