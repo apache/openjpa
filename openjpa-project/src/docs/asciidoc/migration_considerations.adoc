@@ -264,7 +264,7 @@ Catch [class]``IllegalStateException`` for unbound parameters and expect [class]
 Positional stored procedure parameters are now resolved 1-based (previously the 0-based column index was used as fallback, so position 1 could match the second `IN` column), and only ``IN``/``INOUT``/ `OUT` columns are registered, so positional indexes shift for PostgreSQL functions with a return value.
 When a procedure declares `OUT` parameters the connection is kept open (with auto-commit temporarily disabled) until the result list is closed, so that `REF_CURSOR` results can be consumed; consume and close such result lists promptly.
 
-`executeUpdate()` now requires an active transaction ([class]``TransactionRequiredException``) and `getUpdateCount()` returns `-1` after it; ``setLockMode()``/``getLockMode()`` throw [class]``IllegalStateException``; `getOutputParameterValue()` throws [class]``IllegalArgumentException`` for unknown names or positions; [class]``NoResultException`` and [class]``NonUniqueResultException`` propagate unwrapped; procedure metadata lookup retries with the lower-cased name; an `orm.xml```named-stored-procedure-query`` overrides an annotation of the same name.
+`executeUpdate()` now requires an active transaction ([class]``TransactionRequiredException``) and `getUpdateCount()` returns `-1` after it; ``setLockMode()``/``getLockMode()`` throw [class]``IllegalStateException``; `getOutputParameterValue()` throws [class]``IllegalArgumentException`` for unknown names or positions; [class]``NoResultException`` and [class]``NonUniqueResultException`` propagate unwrapped; procedure metadata lookup retries with the lower-cased name; an `orm.xml` ``named-stored-procedure-query`` overrides an annotation of the same name.
 
 [[_jpa_4.2_criteriametamodel]]
 ==== Criteria API and Metamodel
@@ -325,7 +325,7 @@ Verify the column names produced by overrides that were previously ignored or re
 ==== @SequenceGenerator without sequenceName
 
 A `@SequenceGenerator` annotation without `sequenceName` previously fell back to the OpenJPA default sequence ``OPENJPA_SEQUENCE``, so all such generators shared one database sequence.
-As defined by the specification, the generator name is now used as the database sequence name, and DDL generation creates one sequence per generator. `orm.xml```sequence-generator`` elements are not affected.
+As defined by the specification, the generator name is now used as the database sequence name, and DDL generation creates one sequence per generator. `orm.xml` ``sequence-generator`` elements are not affected.
 
 For existing databases either add `sequenceName="OPENJPA_SEQUENCE"` (or the previously used name) to each generator, or create the new per-generator sequences.
 See <<_jpa_overview_mapping_sequence_seqgen>>.

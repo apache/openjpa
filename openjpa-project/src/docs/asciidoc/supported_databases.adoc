@@ -865,7 +865,7 @@ openjpa.ConnectionURL: \
 [[_dbsupport_sybase_issues]]
 ===== Known issues with Sybase
 
-* The "``DYNAMIC_PREPARE``" parameter of the Sybase JDBC driver cannot be used with OpenJPA.
+* The `DYNAMIC_PREPARE` parameter of the Sybase JDBC driver cannot be used with OpenJPA.
 * Datastore locking cannot be used when manipulating many-to-many relations using the default OpenJPA schema created by the schematool, unless an auto-increment primary key field is manually added to the table.
 * Persisting a zero-length string results in a string with a single space character being returned from Sybase, Inc.'s JDBC driver.
 * The `BE_AS_JDBC_COMPLIANT_AS_POSSIBLE` is required in order to use datastore (pessimistic) locking. Failure to set this property may lead to obscure errors like " `FOR UPDATE can not be used in a SELECT which is not part of the declaration of a cursor or which is not inside a stored procedure.` ".

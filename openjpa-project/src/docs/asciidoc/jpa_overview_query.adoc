@@ -1204,7 +1204,7 @@ For example, consider the previous query:
 SELECT DISTINCT mag FROM Magazine mag JOIN mag.articles art JOIN art.author auth WHERE auth.firstName = 'John'
 ----
 In the `FROM` clause declaration 
-`mag.articles```art``, the identification variable ``art`` evaluates to any `Article` value directly reachable from ``Magazine``.
+`mag.articles` ``art``, the identification variable ``art`` evaluates to any `Article` value directly reachable from ``Magazine``.
 The association-field ``articles`` is a collection of instances of the abstract schema type `Article` and the identification variable `art`  refers to an element of this collection.
 The type of `auth`  is the abstract schema type of ``Author``.
 
@@ -1241,11 +1241,11 @@ A range variable must not designate an embeddable class abstract schema type.
 
 Range variable declarations allow the developer to designate a "root" for objects which may not be reachable by navigation.
 
-In order to select values by comparing more than one instance of an entity abstract schema type, more than one identification variable ranging over the abstract schema type is needed in the` FROM `clause.
+In order to select values by comparing more than one instance of an entity abstract schema type, more than one identification variable ranging over the abstract schema type is needed in the `FROM` clause.
 
 The following query returns magazines whose price is greater than the price of magazines published by "Adventure" publishers.
-This example illustrates the use of two different identification variables in the` FROM `clause, both of the abstract schema type Magazine.
-The` SELECT` clause of this query determines that it is the magazines with prices greater than those of "Adventure" publisher's that are returned.
+This example illustrates the use of two different identification variables in the `FROM` clause, both of the abstract schema type Magazine.
+The `SELECT` clause of this query determines that it is the magazines with prices greater than those of "Adventure" publisher's that are returned.
 
 [source]
 ----

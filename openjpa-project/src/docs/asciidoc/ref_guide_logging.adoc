@@ -44,13 +44,11 @@ see <<_ref_guide_dbsetup_builtin,`Using the OpenJPA
 DataSource`>>
 ====
 
-When using the built-in OpenJPA logging facilities, you can enable SQL logging by adding` SQL=TRACE `to your` openjpa.Log `property.
+When using the built-in OpenJPA logging facilities, you can enable SQL logging by adding `SQL=TRACE` to your `openjpa.Log` property.
 
 OpenJPA can optionally reformat the logged SQL to make it easier to read.
-To enable pretty-printing, add` PrettyPrint=true `to the <<_openjpa.connectionfactoryproperties,`
-openjpa.ConnectionFactoryProperties`>> property.
-You can control how many columns wide the pretty-printed SQL will be with the` 
-PrettyPrintLineLength` property.
+To enable pretty-printing, add `PrettyPrint=true` to the <<_openjpa.connectionfactoryproperties,`openjpa.ConnectionFactoryProperties`>> property.
+You can control how many columns wide the pretty-printed SQL will be with the `PrettyPrintLineLength` property.
 The default line length is 60 columns.
 
 While pretty printing makes things easier to read, it can make output harder to process with tools like grep.
