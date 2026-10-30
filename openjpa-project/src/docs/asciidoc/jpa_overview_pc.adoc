@@ -1,16 +1,8 @@
 [[_jpa_overview_pc]]
 === Entity
-(((
-            persistent classes
-        )))
-(((
-            Entity
-        )))
-(((
-            class
-        ,
-            persistent
-        )))
+(((persistent classes)))
+(((Entity)))
+(((class , persistent)))
 
 JPA recognizes two types of persistent classes: _entity_ classes and _embeddable_ classes.
 Each persistent instance of an entity class - each _entity_ - represents a unique datastore record.
@@ -83,22 +75,14 @@ public class Magazine {
 
 [[_jpa_overview_pc_restrict]]
 ==== Restrictions on Persistent Classes
-(((
-                persistent classes
-            ,
-                restrictions on
-            )))
+(((persistent classes , restrictions on)))
 
 There are very few restrictions placed on persistent classes.
 Still, it never hurts to familiarize yourself with exactly what JPA does and does not support.
 
 [[_jpa_overview_pc_no_arg]]
 ===== Default or No-Arg Constructor
-(((
-                    constructor
-                ,
-                    no-arg constructor requirement
-                )))
+(((constructor , no-arg constructor requirement)))
 
 The JPA specification requires that all persistent classes have a no-arg constructor.
 This constructor may be public or protected.
@@ -124,11 +108,7 @@ OpenJPA supports final classes and final methods.
 
 [[_jpa_overview_pc_id]]
 ===== Identity Fields
-(((
-                    persistent classes
-                ,
-                    JPA id requirement
-                )))
+(((persistent classes , JPA id requirement)))
 
 All entity classes must declare one or more fields which together form the persistent identity of an instance.
 These are called _identity _ or _primary key_ fields.
@@ -143,11 +123,7 @@ See <<_ref_guide_pc_oid>> of the Reference Guide for details.
 
 [[_jpa_overview_pc_version]]
 ===== Version Field
-(((
-                    persistent classes
-                ,
-                    JPA version requirement
-                )))
+(((persistent classes , JPA version requirement)))
 
 The `version` field in our [class]``Magazine`` class may seem out of place.
 JPA uses a version field in your entities to detect concurrent modifications to the same datastore record.
@@ -171,11 +147,7 @@ See <<_ref_guide_mapping_jpa>> in the Reference Guide.
 
 [[_jpa_overview_pc_restrict_inheritance]]
 ===== Inheritance
-(((
-                    inheritance
-                ,
-                    of persistent classes
-                )))
+(((inheritance , of persistent classes)))
 
 JPA fully supports inheritance in persistent classes.
 It allows persistent classes to inherit from non-persistent classes, persistent classes to inherit from other persistent classes, and non-persistent classes to inherit from persistent classes.
@@ -189,11 +161,7 @@ There are, however, a few important limitations:
 
 [[_jpa_overview_pc_restrict_fields]]
 ===== Persistent Fields
-(((
-                    field
-                ,
-                    persistent
-                )))
+(((field , persistent)))
 
 JPA manages the state of all persistent fields.
 Before you access persistent state, the JPA runtime makes sure that it has been loaded from the datastore.
@@ -205,11 +173,7 @@ It does, however, include built-in support for most common field types.
 These types can be roughly divided into three categories: immutable types, mutable types, and relations.
 
 
-(((
-                    persistent fields
-                ,
-                    immutable types
-                )))__Immutable__ types, once created, cannot be changed.
+(((persistent fields , immutable types)))__Immutable__ types, once created, cannot be changed.
 The only way to alter a persistent field of an immutable type is to assign a new value to the field.
 JPA supports the following immutable types:
 
@@ -229,16 +193,8 @@ JPA also supports [class]``byte[]``, [class]``Byte[]``, [class]``char[]``, and [
 That is, you can persist fields of these types, but you should not manipulate individual array indexes without resetting the array into the persistent field.
 
 
-(((
-                    persistent fields
-                ,
-                    mutable types
-                )))
-(((
-                    persistent fields
-                ,
-                    user-defined types
-                ))) Persistent fields of _mutable_ types can be altered without assigning the field a new value.
+(((persistent fields , mutable types)))
+(((persistent fields , user-defined types))) Persistent fields of _mutable_ types can be altered without assigning the field a new value.
 Mutable types can be modified directly through their own methods.
 The JPA specification requires that implementations support the following mutable field types:
 
@@ -258,11 +214,7 @@ The JPA specification requires that implementations support the following mutabl
 Collection and map types may be parameterized.
 
 
-(((
-                    persistent fields
-                ,
-                    of unknown types
-                ))) Most JPA implementations also have support for persisting serializable values as binary data in the datastore. <<_jpa_overview_meta>> has more information on persisting serializable types.
+(((persistent fields , of unknown types))) Most JPA implementations also have support for persisting serializable values as binary data in the datastore. <<_jpa_overview_meta>> has more information on persisting serializable types.
 
 [NOTE]
 ====
@@ -279,26 +231,12 @@ Additionally, there are often ways of using JPA's other features to circumvent a
 
 [[_jpa_overview_pc_identity]]
 ==== Entity Identity
-(((
-                JPA
-            ,
-                identity
-            )))
-(((
-                identity
-            ,
-                JPA
-            )))
+(((JPA , identity)))
+(((identity , JPA)))
 
 
-(((
-                identity
-            ,
-                qualitative
-            )))
-(((
-                qualitative identity
-            ))) Java recognizes two forms of object identity: numeric identity and qualitative identity.
+(((identity , qualitative)))
+(((qualitative identity))) Java recognizes two forms of object identity: numeric identity and qualitative identity.
 If two references are _numerically_ identical, then they refer to the same JVM instance in memory.
 You can test for this using the ``==`` operator. _Qualitative_ identity, on the other hand, relies on some user-defined criteria to determine whether two objects are "equal". You test for qualitative identity using the [method]``
 equals`` method.
@@ -309,11 +247,7 @@ identity_ or __persistent identity__.
 Entity identity tests whether two persistent objects represent the same state in the datastore.
 
 
-(((
-                persistent fields
-            ,
-                id
-            ))) The entity identity of each persistent instance is encapsulated in its __identity field(s)__.
+(((persistent fields , id))) The entity identity of each persistent instance is encapsulated in its __identity field(s)__.
 If two entities of the same type have the same identity field values, then the two entities represent the same state in the datastore.
 Each entity's identity field values must be unique among all other entities of the same type.
 
@@ -342,11 +276,7 @@ Always treat embeddable identity instances as immutable objects in your applicat
 ====
 
 
-(((
-                identity
-            ,
-                uniqueness requirement
-            ))) If you are dealing with a single persistence context (see <<_jpa_overview_emfactory_perscontext>>), then you do not have to compare identity fields to test whether two entity references represent the same state in the datastore.
+(((identity , uniqueness requirement))) If you are dealing with a single persistence context (see <<_jpa_overview_emfactory_perscontext>>), then you do not have to compare identity fields to test whether two entity references represent the same state in the datastore.
 There is a much easier way: the `== ` operator.
 JPA requires that each persistence context maintain only one JVM object to represent each unique datastore record.
 Thus, entity identity is equivalent to numeric identity within a persistence context.
@@ -360,14 +290,8 @@ If you made different modifications to each of these objects, which set of chang
 ===== Identity Class
 
 
-(((
-                    identity class
-                )))
-(((
-                    identity
-                ,
-                    class requirements
-                ))) If your entity has only one identity field, you can use the value of that field as the entity's identity object in all <<_jpa_overview_em,[class]``EntityManager``>> APIs.
+(((identity class)))
+(((identity , class requirements))) If your entity has only one identity field, you can use the value of that field as the entity's identity object in all <<_jpa_overview_em,[class]``EntityManager``>> APIs.
 Otherwise, you must supply an identity class to use for identity objects.
 Your identity class must meet the following criteria:
 
@@ -473,14 +397,8 @@ The requirements for using a hierarchy of identity classes are as follows:
 
 [[_jpa_overview_pc_callbacks]]
 ==== Lifecycle Callbacks
-(((
-                lifecycle callbacks
-            )))
-(((
-                persistent classes
-            ,
-                lifecycle callbacks
-            )))
+(((lifecycle callbacks)))
+(((persistent classes , lifecycle callbacks)))
 
 It is often necessary to perform various actions at different stages of a persistent object's lifecycle.
 JPA includes a variety of callbacks methods for monitoring changes in the lifecycle of your persistent objects.
@@ -488,11 +406,7 @@ These callbacks can be defined on the persistent classes themselves and on non-p
 
 [[_jpa_overview_pc_callbacks_methods]]
 ===== Callback Methods
-(((
-                    entity
-                ,
-                    callback methods
-                )))
+(((entity , callback methods)))
 
 Every persistence event has a corresponding callback method marker.
 These markers are shared between persistent classes and their listeners.
@@ -500,46 +414,34 @@ You can use these markers to designate a method for callback either by annotatin
 The lifecycle events and their corresponding method markers are:
 
 * https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/prepersist[ PrePersist]: Methods marked with this annotation will be invoked before an object is persisted. This could be used for assigning primary key values to persistent objects. This is equivalent to the XML element tag ``pre-persist``.
-* (((
-                            PostPersist
-                        )))https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/postpersist[
+* (((PostPersist)))https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/postpersist[
 PostPersist]: Methods marked with this annotation will be invoked after an object has transitioned to the persistent state.
 You might want to use such methods to update a screen after a new row is added.
 This is equivalent to the XML element tag ``post-persist``.
-* (((
-                            PostLoad
-                        )))https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/postload[
+* (((PostLoad)))https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/postload[
 PostLoad]: Methods marked with this annotation will be invoked after all eagerly fetched fields of your class have been loaded from the datastore.
 No other persistent fields can be accessed in this method.
 This is equivalent to the XML element tag ``post-load``.
 
 [class]``PostLoad`` is often used to initialize non-persistent fields whose values depend on the values of persistent fields, such as a complex data structure.
-* (((
-                            PreUpdate
-                        )))https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/preupdate[
+* (((PreUpdate)))https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/preupdate[
 PreUpdate]: Methods marked with this annotation will be invoked just the persistent values in your objects are flushed to the datastore.
 This is equivalent to the XML element tag ``
 pre-update``.
 
 [class]``PreUpdate`` is the complement to [class]``PostLoad ``.
 While methods marked with [class]``PostLoad`` are most often used to initialize non-persistent values from persistent data, methods annotated with [class]``PreUpdate`` is normally used to set persistent fields with information cached in non-persistent data.
-* (((
-                            PostUpdate
-                        )))https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/postupdate[
+* (((PostUpdate)))https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/postupdate[
 PostUpdate]: Methods marked with this annotation will be invoked after changes to a given instance have been stored to the datastore.
 This is useful for clearing stale data cached at the application layer.
 This is equivalent to the XML element tag ``post-update``.
-* (((
-                            PreRemove
-                        )))https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/preremove[
+* (((PreRemove)))https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/preremove[
 PreRemove]: Methods marked with this annotation will be invoked before an object transactions to the deleted state.
 Access to persistent fields is valid within this method.
 You might use this method to cascade the deletion to related objects based on complex criteria, or to perform other cleanup.
 This is equivalent to the XML element tag ``
 pre-remove``.
-* (((
-                            PostRemove
-                        )))https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/postremove[
+* (((PostRemove)))https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/postremove[
 PostRemove]: Methods marked with this annotation will be invoked after an object has been marked as to be deleted.
 This is equivalent to the XML element tag ``post-remove``.
 
@@ -662,11 +564,7 @@ In XML, we define both the listeners and their callback methods as so:
 
 [[_jpa_overview_entity_listeners_exclude]]
 ===== Entity Listeners Hierarchy
-(((
-                    lifecycle listeners
-                ,
-                    hierarchy
-                )))
+(((lifecycle listeners , hierarchy)))
 
 Entity listener methods are invoked in a specific order when a given event is fired.
 So-called _default_ listeners are invoked first: these are listeners which have been defined in a package annotation or in the root element of XML mapping files.

@@ -6,11 +6,7 @@ This chapter explores OpenJPA's data cache, query cache, and query compilation c
 
 [[_ref_guide_cache]]
 ==== Data Cache
-(((
-                caching
-            ,
-                data cache
-            )))
+(((caching , data cache)))
 
 The OpenJPA data cache is an optional cache of persistent object data that operates at the [class]``EntityManagerFactory`` level.
 This cache is designed to significantly increase performance while remaining in full compliance with the JPA standard.
@@ -120,11 +116,7 @@ Note that enabling the `Lru` cache can hurt performance as this map in not as sc
 ====
 
 
-(((
-                    caching
-                ,
-                    timeout
-                ))) You can specify a cache timeout value for a class by setting the timeout <<_ref_guide_meta_ext,metadata extension>> to the amount of time in milliseconds a class's data is valid.
+(((caching , timeout))) You can specify a cache timeout value for a class by setting the timeout <<_ref_guide_meta_ext,metadata extension>> to the amount of time in milliseconds a class's data is valid.
 Use a value of -1 for no expiration.
 This is the default value.
 
@@ -454,11 +446,7 @@ oem.evict(changedMag);  // will evict from data cache also
 
 [[_ref_guide_cache_statistics]]
 ===== Cache Statistics
-(((
-                    caching
-                ,
-                    statistics
-                )))
+(((caching , statistics)))
 
 Number of requests to read and write requests and hit ratio of the data cache is available via link:../../apidocs/org/apache/openjpa/datacache/CacheStatistics.html[
 org.apache.openjpa.datacache.CacheStatistics] interface.
@@ -524,11 +512,7 @@ Also each method that accepts Class argument, treats null argument as [class]``j
 
 [[_ref_guide_cache_query]]
 ===== Query Cache
-(((
-                    Query
-                ,
-                    result caching
-                )))
+(((Query , result caching)))
 
 In addition to the data cache, the `org.apache.openjpa.datacache ` package defines service provider interfaces for a query cache.
 The query cache is disabled by default and needs to be enabled separately from the data cache.
@@ -727,13 +711,7 @@ oq.getFetchPlan().setQueryResultCacheEnabled(true);
 
 [[_ref_guide_cache_extension]]
 ===== Cache Extension
-(((
-                    caching
-                ,
-                    query cache
-                ,
-                    extension
-                )))
+(((caching , query cache , extension)))
 
 The provided data cache classes can be easily extended to add additional functionality.
 If you are adding new behavior, you should extend [class]``

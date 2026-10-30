@@ -1,8 +1,6 @@
 [[_ref_guide_optimization]]
 === Optimization Guidelines
-(((
-            optimization guidelines
-        )))
+(((optimization guidelines)))
 
 There are numerous techniques you can use in order to ensure that OpenJPA operates in the fastest and most efficient manner.
 Following are some guidelines.

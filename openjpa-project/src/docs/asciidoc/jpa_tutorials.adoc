@@ -74,13 +74,9 @@ Add the following lines to [path]_
 
 * ``java``: Runs main methods in specified Java classes.
 * ``javac``: Compiles [path]_.java_ files into [path]_.class_ files that can be executed by ``java ``.
-* (((
-                                org.apache.openjpa.enhance.PCEnhancer
-                            )))``org.apache.openjpa.enhance.PCEnhancer``: Runs the OpenJPA enhancer against the specified classes.
+* (((org.apache.openjpa.enhance.PCEnhancer)))``org.apache.openjpa.enhance.PCEnhancer``: Runs the OpenJPA enhancer against the specified classes.
 More information is available in <<_ref_guide_pc_enhance>> of the Reference Guide.
-* (((
-                                org.apache.openjpa.jdbc.meta.MappingTool
-                            )))``org.apache.openjpa.jdbc.meta.MappingTool``: A utility that can be used to create and maintain the object-relational mappings and schema of all persistent classes in a JDBC-compliant datastore.
+* (((org.apache.openjpa.jdbc.meta.MappingTool)))``org.apache.openjpa.jdbc.meta.MappingTool``: A utility that can be used to create and maintain the object-relational mappings and schema of all persistent classes in a JDBC-compliant datastore.
 This functionality allows the underlying mappings and schema to be easily kept up-to-date with the Java classes in the system.
 See <<_ref_guide_mapping>> of the Reference Guide for more information.
 
@@ -94,9 +90,7 @@ To do so, we must compile the [path]_.java_ files, as we would with any Java pro
 [NOTE]
 ====
 
-(((
-                        CLASSPATH
-                    ))) Be sure that your [var]``CLASSPATH`` is set correctly.
+(((CLASSPATH))) Be sure that your [var]``CLASSPATH`` is set correctly.
 Note that your OpenJPA install directory should be in the [var]``CLASSPATH``, as the tutorial classes are located in the ` tutorial/persistence` directory under your OpenJPA install directory, and are in the `
 tutorial.persistence` package.
 ====
@@ -209,9 +203,7 @@ For more information on how to connect to a different database or how to add sup
 
 .
 
-(((
-                                org.apache.openjpa.jdbc.meta.MappingTool
-                            ))) Create the object-relational mappings and database schema.
+(((org.apache.openjpa.jdbc.meta.MappingTool))) Create the object-relational mappings and database schema.
 
 
 [source]

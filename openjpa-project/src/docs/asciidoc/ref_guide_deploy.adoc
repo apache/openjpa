@@ -11,11 +11,7 @@ OpenJPA offers two [class]``EntityManagerFactory`` deployment options.
 
 [[_ref_guide_deploy_factory_standalone]]
 ===== Standalone Deployment
-(((
-                    deployment
-                ,
-                    standalone
-                )))
+(((deployment , standalone)))
 
 The JPA Overview describes the [class]``jakarta.persistence.Persistence `` class.
 You can use [class]``Persistence`` to obtain [class]``EntityManagerFactory`` instances, as demonstrated in <<_jpa_overview_persistence>>.
@@ -37,14 +33,8 @@ See your application server documentation for details.
 
 [[_ref_guide_enterprise_trans]]
 ==== Integrating with the Transaction Manager
-(((
-                TransactionManager
-            ,
-                integration
-            )))
-(((
-                TransactionMode
-            )))
+(((TransactionManager , integration)))
+(((TransactionMode)))
 
 OpenJPA [class]``EntityManager``s have the ability to automatically synchronize their transactions with an external transaction manager.
 Whether or not [class]``EntityManager``s from a given [class]``
@@ -95,11 +85,7 @@ See the Javadoc for of each class for details on the bean properties you can pas
 
 [[_ref_guide_enterprise_xa]]
 ==== XA Transactions
-(((
-                transactions
-            ,
-                XA
-            )))
+(((transactions , XA)))
 
 The X/Open Distributed Transaction Processing (X/Open DTP) model, designed by http://www.opengroup.org/[The Open Group] (a vendor consortium), defines a standard communication architecture that provides the following:
 

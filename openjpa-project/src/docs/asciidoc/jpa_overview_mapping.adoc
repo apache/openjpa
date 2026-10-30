@@ -1,21 +1,9 @@
 [[_jpa_overview_mapping]]
 === Mapping Metadata
-(((
-            mapping metadata
-        )))
-(((
-            entities
-        ,
-            mapping to database
-        )))
-(((
-            ORM
-        )))
-(((
-            JPA
-        ,
-            object-relational mapping
-        )))
+(((mapping metadata)))
+(((entities , mapping to database)))
+(((ORM)))
+(((JPA , object-relational mapping)))
 
 _Object-relational mapping_ is the process of mapping entities to relational database tables.
 In JPA, you perform object/relational mapping through __mapping metadata__.
@@ -218,11 +206,7 @@ The same mapping information expressed in XML:
 
 [[_jpa_overview_mapping_unq]]
 ==== Unique Constraints
-(((
-                mapping metadata
-            ,
-                unique constraints
-            )))
+(((mapping metadata , unique constraints)))
 
 Unique constraints ensure that the data in a column or combination of columns is unique for each row.
 A table's primary key, for example, functions as an implicit unique constraint.
@@ -274,43 +258,21 @@ The same metadata expressed in XML form:
 
 [[_jpa_overview_mapping_column]]
 ==== Column
-(((
-                mapping metadata
-            ,
-                Column
-            )))
+(((mapping metadata , Column)))
 
 In the previous section, we saw that a [class]``UniqueConstraint`` uses an array of column names.
 Field mappings, however, use full-fledged [class]``Column`` annotations.
 Column annotations have the following properties:
 
-* (((
-                        mapping metadata
-                    ,
-                        Column
-                    ,
-                        name property
-                    )))``String name``: The column name.
+* (((mapping metadata , Column , name property)))``String name``: The column name.
 Defaults to the field name.
 * ``String columnDefinition``: The database-specific column type name. This property is only used by vendors that support creating tables from your mapping metadata. During table creation, the vendor will use the value of the `columnDefinition` as the declared column type. If no ``columnDefinition`` is given, the vendor will choose an appropriate default based on the field type combined with the column's length, precision, and scale.
 * ``int length``: The column length. This property is typically only used during table creation, though some vendors might use it to validate data before flushing. `CHAR` and `VARCHAR` columns typically default to a length of 255; other column types use the database default.
-* (((
-                        mapping metadata
-                    ,
-                        Column
-                    ,
-                        precision property
-                    )))``int precision``: The precision of a numeric column.
+* (((mapping metadata , Column , precision property)))``int precision``: The precision of a numeric column.
 This property is often used in conjunction with `scale` to form the proper column type name during table creation.
 * ``int scale``: The number of decimal digits a numeric column can hold. This property is often used in conjunction with `precision ` to form the proper column type name during table creation.
 * ``boolean nullable``: Whether the column can store null values. Vendors may use this property both for table creation and at runtime; however, it is never required. Defaults to ``true``.
-* (((
-                        mapping metadata
-                    ,
-                        Column
-                    ,
-                        insertable property
-                    )))``boolean insertable``: By setting this property to ``
+* (((mapping metadata , Column , insertable property)))``boolean insertable``: By setting this property to ``
 false``, you can omit the column from SQL `INSERT` statements.
 Defaults to ``true``.
 * ``boolean updatable``: By setting this property to `` false``, you can omit the column from SQL `UPDATE` statements. Defaults to ``true``.
@@ -331,14 +293,8 @@ This element has attributes that are exactly equivalent to the [class]`` Column`
 
 [[_jpa_overview_mapping_id]]
 ==== Identity Mapping
-(((
-                Id
-            )))
-(((
-                mapping metadata
-            ,
-                identity
-            )))
+(((Id)))
+(((mapping metadata , identity)))
 
 With our new knowledge of columns, we can map the identity fields of our entities.
 The diagram below now includes primary key columns for our model's tables.
@@ -492,11 +448,7 @@ The same metadata for `Magazine` and `Company` expressed in XML form:
 
 [[_jpa_overview_mapping_sequence]]
 ==== Generators
-(((
-                generators
-            ,
-                mapping metadata
-            )))
+(((generators , mapping metadata)))
 
 One aspect of identity mapping not covered in the previous section is JPA's ability to automatically assign a value to your numeric identity fields using __generators__.
 We discussed the available generator types in <<_jpa_overview_meta_id>>.
@@ -504,11 +456,7 @@ Now we show you how to define named generators.
 
 [[_jpa_overview_mapping_sequence_seqgen]]
 ===== Sequence Generator
-(((
-                    generators
-                ,
-                    SequenceGenerator
-                )))
+(((generators , SequenceGenerator)))
 
 Most databases allow you to create native sequences.
 These are database structures that generate increasing numeric values.
@@ -517,24 +465,12 @@ SequenceGenerator`` annotation represents a named database sequence.
 You can place the annotation on any package, entity class, persistent field declaration (if your entity uses field access), or getter method for a persistent property (if your entity uses property access). [class]``
 SequenceGenerator`` has the following properties:
 
-* (((
-                            SequenceGenerator
-                        ,
-                            name property
-                        )))``String name``: The generator name.
+* (((SequenceGenerator , name property)))``String name``: The generator name.
 This property is required.
 * ``String sequenceName``: The name of the database sequence. If you do not specify the database sequence, your vendor will choose an appropriate default.
-* (((
-                            SequenceGenerator
-                        ,
-                            initialValue property
-                        )))``int initialValue``: The initial sequence value.
+* (((SequenceGenerator , initialValue property)))``int initialValue``: The initial sequence value.
 * ``int allocationSize``: The number of values to allocate in memory for each trip to the database. Allocating values in memory allows the JPA runtime to avoid accessing the database for every sequence request. This number also specifies the amount that the sequence value is incremented each time the sequence is accessed. Defaults to 50.
-* (((
-                            SequenceGenerator
-                        ,
-                            schema property
-                        )))``String schema``: The sequence's schema.
+* (((SequenceGenerator , schema property)))``String schema``: The sequence's schema.
 If you do not name a schema, JPA uses the default schema for the database connection.
 
 
@@ -562,49 +498,27 @@ generated-value` XML element's `strategy` attribute to ``SEQUENCE`` and its `gen
 
 [[_jpa_overview_mapping_sequence_tablegen]]
 ===== Table Generator
-(((
-                    TableGenerator
-                )))
+(((TableGenerator)))
 
 A [class]``TableGenerator`` refers to a database table used to store increasing sequence values for one or more entities.
 As with [class]``
 SequenceGenerator``, you can place the [class]``TableGenerator `` annotation on any package, entity class, persistent field declaration (if your entity uses field access), or getter method for a persistent property (if your entity uses property access). [class]``
 TableGenerator`` has the following properties:
 
-* (((
-                            TableGenerator
-                        ,
-                            name property
-                        )))``String name``: The generator name.
+* (((TableGenerator , name property)))``String name``: The generator name.
 This property is required.
 * ``String table``: The name of the generator table. If left unspecified, your vendor will choose a default table.
-* (((
-                            TableGenerator
-                        ,
-                            schema property
-                        )))``String schema``: The named table's schema.
+* (((TableGenerator , schema property)))``String schema``: The named table's schema.
 * ``String catalog``: The named table's catalog.
-* (((
-                            TableGenerator
-                        ,
-                            pkColumnName property
-                        )))``String pkColumnName``: The name of the primary key column in the generator table.
+* (((TableGenerator , pkColumnName property)))``String pkColumnName``: The name of the primary key column in the generator table.
 If unspecified, your implementation will choose a default.
 * ``String valueColumnName``: The name of the column that holds the sequence value. If unspecified, your implementation will choose a default.
-* (((
-                            TableGenerator
-                        ,
-                            pkColumnValue property
-                        )))``String pkColumnValue``: The primary key column value of the row in the generator table holding this sequence value.
+* (((TableGenerator , pkColumnValue property)))``String pkColumnValue``: The primary key column value of the row in the generator table holding this sequence value.
 You can use the same generator table for multiple logical sequences by supplying different `
 pkColumnValue` s.
 If you do not specify a value, the implementation will supply a default.
 * ``int initialValue``: The value of the generator's first issued number.
-* (((
-                            TableGenerator
-                        ,
-                            allocationSize property
-                        )))``int allocationSize``: The number of values to allocate in memory for each trip to the database.
+* (((TableGenerator , allocationSize property)))``int allocationSize``: The number of values to allocate in memory for each trip to the database.
 Allocating values in memory allows the JPA runtime to avoid accessing the database for every sequence request.
 This number also specifies the amount that the sequence value is incremented each time the generator table is updated.
 Defaults to 50.
@@ -788,27 +702,15 @@ The same metadata for `Article` and `Author` expressed in XML form:
 
 [[_jpa_overview_mapping_inher]]
 ==== Inheritance
-(((
-                inheritance
-            ,
-                mapping
-            )))
-(((
-                impedance mismatch
-            )))
+(((inheritance , mapping)))
+(((impedance mismatch)))
 
 In the 1990's programmers coined the term _impedance mismatch _ to describe the difficulties in bridging the object and relational worlds.
 Perhaps no feature of object modeling highlights the impedance mismatch better than inheritance.
 There is no natural, efficient way to represent an inheritance relationship in a relational database.
 
 
-(((
-                mapping metadata
-            ,
-                inheritance
-            ,
-                strategy attribute
-            ))) Luckily, JPA gives you a choice of inheritance strategies, making the best of a bad situation.
+(((mapping metadata , inheritance , strategy attribute))) Luckily, JPA gives you a choice of inheritance strategies, making the best of a bad situation.
 The base entity class defines the inheritance strategy for the hierarchy with the [class]``Inheritance`` annotation. [class]``Inheritance`` has the following properties:
 
 * ``InheritanceType strategy``: Enum value declaring the inheritance strategy for the hierarchy. Defaults to `` InheritanceType.SINGLE_TABLE``. We detail each of the available strategies below.
@@ -877,22 +779,12 @@ Thus, we could omit the ``@Inheritance`` annotation in the example above and get
 [NOTE]
 ====
 
-(((
-                        inheritance
-                    ,
-                        flat
-                    ))) Mapping subclass state to the superclass table is often called _flat _ inheritance mapping.
+(((inheritance , flat))) Mapping subclass state to the superclass table is often called _flat _ inheritance mapping.
 ====
 
 [[_jpa_overview_mapping_inher_single_adv]]
 ====== Advantages
-(((
-                        inheritance
-                    ,
-                        SINGLE_TABLE strategy
-                    ,
-                        advantages
-                    )))
+(((inheritance , SINGLE_TABLE strategy , advantages)))
 
 Single table inheritance mapping is the fastest of all inheritance models, since it never requires a join to retrieve a persistent instance from the database.
 Similarly, persisting or updating a persistent instance requires only a single ``INSERT`` or `UPDATE` statement.
@@ -906,11 +798,7 @@ This may have undesirable consequence on the database size, since a wide or deep
 
 [[_jpa_overview_mapping_inher_joined]]
 ===== Joined
-(((
-                    inheritance
-                ,
-                    JOINED strategy
-                )))
+(((inheritance , JOINED strategy)))
 
 The `InheritanceType.JOINED` strategy uses a different table for each class in the hierarchy.
 Each table only includes state declared in its class.
@@ -919,9 +807,7 @@ Thus to load a subclass instance, the JPA implementation must read from the subc
 [NOTE]
 ====
 
-(((
-                        vertical
-                    ))) Using joined subclass tables is also called _vertical_ inheritance mapping.
+(((vertical))) Using joined subclass tables is also called _vertical_ inheritance mapping.
 ====
 
 
@@ -1015,13 +901,7 @@ In XML, simply list as many ` primary-key-join-column` elements as necessary.
 
 [[_jpa_overview_mapping_inher_joined_adv]]
 ====== Advantages
-(((
-                        inheritance
-                    ,
-                        JOINED strategy
-                    ,
-                        advantages
-                    )))
+(((inheritance , JOINED strategy , advantages)))
 
 The joined strategy has the following advantages:
 
@@ -1044,13 +924,7 @@ When executing a select against a hierarchy that uses joined subclass table inhe
 
 [[_jpa_overview_mapping_inher_tpc]]
 ===== Table Per Class
-(((
-                    mapping metadata
-                ,
-                    inheritance
-                ,
-                    TABLE_PER_CLASS strategy
-                )))
+(((mapping metadata , inheritance , TABLE_PER_CLASS strategy)))
 
 Like the `JOINED` strategy, the `
 InheritanceType.TABLE_PER_CLASS` strategy uses a different table for each class in the hierarchy.
@@ -1116,13 +990,7 @@ Also, as in the joined strategy, adding additional classes to the hierarchy does
 
 [[_jpa_overview_mapping_inher_tpc_disadv]]
 ====== Disadvantages
-(((
-                        inheritance
-                    ,
-                        TABLE_PER_CLASS strategy
-                    ,
-                        disadvantages
-                    )))
+(((inheritance , TABLE_PER_CLASS strategy , disadvantages)))
 
 Polymorphic relations to non-leaf classes in a table-per-class hierarchy have many limitations.
 When the concrete subclass is not known, the related object could be in any of the subclass tables, making joins through the relation impossible.
@@ -1362,11 +1230,7 @@ The same metadata expressed in XML form:
 
 [[_jpa_overview_mapping_discrim]]
 ==== Discriminator
-(((
-                inheritance
-            ,
-                discriminator
-            )))
+(((inheritance , discriminator)))
 
 The <<_jpa_overview_mapping_inher_single,single table>> inheritance strategy results in a single table containing records for two or more different classes in an inheritance hierarchy.
 Similarly, using the <<_jpa_overview_mapping_inher_joined, joined>> strategy results in the superclass table holding records for superclass instances as well as for the superclass state of subclass instances.
@@ -1657,11 +1521,7 @@ The same metadata expressed in XML:
 
 [[_jpa_overview_mapping_field]]
 ==== Field Mapping
-(((
-                persistent fields
-            ,
-                mapping metadata
-            )))
+(((persistent fields , mapping metadata)))
 
 The following sections enumerate the myriad of field mappings JPA supports.
 JPA augments the persistence metadata covered in <<_jpa_overview_meta>> with many new object-relational annotations.
@@ -1675,11 +1535,7 @@ See the Reference Guide's <<_ref_guide_mapping>> for complete coverage of OpenJP
 
 [[_jpa_overview_mapping_basic]]
 ===== Basic Mapping
-(((
-                    persistent fields
-                ,
-                    basic
-                )))
+(((persistent fields , basic)))
 
 A _basic_ field mapping stores the field value directly into a database column.
 The following field metadata types use basic mapping.
@@ -1697,11 +1553,7 @@ These defaults allow you to sometimes omit the annotation altogether.
 
 [[_jpa_overview_mapping_lob]]
 ====== LOBs
-(((
-                        mapping metadata
-                    ,
-                        LOB types
-                    )))
+(((mapping metadata , LOB types)))
 
 Adding the [class]``Lob`` marker annotation to a basic field signals that the data is to be stored as a LOB (Large OBject). If the field holds string or character data, it will map to a `CLOB` (Character Large OBject) database column.
 If the field holds any other data type, it will be stored as binary data in a `BLOB` (Binary Large OBject) column.
@@ -1717,14 +1569,8 @@ See <<_ref_guide_streamsupport>> in the Reference Guide for details.
 
 [[_jpa_overview_mapping_enum]]
 ====== Enumerated
-(((
-                        Enumerated
-                    )))
-(((
-                        mapping metadata
-                    ,
-                        enums
-                    )))
+(((Enumerated)))
+(((mapping metadata , enums)))
 
 You can apply the [class]``Enumerated`` annotation to your [class]``Enum`` fields to control how they map to the database.
 The [class]``Enumerated`` annotation's value one of the following constants from the [class]``EnumType`` enum:
@@ -1740,11 +1586,7 @@ Its embedded text must be one of `STRING` or ``ORIDINAL``.
 
 [[_jpa_overview_mapping_temporal]]
 ====== Temporal Types
-(((
-                        mapping metadata
-                    ,
-                        temporal types
-                    )))
+(((mapping metadata , temporal types)))
 
 The [class]``Temporal`` annotation determines how the implementation handles your basic [class]`` java.util.Date`` and [class]``
 java.util.Calendar`` fields at the JDBC level.
@@ -2123,11 +1965,7 @@ The same metadata expressed in XML:
 
 [[_jpa_overview_mapping_secondary]]
 ===== Secondary Tables
-(((
-                    mapping metadata
-                ,
-                    secondary table fields
-                )))
+(((mapping metadata , secondary table fields)))
 
 Sometimes a logical record is spread over multiple database tables.
 JPA calls a class' declared table the _primary_ table, and calls other tables that make up a logical record _secondary _ tables.
@@ -2199,11 +2037,7 @@ And in XML:
 
 [[_jpa_overview_mapping_embed]]
 ===== Embedded Mapping
-(((
-                    mapping metadata
-                ,
-                    embedded fields
-                )))
+(((mapping metadata , embedded fields)))
 
 <<_jpa_overview_meta>> describes JPA's concept of _
 embeddable_ objects.
@@ -2384,17 +2218,9 @@ The same metadata expressed in XML form:
 
 [[_jpa_overview_mapping_rel]]
 ===== Direct Relations
-(((
-                    mapping metadata
-                ,
-                    direct relation fields
-                )))
-(((
-                    one-one
-                )))
-(((
-                    many-one
-                )))
+(((mapping metadata , direct relation fields)))
+(((one-one)))
+(((many-one)))
 
 A direct relation is a non-embedded persistent field that holds a reference to another entity. <<_jpa_overview_meta_manytoone,many to one>> and <<_jpa_overview_meta_onetoone,one to one>> metadata field types are mapped as direct relations.
 Our model has three direct relations: [class]``Magazine``'s `publisher` field is a direct relation to a [class]``Company``, [class]``Magazine``'s ``coverArticle`` field is a direct relation to [class]``
@@ -2562,20 +2388,10 @@ primary-key-join-column` elements in place of [class]``JoinColumn(s) `` / ` join
 
 [[_jpa_overview_mapping_assoccoll]]
 ===== Join Table
-(((
-                    mapping metadata
-                ,
-                    association table collection fields
-                )))
-(((
-                    join table
-                )))
-(((
-                    one-many
-                )))
-(((
-                    many-many
-                )))
+(((mapping metadata , association table collection fields)))
+(((join table)))
+(((one-many)))
+(((many-many)))
 
 A _join table_ consists of two foreign keys.
 Each row of a join table associates two objects together.
@@ -2718,11 +2534,7 @@ The same metadata expressed in XML:
 
 [[_jpa_overview_mapping_bidi]]
 ===== Bidirectional Mapping
-(((
-                    bidirectional relations
-                ,
-                    mapping
-                )))
+(((bidirectional relations , mapping)))
 
 <<_jpa_overview_meta_mappedby>> introduced bidirectional relations.
 To map a bidirectional relation, you map one field normally using the annotations we have covered throughout this chapter.
@@ -2736,11 +2548,7 @@ Look for this pattern in these bidirectional relations as you peruse the complet
 
 [[_jpa_overview_mapping_map]]
 ===== Map Mapping
-(((
-                    persistent fields
-                ,
-                    maps
-                )))
+(((persistent fields , maps)))
 
 All map fields in JPA are modeled on either one to many or many to many associations.
 The map key is always derived from an associated entity's field.

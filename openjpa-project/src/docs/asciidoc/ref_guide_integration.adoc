@@ -6,9 +6,7 @@ The following chapter will illustrate these integration features.
 
 [[_ref_guide_integration_ant]]
 ==== Apache Ant
-(((
-                Ant
-            )))
+(((Ant)))
 
 Ant is a very popular tool for building Java projects.
 It is similar to the ``make`` command, but is Java-centric and has more modern features.
@@ -30,11 +28,7 @@ This allows you to customize various aspects of the Ant tasks in order to better
 
 [[_ref_guide_integration_conf]]
 ===== Common Ant Configuration Options
-(((
-                    Ant
-                ,
-                    configuration options
-                )))
+(((Ant , configuration options)))
 
 All OpenJPA tasks accept a nested `config` element, which defines the configuration environment in which the specified task will run.
 The attributes for the `config` tag are defined by the link:../../apidocs/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html[
@@ -132,11 +126,7 @@ See the code formatting documentation in <<_ref_guide_conf_devtools_format>> for
 
 [[_ref_guide_integration_enhance]]
 ===== Enhancer Ant Task
-(((
-                    enhancer
-                ,
-                    Ant task
-                )))
+(((enhancer , Ant task)))
 
 The enhancer task allows you to invoke the OpenJPA enhancer directly from within the Ant build process.
 The task's parameters correspond exactly to the long versions of the command-line arguments to the <<_ref_guide_pc_enhance,[class]``
@@ -193,11 +183,7 @@ _ file:
 
 [[_ref_guide_integration_appidtool]]
 ===== Application Identity Tool Ant Task
-(((
-                    application identity tool
-                ,
-                    Ant task
-                )))
+(((application identity tool , Ant task)))
 
 The application identity tool task allows you to invoke the application identity tool directly from within the Ant build process.
 The task's parameters correspond exactly to the long versions of the command-line arguments to the <<_ref_guide_pc_appid_appidtool,[class]``
@@ -235,11 +221,7 @@ Following is an example of using the application identity tool task in a [path]_
 
 [[_ref_guide_integration_mappingtool]]
 ===== Mapping Tool Ant Task
-(((
-                    mapping tool
-                ,
-                    Ant task
-                )))
+(((mapping tool , Ant task)))
 
 The mapping tool task allows you to directly invoke the mapping tool from within the Ant build process.
 It is useful for making sure that the database schema and object-relational mapping data is always synchronized with your persistent class definitions, without needing to remember to invoke the mapping tool manually.
@@ -275,11 +257,7 @@ Following is an example of a [path]_build.xml_ target that invokes the mapping t
 
 [[_ref_guide_integration_revmappingtool]]
 ===== Reverse Mapping Tool Ant Task
-(((
-                    reverse mapping tool
-                ,
-                    Ant task
-                )))
+(((reverse mapping tool , Ant task)))
 
 The reverse mapping tool task allows you to directly invoke the reverse mapping tool from within Ant.
 While many users will only run the reverse mapping process once, others will make it part of their build process.
@@ -310,11 +288,7 @@ Following is an example of a [path]_build.xml_ target that invokes the reverse m
 
 [[_ref_guide_integration_schematool]]
 ===== Schema Tool Ant Task
-(((
-                    schema tool
-                ,
-                    Ant task
-                )))
+(((schema tool , Ant task)))
 
 The schema tool task allows you to directly invoke the schema tool from within the Ant build process.
 The task's parameters correspond exactly to the long versions of the command-line arguments to the <<_ref_guide_schema_schematool,[class]``
@@ -351,11 +325,7 @@ For Java SE or applications running in application managed mode, the OpenJPA agg
 
 [[_ref_guide_integration_dbcp_conf]]
 ===== Apache Commons DBCP Configuration Options
-(((
-                    DBCP
-                ,
-                    configuration options
-                )))
+(((DBCP , configuration options)))
 
 The <<_ref_guide_dbsetup_thirdparty,JDBC DataSource configuration options>> that we will need to modify in order to use Apache Commons DBCP for connection pooling are:
 [source]

@@ -1,11 +1,7 @@
 [[_jpa_overview_query]]
 === JPA Query
-(((
-            JP Query
-        )))
-(((
-            queries
-        )))
+(((JP Query)))
+(((queries)))
 
 
 image::img/jpa-query.png[]
@@ -154,9 +150,7 @@ This expression would match magazines whose price is 4.00, 5.00 or 6.00, but not
 
 JPQL also includes the following conditionals:
 
-* (((
-                            BETWEEN expressions
-                        )))``[NOT] BETWEEN``: Shorthand for expressing that a value falls between two other values.
+* (((BETWEEN expressions)))``[NOT] BETWEEN``: Shorthand for expressing that a value falls between two other values.
 The following two statements are synonymous:
 
 
@@ -172,9 +166,7 @@ SELECT x FROM Magazine x WHERE x.price >= 3.00 AND x.price <= 5.00
 
 SELECT x FROM Magazine x WHERE x.price BETWEEN 3.00 AND 5.00
 ----
-* (((
-                            LIKE expressions
-                        )))``[NOT] LIKE``: Performs a string comparison with wildcard support.
+* (((LIKE expressions)))``[NOT] LIKE``: Performs a string comparison with wildcard support.
 The special character '_' in the parameter means to match any single character, and the special character '%' means to match any sequence of characters.
 The following statement matches title fields "JDJ" and "JavaPro", but not "IT Insider":
 
@@ -193,9 +185,7 @@ The following statement matches the title field "JDJ" but not "JavaPro":
 
 SELECT x FROM Magazine x WHERE x.title LIKE 'J__'
 ----
-* (((
-                            IN expressions
-                        )))``[NOT] IN``: Specifies that the member must be equal to one element of the provided list.
+* (((IN expressions)))``[NOT] IN``: Specifies that the member must be equal to one element of the provided list.
 The following two statements are synonymous:
 
 
@@ -210,9 +200,7 @@ SELECT x FROM Magazine x WHERE x.title IN ('JDJ', 'JavaPro', 'IT Insider')
 ----
 SELECT x FROM Magazine x WHERE x.title = 'JDJ' OR x.title = 'JavaPro' OR x.title = 'IT Insider'
 ----
-* (((
-                            IS EMPTY expressions
-                        )))``IS [NOT] EMPTY``: Specifies that the collection field holds no elements.
+* (((IS EMPTY expressions)))``IS [NOT] EMPTY``: Specifies that the collection field holds no elements.
 For example:
 
 
@@ -223,9 +211,7 @@ SELECT x FROM Magazine x WHERE x.articles is empty
 ----
 
 This statement will return all magazines whose ` articles` member contains no elements.
-* (((
-                            IS NULL expressions
-                        )))``IS [NOT] NULL``: Specifies that the field is equal to null.
+* (((IS NULL expressions)))``IS [NOT] NULL``: Specifies that the field is equal to null.
 For example:
 
 
@@ -236,9 +222,7 @@ SELECT x FROM Magazine x WHERE x.publisher is null
 ----
 
 This statement will return all Magazine instances whose "publisher" field is set to ``null``.
-* (((
-                            NOT expressions
-                        )))``NOT``: Negates the contained expression.
+* (((NOT expressions)))``NOT``: Negates the contained expression.
 For example, the following two statements are synonymous:
 
 
@@ -380,9 +364,7 @@ See <<_ref_guide_fetch>>.
 
 As well as supporting direct field and relation comparisons, JPQL supports a pre-defined set of functions that you can apply.
 
-* (((
-                            CONCAT function
-                        )))``CONCAT(string1, string2)``: Concatenates two string fields or literals.
+* (((CONCAT function)))``CONCAT(string1, string2)``: Concatenates two string fields or literals.
 For example:
 
 
@@ -391,9 +373,7 @@ For example:
 
 SELECT x FROM Magazine x WHERE CONCAT(x.title, 's') = 'JDJs'
 ----
-* (((
-                            SUBSTRING function
-                        )))``SUBSTRING(string, startIndex, [length])``: Returns the part of the `string` argument starting at `startIndex` (1-based) and optionally ending at `length` characters past ``
+* (((SUBSTRING function)))``SUBSTRING(string, startIndex, [length])``: Returns the part of the `string` argument starting at `startIndex` (1-based) and optionally ending at `length` characters past ``
 startIndex``.
 If the `length` argument is not specified, the substring from the `startIndex` to the end of the `string` is returned.
 
@@ -403,9 +383,7 @@ If the `length` argument is not specified, the substring from the `startIndex` t
 
 SELECT x FROM Magazine x WHERE SUBSTRING(x.title, 1, 1) = 'J'
 ----
-* (((
-                            TRIM function
-                        )))``TRIM([LEADING | TRAILING | BOTH] [character FROM] string``: Trims the specified character from either the beginning ( ``LEADING ``) end ( ``TRAILING``) or both ( `` BOTH ``) of the string argument.
+* (((TRIM function)))``TRIM([LEADING | TRAILING | BOTH] [character FROM] string``: Trims the specified character from either the beginning ( ``LEADING ``) end ( ``TRAILING``) or both ( `` BOTH ``) of the string argument.
 If no trim character is specified, the space character will be trimmed.
 
 
@@ -414,9 +392,7 @@ If no trim character is specified, the space character will be trimmed.
 
 SELECT x FROM Magazine x WHERE TRIM(BOTH 'J' FROM x.title) = 'D'
 ----
-* (((
-                            LOWER function
-                        )))``LOWER(string)``: Returns the lower-case of the specified string argument.
+* (((LOWER function)))``LOWER(string)``: Returns the lower-case of the specified string argument.
 
 
 [source]
@@ -424,9 +400,7 @@ SELECT x FROM Magazine x WHERE TRIM(BOTH 'J' FROM x.title) = 'D'
 
 SELECT x FROM Magazine x WHERE LOWER(x.title) = 'jdj'
 ----
-* (((
-                            UPPER function
-                        )))``UPPER(string)``: Returns the upper-case of the specified string argument.
+* (((UPPER function)))``UPPER(string)``: Returns the upper-case of the specified string argument.
 
 
 [source]
@@ -434,9 +408,7 @@ SELECT x FROM Magazine x WHERE LOWER(x.title) = 'jdj'
 
 SELECT x FROM Magazine x WHERE UPPER(x.title) = 'JAVAPRO'
 ----
-* (((
-                            LENGTH function
-                        )))``LENGTH(string)``: Returns the number of characters in the specified string argument.
+* (((LENGTH function)))``LENGTH(string)``: Returns the number of characters in the specified string argument.
 
 
 [source]
@@ -444,9 +416,7 @@ SELECT x FROM Magazine x WHERE UPPER(x.title) = 'JAVAPRO'
 
 SELECT x FROM Magazine x WHERE LENGTH(x.title) = 3
 ----
-* (((
-                            LOCATE function
-                        )))``LOCATE(searchString, candidateString [, startIndex])``: Returns the first index of `searchString` in ``
+* (((LOCATE function)))``LOCATE(searchString, candidateString [, startIndex])``: Returns the first index of `searchString` in ``
 candidateString``.
 Positions are 1-based.
 If the string is not found, returns 0.
@@ -457,9 +427,7 @@ If the string is not found, returns 0.
 
 SELECT x FROM Magazine x WHERE LOCATE('D', x.title) = 2
 ----
-* (((
-                            ABS function
-                        )))``ABS(number)``: Returns the absolute value of the argument.
+* (((ABS function)))``ABS(number)``: Returns the absolute value of the argument.
 
 
 [source]
@@ -467,9 +435,7 @@ SELECT x FROM Magazine x WHERE LOCATE('D', x.title) = 2
 
 SELECT x FROM Magazine x WHERE ABS(x.price) >= 5.00
 ----
-* (((
-                            CEILING function
-                        )))``CEILING(number)``: Returns the smallest (closest to negative infinity) value that is greater than or equal to the argument and is equal to a mathematical integer.
+* (((CEILING function)))``CEILING(number)``: Returns the smallest (closest to negative infinity) value that is greater than or equal to the argument and is equal to a mathematical integer.
 
 
 [source]
@@ -477,9 +443,7 @@ SELECT x FROM Magazine x WHERE ABS(x.price) >= 5.00
 
 SELECT x FROM Magazine x WHERE CEILING(x.price) >= 10
 ----
-* (((
-                            EXP function
-                        )))``EXP(number)``: Returns the Euler's number `e` raised to the power of a value.
+* (((EXP function)))``EXP(number)``: Returns the Euler's number `e` raised to the power of a value.
 
 
 [source]
@@ -487,9 +451,7 @@ SELECT x FROM Magazine x WHERE CEILING(x.price) >= 10
 
 SELECT x FROM Magazine x WHERE EXP(x.price) >= 10
 ----
-* (((
-                            FLOOR function
-                        )))``FLOOR(number)``: Returns the largest (closest to positive infinity) value that is less than or equal to the argument and is equal to a mathematical integer.
+* (((FLOOR function)))``FLOOR(number)``: Returns the largest (closest to positive infinity) value that is less than or equal to the argument and is equal to a mathematical integer.
 
 
 [source]
@@ -497,9 +459,7 @@ SELECT x FROM Magazine x WHERE EXP(x.price) >= 10
 
 SELECT x FROM Magazine x WHERE FLOOR(x.price) >= 10
 ----
-* (((
-                            LN function
-                        )))``LN(number)``: Returns the natural logarithm (base ``e``) of a value.
+* (((LN function)))``LN(number)``: Returns the natural logarithm (base ``e``) of a value.
 
 
 [source]
@@ -507,9 +467,7 @@ SELECT x FROM Magazine x WHERE FLOOR(x.price) >= 10
 
 SELECT x FROM Magazine x WHERE LN(x.price) >= 10
 ----
-* (((
-                            SQRT function
-                        )))``SQRT(number)``: Returns the square root of the argument.
+* (((SQRT function)))``SQRT(number)``: Returns the square root of the argument.
 
 
 [source]
@@ -517,9 +475,7 @@ SELECT x FROM Magazine x WHERE LN(x.price) >= 10
 
 SELECT x FROM Magazine x WHERE SQRT(x.price) >= 1.00
 ----
-* (((
-                            MOD function
-                        )))``MOD(number, divisor)``: Returns the modulo of `number ` and ``divisor``.
+* (((MOD function)))``MOD(number, divisor)``: Returns the modulo of `number ` and ``divisor``.
 
 
 [source]
@@ -527,9 +483,7 @@ SELECT x FROM Magazine x WHERE SQRT(x.price) >= 1.00
 
 SELECT x FROM Magazine x WHERE MOD(x.price, 10) = 0
 ----
-* (((
-                            POWER function
-                        )))``POWER(base, exponent)``: Returns the value of the first argument raised to the power of the second argument.
+* (((POWER function)))``POWER(base, exponent)``: Returns the value of the first argument raised to the power of the second argument.
 
 
 [source]
@@ -537,9 +491,7 @@ SELECT x FROM Magazine x WHERE MOD(x.price, 10) = 0
 
 SELECT x FROM Magazine x WHERE POWER(x.price, 2) >= 10
 ----
-* (((
-                            ROUND function
-                        )))``ROUND(number, precision)``: Rounds the number to given precision.
+* (((ROUND function)))``ROUND(number, precision)``: Rounds the number to given precision.
 
 
 [source]
@@ -547,9 +499,7 @@ SELECT x FROM Magazine x WHERE POWER(x.price, 2) >= 10
 
 SELECT x FROM Magazine x WHERE ROUND(x.price, 2) >= 10
 ----
-* (((
-                            SIGN function
-                        )))``SIGN(number)``: Returns the sign (-1, 0, 1) of a number
+* (((SIGN function)))``SIGN(number)``: Returns the sign (-1, 0, 1) of a number
 
 
 [source]
@@ -557,9 +507,7 @@ SELECT x FROM Magazine x WHERE ROUND(x.price, 2) >= 10
 
 SELECT x FROM Magazine x WHERE SIGN(x.price) >= 0
 ----
-* (((
-                            INDEX function
-                        )))``INDEX(identification_variable)``: Returns an integer value corresponding to the position of its argument in an ordered list.
+* (((INDEX function)))``INDEX(identification_variable)``: Returns an integer value corresponding to the position of its argument in an ordered list.
 The INDEX function can only be applied to identification variables denoting types for which an order column has been specified.
 
 In the following example, `studentWaitlist` is a list of students for which an order column has been specified, the query returns the name of the first student on the waiting list of the course named 'Calculus':
@@ -570,27 +518,13 @@ In the following example, `studentWaitlist` is a list of students for which an o
 
 SELECT w.name FROM Course c JOIN c.studentWaitlist w WHERE c.name = ‘Calculus’ AND INDEX(w) = 0
 ----
-* (((
-                            CURRENT_DATE function
-                        )))``CURRENT_DATE``: Returns the current date.
-* (((
-                            CURRENT_TIME function
-                        )))``CURRENT_TIME``: Returns the current time.
-* (((
-                            CURRENT_TIMESTAMP function
-                        )))``CURRENT_TIMESTAMP``: Returns the current timestamp.
-* (((
-                            LOCAL DATE function
-                        )))``LOCAL DATE``: returns the value of current date on the database server.
-* (((
-                            LOCAL TIME function
-                        )))``LOCAL TIME``: returns the value of current time on the database server.
-* (((
-                            LOCAL DATETIME function
-                        )))``LOCAL DATETIME``: returns the value of current timestamp on the database server.
-* (((
-                            EXTRACT date field function
-                        )))``EXTRACT``(date_field `FROM` date_expression) : extracts a given field  (year, quarter, month, week, day, hour, minute or second) from a datetime.
+* (((CURRENT_DATE function)))``CURRENT_DATE``: Returns the current date.
+* (((CURRENT_TIME function)))``CURRENT_TIME``: Returns the current time.
+* (((CURRENT_TIMESTAMP function)))``CURRENT_TIMESTAMP``: Returns the current timestamp.
+* (((LOCAL DATE function)))``LOCAL DATE``: returns the value of current date on the database server.
+* (((LOCAL TIME function)))``LOCAL TIME``: returns the value of current time on the database server.
+* (((LOCAL DATETIME function)))``LOCAL DATETIME``: returns the value of current timestamp on the database server.
+* (((EXTRACT date field function)))``EXTRACT``(date_field `FROM` date_expression) : extracts a given field  (year, quarter, month, week, day, hour, minute or second) from a datetime.
 
 
 [source]
@@ -598,9 +532,7 @@ SELECT w.name FROM Course c JOIN c.studentWaitlist w WHERE c.name = ‘Calculus�
 
 SELECT c FROM Customer AS c WHERE EXTRACT(YEAR FROM c.birthDate)  (EXTRACT(YEAR FROM CURRENT_DATE) - 13)
 ----
-* (((
-                            EXTRACT date part function
-                        )))``EXTRACT``(date_part `FROM` date_expression) : extracts a date part  (date or time) from a datetime.
+* (((EXTRACT date part function)))``EXTRACT``(date_part `FROM` date_expression) : extracts a date part  (date or time) from a datetime.
 
 
 [source]

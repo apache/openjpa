@@ -1,13 +1,7 @@
 [[_jpa_overview_meta]]
 === Metadata
-(((
-            metadata
-        )))
-(((
-            JPA
-        ,
-            metadata
-        )))
+(((metadata)))
+(((JPA , metadata)))
 
 JPA requires that you accompany each persistent class with persistence metadata.
 This metadata serves three primary purposes:
@@ -54,16 +48,8 @@ The following metadata annotations and XML elements apply to persistent class de
 
 [[_jpa_overview_meta_entity]]
 ===== Entity
-(((
-                    Entity
-                ,
-                    annotation
-                )))
-(((
-                    annotations
-                ,
-                    Entity
-                )))
+(((Entity , annotation)))
+(((annotations , Entity)))
 
 The [class]``Entity`` annotation denotes an entity class.
 All entity classes must have this annotation.
@@ -87,11 +73,7 @@ See <<_ref_guide_pc_enhance>> in the Reference Guide for details on enhancement.
 
 [[_jpa_overview_meta_idclass]]
 ===== Id Class
-(((
-                    metadata
-                ,
-                    IdClass
-                )))
+(((metadata , IdClass)))
 
 As we discussed in <<_jpa_overview_pc_identitycls>>, entities with multiple identity fields must use an _ identity class _ to encapsulate their persistent identity.
 The [class]``IdClass `` annotation specifies this class.
@@ -105,14 +87,8 @@ The equivalent XML element is ``id-class``, which has a single attribute:
 
 [[_jpa_overview_meta_embeddablesuper]]
 ===== Mapped Superclass
-(((
-                    MappedSuperclass
-                )))
-(((
-                    metadata
-                ,
-                    MappedSuperclass
-                )))
+(((MappedSuperclass)))
+(((metadata , MappedSuperclass)))
 
 A _mapped superclass_ is a non-entity class that can define persistent state and mapping information for entity subclasses.
 Mapped superclasses are usually abstract.
@@ -136,14 +112,8 @@ OpenJPA also allows you to declare relations to mapped superclass types; however
 
 [[_jpa_overview_meta_embeddable]]
 ===== Embeddable
-(((
-                    Embeddable
-                )))
-(((
-                    metadata
-                ,
-                    Embeddable
-                )))
+(((Embeddable)))
+(((metadata , Embeddable)))
 
 The [class]``Embeddable`` annotation designates an embeddable persistent class.
 Embeddable instances are stored as part of the record of their owning instance.
@@ -169,17 +139,9 @@ To signal that a class is both an entity and an embeddable class in OpenJPA, sim
 
 [[_jpa_overview_meta_entity_listeners]]
 ===== EntityListeners
-(((
-                    EntityListeners
-                )))
-(((
-                    entity-listeners
-                )))
-(((
-                    metadata
-                ,
-                    EntityListeners
-                )))
+(((EntityListeners)))
+(((entity-listeners)))
+(((metadata , EntityListeners)))
 
 An entity may list its lifecycle event listeners in the [class]``
 EntityListeners`` annotation.
@@ -335,14 +297,8 @@ private Company publisher;
 ----
 
 
-(((
-                metadata
-            ,
-                property access
-            )))
-(((
-                persistent properties
-            ))) Property access, on the other hand, retrieves and loads state through JavaBean "getter" and "setter" methods.
+(((metadata , property access)))
+(((persistent properties))) Property access, on the other hand, retrieves and loads state through JavaBean "getter" and "setter" methods.
 For a property `p` of type ``T``, you must define the following getter method:
 
 [source]
@@ -382,14 +338,8 @@ private void setPublisher(Company publisher) { ... }
 ===== Explicit Access
 
 
-(((
-                    metadata
-                ,
-                    explicit access
-                )))
-(((
-                    persistent attributes
-                ))) The access type of a class or individual persistent attributes can be specified explicitly using the `@Access` annotation or `access ` attribute on the XML elements used to define persistent attributes.
+(((metadata , explicit access)))
+(((persistent attributes))) The access type of a class or individual persistent attributes can be specified explicitly using the `@Access` annotation or `access ` attribute on the XML elements used to define persistent attributes.
 When explicitly defining access, specify the explicit access type for the class and then apply the `@Access` annotation or ``access ``XML attribute to individual fields or properties.
 If explicit ``FIELD`` or `PROPERTY` is specified at the class level, all eligible non-transient fields or properties will be persistent.
 If using class level `FIELD` access, non-persistent fields must be `transient` or annotated with ``@Transient``.
@@ -469,14 +419,8 @@ The remainder of this document uses the term "persistent field" to refer to eith
 
 [[_jpa_overview_meta_transient]]
 ===== Transient
-(((
-                    Transient
-                )))
-(((
-                    metadata
-                ,
-                    Transient
-                )))
+(((Transient)))
+(((metadata , Transient)))
 
 The [class]``Transient`` annotation specifies that a field is non-persistent.
 Use it to exclude fields from management that would otherwise be persistent. [class]``Transient`` is a marker annotation only; it has no properties.
@@ -489,14 +433,8 @@ It has a single attribute:
 
 [[_jpa_overview_meta_id]]
 ===== Id
-(((
-                    Id
-                )))
-(((
-                    metadata
-                ,
-                    Id
-                )))
+(((Id)))
+(((metadata , Id)))
 
 Annotate your simple identity fields with [class]``Id``.
 This annotation has no properties.
@@ -510,14 +448,8 @@ It has one required attribute:
 
 [[_jpa_overview_meta_gen]]
 ===== Generated Value
-(((
-                    GeneratedValue
-                )))
-(((
-                    metadata
-                ,
-                    GeneratedValue
-                )))
+(((GeneratedValue)))
+(((metadata , GeneratedValue)))
 
 The previous section showed you how to declare your identity fields with the [class]``Id`` annotation.
 It is often convenient to allow the persistence implementation to assign a unique value to your identity fields automatically.
@@ -545,30 +477,14 @@ Before using the `IDENTITY ` generation strategy, however, read <<_ref_guide_pc_
 
 OpenJPA also offers additional generator strategies for non-numeric fields, which you can access by setting `strategy` to `AUTO ` (the default), and setting the `generator` string to:
 
-* (((
-                                mapping metadata
-                            ,
-                                uuid-string
-                            )))``uuid-string``: OpenJPA will generate a 128-bit type 1 UUID unique within the network, represented as a 16-character string.
+* (((mapping metadata , uuid-string)))``uuid-string``: OpenJPA will generate a 128-bit type 1 UUID unique within the network, represented as a 16-character string.
 For more information on UUIDs, see the IETF UUID draft specification at: http://www.ics.uci.edu/~ejw/authoring/uuid-guid/[
 http://www.ics.uci.edu/~ejw/authoring/uuid-guid/]
-* (((
-                                mapping metadata
-                            ,
-                                uuid-hex
-                            )))``uuid-hex``: Same as `` uuid-string``, but represents the type 1 UUID as a 32-character hexadecimal string.
-* (((
-                                mapping metadata
-                            ,
-                                uuid-type4-string
-                            )))``uuid-type4-string``: OpenJPA will generate a 128-bit type 4 pseudo-random UUID, represented as a 16-character string.
+* (((mapping metadata , uuid-hex)))``uuid-hex``: Same as `` uuid-string``, but represents the type 1 UUID as a 32-character hexadecimal string.
+* (((mapping metadata , uuid-type4-string)))``uuid-type4-string``: OpenJPA will generate a 128-bit type 4 pseudo-random UUID, represented as a 16-character string.
 For more information on UUIDs, see the IETF UUID draft specification at: http://www.ics.uci.edu/~ejw/authoring/uuid-guid/[
 http://www.ics.uci.edu/~ejw/authoring/uuid-guid/]
-* (((
-                                mapping metadata
-                            ,
-                                uuid-type4-hex
-                            )))``uuid-type4-hex``: Same as ` uuid-type4-string` , but represents the type 4 UUID as a 32-character hexadecimal string.
+* (((mapping metadata , uuid-type4-hex)))``uuid-type4-hex``: Same as ` uuid-type4-string` , but represents the type 4 UUID as a 32-character hexadecimal string.
 
 These string constants are defined in link:../../apidocs/org/apache/openjpa/persistence/Generator.html[
 org.apache.openjpa.persistence.Generator].
@@ -581,14 +497,8 @@ Read <<_ref_guide_sequence>> and <<_ref_guide_schema_def>> in the Reference Guid
 
 [[_jpa_overview_meta_embedid]]
 ===== Embedded Id
-(((
-                    EmbeddedId
-                )))
-(((
-                    metadata
-                ,
-                    EmbeddedId
-                )))
+(((EmbeddedId)))
+(((metadata , EmbeddedId)))
 
 If your entity has multiple identity values, you may declare multiple `
 @Id` fields, or you may declare a single `@EmbeddedId` field.
@@ -606,14 +516,8 @@ It has one required attribute:
 
 [[_jpa_overview_meta_version]]
 ===== Version
-(((
-                    Version
-                )))
-(((
-                    metadata
-                ,
-                    Version
-                )))
+(((Version)))
+(((metadata , Version)))
 
 Use the [class]``Version`` annotation to designate a version field. <<_jpa_overview_pc_version>> explained the importance of version fields to JPA.
 This is a marker annotation; it has no properties.
@@ -625,14 +529,8 @@ The equivalent XML element is ``version``, which has a single attribute:
 
 [[_jpa_overview_meta_basic]]
 ===== Basic
-(((
-                    Basic
-                )))
-(((
-                    metadata
-                ,
-                    Basic
-                )))
+(((Basic)))
+(((metadata , Basic)))
 
 [class]``Basic`` signifies a standard value persisted as-is to the datastore.
 You can use the [class]``Basic`` annotation on persistent fields of the following types: primitives, primitive wrappers, [class]``
@@ -660,16 +558,8 @@ It has the following attributes:
 
 [[_jpa_overview_meta_fetch]]
 ====== Fetch Type
-(((
-                        eager fetching
-                    ,
-                        FetchType
-                    )))
-(((
-                        metadata
-                    ,
-                        FetchType
-                    )))
+(((eager fetching , FetchType)))
+(((metadata , FetchType)))
 
 Many metadata annotations in JPA have a `fetch` property.
 This property can take on one of two values: `FetchType.EAGER` or ``FetchType.LAZY``. `FetchType.EAGER` means that the field is loaded by the JPA implementation before it returns the persistent object to you.
@@ -695,11 +585,7 @@ The Reference Guide details OpenJPA's eager fetching behavior in <<_ref_guide_pe
 
 [[_jpa_overview_meta_embedded]]
 ===== Embedded
-(((
-                    metadata
-                ,
-                    Embedded
-                )))
+(((metadata , Embedded)))
 
 Use the [class]``Embedded`` marker annotation on embeddable field types.
 Embedded fields are mapped as part of the datastore record of the declaring entity.
@@ -712,14 +598,8 @@ The equivalent XML element is ``embedded``, which expects a single attribute:
 
 [[_jpa_overview_meta_manytoone]]
 ===== Many To One
-(((
-                    ManyToOne
-                )))
-(((
-                    metadata
-                ,
-                    ManyToOne
-                )))
+(((ManyToOne)))
+(((metadata , ManyToOne)))
 
 When an entity `A` references a single entity ``
 B``, and other ``A``s might also reference the same ``B``, we say there is a _many to one_ relation from `A` to ``B``.
@@ -748,14 +628,8 @@ It accepts the following attributes:
 
 [[_jpa_overview_meta_cascade]]
 ====== Cascade Type
-(((
-                        CascadeType
-                    )))
-(((
-                        metadata
-                    ,
-                        CascadeType
-                    )))
+(((CascadeType)))
+(((metadata , CascadeType)))
 
 We introduce the JPA [class]``EntityManager`` in <<_jpa_overview_em>>.
 The [class]``EntityManager `` has APIs to persist new entities, remove (delete) existing entities, refresh entity state from the datastore, and merge _detached _ entity state back into the persistence context.
@@ -825,11 +699,7 @@ The following examples are equivalent:
 
 [[_jpa_overview_meta_onetomany]]
 ===== One To Many
-(((
-                    metadata
-                ,
-                    OneToMany
-                )))
+(((metadata , OneToMany)))
 
 When an entity `A` references multiple `B` entities, and no two ``A``s reference the same ``
 B``, we say there is a _one to many_ relation from ``A`` to ``B``.
@@ -861,15 +731,9 @@ one-to-many` element.
 
 [[_jpa_overview_meta_mappedby]]
 ====== Bidirectional Relations
-(((
-                        bidirectional relations
-                    )))
-(((
-                        mappedBy
-                    )))
-(((
-                        mapping metadata
-                    )))
+(((bidirectional relations)))
+(((mappedBy)))
+(((mapping metadata)))
 
 When two fields are logical inverses of each other, they form a __
 bidirectional relation__.
@@ -897,14 +761,8 @@ See <<_ref_guide_inverses>> in the Reference Guide for details.
 
 [[_jpa_overview_meta_onetoone]]
 ===== One To One
-(((
-                    OneToOne
-                )))
-(((
-                    metadata
-                ,
-                    OneToOne
-                )))
+(((OneToOne)))
+(((metadata , OneToOne)))
 
 When an entity `A` references a single entity ``
 B``, and no other ``A``s can reference the same ``
@@ -935,14 +793,8 @@ one-to-one` element.
 
 [[_jpa_overview_meta_manytomany]]
 ===== Many To Many
-(((
-                    ManyToMany
-                )))
-(((
-                    metadata
-                ,
-                    ManyToMany
-                )))
+(((ManyToMany)))
+(((metadata , ManyToMany)))
 
 When an entity `A` references multiple `B` entities, and other ``A``s might reference some of the same ``B``s, we say there is a _many to many_ relation between `A` and ``B``.
 In our sample model, for example, each article has a reference to all the authors that contributed to the article.
@@ -971,14 +823,8 @@ many-to-many` element.
 
 [[_jpa_overview_meta_orderby]]
 ===== Order By
-(((
-                    OrderBy
-                )))
-(((
-                    metadata
-                ,
-                    OrderBy
-                )))
+(((OrderBy)))
+(((metadata , OrderBy)))
 
 Datastores such as relational databases do not preserve the order of records.
 Your persistent [class]``List`` fields might be ordered one way the first time you retrieve an object from the datastore, and a completely different way the next.
@@ -1002,14 +848,8 @@ The text within this element is parsed as the order by string.
 
 [[_jpa_overview_meta_mapkey]]
 ===== Map Key
-(((
-                    MapKey
-                )))
-(((
-                    metadata
-                ,
-                    MapKey
-                )))
+(((MapKey)))
+(((metadata , MapKey)))
 
 JPA supports persistent [class]``Map`` fields through either a <<_jpa_overview_meta_onetomany,[class]`` OneToMany``>> or <<_jpa_overview_meta_manytomany,[class]``ManyToMany ``>> association.
 The related entities form the map values.
@@ -1040,11 +880,7 @@ Without an annotation, a relation field will default to serialized storage if th
 
 [[_jpa_overview_meta_xml]]
 ==== XML Schema
-(((
-                metadata
-            ,
-                XSD
-            )))
+(((metadata , XSD)))
 
 The latest revision of the version 2.0 orm schema is presented below.
 Version 2.0 of the schema must be used if JPA 2.0 elements are specified as XML metadata.

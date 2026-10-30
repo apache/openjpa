@@ -1,8 +1,6 @@
 [[_jpa_overview_emfactory]]
 === EntityManagerFactory
-(((
-            EntityManagerFactory
-        )))
+(((EntityManagerFactory)))
 
 
 image::img/entitymanagerfactory.png[]
@@ -18,14 +16,8 @@ OpenJPAEntityManagerFactory] to provide additional functionality.
 
 [[_jpa_overview_emfactory_obtain]]
 ==== Obtaining an EntityManagerFactory
-(((
-                EntityManagerFactory
-            ,
-                construction
-            )))
-(((
-                JCA
-            )))
+(((EntityManagerFactory , construction)))
+(((JCA)))
 
 Within a container, you will typically use _injection_ to access an [class]``EntityManagerFactory``.
 There are, however, alternative mechanisms for [class]``EntityManagerFactory`` construction.
@@ -36,18 +28,12 @@ Persistence`` class' [method]``createEntityManagerFactory `` methods in an unman
 These strategies allow vendors to pool factories, cutting down on resource utilization.
 
 
-(((
-                JNDI
-            ))) JPA allows you to create and configure an [class]``
+(((JNDI))) JPA allows you to create and configure an [class]``
 EntityManagerFactory``, then store it in a Java Naming and Directory Interface (JNDI) tree for later retrieval and use.
 
 [[_jpa_overview_emfactory_em]]
 ==== Obtaining EntityManagers
-(((
-                EntityManager
-            ,
-                obtaining
-            )))
+(((EntityManager , obtaining)))
 
 [source]
 ----
@@ -77,12 +63,8 @@ The first options correspond exactly to the same-named OpenJPA configuration key
 
 [[_jpa_overview_emfactory_perscontext]]
 ==== Persistence Context
-(((
-                persistence context
-            )))
-(((
-                PersistenceContextType
-            )))
+(((persistence context)))
+(((PersistenceContextType)))
 
 A persistence context is a set of entities such that for any persistent identity there is a unique entity instance.
 Within a persistence context, entities are __managed__.
@@ -213,11 +195,7 @@ em.close();
 
 [[_jpa_overview_emf_properties]]
 ==== Retrieving Properties Information
-(((
-                EntityManagerFactory
-            ,
-                properties information
-            )))
+(((EntityManagerFactory , properties information)))
 
 [[_jpa_overview_emfactory_close]]
 ==== Closing the EntityManagerFactory
@@ -248,11 +226,7 @@ IllegalStateException``.
 
 [[_jpa_overview_emfactory_puutil]]
 ==== PersistenceUnitUtil
-(((
-                EntityManagerFactory
-            ,
-                util
-            )))
+(((EntityManagerFactory , util)))
 
 [source]
 ----

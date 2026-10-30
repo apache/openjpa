@@ -1,11 +1,7 @@
 [[_jpa_overview_criteria]]
 === JPA Criteria
-(((
-            JP Criteria
-        )))
-(((
-            queries
-        )))
+(((JP Criteria)))
+(((queries)))
 
 JPA 2.0 specification introduced a new API to define queries dynamically via construction of an object-based [class]``jakarta.persistence.CriteriaQuery`` instance, rather than string-based approach used in JPQL (Java Persistence Query Language). This dynamic query definition capability, referred as Criteria API, is based on the abstract persistent schema of the entities, their embedded objects and their relationships.
 The syntax is designed to construct a _Query Tree_ whose nodes represent the semantic query elements such as projections, conditional predicates of WHERE clause or GROUP BY elements etc.

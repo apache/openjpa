@@ -1,53 +1,29 @@
 [[_jpa_overview_trans]]
 === Transaction
-(((
-            transactions
-        )))
+(((transactions)))
 
 Transactions are critical to maintaining data integrity.
 They are used to group operations into units of work that act in an all-or-nothing fashion.
 Transactions have the following qualities:
 
-* (((
-                    atomicity
-                )))
-(((
-                    transactions
-                ,
-                    atomicity
-                )))__Atomicity__.
+* (((atomicity)))
+(((transactions , atomicity)))__Atomicity__.
 Atomicity refers to the all-or-nothing property of transactions.
 Either every data update in the transaction completes successfully, or they all fail, leaving the datastore in its original state.
 A transaction cannot be only partially successful.
-* (((
-                    transactions
-                ,
-                    consistency
-                )))__Consistency__.
+* (((transactions , consistency)))__Consistency__.
 Each transaction takes the datastore from one consistent state to another consistent state.
-* (((
-                    transactions
-                ,
-                    isolation
-                )))__Isolation__.
+* (((transactions , isolation)))__Isolation__.
 Transactions are isolated from each other.
 When you are reading persistent data in one transaction, you cannot "see" the changes that are being made to that data in other transactions.
 Similarly, the updates you make in one transaction cannot conflict with updates made in concurrent transactions.
 The form of conflict resolution employed depends on whether you are using pessimistic or optimistic transactions.
 Both types are described later in this chapter.
-* (((
-                    transactions
-                ,
-                    durability
-                )))__Durability__.
+* (((transactions , durability)))__Durability__.
 The effects of successful transactions are durable; the updates made to persistent data last for the lifetime of the datastore.
 
 
-(((
-            transactions
-        ,
-            ACID
-        ))) Together, these qualities are called the ACID properties of transactions.
+(((transactions , ACID))) Together, these qualities are called the ACID properties of transactions.
 To understand why these properties are so important to maintaining data integrity, consider the following example:
 
 Suppose you create an application to manage bank accounts.
@@ -85,33 +61,19 @@ There are two major types of transactions: pessimistic transactions and optimist
 Each type has both advantages and disadvantages.
 
 
-(((
-                transactions
-            ,
-                pessimistic
-            )))
-(((
-                deadlock
-            ))) Pessimistic transactions generally lock the datastore records they act on, preventing other concurrent transactions from using the same data.
+(((transactions , pessimistic)))
+(((deadlock))) Pessimistic transactions generally lock the datastore records they act on, preventing other concurrent transactions from using the same data.
 This avoids conflicts between transactions, but consumes database resources.
 Additionally, locking records can result in __deadlock__, a situation in which two transactions are both waiting for the other to release its locks before completing.
 The results of a deadlock are datastore-dependent; usually one transaction is forcefully rolled back after some specified timeout interval, and an exception is thrown.
 
 
-(((
-                transactions
-            ,
-                datastore
-            ))) This document will often use the term _datastore_ transaction in place of _pessimistic_ transaction.
+(((transactions , datastore))) This document will often use the term _datastore_ transaction in place of _pessimistic_ transaction.
 This is to acknowledge that some datastores do not support pessimistic semantics, and that the exact meaning of a non-optimistic JPA transaction is dependent on the datastore.
 Most of the time, a datastore transaction is equivalent to a pessimistic transaction.
 
 
-(((
-                transactions
-            ,
-                optimistic
-            ))) Optimistic transactions consume less resources than pessimistic/datastore transactions, but only at the expense of reliability.
+(((transactions , optimistic))) Optimistic transactions consume less resources than pessimistic/datastore transactions, but only at the expense of reliability.
 Because optimistic transactions do not lock datastore records, two transactions might change the same persistent information at the same time, and the conflict will not be detected until the second transaction attempts to flush or commit.
 At this time, the second transaction will realize that another transaction has concurrently modified the same records (usually through a timestamp or versioning system), and will throw an appropriate exception.
 Note that optimistic transactions still maintain data integrity; they are simply more likely to fail in heavily concurrent situations.
@@ -128,9 +90,7 @@ See <<_ref_guide_locking>> of the Reference Guide for details on locking. <<_jpa
 
 [[_jpa_overview_trans_local]]
 ==== The EntityTransaction Interface
-(((
-                Transaction
-            )))
+(((Transaction)))
 
 
 image::img/jpa-transaction.png[]
@@ -148,21 +108,9 @@ public void rollback();
 ----
 
 
-(((
-                Transaction
-            ,
-                demarcation
-            )))
-(((
-                Transaction
-            ,
-                begin
-            )))
-(((
-                Transaction
-            ,
-                rollback
-            ))) The [method]``begin``, [method]``commit``, and [method]``rollback`` methods demarcate transaction boundaries.
+(((Transaction , demarcation)))
+(((Transaction , begin)))
+(((Transaction , rollback))) The [method]``begin``, [method]``commit``, and [method]``rollback`` methods demarcate transaction boundaries.
 The methods should be self-explanatory: [method]``begin`` starts a transaction, [method]``commit`` attempts to commit the transaction's changes to the datastore, and [method]``rollback`` aborts the transaction, in which case the datastore is "rolled back" to its previous state.
 JPA implementations will automatically roll back transactions if any exception is thrown during the commit process.
 

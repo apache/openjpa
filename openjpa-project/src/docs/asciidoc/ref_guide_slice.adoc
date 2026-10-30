@@ -321,9 +321,7 @@ The _per-slice_ properties apply to individual slice, for example, the JDBC conn
 ====== openjpa.slice.DistributionPolicy
 
 This _mandatory_ plug-in property determines how newly persistent instances are distributed across individual slices.
-The value of this property is a fully-qualified class name that implements link:../../apidocs/org/apache/openjpa/slice/DistributionPolicy.html[
-         org.apache.openjpa.slice.DistributionPolicy
-         ] interface.
+The value of this property is a fully-qualified class name that implements link:../../apidocs/org/apache/openjpa/slice/DistributionPolicy.html[org.apache.openjpa.slice.DistributionPolicy] interface.
 
 ====== openjpa.slice.Lenient
 
@@ -364,9 +362,7 @@ If logical slice names are registered explicitly via this property, then any log
 ====== openjpa.slice.ThreadingPolicy
 
 This plug-in property determines the nature of thread pool being used for database operations such as query or flush on individual slices.
-The value of the property is a fully-qualified class name that implements https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/ExecutorService.html[
-        java.util.concurrent.ExecutorService
-        ] interface.
+The value of the property is a fully-qualified class name that implements https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/ExecutorService.html[java.util.concurrent.ExecutorService] interface.
 Two pre-defined pools can be chosen via their aliases namely [class]``fixed`` or [class]``cached``.
 
 The pre-defined alias [class]``cached`` activates a https://docs.oracle.com/en/java/javase/17/docs/api///java.base/java/util/concurrent/Executors.html#newCachedThreadPool()[cached thread pool].
@@ -380,16 +376,12 @@ The meaning of these parameters are described in https://docs.oracle.com/en/java
 The users can exercise finer control on thread pool behavior via these parameters.
 By default, the core pool size is [class]``10``, maximum pool size is also [class]``10``, keep alive time is [class]``60`` seconds and rejected execution is https://docs.oracle.com/en/java/javase/17/docs/api///java.base/java/util/concurrent/ThreadPoolExecutor.AbortPolicy.html[aborted].
 
-Both of the pre-defined aliases can be parameterized with a fully-qualified class name that implements https://docs.oracle.com/en/java/javase/17/docs/api///java.base/java/util/concurrent/ThreadFactory.html[
-        java.util.concurrent.ThreadFactory
-        ] interface.
+Both of the pre-defined aliases can be parameterized with a fully-qualified class name that implements https://docs.oracle.com/en/java/javase/17/docs/api///java.base/java/util/concurrent/ThreadFactory.html[java.util.concurrent.ThreadFactory] interface.
 
 ====== openjpa.slice.TransactionPolicy
 
 This plug-in property determines the policy for transaction commit across multiple slices.
-The value of this property is a fully-qualified class name that implements https://jakarta.ee/specifications/transactions/2.0/apidocs/jakarta/transaction/transactionmanager[
-      javax.transaction.TransactionManager
-      ] interface.
+The value of this property is a fully-qualified class name that implements https://jakarta.ee/specifications/transactions/2.0/apidocs/jakarta/transaction/transactionmanager[javax.transaction.TransactionManager] interface.
 
 Three pre-defined policies can be chosen by their aliases namely [class]``default``, [class]``xa`` and [class]``jndi``.
 

@@ -246,6 +246,11 @@
                                 <allow-uri-read>allow-uri-read</allow-uri-read>
                                 <stylesheet>css/docbook.css</stylesheet>
                                 <linkcss>true</linkcss>
+                                <icontype>svg</icontype>
+                                <icons>image</icons>
+                                <iconsdir>img/icons</iconsdir>
+                                <iconfont-remote>false</iconfont-remote>
+                                <webfonts>false</webfonts>
                                 <source-highlighter>coderay</source-highlighter>
                                 <project-version>${project.version}</project-version>
                             </attributes>
@@ -259,6 +264,9 @@
                                 <goals>
                                     <goal>process-asciidoc</goal>
                                 </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/generated-docs/html</outputDirectory>
+                                </configuration>
                             </execution>
                             <execution>
                                 <id>output-docbook</id>
@@ -273,7 +281,7 @@
                                     <requires>
                                         <require>asciidoctor-multipage</require>
                                     </requires>
-                                    <outputDirectory>${project.build.directory}/generated-docs/multipage</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/generated-docs/multihtml</outputDirectory>
                                 </configuration>
                             </execution>
                             <execution>

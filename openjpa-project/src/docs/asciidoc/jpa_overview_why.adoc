@@ -217,56 +217,32 @@ All these factors make serialization useless for all but the most trivial persis
 JDBC overcomes most of the shortcomings of serialization: it can handle large amounts of data, has mechanisms to ensure data integrity, supports concurrent access to information, and has a sophisticated query language in SQL.
 Unfortunately, JDBC does not duplicate serialization's ease of use.
 The relational paradigm used by JDBC was not designed for storing objects, and therefore forces you to either abandon object-oriented programming for the portions of your code that deal with persistent data, or to find a way of mapping object-oriented concepts like inheritance to relational databases yourself.
-* (((
-                    ORM
-                )))
-(((
-                    JPA
-                ,
-                    vs ORM products
-                ))) There are many proprietary software products that can perform the mapping between objects and relational database tables for you.
+* (((ORM)))
+(((JPA , vs ORM products))) There are many proprietary software products that can perform the mapping between objects and relational database tables for you.
 These _
 object-relational mapping_ (ORM) frameworks allow you to focus on the object model and not concern yourself with the mismatch between the object-oriented and relational paradigms.
 Unfortunately, each of these product has its own set of APIs.
 Your code becomes tied to the proprietary interfaces of a single vendor.
 If the vendor raises prices, fails to fix show-stopping bugs, or falls behind in features, you cannot switch to another product without rewriting all of your persistence code.
 This is referred to as vendor lock-in.
-* (((
-                    ODB
-                )))
-(((
-                    JPA
-                ,
-                    vs ODBs
-                ))) Rather than map objects to relational databases, some software companies have developed a form of database designed specifically to store objects.
+* (((ODB)))
+(((JPA , vs ODBs))) Rather than map objects to relational databases, some software companies have developed a form of database designed specifically to store objects.
 These __object databases__ (ODBs) are often much easier to use than object-relational mapping software.
 The Object Database Management Group (ODMG) was formed to create a standard API for accessing object databases; few object database vendors, however, comply with the ODMG's recommendations.
 Thus, vendor lock-in plagues object databases as well.
 Many companies are also hesitant to switch from tried-and-true relational systems to the relatively unknown object database technology.
 Fewer data-analysis tools are available for object database systems, and there are vast quantities of data already stored in older relational databases.
 For all of these reasons and more, object databases have not caught on as well as their creators hoped.
-* (((
-                    Enterprise Java Beans
-                )))
-(((
-                    EJB
-                )))
-(((
-                    JPA
-                ,
-                    vs EJB 2
-                ))) The Enterprise Edition of the Java platform introduced entity Enterprise Java Beans (EJBs). EJB 2.x entities are components that represent persistent information in a datastore.
+* (((Enterprise Java Beans)))
+(((EJB)))
+(((JPA , vs EJB 2))) The Enterprise Edition of the Java platform introduced entity Enterprise Java Beans (EJBs). EJB 2.x entities are components that represent persistent information in a datastore.
 Like object-relational mapping solutions, EJB 2.x entities provide an object-oriented view of persistent data.
 Unlike object-relational software, however, EJB 2.x entities are not limited to relational databases; the persistent information they represent may come from an Enterprise Information System (EIS) or other storage device.
 Also, EJB 2.x entities use a strict standard, making them portable across vendors.
 Unfortunately, the EJB 2.x standard is somewhat limited in the object-oriented concepts it can represent.
 Advanced features like inheritance, polymorphism, and complex relations are absent.
 Additionally, EBJ 2.x entities are difficult to code, and they require heavyweight and often expensive application servers to run.
-* (((
-                    JPA
-                ,
-                    vs JDO
-                ))) The JDO specification uses an API that is strikingly similar to JPA.
+* (((JPA , vs JDO))) The JDO specification uses an API that is strikingly similar to JPA.
 JDO, however, supports non-relational databases, a feature that some argue dilutes the specification.
 
 JPA combines the best features from each of the persistence mechanisms listed above.

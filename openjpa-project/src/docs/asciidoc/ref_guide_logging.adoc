@@ -1,11 +1,7 @@
 [[_ref_guide_logging]]
 === Logging and Auditing
-(((
-            logging
-        )))
-(((
-            Log
-        )))
+(((logging)))
+(((Log)))
 
 Logging is an important means of gaining insight into your application's runtime behavior.
 OpenJPA provides a flexible logging system that integrates with many existing runtime systems, such as application servers and servlet runners.
@@ -22,11 +18,7 @@ You can disable logging altogether by setting the `openjpa.Log` property to ``no
 
 [[_ref_guide_logging_channels]]
 ==== Logging Channels
-(((
-                logging
-            ,
-                channels
-            )))
+(((logging , channels)))
 
 Logging is done over a number of __logging channels__, each of which has a _logging level_ which controls the verbosity of log messages recorded for the channel.
 OpenJPA uses the following logging channels:
@@ -132,11 +124,7 @@ property name="openjpa.Log" value="File=/tmp/org.apache.openjpa.log, DefaultLeve
 
 [[_ref_guide_logging_noop]]
 ==== Disabling Logging
-(((
-                logging
-            ,
-                disabling
-            )))
+(((logging , disabling)))
 
 Disabling logging can be useful to analyze performance without any I/O overhead or to reduce verbosity at the console.
 To do this, set the `openjpa.Log ` property to ``none``.
@@ -177,11 +165,7 @@ log4j.appender.console=org.apache.log4j.ConsoleAppender
 
 [[_ref_guide_logging_commons]]
 ==== Apache Commons Logging
-(((
-                logging
-            ,
-                Apache Commons
-            )))
+(((logging , Apache Commons)))
 
 Set the `openjpa.Log` property to `commons` to use the http://commons.apache.org/logging/[ Apache
 Commons Logging] thin library for issuing log messages.
@@ -249,11 +233,7 @@ openjpa.jdbc.Schema.level=INFO
 
 [[_ref_guide_logging_slf4j]]
 ==== SLF4J
-(((
-                logging
-            ,
-                SLF4j
-            )))
+(((logging , SLF4j)))
 
 When `openjpa.Log` is set to ``slf4j``, OpenJPA will delegate to SLF4J API for logging, which provides several adapters or a simple logging mechanism.
 For further details on logging adapters and configuring SLF4J, please see the http://www.slf4j.org/manual.html[SLF4J website].

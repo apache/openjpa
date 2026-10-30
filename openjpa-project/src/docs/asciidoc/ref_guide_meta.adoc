@@ -6,11 +6,7 @@ This chapter discusses OpenJPA's extensions to standard JPA metadata.
 
 [[_ref_guide_meta_factory]]
 ==== Metadata Factory
-(((
-                metadata
-            ,
-                loading and storing
-            )))
+(((metadata , loading and storing)))
 
 The <<_openjpa.metadatafactory,`openjpa.MetaDataFactory `>> configuration property controls metadata loading and storing.
 This property takes a plugin string (see <<_ref_guide_conf_plugins>>) describing a concrete link:../../apidocs/org/apache/openjpa/meta/MetaDataFactory.html[
@@ -75,11 +71,7 @@ Finally, <<_ref_guide_meta_ext>> covers additional extensions to JPA metadata th
 
 [[_ref_guide_meta_jpa_datastoreid]]
 ===== Datastore Identity
-(((
-                    identity
-                ,
-                    datastore
-                )))
+(((identity , datastore)))
 
 JPA typically requires you to declare one or more `Id` fields to act as primary keys.
 OpenJPA, however, can create and maintain a surrogate primary key value when you do not declare any `Id` fields.
@@ -93,9 +85,7 @@ Just as OpenJPA can maintain your entity's identity without any `Id ` fields, Op
 
 [[_ref_guide_meta_jpa_persistent]]
 ===== Persistent Field Values
-(((
-                    persistent fields
-                )))
+(((persistent fields)))
 
 JPA defines ``Basic``, ``Lob``, ``Embedded ``, ``ManyToOne``, and `OneToOne` persistence strategies for direct field values.
 OpenJPA supports all of these standard strategies, but adds one of its own: ``Persistent``.
@@ -149,11 +139,7 @@ It has the following properties:
 
 [[_ref_guide_meta_ext]]
 ==== Metadata Extensions
-(((
-                metadata
-            ,
-                extensions
-            )))
+(((metadata , extensions)))
 
 OpenJPA extends standard metadata to allow you to access advanced OpenJPA functionality.
 This section covers persistence metadata extensions; we discuss mapping metadata extensions in <<_ref_guide_mapping_ext>>.
@@ -173,13 +159,7 @@ org.apache.openjpa.persistence.FetchGroup] annotations allow you to define fetch
 
 [[_data_cache]]
 ====== Data Cache
-(((
-                        metadata
-                    ,
-                        extensions
-                    ,
-                        data cache
-                    )))
+(((metadata , extensions , data cache)))
 
 <<_ref_guide_cache>> examines caching in OpenJPA.
 Metadata extensions allow individual classes to override system caching defaults.
@@ -232,13 +212,7 @@ OpenJPA offers a family of marker annotations to denote dependent relations in J
 
 [[_load_fetch_group]]
 ====== Load Fetch Group
-(((
-                        metadata
-                    ,
-                        extensions
-                    ,
-                        load fetch group
-                    )))
+(((metadata , extensions , load fetch group)))
 
 The link:../../apidocs/org/apache/openjpa/persistence/LoadFetchGroup.html[
 org.apache.openjpa.persistence.LoadFetchGroup] annotation specifies a field's load fetch group. <<_ref_guide_fetch>> discusses OpenJPA's support for fetch groups in general; see <<_ref_guide_fetch_custom>> for how to use this annotation in particular.
@@ -252,13 +226,7 @@ A complete description of large result set proxies is available in <<_ref_guide_
 
 [[_inverse_logical]]
 ====== Inverse-Logical
-(((
-                        metadata
-                    ,
-                        extensions
-                    ,
-                        inverse-logical
-                    )))
+(((metadata , extensions , inverse-logical)))
 
 This extension names the inverse field in a logical bidirectional relation.
 To create a logical bidirectional relation in OpenJPA, use the link:../../apidocs/org/apache/openjpa/persistence/InverseLogical.html[
@@ -282,13 +250,7 @@ The [class]``UpdateAction`` enum includes:
 
 [[_type]]
 ====== Type
-(((
-                        metadata
-                    ,
-                        extensions
-                    ,
-                        type
-                    )))
+(((metadata , extensions , type)))
 
 OpenJPA has three levels of support for relations:
 
@@ -331,13 +293,7 @@ See <<_ref_guide_pc_extern>> for details.
 
 [[_external_values]]
 ====== External Values
-(((
-                        metadata
-                    ,
-                        extensions
-                    ,
-                        external values
-                    )))
+(((metadata , extensions , external values)))
 
 The OpenJPA link:../../apidocs/org/apache/openjpa/persistence/ExternalValues.html[
 org.apache.openjpa.persistence.ExternalValues] annotation declares values for transformation of simple fields to different constant values in the datastore.

@@ -1,19 +1,13 @@
 [[_ref_guide_pc]]
 === Persistent Classes
-(((
-            persistent classes
-        )))
+(((persistent classes)))
 
 Persistent class basics are covered in <<_jpa_overview_pc>> of the JPA Overview.
 This chapter details the persistent class features OpenJPA offers beyond the core JPA specification.
 
 [[_ref_guide_pc_pcclasses]]
 ==== Persistent Class List
-(((
-                persistent classes
-            ,
-                list
-            )))
+(((persistent classes , list)))
 
 Unlike many ORM products, OpenJPA does not need to know about all of your persistent classes at startup.
 OpenJPA discovers new persistent classes automatically as they are loaded into the JVM; in fact you can introduce new persistent classes into running applications under OpenJPA.
@@ -38,12 +32,8 @@ If your persistent class list is non-empty, OpenJPA will assume that any unliste
 
 [[_ref_guide_pc_enhance]]
 ==== Enhancement
-(((
-                enhancer
-            )))
-(((
-                openjpac
-            )))
+(((enhancer)))
+(((openjpac)))
 
 In order to provide optimal runtime performance, flexible lazy loading, and efficient, immediate dirty tracking, OpenJPA can use an __enhancer __.
 An enhancer is a tool that automatically adds code to your persistent classes after you have written them.
@@ -64,11 +54,7 @@ The following sections describe each option.
 
 [[_ref_guide_pc_enhance_build]]
 ===== Enhancing at Build Time
-(((
-                    enhancer
-                ,
-                    build time
-                )))
+(((enhancer , build time)))
 
 The enhancer can be invoked at build time via its Java class, [class]``
 org.apache.openjpa.enhance.PCEnhancer``.
@@ -122,13 +108,7 @@ If your application server does not support the Java EE enhancement hooks, consi
 
 [[_ref_guide_pc_enhance_runtime]]
 ===== Enhancing at Runtime
-(((
-                    enhancer
-                ,
-                    runtime
-                ,
-                    outside a container
-                )))
+(((enhancer , runtime , outside a container)))
 
 OpenJPA includes a _Java agent_ for automatically enhancing persistent classes as they are loaded into the JVM.
 Java agents are classes that are invoked prior to your application's [method]``main`` method.
@@ -276,19 +256,13 @@ em.getTransaction().commit();
 
 [[_ref_guide_pc_oid]]
 ==== Object Identity
-(((
-                identity
-            )))
+(((identity)))
 
 OpenJPA makes several enhancements to JPA's standard entity identity.
 
 [[_ref_guide_pc_oid_datastore]]
 ===== Datastore Identity
-(((
-                    identity
-                ,
-                    datastore
-                )))
+(((identity , datastore)))
 
 The JPA specification requires you to declare one or more identity fields in your persistent classes.
 OpenJPA fully supports this form of object identity, called _application_ identity.
@@ -456,13 +430,7 @@ The ``MapsId`` annotation must be applied to the relationship field ``LineItem.o
 
 [[_ref_guide_pc_oid_application]]
 ===== Application Identity Tool
-(((
-                    identity
-                ,
-                    application
-                ,
-                    application identity tool
-                )))
+(((identity , application , application identity tool)))
 
 If you choose to use application identity, you may want to take advantage of OpenJPA's application identity tool.
 The application identity tool generates Java code implementing the identity class for any persistent type using application identity.
@@ -513,11 +481,7 @@ If you do not supply any arguments to the tool, it will act on the classes in yo
 
 [[_ref_guide_pc_oid_pkgen_autoinc]]
 ===== Autoassign / Identity Strategy Caveats
-(((
-                    datastore identity
-                ,
-                    autoassign strategy
-                )))
+(((datastore identity , autoassign strategy)))
 
 <<_jpa_overview_meta_gen>> explains how to use JPA's ``IDENTITY`` generation type to automatically assign field values.
 However, here are some additional caveats you should be aware of when using `IDENTITY` generation:
@@ -529,11 +493,7 @@ However, here are some additional caveats you should be aware of when using `IDE
 
 [[_ref_guide_inverses]]
 ==== Managed Inverses
-(((
-                bidirectional relations
-            ,
-                automatic management
-            )))
+(((bidirectional relations , automatic management)))
 
 Bidirectional relations are an essential part of data modeling. <<_jpa_overview_mapping>> in the JPA Overview explains how to use the `mappedBy` annotation attribute to form bidirectional relations that also share datastore storage in JPA.
 
@@ -610,31 +570,21 @@ You can force large result set fields to be included by setting the `ManageLRS` 
 
 [[_ref_guide_pc_scos]]
 ==== Persistent Fields
-(((
-                persistent fields
-            )))
+(((persistent fields)))
 
 OpenJPA enhances the specification's support for persistent fields in many ways.
 This section documents aspects of OpenJPA's persistent field handling that may affect the way you design your persistent classes.
 
 [[_ref_guide_pc_scos_restore]]
 ===== Restoring State
-(((
-                    persistent fields
-                ,
-                    field rollback
-                )))
+(((persistent fields , field rollback)))
 
 While the JPA specification says that you should not use rolled back objects, such objects are perfectly valid in OpenJPA.
 You can control whether the objects' managed state is rolled back to its pre-transaction values with the <<_openjpa.restorestate,`openjpa.RestoreState`>> configuration property. `none` does not roll back state (the object becomes hollow, and will re-load its state the next time it is accessed), `immutable` restores immutable values (primitives, primitive wrappers, strings) and clears mutable values so that they are reloaded on next access, and `all` restores all managed values to their pre-transaction state.
 
 [[_ref_guide_pc_scos_order]]
 ===== Typing and Ordering
-(((
-                    persistent fields
-                ,
-                    comparators
-                )))
+(((persistent fields , comparators)))
 
 When loading data into a field, OpenJPA examines the value you assign the field in your declaration code or in your no-args constructor.
 If the field value's type is more specific than the field's declared type, OpenJPA uses the value type to hold the loaded data.
@@ -677,14 +627,8 @@ TimeZone`` that was used to initialize the field.
 
 [[_ref_guide_pc_scos_proxy]]
 ===== Proxies
-(((
-                    proxies
-                )))
-(((
-                    persistent fields
-                ,
-                    proxies
-                )))
+(((proxies)))
+(((persistent fields , proxies)))
 
 At runtime, the values of all mutable second class object fields in persistent and transactional objects are replaced with implementation-specific proxies.
 On modification, these proxies notify their owning instance that they have been changed, so that the appropriate updates can be made on the datastore.
@@ -705,11 +649,7 @@ See the section on <<_ref_guide_pc_scos_proxy_custom,custom proxies>> for detail
 
 [[_ref_guide_pc_scos_proxy_lrs]]
 ====== Large Result Set Proxies
-(((
-                        proxies
-                    ,
-                        large result set
-                    )))
+(((proxies , large result set)))
 
 Under standard ORM behavior, traversing a persistent collection or map field brings the entire contents of that field into memory.
 Some persistent fields, however, might represent huge amounts of data, to the point that attempting to fully instantiate them can overwhelm the JVM or seriously degrade performance.
@@ -783,11 +723,7 @@ public class Company {
 
 [[_ref_guide_pc_scos_proxy_custom]]
 ====== Custom Proxies
-(((
-                        proxies
-                    ,
-                        custom
-                    )))
+(((proxies , custom)))
 
 OpenJPA manages proxies through the link:../../apidocs/org/apache/openjpa/util/ProxyManager.html[
 org.apache.openjpa.util.ProxyManager] interface.
@@ -823,11 +759,7 @@ You can plug your custom proxy manager into the OpenJPA runtime through the <<_o
 
 [[_ref_guide_pc_scos_proxy_serial]]
 ====== Serialization
-(((
-                        proxies
-                    ,
-                        serialization
-                    )))
+(((proxies , serialization)))
 
 When objects are serialized, the `DetachedStateField` in section <<_ref_guide_detach_state>> will be used to help determine when build time proxies will be removed.
 If runtime created proxies are being used (proxies not supplied by OpenJPA) or if an entity has already been detached, then any found proxies will be removed during serialization.
@@ -839,14 +771,8 @@ If runtime created proxies are being used (proxies not supplied by OpenJPA) or i
 
 [[_ref_guide_pc_extern]]
 ===== Externalization
-(((
-                    externalization
-                )))
-(((
-                    persistent fields
-                ,
-                    externalization
-                )))
+(((externalization)))
+(((persistent fields , externalization)))
 
 OpenJPA offers the ability to write <<_ref_guide_mapping_custom_field,custom field mappings>> in order to have complete control over the mechanism with which fields are stored, queried, and loaded from the datastore.
 Often, however, a custom mapping is overkill.
@@ -1037,11 +963,7 @@ results = q.getResultList();
 
 [[_ref_guide_pc_extern_values]]
 ====== External Values
-(((
-                        externalization
-                    ,
-                        external values
-                    )))
+(((externalization , external values)))
 
 Externalization often takes simple constant values and transforms them to constant values of a different type.
 An example would be storing a [class]``
@@ -1181,11 +1103,7 @@ public class Magazine {
 
 [[_ref_guide_fetch_conf]]
 ===== Custom Fetch Group Configuration
-(((
-                    fetch groups
-                ,
-                    custom configuration
-                )))
+(((fetch groups , custom configuration)))
 
 You can control the default set of fetch groups with the <<_openjpa.fetchgroups,`openjpa.FetchGroups`>> configuration property.
 Set this property to a comma-separated list of fetch group names.
@@ -1242,11 +1160,7 @@ List results = kq.getResultList();
 
 [[_ref_guide_fetch_single_field]]
 ===== Per-field Fetch Configuration
-(((
-                    fetch groups
-                ,
-                    single fields
-                )))
+(((fetch groups , single fields)))
 
 In addition to controlling fetch configuration on a per-fetch-group basis, you can configure OpenJPA to include particular fields in the current fetch plan.
 This allows you to add individual fields that are not in the default fetch group or in any other active fetch groups to the set of fields that will be eagerly loaded from the database.
@@ -1310,14 +1224,8 @@ Magazine mag = em.find(Magazine.class, magId);
 
 [[_ref_guide_perfpack_eager]]
 ==== Eager Fetching
-(((
-                persistent fields
-            )))
-(((
-                fetch groups
-            ,
-                eager fetching
-            )))
+(((persistent fields)))
+(((fetch groups , eager fetching)))
 
 Eager fetching is the ability to efficiently load subclass data and related objects along with the base instances being queried.
 Typically, OpenJPA has to make a trip to the database whenever a relation is loaded, or when you first access data that is mapped to a table other than the least-derived superclass table.
@@ -1333,11 +1241,7 @@ Similarly, queries that exclude subclasses aren't affected by eager subclass fet
 Eager fetching has three modes:
 
 * ``none``: No eager fetching is performed. Related objects are always loaded in an independent select statement. No joined subclass data is loaded unless it is in the table(s) for the base type being queried. Unjoined subclass data is loaded using separate select statements rather than a SQL UNION operation.
-* (((
-                        eager fetching
-                    ,
-                        join mode
-                    )))``join``: In this mode, OpenJPA joins to to-one relations in the configured fetch groups.
+* (((eager fetching , join mode)))``join``: In this mode, OpenJPA joins to to-one relations in the configured fetch groups.
 If OpenJPA is loading data for a single instance, then OpenJPA will also join to any collection field in the configured fetch groups.
 When loading data for multiple instances, though, (such as when executing a [class]``Query``) OpenJPA will not join to collections by default.
 Instead, OpenJPA defaults to `parallel` mode for collections, as described below.
@@ -1357,11 +1261,7 @@ Some databases may not support outer joins.
 Also, OpenJPA can not use outer joins if you have set the <<_openjpa.jdbc.dbdictionary,` DBDictionary`>>'s `JoinSyntax` to ``traditional``.
 See <<_ref_guide_dbsetup_sql92>>.
 ====
-* (((
-                        eager fetching
-                    ,
-                        parallel mode
-                    )))``parallel``: Under this mode, OpenJPA selects to-one relations and joined collections as outlined in the `join` mode description above.
+* (((eager fetching , parallel mode)))``parallel``: Under this mode, OpenJPA selects to-one relations and joined collections as outlined in the `join` mode description above.
 Unjoined collection fields, however, are eagerly fetched using a separate select statement for each collection, executed in parallel with the select statement for the target objects.
 The parallel selects use the ``WHERE`` conditions from the primary select, but add their own joins to reach the related data.
 Thus, if you perform a query that returns 100 [class]``Company`` objects, where each company has a list of [class]``Employee`` objects and [class]``Department`` objects, OpenJPA will make 3 queries.
@@ -1388,17 +1288,9 @@ join` mode when multiple objects with eager relations are being loaded, or when 
 ===== Configuring Eager Fetching
 
 
-(((
-                    EagerFetchMode
-                )))
-(((
-                    SubclassFetchMode
-                )))
-(((
-                    eager fetching
-                ,
-                    EagerFetchMode
-                ))) You can control OpenJPA's default eager fetch mode through the <<_openjpa.jdbc.eagerfetchmode,`
+(((EagerFetchMode)))
+(((SubclassFetchMode)))
+(((eager fetching , EagerFetchMode))) You can control OpenJPA's default eager fetch mode through the <<_openjpa.jdbc.eagerfetchmode,`
 openjpa.jdbc.EagerFetchMode`>> and <<_openjpa.jdbc.subclassfetchmode,`
 openjpa.jdbc.SubclassFetchMode`>> configuration properties.
 Set each of these properties to one of the mode names described in the previous section: ``none, join, parallel``.
@@ -1448,11 +1340,7 @@ But an extension value of ``join`` won't cause any eager joining if the fetch co
 
 There are several important points that you should consider when using eager fetching:
 
-* (((
-                            eager fetching
-                        ,
-                            with large result sets
-                        ))) When you are using `parallel` eager fetch mode and you have large result sets enabled (see <<_ref_guide_dbsetup_lrs>>) or you place a range on a query, OpenJPA performs the needed parallel selects on one page of results at a time.
+* (((eager fetching , with large result sets))) When you are using `parallel` eager fetch mode and you have large result sets enabled (see <<_ref_guide_dbsetup_lrs>>) or you place a range on a query, OpenJPA performs the needed parallel selects on one page of results at a time.
 For example, suppose your `
 FetchBatchSize` is set to 20, and you perform a large result set query on a class that has collection fields in the configured fetch groups.
 OpenJPA will immediately cache the first `20` results of the query using `join` mode eager fetching only.

@@ -1,11 +1,7 @@
 [[_ref_guide_remote]]
 === Remote and Offline Operation
-(((
-            remote
-        )))
-(((
-            offline
-        )))
+(((remote)))
+(((offline)))
 
 The standard JPA runtime environment was originally just __local__ and __online__.
 It is _local_ in that components such as [class]``EntityManager``s and queries connect directly to the datastore and execute their actions in the same JVM as the code using them.
@@ -21,23 +17,15 @@ The following sections explain these capabilities in detail.
 
 [[_ref_guide_detach]]
 ==== Detach and Attach
-(((
-                detachment
-            )))
-(((
-                attachment
-            )))
+(((detachment)))
+(((attachment)))
 
 The JPA Overview describes the specification's standard detach and attach APIs in <<_jpa_overview_em_lifecycle>>.
 This section enumerates OpenJPA's enhancements to the standard behavior.
 
 [[_ref_guide_detach_behavior]]
 ===== Detach Behavior
-(((
-                    detachment
-                ,
-                    behavior
-                )))
+(((detachment , behavior)))
 
 [NOTE]
 ====
@@ -98,11 +86,7 @@ RollbackOnly` flag on the transaction.
 
 [[_ref_guide_detach_graph]]
 ===== Defining the Detached Object Graph
-(((
-                    detachment
-                ,
-                    defining the object graph
-                )))
+(((detachment , defining the object graph)))
 
 When detached objects lose their association with the OpenJPA runtime, they also lose the ability to load additional state from the datastore.
 It is important, therefore, to populate objects with all the persistent state you will need before detaching them.
@@ -185,11 +169,7 @@ enum DetachStateType {
 
 [[_ref_guide_detach_field]]
 ====== Detached State Field
-(((
-                        detachment
-                    ,
-                        detached state field
-                    )))
+(((detachment , detached state field)))
 
 When the detached state field is enabled, the OpenJPA enhancer adds an additional field to the enhanced version of your class.
 This field of type [class]``Object``.
@@ -217,20 +197,10 @@ public class Magazine
 
 [[_ref_guide_event]]
 ==== Remote Event Notification Framework
-(((
-                events
-            ,
-                remote
-            )))
+(((events , remote)))
 
 
-(((
-                remote
-            ,
-                events
-            ,
-                RemoteCommitListener
-            ))) The remote event notification framework allows a subset of the information available through OpenJPA's transaction events (see <<_ref_guide_runtime_pm_event>>) to be broadcast to remote listeners.
+(((remote , events , RemoteCommitListener))) The remote event notification framework allows a subset of the information available through OpenJPA's transaction events (see <<_ref_guide_runtime_pm_event>>) to be broadcast to remote listeners.
 OpenJPA's <<_ref_guide_cache,data cache>>, for example, uses remote events to remain synchronized when deployed in multiple JVMs.
 
 To enable remote events, you must configure the [class]`` EntityManagerFactory `` to use a `RemoteCommitProvider` (see below).
@@ -276,13 +246,7 @@ If you do not do so, a daemon thread will stay up in the JVM, preventing the JVM
 
 [[_ref_guide_event_conf_tcp]]
 ====== TCP
-(((
-                        remote
-                    ,
-                        events
-                    ,
-                        TCP
-                    )))
+(((remote , events , TCP)))
 
 The TCP remote commit provider has several options that are defined as host specifications containing a host name or IP address and an optional port separated by a colon.
 For example, the host specification `
@@ -332,16 +296,9 @@ To transmit persisted object ids in our remote commit events using the JMS provi
 
 [[_ref_guide_event_customization]]
 ===== Customization
-(((
-                    remote
-                ,
-                    events
-                ,
-                    customization
-                )))
+(((remote , events , customization)))
 
-You can develop additional mechanisms for remote event notification be by creating an implementation of the link:../../apidocs/org/apache/openjpa/event/RemoteCommitProvider.html[
- RemoteCommitProvider] interface, possibly by extending the link:../../apidocs/org/apache/openjpa/event/AbstractRemoteCommitProvider.html[
+You can develop additional mechanisms for remote event notification be by creating an implementation of the link:../../apidocs/org/apache/openjpa/event/RemoteCommitProvider.html[RemoteCommitProvider] interface, possibly by extending the link:../../apidocs/org/apache/openjpa/event/AbstractRemoteCommitProvider.html[
 AbstractRemoteCommitProvider] abstract class..
 
 ifdef::backend-docbook[]

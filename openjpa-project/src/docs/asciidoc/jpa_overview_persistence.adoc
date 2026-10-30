@@ -1,16 +1,8 @@
 [[_jpa_overview_persistence]]
 === Persistence
-(((
-            Persistence
-        )))
-(((
-            EntityManagerFactory
-        ,
-            construction
-        )))
-(((
-            getEntityManagerFactory
-        )))
+(((Persistence)))
+(((EntityManagerFactory , construction)))
+(((getEntityManagerFactory)))
 
 
 image::img/persistence.png[]

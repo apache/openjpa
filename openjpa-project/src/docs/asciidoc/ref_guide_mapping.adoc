@@ -1,25 +1,15 @@
 [[_ref_guide_mapping]]
 === Mapping
-(((
-            mapping metadata
-        )))
+(((mapping metadata)))
 
 The JPA Overview's <<_jpa_overview_mapping>> explains object-relational mapping under JPA.
 This chapter reviews the mapping utilities OpenJPA provides and examines OpenJPA features that go beyond the JPA specification.
 
 [[_ref_guide_mapping_mappingtool]]
 ==== Forward Mapping
-(((
-                forward mapping
-            )))
-(((
-                mapping tool
-            )))
-(((
-                mapping metadata
-            ,
-                forward mapping
-            )))
+(((forward mapping)))
+(((mapping tool)))
+(((mapping metadata , forward mapping)))
 
 _Forward mapping_ is the process of creating mappings and their corresponding database schema from your object model.
 OpenJPA supports forward mapping through the __mapping tool__.
@@ -100,11 +90,7 @@ schemaAction` to ``drop``.
 
 .Refreshing entire schema and cleaning out tables
 ====
-(((
-        	            testing
-            	    ,
-                    	Rebuild mappings and clean tables
-	                )))
+(((testing , Rebuild mappings and clean tables)))
 [source]
 ----
 
@@ -123,11 +109,7 @@ java org.apache.openjpa.jdbc.meta.MappingTool -schemaAction drop Magazine.java
 
 [[_ref_guide_ddl_examples]]
 ===== Generating DDL SQL
-(((
-                    DDL
-                ,
-                    with mapping tool
-                )))
+(((DDL , with mapping tool)))
 
 The examples below show how to use the mapping tool to generate DDL SQL scripts, rather than modifying the database directly.
 
@@ -156,11 +138,7 @@ java org.apache.openjpa.jdbc.meta.MappingTool -sql update.sql Magazine.java
 
 [[_ref_guide_mapping_synch]]
 ===== Runtime Forward Mapping
-(((
-                    mapping metadata
-                ,
-                    automatic runtime mapping
-                )))
+(((mapping metadata , automatic runtime mapping)))
 
 You can configure OpenJPA to automatically run the mapping tool at runtime through the <<_openjpa.jdbc.synchronizemappings,`
 openjpa.jdbc.SynchronizeMappings`>> configuration property.
@@ -192,14 +170,8 @@ java org.apache.openjpa.jdbc.meta.MappingTool -action buildSchema -foreignKeys t
 
 [[_ref_guide_pc_reverse]]
 ==== Reverse Mapping
-(((
-                reverse mapping tool
-            )))
-(((
-                mapping metadata
-            ,
-                reverse mapping
-            )))
+(((reverse mapping tool)))
+(((mapping metadata , reverse mapping)))
 
 OpenJPA includes a _reverse mapping_ tool for generating persistent class definitions, complete with metadata, from an existing database schema.
 You do not have to use the reverse mapping tool to access an existing schema; you are free to write your classes and mappings yourself, as described in <<_ref_guide_mapping_middle>>.
@@ -337,14 +309,8 @@ com.xyz.pub.Company.identity:           com.xyz.pub.CompanyId
 
 [[_ref_guide_mapping_middle]]
 ==== Meet-in-the-Middle Mapping
-(((
-                reverse mapping tool
-            )))
-(((
-                mapping metadata
-            ,
-                meet-in-the-middle mapping
-            )))
+(((reverse mapping tool)))
+(((mapping metadata , meet-in-the-middle mapping)))
 
 In the _meet-in-the-middle_ mapping approach, you control both the relational model and the object model.
 It is up to you to define the mappings between these models.
@@ -367,11 +333,7 @@ This lets you modify your mapping data manually, but saves you the hassle of usi
 
 [[_ref_guide_mapping_defaults]]
 ==== Mapping Defaults
-(((
-                mapping metadata
-            ,
-                defaults
-            )))
+(((mapping metadata , defaults)))
 
 The previous sections showed how to use the mapping tool to generate default mappings.
 But how does the mapping tool know what mappings to generate? The answer lies in the link:../../apidocs/org/apache/openjpa/jdbc/meta/MappingDefaults.html[
@@ -438,14 +400,8 @@ The example below turns on foreign key generation during schema creation and ass
 
 [[_ref_guide_mapping_factory]]
 ==== Mapping Factory
-(((
-                MappingFactory
-            )))
-(((
-                mapping metadata
-            ,
-                loading and storing
-            )))
+(((MappingFactory)))
+(((mapping metadata , loading and storing)))
 
 An important decision in the object-relational mapping process is how and where to store the data necessary to map your persistent classes to the database schema.
 
@@ -480,11 +436,7 @@ All of the examples in that document, however, use "standard" joins, in that the
 OpenJPA supports additional join patterns, including partial primary key joins, non-primary key joins, and joins using constant values.
 
 
-(((
-                joins
-            ,
-                partial primary key
-            ))) In a partial primary key join, the source table only has foreign key columns for a subset of the primary key columns in the target table.
+(((joins , partial primary key))) In a partial primary key join, the source table only has foreign key columns for a subset of the primary key columns in the target table.
 So long as this subset of columns correctly identifies the proper row(s) in the referenced table, OpenJPA will function properly.
 There is no special syntax for expressing a partial primary key join - just do not include column definitions for missing foreign key columns.
 
@@ -497,11 +449,7 @@ OpenJPA will also respect any custom mappings that implement this interface.
 See <<_ref_guide_mapping_custom>> for an examination of custom mappings.
 
 
-(((
-                joins
-            ,
-                constant
-            ))) Not all joins consist of only links between columns.
+(((joins , constant))) Not all joins consist of only links between columns.
 In some cases you might have a schema in which one of the join criteria is that a column in the source or target table must have some constant value.
 OpenJPA calls joins involving constant values __constant joins__.
 
@@ -590,17 +538,9 @@ We now demonstrate how to map entities using these strategies to the database.
 
 [[_ref_guide_mapping_jpa_datastoreid]]
 ===== Datastore Identity Mapping
-(((
-                    datastore identity
-                ,
-                    mapping
-                )))
-(((
-                    DataStoreIdColumn
-                )))
-(((
-                    primary key
-                )))
+(((datastore identity , mapping)))
+(((DataStoreIdColumn)))
+(((primary key)))
 
 <<_ref_guide_pc_oid>> describes how to use datastore identity in JPA.
 OpenJPA requires a single numeric primary key column to hold datastore identity values.
@@ -640,14 +580,8 @@ public class LogEntry {
 
 [[_ref_guide_mapping_jpa_version]]
 ===== Surrogate Version Mapping
-(((
-                    version
-                ,
-                    mapping
-                )))
-(((
-                    VersionColumn
-                )))
+(((version , mapping)))
+(((VersionColumn)))
 
 OpenJPA supports version fields as defined by the JPA specification, but allows you to use a surrogate version column in place of a version field if you like.
 You map the surrogate version column with the link:../../apidocs/org/apache/openjpa/persistence/jdbc/VersionColumn.html[
@@ -703,14 +637,8 @@ For example, following example shows 3 version columns ``v01, v11, v12, v21`` de
 
 [[_ref_guide_mapping_jpa_columns]]
 ===== Multi-Column Mappings
-(((
-                    mapping metadata
-                ,
-                    column
-                )))
-(((
-                    Columns
-                )))
+(((mapping metadata , column)))
+(((Columns)))
 
 OpenJPA makes it easy to create multi-column <<_ref_guide_mapping_custom_field,custom mappings>>.
 The JPA specification includes a [class]``Column`` annotation, but is missing a way to declare multiple columns for a single field.
@@ -820,11 +748,7 @@ public class Path {
 
 [[_ref_guide_mapping_jpa_coll]]
 ===== Collections
-(((
-                    mapping metadata
-                ,
-                    collections
-                )))
+(((mapping metadata , collections)))
 
 In <<_ref_guide_meta_jpa_persistent_coll>>, we explored the [class]``PersistentCollection`` annotation for persistent collection fields that aren't a standard `OneToMany` or `
 ManyToMany` relation.
@@ -856,9 +780,7 @@ That is left to separate annotations, which are the subject of the next sections
 
 [[_ref_guide_mapping_jpa_coll_joincols]]
 ====== Element Join Columns
-(((
-                        ElementJoinColumn
-                    )))
+(((ElementJoinColumn)))
 
 Element join columns are equivalent to standard JPA join columns, except that they represent a join to a collection or map element entity rather than a direct relation.
 You represent an element join column with OpenJPA's link:../../apidocs/org/apache/openjpa/persistence/jdbc/ElementJoinColumn.html[
@@ -877,9 +799,7 @@ See <<_jpa_overview_mapping_rel>> in the JPA Overview for a review of the [class
 
 [[_ref_guide_mapping_jpa_coll_order]]
 ====== Order Column
-(((
-                        OrderColumn
-                    )))
+(((OrderColumn)))
 
 Relational databases do not guarantee that records are returned in insertion order.
 If you want to make sure that your collection elements are loaded in the same order they were in when last stored, you must declare an order column.
@@ -901,13 +821,7 @@ All other properties correspond exactly to the same-named properties on the stan
 
 [[_ref_guide_mapping_jpa_onemany]]
 ===== One-Sided One-Many Mapping
-(((
-                    mapping metadata
-                ,
-                    collections
-                ,
-                    JPA one-sided one-many
-                )))
+(((mapping metadata , collections , JPA one-sided one-many)))
 
 The previous section covered the use of [class]``ElementJoinColumn`` annotations in conjunction with a [class]``ContainerTable`` for mapping collections to dedicate tables. [class]``ElementJoinColumn`` s, however, have one additional use: to create a one-sided one-many mapping.
 Standard JPA supports [class]``OneToMany`` fields without a ``mappedBy`` inverse, but only by mapping these fields to a [class]``JoinTable`` (see <<_jpa_overview_mapping_assoccoll>> in the JPA Overview for details). Often, you'd like to create a one-many association based on an inverse foreign key (logical or actual) in the table of the related type.
@@ -960,12 +874,8 @@ Custom map mappings may also use this annotation to represent a map table.
 ====== Key Columns
 
 Key columns serve the same role for map keys as the element join columns described in <<_ref_guide_mapping_jpa_coll_joincols>> serve for collection elements.
-OpenJPA's link:../../apidocs/org/apache/openjpa/persistence/jdbc/KeyColumn.html[
-        org.apache.openjpa.persistence.jdbc.KeyColumn
-        ] annotation represents a map key.
-To map custom multi-column keys, use the link:../../apidocs/org/apache/openjpa/persistence/jdbc/KeyColumns.html[
-        org.apache.openjpa.persistence.jdbc.KeyColumns
-        ] annotation, whose value is an array of [class]``KeyColumn``s.
+OpenJPA's link:../../apidocs/org/apache/openjpa/persistence/jdbc/KeyColumn.html[org.apache.openjpa.persistence.jdbc.KeyColumn] annotation represents a map key.
+To map custom multi-column keys, use the link:../../apidocs/org/apache/openjpa/persistence/jdbc/KeyColumns.html[org.apache.openjpa.persistence.jdbc.KeyColumns] annotation, whose value is an array of [class]``KeyColumn``s.
 
 A [class]``KeyColumn`` always resides in a container table, so it does not have the `table` property of a standard [class]``Column``.
 Otherwise, the [class]``KeyColumn`` and standard [class]``Column`` annotations are equivalent.
@@ -976,11 +886,8 @@ See <<_jpa_overview_mapping_column>> in the JPA Overview for a review of the [cl
 (((KeyJoinColumn)))
 
 Key join columns are equivalent to standard JPA join columns, except that they represent a join to a map key entity rather than a direct relation.
-You represent a key join column with OpenJPA's link:../../apidocs/org/apache/openjpa/persistence/jdbc/KeyJoinColumn.html[
-        org.apache.openjpa.persistence.jdbc.KeyJoinColumn] annotation.
-To declare a compound join, enclose an array of [class]``KeyJoinColumn``s in the link:../../apidocs/org/apache/openjpa/persistence/jdbc/KeyJoinColumns.html[
-        org.apache.openjpa.persistence.jdbc.KeyJoinColumns
-        ] annotation.
+You represent a key join column with OpenJPA's link:../../apidocs/org/apache/openjpa/persistence/jdbc/KeyJoinColumn.html[org.apache.openjpa.persistence.jdbc.KeyJoinColumn] annotation.
+To declare a compound join, enclose an array of [class]``KeyJoinColumn``s in the link:../../apidocs/org/apache/openjpa/persistence/jdbc/KeyJoinColumns.html[org.apache.openjpa.persistence.jdbc.KeyJoinColumns] annotation.
 
 A [class]``KeyJoinColumn`` always resides in a container table, so it does not have the `table` property of a standard [class]``JoinColumn``.
 Like [class]``XJoinColumn``s above, [class]``KeyJoinColumn``s can reference a linked field rather than a static linked column.
@@ -991,9 +898,7 @@ See <<_jpa_overview_mapping_rel>> in the JPA Overview for a review of the [class
 ====== Key Embedded Mapping
 (((KeyEmbeddedMapping)))
 
-The link:../../apidocs/org/apache/openjpa/persistence/jdbc/KeyEmbeddedMapping.html[
-        org.apache.openjpa.persistence.jdbc.KeyEmbeddedMapping
-        ] annotation allows you to map your map field's embedded key type to your container table.
+The link:../../apidocs/org/apache/openjpa/persistence/jdbc/KeyEmbeddedMapping.html[org.apache.openjpa.persistence.jdbc.KeyEmbeddedMapping] annotation allows you to map your map field's embedded key type to your container table.
 This annotation has exactly the same properties as the [class]``EmbeddedMapping`` annotation described <<_ref_guide_mapping_jpa_embed,above>>.
 
 [[_ref_guide_mapping_jpa_map_ex]]
@@ -1052,17 +957,12 @@ You can override the configured defaults on individual joins, field values, coll
 
 [[_ref_guide_mapping_jpa_index]]
 ====== Indexes
-(((
-                        mapping metadata
-                    ,
-                        indexes
-                    )))
+(((mapping metadata , indexes)))
 
 The link:../../apidocs/org/apache/openjpa/persistence/jdbc/Index.html[
 org.apache.openjpa.persistence.jdbc.Index] annotation represents an index on the columns of a field.
 It is also used within the <<_ref_guide_mapping_jpa_coll_table,[class]``ContainerTable ``>> annotation to index join columns.
-To index the columns of a collection element, use the link:../../apidocs/org/apache/openjpa/persistence/jdbc/ElementIndex.html[
- org.apache.openjpa.persistence.jdbc.ElementIndex] annotation.
+To index the columns of a collection element, use the link:../../apidocs/org/apache/openjpa/persistence/jdbc/ElementIndex.html[org.apache.openjpa.persistence.jdbc.ElementIndex] annotation.
 These annotations have the following properties:
 
 * ``boolean enabled``: Set this property to `false ` to explicitly tell OpenJPA not to index these columns, when OpenJPA would otherwise do so.
@@ -1072,19 +972,13 @@ These annotations have the following properties:
 
 [[_ref_guide_mapping_jpa_fk]]
 ====== Foreign Keys
-(((
-                        mapping metadata
-                    ,
-                        foreign keys
-                    )))
+(((mapping metadata , foreign keys)))
 
 The link:../../apidocs/org/apache/openjpa/persistence/jdbc/ForeignKey.html[
 org.apache.openjpa.persistence.jdbc.ForeignKey] annotation represents a foreign key on the columns of a field.
 It is also used within the <<_ref_guide_mapping_jpa_coll_table,[class]``
 ContainerTable``>> annotation to set a database foreign key on join columns.
-To set a constraint to the columns of a collection element, use the link:../../apidocs/org/apache/openjpa/persistence/jdbc/ElementForeignKey.html[
- org.apache.openjpa.persistence.jdbc.ElementForeignKey
-] annotation.
+To set a constraint to the columns of a collection element, use the link:../../apidocs/org/apache/openjpa/persistence/jdbc/ElementForeignKey.html[org.apache.openjpa.persistence.jdbc.ElementForeignKey] annotation.
 These annotations have the following properties:
 
 * ``boolean enabled``: Set this property to `false ` to explicitly tell OpenJPA not to set a foreign key on these columns, when OpenJPA would otherwise do so.
@@ -1098,11 +992,7 @@ Keep in mind that OpenJPA uses foreign key information at runtime to avoid const
 
 [[_ref_guide_mapping_jpa_unique]]
 ====== Unique Constraints
-(((
-                        mapping metadata
-                    ,
-                        unique constraints
-                    )))
+(((mapping metadata , unique constraints)))
 
 The link:../../apidocs/org/apache/openjpa/persistence/jdbc/Unique.html[
 org.apache.openjpa.persistence.jdbc.Unique] annotation represents a unique constraint on the columns of a field.
@@ -1116,11 +1006,7 @@ The [class]``Unique`` annotation has the following properties:
 
 [[_ref_guide_xmlmapping]]
 ===== XML Column Mapping
-(((
-                      mapping metadata
-                  ,
-                      xml column mapping
-                  )))
+(((mapping metadata , xml column mapping)))
 
 Some databases support XML column types and XPath queries and indexes over these columns.
 OpenJPA supports mapping of an entity property mapped to an XML column on the following databases and their minimum versions.
@@ -1387,9 +1273,7 @@ em.persist(o1);
 
 [[_ref_guide_streamsupport]]
 ===== LOB Streaming
-(((
-                    lob streaming
-                )))
+(((lob streaming)))
 
 In addition to handling LOBs in a standard JPA manner ([class]``LOB`` annotation and `lob` XML element), OpenJPA supports LOB streaming.
 This feature makes it possible to stream large amounts of data into and out of persistent field without ever holding all the data in memory at the same time.
@@ -1427,11 +1311,7 @@ public class Employee {
 
 [[_ref_guide_mapping_limits]]
 ==== Mapping Limitations
-(((
-                mapping metadata
-            ,
-                limitations
-            )))
+(((mapping metadata , limitations)))
 
 The following sections outline the limitations OpenJPA places on specific mapping strategies.
 
@@ -1466,13 +1346,7 @@ OpenJPA recognizes the following class extensions.
 
 [[_subclass_fetch_mode]]
 ====== Subclass Fetch Mode
-(((
-                        mapping metadata
-                    ,
-                        extensions
-                    ,
-                        subclass fetch mode
-                    )))
+(((mapping metadata , extensions , subclass fetch mode)))
 
 This extension specifies how to eagerly fetch subclass state.
 It overrides the global <<_openjpa.jdbc.subclassfetchmode,`
@@ -1501,13 +1375,7 @@ See <<_ref_guide_mapping_custom>> for information on custom mappings.
 
 [[_version_strategy]]
 ====== Version Strategy
-(((
-                        mapping metadata
-                    ,
-                        extensions
-                    ,
-                        version strategy
-                    )))
+(((mapping metadata , extensions , version strategy)))
 
 The link:../../apidocs/org/apache/openjpa/persistence/jdbc/VersionStrategy.html[
 org.apache.openjpa.persistence.jdbc.VersionStrategy
@@ -1562,13 +1430,7 @@ This value only excludes table-per-class subclasses.
 
 [[_class_criteria]]
 ====== Class Criteria
-(((
-                        mapping metadata
-                    ,
-                        extensions
-                    ,
-                        class criteria
-                    )))
+(((mapping metadata , extensions , class criteria)))
 
 This family of boolean extensions determines whether OpenJPA will use the expected class of related objects as criteria in the SQL it issues to load a relation field.
 Typically, this is not needed.
@@ -1591,14 +1453,8 @@ See <<_ref_guide_mapping_custom>> for information on custom mappings.
 
 [[_ref_guide_mapping_custom]]
 ==== Custom Mappings
-(((
-                custom mapping
-            )))
-(((
-                mapping metadata
-            ,
-                custom mapping
-            )))
+(((custom mapping)))
+(((mapping metadata , custom mapping)))
 
 In OpenJPA, you are not limited to the set of standard mappings defined by the specification.
 OpenJPA allows you to define custom class, discriminator, version, and field mapping strategies with all the power of OpenJPA's built-in strategies.
@@ -1642,13 +1498,7 @@ The following sections examine each.
 
 [[_ref_guide_mapping_custom_vhandler]]
 ====== Value Handlers
-(((
-                        custom mapping
-                    ,
-                        field mapping
-                    ,
-                        value handler
-                    )))
+(((custom mapping , field mapping , value handler)))
 
 Value handlers make it trivial to map any type that you can break down into one or more simple values.
 All value handlers implement the [class]``
@@ -1697,8 +1547,7 @@ One way of avoiding orphaned keys is to use _dependent_ fields.
 
 OpenJPA's <<_openjpa.orphanedkeyaction,`
 openjpa.OrphanedKeyAction`>> configuration property controls what action to take when OpenJPA encounters an orphaned key.
-You can set this plugin string (see <<_ref_guide_conf_plugins>>) to a custom implementation of the link:../../apidocs/org/apache/openjpa/event/OrphanedKeyAction.html[
- org.apache.openjpa.event.OrphanedKeyAction] interface, or use one of the built-in options:
+You can set this plugin string (see <<_ref_guide_conf_plugins>>) to a custom implementation of the link:../../apidocs/org/apache/openjpa/event/OrphanedKeyAction.html[org.apache.openjpa.event.OrphanedKeyAction] interface, or use one of the built-in options:
 
 * ``log``: This is the default setting. This option logs a message for each orphaned key. It is an alias for the link:../../apidocs/org/apache/openjpa/event/LogOrphanedKeyAction.html[ org.apache.openjpa.event.LogOrphanedKeyAction] class, which has the following additional properties:
 ** ``Channel``: The channel to log to. Defaults to `` openjpa.Runtime``.
