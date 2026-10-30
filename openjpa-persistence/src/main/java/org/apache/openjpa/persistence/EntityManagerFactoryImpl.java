@@ -141,10 +141,8 @@ public class EntityManagerFactoryImpl
         }
         if (properties == null) {
             Map<String,Object> props = _factory.getProperties();
-            // convert to user readable values
-            if (emEmptyPropsProperties != null) {
-                props.putAll(emEmptyPropsProperties);
-            }
+            // Keep factory properties scoped to the factory. EntityManager properties
+            // are runtime values and may not be valid factory configuration inputs.
             // no need to sync or volatile, worse case concurrent threads create 2 instances
             // we just want to avoid to do it after some "init" phase
             this.properties = props;
