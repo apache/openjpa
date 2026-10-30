@@ -185,15 +185,10 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
     }
 
     public void testFactoryPropertiesCanBeReusedToCreateFactory() {
-        EntityManagerFactory recreated = null;
-        try {
-            recreated = Persistence.createEntityManagerFactory(UNIT_NAME, emf.getProperties());
+        try (EntityManagerFactory recreated =
+            Persistence.createEntityManagerFactory(UNIT_NAME, emf.getProperties())) {
             assertNotNull(recreated);
             assertEquals(300, recreated.getProperties().get("openjpa.DataCacheTimeout"));
-        } finally {
-            if (recreated != null) {
-                recreated.close();
-            }
         }
     }
 
