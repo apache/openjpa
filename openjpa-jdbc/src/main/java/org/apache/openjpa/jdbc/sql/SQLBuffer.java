@@ -195,27 +195,27 @@ public final class SQLBuffer
 
         if (_userIndex != null) {
             // fix up user parameter index(s)
-            for (int i = 0; i < _userIndex.size(); i+=2) {
-            	Object param = _userIndex.get(i+1);
-
-            	Object previousParam = (i > 0) ? _userIndex.get(i-1) : null;
-            	if ( param != previousParam) {
-            		_userIndex.set(i, _userParams.indexOf(param));
-            	}else{
-            		//if there are multiple parameters for the in clause or the combined PK field,
-            		//we got duplicate param objects in _userParams list.
-            		//In order to find the right index, we have to skip params that's checked already.
-            		int previousUserIndex = (Integer)_userIndex.get(i-2);
-            		int userParamindex = 0;
-
-                	for(Object next : _userParams){
-                        if (next == param && userParamindex > previousUserIndex) {
-                            _userIndex.set(i, userParamindex);
-                            break;
-                      }
-                      userParamindex++;
-                	}
-            	}
+            // a parameter occurs more than once in _userParams for the values
+            // of an in clause, the columns of a combined PK field, or when it
+            // is used in two comparisons as in :p BETWEEN x AND y. Give the
+            // n-th occurrence of a parameter in _userIndex the position of its
+            // n-th occurrence in _userParams.
+            for (int i = 0; i < _userIndex.size(); i += 2) {
+                Object param = _userIndex.get(i + 1);
+                int occurrence = 0;
+                for (int j = 1; j < i; j += 2) {
+                    if (_userIndex.get(j) == param) {
+                        occurrence++;
+                    }
+                }
+                int userParamIndex = 0;
+                for (Object next : _userParams) {
+                    if (next == param && occurrence-- == 0) {
+                        _userIndex.set(i, userParamIndex);
+                        break;
+                    }
+                    userParamIndex++;
+                }
             }
         }
     }

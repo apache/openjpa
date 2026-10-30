@@ -3607,6 +3607,10 @@ public class DBDictionary
             buf.append(lvalue).append(op).append(rvalue);
             return;
         }
+        if (requiresCastForComparisons && lhs.isConstant() && rhs.isConstant()) {
+            lc = getComparedConstantType(lhs, lc);
+            rc = getComparedConstantType(rhs, rc);
+        }
         int type = 0;
         if (requiresCastForComparisons && (lc != rc
             || (lhs.isConstant() && rhs.isConstant()))) {
@@ -3631,6 +3635,22 @@ public class DBDictionary
             appendCast(buf, rhs, type);
         else
             rhs.appendTo(buf);
+    }
+
+    /**
+     * Return the type to cast the given constant operand of a comparison to.
+     * A parameter compared with another parameter has no declared type, so
+     * use the type of its bound value instead.
+     *
+     * @param val the constant operand
+     * @param type the wrapped declared type of the operand
+     */
+    private static Class<?> getComparedConstantType(FilterValue val, Class<?> type) {
+        if (type != Object.class) {
+            return type;
+        }
+        Object value = val.getValue();
+        return (value == null) ? type : Filters.wrap(value.getClass());
     }
 
     /**

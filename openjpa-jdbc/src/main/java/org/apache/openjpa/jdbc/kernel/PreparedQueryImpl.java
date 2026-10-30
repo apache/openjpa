@@ -19,10 +19,12 @@
 
 package org.apache.openjpa.jdbc.kernel;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,8 +46,12 @@ import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.StoreQuery;
+import org.apache.openjpa.kernel.exps.AbstractExpressionVisitor;
+import org.apache.openjpa.kernel.exps.Expression;
+import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.kernel.exps.Parameter;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
+import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.lib.rop.RangeResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.lib.util.Localizer;
@@ -196,6 +202,11 @@ public class PreparedQueryImpl implements PreparedQuery {
             return new PreparedQueryCacheImpl.StrongExclusion(_id,
                 _loc.get("exclude-pagination", _id).getMessage());
 
+        if (select.getDictionary().requiresCastForComparisons && isComparingUntypedParameters()) {
+            return new PreparedQueryCacheImpl.StrongExclusion(_id,
+                _loc.get("exclude-untyped-param-comparison", _id).getMessage());
+        }
+
         setTargetQuery(buffer.getSQL());
         setParameters(buffer.getParameters());
         setUserParameterPositions(buffer.getUserParameters());
@@ -283,6 +294,36 @@ public class PreparedQueryImpl implements PreparedQuery {
         }
         return false;
     }
+
+    /**
+     * Affirms if a condition of this query, in the filter or in an expression
+     * such as a CASE in the projections or the ordering, compares parameters
+     * without a declared type with each other. A database that requires casts
+     * for such a comparison gets casts to the types of the bound values, so
+     * the SQL can not be reused for values of other types.
+     */
+    private boolean isComparingUntypedParameters() {
+        UntypedParameterComparisonFinder finder = new UntypedParameterComparisonFinder();
+        for (QueryExpressions exp : _exps) {
+            for (Value val : exp.projections) {
+                val.acceptVisit(finder);
+            }
+            if (exp.filter != null) {
+                exp.filter.acceptVisit(finder);
+            }
+            for (Value val : exp.grouping) {
+                val.acceptVisit(finder);
+            }
+            if (exp.having != null) {
+                exp.having.acceptVisit(finder);
+            }
+            for (Value val : exp.ordering) {
+                val.acceptVisit(finder);
+            }
+        }
+        return finder.found;
+    }
+
     private boolean isUsingFieldStrategy() {
         for (QueryExpressions exp : _exps) {
             if (isUsingFieldStrategy(exp)) {
@@ -453,5 +494,49 @@ public class PreparedQueryImpl implements PreparedQuery {
     public String toString() {
         return "PreparedQuery: [" + getOriginalQuery() + "] --> [" +
                getTargetQuery() + "]";
+    }
+
+    /**
+     * Finds an expression whose operands are only parameters and literals,
+     * at least one of them a parameter without a declared type.
+     */
+    private static class UntypedParameterComparisonFinder extends AbstractExpressionVisitor {
+        // operands of each expression or value being visited
+        private final Deque<List<Value>> _operands = new ArrayDeque<>();
+        private boolean found;
+
+        @Override
+        public void enter(Expression exp) {
+            _operands.push(new ArrayList<>());
+        }
+
+        @Override
+        public void exit(Expression exp) {
+            List<Value> operands = _operands.pop();
+            if (operands.size() < 2) {
+                return;
+            }
+            boolean untyped = false;
+            for (Value val : operands) {
+                if (!(val instanceof Parameter) && !(val instanceof Literal)) {
+                    return;
+                }
+                untyped |= val instanceof Parameter && val.getType() == Object.class;
+            }
+            found |= untyped;
+        }
+
+        @Override
+        public void enter(Value val) {
+            if (!_operands.isEmpty()) {
+                _operands.peek().add(val);
+            }
+            _operands.push(new ArrayList<>());
+        }
+
+        @Override
+        public void exit(Value val) {
+            _operands.pop();
+        }
     }
 }
