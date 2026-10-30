@@ -59,8 +59,8 @@
         </fileSet>
         -->
         <fileSet>
-            <directory>target/docbook</directory>
-            <outputDirectory>docs/docbook</outputDirectory>
+            <directory>target/site/docs</directory>
+            <outputDirectory>docs</outputDirectory>
         </fileSet>
         <fileSet>
             <directory>../target/site/apidocs</directory>

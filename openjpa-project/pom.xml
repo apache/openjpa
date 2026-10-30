@@ -52,35 +52,21 @@
             ${user.name}@apache.org
         </openjpa.release.keyAlias>
 
-        <openjpa.assembly.finalName>
-            ${project.artifactId}-${project.version}</openjpa.assembly.finalName>
-        <openjpa.assembly.outputDirectory>
-        ${project.basedir}/target/site/downloads
-        </openjpa.assembly.outputDirectory>
+        <openjpa.assembly.finalName>${project.artifactId}-${project.version}</openjpa.assembly.finalName>
+        <openjpa.assembly.outputDirectory>${project.basedir}/target/site/downloads</openjpa.assembly.outputDirectory>
 
         <openjpa.assembly.binarySuffix>binary</openjpa.assembly.binarySuffix>
-        <openjpa.assembly.binaryBase>
-        ${openjpa.assembly.outputDirectory}/${openjpa.assembly.finalName}-${openjpa.assembly.binarySuffix}
-        </openjpa.assembly.binaryBase>
-        <openjpa.assembly.binaryFile>
-        ${openjpa.assembly.binaryBase}.zip
-        </openjpa.assembly.binaryFile>
+        <openjpa.assembly.prefix>${openjpa.assembly.outputDirectory}/${openjpa.assembly.finalName}-</openjpa.assembly.prefix>
+        <openjpa.assembly.binaryBase>${openjpa.assembly.prefix}${openjpa.assembly.binarySuffix}</openjpa.assembly.binaryBase>
+        <openjpa.assembly.binaryFile>${openjpa.assembly.binaryBase}.zip</openjpa.assembly.binaryFile>
 
         <openjpa.assembly.sourceSuffix>source</openjpa.assembly.sourceSuffix>
-        <openjpa.assembly.sourceBase>
-        ${openjpa.assembly.outputDirectory}/${openjpa.assembly.finalName}-${openjpa.assembly.sourceSuffix}
-        </openjpa.assembly.sourceBase>
-        <openjpa.assembly.sourceFile>
-        ${openjpa.assembly.sourceBase}.zip
-        </openjpa.assembly.sourceFile>
+        <openjpa.assembly.sourceBase>${openjpa.assembly.prefix}${openjpa.assembly.sourceSuffix}</openjpa.assembly.sourceBase>
+        <openjpa.assembly.sourceFile>${openjpa.assembly.sourceBase}.zip</openjpa.assembly.sourceFile>
 
-        <parent.site.docs>
-        ${project.basedir}/target/site/docs
-        </parent.site.docs>
+        <site.docs.folder>${project.build.directory}/site/docs</site.docs.folder>
 
-        <docbook.source>${project.basedir}/src/doc/manual</docbook.source>
-        <docbook.target>${project.build.directory}/docbook</docbook.target>
-        <docbook.version>1.67.2</docbook.version>
+        <docbook.gen.base.folder>${project.build.directory}/generated-docs</docbook.gen.base.folder>
         <asciidoctor-maven-plugin.version>3.2.0</asciidoctor-maven-plugin.version>
         <asciidoctorj-version>3.0.1</asciidoctorj-version>
         <asciidoctor-multipage.version>0.0.19</asciidoctor-multipage.version>
@@ -185,21 +171,28 @@
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>prefilter-site</id>
-                        <phase>site</phase>
+                        <id>place-docs</id>
+                        <phase>process-resources</phase>
                         <goals>
-                            <goal>resources</goal>
+                            <goal>copy-resources</goal>
                         </goals>
+                        <configuration>
+                            <outputDirectory>${site.docs.folder}</outputDirectory>
+                            <changeDetection>always</changeDetection>
+                            <resources>
+                                <resource>
+                                    <directory>${docbook.gen.base.folder}</directory>
+                                    <filtering>false</filtering>
+                                    <excludes>
+                                        <exclude>css/**</exclude>
+                                        <exclude>img/**</exclude>
+                                        <exclude>**/*.xsl</exclude>
+                                    </excludes>
+                                </resource>
+                            </resources>
+                        </configuration>
                     </execution>
                 </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <configuration>
-                    <siteDirectory>target/filtered-site</siteDirectory>
-                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -265,7 +258,7 @@
                                     <goal>process-asciidoc</goal>
                                 </goals>
                                 <configuration>
-                                    <outputDirectory>${project.build.directory}/generated-docs/html</outputDirectory>
+                                    <outputDirectory>${docbook.gen.base.folder}/html</outputDirectory>
                                 </configuration>
                             </execution>
                             <execution>
@@ -281,7 +274,7 @@
                                     <requires>
                                         <require>asciidoctor-multipage</require>
                                     </requires>
-                                    <outputDirectory>${project.build.directory}/generated-docs/multihtml</outputDirectory>
+                                    <outputDirectory>${docbook.gen.base.folder}/multihtml</outputDirectory>
                                 </configuration>
                             </execution>
                             <execution>
@@ -298,6 +291,7 @@
                                         <idseparator>-</idseparator>
                                         <toc />
                                     </attributes>
+                                    <outputDirectory>${docbook.gen.base.folder}</outputDirectory>
                                 </configuration>
                             </execution>
                         </executions>
@@ -338,48 +332,6 @@
                     <url>mavengem:https://rubygems.org</url>
                 </repository>
             </repositories>
-        </profile>
-        <!--
-          Upload distribution files, javadoc and manual to openjpa.apache.org/builds/${nightly.version}.
-          This profile is designed to be run nightly by a continuous build server, but can
-          also be run manually.
-
-          The nightly.user.name and nightly.password properties need to be set prior to using
-          this profile, ie :
-          $ mvn -Dnightly.user.name=mikedd -Dnightly.password=mikesPassword -Pnightly-upload package
-          or (using a profile defined in $user.home/.m2/settings.xml )
-          $ mvn -Pnightly-upload,mikes-nightly-credentials package
-          -->
-        <profile>
-            <id>nightly-upload</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <configuration>
-                                    <target>
-                                        <ant antfile="upload.xml" target="upload" inheritRefs="true">
-                                            <property name="nightly.user.name" value="${nightly.user.name}" />
-                                            <property name="nightly.password" value="${nightly.password}" />
-                                            <property name="nightly.keyfile" value="${nightly.keyfile}" />
-                                            <property name="nightly.passphrase" value="${nightly.passphrase}" />
-                                            <property name="nightly.version" value="${nightly.version}" />
-                                            <property name="project.version" value="${project.version}" />
-                                        </ant>
-                                    </target>
-                                </configuration>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
         </profile>
     </profiles>
 
