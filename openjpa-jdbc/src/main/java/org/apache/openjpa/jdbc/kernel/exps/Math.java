@@ -36,7 +36,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 public class Math
     extends AbstractVal {
 
-    
+
     private static final long serialVersionUID = 1L;
     public static final String ADD = "+";
     public static final String SUBTRACT = "-";
@@ -144,7 +144,29 @@ public class Math
     public Object load(ExpContext ctx, ExpState state, Result res)
         throws SQLException {
         return Filters.convert(res.getObject(this, JavaSQLTypes.JDBC_DEFAULT,
-            null), getType());
+            null), getType(ctx));
+    }
+
+    /**
+     * Return the type of the result. An operand without a known type, such
+     * as an input parameter, takes the type of the value bound to it.
+     */
+    private Class getType(ExpContext ctx) {
+        if (_cast != null) {
+            return _cast;
+        }
+        return Filters.promote(operandType(_val1, ctx), operandType(_val2, ctx));
+    }
+
+    private static Class operandType(Val val, ExpContext ctx) {
+        Class type = val.getType();
+        if (type == Object.class && val instanceof Param valP && ctx.params != null) {
+            Object o = valP.getValue(ctx.params);
+            if (o != null) {
+                return o.getClass();
+            }
+        }
+        return type;
     }
 
     @Override

@@ -1276,6 +1276,12 @@ public class JPQLExpressionBuilder
                 setImplicitTypes(val1, val2, TYPE_NUMBER);
                 return promoteSubInteger(factory.subtract(val1, val2));
 
+            case JJTNEGATE: // -x
+                // rendered as 0 - x: the Integer literal 0 makes the result
+                // type that of the operand under numeric promotion
+                return factory.subtract(factory.newLiteral(0, Literal.TYPE_NUMBER),
+                    getValue(onlyChild(node)));
+
             case JJTMULTIPLY: // x * y
                 val1 = getValue(left(node));
                 val2 = getValue(right(node));

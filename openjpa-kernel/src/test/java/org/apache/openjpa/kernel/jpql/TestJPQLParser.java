@@ -20,6 +20,7 @@ package org.apache.openjpa.kernel.jpql;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import org.apache.openjpa.kernel.jpql.JPQLExpressionBuilder.JPQLNode;
@@ -607,5 +608,88 @@ public class TestJPQLParser {
         assertNotNull(add);
         assertEquals("1", add.children[0].text);
         assertEquals(JPQLTreeConstants.JJTMULTIPLY, add.children[1].id);
+    }
+
+    @Test
+    public void testUnaryMinusOnPath() throws ParseException {
+        JPQLNode node = (JPQLNode) new JPQL("SELECT -u.age FROM User u").parseQuery();
+        JPQLNode negate = node.findChildByID(JPQLTreeConstants.JJTNEGATE, true);
+        assertNotNull(negate);
+        assertEquals(JPQLTreeConstants.JJTPATH, negate.children[0].id);
+    }
+
+    @Test
+    public void testUnaryPlusOnPath() throws ParseException {
+        JPQLNode node = (JPQLNode) new JPQL("SELECT +u.age FROM User u").parseQuery();
+        assertNull(node.findChildByID(JPQLTreeConstants.JJTNEGATE, true));
+        assertNotNull(node.findChildByID(JPQLTreeConstants.JJTPATH, true));
+    }
+
+    @Test
+    public void testUnaryMinusBindsTighterThanMultiplication() throws ParseException {
+        // -u.age * 2 must parse as (-u.age) * 2
+        String query = "SELECT u FROM User u WHERE -u.age * 2 < 0";
+        JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+        JPQLNode multiply = node.findChildByID(JPQLTreeConstants.JJTMULTIPLY, true);
+        assertNotNull(multiply);
+        assertEquals(JPQLTreeConstants.JJTNEGATE, multiply.children[0].id);
+    }
+
+    @Test
+    public void testUnaryMinusOnArithmeticPrimaries() throws ParseException {
+        String[] queries = {
+            "SELECT -(u.age + u.height) FROM User u",
+            "SELECT u FROM User u WHERE -u.age < 0",
+            "SELECT u FROM User u WHERE u.age = -:age",
+            "SELECT u FROM User u WHERE u.age = -?1",
+            "SELECT u FROM User u ORDER BY -u.age",
+            "SELECT u.name, -SUM(u.age) FROM User u GROUP BY u.name HAVING -SUM(u.age) < 0",
+            "SELECT -CASE WHEN u.age > 10 THEN u.age ELSE 0 END FROM User u",
+            "SELECT -ABS(u.age) FROM User u",
+            "SELECT u.age - -u.height FROM User u",
+            "SELECT u FROM User u WHERE u.age BETWEEN -u.height AND +u.height",
+        };
+        for (String query : queries) {
+            JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+            assertNotNull(query, node.findChildByID(JPQLTreeConstants.JJTNEGATE, true));
+        }
+    }
+
+    @Test
+    public void testSignedNumericLiteralsStayLiterals() throws ParseException {
+        String[] queries = {
+            "SELECT u FROM User u WHERE u.age = -1",
+            "SELECT u FROM User u WHERE u.age = - 1",
+            "SELECT u FROM User u WHERE u.age = +1",
+            "SELECT u FROM User u WHERE u.height = -1.5",
+            "SELECT -1 FROM User u",
+        };
+        for (String query : queries) {
+            JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
+            assertNull(query, node.findChildByID(JPQLTreeConstants.JJTNEGATE, true));
+        }
+    }
+
+    @Test
+    public void testSubtractionOfSignedLiteral() throws ParseException {
+        // 1 - -1 is a subtraction whose right operand is the literal -1
+        JPQLNode node = (JPQLNode) new JPQL("SELECT u FROM User u WHERE u.age = 1 - -1").parseQuery();
+        assertNull(node.findChildByID(JPQLTreeConstants.JJTNEGATE, true));
+        JPQLNode subtract = node.findChildByID(JPQLTreeConstants.JJTSUBTRACT, true);
+        assertNotNull(subtract);
+        assertEquals(JPQLTreeConstants.JJTINTEGERLITERAL, subtract.children[1].id);
+        assertEquals(JPQLTreeConstants.JJTNEGATIVE, subtract.children[1].children[0].id);
+    }
+
+    @Test
+    public void testSubtractionWithoutWhitespace() throws ParseException {
+        // u.age -1 is a subtraction, not a path followed by the literal -1
+        JPQLNode node = (JPQLNode) new JPQL("SELECT u FROM User u WHERE u.age -1 = 0").parseQuery();
+        assertNull(node.findChildByID(JPQLTreeConstants.JJTNEGATE, true));
+        JPQLNode subtract = node.findChildByID(JPQLTreeConstants.JJTSUBTRACT, true);
+        assertNotNull(subtract);
+        assertEquals(JPQLTreeConstants.JJTPATH, subtract.children[0].id);
+        assertEquals(JPQLTreeConstants.JJTINTEGERLITERAL, subtract.children[1].id);
+        assertNull(subtract.children[1].children);
     }
 }

@@ -1066,9 +1066,19 @@ void arithmetic_term() : { }
 }
 
 
+/* arithmetic_factor ::= [{+ | -}] arithmetic_primary; a sign in front of a
+   numeric literal stays part of the literal */
 void arithmetic_factor() : { }
 {
-	numeric_literal() |
+	LOOKAHEAD(numeric_literal()) numeric_literal() |
+	<PLUS> arithmetic_primary() |
+	(<MINUS> arithmetic_primary()) #NEGATE(1) |
+	arithmetic_primary()
+}
+
+
+void arithmetic_primary() : { }
+{
 	input_parameter() |
 	LOOKAHEAD(treat_path()) treat_path() |
 	LOOKAHEAD(path()) path() |
