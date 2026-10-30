@@ -290,49 +290,6 @@
         </profile>
 
         <profile>
-            <!--
-                Javadoc profile. Docs can be built by running:
-                    mvn process-classes -Dtest=false -Pjavadoc-profile
-            -->
-            <id>javadoc-profile</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <configuration>
-                            <encoding>${project.build.sourceEncoding}</encoding>
-                            <release>${java.class.version}</release>
-                            <doclint>none</doclint>
-                            <additionalJOption>
-                                ${javadoc.additionalparam}
-                            </additionalJOption>
-                            <subpackages>org.apache.openjpa</subpackages>
-                            <verbose>false</verbose>
-                            <maxmemory>1024m</maxmemory>
-                            <links>
-                                <link>https://docs.oracle.com/en/java/javase/11/docs/api/</link>
-                            </links>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <phase>process-classes</phase>
-                                <goals>
-                                    <goal>aggregate-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-            <activation>
-                <property>
-                    <name>builddocs</name>
-                    <value>true</value>
-                </property>
-            </activation>
-        </profile>
-        <profile>
             <id>site-profile</id>
             <build>
                 <plugins>
