@@ -1,4 +1,4 @@
-[[_jpa_overview_mapping]]
+[[jpa_overview_mapping]]
 === Mapping Metadata
 (((mapping metadata)))
 (((entities , mapping to database)))
@@ -12,10 +12,10 @@ Mapping metadata uses annotations to describe how to link your object model to y
 [NOTE]
 ====
 OpenJPA offers tools to automate mapping and schema creation.
-See <<_ref_guide_mapping>> in the Reference Guide.
+See <<ref_guide_mapping>> in the Reference Guide.
 ====
 
-Throughout this chapter, we will draw on the object model introduced in <<_jpa_overview_meta>>.
+Throughout this chapter, we will draw on the object model introduced in <<jpa_overview_meta>>.
 We present that model again below.
 As we discuss various aspects of mapping metadata, we will zoom in on specific areas of the model and show how we map the object layer to the relational layer.
 
@@ -33,12 +33,12 @@ This metadata should not be relied upon for validation prior to communicating wi
 For example using the @Column(nullable=false) annotation does not do up front validation that the value in the entity is correct.
 ====
 
-[[_jpa_overview_mapping_table]]
+[[jpa_overview_mapping_table]]
 ==== Table
 
 The [class]``Table`` annotation specifies the table for an entity class.
 If you omit the [class]``Table`` annotation, base entity classes default to a table with their unqualified class name.
-The default table of an entity subclass depends on the inheritance strategy, as you will see in <<_jpa_overview_mapping_inher>>.
+The default table of an entity subclass depends on the inheritance strategy, as you will see in <<jpa_overview_mapping_inher>>.
 
 [class]``Table``s have the following properties:
 
@@ -65,6 +65,7 @@ Later, we will see how to map certain fields to other tables.
 The example below maps classes to tables to separate schemas.
 The ``CONTRACT``, ``SUB``, and `LINE_ITEM`  tables are in the `CNTRCT` schema; all other tables are in the default schema.
 
+[[jpa_overview_mapping_classex]]
 .Mapping Classes
 ====
 [source]
@@ -204,7 +205,7 @@ The same mapping information expressed in XML:
 ----
 ====
 
-[[_jpa_overview_mapping_unq]]
+[[jpa_overview_mapping_unq]]
 ==== Unique Constraints
 (((mapping metadata , unique constraints)))
 
@@ -225,6 +226,7 @@ In XML, unique constraints are represented by nesting
 `unique-constraint` elements within the  `table` element.
 Each `unique-constraint` element in turn nests ``column-name`` text elements to enumerate the constraint's columns.
 
+[[jpa_overview_mapping_unq_attrex]]
 .Defining a Unique Constraint
 ====
 The following defines a unique constraint on the  `TITLE` column of the `ART` table:
@@ -256,7 +258,7 @@ The same metadata expressed in XML form:
 ----
 ====
 
-[[_jpa_overview_mapping_column]]
+[[jpa_overview_mapping_column]]
 ==== Column
 (((mapping metadata , Column)))
 
@@ -290,7 +292,7 @@ This element has attributes that are exactly equivalent to the [class]``Column``
 * `table`
 
 
-[[_jpa_overview_mapping_id]]
+[[jpa_overview_mapping_id]]
 ==== Identity Mapping
 (((Id)))
 (((mapping metadata , identity)))
@@ -307,7 +309,7 @@ image::img/jpa-mapping-identity.png[]
 
 Note that many of our identity fields do not need to specify column information, because they use the default column name and type.
 
-[#_jpa_overview_mapping_identityex]
+[[jpa_overview_mapping_identityex]]
 .Identity Mapping
 ====
 [source]
@@ -445,15 +447,15 @@ The same metadata for `Magazine` and `Company` expressed in XML form:
 ----
 ====
 
-[[_jpa_overview_mapping_sequence]]
+[[jpa_overview_mapping_sequence]]
 ==== Generators
 (((generators , mapping metadata)))
 
 One aspect of identity mapping not covered in the previous section is JPA's ability to automatically assign a value to your numeric identity fields using __generators__.
-We discussed the available generator types in <<_jpa_overview_meta_id>>.
+We discussed the available generator types in <<jpa_overview_meta_id>>.
 Now we show you how to define named generators.
 
-[[_jpa_overview_mapping_sequence_seqgen]]
+[[jpa_overview_mapping_sequence_seqgen]]
 ===== Sequence Generator
 (((generators , SequenceGenerator)))
 
@@ -474,9 +476,9 @@ If you do not name a schema, JPA uses the default schema for the database connec
 [NOTE]
 ====
 OpenJPA allows you to use one of OpenJPA's built-in generator implementations in the `sequenceName` property.
-You can also set the `sequenceName` to `system` to use the system sequence defined by the <<_openjpa.sequence,
+You can also set the `sequenceName` to `system` to use the system sequence defined by the <<openjpa.Sequence,
 `openjpa.Sequence`>> configuration property.
-See the Reference Guide's <<_ref_guide_sequence>> for details.
+See the Reference Guide's <<ref_guide_sequence>> for details.
 ====
 
 The XML element for a sequence generator is ``sequence-generator``.
@@ -492,7 +494,7 @@ To use a sequence generator, set your [class]``GeneratedValue`` annotation's `st
 Or equivalently, set your 
 `generated-value` XML element's `strategy` attribute to ``SEQUENCE`` and its `generator` attribute to the generator name.
 
-[[_jpa_overview_mapping_sequence_tablegen]]
+[[jpa_overview_mapping_sequence_tablegen]]
 ===== Table Generator
 (((TableGenerator)))
 
@@ -534,12 +536,13 @@ To use a table generator, set your [class]``GeneratedValue`` annotation's `strat
 Or equivalently, set your 
 `generated-value` XML element's `strategy` attribute to ``TABLE`` and its `generator` attribute to the generator name.
 
-[[_jpa_overview_mapping_sequence_genex]]
+[[jpa_overview_mapping_sequence_genex]]
 ===== Example
 
 Let's take advantage of generators in our entity model.
 Here are our updated mappings.
 
+[[jpa_overview_mapping_sequenceex]]
 .Generator Mapping
 ====
 [source]
@@ -693,7 +696,7 @@ The same metadata for `Article` and `Author` expressed in XML form:
 ----
 ====
 
-[[_jpa_overview_mapping_inher]]
+[[jpa_overview_mapping_inher]]
 ==== Inheritance
 (((inheritance , mapping)))
 (((impedance mismatch)))
@@ -717,10 +720,10 @@ The following sections describe JPA's standard inheritance strategies.
 [NOTE]
 ====
 OpenJPA allows you to vary your inheritance strategy for each class, rather than forcing a single strategy per inheritance hierarchy.
-See <<_ref_guide_mapping_jpa>> in the Reference Guide for details.
+See <<ref_guide_mapping_jpa>> in the Reference Guide for details.
 ====
 
-[[_jpa_overview_mapping_inher_single]]
+[[jpa_overview_mapping_inher_single]]
 ===== Single Table
 
 The `InheritanceType.SINGLE_TABLE` strategy maps all classes in the hierarchy to the base class' table.
@@ -731,6 +734,7 @@ image::img/inher-superclass-table.png[]
 In our model, [class]``Subscription`` is mapped to the 
 `CNTRCT.SUB` table. [class]``LifetimeSubscription``, which extends [class]``Subscription``, adds its field data to this table as well.
 
+[[jpa_overview_mapping_inher_singleex]]
 .Single Table Mapping
 ====
 [source]
@@ -775,7 +779,7 @@ Thus, we could omit the ``@Inheritance`` annotation in the example above and get
 (((inheritance , flat))) Mapping subclass state to the superclass table is often called _flat_  inheritance mapping.
 ====
 
-[[_jpa_overview_mapping_inher_single_adv]]
+[[jpa_overview_mapping_inher_single_adv]]
 ====== Advantages
 (((inheritance , SINGLE_TABLE strategy , advantages)))
 
@@ -783,13 +787,13 @@ Single table inheritance mapping is the fastest of all inheritance models, since
 Similarly, persisting or updating a persistent instance requires only a single ``INSERT`` or `UPDATE` statement.
 Finally, relations to any class within a single table inheritance hierarchy are just as efficient as relations to a base class.
 
-[[_jpa_overview_mapping_inher_single_disadv]]
+[[jpa_overview_mapping_inher_single_disadv]]
 ====== Disadvantages
 
 The larger the inheritance model gets, the "wider" the mapped table gets, in that for every field in the entire inheritance hierarchy, a column must exist in the mapped table.
 This may have undesirable consequence on the database size, since a wide or deep inheritance hierarchy will result in tables with many mostly-empty columns.
 
-[[_jpa_overview_mapping_inher_joined]]
+[[jpa_overview_mapping_inher_joined]]
 ===== Joined
 (((inheritance , JOINED strategy)))
 
@@ -812,7 +816,7 @@ The [class]``PrimaryKeyJoinColumn`` annotation has the following properties:
 
 * ``String name``: The name of the subclass table column. When there is a single identity field, defaults to that field's column name.
 * ``String referencedColumnName``: The name of the superclass table column this subclass table column joins to. When there is a single identity field, defaults to that field's column name.
-* ``String columnDefinition``: This property has the same meaning as the `columnDefinition` property on the [class]``Column`` annotation, described in <<_jpa_overview_mapping_column>>.
+* ``String columnDefinition``: This property has the same meaning as the `columnDefinition` property on the [class]``Column`` annotation, described in <<jpa_overview_mapping_column>>.
 
 The XML equivalent is the `primary-key-join-column` element.
 Its attributes mirror the annotation properties described above:
@@ -826,6 +830,7 @@ Note that a primary key join column is not strictly needed, because there is onl
 In this situation, the defaults suffice.
 However, we include the primary key join column for illustrative purposes.
 
+[[jpa_overview_mapping_inher_joinedex]]
 .Joined Subclass Tables
 ====
 [source]
@@ -890,7 +895,7 @@ public static class LineItem
 
 In XML, simply list as many  `primary-key-join-column` elements as necessary.
 
-[[_jpa_overview_mapping_inher_joined_adv]]
+[[jpa_overview_mapping_inher_joined_adv]]
 ====== Advantages
 (((inheritance , JOINED strategy , advantages)))
 
@@ -901,7 +906,7 @@ The joined strategy has the following advantages:
 . Relations to a base class using this strategy can be loaded through standard joins and can use standard foreign keys, as opposed to the machinations required to load polymorphic relations to table-per-class base types, described below.
 
 
-[[_jpa_overview_mapping_inher_joined_disadv]]
+[[jpa_overview_mapping_inher_joined_disadv]]
 ====== Disadvantages
 
 Aside from certain uses of the table-per-class strategy described below, the joined strategy is often the slowest of the inheritance models.
@@ -910,10 +915,10 @@ This is only the case when persistence operations are performed on subclasses; i
 
 [NOTE]
 ====
-When executing a select against a hierarchy that uses joined subclass table inheritance, you must consider how to load subclass state. <<_ref_guide_perfpack_eager>> in the Reference Guide describes OpenJPA's options for efficient data loading.
+When executing a select against a hierarchy that uses joined subclass table inheritance, you must consider how to load subclass state. <<ref_guide_perfpack_eager>> in the Reference Guide describes OpenJPA's options for efficient data loading.
 ====
 
-[[_jpa_overview_mapping_inher_tpc]]
+[[jpa_overview_mapping_inher_tpc]]
 ===== Table Per Class
 (((mapping metadata , inheritance , TABLE_PER_CLASS strategy)))
 
@@ -930,8 +935,9 @@ The classes are mapped using the table-per-class strategy, as in the diagram abo
 In a table-per-class mapping, [class]``Magazine``'s table `MAG` contains all state declared in the base [class]``Magazine`` class. [class]``Tabloid`` maps to a separate table, ``TABLOID``.
 This table contains not only the state declared in the [class]``Tabloid`` subclass, but all the base class state from [class]``Magazine`` as well.
 Thus the `TABLOID` table would contain columns for ``isbn``, ``title``, and other [class]``Magazine`` fields.
-These columns would default to the names used in [class]``Magazine``'s mapping metadata. <<_jpa_overview_mapping_embed>> will show you how to use ``AttributeOverride``s and `AssociationOverride` s to override superclass field mappings.
+These columns would default to the names used in [class]``Magazine``'s mapping metadata. <<jpa_overview_mapping_embed>> will show you how to use ``AttributeOverride``s and `AssociationOverride` s to override superclass field mappings.
 
+[[jpa_overview_mapping_inher_tpcex]]
 .Table Per Class Mapping
 ====
 [source]
@@ -969,7 +975,7 @@ And the same classes in XML:
 ----
 ====
 
-[[_jpa_overview_mapping_inher_tpc_adv]]
+[[jpa_overview_mapping_inher_tpc_adv]]
 ====== Advantages
 
 The table-per-class strategy is very efficient when operating on instances of a known class.
@@ -977,7 +983,7 @@ Under these conditions, the strategy never requires joining to superclass or sub
 Reads, joins, inserts, updates, and deletes are all efficient in the absence of polymorphic behavior.
 Also, as in the joined strategy, adding additional classes to the hierarchy does not require modifying existing class tables.
 
-[[_jpa_overview_mapping_inher_tpc_disadv]]
+[[jpa_overview_mapping_inher_tpc_disadv]]
 ====== Disadvantages
 (((inheritance , TABLE_PER_CLASS strategy , disadvantages)))
 
@@ -987,10 +993,10 @@ This ambiguity also affects identity lookups and queries; these operations requi
 
 [NOTE]
 ====
-<<_ref_guide_mapping_limits_tpc>> in the Reference Guide describes the limitations OpenJPA places on table-per-class mapping.
+<<ref_guide_mapping_limits_tpc>> in the Reference Guide describes the limitations OpenJPA places on table-per-class mapping.
 ====
 
-[[_jpa_overview_mapping_inher_together]]
+[[jpa_overview_mapping_inher_together]]
 ===== Putting it All Together
 
 Now that we have covered JPA's inheritance strategies, we can update our mapping document with inheritance information.
@@ -1001,6 +1007,7 @@ image::img/jpa-inher-all.png[]
 
 And here is the corresponding mapping metadata:
 
+[[jpa_overview_mapping_inher_togetherex]]
 .Inheritance Mapping
 ====
 [source]
@@ -1217,12 +1224,12 @@ The same metadata expressed in XML form:
 ----
 ====
 
-[[_jpa_overview_mapping_discrim]]
+[[jpa_overview_mapping_discrim]]
 ==== Discriminator
 (((inheritance , discriminator)))
 
-The <<_jpa_overview_mapping_inher_single,single table>> inheritance strategy results in a single table containing records for two or more different classes in an inheritance hierarchy.
-Similarly, using the <<_jpa_overview_mapping_inher_joined, joined>> strategy results in the superclass table holding records for superclass instances as well as for the superclass state of subclass instances.
+The <<jpa_overview_mapping_inher_single,single table>> inheritance strategy results in a single table containing records for two or more different classes in an inheritance hierarchy.
+Similarly, using the <<jpa_overview_mapping_inher_joined, joined>> strategy results in the superclass table holding records for superclass instances as well as for the superclass state of subclass instances.
 When selecting data, JPA needs a way to differentiate a row representing an object of one class from a row representing an object of another.
 That is the job of the _discriminator_ column.
 
@@ -1234,7 +1241,7 @@ It has these properties:
 
 * ``String name``: The column name. Defaults to ``DTYPE``.
 * ``length``: For string discriminator values, the length of the column. Defaults to 31.
-* ``String columnDefinition``: This property has the same meaning as the `columnDefinition` property on the [class]``Column`` annotation, described in <<_jpa_overview_mapping_column>>.
+* ``String columnDefinition``: This property has the same meaning as the `columnDefinition` property on the [class]``Column`` annotation, described in <<jpa_overview_mapping_column>>.
 * ``DiscriminatorType discriminatorType``: Enum value declaring the discriminator strategy of the hierarchy.
 
 The corresponding XML element is ``discriminator-column``.
@@ -1263,7 +1270,7 @@ OpenJPA assumes your model employs a discriminator column if any of the followin
 
 Only `SINGLE_TABLE` inheritance hierarchies require a discriminator column and values.  `JOINED` hierarchies can use a discriminator to make some operations more efficient, but do not require one. ``TABLE_PER_CLASS`` hierarchies have no use for a discriminator.
 
-OpenJPA defines additional discriminator strategies; see <<_ref_guide_mapping_jpa>> in the Reference Guide for details.
+OpenJPA defines additional discriminator strategies; see <<ref_guide_mapping_jpa>> in the Reference Guide for details.
 OpenJPA also supports final entity classes.
 OpenJPA does not use a discriminator on final classes.
 ====
@@ -1278,6 +1285,7 @@ Next, we present the updated mapping document.
 Notice that in this version, we have removed explicit inheritance annotations when the defaults sufficed.
 Also, notice that entities using the default `DTYPE` discriminator column mapping do not need an explicit [class]``DiscriminatorColumn`` annotation.
 
+[[jpa_overview_mapping_discrimex]]
 .Discriminator Mapping
 ====
 [source]
@@ -1504,39 +1512,39 @@ The same metadata expressed in XML:
 ----
 ====
 
-[[_jpa_overview_mapping_field]]
+[[jpa_overview_mapping_field]]
 ==== Field Mapping
 (((persistent fields , mapping metadata)))
 
 The following sections enumerate the myriad of field mappings JPA supports.
-JPA augments the persistence metadata covered in <<_jpa_overview_meta>> with many new object-relational annotations.
+JPA augments the persistence metadata covered in <<jpa_overview_meta>> with many new object-relational annotations.
 As we explore the library of standard mappings, we introduce each of these enhancements in context.
 
 [NOTE]
 ====
 OpenJPA supports many additional field types, and allows you to create custom mappings for unsupported field types or database schemas.
-See the Reference Guide's <<_ref_guide_mapping>> for complete coverage of OpenJPA's mapping capabilities.
+See the Reference Guide's <<ref_guide_mapping>> for complete coverage of OpenJPA's mapping capabilities.
 ====
 
-[[_jpa_overview_mapping_basic]]
+[[jpa_overview_mapping_basic]]
 ===== Basic Mapping
 (((persistent fields , basic)))
 
 A _basic_ field mapping stores the field value directly into a database column.
 The following field metadata types use basic mapping.
-These types were defined in <<_jpa_overview_meta_field>>.
+These types were defined in <<jpa_overview_meta_field>>.
 
-* <<_jpa_overview_meta_id,[class]``Id``>> fields.
-* <<_jpa_overview_meta_version,[class]``Version``>> fields.
-* <<_jpa_overview_meta_basic,[class]``Basic``>> fields.
+* <<jpa_overview_meta_id,[class]``Id``>> fields.
+* <<jpa_overview_meta_version,[class]``Version``>> fields.
+* <<jpa_overview_meta_basic,[class]``Basic``>> fields.
 
-In fact, you have already seen examples of basic field mappings in this chapter - the mapping of all identity fields in <<_jpa_overview_mapping_identityex>>.
+In fact, you have already seen examples of basic field mappings in this chapter - the mapping of all identity fields in <<jpa_overview_mapping_identityex>>.
 As you saw in that section, to write a basic field mapping you use the [class]``Column`` annotation to describe the column the field value is stored in.
-We discussed the [class]``Column`` annotation in <<_jpa_overview_mapping_column>>.
+We discussed the [class]``Column`` annotation in <<jpa_overview_mapping_column>>.
 Recall that the name of the column defaults to the field name, and the type of the column defaults to an appropriate type for the field type.
 These defaults allow you to sometimes omit the annotation altogether.
 
-[[_jpa_overview_mapping_lob]]
+[[jpa_overview_mapping_lob]]
 ====== LOBs
 (((mapping metadata , LOB types)))
 
@@ -1549,10 +1557,10 @@ The equivalent XML element is ``lob``, which has no children or attributes.
 [NOTE]
 ====
 OpenJPA also supports LOB streaming.
-See <<_ref_guide_streamsupport>> in the Reference Guide for details.
+See <<ref_guide_streamsupport>> in the Reference Guide for details.
 ====
 
-[[_jpa_overview_mapping_enum]]
+[[jpa_overview_mapping_enum]]
 ====== Enumerated
 (((Enumerated)))
 (((mapping metadata , enums)))
@@ -1569,7 +1577,7 @@ Any un-annotated enumeration field defaults to `ORDINAL` mapping.
 The corresponding XML element is ``enumerated``.
 Its embedded text must be one of `STRING` or ``ORIDINAL``.
 
-[[_jpa_overview_mapping_temporal]]
+[[jpa_overview_mapping_temporal]]
 ====== Temporal Types
 (((mapping metadata , temporal types)))
 
@@ -1585,18 +1593,19 @@ If the [class]``Temporal`` annotation is omitted, the implementation will treat 
 
 The corresponding XML element is ``temporal``, whose text value must be one of: ``TIME``, ``DATE``, or ``TIMESTAMP``.
 
-[[_jpa_overview_mapping_basic_example]]
+[[jpa_overview_mapping_basic_example]]
 ====== The Updated Mappings
 
 Below we present an updated diagram of our model and its associated database schema, followed by the corresponding mapping metadata.
 Note that the mapping metadata relies on defaults where possible.
 Also note that as a mapped superclass, [class]``Document`` can define mappings that will automatically transfer to its subclass' tables.
-In <<_jpa_overview_mapping_embed>>, you will see how a subclass can override its mapped superclass' mappings.
+In <<jpa_overview_mapping_embed>>, you will see how a subclass can override its mapped superclass' mappings.
 
 
 image::img/jpa-basic-field.png[]
 
 
+[[jpa_overview_mapping_basicex]]
 .Basic Field Mapping
 ====
 [source]
@@ -1944,7 +1953,7 @@ The same metadata expressed in XML:
 ----
 ====
 
-[[_jpa_overview_mapping_secondary]]
+[[jpa_overview_mapping_secondary]]
 ===== Secondary Tables
 (((mapping metadata , secondary table fields)))
 
@@ -1957,21 +1966,22 @@ Just write the standard field mapping, then perform these two additional steps:
 . Define the secondary table on the entity class declaration.
 
 You define secondary tables with the [class]``SecondaryTable`` annotation.
-This annotation has all the properties of the [class]``Table`` annotation covered in <<_jpa_overview_mapping_table>> , plus a  `pkJoinColumns` property.
+This annotation has all the properties of the [class]``Table`` annotation covered in <<jpa_overview_mapping_table>> , plus a  `pkJoinColumns` property.
 
 The `pkJoinColumns` property is an array of [class]``PrimaryKeyJoinColumn``s dictating how to join secondary table records to their owning primary table records.
 Each [class]``PrimaryKeyJoinColumn`` joins a secondary table column to a primary key column in the primary table.
-See <<_jpa_overview_mapping_inher_joined>> above for coverage of [class]``PrimaryKeyJoinColumn``'s properties.
+See <<jpa_overview_mapping_inher_joined>> above for coverage of [class]``PrimaryKeyJoinColumn``'s properties.
 
 The corresponding XML element is ``secondary-table``.
 This element has all the attributes of the `table` element, but also accepts nested `primary-key-join-column` elements.
 
-In the following example, we move the `Article.content` field we mapped in <<_jpa_overview_mapping_basic>> into a joined secondary table, like so:
+In the following example, we move the `Article.content` field we mapped in <<jpa_overview_mapping_basic>> into a joined secondary table, like so:
 
 
 image::img/secondary-table.png[]
 
 
+[[jpa_overview_mapping_secondaryex]]
 .Secondary Table Field Mapping
 ====
 [source]
@@ -2015,11 +2025,11 @@ And in XML:
 ----
 ====
 
-[[_jpa_overview_mapping_embed]]
+[[jpa_overview_mapping_embed]]
 ===== Embedded Mapping
 (((mapping metadata , embedded fields)))
 
-<<_jpa_overview_meta>> describes JPA's concept of _embeddable_ objects.
+<<jpa_overview_meta>> describes JPA's concept of _embeddable_ objects.
 The field values of embedded objects are stored as part of the owning record, rather than as a separate database record.
 Thus, instead of mapping a relation to an embeddable object as a foreign key, you map all the fields of the embeddable instance to columns in the owning field's table.
 
@@ -2051,6 +2061,7 @@ To declare multiple relation overrides, use the [class]``AssociationOverrides`` 
 In XML, simply list multiple 
 `association-override` elements in succession.
 
+[[jpa_overview_mapping_embedex]]
 .Embedded Field Mapping
 ====
 In this example, [class]``Company`` overrides the default mapping of ``Address.street`` and ``Address.city``.
@@ -2139,6 +2150,7 @@ The same metadata expressed in XML:
 You can also use attribute overrides on an entity class to override mappings defined by its mapped superclass or table-per-class superclass.
 The example below re-maps the `Document.version` field to the [class]``Contract`` table's `CVERSION` column.
 
+[[jpa_overview_mapping_joined_overex]]
 .Mapping Mapped Superclass Field
 ====
 [source]
@@ -2191,13 +2203,13 @@ The same metadata expressed in XML form:
 ----
 ====
 
-[[_jpa_overview_mapping_rel]]
+[[jpa_overview_mapping_rel]]
 ===== Direct Relations
 (((mapping metadata , direct relation fields)))
 (((one-one)))
 (((many-one)))
 
-A direct relation is a non-embedded persistent field that holds a reference to another entity. <<_jpa_overview_meta_manytoone,many to one>> and <<_jpa_overview_meta_onetoone,one to one>> metadata field types are mapped as direct relations.
+A direct relation is a non-embedded persistent field that holds a reference to another entity. <<jpa_overview_meta_manytoone,many to one>> and <<jpa_overview_meta_onetoone,one to one>> metadata field types are mapped as direct relations.
 Our model has three direct relations: [class]``Magazine``'s `publisher` field is a direct relation to a [class]``Company``, [class]``Magazine``'s ``coverArticle`` field is a direct relation to [class]``Article``, and the `LineItem.magazine` field is a direct relation to a [class]``Magazine``.
 Direct relations are represented in the database by foreign key columns:
 
@@ -2212,7 +2224,7 @@ The [class]``JoinColumn`` annotation exposes the following properties:
 * ``boolean unique``: Whether this column is guaranteed to hold unique values for all rows. Defaults to false.
 
 [class]``JoinColumn`` also has the same  `nullable` , ``insertable``, ``updatable``, ``columnDefinition``, and `table` properties as the [class]``Column`` annotation.
-See <<_jpa_overview_mapping_column>> for details on these properties.
+See <<jpa_overview_mapping_column>> for details on these properties.
 
 The `join-column` element represents a join column in XML.
 Its attributes mirror the above annotation's properties:
@@ -2232,9 +2244,10 @@ In XML, simply list multiple ``join-column`` elements.
 [NOTE]
 ====
 OpenJPA supports many non-standard joins.
-See <<_ref_guide_mapping_notes_nonstdjoins>> in the Reference Guide for details.
+See <<ref_guide_mapping_notes_nonstdjoins>> in the Reference Guide for details.
 ====
 
+[[jpa_overview_mapping_relex]]
 .Direct Relation Field Mapping
 ====
 [source]
@@ -2357,7 +2370,7 @@ The same metadata expressed in XML form:
 When the entities in a one to one relation join on shared primary key values rather than separate foreign key columns, use the [class]``PrimaryKeyJoinColumn(s)`` annotation or 
 `primary-key-join-column` elements in place of [class]``JoinColumn(s)`` /  `join-column` elements.
 
-[[_jpa_overview_mapping_assoccoll]]
+[[jpa_overview_mapping_assoccoll]]
 ===== Join Table
 (((mapping metadata , association table collection fields)))
 (((join table)))
@@ -2368,7 +2381,7 @@ A _join table_ consists of two foreign keys.
 Each row of a join table associates two objects together.
 JPA uses join tables to represent collections of entity objects: one foreign key refers back to the collection's owner, and the other refers to a collection element.
 
-<<_jpa_overview_meta_onetomany,one to many>> and <<_jpa_overview_meta_manytomany,many to many>> metadata field types can map to join tables.
+<<jpa_overview_meta_onetomany,one to many>> and <<jpa_overview_meta_manytomany,many to many>> metadata field types can map to join tables.
 Several fields in our model use join table mappings, including `Magazine.articles` and ``Article.authors``.
 
 
@@ -2380,11 +2393,11 @@ This annotation has the following properties:
 * ``String name``: Table name. If not given, the name of the table defaults to the name of the owning entity's table, plus an underscore, plus the name of the related entity's table.
 * ``String catalog``: Table catalog.
 * ``String schema``: Table schema.
-* ``JoinColumn[] joinColumns``: Array of [class]``JoinColumn`` showing how to associate join table records with the owning row in the primary table. This property mirrors the `pkJoinColumns` property of the [class]``SecondaryTable`` annotation in functionality. See <<_jpa_overview_mapping_secondary>> to refresh your memory on secondary tables.
+* ``JoinColumn[] joinColumns``: Array of [class]``JoinColumn`` showing how to associate join table records with the owning row in the primary table. This property mirrors the `pkJoinColumns` property of the [class]``SecondaryTable`` annotation in functionality. See <<jpa_overview_mapping_secondary>> to refresh your memory on secondary tables.
 
-If this is a bidirectional relation (see <<_jpa_overview_meta_mappedby>> ), the name of a join column defaults to the inverse field name, plus an underscore, plus the referenced primary key column name.
+If this is a bidirectional relation (see <<jpa_overview_meta_mappedby>> ), the name of a join column defaults to the inverse field name, plus an underscore, plus the referenced primary key column name.
 Otherwise, the join column name defaults to the field's owning entity name, plus an underscore, plus the referenced primary key column name.
-* ``JoinColumn[] inverseJoinColumns``: Array of [class]``JoinColumns`` showing how to associate join table records with the records that form the elements of the collection. These join columns are used just like the join columns for direct relations, and they have the same naming defaults. Read <<_jpa_overview_mapping_rel>> for a review of direct relation mapping.
+* ``JoinColumn[] inverseJoinColumns``: Array of [class]``JoinColumns`` showing how to associate join table records with the records that form the elements of the collection. These join columns are used just like the join columns for direct relations, and they have the same naming defaults. Read <<jpa_overview_mapping_rel>> for a review of direct relation mapping.
 
 `join-table` is the corresponding XML element.
 It has the same attributes as the `table` element, but includes the ability to nest `join-column` and `inverse-join-column` elements as children.
@@ -2392,6 +2405,7 @@ We have seen `join-column` elements already; `inverse-join-column` elements have
 
 Here are the join table mappings for the diagram above.
 
+[[jpa_overview_mapping_assoccollex]]
 .Join Table Mapping
 ====
 [source]
@@ -2502,11 +2516,11 @@ The same metadata expressed in XML:
 ----
 ====
 
-[[_jpa_overview_mapping_bidi]]
+[[jpa_overview_mapping_bidi]]
 ===== Bidirectional Mapping
 (((bidirectional relations , mapping)))
 
-<<_jpa_overview_meta_mappedby>> introduced bidirectional relations.
+<<jpa_overview_meta_mappedby>> introduced bidirectional relations.
 To map a bidirectional relation, you map one field normally using the annotations we have covered throughout this chapter.
 Then you use the 
 `mappedBy` property of the other field's metadata annotation or the corresponding `mapped-by` XML attribute to refer to the mapped field.
@@ -2516,22 +2530,22 @@ Look for this pattern in these bidirectional relations as you peruse the complet
 * `Article.authors` and ``Author.articles``.
 
 
-[[_jpa_overview_mapping_map]]
+[[jpa_overview_mapping_map]]
 ===== Map Mapping
 (((persistent fields , maps)))
 
 All map fields in JPA are modeled on either one to many or many to many associations.
 The map key is always derived from an associated entity's field.
-Thus map fields use the same mappings as any one to many or many to many fields, namely dedicated <<_jpa_overview_mapping_assoccoll,join
-tables>> or <<_jpa_overview_mapping_bidi,bidirectional
+Thus map fields use the same mappings as any one to many or many to many fields, namely dedicated <<jpa_overview_mapping_assoccoll,join
+tables>> or <<jpa_overview_mapping_bidi,bidirectional
 relations>>.
 The only additions are the [class]``MapKey`` annotation and `map-key` element to declare the key field.
-We covered these additions in <<_jpa_overview_meta_mapkey>>.
+We covered these additions in <<jpa_overview_meta_mapkey>>.
 
 For a map of basic types the key is held in a column of its own.
 Unless [class]``MapKeyColumn`` names it, the column defaults to ``the
 name of the field or property + _KEY``.
-To use the default of OpenJPA releases before 4.2.0, `KEY` (which most dictionaries turn into ``KEY0``, as `KEY` is a reserved word), set the <<_openjpa.compatibility>> option ``UseSpecDefaultMapKeyColumnName`` to ``false``.
+To use the default of OpenJPA releases before 4.2.0, `KEY` (which most dictionaries turn into ``KEY0``, as `KEY` is a reserved word), set the <<openjpa.Compatibility>> option ``UseSpecDefaultMapKeyColumnName`` to ``false``.
 
 
 image::img/jpa-map.png[]
@@ -2539,6 +2553,7 @@ image::img/jpa-map.png[]
 The example below maps [class]``Subscription``'s map of [class]``LineItem``s to the `SUB_ITEMS` join table.
 The key for each map entry is the [class]``LineItem``'s `num`  field value.
 
+[[jpa_overview_mapping_mapex]]
 .Join Table Map Mapping
 ====
 [source]
@@ -2605,7 +2620,7 @@ The same metadata expressed in XML:
 ----
 ====
 
-[[_jpa_overview_mapping_full]]
+[[jpa_overview_mapping_full]]
 ==== The Complete Mappings
 
 We began this chapter with the goal of mapping the following object model:
@@ -2623,6 +2638,7 @@ image::img/jpa-data-model.png[]
 And finally, the complete entity mappings.
 We have trimmed the mappings to take advantage of JPA defaults where possible.
 
+[[jpa_overview_mapping_fullex]]
 .Full Entity Mappings
 ====
 [source]

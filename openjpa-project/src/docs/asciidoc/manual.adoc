@@ -16,13 +16,13 @@
 :sectnums:
 :sectnumlevels: 10
 
-[[_introduction]]
+[[introduction]]
 == Introduction
 
 include::openjpa_intro.adoc[]
 include::openjpa_legal.adoc[]
 
-[[_jpa_overview]]
+[[jpa_overview]]
 == Java Persistence API
 
 include::jpa_overview_intro.adoc[]
@@ -40,12 +40,12 @@ include::jpa_overview_sqlquery.adoc[]
 include::jpa_overview_mapping.adoc[]
 include::jpa_overview_conclusion.adoc[]
 
-//[[_tutorials]]
+//[[tutorials]]
 //== Tutorials
 //
 //include::jpa_tutorials.adoc[]
 
-[[_ref_guide]]
+[[ref_guide]]
 == Reference Guide
 
 include::ref_guide_intro.adoc[]
@@ -65,7 +65,7 @@ include::ref_guide_integration.adoc[]
 include::ref_guide_optimization.adoc[]
 include::ref_guide_instrumentation.adoc[]
 
-//[[_samples_guide_part]]
+//[[samples_guide_part]]
 //== Samples
 //
 //include::samples_guide.adoc[]

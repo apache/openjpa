@@ -2,7 +2,7 @@
 :sectnums!:
 
 [appendix]
-[[_jpa_resources]]
+[[jpa_resources]]
 === JPA Resources
 
 * https://jakarta.ee/specifications/persistence/3.2/[ Java Persistence 3.2 page]

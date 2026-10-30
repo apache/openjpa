@@ -1,4 +1,4 @@
-[[_jpa_overview_criteria]]
+[[jpa_overview_criteria]]
 === JPA Criteria
 (((JP Criteria)))
 (((queries)))

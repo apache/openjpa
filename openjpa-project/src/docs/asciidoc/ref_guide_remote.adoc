@@ -1,4 +1,4 @@
-[[_ref_guide_remote]]
+[[ref_guide_remote]]
 === Remote and Offline Operation
 (((remote)))
 (((offline)))
@@ -10,29 +10,29 @@ These two properties, combined with the fact that [class]``EntityManager``s cann
 
 JPA has now provided _offline_ capability through the detach() and merge() methods on the EntityManager interface.
 OpenJPA has extended this to include additional detach...() and merge...() methods.
-All of these are documented in <<_ref_guide_detach,Detach and Attach APIs>>.
-In addition, OpenJPA has added _remote_ capability in the form of <<_ref_guide_event,Remote Commit Events>>.
+All of these are documented in <<ref_guide_detach,Detach and Attach APIs>>.
+In addition, OpenJPA has added _remote_ capability in the form of <<ref_guide_event,Remote Commit Events>>.
 The following sections explain these capabilities in detail.
 
-[[_ref_guide_detach]]
+[[ref_guide_detach]]
 ==== Detach and Attach
 (((detachment)))
 (((attachment)))
 
-The JPA Overview describes the specification's standard detach and attach APIs in <<_jpa_overview_em_lifecycle>>.
+The JPA Overview describes the specification's standard detach and attach APIs in <<jpa_overview_em_lifecycle>>.
 This section enumerates OpenJPA's enhancements to the standard behavior.
 
-[[_ref_guide_detach_behavior]]
+[[ref_guide_detach_behavior]]
 ===== Detach Behavior
 (((detachment , behavior)))
 
 [NOTE]
 ====
 In version 2.0, the detach behavior has changed from the previous version.
-See the migration section <<_migration_detach_behavior,Detach Behavior>> for details.
+See the migration section <<migration_detach_behavior,Detach Behavior>> for details.
 ====
 
-In JPA, objects detach automatically when they are serialized or when a <<_jpa_overview_emfactory_perscontext,persistence context>> ends.
+In JPA, objects detach automatically when they are serialized or when a <<jpa_overview_emfactory_perscontext,persistence context>> ends.
 The specification also allows objects to be explicitly detached using the following jakarta.persistence.EntityManager method:
 
 [source]
@@ -62,17 +62,17 @@ The behavior of the detach operation is as follows:
   value.
 
 
-[[_ref_guide_attach_behavior]]
+[[ref_guide_attach_behavior]]
 ===== Attach Behavior
 
 When attaching, OpenJPA uses several strategies to determine the optimal way to merge changes made to the detached instance.
 As you will see, these strategies can even be used to attach changes made to a transient instance which was never detached in the first place.
 
-* If the instance was detached and <<_ref_guide_detach_graph, detached state>> is enabled, OpenJPA will use the detached state to determine the object's version and primary key values. In addition, this state will tell OpenJPA which fields were loaded at the time of detach, and in turn where to expect changes. Loaded detached fields with null values will set the attached instance's corresponding fields to null.
+* If the instance was detached and <<ref_guide_detach_graph, detached state>> is enabled, OpenJPA will use the detached state to determine the object's version and primary key values. In addition, this state will tell OpenJPA which fields were loaded at the time of detach, and in turn where to expect changes. Loaded detached fields with null values will set the attached instance's corresponding fields to null.
 * If the instance has a `Version` field, OpenJPA will consider the object detached if the version field has a non-default value, and new otherwise. Similarly, if the instance has ``GeneratedValue`` primary key fields, OpenJPA will consider the object detached if any of these fields have non-default values, and new otherwise.
 
 When attaching null fields in these cases, OpenJPA cannot distinguish between a field that was unloaded and one that was intentionally set to null.
-In this case, OpenJPA will use the current <<_ref_guide_detach_graph,
+In this case, OpenJPA will use the current <<ref_guide_detach_graph,
 detach state>> setting to determine how to handle null fields: fields that would have been included in the detached state are treated as loaded, and will in turn set the corresponding attached field to null.
 * If neither of the above cases apply, OpenJPA will check to see if an instance with the same primary key values exists in the database. If so, the object is considered detached. Otherwise, it is considered new.
 
@@ -83,7 +83,7 @@ When attaching an instance whose database record has been deleted since detachin
 In these cases, OpenJPA sets the 
 `RollbackOnly` flag on the transaction.
 
-[[_ref_guide_detach_graph]]
+[[ref_guide_detach_graph]]
 ===== Defining the Detached Object Graph
 (((detachment , defining the object graph)))
 
@@ -91,32 +91,32 @@ When detached objects lose their association with the OpenJPA runtime, they also
 It is important, therefore, to populate objects with all the persistent state you will need before detaching them.
 While you are free to do this manually, OpenJPA includes facilities for automatically populating objects when they detach.
 
-[[_ref_guide_detach_state]]
+[[ref_guide_detach_state]]
 ====== Detached State
 
-The <<_openjpa.detachstate,`openjpa.DetachState`>> configuration property determines which fields and relations are detached by default.
+The <<openjpa.DetachState,`openjpa.DetachState`>> configuration property determines which fields and relations are detached by default.
 All settings are recursive.
 They are:
 
 . ``loaded``: Detach all fields and relations that are already loaded, but don't include unloaded fields in the detached graph. This is the default.
-. ``fetch-groups``: Detach all fields and relations in the current <<_ref_guide_runtime,fetch configuration>>. For more information on custom fetch groups, see <<_ref_guide_fetch>>.
+. ``fetch-groups``: Detach all fields and relations in the current <<ref_guide_runtime,fetch configuration>>. For more information on custom fetch groups, see <<ref_guide_fetch>>.
 . ``all``: Detach all fields and relations. Be very careful when using this mode; if you have a highly-connected domain model, you could end up bringing every object in the database into memory!
 
 Any field that is not included in the set determined by the detach mode is set to its Java default value in the detached instance.
 
-The `openjpa.DetachState` option is actually a plugin string (see <<_ref_guide_conf_plugins>>) that allows you to also configure the following options related to detached state:
+The `openjpa.DetachState` option is actually a plugin string (see <<ref_guide_conf_plugins>>) that allows you to also configure the following options related to detached state:
 
-* ``DetachedStateField``: As described in <<_ref_guide_attach_behavior>> above, OpenJPA can take advantage of a _detached state field_ to make the attach process more efficient. This field is added by the enhancer and is not visible to your application. Set this property to one of the following values:
+* ``DetachedStateField``: As described in <<ref_guide_attach_behavior>> above, OpenJPA can take advantage of a _detached state field_ to make the attach process more efficient. This field is added by the enhancer and is not visible to your application. Set this property to one of the following values:
 ** ``transient``: Use a transient detached state field. This gives the benefits of a detached state field to local objects that are never serialized, but retains serialization compatibility for client tiers without access to the enhanced versions of your classes or the OpenJPA runtime. This is the default.
 ** ``true``: Use a non-transient detached state field so that objects crossing serialization barriers can still be attached efficiently. This requires, however, that your client tier have the enhanced versions of your classes and the OpenJPA runtime.
 ** ``false``: Do not use a detached state field. No OpenJPA runtime will be required for client tiers.
 
 
 The detached state field is also used to determine when proxies should be removed from entities during serialization.
-See the <<_ref_guide_pc_scos_proxy_serial>> section for more details.
+See the <<ref_guide_pc_scos_proxy_serial>> section for more details.
 
 You can override the setting of this property or declare your own detached state field on individual classes using OpenJPA's metadata extensions.
-See <<_ref_guide_detach_field>> below.
+See <<ref_guide_detach_field>> below.
 * ``DetachedStateManager``: Whether to use a detached state manager. A detached state manager makes attachment much more efficient. Like a detached state field, however, it breaks serialization compatibility with the unenhanced class if it isn't transient.
 
 This setting piggybacks on the `DetachedStateField` setting above.
@@ -135,6 +135,7 @@ This may be useful for debugging or for legacy OpenJPA users who find difference
 ** ``false``: All proxies will be left in place and LRS fields will be removed.
 
 
+[[ref_guide_detach_graph_confex]]
 .Configuring Detached State
 ====
 [source]
@@ -166,7 +167,7 @@ enum DetachStateType {
 }
 ----
 
-[[_ref_guide_detach_field]]
+[[ref_guide_detach_field]]
 ====== Detached State Field
 (((detachment , detached state field)))
 
@@ -177,7 +178,7 @@ OpenJPA uses this field for bookkeeping information, such as the versioning data
 It is possible to define this detached state field yourself.
 Declaring this field in your class metadata prevents the enhancer from adding any extra fields to the class, and keeps the enhanced class serialization-compatible with the unenhanced version.
 The detached state field must not be persistent.
-See <<_detached_state_field>> for details on how to declare a detached state field.
+See <<detached-state-field>> for details on how to declare a detached state field.
 
 [source]
 ----
@@ -194,28 +195,28 @@ public class Magazine
 }
 ----
 
-[[_ref_guide_event]]
+[[ref_guide_event]]
 ==== Remote Event Notification Framework
 (((events , remote)))
 
 
-(((remote , events , RemoteCommitListener))) The remote event notification framework allows a subset of the information available through OpenJPA's transaction events (see <<_ref_guide_runtime_pm_event>>) to be broadcast to remote listeners.
-OpenJPA's <<_ref_guide_cache,data cache>>, for example, uses remote events to remain synchronized when deployed in multiple JVMs.
+(((remote , events , RemoteCommitListener))) The remote event notification framework allows a subset of the information available through OpenJPA's transaction events (see <<ref_guide_runtime_pm_event>>) to be broadcast to remote listeners.
+OpenJPA's <<ref_guide_cache,data cache>>, for example, uses remote events to remain synchronized when deployed in multiple JVMs.
 
 To enable remote events, you must configure the [class]``EntityManagerFactory`` to use a `RemoteCommitProvider` (see below).
 
 When a `RemoteCommitProvider` is properly configured, you can register link:../../apidocs/org/apache/openjpa/event/RemoteCommitListener.html[
 RemoteCommitListener]s that will be alerted with a list of modified object ids whenever a transaction on a remote machine successfully commits.
 
-[[_ref_guide_event_conf]]
+[[ref_guide_event_conf]]
 ===== Remote Commit Provider Configuration
 
 OpenJPA includes built in remote commit providers for JMS and TCP communication.
 
-[[_ref_guide_event_conf_jms]]
+[[ref_guide_event_conf_jms]]
 ====== JMS
 
-The JMS remote commit provider can be configured by setting the <<_openjpa.remotecommitprovider,
+The JMS remote commit provider can be configured by setting the <<openjpa.RemoteCommitProvider,
 `openjpa.RemoteCommitProvider`>> property to contain the appropriate configuration properties.
 The JMS provider understands the following properties:
 
@@ -226,6 +227,7 @@ The JMS provider understands the following properties:
 
 To configure a factory to use the JMS provider, your properties might look like the following:
 
+[[ref_guide_event_conf_jmsex]]
 .JMS Remote Commit Provider Configuration
 ====
 [source]
@@ -242,7 +244,7 @@ Because of the nature of JMS, it is important that you invoke [method]``EntityMa
 If you do not do so, a daemon thread will stay up in the JVM, preventing the JVM from exiting.
 ====
 
-[[_ref_guide_event_conf_tcp]]
+[[ref_guide_event_conf_tcp]]
 ====== TCP
 (((remote , events , TCP)))
 
@@ -256,13 +258,14 @@ The TCP provider understands the following properties:
 
 * ``Port``: The TCP port that the provider should listen on for commit notifications. Defaults to 5636.
 * ``Addresses``: A semicolon-separated list of IP addresses to which notifications should be sent. No default value.
-* ``NumBroadcastThreads``: The number of threads to create for the purpose of transmitting events to peers. You should increase this value as the number of concurrent transactions increases. The maximum number of concurrent transactions is a function of the size of the connection pool. See the ``MaxTotal`` property of  `openjpa.ConnectionFactoryProperties` in <<_ref_guide_dbsetup_builtin>>. Setting a value of 0 will result in behavior where the thread invoking [method]``commit`` will perform the broadcast directly. Defaults to 2.
+* ``NumBroadcastThreads``: The number of threads to create for the purpose of transmitting events to peers. You should increase this value as the number of concurrent transactions increases. The maximum number of concurrent transactions is a function of the size of the connection pool. See the ``MaxTotal`` property of  `openjpa.ConnectionFactoryProperties` in <<ref_guide_dbsetup_builtin>>. Setting a value of 0 will result in behavior where the thread invoking [method]``commit`` will perform the broadcast directly. Defaults to 2.
 * ``RecoveryTimeMillis``: Amount of time to wait in milliseconds before attempting to reconnect to a peer of the cluster when connectivity to the peer is lost. Defaults to 15000.
 * ``MaxIdle``: The number of TCP sockets (channels) to keep open to each peer in the cluster for the transmission of events. Defaults to 2.
 * ``MaxTotal``: Total allowed number of TCP sockets (channels) to open simultaneously between each peer in the cluster. Defaults to 2.
 
 To configure a factory to use the TCP provider, your properties might look like the following:
 
+[[ref_guide_event_conf_tcpex]]
 .TCP Remote Commit Provider Configuration
 ====
 [source]
@@ -273,7 +276,7 @@ To configure a factory to use the TCP provider, your properties might look like 
 ----
 ====
 
-[[_ref_guide_event_conf_common]]
+[[ref_guide_event_conf_common]]
 ====== Common Properties
 
 In addition to the provider-specific configuration options above, all providers accept the following plugin properties:
@@ -282,6 +285,7 @@ In addition to the provider-specific configuration options above, all providers 
 
 To transmit persisted object ids in our remote commit events using the JMS provider, we modify the previous example as follows:
 
+[[ref_guide_event_conf_jms2ex]]
 .JMS Remote Commit Provider transmitting Persisted Object Ids
 ====
 [source]
@@ -292,7 +296,7 @@ To transmit persisted object ids in our remote commit events using the JMS provi
 ----
 ====
 
-[[_ref_guide_event_customization]]
+[[ref_guide_event_customization]]
 ===== Customization
 (((remote , events , customization)))
 

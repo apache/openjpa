@@ -1,4 +1,4 @@
-[[_openjpa_intro]]
+[[openjpa_intro]]
 === About
 
 OpenJPA is Apache's implementation of https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2[Java Persistence 3.2 API]  specification for the transparent persistence of Java objects.
@@ -7,13 +7,13 @@ This document provides an overview of the JPA standard and technical details on 
 This document is intended for OpenJPA users.
 It is divided into several parts:
 
-* The <<_jpa_overview_intro,JPA Overview>> describes the fundamentals of the JPA specification.
-* The <<_ref_guide_intro,OpenJPA Reference Guide>> contains detailed documentation on all aspects of OpenJPA. Browse through this guide to familiarize yourself with the many advanced features and customization opportunities OpenJPA provides. Later, you can use the guide when you need details on a specific aspect of OpenJPA.
+* The <<jpa_overview_intro,JPA Overview>> describes the fundamentals of the JPA specification.
+* The <<ref_guide_intro,OpenJPA Reference Guide>> contains detailed documentation on all aspects of OpenJPA. Browse through this guide to familiarize yourself with the many advanced features and customization opportunities OpenJPA provides. Later, you can use the guide when you need details on a specific aspect of OpenJPA.
 * Appendices
 
-** The appendix <<_jpa_resources,JPA Resources>> provides links to other resources.
-** The appendix <<_supported_databases, Supported Databases>> provides information on databases supported by OpenJPA.
-** The appendix <<_migration_considerations, Migration Considerations>> provides information related to migration to a different release.
+** The appendix <<jpa_resources,JPA Resources>> provides links to other resources.
+** The appendix <<supported_databases, Supported Databases>> provides information on databases supported by OpenJPA.
+** The appendix <<migration_considerations, Migration Considerations>> provides information related to migration to a different release.
 
 
 ifdef::backend-docbook[]

@@ -1,4 +1,4 @@
-[[_ref_guide_optimization]]
+[[ref_guide_optimization]]
 === Optimization Guidelines
 (((optimization guidelines)))
 
@@ -25,9 +25,9 @@ _performance, scalability_
 |
 OpenJPA's built-in datasource does not perform connection pooling or
 prepared statement caching, but it can use Apache Commons DBCP for connection
-pooling if it is provided on the classpath.  Check out the <<_ref_guide_dbsetup_builtin,DriverDataSource>>
+pooling if it is provided on the classpath.  Check out the <<ref_guide_dbsetup_builtin,DriverDataSource>>
 section, which describes how to use and configure Commons DBCP.
-Also, you can manually plug in a third-party pooling datasource like <<_ref_guide_integration_dbcp,Apache Commons DBCP>>,
+Also, you can manually plug in a third-party pooling datasource like <<ref_guide_integration_dbcp,Apache Commons DBCP>>,
 included in the binary distribution and openjpa-all artifact, which may
 drastically improve application performance.
 
@@ -64,7 +64,7 @@ please see https://openjdk.org/groups/hotspot/docs/RuntimeOverview.html.
 
 _performance, scalability_
 |
-Using OpenJPA's <<_ref_guide_cache,data and query caching>>
+Using OpenJPA's <<ref_guide_cache,data and query caching>>
 features can often result in a dramatic improvement in performance.
 Additionally, these caches can significantly reduce the amount of load on
 the database, increasing the scalability characteristics of your application.
@@ -76,7 +76,7 @@ the database, increasing the scalability characteristics of your application.
 
 _performance vs. scalability_
 |
-When using OpenJPA's <<_ref_guide_cache,data caching>>
+When using OpenJPA's <<ref_guide_cache,data caching>>
 features in a transaction that will delete, modify, or create a very large
 number of objects you can set `LargeTransaction` to true and
 perform periodic flushes during your transaction to reduce its memory
@@ -98,7 +98,7 @@ OpenJPA performs best when your persistent classes have been run through the
 OpenJPA post-compilation bytecode enhancer. When dealing with enhanced classes,
 OpenJPA can make a number of assumptions that reduce memory footprint and
 accelerate persistent data access. When evaluating OpenJPA's performance,
-build-time or deploy-time enhancement should be enabled. See <<_ref_guide_pc_enhance>> for details.
+build-time or deploy-time enhancement should be enabled. See <<ref_guide_pc_enhance>> for details.
 
 |**
                             Disable logging, performance tracking **
@@ -115,8 +115,8 @@ OpenJPA's performance, these options should all be disabled.
 
 _performance vs. scalability_
 |
-When both the <<_openjpa.ignorechanges,
-`openjpa.IgnoreChanges`>> and <<_openjpa.flushbeforequeries,`openjpa.FlushBeforeQueries` >> properties are set to false, OpenJPA needs to consider
+When both the <<openjpa.IgnoreChanges,
+`openjpa.IgnoreChanges`>> and <<openjpa.FlushBeforeQueries,`openjpa.FlushBeforeQueries` >> properties are set to false, OpenJPA needs to consider
 in-memory dirty instances during queries.  This can sometimes result in OpenJPA
 needing to evaluate the entire extent objects in order to return the correct
 query results, which can have drastic performance consequences.  If it is
@@ -134,7 +134,7 @@ On the other hand, setting `IgnoreChanges` to `false` will have a negative impac
 
 _performance vs. scalability_
 |
-The <<_openjpa.connectionretainmode,`ConnectionRetainMode` >> configuration option controls when OpenJPA will obtain a
+The <<openjpa.ConnectionRetainMode,`ConnectionRetainMode` >> configuration option controls when OpenJPA will obtain a
 connection, and how long it will hold that connection. The optimal settings for
 this option will vary considerably depending on the particular behavior of
 your application. You may even benefit from using different retain modes for
@@ -210,7 +210,7 @@ _performance_
 
 Attaching and even persisting instances can be more efficient when your detached objects use detached state managers.
 By default, OpenJPA does not use detached state managers when serializing an instance across tiers.
-See <<_ref_guide_detach_graph>> for how to force OpenJPA to use detached state managers across tiers, and for other options for more efficient attachment.
+See <<ref_guide_detach_graph>> for how to force OpenJPA to use detached state managers across tiers, and for other options for more efficient attachment.
 
 The downside of using a detached state manager across tiers is that your enhanced persistent classes and the OpenJPA libraries must be available on the client tier.
 
@@ -221,7 +221,7 @@ The downside of using a detached state manager across tiers is that your enhance
 _performance, scalability_
 |
 When possible and appropriate, re-using [class]``EntityManager``s
-and setting the <<_openjpa.retainstate,`RetainState` >> configuration option to `true` may result in
+and setting the <<openjpa.RetainState,`RetainState` >> configuration option to `true` may result in
 significant performance gains, since the [class]``EntityManager``'s
 built-in object cache will be used.
 
@@ -230,7 +230,7 @@ built-in object cache will be used.
 
 _performance_
 |
-OpenJPA respects the <<_openjpa.multithreaded,
+OpenJPA respects the <<openjpa.Multithreaded,
 `openjpa.Multithreaded`>> option in that it does not impose as
 much synchronization overhead for applications that do not set this value to ``true``. If your application is guaranteed to only use
 single-threaded access to OpenJPA resources and persistent objects, leaving
@@ -244,7 +244,7 @@ _performance, scalability_
 |
 If you execute queries that return large numbers of objects or have relations
 (collections or maps) that are large, and if you often only access parts of
-these data sets, enabling <<_ref_guide_dbsetup_lrs,large result
+these data sets, enabling <<ref_guide_dbsetup_lrs,large result
 set handling>> where appropriate can dramatically speed up your
 application, since OpenJPA will bring the data sets into memory from the
 database only as necessary.
@@ -263,7 +263,7 @@ require it, consider disabling it again.  Some JDBC drivers and databases
 
 _performance, validation_
 |
-If you are using an <<_openjpa.jdbc.schemafactory,
+If you are using an <<openjpa.jdbc.SchemaFactory,
 `openjpa.jdbc.SchemaFactory`>> setting of something other than
 the default of ``dynamic``, consider switching back.  While other
 factories can ensure that object-relational mapping information is valid when
@@ -275,7 +275,7 @@ your application.
                             Do not use XA transactions **
 
 _performance, scalability_
-|<<_ref_guide_enterprise_xa,XA transactions>> can be orders of
+|<<ref_guide_enterprise_xa,XA transactions>> can be orders of
 magnitude slower than standard transactions. Unless distributed transaction
 functionality is required by your application, use standard transactions.
 
@@ -309,7 +309,7 @@ where a single one could have sufficed.
 
 _performance, scalability_
 |
-The <<_ref_guide_fetch,fetch groups>> used when loading an
+The <<ref_guide_fetch,fetch groups>> used when loading an
 object control how much data is eagerly loaded, and by extension, which fields
 must be lazily loaded at a future time. The ideal fetch group configuration
 loads all the data that is needed in one fetch, and no extra fields - this
@@ -324,7 +324,7 @@ If too few fields are specified in the fetch groups, then OpenJPA will have to m
 
 _performance, scalability_
 |
-Using <<_ref_guide_perfpack_eager,eager fetching>> when
+Using <<ref_guide_perfpack_eager,eager fetching>> when
 loading subclass data or traversing relations for each instance in a large
 collection of results can speed up data loading by orders of magnitude.
 
@@ -337,7 +337,7 @@ Outside of a Java EE application server or other JPA persistence container,
 OpenJPA's EntityManagers use finalizers to ensure that resources
 get cleaned up. If you are properly managing your resources, this finalization
 is not necessary, and will introduce unneeded synchronization, leading to
-scalability problems. You can disable this protective behavior by setting the ``openjpa.BrokerImpl`` property to ``non-finalizing``. See <<_ref_guide_runtime_broker_finalization>> for details.
+scalability problems. You can disable this protective behavior by setting the ``openjpa.BrokerImpl`` property to ``non-finalizing``. See <<ref_guide_runtime_broker_finalization>> for details.
 
 |**
                             Preload MetaDataRepository **
@@ -346,7 +346,7 @@ _scalability_
 |
 By default, the MetaDataRepository is lazily loaded which means that fair amounts of locking
 is used to ensure that metadata is processed properly. Enabling preloading allows OpenJPA to
-load metadata upfront and remove locking. See <<_ref_guide_meta_repository>> for details.
+load metadata upfront and remove locking. See <<ref_guide_meta_repository>> for details.
 |===
 
 ifdef::backend-docbook[]

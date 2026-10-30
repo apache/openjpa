@@ -1,9 +1,9 @@
-[[_samples_guide]]
+[[samples_guide]]
 === OpenJPA Sample Code
 
 The OpenJPA distribution comes with a number of examples that illustrate the usage of various features.
 
-[[_samples_guide_interop]]
+[[samples_guide_interop]]
 ==== JDO - JPA Persistence Interoperability
 
 This sample demonstrates how to combine JDO and JPA in a single application.
@@ -12,7 +12,7 @@ The [path]_MachineMain.java_ program uses both [class]``EntityManager``s and [cl
 The sample includes both annotated persistent classes as well as JDOR metadata information.
 The application can switch to either system simply by changing the bootstrap mechanism.
 Depending on which configuration system you use, OpenJPA will read the corresponding metadata format.
-You can override some or all of this behavior using OpenJPA's configuration options, such as <<_openjpa.metadatafactory,openjpa.MetaDataFactory>>.
+You can override some or all of this behavior using OpenJPA's configuration options, such as <<openjpa.MetaDataFactory,openjpa.MetaDataFactory>>.
 
 To use this sample, you should ensure that either a [path]_jdo.properties_
  or [path]_persistence.xml_ are in the [path]_META-INF_ directory in your [var]``CLASSPATH``.
@@ -65,10 +65,10 @@ Bulldozer.java Operator.java``
 jpa>``
 
 
-[[_samples_guide_jpadiv]]
+[[samples_guide_jpadiv]]
 ==== JPA
 
-[[_samples_guide_model_humres_jpa]]
+[[samples_guide_model_humres_jpa]]
 ===== Sample Human Resources Model
 
 The files for this sample are located in the [path]_samples/persistence/models/humres_ directory of the OpenJPA installation.

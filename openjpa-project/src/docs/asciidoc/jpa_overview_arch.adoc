@@ -1,4 +1,4 @@
-[[_jpa_overview_arch]]
+[[jpa_overview_arch]]
 === Java Persistence API Architecture
 (((JPA, architecture)))
 
@@ -16,26 +16,27 @@ Also, transactions within an application server are handled using standard appli
 Thus, the [class]``EntityTransaction`` also goes unused.
 ====
 
-* **<<_jpa_overview_persistence,[class]``** Persistence**``>>**: The [class]``jakarta.persistence.Persistence`` class contains static helper methods to obtain [class]``EntityManagerFactory`` instances in a vendor-neutral fashion.
-* (((EntityManagerFactory)))**<<_jpa_overview_emfactory,[class]``**
+* **<<jpa_overview_persistence,[class]``** Persistence**``>>**: The [class]``jakarta.persistence.Persistence`` class contains static helper methods to obtain [class]``EntityManagerFactory`` instances in a vendor-neutral fashion.
+* (((EntityManagerFactory)))**<<jpa_overview_emfactory,[class]``**
 EntityManagerFactory**``>>**: The [class]``jakarta.persistence.EntityManagerFactory`` class is a factory for [class]``EntityManager`` s.
-* (((EntityManager)))**<<_jpa_overview_em,[class]``**EntityManager**``>>**: The [class]``jakarta.persistence.EntityManager`` is the primary JPA interface used by applications.
+* (((EntityManager)))**<<jpa_overview_em,[class]``**EntityManager**``>>**: The [class]``jakarta.persistence.EntityManager`` is the primary JPA interface used by applications.
 Each [class]``EntityManager`` manages a set of persistent objects, and has APIs to insert new objects and delete existing ones.
 When used outside the container, there is a one-to-one relationship between an [class]``EntityManager`` and an [class]``EntityTransaction``. [class]``EntityManager``s also act as factories for [class]``Query`` instances.
-* (((entity)))**<<_jpa_overview_pc,[class]``**Entity**``>>**: Entities are persistent objects that represent datastore records.
-* (((EntityTransaction)))**<<_jpa_overview_trans,[class]``**
+* (((entity)))**<<jpa_overview_pc,[class]``**Entity**``>>**: Entities are persistent objects that represent datastore records.
+* (((EntityTransaction)))**<<jpa_overview_trans,[class]``**
 EntityTransaction**``>>**: Each [class]``EntityManager`` has a one-to-one relation with a single [class]``jakarta.persistence.EntityTransaction``. [class]``EntityTransaction``s allow operations on persistent data to be grouped into units of work that either completely succeed or completely fail, leaving the datastore in its original state.
 These all-or-nothing operations are important for maintaining data integrity.
 * (((Query)))
 (((Java Persistence Query Language)))
 (((JPQL)))
 (((JPA , query language)))
-(((SQL)))**<<_jpa_overview_query,[class]``**Query**``>>**: The [class]``jakarta.persistence.Query`` interface is implemented by each JPA vendor to find persistent objects that meet certain criteria.
+(((SQL)))**<<jpa_overview_query,[class]``**Query**``>>**: The [class]``jakarta.persistence.Query`` interface is implemented by each JPA vendor to find persistent objects that meet certain criteria.
 JPA standardizes support for queries using both the Java Persistence Query Language (JPQL) and the Structured Query Language (SQL). You obtain [class]``Query`` instances from an [class]``EntityManager``.
 
 The example below illustrates how the JPA interfaces interact to execute a JPQL query and update persistent objects.
 The example assumes execution outside a container.
 
+[[jpa_overview_arch_interact_outside]]
 .Interaction of Interfaces Outside Container
 ====
 [source]
@@ -78,6 +79,7 @@ The example assumes execution outside a container.
 Within a container, the [class]``EntityManager`` will be injected and transactions will be handled declaratively.
 Thus, the in-container version of the example consists entirely of business logic:
 
+[[jpa_overview_arch_interact_inside]]
 .Interaction of Interfaces Inside Container
 ====
 [source]
@@ -101,7 +103,7 @@ for (Object res : results) {
 The remainder of this document explores the JPA interfaces in detail.
 We present them in roughly the order that you will use them as you develop your application.
 
-[[_jpa_overview_arch_exceptions]]
+[[jpa_overview_arch_exceptions]]
 ==== JPA Exceptions
 (((JPA , exceptions)))
 

@@ -1,4 +1,4 @@
-[[_jpa_overview_pc]]
+[[jpa_overview_pc]]
 === Entity
 (((persistent classes)))
 (((Entity)))
@@ -23,6 +23,7 @@ JPA supports both fields and JavaBean properties as persistent state.
 For simplicity, however, we will refer to all persistent state as persistent fields, unless we want to note a unique aspect of persistent properties.
 ====
 
+[[jpa_overview_pc_pcclass]]
 .Persistent Class
 ====
 [source]
@@ -73,14 +74,14 @@ public class Magazine {
 ----
 ====
 
-[[_jpa_overview_pc_restrict]]
+[[jpa_overview_pc_restrict]]
 ==== Restrictions on Persistent Classes
 (((persistent classes , restrictions on)))
 
 There are very few restrictions placed on persistent classes.
 Still, it never hurts to familiarize yourself with exactly what JPA does and does not support.
 
-[[_jpa_overview_pc_no_arg]]
+[[jpa_overview_pc_no_arg]]
 ===== Default or No-Arg Constructor
 (((constructor , no-arg constructor requirement)))
 
@@ -92,10 +93,10 @@ Because the compiler automatically creates a default no-arg constructor when no 
 ====
 OpenJPA's _enhancer_ will automatically add a protected no-arg constructor to your class when required.
 Therefore, this restriction does not apply when using the enhancer.
-See <<_ref_guide_pc_enhance>> of the Reference Guide for details.
+See <<ref_guide_pc_enhance>> of the Reference Guide for details.
 ====
 
-[[_jpa_overview_pc_final]]
+[[jpa_overview_pc_final]]
 ===== Final
 
 Entity classes may not be final.
@@ -106,21 +107,21 @@ No method of an entity class can be final.
 OpenJPA supports final classes and final methods.
 ====
 
-[[_jpa_overview_pc_id]]
+[[jpa_overview_pc_id]]
 ===== Identity Fields
 (((persistent classes , JPA id requirement)))
 
 All entity classes must declare one or more fields which together form the persistent identity of an instance.
 These are called _identity_  or _primary key_ fields.
-In our [class]``Magazine`` class, `isbn` and `title` are identity fields, because no two magazine records in the datastore can have the same `isbn` and `title` values. <<_jpa_overview_meta_id>> will show you how to denote your identity fields in JPA metadata. <<_jpa_overview_pc_identity>> below examines persistent identity.
+In our [class]``Magazine`` class, `isbn` and `title` are identity fields, because no two magazine records in the datastore can have the same `isbn` and `title` values. <<jpa_overview_meta_id>> will show you how to denote your identity fields in JPA metadata. <<jpa_overview_pc_identity>> below examines persistent identity.
 
 [NOTE]
 ====
 OpenJPA fully supports identity fields, but does not require them.
-See <<_ref_guide_pc_oid>> of the Reference Guide for details.
+See <<ref_guide_pc_oid>> of the Reference Guide for details.
 ====
 
-[[_jpa_overview_pc_version]]
+[[jpa_overview_pc_version]]
 ===== Version Field
 (((persistent classes , JPA version requirement)))
 
@@ -130,7 +131,7 @@ When the JPA runtime detects an attempt to concurrently modify the same record, 
 This prevents overwriting the previous commit with stale data.
 
 A version field is not required, but without one concurrent threads or processes might succeed in making conflicting changes to the same record at the same time.
-This is unacceptable to most applications. <<_jpa_overview_meta_version>> shows you how to designate a version field in JPA metadata.
+This is unacceptable to most applications. <<jpa_overview_meta_version>> shows you how to designate a version field in JPA metadata.
 
 The version field must be an integral type ([class]``int``, [class]``Long``, etc), a [class]``java.sql.Timestamp``, a [class]``java.time.LocalDateTime``  or a [class]``java.time.Instant``.
 You should consider version fields immutable.
@@ -140,10 +141,10 @@ Changing the field value has undefined results.
 ====
 OpenJPA fully supports version fields, but does not require them within the actual entity for concurrency detection.
 OpenJPA can maintain surrogate version values or use state comparisons to detect concurrent modifications.
-See <<_ref_guide_mapping_jpa>> in the Reference Guide.
+See <<ref_guide_mapping_jpa>> in the Reference Guide.
 ====
 
-[[_jpa_overview_pc_restrict_inheritance]]
+[[jpa_overview_pc_restrict_inheritance]]
 ===== Inheritance
 (((inheritance , of persistent classes)))
 
@@ -154,10 +155,10 @@ There are, however, a few important limitations:
 
 * Persistent classes cannot inherit from certain natively-implemented system classes such as [class]``java.net.Socket`` and [class]``java.lang.Thread``.
 * If a persistent class inherits from a non-persistent class, the fields of the non-persistent superclass cannot be persisted.
-* All classes in an inheritance tree must use the same identity type. We cover entity identity in <<_jpa_overview_pc_identity>>.
+* All classes in an inheritance tree must use the same identity type. We cover entity identity in <<jpa_overview_pc_identity>>.
 
 
-[[_jpa_overview_pc_restrict_fields]]
+[[jpa_overview_pc_restrict_fields]]
 ===== Persistent Fields
 (((field , persistent)))
 
@@ -212,7 +213,7 @@ The JPA specification requires that implementations support the following mutabl
 Collection and map types may be parameterized.
 
 
-(((persistent fields , of unknown types))) Most JPA implementations also have support for persisting serializable values as binary data in the datastore. <<_jpa_overview_meta>> has more information on persisting serializable types.
+(((persistent fields , of unknown types))) Most JPA implementations also have support for persisting serializable values as binary data in the datastore. <<jpa_overview_meta>> has more information on persisting serializable types.
 
 [NOTE]
 ====
@@ -220,14 +221,14 @@ OpenJPA also supports arrays, [class]``java.lang.Number``, [class]``java.util.Lo
 OpenJPA also allows you to plug in support for custom types.
 ====
 
-[[_jpa_overview_pc_restrict_conclusion]]
+[[jpa_overview_pc_restrict_conclusion]]
 ===== Conclusions
 
 This section detailed all of the restrictions JPA places on persistent classes.
 While it may seem like we presented a lot of information, you will seldom find yourself hindered by these restrictions in practice.
 Additionally, there are often ways of using JPA's other features to circumvent any limitations you run into.
 
-[[_jpa_overview_pc_identity]]
+[[jpa_overview_pc_identity]]
 ==== Entity Identity
 (((JPA , identity)))
 (((identity , JPA)))
@@ -252,7 +253,7 @@ Identity fields must be primitives, primitive wrappers, [class]``String``s, [cla
 
 [NOTE]
 ====
-OpenJPA supports entities as identity fields, as the Reference Guide discusses in <<_ref_guide_pc_oid_entitypk>>.
+OpenJPA supports entities as identity fields, as the Reference Guide discusses in <<ref_guide_pc_oid_entitypk>>.
 For legacy schemas with binary primary key columns, OpenJPA also supports using identity fields of type [class]``byte[]``.
 When you use a [class]``byte[]`` identity field, you must create an identity class.
 Identity classes are covered below.
@@ -271,7 +272,7 @@ Always treat embeddable identity instances as immutable objects in your applicat
 ====
 
 
-(((identity , uniqueness requirement))) If you are dealing with a single persistence context (see <<_jpa_overview_emfactory_perscontext>>), then you do not have to compare identity fields to test whether two entity references represent the same state in the datastore.
+(((identity , uniqueness requirement))) If you are dealing with a single persistence context (see <<jpa_overview_emfactory_perscontext>>), then you do not have to compare identity fields to test whether two entity references represent the same state in the datastore.
 There is a much easier way: the `==`  operator.
 JPA requires that each persistence context maintain only one JVM object to represent each unique datastore record.
 Thus, entity identity is equivalent to numeric identity within a persistence context.
@@ -281,12 +282,12 @@ The uniqueness requirement is extremely important - without it, it would be impo
 Think of what could happen if two different objects in the same transaction were allowed to represent the same persistent data.
 If you made different modifications to each of these objects, which set of changes should be written to the datastore? How would your application logic handle seeing two different "versions" of the same data? Thanks to the uniqueness requirement, these questions do not have to be answered.
 
-[[_jpa_overview_pc_identitycls]]
+[[jpa_overview_pc_identitycls]]
 ===== Identity Class
 
 
 (((identity class)))
-(((identity , class requirements))) If your entity has only one identity field, you can use the value of that field as the entity's identity object in all <<_jpa_overview_em,[class]``EntityManager``>> APIs.
+(((identity , class requirements))) If your entity has only one identity field, you can use the value of that field as the entity's identity object in all <<jpa_overview_em,[class]``EntityManager``>> APIs.
 Otherwise, you must supply an identity class to use for identity objects.
 Your identity class must meet the following criteria:
 
@@ -294,7 +295,7 @@ Your identity class must meet the following criteria:
 * The names of the non-static fields or properties of the class must be the same as the names of the identity fields or properties of the corresponding entity class, and the types must be identical.
 * The [method]``equals`` and [method]``hashCode`` methods of the class must use the values of all fields or properties corresponding to identity fields or properties in the entity class.
 * If the class is an inner class, it must be ``static``.
-* All entity classes related by inheritance must use the same identity class, or else each entity class must have its own identity class whose inheritance hierarchy mirrors the inheritance hierarchy of the owning entity classes (see <<_jpa_overview_pc_identity_hierarchy>>).
+* All entity classes related by inheritance must use the same identity class, or else each entity class must have its own identity class whose inheritance hierarchy mirrors the inheritance hierarchy of the owning entity classes (see <<jpa_overview_pc_identity_hierarchy>>).
 
 
 [NOTE]
@@ -307,9 +308,10 @@ Those fail with a [class]``java.io.NotSerializableException`` naming the identit
 [NOTE]
 ====
 Though you may still create identity classes by hand, OpenJPA provides the [class]``appidtool`` to automatically generate proper identity classes based on your identity fields.
-See <<_ref_guide_pc_oid_application>> of the Reference Guide.
+See <<ref_guide_pc_oid_application>> of the Reference Guide.
 ====
 
+[[jpa_overview_pc_identity_appidcode]]
 .Identity Class
 ====
 This example illustrates a proper identity class for an entity with multiple identity fields.
@@ -373,7 +375,7 @@ public class Magazine {
 ----
 ====
 
-[[_jpa_overview_pc_identity_hierarchy]]
+[[jpa_overview_pc_identity_hierarchy]]
 ====== Identity Hierarchies
 
 
@@ -390,7 +392,7 @@ The requirements for using a hierarchy of identity classes are as follows:
 .. An identity class that extends another non-abstract identity class should not override [method]``equals`` or [method]``hashCode``.
 
 
-[[_jpa_overview_pc_callbacks]]
+[[jpa_overview_pc_callbacks]]
 ==== Lifecycle Callbacks
 (((lifecycle callbacks)))
 (((persistent classes , lifecycle callbacks)))
@@ -399,7 +401,7 @@ It is often necessary to perform various actions at different stages of a persis
 JPA includes a variety of callbacks methods for monitoring changes in the lifecycle of your persistent objects.
 These callbacks can be defined on the persistent classes themselves and on non-persistent listener classes.
 
-[[_jpa_overview_pc_callbacks_methods]]
+[[jpa_overview_pc_callbacks_methods]]
 ===== Callback Methods
 (((entity , callback methods)))
 
@@ -439,7 +441,7 @@ PostRemove]: Methods marked with this annotation will be invoked after an object
 This is equivalent to the XML element tag ``post-remove``.
 
 
-[[_jpa_overview_callbacks_using]]
+[[jpa_overview_callbacks_using]]
 ===== Using Callback Methods
 
 When declaring callback methods on a persistent class, any method may be used which takes no arguments and is not shared with any property access fields.
@@ -490,10 +492,10 @@ In an XML mapping file, we can define the same methods without annotations:
 
 [NOTE]
 ====
-We fully explore persistence metadata annotations and XML in <<_jpa_overview_meta>>.
+We fully explore persistence metadata annotations and XML in <<jpa_overview_meta>>.
 ====
 
-[[_jpa_overview_entity_listeners_using]]
+[[jpa_overview_entity_listeners_using]]
 ===== Using Entity Listeners
 
 Mixing lifecycle event code into your persistent classes is not always ideal.
@@ -555,7 +557,7 @@ In XML, we define both the listeners and their callback methods as so:
 </entity>
 ----
 
-[[_jpa_overview_entity_listeners_exclude]]
+[[jpa_overview_entity_listeners_exclude]]
 ===== Entity Listeners Hierarchy
 (((lifecycle listeners , hierarchy)))
 
@@ -570,7 +572,7 @@ You can exclude default listeners and listeners defined in superclasses from the
 * [class]``ExcludeSuperclassListeners``: This annotation will cause OpenJPA to skip invoking any listeners declared in superclasses. The XML equivalent is the empty `exclude-superclass-listeners` element.
 
 
-[[_jpa_overview_pc_conclusion]]
+[[jpa_overview_pc_conclusion]]
 ==== Conclusions
 
 This chapter covered everything you need to know to write persistent class definitions in JPA.

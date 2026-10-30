@@ -1,4 +1,4 @@
-[[_jpa_overview_emfactory]]
+[[jpa_overview_emfactory]]
 === EntityManagerFactory
 (((EntityManagerFactory)))
 
@@ -13,7 +13,7 @@ OpenJPA extends the standard [class]``EntityManagerFactory`` interface with the 
 OpenJPAEntityManagerFactory] to provide additional functionality.
 ====
 
-[[_jpa_overview_emfactory_obtain]]
+[[jpa_overview_emfactory_obtain]]
 ==== Obtaining an EntityManagerFactory
 (((EntityManagerFactory , construction)))
 (((JCA)))
@@ -21,13 +21,13 @@ OpenJPAEntityManagerFactory] to provide additional functionality.
 Within a container, you will typically use _injection_ to access an [class]``EntityManagerFactory``.
 There are, however, alternative mechanisms for [class]``EntityManagerFactory`` construction.
 
-Some vendors may supply public constructors for their [class]``EntityManagerFactory`` implementations, but we recommend using the Java Connector Architecture (JCA) in a managed environment, or the [class]``Persistence`` class' [method]``createEntityManagerFactory`` methods in an unmanaged environment, as described in <<_jpa_overview_persistence>>.
+Some vendors may supply public constructors for their [class]``EntityManagerFactory`` implementations, but we recommend using the Java Connector Architecture (JCA) in a managed environment, or the [class]``Persistence`` class' [method]``createEntityManagerFactory`` methods in an unmanaged environment, as described in <<jpa_overview_persistence>>.
 These strategies allow vendors to pool factories, cutting down on resource utilization.
 
 
 (((JNDI))) JPA allows you to create and configure an [class]``EntityManagerFactory``, then store it in a Java Naming and Directory Interface (JNDI) tree for later retrieval and use.
 
-[[_jpa_overview_emfactory_em]]
+[[jpa_overview_emfactory_em]]
 ==== Obtaining EntityManagers
 (((EntityManager , obtaining)))
 
@@ -53,10 +53,10 @@ OpenJPA recognizes the following string keys in the map supplied to [method]``cr
 * ``openjpa.<property>``, where _<property>_  is any JavaBean property of the link:../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html[ org.apache.openjpa.persistence.OpenJPAEntityManager].
 
 The last option uses reflection to configure any property of OpenJPA's [class]``EntityManager`` implementation with the value supplied in your map.
-The first options correspond exactly to the same-named OpenJPA configuration keys described in <<_ref_guide_conf>> of the Reference Guide.
+The first options correspond exactly to the same-named OpenJPA configuration keys described in <<ref_guide_conf>> of the Reference Guide.
 ====
 
-[[_jpa_overview_emfactory_perscontext]]
+[[jpa_overview_emfactory_perscontext]]
 ==== Persistence Context
 (((persistence context)))
 (((PersistenceContextType)))
@@ -68,7 +68,7 @@ The [class]``EntityManager`` controls their lifecycle, and they can access datas
 When a persistence context ends, previously-managed entities become __
 detached__.
 A detached entity is no longer under the control of the [class]``EntityManager``, and no longer has access to datastore resources.
-We discuss detachment in detail in <<_jpa_overview_em_lifecycle>>.
+We discuss detachment in detail in <<jpa_overview_em_lifecycle>>.
 For now, it is sufficient to know that detachment has two obvious consequences:
 
 . The detached entity cannot load any additional persistent state.
@@ -78,13 +78,13 @@ For now, it is sufficient to know that detachment has two obvious consequences:
 [NOTE]
 ====
 OpenJPA offers several features related to detaching entities.
-See <<_ref_guide_detach>> in the Reference Guide. <<_ref_guide_detach_graph>> in particular describes how to use the `DetachState` setting to boost the performance of merging detached entities.
+See <<ref_guide_detach>> in the Reference Guide. <<ref_guide_detach_graph>> in particular describes how to use the `DetachState` setting to boost the performance of merging detached entities.
 ====
 
 Injected [class]``EntityManager``s have a _transaction_  persistence context, while [class]``EntityManager``s obtained through the [class]``EntityManagerFactory`` have an _extended_  persistence context.
 We describe these persistence context types below.
 
-[[_jpa_overview_emfactory_perscontext_trans]]
+[[jpa_overview_emfactory_perscontext_trans]]
 ===== Transaction Persistence Context
 
 Under the transaction persistence context model, an [class]``EntityManager`` begins a new persistence context with each transaction, and ends the context when the transaction commits or rolls back.
@@ -101,8 +101,9 @@ The [class]``EntityManager`` will create a temporary persistence context, perfor
 A second call with the same id will return a second detached object.
 
 When the next transaction begins, the [class]``EntityManager`` will begin a new persistence context, and will again start returning managed entities.
-As you'll see in <<_jpa_overview_em>>, you can also merge the previously-detached entities back into the new persistence context.
+As you'll see in <<jpa_overview_em>>, you can also merge the previously-detached entities back into the new persistence context.
 
+[[jpa_overview_emfactory_perscontext_transex]]
 .Behavior of Transaction Persistence Context
 ====
 The following code illustrates the behavior of entities under an [class]``EntityManager`` using a transaction persistence context.
@@ -142,13 +143,14 @@ assertTrue(mag5 != mag3);
 ----
 ====
 
-[[_jpa_overview_emfactory_perscontext_extend]]
+[[jpa_overview_emfactory_perscontext_extend]]
 ===== Extended Persistence Context
 
 An [class]``EntityManager`` using an extended persistence context maintains the same persistence context for its entire lifecycle.
 Whether inside a transaction or not, all entities returned from the [class]``EntityManager`` are managed, and the [class]``EntityManager`` never creates two entity instances to represent the same persistent identity.
 Entities only become detached when you finally close the [class]``EntityManager`` (or when they are serialized).
 
+[[jpa_overview_emfactory_perscontext_extendex]]
 .Behavior of Extended Persistence Context
 ====
 The following code illustrates the behavior of entities under an [class]``EntityManager`` using an extended persistence context.
@@ -184,11 +186,11 @@ em.close();
 ----
 ====
 
-[[_jpa_overview_emf_properties]]
+[[jpa_overview_emf_properties]]
 ==== Retrieving Properties Information
 (((EntityManagerFactory , properties information)))
 
-[[_jpa_overview_emfactory_close]]
+[[jpa_overview_emfactory_close]]
 ==== Closing the EntityManagerFactory
 
 [source]
@@ -210,7 +212,7 @@ Thus, most applications will never close the factory, or only close it when the 
 Only applications that require multiple factories with different configurations have an obvious reason to create and close multiple [class]``EntityManagerFactory`` instances.
 Once a factory is closed, all methods except [method]``isOpen`` throw an [class]``IllegalStateException``.
 
-[[_jpa_overview_emfactory_puutil]]
+[[jpa_overview_emfactory_puutil]]
 ==== PersistenceUnitUtil
 (((EntityManagerFactory , util)))
 

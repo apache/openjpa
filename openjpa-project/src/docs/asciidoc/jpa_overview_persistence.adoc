@@ -1,4 +1,4 @@
-[[_jpa_overview_persistence]]
+[[jpa_overview_persistence]]
 === Persistence
 (((Persistence)))
 (((EntityManagerFactory , construction)))
@@ -46,7 +46,7 @@ if (!pUtil.isLoaded(myEntity)) {
 }
 ----
 
-[[_jpa_overview_persistence_xml]]
+[[jpa_overview_persistence_xml]]
 ==== persistence.xml
 
 With the introduction of JPA 2.0, there are two versions of the [path]_persistence.xml_.
@@ -391,11 +391,12 @@ Set the `provider` to [class]``org.apache.openjpa.persistence.PersistenceProvide
 
 [NOTE]
 ====
-The Reference Guide's <<_ref_guide_conf>> describes OpenJPA's configuration properties.
+The Reference Guide's <<ref_guide_conf>> describes OpenJPA's configuration properties.
 ====
 
 Here is a typical [path]_persistence.xml_ file for a non-EE environment:
 
+[[jpa_overview_persistence_xmlex]]
 .persistence.xml
 ====
 [source]
@@ -421,13 +422,14 @@ Here is a typical [path]_persistence.xml_ file for a non-EE environment:
 ----
 ====
 
-[[_jpa_overview_persistence_use]]
+[[jpa_overview_persistence_use]]
 ==== Non-EE Use
 
 The example below demonstrates the [class]``Persistence`` class in action.
 You will typically execute code like this on application startup, then cache the resulting factory for future use.
 This bootstrapping code is only necessary in non-EE environments; in an EE environment [class]``EntityManagerFactories`` are typically injected.
 
+[[jpa_overview_persistence_getemfactory]]
 .Obtaining an EntityManagerFactory
 ====
 [source]

@@ -1,4 +1,4 @@
-[[_ref_guide_encryption]]
+[[ref_guide_encryption]]
 === Encryption Provider
 
 OpenJPA provides an interface for a provider to implement connection password encryption.

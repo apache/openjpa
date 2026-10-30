@@ -1,20 +1,20 @@
-[[_ref_guide_deploy]]
+[[ref_guide_deploy]]
 === Deployment
 
 OpenJPA deployment includes choosing a factory deployment strategy, and in a managed environment, optionally integrating with your application server's managed and XA transactions.
 This chapter examines each aspect of deployment in turn.
 
-[[_ref_guide_deploy_factory]]
+[[ref_guide_deploy_factory]]
 ==== Factory Deployment
 
 OpenJPA offers two [class]``EntityManagerFactory`` deployment options.
 
-[[_ref_guide_deploy_factory_standalone]]
+[[ref_guide_deploy_factory_standalone]]
 ===== Standalone Deployment
 (((deployment , standalone)))
 
 The JPA Overview describes the [class]``jakarta.persistence.Persistence`` class.
-You can use [class]``Persistence`` to obtain [class]``EntityManagerFactory`` instances, as demonstrated in <<_jpa_overview_persistence>>.
+You can use [class]``Persistence`` to obtain [class]``EntityManagerFactory`` instances, as demonstrated in <<jpa_overview_persistence>>.
 OpenJPA also extends [class]``Persistence`` to add additional [class]``EntityManagerFactory`` creation methods.
 The [class]``org.apache.openjpa.persistence.OpenJPAPersistence`` class link:../../apidocs/org/apache/openjpa/persistence/OpenJPAPersistence.html[
 Javadoc] details these extensions.
@@ -22,20 +22,20 @@ Javadoc] details these extensions.
 After obtaining the factory, you can cache it for all [class]``EntityManager`` creation duties.
 OpenJPA factories support being bound to JNDI as well.
 
-[[_ref_guide_deploy_inject]]
+[[ref_guide_deploy_inject]]
 ===== EntityManager Injection
 
 Java EE application servers allow you to _inject_ entity managers into your session beans using the `PersistenceContext`  annotation.
 See your application server documentation for details.
 
-[[_ref_guide_enterprise_trans]]
+[[ref_guide_enterprise_trans]]
 ==== Integrating with the Transaction Manager
 (((TransactionManager , integration)))
 (((TransactionMode)))
 
 OpenJPA [class]``EntityManager``s have the ability to automatically synchronize their transactions with an external transaction manager.
 Whether or not [class]``EntityManager``s from a given [class]``EntityManagerFactory`` exhibit this behavior by default depends on the transaction type you set for the factory's persistence unit in your [path]_persistence.xml_ file.
-OpenJPA uses the given transaction type internally to set the <<_openjpa.transactionmode,`openjpa.TransactionMode` >> configuration property.
+OpenJPA uses the given transaction type internally to set the <<openjpa.TransactionMode,`openjpa.TransactionMode` >> configuration property.
 This property accepts the following modes:
 
 * ``local``: Perform transaction operations locally.
@@ -55,7 +55,7 @@ You can also override the ``openjpa.ConnectionUserName``, ``openjpa.ConnectionPa
 (((ManagedRuntime))) In order to use global transactions, OpenJPA must be able to access the application server's [class]``javax.transaction.TransactionManager``.
 OpenJPA can automatically discover the transaction manager for most major application servers.
 Occasionally, however, you might have to point OpenJPA to the transaction manager for an unrecognized or non-standard application server setup.
-This is accomplished through the <<_openjpa.managedruntime,
+This is accomplished through the <<openjpa.ManagedRuntime,
 `openjpa.ManagedRuntime`>> configuration property.
 This property describes an link:../../apidocs/org/apache/openjpa/ee/ManagedRuntime.html[
 org.apache.openjpa.ee.ManagedRuntime] implementation to use for transaction manager discovery.
@@ -67,6 +67,7 @@ You can specify your own implementation, or use one of the built-ins:
 
 See the Javadoc for of each class for details on the bean properties you can pass to these plugins in your configuration string.
 
+[[ref_guide_enterprise_transex]]
 .Configuring Transaction Manager Integration
 ====
 [source]
@@ -77,7 +78,7 @@ See the Javadoc for of each class for details on the bean properties you can pas
 ----
 ====
 
-[[_ref_guide_enterprise_xa]]
+[[ref_guide_enterprise_xa]]
 ==== XA Transactions
 (((transactions , XA)))
 
@@ -92,7 +93,7 @@ The X/Open Distributed Transaction Processing (X/Open DTP) model, designed by ht
 The X/Open DTP XA standard defines the application programming interfaces that a resource manager uses to communicate with a transaction manager.
 The XA interfaces enable resource managers to join transactions, to perform two-phase commit, and to recover in-doubt transactions following a failure.
 
-[[_ref_guide_enterprise_xa_req]]
+[[ref_guide_enterprise_xa_req]]
 ===== Using OpenJPA with XA Transactions
 
 OpenJPA supports XA-compliant transactions when used in a properly configured managed environment.
@@ -103,8 +104,8 @@ The following components are required:
 
 Given these components, setting up OpenJPA to participate in distributed transactions is a simple two-step process:
 
-. Integrate OpenJPA with your application server's transaction manager, as detailed in <<_ref_guide_enterprise_trans>> above.
-. Point OpenJPA at an enlisted [class]``XADataSource``, and configure a second non-enlisted data source. See <<_ref_guide_dbsetup_thirdparty_enlist>>.
+. Integrate OpenJPA with your application server's transaction manager, as detailed in <<ref_guide_enterprise_trans>> above.
+. Point OpenJPA at an enlisted [class]``XADataSource``, and configure a second non-enlisted data source. See <<ref_guide_dbsetup_thirdparty_enlist>>.
 
 
 ifdef::backend-docbook[]

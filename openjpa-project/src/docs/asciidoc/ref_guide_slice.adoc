@@ -1,10 +1,10 @@
-[[_ref_guide_slice]]
+[[ref_guide_slice]]
 === Slice: Distributed Persistence
 
 The standard JPA runtime environment works with a _single_ database instance. _Slice_ is a plug-in module for OpenJPA to work with _multiple_ databases within the same transaction.
 Following sections describe the features and usage of Slice for distributed database environment.
 
-[[_slice_overview]]
+[[slice_overview]]
 ==== Overview
 
 Enterprise applications are increasingly deployed in distributed database environment.
@@ -13,7 +13,7 @@ A distributed, horizontally-partitioned database environment can be an effective
 Any JPA-based user application has to address demanding technical and conceptual challenges to interact with multiple physical databases within a single transaction.
 OpenJPA Slice encapsulates the complexity of distributed database environment via the abstraction of _virtual_ database which internally manages multiple physical database instances referred as __slice__. _Virtualization_ of distributed databases makes OpenJPA object management kernel and the user application to work in the same way as in the case of a single physical database.
 
-[[_features_and_limitations]]
+[[features_and_limitations]]
 ==== Salient Features
 
 ===== Transparency
@@ -160,7 +160,7 @@ The database slices participate in a global transaction provided each slice is c
             the transaction is not ensured.
 ====
 
-[[_collocation_constraint]]
+[[collocation_constraint]]
 ===== Collocation Constraint
 
 No relationship can exist across database slices.
@@ -174,7 +174,7 @@ Slice, however, helps to maintain collocation constraint automatically.
 The instances in the closure set of any newly persistent instance reachable via cascaded relationship is stored in the same slice.
 The user-defined distribution policy requires to supply the slice for the root instance only.
 
-[[_slice_configuration]]
+[[slice_configuration]]
 ==== Usage
 
 Slice is activated via the following property settings:
@@ -260,7 +260,7 @@ For example to use commons-dbcp with Derby you might use the following propertie
 Be aware that you need to set the DBDictionary when using commons-dbcp.
 ====
 
-[[_distribution_policy]]
+[[distribution_policy]]
 ===== Implement DistributionPolicy interface
 
 Slice needs to determine which slice will persist a new instance.
@@ -293,14 +293,14 @@ public interface DistributionPolicy {
 }
 ----
 
-While implementing a distribution policy the most important thing to remember is <<_collocation_constraint,collocation constraint>>.
+While implementing a distribution policy the most important thing to remember is <<collocation_constraint,collocation constraint>>.
 Because Slice can not establish or query any cross-database relationship, all the related instances must be stored in the same database slice.
 Slice can determine the closure of a root object by traversal of cascaded relationships.
 Hence user-defined policy has to only decide the database for the root instance that is the explicit argument to [method]``EntityManager.persist()`` call.
 Slice will ensure that all other related instances that get persisted by cascade are assigned to the same database slice as that of the root instance.
 However, the user-defined distribution policy must return the same slice identifier for the instances that are logically related but not cascaded for persist.
 
-[[_replication_policy]]
+[[replication_policy]]
 ===== Implement ReplicationPolicy interface
 
 The entities that are enumerated in [class]``openjpa.slice.ReplicatedTypes``			property can be stored in multiple slices as identical copies.
@@ -353,7 +353,7 @@ If this property is not explicitly specified then, by default, the master slice 
 
 This plug-in property can be used to register the logical slice names.
 The value of this property is comma-separated list of slice names.
-The ordering of the names in this list is _significant_ because <<_distribution_policy,DistributionPolicy>> and <<_replication_policy,ReplicationPolicy>> receive the input argument of the slice names in the same order.
+The ordering of the names in this list is _significant_ because <<distribution_policy,DistributionPolicy>> and <<replication_policy,ReplicationPolicy>> receive the input argument of the slice names in the same order.
 
 If logical slice names are not registered explicitly via this property, then all logical slice names available in the persistence unit are registered.
 The ordering of the slice names in this case is alphabetical.

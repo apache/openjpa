@@ -2,22 +2,22 @@
 :sectnums!:
 
 [appendix]
-[[_supported_databases]]
+[[supported_databases]]
 === Supported Databases
 
-[[_dbappendix]]
+[[dbappendix]]
 ==== Overview
 
 The following appendix covers the database and JDBC driver versions that are known to work with OpenJPA, along with any database specific configuration parameters, known issues or limitations.
-The <<_dbsupport,Verified Database Matrix>>, contains the list of databases and drivers that were tested extensively against this release of OpenJPA, while the <<_dbcompatible,Compatible Database
+The <<dbsupport,Verified Database Matrix>>, contains the list of databases and drivers that were tested extensively against this release of OpenJPA, while the <<dbcompatible,Compatible Database
 Matrix>> contains the list of databases and drivers that were tested against prior releases or by OpenJPA users and may not support every feature of this release.
 The link:Unverified Database Matrix contains a list of databases which have been reported to work, but have not been tested by the development team.
 
-[[_dbsupport]]
+[[dbsupport]]
 ==== Verified Database Matrix
 
 Following is a table of the supported database and JDBC driver versions that have been verified against this version of OpenJPA.
-For the list of other databases and drivers that were tested in prior releases or by other OpenJPA users, but may not support every feature of this release, please refer to the <<_dbcompatible,Compatible Database Matrix>> section.
+For the list of other databases and drivers that were tested in prior releases or by other OpenJPA users, but may not support every feature of this release, please refer to the <<dbcompatible,Compatible Database Matrix>> section.
 
 .Supported Databases and JDBC Drivers
 [cols="1,1,1,1", options="header"]
@@ -35,7 +35,7 @@ For the list of other databases and drivers that were tested in prior releases o
                         JDBC Driver Version
 
 
-|<<_dbsupport_derby,Apache Derby>>
+|<<dbsupport_derby,Apache Derby>>
 |
                         10.2.2.0, 10.3.3.0, 10.4.2.0, 10.5.3.0, 10.8.2.2, 10.14.2.0
 |
@@ -43,7 +43,7 @@ For the list of other databases and drivers that were tested in prior releases o
 |
                         Same as Database Version
 
-|<<_dbsupport_h2,H2>>
+|<<dbsupport_h2,H2>>
 |
                         1.4.195, 1.4.196
 |
@@ -51,7 +51,7 @@ For the list of other databases and drivers that were tested in prior releases o
 |
                         Same as Database Version
 
-|<<_dbsupport_sqlserver,Microsoft SQL Server>>
+|<<dbsupport_sqlserver,Microsoft SQL Server>>
 |
                         2005 (9.00), 2008 (10.00), 2017
 |
@@ -59,7 +59,7 @@ For the list of other databases and drivers that were tested in prior releases o
 |
                         1.2 or 2.0, 9.2.1
 
-|<<_dbsupport_oracle,Oracle>>
+|<<dbsupport_oracle,Oracle>>
 |
                         10g (10.1, 10.2), 11g (11.1, 11.2), 12c, 18c, 19c, 21c
 |
@@ -67,7 +67,7 @@ For the list of other databases and drivers that were tested in prior releases o
 |
                         11.2.0.1, 11.2.0.4, 19.3.0.0, 23.26.2.0
 
-|<<_dbsupport_postgresql,PostgreSQL>>
+|<<dbsupport_postgresql,PostgreSQL>>
 |
                         8.3.5, 8.4, 9, 11, 12, 13, 16, 18
 |
@@ -75,7 +75,7 @@ For the list of other databases and drivers that were tested in prior releases o
 |
                         8.3 JDBC3 (build 603), 8.4 JDBC3 (build 701), 42.2.5, , 42.2.19, 42.7.13
 
-|<<_dbsupport_mysql,MySQL>>
+|<<dbsupport_mysql,MySQL>>
 |
                         5.0.26, 5.1.6, 5.7, 9.7.0
 |
@@ -83,7 +83,7 @@ For the list of other databases and drivers that were tested in prior releases o
 |
                         5.1.6, 5.1.47, 9.7.0
 
-|<<_dbsupport_mariadb,MariaDB>>
+|<<dbsupport_mariadb,MariaDB>>
 |
                         10.5, 12.3.2
 |
@@ -91,7 +91,7 @@ For the list of other databases and drivers that were tested in prior releases o
 |
                         3.5.8
 
-|<<_dbsupport_hypersonic,Hypersonic HSQLDB>>
+|<<dbsupport_hypersonic,Hypersonic HSQLDB>>
 |
                         2.5.1
 |
@@ -99,7 +99,7 @@ For the list of other databases and drivers that were tested in prior releases o
 |
                         Same as Database Version
 
-|<<_dbsupport_db2,IBM DB2>>
+|<<dbsupport_db2,IBM DB2>>
 |
                         8.1, 8.2, 9.1, 9.5, 9.7
 |
@@ -107,7 +107,7 @@ For the list of other databases and drivers that were tested in prior releases o
 |
                         3.50.152
 
-|<<_dbsupport_informix,IBM Informix Dynamic Server>>
+|<<dbsupport_informix,IBM Informix Dynamic Server>>
 |
                         10.00xC6, 11.10xC1, 11.5xC1
 |
@@ -115,7 +115,7 @@ For the list of other databases and drivers that were tested in prior releases o
 |
                         3.00 JC3, 3.10 JC1, 3.50 JC1
 
-|<<_dbsupport_soliddb,IBM solidDB>>
+|<<dbsupport_soliddb,IBM solidDB>>
 |
                         6.5.0.0
 |
@@ -123,7 +123,7 @@ For the list of other databases and drivers that were tested in prior releases o
 |
                         2.0
 
-|<<_dbsupport_sybase,Sybase Adaptive Server Enterprise>>
+|<<dbsupport_sybase,Sybase Adaptive Server Enterprise>>
 |
                         12.5, 15.0
 |
@@ -132,12 +132,12 @@ For the list of other databases and drivers that were tested in prior releases o
                         5.5, 6.0
 |===
 
-[[_dbcompatible]]
+[[dbcompatible]]
 ==== Compatible Database Matrix
 
 Following is a table of the database and JDBC driver versions that are compatible with OpenJPA.
 Some of these databases have been tested against this version of OpenJPA, while others were added or tested in prior releases and may not support all of the new features of this release.
-For the list of databases that have been fully tested against this release, please refer to the <<_dbsupport,Verified Database Matrix>> section.
+For the list of databases that have been fully tested against this release, please refer to the <<dbsupport,Verified Database Matrix>> section.
 
 .Compatible Databases and JDBC Drivers
 [cols="1,1,1,1", options="header"]
@@ -155,7 +155,7 @@ For the list of databases that have been fully tested against this release, plea
                         JDBC Driver Version
 
 
-|<<_dbsupport_derby,Apache Derby>>
+|<<dbsupport_derby,Apache Derby>>
 |
                         10.1.2.1
 |
@@ -163,7 +163,7 @@ For the list of databases that have been fully tested against this release, plea
 |
                         10.1.2.1
 
-|<<_dbsupport_interbase,Borland Interbase>>
+|<<dbsupport_interbase,Borland Interbase>>
 |
                         7.1.0.202
 |
@@ -171,7 +171,7 @@ For the list of databases that have been fully tested against this release, plea
 |
                         4.5.1
 
-|<<_dbsupport_jdatastore,Borland JDataStore>>
+|<<dbsupport_jdatastore,Borland JDataStore>>
 |
                         6.0
 |
@@ -179,7 +179,7 @@ For the list of databases that have been fully tested against this release, plea
 |
                         6.0
 
-|<<_dbsupport_db2,DB2>>
+|<<dbsupport_db2,DB2>>
 |
                         8.1
 |
@@ -187,7 +187,7 @@ For the list of databases that have been fully tested against this release, plea
 |
                         1.0.581, 2.10.72
 
-|<<_dbsupport_empress,Empress>>
+|<<dbsupport_empress,Empress>>
 |
                         8.62
 |
@@ -195,7 +195,7 @@ For the list of databases that have been fully tested against this release, plea
 |
                         8.62
 
-|<<_dbsupport_firebird,Firebird>>
+|<<dbsupport_firebird,Firebird>>
 |
                         1.5, 2.0, 2.1
 |
@@ -203,7 +203,7 @@ For the list of databases that have been fully tested against this release, plea
 |
                         2.1.6
 
-|<<_dbsupport_h2,H2 Database Engine>>
+|<<dbsupport_h2,H2 Database Engine>>
 |
                         1.1.118
 |
@@ -211,7 +211,7 @@ For the list of databases that have been fully tested against this release, plea
 |
                         Same as Database Version
 
-|<<_dbsupport_hypersonic,Hypersonic Database Engine>>
+|<<dbsupport_hypersonic,Hypersonic Database Engine>>
 |
                         1.8.0, 2.0.1 RC2
 |
@@ -219,7 +219,7 @@ For the list of databases that have been fully tested against this release, plea
 |
                         Same as Database Version
 
-|<<_dbsupport_informix,Informix Dynamic Server>>
+|<<dbsupport_informix,Informix Dynamic Server>>
 |
                         9.30.UC10, 9.4xC7
 |
@@ -227,7 +227,7 @@ For the list of databases that have been fully tested against this release, plea
 |
                         2.21.JC2, 3.00 JC3, 3.10 JC1
 
-|<<_dbsupport_ingres,Ingres Database>>
+|<<dbsupport_ingres,Ingres Database>>
 |
                         9.2
 |
@@ -235,7 +235,7 @@ For the list of databases that have been fully tested against this release, plea
 |
                         9.2-3.4.8
 
-|<<_dbsupport_intersystems_cache,InterSystems Cache>>
+|<<dbsupport_intersystems_cache,InterSystems Cache>>
 |
                         5.0
 |
@@ -243,7 +243,7 @@ For the list of databases that have been fully tested against this release, plea
 |
                         5.0
 
-|<<_dbsupport_access,Microsoft Access>>
+|<<dbsupport_access,Microsoft Access>>
 |
                         9.0 (a.k.a. "2000")
 |
@@ -251,7 +251,7 @@ For the list of databases that have been fully tested against this release, plea
 |
                         5.4.0038
 
-|<<_dbsupport_sqlserver,Microsoft SQL Server>>
+|<<dbsupport_sqlserver,Microsoft SQL Server>>
 |
                         2000 (8.00)
 |
@@ -259,7 +259,7 @@ For the list of databases that have been fully tested against this release, plea
 |
                         1.2
 
-|<<_dbsupport_foxpro,Microsoft Visual FoxPro>>
+|<<dbsupport_foxpro,Microsoft Visual FoxPro>>
 |
                         7.0
 |
@@ -267,7 +267,7 @@ For the list of databases that have been fully tested against this release, plea
 |
                         5.4.0038
 
-|<<_dbsupport_mysql,MySQL>>
+|<<dbsupport_mysql,MySQL>>
 |
                         3.23.43-log
 |
@@ -275,7 +275,7 @@ For the list of databases that have been fully tested against this release, plea
 |
                         3.0.14
 
-|<<_dbsupport_oracle,Oracle>>
+|<<dbsupport_oracle,Oracle>>
 |
                         8.1, 9.2
 |
@@ -283,7 +283,7 @@ For the list of databases that have been fully tested against this release, plea
 |
                         10.2.0.1
 
-|<<_dbsupport_pointbase,Pointbase>>
+|<<dbsupport_pointbase,Pointbase>>
 |
                         4.4
 |
@@ -291,7 +291,7 @@ For the list of databases that have been fully tested against this release, plea
 |
                         4.4 (4.4)
 
-|<<_dbsupport_postgresql,PostgreSQL>>
+|<<dbsupport_postgresql,PostgreSQL>>
 |
                         7.2.1, 8.1.5
 |
@@ -299,7 +299,7 @@ For the list of databases that have been fully tested against this release, plea
 |
                         8.1
 
-|<<_dbsupport_soliddb,IBM solidDB>>
+|<<dbsupport_soliddb,IBM solidDB>>
 |
                         6.5.0.0
 |
@@ -307,7 +307,7 @@ For the list of databases that have been fully tested against this release, plea
 |
                         2.0
 
-|<<_dbsupport_sybase,Sybase Adaptive Server Enterprise>>
+|<<dbsupport_sybase,Sybase Adaptive Server Enterprise>>
 |
                         12.5
 |
@@ -316,12 +316,12 @@ For the list of databases that have been fully tested against this release, plea
                         5.5 (5.5)
 |===
 
-[[_dbunverified]]
+[[dbunverified]]
 ==== Unverified Database Matrix
 
 Following is a table of the database and JDBC driver versions that have been reported to work with OpenJPA by the community but have not been verified by the development team.
 In some cases this is a question of availability since the developers may not be able to obtain a license to test, or have experience configuring these databases.
-For the list of databases that have been fully tested against this release, please refer to the <<_dbsupport,Verified Database Matrix>> section.
+For the list of databases that have been fully tested against this release, please refer to the <<dbsupport,Verified Database Matrix>> section.
 
 .Unverified Databases and JDBC Drivers
 [cols="1,1,1,1", options="header"]
@@ -346,9 +346,10 @@ For the list of databases that have been fully tested against this release, plea
 |
 |===
 
-[[_dbsupport_derby]]
+[[dbsupport_derby]]
 ==== Apache Derby
 
+[[example_props_derby]]
 .Example properties for Derby
 ====
 [source]
@@ -359,9 +360,10 @@ openjpa.ConnectionURL: jdbc:derby:DB_NAME;create=true
 ----
 ====
 
-[[_dbsupport_interbase]]
+[[dbsupport_interbase]]
 ==== Borland Interbase
 
+[[example_props_interbase]]
 .Example properties for Interbase
 ====
 [source]
@@ -372,16 +374,17 @@ openjpa.ConnectionURL: jdbc:interbase://SERVER_NAME:SERVER_PORT/DB_PATH
 ----
 ====
 
-[[_dbsupport_interbase_issues]]
+[[dbsupport_interbase_issues]]
 ===== Known issues with Interbase
 
 * Interbase does not support record locking, so datastore transactions cannot use the pessimistic lock manager.
 * Interbase does not support the ``LOWER``, ``SUBSTRING``, or `INSTR` SQL functions.
 
 
-[[_dbsupport_jdatastore]]
+[[dbsupport_jdatastore]]
 ==== JDataStore
 
+[[example_props_jdatastore]]
 .Example properties for JDataStore
 ====
 [source]
@@ -392,9 +395,10 @@ openjpa.ConnectionURL: jdbc:borland:dslocal:db-jdatastore.jds;create=true
 ----
 ====
 
-[[_dbsupport_db2]]
+[[dbsupport_db2]]
 ==== IBM DB2
 
+[[example_props_db2]]
 .Example properties for IBM DB2
 ====
 [source]
@@ -405,7 +409,7 @@ openjpa.ConnectionURL: jdbc:db2://SERVER_NAME:SERVER_PORT/DB_NAME
 ----
 ====
 
-[[_dbsupport_db2_issues]]
+[[dbsupport_db2_issues]]
 ===== Known issues with DB2
 
 * Floats and doubles may lose precision when stored.
@@ -424,9 +428,10 @@ openjpa.ConnectionURL: jdbc:db2://localhost:50000/demodb:fullyMaterializeLobData
 ----
 
 
-[[_dbsupport_empress]]
+[[dbsupport_empress]]
 ==== Empress
 
+[[example_props_empress]]
 .Example properties for Empress
 ====
 [source]
@@ -437,16 +442,17 @@ openjpa.ConnectionURL: jdbc:empress://SERVER=yourserver;PORT=6322;DATABASE=yourd
 ----
 ====
 
-[[_dbsupport_empress_issues]]
+[[dbsupport_empress_issues]]
 ===== Known issues with Empress
 
 * Empress enforces pessimistic semantics (lock on read) when not using `AllowConcurrentRead` property (which bypasses row locking) for [class]``EmpressDictionary``.
 * Only the category 2 non-local driver is supported.
 
 
-[[_dbsupport_h2]]
+[[dbsupport_h2]]
 ==== H2 Database Engine
 
+[[example_props_h2]]
 .Example properties for H2 Database Engine
 ====
 [source]
@@ -457,15 +463,16 @@ openjpa.ConnectionURL: jdbc:h2:DB_NAME
 ----
 ====
 
-[[_dbsupport_h2_issues]]
+[[dbsupport_h2_issues]]
 ===== Known issues with H2 Database Engine
 
 * [class]``UUID`` support allows usage of binary data on entities. If the user wants to exchange [class]``String`` for [class]``UUID``, it is necessary to previously convert the [class]``String`` to UUID type in database.
 
 
-[[_dbsupport_hypersonic]]
+[[dbsupport_hypersonic]]
 ==== Hypersonic
 
+[[example_props_hypersonic]]
 .Example properties for Hypersonic
 ====
 [source]
@@ -476,15 +483,16 @@ openjpa.ConnectionURL: jdbc:hsqldb:DB_NAME
 ----
 ====
 
-[[_dbsupport_hypersonic_issues]]
+[[dbsupport_hypersonic_issues]]
 ===== Known issues with Hypersonic
 
-* Hypersonic does not support pessimistic locking, so non-optimistic transactions will fail unless the `SimulateLocking` property is set for the <<_openjpa.jdbc.dbdictionary, openjpa.jdbc.DBDictionary>>
+* Hypersonic does not support pessimistic locking, so non-optimistic transactions will fail unless the `SimulateLocking` property is set for the <<openjpa.jdbc.DBDictionary, openjpa.jdbc.DBDictionary>>
 
 
-[[_dbsupport_firebird]]
+[[dbsupport_firebird]]
 ==== Firebird
 
+[[example_props_firebird]]
 .Example properties for Firebird
 ====
 [source]
@@ -495,16 +503,17 @@ openjpa.ConnectionURL: jdbc:firebirdsql:SERVER_NAME/3050:DB_PATH_OR_ALIAS
 ----
 ====
 
-[[_dbsupport_firebird_issues]]
+[[dbsupport_firebird_issues]]
 ===== Known issues with Firebird
 
 * Firebird does not support auto-increment columns.
 * In order to use many of JPQL functions with Firebird 1.5, Interbase UDFs have to be available in the database.
 
 
-[[_dbsupport_informix]]
+[[dbsupport_informix]]
 ==== Informix
 
+[[example_props_informix]]
 .Example properties for Informix Dynamic Server
 ====
 [source]
@@ -516,15 +525,16 @@ openjpa.ConnectionURL: \
 ----
 ====
 
-[[_dbsupport_informix_issues]]
+[[dbsupport_informix_issues]]
 ===== Known issues with Informix
 
 * None
 
 
-[[_dbsupport_ingres]]
+[[dbsupport_ingres]]
 ==== Ingres Database
 
+[[example_props_ingres]]
 .Example properties for Ingres
 ====
 [source]
@@ -536,15 +546,16 @@ openjpa.ConnectionURL: \
 ----
 ====
 
-[[_dbsupport_ingres_issues]]
+[[dbsupport_ingres_issues]]
 ===== Known issues with Ingres
 
 * Databases must be created with the -n flag for Unicode compatibility in order to use LOBs.
 
 
-[[_dbsupport_intersystems_cache]]
+[[dbsupport_intersystems_cache]]
 ==== InterSystems Cache
 
+[[example_props_intersystems_cache]]
 .Example properties for InterSystems Cache
 ====
 [source]
@@ -555,15 +566,16 @@ openjpa.ConnectionURL: jdbc:Cache://SERVER_NAME:SERVER_PORT/DB_NAME
 ----
 ====
 
-[[_dbsupport_intersystems_cache_issues]]
+[[dbsupport_intersystems_cache_issues]]
 ===== Known issues with InterSystems Cache
 
 * Support for Cache is done via SQL access over JDBC, not through their object database APIs.
 
 
-[[_dbsupport_access]]
+[[dbsupport_access]]
 ==== Microsoft Access
 
+[[example_props_access]]
 .Example properties for Microsoft Access
 ====
 [source]
@@ -574,15 +586,16 @@ openjpa.ConnectionURL: jdbc:sequelink://SERVER_NAME:SERVER_PORT
 ----
 ====
 
-[[_dbsupport_access_issues]]
+[[dbsupport_access_issues]]
 ===== Known issues with Microsoft Access
 
 * Using the Sun JDBC-ODBC bridge to connect is not supported.
 
 
-[[_dbsupport_sqlserver]]
+[[dbsupport_sqlserver]]
 ==== Microsoft SQL Server
 
+[[example_props_sqlserver]]
 .Example properties for Microsoft SQL Server
 ====
 [source]
@@ -594,7 +607,7 @@ openjpa.ConnectionURL: \
 ----
 ====
 
-[[_dbsupport_sqlserver_issues]]
+[[dbsupport_sqlserver_issues]]
 ===== Known issues with SQL Server
 
 * When using a Microsoft SQL Server JDBC Driver v1.2 or earlier, the ConnectionURL must always contain the `selectMethod=cursor`  string, which is necessary for the driver to properly support large result sets.
@@ -604,15 +617,16 @@ openjpa.ConnectionURL: \
 * The Microsoft SQL Server driver only emulates batch updates. The DataDirect JDBC driver has true support for batch updates, and may result in a significant performance gain.
 * Floats and doubles may lose precision when stored.
 * `TEXT` columns cannot be used in queries.
-* When using a SQL Server instance that has been configured to be case-sensitive in schema names, you need to set the "schemaCase=preserve" parameter in the <<_openjpa.jdbc.dbdictionary,openjpa.jdbc.DBDictionary>> property.
+* When using a SQL Server instance that has been configured to be case-sensitive in schema names, you need to set the "schemaCase=preserve" parameter in the <<openjpa.jdbc.DBDictionary,openjpa.jdbc.DBDictionary>> property.
 * SQL Server 2005 does not support native sequences. If you would like to use generated values with SQL Server you should use GenerationType.IDENTITY, GenerationType.TABLE, or GenerationType.AUTO.
-* The use of <<_ref_guide_streamsupport,LOB streaming>> is limited. When reading LOB data from the database, the Microsoft SQL Server driver will actually load all the data into memory at the same time.
+* The use of <<ref_guide_streamsupport,LOB streaming>> is limited. When reading LOB data from the database, the Microsoft SQL Server driver will actually load all the data into memory at the same time.
 * The SQL Server 2008 DATETIME2 data type supports 7 digits sub-second precision. When DataDirect JDBC driver is used with SQL Server 2008, setTimestamp method call with a java.sql.Timestamp argument of more than 3 digits precision in a prepared statement will result in truncation. This may cause loss of data precision or optimistic lock exception if an entity uses Timestamp type as version field.
 
 
-[[_dbsupport_foxpro]]
+[[dbsupport_foxpro]]
 ==== Microsoft FoxPro
 
+[[example_props_foxpro]]
 .Example properties for Microsoft FoxPro
 ====
 [source]
@@ -623,15 +637,16 @@ openjpa.ConnectionURL: jdbc:sequelink://SERVER_NAME:SERVER_PORT
 ----
 ====
 
-[[_dbsupport_foxpro_issues]]
+[[dbsupport_foxpro_issues]]
 ===== Known issues with Microsoft FoxPro
 
 * Using the Sun JDBC-ODBC bridge to connect is not supported.
 
 
-[[_dbsupport_mysql]]
+[[dbsupport_mysql]]
 ==== MySQL
 
+[[example_props_mysql]]
 .Example properties for MySQL
 ====
 [source]
@@ -642,13 +657,14 @@ openjpa.ConnectionURL: jdbc:mysql://SERVER_NAME/DB_NAME
 ----
 ====
 
-[[_dbsupport_mysql_query_hints]]
+[[dbsupport_mysql_query_hints]]
 ===== Using Query Hints with MySQL
 
 MySQL has support for "query hints", which are keywords embedded in SQL that provide some hint for how the query should be executed.
 These hints are usually designed to provide suggestions to the MySQL query optimizer for how to efficiently perform a certain query, and aren't typically needed for any but the most intensive queries.
 OpenJPA supports hints to be placed between SELECT keyword and column list.
 
+[[dbsupport_mysql_query_hints_ex]]
 .Using MySQL Hints
 ====
 [source]
@@ -660,7 +676,7 @@ List results = query.getResultList();
 ----
 ====
 
-[[_dbsupport_mysql_issues]]
+[[dbsupport_mysql_issues]]
 ===== Known issues with MySQL
 
 * The default table types that MySQL uses do not support transactions, which will prevent OpenJPA from being able to roll back transactions. Use the ``InnoDB`` table type for any tables that OpenJPA will access.
@@ -669,14 +685,15 @@ List results = query.getResultList();
 * Floats and doubles may lose precision when stored in some datastores.
 * When storing a field of type [class]``java.math.BigDecimal``, some datastores will add extraneous trailing 0 characters, causing an equality mismatch between the field that is stored and the field that is retrieved.
 * When using large result sets with MySQL there are a number of documented limitations. Please read the section titled "ResultSet" in the "MySQL JDBC API Implementation Notes". The net effect of these limitations is that you will have to read all of the rows of a result set (or close the connection) before you can issue any other queries on the connection, or an exception will be thrown. Setting openjpa.FetchBatchSize to any value greater than zero will enable streaming result sets.
-* The use of <<_ref_guide_streamsupport,LOB streaming>> is limited. When reading LOB data from the database, the MySQL JDBC driver will actually load all the data into memory at the same time.
+* The use of <<ref_guide_streamsupport,LOB streaming>> is limited. When reading LOB data from the database, the MySQL JDBC driver will actually load all the data into memory at the same time.
 * As of MySQL 5.7 the `DATETIME` data type supports sub-second fractions. The default of MySQL is to use no fractions. The number of fractions can be explicitly set via scale: ``@Column(scale=3)`` will lead to a `DATETIME(3)` column.
 * MySQL does not support native sequences. If you would like to use generated values with SQL Server you should use GenerationType.IDENTITY, GenerationType.TABLE, or GenerationType.AUTO.
 
 
-[[_dbsupport_mariadb]]
+[[dbsupport_mariadb]]
 ==== MariaDB
 
+[[example_props_mariadb]]
 .Example properties for MariaDB
 ====
 [source]
@@ -687,12 +704,12 @@ List results = query.getResultList();
 ----
 ====
 
-[[_dbsupport_mariadb_issues]]
+[[dbsupport_mariadb_issues]]
 ===== Known issues with MariaDB
 
 * As of MariaDB 10.2 the `DATETIME` data type supports sub-second fractions. The default of MariaDB internally is to use no fractions. The number of fractions can be explicitly set via scale: `@Column(scale=6)` will lead to a `DATETIME(6)` column and able to store microseconds. A value of `@Column(scale=-1)` will explicitly turn off all fractions.
 * As of MariaDB 10.7 the `UUID` data type is supported, but the JDBC driver does not writes the object directly, so UUID field support is made through UUID to String conversion.
-* MariaDB's InnoDB performs `ALTER TABLE ... ADD COLUMN` and `ALTER TABLE ... DROP COLUMN` instantly and keeps the dropped columns in the clustered index record format, where they continue to count towards the 8126 byte maximum row size. Re-synchronising a mapping with a drop/add schema action against the same table - either <<_ref_guide_mapping_synch, `openjpa.jdbc.SynchronizeMappings`>> set to ``buildSchema(SchemaAction='drop,add')``, or `mappingtool -action refresh` in a deployment script - therefore accumulates that metadata on every cycle and eventually fails with
+* MariaDB's InnoDB performs `ALTER TABLE ... ADD COLUMN` and `ALTER TABLE ... DROP COLUMN` instantly and keeps the dropped columns in the clustered index record format, where they continue to count towards the 8126 byte maximum row size. Re-synchronising a mapping with a drop/add schema action against the same table - either <<ref_guide_mapping_synch, `openjpa.jdbc.SynchronizeMappings`>> set to ``buildSchema(SchemaAction='drop,add')``, or `mappingtool -action refresh` in a deployment script - therefore accumulates that metadata on every cycle and eventually fails with
 
 
 [source]
@@ -706,9 +723,10 @@ even though the table's visible columns fit well inside the limit; `information_
 Rebuild the table to discard it (``ALTER TABLE <name> FORCE`` or ``OPTIMIZE TABLE <name>``), or do not use a drop/add schema action against a long-lived MariaDB schema.
 
 
-[[_dbsupport_oracle]]
+[[dbsupport_oracle]]
 ==== Oracle
 
+[[example_props_oracle]]
 .Example properties for Oracle
 ====
 [source]
@@ -719,12 +737,13 @@ openjpa.ConnectionURL: jdbc:oracle:thin:@SERVER_NAME:1521:DB_NAME
 ----
 ====
 
-[[_dbsupport_oracle_query_hints]]
+[[dbsupport_oracle_query_hints]]
 ===== Using Query Hints with Oracle
 
 Oracle has support for "query hints", which are formatted comments embedded in SQL that provide some hint for how the query should be executed.
 These hints are usually designed to provide suggestions to the Oracle query optimizer for how to efficiently perform a certain query, and aren't typically needed for any but the most intensive queries.
 
+[[dbsupport_oracle_query_hints_ex]]
 .Using Oracle Hints
 ====
 [source]
@@ -736,7 +755,7 @@ List results = query.getResultList();
 ----
 ====
 
-[[_dbsupport_oracle_issues]]
+[[dbsupport_oracle_issues]]
 ===== Known issues with Oracle
 
 * The Oracle JDBC driver has significant differences between different versions. It is important to use the officially supported version of the drivers (10.2.0.1.0/11.2.0.x.0), which is backward compatible with previous versions of the Oracle server. It can be downloaded from http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html[ http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html].
@@ -744,6 +763,7 @@ List results = query.getResultList();
 * Oracle corp's JDBC driver for Oracle has only limited support for batch updates. The result for OpenJPA is that batching of some statements may fail and in some cases, the exact object that failed an optimistic lock check cannot be determined. OpenJPA will throw an [class]``OptimisticException`` with more failed objects than actually failed. This situation may be resolved by disabling statement batching by setting the batchLimit value to zero or by using a more recent Oracle JDBC Driver (11.2.0.1) with batch support improvements. Attempting to resolve the issue with a more current driver is recommended since disabling statement batching can result in a decrease in performance.
 
 
+[[dbsupport_oracle_disable_batch_updates]]
 .Property to disable statement batching for Oracle
 ====
 [source]
@@ -755,9 +775,10 @@ openjpa.jdbc.DBDictionary: oracle(batchLimit=0)
 * Oracle cannot store numbers with more than 38 digits in numeric columns.
 * Floats and doubles may lose precision when stored.
 * CLOB columns cannot be used in queries.
-* The use of LOBs with persistent attributes of a streaming data type (ex. ``java.io.InputStream`` or ``java.io.Reader``) may require the same connection to be used over the life of the transaction or entity manager. If the same connection is not used for persistent operations a `java.io.IOException` with message `Closed Connection`  may result. The OpenJPA property `openjpa.ConnectionRetainMode` can be used to control how OpenJPA uses datastore connections. See <<_ref_guide_dbsetup_retain>> for details.
+* The use of LOBs with persistent attributes of a streaming data type (ex. ``java.io.InputStream`` or ``java.io.Reader``) may require the same connection to be used over the life of the transaction or entity manager. If the same connection is not used for persistent operations a `java.io.IOException` with message `Closed Connection`  may result. The OpenJPA property `openjpa.ConnectionRetainMode` can be used to control how OpenJPA uses datastore connections. See <<ref_guide_dbsetup_retain>> for details.
 
 
+[[dbsupport_oracle_retain_connection]]
 .Property to retain connection over the lifetime of the entity manager
 ====
 [source]
@@ -766,13 +787,14 @@ openjpa.jdbc.DBDictionary: oracle(batchLimit=0)
 openjpa.ConnectionRetainMode: always
 ----
 ====
-* Mapping persistent attributes to <<_ref_guide_xmlmapping,XML columns>> requires a JDBC 4 compliant driver if XML strings are longer than 4000 bytes, as counted in database. Otherwise an `ORA-01461: can bind a LONG value only for insert into a LONG column` error may result.
+* Mapping persistent attributes to <<ref_guide_xmlmapping,XML columns>> requires a JDBC 4 compliant driver if XML strings are longer than 4000 bytes, as counted in database. Otherwise an `ORA-01461: can bind a LONG value only for insert into a LONG column` error may result.
 * If Oracle dictionary property `MaxEmbeddedBlobSize` or ``MaxEmbeddedClobSize`` is set to some limit (i.e. not -1) and embedded collection with BLOB/CLOB attribute is used, a ``"org.apache.openjpa.persistence.ArgumentException: "x.y.z.EmbedOwner.embedCollection<element:class x.y.z.EmbedValue>" is mapped as embedded, but embedded field "x.y.z.EmbedOwner.embedCollection.x.y.z.EmbedValue.blob" is not embeddable. Embedded element/key/value types are limited to simple fields and direct relations to other persistent types"`` error may result. To overcome this limitation, either use JDBC driver 11.2.0.x.0 (or later version) or set both `MaxEmbeddedBlobSize` and ``MaxEmbeddedClobSize`` properties to -1.
 
 
-[[_dbsupport_pointbase]]
+[[dbsupport_pointbase]]
 ==== Pointbase
 
+[[example_props_pointbase]]
 .Example properties for Pointbase
 ====
 [source]
@@ -784,15 +806,16 @@ openjpa.ConnectionURL: \
 ----
 ====
 
-[[_dbsupport_pointbase_issues]]
+[[dbsupport_pointbase_issues]]
 ===== Known issues with Pointbase
 
 * Fields of type BLOB and CLOB are limited to 1M. Set the `BlobTypeName`  and/or `ClobTypeName` properties of the ``openjpa.jdbc.DBDictionary`` setting to override.
 
 
-[[_dbsupport_postgresql]]
+[[dbsupport_postgresql]]
 ==== PostgreSQL
 
+[[example_props_postgresql]]
 .Example properties for PostgreSQL
 ====
 [source]
@@ -803,19 +826,20 @@ openjpa.ConnectionURL: jdbc:postgresql://SERVER_NAME:5432/DB_NAME
 ----
 ====
 
-[[_dbsupport_postgresql_issues]]
+[[dbsupport_postgresql_issues]]
 ===== Known issues with PostgreSQL
 
 * Floats and doubles may lose precision when stored.
 * PostgreSQL cannot store very low and very high dates.
 * Empty string/char values are stored as NULL.
-* Persistent fields of type [class]``java.io.Reader`` are not supported when using <<_ref_guide_streamsupport,LOB streaming>>.
+* Persistent fields of type [class]``java.io.Reader`` are not supported when using <<ref_guide_streamsupport,LOB streaming>>.
 * [class]``UUID`` support allows usage of binary data on entities. If the user wants to exchange [class]``String`` for [class]``UUID``, it is necessary to previously convert the [class]``String`` to UUID type in database.
 
 
-[[_dbsupport_soliddb]]
+[[dbsupport_soliddb]]
 ==== IBM solidDB
 
+[[example_props_soliddb]]
 .Example properties for IBM solidDB
 ====
 [source]
@@ -826,7 +850,7 @@ openjpa.ConnectionURL: jdbc:solid://localhost:2315/dba/dba
 ----
 ====
 
-[[_dbsupport_soliddb_table_types]]
+[[dbsupport_soliddb_table_types]]
 ===== M-type tables vs. D-type tables
 
 IBM solidDB supports two types of tables: in-memory tables (M-tables) and on-disk tables (D-tables). Since cursor hold over commit can not apply to M-tables (which will cause SOLID Table Error 13187: The cursor cannot continue accessing M-tables after the transaction has committed or aborted.
@@ -835,7 +859,7 @@ One can set the whole server to disk-based mode by adding [General] DefaultStore
 The table types can also be determined by setting OpenJPA property "openjpa.jdbc.DBDictionary" with value "storeIsMemory=true" or "storeIsMemory=false" in the persistence.xml.
 The "STORE MEMORY" and "STORE DISK" will be appended to the create table DDL, respectively.
 
-[[_dbsupport_soliddb_concurrency_control]]
+[[dbsupport_soliddb_concurrency_control]]
 ===== Concurrency control mechanism
 
 The default concurrency control mechanism depends on the table type: Disk-based tables (D-tables) are by default optimistic.
@@ -848,9 +872,10 @@ The pessimistic locking mode can be set in solid.ini: [General] Pessimistic=yes 
 An extra SQL will be generated along with CREATE TABLE DDL: ALTER TABLE EX_POBJECT SET PESSIMISTIC.
 The possible values for lockingMode is OPTIMISTIC/PESSIMISTIC.
 
-[[_dbsupport_sybase]]
+[[dbsupport_sybase]]
 ==== Sybase Adaptive Server
 
+[[example_props_sybase]]
 .Example properties for Sybase
 ====
 [source]
@@ -862,14 +887,14 @@ openjpa.ConnectionURL: \
 ----
 ====
 
-[[_dbsupport_sybase_issues]]
+[[dbsupport_sybase_issues]]
 ===== Known issues with Sybase
 
 * The `DYNAMIC_PREPARE` parameter of the Sybase JDBC driver cannot be used with OpenJPA.
 * Datastore locking cannot be used when manipulating many-to-many relations using the default OpenJPA schema created by the schematool, unless an auto-increment primary key field is manually added to the table.
 * Persisting a zero-length string results in a string with a single space character being returned from Sybase, Inc.'s JDBC driver.
 * The `BE_AS_JDBC_COMPLIANT_AS_POSSIBLE` is required in order to use datastore (pessimistic) locking. Failure to set this property may lead to obscure errors like " `FOR UPDATE can not be used in a SELECT which is not part of the declaration of a cursor or which is not inside a stored procedure.` ".
-* Applications performing update/insert data of the BigDecimal Java type may fail with OptimisticException if the data exceeds the scale or precision of the column on Sybase. To avoid this problem, applications can specify the precision and scale for the numeric type by setting numericTypeName='NUMERIC(p,s)' for the column type mapped by the BigDecimal Java type. See <<_openjpa.jdbc.dbdictionary,openjpa.jdbc.DBDictionary>> for more detail. Alternatively, application can set the precision and scale using the standard [class]``Column`` annotation, described in <<_jpa_overview_mapping_column>>.
+* Applications performing update/insert data of the BigDecimal Java type may fail with OptimisticException if the data exceeds the scale or precision of the column on Sybase. To avoid this problem, applications can specify the precision and scale for the numeric type by setting numericTypeName='NUMERIC(p,s)' for the column type mapped by the BigDecimal Java type. See <<openjpa.jdbc.DBDictionary,openjpa.jdbc.DBDictionary>> for more detail. Alternatively, application can set the precision and scale using the standard [class]``Column`` annotation, described in <<jpa_overview_mapping_column>>.
 
 
 :sectnums:

@@ -1,4 +1,4 @@
-[[_jpa_overview_why]]
+[[jpa_overview_why]]
 === Why JPA?
 (((JPA, why)))
 

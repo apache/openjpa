@@ -1,15 +1,15 @@
-[[_ref_guide_intro]]
+[[ref_guide_intro]]
 === Introduction
 
 OpenJPA is a JDBC-based implementation of the JPA standard.
 This document is a reference for the configuration and use of OpenJPA.
 
-[[_ref_guide_intro_audience]]
+[[ref_guide_intro_audience]]
 ==== Intended Audience
 
 This document is intended for OpenJPA developers.
 It assumes strong knowledge of Java, familiarity with the eXtensible Markup Language (XML), and an understanding of JPA.
-If you are not familiar with JPA, please read the <<_jpa_overview_intro,JPA Overview>> before proceeding.
+If you are not familiar with JPA, please read the <<jpa_overview_intro,JPA Overview>> before proceeding.
 
 Certain sections of this guide cover advanced topics such as custom object-relational mapping, enterprise integration, and using OpenJPA with third-party tools.
 These sections assume prior experience with the relevant subject.

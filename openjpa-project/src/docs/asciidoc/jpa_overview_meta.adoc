@@ -1,4 +1,4 @@
-[[_jpa_overview_meta]]
+[[jpa_overview_meta]]
 === Metadata
 (((metadata)))
 (((JPA , metadata)))
@@ -15,16 +15,16 @@ In the latter case, XML declarations override conflicting annotations.
 If you choose to use XML metadata, the XML files must be available at development and runtime, and must be discoverable via either of two strategies:
 
 . In a resource named [path]_orm.xml_ placed in a [path]_META-INF_ directory within a directory in your classpath or within a jar archive containing your persistent classes.
-. Declared in your <<_jpa_overview_persistence_xml,[path]_persistence.xml_>> configuration file. In this case, each XML metadata file must be listed in a `mapping-file` element whose content is either a path to the given file or a resource location available to the class' class loader.
+. Declared in your <<jpa_overview_persistence_xml,[path]_persistence.xml_>> configuration file. In this case, each XML metadata file must be listed in a `mapping-file` element whose content is either a path to the given file or a resource location available to the class' class loader.
 
 We describe the standard metadata annotations and XML equivalents throughout this chapter.
-The full schema for XML mapping files is available in <<_jpa_overview_meta_xml>>.
-JPA also standardizes relational mapping metadata and named query metadata, which we discuss in <<_jpa_overview_mapping>> and <<_jpa_overview_query_named>> respectively.
+The full schema for XML mapping files is available in <<jpa_overview_meta_xml>>.
+JPA also standardizes relational mapping metadata and named query metadata, which we discuss in <<jpa_overview_mapping>> and <<jpa_overview_query_named>> respectively.
 
 [NOTE]
 ====
 OpenJPA defines many useful annotations beyond the standard set.
-See <<_ref_guide_meta_jpa>> and <<_ref_guide_meta_ext>> in the Reference Guide for details.
+See <<ref_guide_meta_jpa>> and <<ref_guide_meta_ext>> in the Reference Guide for details.
 There are currently no XML equivalents for these extension annotations.
 ====
 
@@ -41,12 +41,12 @@ image::img/jpa-meta-model.png[]
 
 Through the course of this chapter, we will create the persistent object model above.
 
-[[_jpa_overview_meta_class]]
+[[jpa_overview_meta_class]]
 ==== Class Metadata
 
 The following metadata annotations and XML elements apply to persistent class declarations.
 
-[[_jpa_overview_meta_entity]]
+[[jpa_overview_meta_entity]]
 ===== Entity
 (((Entity , annotation)))
 (((annotations , Entity)))
@@ -62,20 +62,20 @@ It has the following attributes:
 
 * ``class``: The entity class. This attribute is required.
 * ``name``: Named used to refer to the class in queries. See the name property above.
-* ``access``: The access type to use for the class. Must either be ``FIELD`` or ``PROPERTY``. For details on access types, see <<_jpa_overview_meta_field>>.
+* ``access``: The access type to use for the class. Must either be ``FIELD`` or ``PROPERTY``. For details on access types, see <<jpa_overview_meta_field>>.
 
 
 [NOTE]
 ====
 OpenJPA uses a process called _enhancement_ to modify the bytecode of entities for transparent lazy loading and immediate dirty tracking.
-See <<_ref_guide_pc_enhance>> in the Reference Guide for details on enhancement.
+See <<ref_guide_pc_enhance>> in the Reference Guide for details on enhancement.
 ====
 
-[[_jpa_overview_meta_idclass]]
+[[jpa_overview_meta_idclass]]
 ===== Id Class
 (((metadata , IdClass)))
 
-As we discussed in <<_jpa_overview_pc_identitycls>>, entities with multiple identity fields must use an _identity class_ to encapsulate their persistent identity.
+As we discussed in <<jpa_overview_pc_identitycls>>, entities with multiple identity fields must use an _identity class_ to encapsulate their persistent identity.
 The [class]``IdClass`` annotation specifies this class.
 It accepts a single [class]``java.lang.Class`` value.
 
@@ -84,7 +84,7 @@ The equivalent XML element is ``id-class``, which has a single attribute:
 * ``class``: Set this required attribute to the name of the identity class.
 
 
-[[_jpa_overview_meta_embeddablesuper]]
+[[jpa_overview_meta_embeddablesuper]]
 ===== Mapped Superclass
 (((MappedSuperclass)))
 (((metadata , MappedSuperclass)))
@@ -98,7 +98,7 @@ The equivalent XML element is ``mapped-superclass``.
 It expects the following attributes:
 
 * ``class``: The entity class. This attribute is required.
-* ``access``: The access type to use for the class. Must either be ``FIELD`` or ``PROPERTY``. For details on access types, see <<_jpa_overview_meta_field>>.
+* ``access``: The access type to use for the class. Must either be ``FIELD`` or ``PROPERTY``. For details on access types, see <<jpa_overview_meta_field>>.
 
 
 [NOTE]
@@ -108,7 +108,7 @@ A query on a mapped superclass will return all matching subclass instances.
 OpenJPA also allows you to declare relations to mapped superclass types; however, you cannot query across these relations.
 ====
 
-[[_jpa_overview_meta_embeddable]]
+[[jpa_overview_meta_embeddable]]
 ===== Embeddable
 (((Embeddable)))
 (((metadata , Embeddable)))
@@ -123,7 +123,7 @@ The equivalent XML element is ``embeddable``.
 It understands the following attributes:
 
 * ``class``: The entity class. This attribute is required.
-* ``access``: The access type to use for the class. Must either be ``FIELD`` or ``PROPERTY``. For details on access types, see <<_jpa_overview_meta_field>>.
+* ``access``: The access type to use for the class. Must either be ``FIELD`` or ``PROPERTY``. For details on access types, see <<jpa_overview_meta_field>>.
 
 
 [NOTE]
@@ -135,7 +135,7 @@ Instances will act as embedded values when assigned to embedded fields of entiti
 To signal that a class is both an entity and an embeddable class in OpenJPA, simply add both the `@Entity` and the `@Embeddable`  annotations to the class.
 ====
 
-[[_jpa_overview_meta_entity_listeners]]
+[[jpa_overview_meta_entity_listeners]]
 ===== EntityListeners
 (((EntityListeners)))
 (((entity-listeners)))
@@ -144,14 +144,15 @@ To signal that a class is both an entity and an embeddable class in OpenJPA, sim
 An entity may list its lifecycle event listeners in the [class]``EntityListeners`` annotation.
 This value of this annotation is an array of the listener [class]``Class`` es for the entity.
 The equivalent XML element is ``entity-listeners``.
-For more details on entity listeners, see <<_jpa_overview_pc_callbacks>>.
+For more details on entity listeners, see <<jpa_overview_pc_callbacks>>.
 
-[[_jpa_overview_meta_classex]]
+[[jpa_overview_meta_classex]]
 ===== Example
 
 Here are the class declarations for our persistent object model, annotated with the appropriate persistence metadata.
 Note that [class]``Magazine`` declares an identity class, and that [class]``Document`` and [class]``Address`` are a mapped superclass and an embeddable class, respectively. [class]``LifetimeSubscription`` and [class]``TrialSubscription`` override the default entity name to supply a shorter alias for use in queries.
 
+[[jpa_overview_meta_classlisting]]
 .Class Metadata
 ====
 [source]
@@ -274,7 +275,7 @@ The equivalent declarations in XML:
 ----
 ====
 
-[[_jpa_overview_meta_field]]
+[[jpa_overview_meta_field]]
 ==== Field and Property Metadata
 
 The persistence implementation must be able to retrieve and set the persistent state of your entities, mapped superclasses, and embeddable types.
@@ -330,7 +331,7 @@ private Company getPublisher() { ... }
 private void setPublisher(Company publisher) { ... }
 ----
 
-[[_jpa_overview_explicit_access]]
+[[jpa_overview_explicit_access]]
 ===== Explicit Access
 
 
@@ -413,7 +414,7 @@ Consider that they are invoked by the persistence implementation to load and ret
 
 The remainder of this document uses the term "persistent field" to refer to either a persistent field or a persistent property.
 
-[[_jpa_overview_meta_transient]]
+[[jpa_overview_meta_transient]]
 ===== Transient
 (((Transient)))
 (((metadata , Transient)))
@@ -427,14 +428,14 @@ It has a single attribute:
 * ``name``: The transient field or property name. This attribute is required.
 
 
-[[_jpa_overview_meta_id]]
+[[jpa_overview_meta_id]]
 ===== Id
 (((Id)))
 (((metadata , Id)))
 
 Annotate your simple identity fields with [class]``Id``.
 This annotation has no properties.
-We explore entity identity and identity fields in <<_jpa_overview_pc_id>>.
+We explore entity identity and identity fields in <<jpa_overview_pc_id>>.
 
 The equivalent XML element is ``id``.
 It has one required attribute:
@@ -442,7 +443,7 @@ It has one required attribute:
 * ``name``: The name of the identity field or property.
 
 
-[[_jpa_overview_meta_gen]]
+[[jpa_overview_meta_gen]]
 ===== Generated Value
 (((GeneratedValue)))
 (((metadata , GeneratedValue)))
@@ -458,7 +459,7 @@ It has the following properties:
 ** ``GenerationType.SEQUENCE``: Use a datastore sequence to generate a field value.
 ** ``GenerationType.TABLE``: Use a sequence table to generate a field value.
 ** ``GenerationType.UUID``: Assign the field a type 4 UUID generated value. In this case, the field must be either [class]``String`` or [class]``UUID``.
-* ``String generator``: The name of a generator defined in mapping metadata. We show you how to define named generators in <<_jpa_overview_mapping_sequence>>. If the [class]``GenerationType`` is set but this property is unset, the JPA implementation uses appropriate defaults for the selected generation type.
+* ``String generator``: The name of a generator defined in mapping metadata. We show you how to define named generators in <<jpa_overview_mapping_sequence>>. If the [class]``GenerationType`` is set but this property is unset, the JPA implementation uses appropriate defaults for the selected generation type.
 
 The equivalent XML element is ``generated-value``, which includes the following attributes:
 
@@ -469,7 +470,7 @@ The equivalent XML element is ``generated-value``, which includes the following 
 [NOTE]
 ====
 OpenJPA allows you to use the [class]``GeneratedValue`` annotation on any field, not just identity fields.
-Before using the `IDENTITY`  generation strategy, however, read <<_ref_guide_pc_oid_pkgen_autoinc>> in the Reference Guide.
+Before using the `IDENTITY`  generation strategy, however, read <<ref_guide_pc_oid_pkgen_autoinc>> in the Reference Guide.
 
 OpenJPA also offers additional generator strategies for non-numeric fields, which you can access by setting `strategy` to `AUTO`  (the default), and setting the `generator` string to:
 
@@ -488,10 +489,10 @@ org.apache.openjpa.persistence.Generator].
 If the entities are mapped to the same table name but with different schema name within one `PersistenceUnit` intentionally, and the strategy of `GeneratedType.AUTO` is used to generate the ID for each entity, a schema name for each entity must be explicitly declared either through the annotation or the mapping.xml file.
 Otherwise, the mapping tool only creates the tables for those entities with the schema names under each schema.
 In addition, there will be only one ``OPENJPA_SEQUENCE_TABLE`` created for all the entities within the `PersistenceUnit` if the entities are not identified with the schema name.
-Read <<_ref_guide_sequence>> and <<_ref_guide_schema_def>> in the Reference Guide.
+Read <<ref_guide_sequence>> and <<ref_guide_schema_def>> in the Reference Guide.
 ====
 
-[[_jpa_overview_meta_embedid]]
+[[jpa_overview_meta_embedid]]
 ===== Embedded Id
 (((EmbeddedId)))
 (((metadata , EmbeddedId)))
@@ -500,7 +501,7 @@ If your entity has multiple identity values, you may declare multiple
 `@Id` fields, or you may declare a single `@EmbeddedId` field.
 The type of a field annotated with [class]``EmbeddedId`` must be an embeddable entity class.
 The fields of this embeddable class are considered the identity values of the owning entity.
-We explore entity identity and identity fields in <<_jpa_overview_pc_id>>.
+We explore entity identity and identity fields in <<jpa_overview_pc_id>>.
 
 The [class]``EmbeddedId`` annotation has no properties.
 
@@ -510,12 +511,12 @@ It has one required attribute:
 * ``name``: The name of the identity field or property.
 
 
-[[_jpa_overview_meta_version]]
+[[jpa_overview_meta_version]]
 ===== Version
 (((Version)))
 (((metadata , Version)))
 
-Use the [class]``Version`` annotation to designate a version field. <<_jpa_overview_pc_version>> explained the importance of version fields to JPA.
+Use the [class]``Version`` annotation to designate a version field. <<jpa_overview_pc_version>> explained the importance of version fields to JPA.
 This is a marker annotation; it has no properties.
 
 The equivalent XML element is ``version``, which has a single attribute:
@@ -523,7 +524,7 @@ The equivalent XML element is ``version``, which has a single attribute:
 * ``name``: The name of the version field or property. This attribute is required.
 
 
-[[_jpa_overview_meta_basic]]
+[[jpa_overview_meta_basic]]
 ===== Basic
 (((Basic)))
 (((metadata , Basic)))
@@ -548,7 +549,7 @@ It has the following attributes:
 * ``optional``: Boolean indicating whether the field value may be null.
 
 
-[[_jpa_overview_meta_fetch]]
+[[jpa_overview_meta_fetch]]
 ====== Fetch Type
 (((eager fetching , FetchType)))
 (((metadata , FetchType)))
@@ -564,18 +565,18 @@ Lazy loading is completely transparent; when you attempt to read the field for t
 Lazy loading is only a hint and not a directive because some JPA implementations cannot lazy-load certain field types.
 
 With a mix of eager and lazily-loaded fields, you can ensure that commonly-used fields load efficiently, and that other state loads transparently when accessed.
-As you will see in <<_jpa_overview_emfactory_perscontext>>, you can also use eager fetching to ensure that entities have all needed data loaded before they become _detached_ at the end of a persistence context.
+As you will see in <<jpa_overview_emfactory_perscontext>>, you can also use eager fetching to ensure that entities have all needed data loaded before they become _detached_ at the end of a persistence context.
 
 [NOTE]
 ====
 OpenJPA can lazy-load any field type.
 OpenJPA also allows you to dynamically change which fields are eagerly or lazily loaded at runtime.
-See <<_ref_guide_fetch>> in the Reference Guide for details.
+See <<ref_guide_fetch>> in the Reference Guide for details.
 
-The Reference Guide details OpenJPA's eager fetching behavior in <<_ref_guide_perfpack_eager>>.
+The Reference Guide details OpenJPA's eager fetching behavior in <<ref_guide_perfpack_eager>>.
 ====
 
-[[_jpa_overview_meta_embedded]]
+[[jpa_overview_meta_embedded]]
 ===== Embedded
 (((metadata , Embedded)))
 
@@ -588,7 +589,7 @@ The equivalent XML element is ``embedded``, which expects a single attribute:
 * ``name``: The name of the field or property. This attribute is required.
 
 
-[[_jpa_overview_meta_manytoone]]
+[[jpa_overview_meta_manytoone]]
 ===== Many To One
 (((ManyToOne)))
 (((metadata , ManyToOne)))
@@ -604,7 +605,7 @@ This annotation has the following properties:
 
 * ``Class targetEntity``: The class of the related entity type.
 * ``CascadeType[] cascade``: Array of enum values defining cascade behavior for this field. We explore cascades below. Defaults to an empty array.
-* ``FetchType fetch``: Whether to load the field eagerly (``FetchType.EAGER``) or lazily (``FetchType.LAZY``). Defaults to ``FetchType.EAGER``. See <<_jpa_overview_meta_fetch>> above for details on fetch types.
+* ``FetchType fetch``: Whether to load the field eagerly (``FetchType.EAGER``) or lazily (``FetchType.LAZY``). Defaults to ``FetchType.EAGER``. See <<jpa_overview_meta_fetch>> above for details on fetch types.
 * ``boolean optional``: Whether the related object must exist. If ``false``, this field cannot be null. Defaults to ``true``.
 
 The equivalent XML element is ``many-to-one``.
@@ -616,12 +617,12 @@ It accepts the following attributes:
 * ``optional``: Boolean indicating whether the field value may be null.
 
 
-[[_jpa_overview_meta_cascade]]
+[[jpa_overview_meta_cascade]]
 ====== Cascade Type
 (((CascadeType)))
 (((metadata , CascadeType)))
 
-We introduce the JPA [class]``EntityManager`` in <<_jpa_overview_em>>.
+We introduce the JPA [class]``EntityManager`` in <<jpa_overview_em>>.
 The [class]``EntityManager`` has APIs to persist new entities, remove (delete) existing entities, refresh entity state from the datastore, and merge _detached_  entity state back into the persistence context.
 We explore all of these APIs in detail later in the overview.
 
@@ -638,7 +639,7 @@ The `cascade`  property accepts an array of [class]``CascadeType`` enum values.
 [NOTE]
 ====
 OpenJPA offers enhancements to JPA's CascadeType.REMOVE functionality, including additional annotations to control how and when dependent fields will be removed.
-See <<_dependent>> for more details.
+See <<dependent>> for more details.
 ====
 
 [class]``CascadeType`` defines one additional value, ``CascadeType.ALL``, that acts as a shortcut for all of the values above.
@@ -686,7 +687,7 @@ The following examples are equivalent:
 </many-to-one>
 ----
 
-[[_jpa_overview_meta_onetomany]]
+[[jpa_overview_meta_onetomany]]
 ===== One To Many
 (((metadata , OneToMany)))
 
@@ -703,20 +704,20 @@ This annotation has the following properties:
 
 * ``Class targetEntity``: The class of the related entity type. This information is usually taken from the parameterized collection or map element type. You must supply it explicitly, however, if your field isn't a parameterized type.
 * ``String mappedBy``: Names the many to one field in the related entity that maps this bidirectional relation. We explain bidirectional relations below. Leaving this property unset signals that this is a standard unidirectional relation.
-* ``CascadeType[] cascade``: Array of enum values defining cascade behavior for the collection elements. We explore cascades above in <<_jpa_overview_meta_cascade>>. Defaults to an empty array.
-* ``FetchType fetch``: Whether to load the field eagerly (``FetchType.EAGER``) or lazily (``FetchType.LAZY``). Defaults to ``FetchType.LAZY``. See <<_jpa_overview_meta_fetch>> above for details on fetch types.
+* ``CascadeType[] cascade``: Array of enum values defining cascade behavior for the collection elements. We explore cascades above in <<jpa_overview_meta_cascade>>. Defaults to an empty array.
+* ``FetchType fetch``: Whether to load the field eagerly (``FetchType.EAGER``) or lazily (``FetchType.LAZY``). Defaults to ``FetchType.LAZY``. See <<jpa_overview_meta_fetch>> above for details on fetch types.
 
 The equivalent XML element is ``one-to-many``, which includes the following attributes:
 
 * ``name``: The name of the field or property. This attribute is required.
 * ``target-entity``: The class of the related type.
 * ``fetch``: One of `EAGER` or ``LAZY``.
-* ``mapped-by``: The name of the field or property that owns the relation. See <<_jpa_overview_meta_field>>.
+* ``mapped-by``: The name of the field or property that owns the relation. See <<jpa_overview_meta_field>>.
 
 You may also nest the `cascade` element within a 
 `one-to-many` element.
 
-[[_jpa_overview_meta_mappedby]]
+[[jpa_overview_meta_mappedby]]
 ====== Bidirectional Relations
 (((bidirectional relations)))
 (((mappedBy)))
@@ -732,7 +733,7 @@ An article refers to its authors while each author refers to her written article
 When the two fields of a bidirectional relation share the same datastore mapping, JPA formalizes the connection with the `mappedBy` property.
 Marking `Company.mags` as `mappedBy` ``Magazine.publisher`` means two things:
 
-. `Company.mags` uses the datastore mapping for ``Magazine.publisher``, but inverses it. In fact, it is illegal to specify any additional mapping information when you use the `mappedBy`  property. All mapping information is read from the referenced field. We explore mapping in depth in <<_jpa_overview_mapping>>.
+. `Company.mags` uses the datastore mapping for ``Magazine.publisher``, but inverses it. In fact, it is illegal to specify any additional mapping information when you use the `mappedBy`  property. All mapping information is read from the referenced field. We explore mapping in depth in <<jpa_overview_mapping>>.
 . `Magazine.publisher` is the "owner" of the relation. The field that specifies the mapping data is always the owner. This means that changes to the `Magazine.publisher` field are reflected in the datastore, while changes to the `Company.mags` field alone are not. Changes to `Company.mags` may still affect the JPA implementation's cache, however. Thus, it is very important that you keep your object model consistent by properly maintaining both sides of your bidirectional relations at all times.
 
 You should always take advantage of the `mappedBy` property rather than mapping each field of a bidirectional relation independently.
@@ -743,10 +744,10 @@ One side has to actually do the mapping!
 [NOTE]
 ====
 You can configure OpenJPA to automatically synchronize both sides of a bidirectional relation, or to perform various actions when it detects inconsistent relations.
-See <<_ref_guide_inverses>> in the Reference Guide for details.
+See <<ref_guide_inverses>> in the Reference Guide for details.
 ====
 
-[[_jpa_overview_meta_onetoone]]
+[[jpa_overview_meta_onetoone]]
 ===== One To One
 (((OneToOne)))
 (((metadata , OneToOne)))
@@ -759,9 +760,9 @@ JPA indicates one to one relations between entities with the [class]``OneToOne``
 This annotation has the following properties:
 
 * ``Class targetEntity``: The class of the related entity type. This information is usually taken from the field type.
-* ``String mappedBy``: Names the field in the related entity that maps this bidirectional relation. We explain bidirectional relations in <<_jpa_overview_meta_mappedby>> above. Leaving this property unset signals that this is a standard unidirectional relation.
-* ``CascadeType[] cascade``: Array of enum values defining cascade behavior for this field. We explore cascades in <<_jpa_overview_meta_cascade>> above. Defaults to an empty array.
-* ``FetchType fetch``: Whether to load the field eagerly (``FetchType.EAGER``) or lazily (``FetchType.LAZY``). Defaults to ``FetchType.EAGER``. See <<_jpa_overview_meta_fetch>> above for details on fetch types.
+* ``String mappedBy``: Names the field in the related entity that maps this bidirectional relation. We explain bidirectional relations in <<jpa_overview_meta_mappedby>> above. Leaving this property unset signals that this is a standard unidirectional relation.
+* ``CascadeType[] cascade``: Array of enum values defining cascade behavior for this field. We explore cascades in <<jpa_overview_meta_cascade>> above. Defaults to an empty array.
+* ``FetchType fetch``: Whether to load the field eagerly (``FetchType.EAGER``) or lazily (``FetchType.LAZY``). Defaults to ``FetchType.EAGER``. See <<jpa_overview_meta_fetch>> above for details on fetch types.
 * ``boolean optional``: Whether the related object must exist. If ``false``, this field cannot be null. Defaults to ``true``.
 
 The equivalent XML element is `one-to-one` which understands the following attributes:
@@ -769,12 +770,12 @@ The equivalent XML element is `one-to-one` which understands the following attri
 * ``name``: The name of the field or property. This attribute is required.
 * ``target-entity``: The class of the related type.
 * ``fetch``: One of `EAGER` or ``LAZY``.
-* ``mapped-by``: The field that owns the relation. See <<_jpa_overview_meta_field>>.
+* ``mapped-by``: The field that owns the relation. See <<jpa_overview_meta_field>>.
 
 You may also nest the `cascade` element within a 
 `one-to-one` element.
 
-[[_jpa_overview_meta_manytomany]]
+[[jpa_overview_meta_manytomany]]
 ===== Many To Many
 (((ManyToMany)))
 (((metadata , ManyToMany)))
@@ -788,9 +789,9 @@ JPA indicates many to many relations between entities with the [class]``ManyToMa
 This annotation has the following properties:
 
 * ``Class targetEntity``: The class of the related entity type. This information is usually taken from the parameterized collection or map element type. You must supply it explicitly, however, if your field isn't a parameterized type.
-* ``String mappedBy``: Names the many to many field in the related entity that maps this bidirectional relation. We explain bidirectional relations in <<_jpa_overview_meta_mappedby>> above. Leaving this property unset signals that this is a standard unidirectional relation.
-* ``CascadeType[] cascade``: Array of enum values defining cascade behavior for the collection elements. We explore cascades above in <<_jpa_overview_meta_cascade>>. Defaults to an empty array.
-* ``FetchType fetch``: Whether to load the field eagerly (``FetchType.EAGER``) or lazily (``FetchType.LAZY``). Defaults to ``FetchType.LAZY``. See <<_jpa_overview_meta_fetch>> above for details on fetch types.
+* ``String mappedBy``: Names the many to many field in the related entity that maps this bidirectional relation. We explain bidirectional relations in <<jpa_overview_meta_mappedby>> above. Leaving this property unset signals that this is a standard unidirectional relation.
+* ``CascadeType[] cascade``: Array of enum values defining cascade behavior for the collection elements. We explore cascades above in <<jpa_overview_meta_cascade>>. Defaults to an empty array.
+* ``FetchType fetch``: Whether to load the field eagerly (``FetchType.EAGER``) or lazily (``FetchType.LAZY``). Defaults to ``FetchType.LAZY``. See <<jpa_overview_meta_fetch>> above for details on fetch types.
 
 The equivalent XML element is ``many-to-many``.
 It accepts the following attributes:
@@ -798,12 +799,12 @@ It accepts the following attributes:
 * ``name``: The name of the field or property. This attribute is required.
 * ``target-entity``: The class of the related type.
 * ``fetch``: One of `EAGER` or ``LAZY``.
-* ``mapped-by``: The field that owns the relation. See <<_jpa_overview_meta_field>>.
+* ``mapped-by``: The field that owns the relation. See <<jpa_overview_meta_field>>.
 
 You may also nest the `cascade` element within a 
 `many-to-many` element.
 
-[[_jpa_overview_meta_orderby]]
+[[jpa_overview_meta_orderby]]
 ===== Order By
 (((OrderBy)))
 (((metadata , OrderBy)))
@@ -828,12 +829,12 @@ If the direction is omitted, it defaults to ascending.
 The equivalent XML element is `order-by` which can be listed as a sub-element of the `one-to-many` or `many-to-many`  elements.
 The text within this element is parsed as the order by string.
 
-[[_jpa_overview_meta_mapkey]]
+[[jpa_overview_meta_mapkey]]
 ===== Map Key
 (((MapKey)))
 (((metadata , MapKey)))
 
-JPA supports persistent [class]``Map`` fields through either a <<_jpa_overview_meta_onetomany,[class]``OneToMany``>> or <<_jpa_overview_meta_manytomany,[class]``ManyToMany``>> association.
+JPA supports persistent [class]``Map`` fields through either a <<jpa_overview_meta_onetomany,[class]``OneToMany``>> or <<jpa_overview_meta_manytomany,[class]``ManyToMany``>> association.
 The related entities form the map values.
 JPA derives the map keys by extracting a field from each entity value.
 The [class]``MapKey`` annotation designates the field that is used as the key.
@@ -847,26 +848,26 @@ The `map-key` element has the following attributes:
 * ``name``: The name of the field in the related entity class to use as the map key.
 
 
-[[_jpa_overview_meta_fielddefaults]]
+[[jpa_overview_meta_fielddefaults]]
 ===== Persistent Field Defaults
 
 In the absence of any of the annotations above, JPA defines the following default behavior for declared fields:
 
 . Fields declared ``static, transient``, or `final`  default to non-persistent.
-. Fields of any primitive type, primitive wrapper type, [class]``java.lang.String``, [class]``byte[]``, [class]``Byte[]``, [class]``char[]``, [class]``Character[]``, [class]``java.math.BigDecimal``, [class]``java.math.BigInteger``, [class]``java.util.Date``, [class]``java.util.Calendar``, [class]``java.sql.Date``, [class]``java.sql.Timestamp``, or any [class]``Serializable`` type default to persistent, as if annotated with <<_jpa_overview_meta_basic, `@Basic`>>.
-. Fields of an embeddable type default to persistent, as if annotated with <<_jpa_overview_meta_embedded,`@Embedded`>>.
+. Fields of any primitive type, primitive wrapper type, [class]``java.lang.String``, [class]``byte[]``, [class]``Byte[]``, [class]``char[]``, [class]``Character[]``, [class]``java.math.BigDecimal``, [class]``java.math.BigInteger``, [class]``java.util.Date``, [class]``java.util.Calendar``, [class]``java.sql.Date``, [class]``java.sql.Timestamp``, or any [class]``Serializable`` type default to persistent, as if annotated with <<jpa_overview_meta_basic, `@Basic`>>.
+. Fields of an embeddable type default to persistent, as if annotated with <<jpa_overview_meta_embedded,`@Embedded`>>.
 . All other fields default to non-persistent.
 
 Note that according to these defaults, all relations between entities must be annotated explicitly.
 Without an annotation, a relation field will default to serialized storage if the related entity type is serializable, or will default to being non-persistent if not.
 
-[[_jpa_overview_meta_xml]]
+[[jpa_overview_meta_xml]]
 ==== XML Schema
 (((metadata , XSD)))
 
 The latest revision of the version 2.0 orm schema is presented below.
 Version 2.0 of the schema must be used if JPA 2.0 elements are specified as XML metadata.
-Many of the elements in the schema relate to object/relational mapping rather than metadata; these elements are discussed in <<_jpa_overview_mapping>>.
+Many of the elements in the schema relate to object/relational mapping rather than metadata; these elements are discussed in <<jpa_overview_mapping>>.
 Version 1.0 of the orm schema can be found at http://java.sun.com/xml/ns/persistence/orm_1_0.xsd.
 
 [source]
@@ -2594,12 +2595,13 @@ Version 1.0 of the orm schema can be found at http://java.sun.com/xml/ns/persist
 </xsd:schema>
 ----
 
-[[_jpa_overview_meta_complete]]
+[[jpa_overview_meta_complete]]
 ==== Conclusion
 
 That exhausts persistence metadata annotations.
 We present the class definitions for our sample model below:
 
+[[jpa_overview_meta_complete_ex]]
 .Complete Metadata
 ====
 [source]
@@ -2919,7 +2921,7 @@ The same metadata declarations in XML:
 ----
 ====
 
-<<_jpa_overview_mapping>> will show you how to map your persistent classes to the datastore using additional annotations and XML markup.
+<<jpa_overview_mapping>> will show you how to map your persistent classes to the datastore using additional annotations and XML markup.
 First, however, we turn to the JPA runtime APIs.
 
 ifdef::backend-docbook[]

@@ -1,4 +1,4 @@
-[[_jpa_overview_query]]
+[[jpa_overview_query]]
 === JPA Query
 (((JP Query)))
 (((queries)))
@@ -10,12 +10,12 @@ The [class]``jakarta.persistence.Query`` interface is the mechanism for issuing 
 The primary query language used is the Java Persistence Query Language, or ``JPQL``.
 JPQL is syntactically very similar to SQL, but is object-oriented rather than table-oriented.
 
-The API for executing JPQL queries will be discussed in <<_jpa_query_api>>, and a full language reference will be covered in <<_jpa_langref>>.
+The API for executing JPQL queries will be discussed in <<jpa_query_api>>, and a full language reference will be covered in <<jpa_langref>>.
 
-[[_jpa_query_api]]
+[[jpa_query_api]]
 ==== JPQL API
 
-[[_jpa_overview_query_basic]]
+[[jpa_overview_query_basic]]
 ===== Query Basics
 
 [source]
@@ -240,7 +240,7 @@ SELECT x FROM Magazine x WHERE x.price <> 10.0
 ----
 
 
-[[_jpa_overview_query_relations]]
+[[jpa_overview_query_relations]]
 ===== Relation Traversal
 
 Relations between objects can be traversed using Java-like syntax.
@@ -284,7 +284,7 @@ x, IN(x.articles) y WHERE y.authorName = 'John Doe'` and
 `SELECT x FROM Magazine x inner join x.articles y WHERE y.authorName = 'John Doe'`  are synonymous.
 ====
 
-[[_jpa_overview_query_embeddables]]
+[[jpa_overview_query_embeddables]]
 ===== Embeddable Traversal
 
 Similar to relation traversal, nested embeddable objects can be traversed using Java-like syntax.
@@ -320,7 +320,7 @@ For example, if the Address has a relation field named "phoneLists" of an entity
 SELECT p FROM Company c, IN(c.address.phoneLists) p WHERE c.name = 'Random House'
 ----
 
-[[_jpa_overview_join_fetch]]
+[[jpa_overview_join_fetch]]
 ===== Fetch Joins
 
 JPQL queries may specify one or more `join fetch` declarations, which allow the query to specify which fields in the returned instances will be pre-fetched.
@@ -355,10 +355,10 @@ SELECT x FROM Magazine x join fetch x.articles a join fetch a.publishers p WHERE
 [NOTE]
 ====
 Specifying the `join fetch` declaration is functionally equivalent to adding the fields to the Query's [class]``FetchConfiguration``.
-See <<_ref_guide_fetch>>.
+See <<ref_guide_fetch>>.
 ====
 
-[[_jpa_overview_query_functions]]
+[[jpa_overview_query_functions]]
 ===== JPQL Functions
 
 As well as supporting direct field and relation comparisons, JPQL supports a pre-defined set of functions that you can apply.
@@ -539,7 +539,7 @@ SELECT c FROM Customer AS c WHERE EXTRACT(DATE FROM c.createdTimestamp)  { d '19
 ----
 
 
-[[_jpa_overview_query_inheritance]]
+[[jpa_overview_query_inheritance]]
 ===== Polymorphic Queries
 
 All JPQL queries are polymorphic, which means the `from` clause of a query includes not only instances of the specific entity class to which it refers, but all subclasses of that class as well.
@@ -551,7 +551,7 @@ For example, the following query may return instances of [class]``Magazine``, as
 SELECT x FROM Magazine x WHERE x.price  5
 ----
 
-Non-polymorphic queries or queries whose polymorphism is restricted can be specified using entity type expressions (see <<_jpa_langref_entity_type_expressions>> ) in the `WHERE` clause to restrict the domain of the query.
+Non-polymorphic queries or queries whose polymorphism is restricted can be specified using entity type expressions (see <<jpa_langref_entity_type_expressions>> ) in the `WHERE` clause to restrict the domain of the query.
 For example, the following query returns instances of [class]``Digest``:
 [source]
 ----
@@ -559,7 +559,7 @@ For example, the following query returns instances of [class]``Digest``:
 SELECT x FROM Magazine WHERE TYPE(x) = Digest
 ----
 
-[[_jpa_overview_query_params]]
+[[jpa_overview_query_params]]
 ===== Query Parameters
 
 JPQL provides support for parameterized queries.
@@ -609,9 +609,9 @@ ListMagazine results = (ListMagazine) q.getResultList();
 
 This code substitutes `JDJ` for the  `:titleParam`  parameter and `5.0` for the `:priceParam`  parameter, then executes the query with those values.
 
-All input parameters must be single-valued, except in IN expressions (see <<_jpa_langref_in_expressions>>), which support the use of collection-valued input parameters.
+All input parameters must be single-valued, except in IN expressions (see <<jpa_langref_in_expressions>>), which support the use of collection-valued input parameters.
 
-[[_jpa_overview_query_hints]]
+[[jpa_overview_query_hints]]
 ===== Query Hints
 
 JPQL provides support for hints which are name/value pairs used to control locking and optimization keywords in SQL.
@@ -619,6 +619,7 @@ The following example shows how to use the JPA hint API to set the [class]``Read
 This will result in a database-specific SQL keyword (usually FOR UPDATE) to be emitted into the SQL provided that a pessimistic LockManager is being used.
 Additionally, if a DB2 database is being used, the OPTIMIZE FOR 2 ROWS clause will also be emitted.
 
+[[jpa_query_hint1]]
 .Query Hints
 ====
 [source]
@@ -636,7 +637,7 @@ List r = q.getResultList();
 Hints which can not be processed by a particular database or are unknown to OpenJPA are ignored.
 Hints known to OpenJPA but supplied with an incompatible value will result in an [class]``IllegalArgumentException`` being thrown.
 
-[[_jpa_hints_locking]]
+[[jpa_hints_locking]]
 ====== Locking Hints
 
 To avoid deadlock and optimistic update exceptions among multiple updaters, use a pessimistic LockManager, specified in the persistence unit definition, and use a hint name of openjpa.FetchPlan.ReadLockMode on queries for entities that must be locked for serialization.
@@ -685,30 +686,30 @@ force update version field at the end of transaction
                                  SQL without FOR UPDATE
 |===
 
-[[_jpa_hints_locktimeout]]
+[[jpa_hints_locktimeout]]
 ====== Lock Timeout Hint
 
 To specify a lock timeout hint in milliseconds to those databases that support it, specify a hint name of openjpa.LockTimeout or jakarta.persistence.lock.timeout with an integer value greater than zero, or zero for no timeout which is the default behavior.
 
-[[_jpa_hints_querytimeout]]
+[[jpa_hints_querytimeout]]
 ====== Query Timeout Hint
 
 To specify a query timeout hint in milliseconds to those database drivers that support it, specify a hint name of jakarta.persistence.query.timeout with an integer value greater than zero, or zero for no timeout which is the default behavior.
 
-[[_jpa_hints_resultset]]
+[[jpa_hints_resultset]]
 ====== Result Set Size Hint
 
 To specify a result set size hint to those databases that support it, specify a hint name of openjpa.hint.OptimizeResultCount with an integer value greater than zero.
 This causes the SQL keyword OPTIMIZE FOR to be generated.
 
-[[_jpa_hints_isolation]]
+[[jpa_hints_isolation]]
 ====== Isolation Level Hint
 
 To specify an isolation level, specify a hint name of openjpa.FetchPlan.Isolation.
 The value will be used to specify isolation level using the SQL WITH isolation clause for those databases that support it.
 This hint only works in conjunction with the ReadLockMode hint.
 
-[[_jpa_hints_fetchplan]]
+[[jpa_hints_fetchplan]]
 ====== Other Fetchplan Hints
 
 Any property of  an OpenJPA FetchPlan can be changed using a hint by using a name of the form openjpa.FetchPlan.property name.
@@ -717,13 +718,14 @@ Valid property names include: [class]``MaxFetchDepth``, [class]``FetchBatchSize`
 ====== Database-Specific Hints
 
 The hint names openjpa.hint.MySQLSelectHint and openjpa.hint.OracleSelectHint can be used to specify a string value of a query hint that will be inserted into SQL for MySQL and Oracle databases.
-See <<_dbsupport_mysql_query_hints>> and <<_dbsupport_oracle_query_hints>> for examples.
+See <<dbsupport_mysql_query_hints>> and <<dbsupport_oracle_query_hints>> for examples.
 
-[[_jpa_hints_named]]
+[[jpa_hints_named]]
 ====== Named Query Hints
 
 Hints can also be included as part of a NamedQuery definition.
 
+[[jpa_query_hint2]]
 .Named Query using Hints
 ====
 [source]
@@ -741,8 +743,8 @@ Hints can also be included as part of a NamedQuery definition.
 ----
 ====
 
-[[_multi_hints_handling]]
-====== Handling of Multiple Similar Query Hints
+[[multi-hints-handling]]
+====== [[multi-hints-handling]]Handling of Multiple Similar Query Hints
 
 When similar hints in different prefix scopes are specified in a query, the following prefix precedence order is used to select the effective hint:
 
@@ -752,6 +754,7 @@ When similar hints in different prefix scopes are specified in a query, the foll
 * openjpa.*
 
 
+[[multi-hints-example]]
 .Setting Multiple Similar Query Hints
 ====
 [source]
@@ -767,7 +770,7 @@ q.setHint("openjpa.LockTimeout", 3000);
 ----
 ====
 
-[[_jpa_overview_query_ordering]]
+[[jpa_overview_query_ordering]]
 ===== Ordering
 
 JPQL queries may optionally contain an `order by` clause which specifies one or more fields to order by when returning query results.
@@ -783,7 +786,7 @@ SELECT x FROM Magazine x order by x.title asc, x.price desc
 The query above returns [class]``Magazine`` instances sorted by their title in ascending order.
 In cases where the titles of two or more magazines are the same, those instances will be sorted by price in descending order.
 
-[[_jpa_overview_query_aggregates]]
+[[jpa_overview_query_aggregates]]
 ===== Aggregates
 
 JPQL queries can select aggregate data as well as objects.
@@ -810,7 +813,7 @@ Query q = em.createQuery("SELECT MAX(x.price) FROM Magazine x WHERE x.title = 'J
 Number result = (Number) q.getSingleResult();
 ----
 
-[[_jpa_overview_query_named]]
+[[jpa_overview_query_named]]
 ===== Named Queries
 
 Query templates can be statically declared using the  `NamedQuery`  and `NamedQueries` annotations.
@@ -860,7 +863,7 @@ q.setParameter("titleParam", "JDJ");
 ListMagazine results = (ListMagazine) q.getResultList();
 ----
 
-[[_jpa_overview_query_delete]]
+[[jpa_overview_query_delete]]
 ===== Delete By Query
 
 Queries are useful not only for finding objects, but for efficiently deleting them as well.
@@ -879,6 +882,7 @@ public int executeUpdate();
 This method returns the number of objects deleted.
 The following example deletes all subscriptions whose expiration date has passed.
 
+[[jpa_overview_query_deleteex]]
 .Delete by Query
 ====
 [source]
@@ -890,7 +894,7 @@ int deleted = q.executeUpdate();
 ----
 ====
 
-[[_jpa_overview_query_update]]
+[[jpa_overview_query_update]]
 ===== Update By Query
 
 Similar to bulk deletes, it is sometimes necessary to perform updates against a large number of queries in a single operation, without having to bring all the instances down to the client.
@@ -908,6 +912,7 @@ public int executeUpdate();
 This method returns the number of objects updated.
 The following example updates all subscriptions whose expiration date has passed to have the "paid" field set to true..
 
+[[jpa_overview_query_updateex]]
 .Update by Query
 ====
 [source]
@@ -920,7 +925,7 @@ int updated = q.executeUpdate();
 ----
 ====
 
-[[_jpa_langref]]
+[[jpa_langref]]
 ==== JPQL Language Reference
 
 The Java Persistence Query Language (JPQL) is used to define searches against persistent entities independent of the mechanism used to store those entities.
@@ -934,7 +939,7 @@ This chapter provides the full definition of the language.
 Much of this section is paraphrased or taken directly from Chapter 4 of the JSR 317 Java Persistence API Specification.
 ====
 
-[[_jpa_langref_stmnttypes]]
+[[jpa_langref_stmnttypes]]
 ===== JPQL Statement Types
 
 A JPQL statement may be either a `SELECT` statement, an ``UPDATE`` statement, or a `DELETE` statement.
@@ -943,11 +948,11 @@ In BNF syntax, a query language statement is defined as:
 
 * QL_statement ::= select_statement | update_statement | delete_statement
 
-The complete BNF for JPQL is defined in <<_jpa_langref_bnf>>.
+The complete BNF for JPQL is defined in <<jpa_langref_bnf>>.
 Any JPQL statement may be constructed dynamically or may be statically defined in a metadata annotation or XML descriptor element.
-All statement types may have parameters, as discussed in <<_jpa_langref_input_params>>.
+All statement types may have parameters, as discussed in <<jpa_langref_input_params>>.
 
-[[_jpa_langref_select]]
+[[jpa_langref_select]]
 ====== JPQL Select Statement
 
 A select statement is a string which consists of the following clauses:
@@ -966,7 +971,7 @@ In BNF syntax, a select statement is defined as:
 A select statement must always have a `SELECT` and a ``FROM`` clause.
 The square brackets [] indicate that the other clauses are optional.
 
-[[_jpa_langref_bulk]]
+[[jpa_langref_bulk]]
 ====== JPQL Update and Delete Statements
 
 Update and delete statements provide bulk operations over sets of entities.
@@ -977,9 +982,9 @@ In BNF syntax, these operations are defined as:
 
 The update and delete clauses determine the type of the entities to be updated or deleted.
 The `WHERE` clause may be used to restrict the scope of the update or delete operation.
-Update and delete statements are described further in <<_jpa_langref_bulk_ops>>.
+Update and delete statements are described further in <<jpa_langref_bulk_ops>>.
 
-[[_jpa_langref_schematypes]]
+[[jpa_langref_schematypes]]
 ===== JPQL Abstract Schema Types and Query Domains
 
 The Java Persistence query language is a typed language, and every expression has a type.
@@ -1001,14 +1006,14 @@ The domain of a query may be restricted by the `navigability` of the relationshi
 The association-fields of an entity's or embeddable's abstract schema type determine navigability.
 Using the association fields and their values, a query can select related entities and use their abstract schema types in the query.
 
-[[_jpa_langref_schemanaming]]
+[[jpa_langref_schemanaming]]
 ====== JPQL Entity Naming
 
 Entities are designated in query strings by their entity names.
 The entity name is defined by the name element of the Entity annotation (or the entity-name XML descriptor element), and defaults to the unqualified name of the entity class.
 Entity names are scoped within the persistence unit and must be unique within the persistence unit.
 
-[[_jpa_langref_schemaexample]]
+[[jpa_langref_schemaexample]]
 ====== JPQL Schema Example
 
 This example assumes that the application developer provides several entity classes, representing magazines, publishers, authors, and articles.
@@ -1047,12 +1052,12 @@ Because `Magazine` is related to `Author` by means of the relationships between 
 This query is specified by using the abstract schema name ``Magazine``, which designates the abstract schema type over which the query ranges.
 The basis for the navigation is provided by the association-fields `authors` and `product` of the abstract schema types `Magazine` and `Article` respectively.
 
-[[_jpa_langref_fromclause]]
+[[jpa_langref_fromclause]]
 ===== JPQL FROM Clause and Navigational Declarations
 
 The `FROM` clause of a query defines the domain of the query by declaring identification variables.
 An identification variable is an identifier declared in the `FROM` clause of a query.
-The domain of the query may be constrained by path expressions (See section <<_jpa_langref_path>>.
+The domain of the query may be constrained by path expressions (See section <<jpa_langref_path>>.
 
 Identification variables designate instances of a particular entity abstract schema type.
 The `FROM`  clause can contain multiple identification variable declarations separated by a comma (,).
@@ -1070,7 +1075,7 @@ The `FROM`  clause can contain multiple identification variable declarations sep
 
 The following subsections discuss the constructs used in the `FROM` clause.
 
-[[_jpa_langref_from_identifiers]]
+[[jpa_langref_from_identifiers]]
 ====== JPQL FROM Identifiers
 
 An identifier is a character sequence of unlimited length.
@@ -1185,7 +1190,7 @@ It is recommended that other SQL reserved words also not be used as identificati
 BIT_LENGTH, CHAR_LENGTH, CHARACTER_LENGTH, POSITION, and UNKNOWN are not currently used: they are reserved for future use.
 ====
 
-[[_jpa_langref_from_vars]]
+[[jpa_langref_from_vars]]
 ====== JPQL Identification Variables
 
 An identification variable is a valid identifier declared in the `FROM`  clause of a query.
@@ -1226,7 +1231,7 @@ An identification variable never designates a collection in its entirety.
 
 An identification variable is scoped to the query (or subquery) in which it is defined and is also visible to any subqueries within that query scope that do not define an identification variable of the same name.
 
-[[_jpa_langref_range]]
+[[jpa_langref_range]]
 ====== JPQL Range Declarations
 
 The syntax for declaring an identification variable as a range variable is similar to that of SQL; optionally, it uses the AS keyword.
@@ -1254,7 +1259,7 @@ SELECT DISTINCT mag1 FROM Magazine mag1, Magazine mag2
 WHERE mag1.price  mag2.price AND mag2.publisher.name = 'Adventure'
 ----
 
-[[_jpa_langref_path]]
+[[jpa_langref_path]]
 ====== JPQL Path Expressions
 
 An identification variable followed by the navigation operator (.) and a state-field or association-field is a path expression.
@@ -1358,9 +1363,9 @@ SELECT DISTINCT art.author FROM Magazine AS mag, IN(mag.articles) art
 ----
 
 It is illegal to use a `collection_valued_path_expression` other than in the `FROM` clause of a query except in an ``empty_collection_comparison_expression``, in a ``collection_member_expression``, or as an argument to the `SIZE` operator.
-See <<_jpa_langref_empty_comp>>, <<_jpa_langref_collection_member>>, and <<_jpa_langref_arithmetic>>.
+See <<jpa_langref_empty_comp>>, <<jpa_langref_collection_member>>, and <<jpa_langref_arithmetic>>.
 
-[[_jpa_langref_joins]]
+[[jpa_langref_Joins]]
 ====== JPQL Joins
 
 An inner join may be implicitly specified by the use of a cartesian product in the `FROM` clause and a join condition in the `WHERE`  clause.
@@ -1384,9 +1389,9 @@ The syntax for explicit join operations is as follows:
 * join_single_valued_path_expression::= identification_variable.{single_valued_embeddable_object_field.}*single_valued_object_field
 * join_spec ::= [ LEFT [OUTER] | INNER ] JOIN
 
-The inner and outer join operation types described in <<_jpa_langref_inner_joins>> and <<_jpa_langref_outer_joins>> are supported.
+The inner and outer join operation types described in <<jpa_langref_inner_joins>> and <<jpa_langref_outer_joins>> are supported.
 
-[[_jpa_langref_inner_joins]]
+[[jpa_langref_inner_joins]]
 ====== JPQL Inner Joins (Relationship Joins)
 
 The syntax for the inner join operation is
@@ -1431,7 +1436,7 @@ FROM Employee e JOIN e.contactInfo c JOIN c.phones p
 WHERE c.address.zipcode = '95054'
 ----
 
-[[_jpa_langref_outer_joins]]
+[[jpa_langref_outer_joins]]
 ====== JPQL Outer Joins
 
 `LEFT JOIN` and `LEFT OUTER JOIN` are synonymous.
@@ -1451,7 +1456,7 @@ SELECT pub FROM Publisher pub LEFT OUTER JOIN pub.magazines mags WHERE pub.reven
 ---- An important use case for `LEFT JOIN` is in enabling the prefetching of related data items as a side effect of a query.
 This is accomplished by specifying the `LEFT JOIN` as a ``FETCH JOIN``.
 
-[[_jpa_langref_fetch_joins]]
+[[jpa_langref_fetch_joins]]
 ====== JPQL Fetch Joins
 
 A `FETCH JOIN` enables the fetching of an association as a side effect of the execution of a query.
@@ -1477,7 +1482,7 @@ Hence, for example, if magazine id 1 has five articles, the above query returns 
 
 The `FETCH JOIN` construct must not be used in the FROM clause of a subquery.
 
-[[_jpa_langref_collection_dec]]
+[[jpa_langref_collection_dec]]
 ====== JPQL Collection Member Declarations
 
 An identification variable declared by a `collection_member_declaration` ranges over values of a collection obtained by navigation using a path expression.
@@ -1510,7 +1515,7 @@ SELECT DISTINCT mag FROM Magazine mag,
 The identification variable `art` designates a member of this collection, a single `Article` abstract schema type instance.
 In this example, `mag` is an identification variable of the abstract schema type ``Magazine``.
 
-[[_jpa_langref_from_clause_and_sql]]
+[[jpa_langref_from_clause_and_sql]]
 ====== JPQL FROM Clause and SQL
 
 The Java Persistence query language treats the FROM clause similarly to SQL in that the declared identification variables affect the results of the query even if they are not used in the WHERE clause.
@@ -1526,7 +1531,7 @@ SELECT o
 FROM Order AS o JOIN o.lineItems l JOIN l.product p
 ----
 
-[[_jpa_langref_polymorph]]
+[[jpa_langref_polymorph]]
 ====== JPQL Polymorphism
 
 Java Persistence queries are automatically polymorphic.
@@ -1534,9 +1539,9 @@ The `FROM`  clause of a query designates not only instances of the specific enti
 The instances returned by a query include instances of the subclasses that satisfy the query criteria.
 
 Non-polymorphic queries or queries whose polymorphism is restricted can be specified using entity type expressions in the `WHERE` clause to restrict the domain of the query.
-See <<_jpa_langref_entity_type_expressions>>.
+See <<jpa_langref_entity_type_expressions>>.
 
-[[_jpa_langref_where]]
+[[jpa_langref_where]]
 ===== JPQL WHERE Clause
 
 The `WHERE` clause of a query consists of a conditional expression used to select objects or values that satisfy the expression.
@@ -1553,9 +1558,9 @@ The syntax of the `HAVING`  clause is as follows:
 
 * having_clause ::= HAVING conditional_expression
 
-The `GROUP BY` and `HAVING` constructs are further discussed in <<_jpa_langref_group>>.
+The `GROUP BY` and `HAVING` constructs are further discussed in <<jpa_langref_group>>.
 
-[[_jpa_langref_cond]]
+[[jpa_langref_cond]]
 ===== JPQL Conditional Expressions
 
 The following sections describe the language constructs that can be used in a conditional expression of the `WHERE` clause or 
@@ -1568,7 +1573,7 @@ State-fields that are mapped in serialized form or as LOBs may not be portably u
 The implementation is not expected to perform such query operations involving such fields in memory rather than in the database.
 ====
 
-[[_jpa_langref_lit]]
+[[jpa_langref_lit]]
 ====== JPQL Literals
 
 A string literal is enclosed in single quotes--for example: 'literal'. A string literal that includes a single quote is represented by two single quotes--for example: 'literal''s'. String literals in queries, like Java String literals, use unicode character encoding.
@@ -1603,24 +1608,24 @@ Entity type literals are specified by entity names--for example: ``Customer``.
 
 Although reserved literals appear in upper case, they are case insensitive.
 
-[[_jpa_langref_idvar]]
+[[jpa_langref_idvar]]
 ====== JPQL Identification Variables
 
 All identification variables used in the `WHERE` or 
-`HAVING` clause of a `SELECT` or `DELETE`  statement must be declared in the `FROM` clause, as described in <<_jpa_langref_from_vars>>.
+`HAVING` clause of a `SELECT` or `DELETE`  statement must be declared in the `FROM` clause, as described in <<jpa_langref_from_vars>>.
 The identification variables used in the `WHERE` clause of an `UPDATE`  statement must be declared in the `UPDATE` clause.
 
 Identification variables are existentially quantified in the `WHERE`  and `HAVING` clause.
 This means that an identification variable represents a member of a collection or an instance of an entity's abstract schema type.
 An identification variable never designates a collection in its entirety.
 
-[[_jpa_langref_path_exp]]
+[[jpa_langref_path_exp]]
 ====== JPQL Path Expressions
 
 It is illegal to use a `collection_valued_path_expression` within a 
 `WHERE` or `HAVING` clause as part of a conditional expression except in an ``empty_collection_comparison_expression``, in a ``collection_member_expression``, or as an argument to the `SIZE` operator.
 
-[[_jpa_langref_input_params]]
+[[jpa_langref_input_params]]
 ====== JPQL Input Parameters
 
 Either positional or named parameters may be used.
@@ -1629,11 +1634,11 @@ Positional and named parameters may not be mixed in a single query.
 Input parameters can only be used in the `WHERE` clause or `HAVING` clause of a query.
 
 Note that if an input parameter value is null, comparison operations or arithmetic operations involving the input parameter will return an unknown value.
-See <<_jpa_langref_null_values>>.
+See <<jpa_langref_null_values>>.
 
-All input parameters must be single-valued, except in IN expressions (see <<_jpa_langref_in_expressions>> ), which support the use of collection-valued input parameters.
+All input parameters must be single-valued, except in IN expressions (see <<jpa_langref_in_expressions>> ), which support the use of collection-valued input parameters.
 
-[[_jpa_langref_pos_params]]
+[[jpa_langref_pos_params]]
 ====== JPQL Positional Parameters
 
 The following rules apply to positional parameters.
@@ -1644,11 +1649,11 @@ The following rules apply to positional parameters.
 * The ordering of the use of parameters within the query string need not conform to the order of the positional parameters.
 
 
-[[_jpa_langref_named_params]]
+[[jpa_langref_named_params]]
 ====== JPQL Named Parameters
 
 A named parameter is an identifier that is prefixed by the ":" symbol.
-It follows the rules for identifiers defined in <<_jpa_langref_from_identifiers>>.
+It follows the rules for identifiers defined in <<jpa_langref_from_identifiers>>.
 Named parameters are case sensitive.
 
 Example:
@@ -1659,18 +1664,18 @@ SELECT pub FROM Publisher pub WHERE pub.revenue  :rev
 
 The same named parameter can be used more than once in the query string.
 
-[[_jpa_langref_cond_comp]]
+[[jpa_langref_cond_comp]]
 ====== JPQL Conditional Expression Composition
 
 Conditional expressions are composed of other conditional expressions, comparison operations, logical operations, path expressions that evaluate to boolean values, boolean literals, and boolean input parameters.
 
-The scalar expressions described in <<_jpa_langref_scalar_expressions>> can be used in conditional expressions.
+The scalar expressions described in <<jpa_langref_scalar_expressions>> can be used in conditional expressions.
 
 Standard bracketing () for ordering expression evaluation is supported.
 
 Aggregate functions can only be used in conditional expressions in a 
 `HAVING` clause.
-See <<_jpa_langref_group>>.
+See <<jpa_langref_group>>.
 
 Conditional expressions are defined as follows:
 
@@ -1683,7 +1688,7 @@ Conditional expressions are defined as follows:
 * simple_cond_expression ::= comparison_expression | between_expression | like_expression | in_expression | null_comparison_expression | empty_collection_comparison_expression | collection_member_expression | exists_expression
 
 
-[[_jpa_langref_operators]]
+[[jpa_langref_operators]]
 ====== JPQL Operators and Operator Precedence
 
 The operators are listed below in order of decreasing precedence.
@@ -1696,7 +1701,7 @@ The operators are listed below in order of decreasing precedence.
 
 The following sections describe other operators used in specific expressions.
 
-[[_jpa_langref_comparison_expressions]]
+[[jpa_langref_comparison_expressions]]
 ====== JPQL Comparison Expressions
 
 The syntax for the use of comparison expressions in a conditional expression is as follows:
@@ -1729,7 +1734,7 @@ TYPE(e) = ExemptEmployee
 Comparisons over instances of embeddable class types are not supported.
 ====
 
-[[_jpa_langref_between]]
+[[jpa_langref_between]]
 ====== JPQL Between Expressions
 
 The syntax for the use of the comparison operator [ `NOT` ] ``BETWEEN`` in a conditional expression is as follows:
@@ -1745,7 +1750,7 @@ x BETWEEN y AND z
 ----
 y = x AND x = z
 ---- The rules for unknown and `NULL` values in comparison operations apply.
-See <<_jpa_langref_null_values>> .
+See <<jpa_langref_null_values>> .
 
 Examples are:
 [source]
@@ -1777,7 +1782,7 @@ FROM CreditCard c JOIN c.transactionHistory t
 WHERE c.holder.name = ‘John Doe’ AND INDEX(t) BETWEEN 0 AND 9
 ----
 
-[[_jpa_langref_in_expressions]]
+[[jpa_langref_in_expressions]]
 ====== JPQL In Expressions
 
 The syntax for the use of the comparison operator [ `NOT` ] ``IN`` in a conditional expression is as follows:
@@ -1790,10 +1795,10 @@ The syntax for the use of the comparison operator [ `NOT` ] ``IN`` in a conditio
 The `state_field_path_expression` must have a string, numeric, date, time, timestamp, or enum value.
 
 The literal and/or input_parameter values must be `like` the same abstract schema type of the `state_field_path_expression` in type.
-(See <<_jpa_langref_equality>> ).
+(See <<jpa_langref_equality>> ).
 
 The results of the subquery must be `like` the same abstract schema type of the ``state_field_path_expression`` in type.
-Subqueries are discussed in <<_jpa_langref_subqueries>>.
+Subqueries are discussed in <<jpa_langref_subqueries>>.
 
 Examples:
 
@@ -1830,7 +1835,7 @@ If the value of a `state_field_path_expression` or `in_item` in an `IN` or
 
 Note that use of a collection-valued input parameter will mean that a static query cannot be precompiled.
 
-[[_jpa_langref_like]]
+[[jpa_langref_like]]
 ====== JPQL Like Expressions
 
 The syntax for the use of the comparison operator [ `NOT` ] ``LIKE`` in a conditional expression is as follows:
@@ -1866,7 +1871,7 @@ If the value of the `string_expression` or ``pattern_value`` is `NULL` or unknow
 `LIKE` expression is unknown.
 If the `escape_character` is specified and is ``NULL``, the value of the `LIKE` expression is unknown.
 
-[[_jpa_langref_null]]
+[[jpa_langref_null]]
 ====== JPQL Null Comparison Expressions
 
 The syntax for the use of the comparison operator `IS NULL` in a conditional expression is as follows:
@@ -1877,7 +1882,7 @@ A null comparison expression tests whether or not the single-valued path express
 
 Null comparisons over instances of embeddable class types are not supported.
 
-[[_jpa_langref_empty_comp]]
+[[jpa_langref_empty_comp]]
 ====== JPQL Empty Collection Comparison Expressions
 
 The syntax for the use of the comparison operator `IS EMPTY` in an `empty_collection_comparison_expression` is as follows:
@@ -1895,7 +1900,7 @@ SELECT mag FROM Magazine mag WHERE mag.articles IS EMPTY
 
 If the value of the collection-valued path expression in an empty collection comparison expression is unknown, the value of the empty comparison expression is unknown.
 
-[[_jpa_langref_collection_member]]
+[[jpa_langref_collection_member]]
 ====== JPQL Collection Member Expressions
 
 The syntax for the use of the comparison operator `MEMBER OF` in an `collection_member_expression` is as follows:
@@ -1924,7 +1929,7 @@ FROM Person p
 WHERE 'Joe' MEMBER OF p.nicknames
 ----
 
-[[_jpa_langref_exists]]
+[[jpa_langref_exists]]
 ====== JPQL Exists Expressions
 
 An `EXISTS` expression is a predicate that is true only if the result of the subquery consists of one or more values and that is false otherwise.
@@ -1941,7 +1946,7 @@ SELECT DISTINCT auth FROM Author auth
 ----
 The result of this query consists of all authors whose spouse is also an author.
 
-[[_jpa_langref_all_any]]
+[[jpa_langref_all_any]]
 ====== JPQL All or Any Expressions
 
 An `ALL` conditional expression is a predicate over a subquery that is true if the comparison operation is true for all values in the result of the subquery or the result of the subquery is empty.
@@ -1952,7 +1957,7 @@ An `ANY` conditional expression is false if the result of the subquery is empty 
 The keyword `SOME` is synonymous with ``ANY``.
 
 The comparison operators used with ``ALL`` or `ANY` conditional expressions are =, , =, , =, . The result of the subquery must be like that of the other argument to the comparison operator in type.
-See <<_jpa_langref_equality>>.
+See <<jpa_langref_equality>>.
 The syntax of an `ALL`  or `ANY` expression is specified as follows:
 
 * all_or_any_expression ::= { ALL | ANY | SOME} (subquery)
@@ -1964,7 +1969,7 @@ SELECT auth FROM Author auth
     WHERE auth.salary = ALL(SELECT a.salary FROM Author a WHERE a.magazine = auth.magazine)
 ----
 
-[[_jpa_langref_subqueries]]
+[[jpa_langref_subqueries]]
 ====== JPQL Subqueries
 
 Subqueries may be used in the `WHERE` or `HAVING`  clause.
@@ -2007,7 +2012,7 @@ WHERE goodCustomer.balanceOwed  (
 SELECT AVG(c.balanceOwed)/2.0 FROM Customer c)
 ----
 
-[[_jpa_langref_scalar_expressions]]
+[[jpa_langref_scalar_expressions]]
 ===== JPQL Scalar Expressions
 
 Numeric, string, datetime, case, and entity type expressions result in scalar values.
@@ -2016,7 +2021,7 @@ Scalar expressions may be used in the `SELECT` clause of a query as well as in t
 
 scalar_expression::= arithmetic_expression | string_primary | enum_primary | datetime_primary | boolean_primary | case_expression | entity_type_expression
 
-[[_jpa_langref_math_expressions]]
+[[jpa_langref_math_expressions]]
 ====== Arithmetic Expressions
 
 The arithmetic operators are:
@@ -2027,16 +2032,16 @@ The arithmetic operators are:
 
 Arithmetic operations use numeric promotion.
 
-Arithmetic functions are described in <<_jpa_langref_arithmetic>>.
+Arithmetic functions are described in <<jpa_langref_arithmetic>>.
 
-[[_jpa_langref_functional_expressions]]
+[[jpa_langref_functional_expressions]]
 ====== String, Arithmetic, and Datetime Functional Expressions
 
-JPQL includes the built-in functions described in subsections <<_jpa_langref_string_fun>>, <<_jpa_langref_arithmetic>>, <<_jpa_langref_datetime>>, which may be used in the ``SELECT``, ``WHERE`` or `HAVING` clause of a query.
+JPQL includes the built-in functions described in subsections <<jpa_langref_string_fun>>, <<jpa_langref_arithmetic>>, <<jpa_langref_datetime>>, which may be used in the ``SELECT``, ``WHERE`` or `HAVING` clause of a query.
 
  If the value of any argument to a functional expression is null or unknown, the value of the functional expression is unknown.
 
-[[_jpa_langref_string_fun]]
+[[jpa_langref_string_fun]]
 ====== JPQL String Functions
 
 
@@ -2072,7 +2077,7 @@ Note that not all databases support the use of the third argument to ``LOCATE``;
 
 The `LENGTH`  function returns the length of the string in characters as an integer.
 
-[[_jpa_langref_arithmetic]]
+[[jpa_langref_arithmetic]]
 ====== JPQL Arithmetic Functions
 
 
@@ -2101,7 +2106,7 @@ Numeric arguments to these functions may correspond to the numeric Java object t
 The INDEX function returns an integer value corresponding to the position of its argument in an ordered list.
 The INDEX function can only be applied to identification variables denoting types for which an order column has been specified.
 
-[[_jpa_langref_datetime]]
+[[jpa_langref_datetime]]
 ====== JPQL Datetime Functions
 
 functions_returning_datetime:= CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP | LOCAL DATE  | LOCAL TIME | LOCAL DATETIME | extract_datetime_part
@@ -2139,7 +2144,7 @@ For the following field type identifiers, EXTRACT returns a part of the datetime
 
 It is illegal to pass a datetime argument which does not have the given part to EXTRACT.
 
-[[_jpa_langref_typecasts_expressions]]
+[[jpa_langref_typecasts_expressions]]
 ====== Typecasts
 
 The CAST function converts an expression of one type to an expression of a different type.
@@ -2157,7 +2162,7 @@ Examples
 UPDATE Invoice AS inv SET inv.description = CONCAT('Price ', CAST(inv.price AS STRING))
 ----
 
-[[_jpa_langref_case_expressions]]
+[[jpa_langref_case_expressions]]
 ====== Case Expressions
 
 The following forms of case expressions are supported: general case expressions, simple case expressions, coalesce expressions, and nullif expressions.
@@ -2225,7 +2230,7 @@ SELECT e.name,
 FROM Employee e JOIN e.frequentFlierPlan f
 ----
 
-[[_jpa_langref_entity_type_expressions]]
+[[jpa_langref_entity_type_expressions]]
 ====== Entity Type Expressions
 
 An entity type expression can be used to restrict query polymorphism.
@@ -2280,7 +2285,7 @@ FROM Employee e
 WHERE TYPE(e)  Exempt
 ----
 
-[[_jpa_langref_group]]
+[[jpa_langref_group]]
 ===== JPQL GROUP BY, HAVING
 
 The `GROUP BY` construct enables the aggregation of values according to a set of properties.
@@ -2340,7 +2345,7 @@ GROUP BY c.country
 HAVING COUNT(c)  30
 ----
 
-[[_jpa_langref_select_clause]]
+[[jpa_langref_select_clause]]
 ===== JPQL SELECT Clause
 
 The `SELECT` clause denotes the query result.
@@ -2403,7 +2408,7 @@ WHERE c.address.state = ‘CA’
 ORDER BY itemCount
 ----
 
-[[_jpa_langref_resulttype]]
+[[jpa_langref_resulttype]]
 ====== JPQL Result Type of the SELECT Clause
 
 The type of the query result specified by the `SELECT` clause of a query is an entity abstract schema type, a state-field type, the result of of a scalar expression, the result of an aggregate function, the result of a construction operation, or some sequence of these.
@@ -2418,13 +2423,13 @@ The type of the result of a `select_expression` is as follows:
 * The result type of a `single_valued_path_expression` that is a ``single_valued_object_path_expression`` is the type of the entity object or embeddable object to which the path expression corresponds. A `single_valued_object_path_expression` that results in an entity object will result in an entity of the type of the relationship field or the subtype of the relationship field of the entity object as determined by the object/relational mapping.
 * The result type of a ``single_valued_path_expression`` that is an identification_variable to which the `KEY` or `VALUE` function has been applied is determined by the type of the map key or value respectively, as defined by the above rules
 * The result type of a ``single_valued_path_expression`` that is an ``identification_variable`` to which the `ENTRY` function has been applied is ``java.util.Map.Entry``, where the key and value types of the map entry are determined by the above rules as applied to the map key and map value respectively.
-* The result type of a ``scalar_expression`` is the type of the scalar value to which the expression evaluates. The result type of a numeric `scalar_expression` is defined in <<_jpa_langref_scalar_expressions>>
+* The result type of a ``scalar_expression`` is the type of the scalar value to which the expression evaluates. The result type of a numeric `scalar_expression` is defined in <<jpa_langref_scalar_expressions>>
 * The result type of an ``entity_type_expression`` scalar expression is the Java class to which the resulting abstract schema type corresponds.
-* The result type of aggregate_expression is defined in <<_jpa_langref_aggregates>>.
+* The result type of aggregate_expression is defined in <<jpa_langref_aggregates>>.
 * The result type of a ``constructor_expression`` is the type of the class for which the constructor is defined. The types of the arguments to the constructor are defined by the above rules.
 
 
-[[_jpa_langref_constructor]]
+[[jpa_langref_constructor]]
 ====== JPQL Constructor Expressions
 
 A constructor may be used in the ``SELECT`` list to return one or more Java instances.
@@ -2451,7 +2456,7 @@ SELECT NEW com.company.PublisherInfo(mag)
     FROM Publisher pub JOIN pub.magazines mag WHERE mag.price  5.00
 ----
 
-[[_jpa_langref_null_select]]
+[[jpa_langref_null_select]]
 ====== JPQL Null Values in the Query Result
 
 If the result of a query corresponds to a association-field or state-field whose value is null, that null value is returned in the result of the query method.
@@ -2460,7 +2465,7 @@ The `IS NOT NULL` construct can be used to eliminate such null values from the r
 Note, however, that state-field types defined in terms of Java numeric primitive types cannot produce `NULL`  values in the query result.
 A query that returns such a state-field type as a result type must not return a null value.
 
-[[_jpa_langref_embeddables]]
+[[jpa_langref_embeddables]]
 ====== JPQL Embeddables in the Query Result
 
 If the result of a query corresponds to an identification variable or state field whose value is an embeddable, the embeddable instance returned by the query will not be in the managed state (i.e., it will not be part of the state of any managed entity).
@@ -2497,7 +2502,7 @@ SELECT e.address AS addr
 FROM Employee e
 ----
 
-[[_jpa_langref_aggregates]]
+[[jpa_langref_aggregates]]
 ====== JPQL Aggregate Functions
 
 The result of a query may be the result of an aggregate function applied to a path expression.
@@ -2531,7 +2536,7 @@ Null values are eliminated before the aggregate function is applied, regardless 
 
 The use of `DISTINCT` with `COUNT` is not supported for arguments of embeddable types or map entry types.
 
-[[_jpa_langref_agg_examples]]
+[[jpa_langref_agg_examples]]
 ====== JPQL Aggregate Examples
 
 The following query returns the average price of all magazines:
@@ -2555,9 +2560,9 @@ The type of a numeric expression in the query result is determined as follows:
 
 An operand that corresponds to a persistent state-field is of the same type as that persistent state-field.
 
-An operand that corresponds to one of arithmetic functions described in <<_jpa_langref_arithmetic>> is of the type defined by <<_jpa_langref_arithmetic>>.
+An operand that corresponds to one of arithmetic functions described in <<jpa_langref_arithmetic>> is of the type defined by <<jpa_langref_arithmetic>>.
 
-An operand that corresponds to one of an aggregate functions described in <<_jpa_langref_aggregates>> is of the type defined by <<_jpa_langref_aggregates>>.
+An operand that corresponds to one of an aggregate functions described in <<jpa_langref_aggregates>> is of the type defined by <<jpa_langref_aggregates>>.
 
 The result of a case expression, coalesce expression, nullif expression, or arithmetic expression (+, -, *, /) is determined by applying the following rule to its operands.
 
@@ -2569,7 +2574,7 @@ The result of a case expression, coalesce expression, nullif expression, or arit
 * otherwise, if there is an operand of integral type, the result of the operation is of type Integer.
 
 
-[[_jpa_langref_orderby]]
+[[jpa_langref_orderby]]
 ===== JPQL ORDER BY Clause
 
 The `ORDER BY` clause allows the objects or values that are returned by the query to be ordered.
@@ -2662,7 +2667,7 @@ SQL rules for the ordering of null values apply: that is, all null values must a
 
 The ordering of the query result is preserved in the result of the query method if the `ORDER BY` clause is used.
 
-[[_jpa_langref_bulk_ops]]
+[[jpa_langref_bulk_ops]]
 ===== JPQL Bulk Update and Delete
 
 Bulk update and delete operations apply to entities of a single entity class (together with its subclasses, if any). Only one entity abstract schema type may be specified in the `FROM` or `UPDATE`  clause.
@@ -2677,7 +2682,7 @@ The syntax of these operations is as follows:
 * delete_statement ::= delete_clause [where_clause]
 * delete_clause ::= DELETE FROM entity_name [[AS] identification_variable]
 
-The syntax of the `WHERE` clause is described in <<_jpa_langref_where>>.
+The syntax of the `WHERE` clause is described in <<jpa_langref_where>>.
 
 A delete operation only applies to entities of the specified class and its subclasses.
 It does not cascade to related entities.
@@ -2707,7 +2712,7 @@ UPDATE Publisher pub SET pub.status = 'outstanding'
     WHERE pub.revenue  1000000 AND 20  (SELECT COUNT(mag) FROM pub.magazines mag)
 ----
 
-[[_jpa_langref_null_values]]
+[[jpa_langref_null_values]]
 ===== JPQL Null Values
 
 When the target of a reference does not exist in the database, its value is regarded as ``NULL``.
@@ -2725,7 +2730,7 @@ Note: The JPQL defines the empty string, "", as a string with 0 length, which is
 However, `NULL` values and empty strings may not always be distinguished when queries are mapped to some databases.
 Application developers should therefore not rely on the semantics of query comparisons involving the empty string and `NULL`  value.
 
-[[_jpa_langref_equality]]
+[[jpa_langref_equality]]
 ===== JPQL Equality and Comparison Semantics
 
 Only the values of `like` types are permitted to be compared.
@@ -2740,7 +2745,7 @@ Equality/inequality comparisons over enums are supported.
 
 Comparisons over instances of embeddable class or map entry types are not supported.
 
-[[_jpa_langref_bnf]]
+[[jpa_langref_bnf]]
 ===== JPQL BNF
 
 BNF notation summary:

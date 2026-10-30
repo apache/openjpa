@@ -1,4 +1,4 @@
-[[_jpa_overview_trans]]
+[[jpa_overview_trans]]
 === Transaction
 (((transactions)))
 
@@ -54,7 +54,7 @@ If the two lines of the [method]``transferFunds`` method had been placed togethe
 Either the funds would be transferred properly or they would not be transferred at all, and an exception would be thrown.
 Money could never vanish into thin air, and the data store could never get into an inconsistent state.
 
-[[_jpa_overview_trans_types]]
+[[jpa_overview_trans_types]]
 ==== Transaction Types
 
 There are two major types of transactions: pessimistic transactions and optimistic transactions.
@@ -85,10 +85,10 @@ They offer better performance, better scalability, and lower risk of hanging due
 ====
 OpenJPA uses optimistic semantics by default, but supports both optimistic and datastore transactions.
 OpenJPA also offers advanced locking and versioning APIs for fine-grained control over database resource allocation and object versioning.
-See <<_ref_guide_locking>> of the Reference Guide for details on locking. <<_jpa_overview_meta_version>> of this document covers standard object versioning, while <<_ref_guide_mapping_jpa>> of the Reference Guide discusses additional versioning strategies available in OpenJPA.
+See <<ref_guide_locking>> of the Reference Guide for details on locking. <<jpa_overview_meta_version>> of this document covers standard object versioning, while <<ref_guide_mapping_jpa>> of the Reference Guide discusses additional versioning strategies available in OpenJPA.
 ====
 
-[[_jpa_overview_trans_local]]
+[[jpa_overview_trans_local]]
 ==== The EntityTransaction Interface
 (((Transaction)))
 
@@ -125,6 +125,7 @@ public boolean isActive();
 
 Finally, the [method]``isActive`` method returns `true`  if the transaction is in progress ([method]``begin`` has been called more recently than [method]``commit`` or [method]``rollback``), and `false` otherwise.
 
+[[jpa_overview_trans_group]]
 .Grouping Operations with Transactions
 ====
 [source]

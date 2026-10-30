@@ -1,9 +1,9 @@
-[[_ref_guide_runtime]]
+[[ref_guide_runtime]]
 === Runtime Extensions
 
 This chapter describes OpenJPA extensions to the standard JPA interfaces, and outlines some additional features of the OpenJPA runtime.
 
-[[_ref_guide_runtime_arch]]
+[[ref_guide_runtime_arch]]
 ==== Architecture
 
 Internally, OpenJPA does not adhere to any persistence specification.
@@ -26,24 +26,25 @@ So that you won't feel lost, the list below associates each specification interf
 * [class]``org.apache.openjpa.persistence.FetchPlan``: _[class]``__org.apache.openjpa.kernel.FetchConfiguration__``_
 * [class]``org.apache.openjpa.persistence.Generator``: _[class]``__org.apache.openjpa.kernel.Seq__``_
 
-The <<_ref_guide_runtime_openjpapersistence,[class]``org.apache.openjpa.persistence.OpenJPAPersistence``>> helper allows you to convert between [class]``EntityManagerFactories`` and [class]``BrokerFactories``, [class]``EntityManager``s and [class]``Broker``s.
+The <<ref_guide_runtime_openjpapersistence,[class]``org.apache.openjpa.persistence.OpenJPAPersistence``>> helper allows you to convert between [class]``EntityManagerFactories`` and [class]``BrokerFactories``, [class]``EntityManager``s and [class]``Broker``s.
 
-[[_ref_guide_runtime_broker_finalization]]
+[[ref_guide_runtime_broker_finalization]]
 ===== Broker Finalization
 (((EntityManager , finalizing , clean-up)))
 
 Outside of a Java EE application server or other JPA persistence container environment, the default OpenJPAEntityManager implementation automatically closes itself during instance finalization.
 This guards against accidental resource leaks that may occur if a developer fails to explicitly close EntityManagers when finished with them, but it also incurs a scalability bottleneck, since the JVM must perform synchronization during instance creation, and since the finalizer thread will have more instances to monitor.
-To avoid this overhead, set the <<_openjpa.brokerimpl,`openjpa.BrokerImpl`>> configuration property to ``non-finalizing``.
+To avoid this overhead, set the <<openjpa.BrokerImpl,`openjpa.BrokerImpl`>> configuration property to ``non-finalizing``.
 
-[[_ref_guide_runtime_broker_extension]]
+[[ref_guide_runtime_broker_extension]]
 ===== Broker Customization and Eviction
 
-As a <<_ref_guide_conf_plugins,plugin string>>, this property can be used to configure the [class]``BrokerImpl`` with the following properties:
+As a <<ref_guide_conf_plugins,plugin string>>, this property can be used to configure the [class]``BrokerImpl`` with the following properties:
 
-* ``EvictFromDataCache``: When evicting an object through the [method]``OpenJPAEntityManager.evict`` methods, whether to also evict it from the OpenJPA's <<_ref_guide_cache,data cache>>. Defaults to ``false``.
+* ``EvictFromDataCache``: When evicting an object through the [method]``OpenJPAEntityManager.evict`` methods, whether to also evict it from the OpenJPA's <<ref_guide_cache,data cache>>. Defaults to ``false``.
 
 
+[[ref_guide_runtime_pm_evictex]]
 .Evict from Data Cache
 ====
 [source]
@@ -55,14 +56,14 @@ As a <<_ref_guide_conf_plugins,plugin string>>, this property can be used to con
 
 Additionally, some advanced users may want to add capabilities to OpenJPA's internal link:../../apidocs/org/apache/openjpa/kernel/BrokerImpl.html[
 org.apache.openjpa.kernel.BrokerImpl].
-You can configure OpenJPA to use a custom subclass of [class]``BrokerImpl`` with the <<_openjpa.brokerimpl,`openjpa.BrokerImpl` >> configuration property.
+You can configure OpenJPA to use a custom subclass of [class]``BrokerImpl`` with the <<openjpa.BrokerImpl,`openjpa.BrokerImpl` >> configuration property.
 Set this property to the full class name of your custom subclass.
-When implementing your subclass, consider the finalization issues mentioned in <<_ref_guide_runtime_broker_finalization>>.
+When implementing your subclass, consider the finalization issues mentioned in <<ref_guide_runtime_broker_finalization>>.
 It may be appropriate to create a subtype of both link:../../apidocs/org/apache/openjpa/kernel/BrokerImpl.html[
 org.apache.openjpa.kernel.BrokerImpl] and link:../../apidocs/org/apache/openjpa/kernel/FinalizingBrokerImpl.html[
 org.apache.openjpa.kernel.FinalizingBrokerImpl].
 
-[[_ref_guide_runtime_jpa]]
+[[ref_guide_runtime_jpa]]
 ==== JPA Extensions
 
 The following sections outline the runtime interfaces you can use to access OpenJPA-specific functionality from JPA.
@@ -81,10 +82,10 @@ public static OpenJPAEntityManager cast(EntityManager em);
 public static OpenJPAQuery cast(Query q);
 ----
 
-We provide additional information on the [class]``OpenJPAPersistence`` helper <<_ref_guide_runtime_openjpapersistence,
+We provide additional information on the [class]``OpenJPAPersistence`` helper <<ref_guide_runtime_openjpapersistence,
 below>>.
 
-[[_ref_guide_runtime_emfactory]]
+[[ref_guide_runtime_emfactory]]
 ===== OpenJPAEntityManagerFactory
 (((EntityManagerFactory , OpenJPA extensions)))
 
@@ -93,7 +94,7 @@ The [class]``OpenJPAEntityManagerFactory`` offers APIs to access the OpenJPA dat
 See the link:../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManagerFactory.html[
 interface Javadoc] for details.
 
-[[_ref_guide_runtime_em]]
+[[ref_guide_runtime_em]]
 ===== OpenJPAEntityManager
 (((EntityManager , OpenJPA extensions)))
 
@@ -104,7 +105,7 @@ This interface extends the standard [class]``jakarta.persistence.EntityManager``
 Just as the standard [class]``EntityManager`` is the primary window into JPA services, the [class]``OpenJPAEntityManager`` is the primary window from JPA into OpenJPA-specific functionality.
 We strongly encourage you to investigate the API extensions this interface contains.
 
-[[_ref_guide_runtime_jpaquery]]
+[[ref_guide_runtime_jpaquery]]
 ===== OpenJPAQuery
 (((Query , OpenJPA extensions)))
 
@@ -112,7 +113,7 @@ OpenJPA extends JPA's standard query functionality with the [class]``org.apache.
 See its link:../../apidocs/org/apache/openjpa/persistence/OpenJPAQuery.html[Javadoc
 ] for details on the convenience methods it provides.
 
-[[_ref_guide_runtime_jpaextent]]
+[[ref_guide_runtime_jpaextent]]
 ===== Extent
 (((Extent , OpenJPA extensions)))
 
@@ -121,6 +122,7 @@ OpenJPA adds the link:../../apidocs/org/apache/openjpa/persistence/Extent.html[
 org.apache.openjpa.persistence.Extent] class to the set of Java Persistence APIs.
 The following code illustrates iterating over all instances of the [class]``Magazine`` entity, without subclasses:
 
+[[ref_guide_runtime_jpaextentex]]
 .Using a JPA Extent
 ====
 [source]
@@ -137,35 +139,35 @@ for (Magazine m : mags)
 ----
 ====
 
-[[_ref_guide_runtime_jpacache]]
+[[ref_guide_runtime_jpacache]]
 ===== StoreCache
 
 In addition to the [class]``EntityManager`` object cache the JPA specification provides access to a second level cache via the jakarta.persistence.Cache interface.
 OpenJPA provides further extensions via the org.apache.openjpa.persistence.StoreCache interface documented at link:../../apidocs/org/apache/openjpa/persistence/StoreCache.html[
-org.apache.openjpa.persistence.StoreCache]. <<_ref_guide_cache>> has detailed information on OpenJPA's data caching system, including the [class]``StoreCache`` facade.
+org.apache.openjpa.persistence.StoreCache]. <<ref_guide_cache>> has detailed information on OpenJPA's data caching system, including the [class]``StoreCache`` facade.
 
-[[_ref_guide_runtime_jpaquerycache]]
+[[ref_guide_runtime_jpaquerycache]]
 ===== QueryResultCache
 (((QueryResultCache)))
 
 OpenJPA can cache query results as well as persistent object data.
 The link:../../apidocs/org/apache/openjpa/persistence/QueryResultCache.html[
 org.apache.openjpa.persistence.QueryResultCache] is an JPA-flavored facade to OpenJPA's internal query cache.
-See <<_ref_guide_cache_query>> for details on query caching in OpenJPA.
+See <<ref_guide_cache_query>> for details on query caching in OpenJPA.
 
-[[_ref_guide_runtime_jpafetch]]
+[[ref_guide_runtime_jpafetch]]
 ===== FetchPlan
 (((FetchPlan)))
 (((eager fetching)))
 
 Many of the aforementioned OpenJPA interfaces give you access to an [class]``org.apache.openjpa.persistence.FetchPlan`` instance.
-The [class]``FetchPlan`` allows you to exercise some control over how objects are fetched from the datastore, including <<_ref_guide_dbsetup_lrs,
-large result set support>>, <<_ref_guide_fetch,custom fetch
-groups>>, and <<_ref_guide_locking,lock levels>>.
+The [class]``FetchPlan`` allows you to exercise some control over how objects are fetched from the datastore, including <<ref_guide_dbsetup_lrs,
+large result set support>>, <<ref_guide_fetch,custom fetch
+groups>>, and <<ref_guide_locking,lock levels>>.
 
 OpenJPA goes one step further, extending [class]``FetchPlan`` with link:../../apidocs/org/apache/openjpa/persistence/jdbc/JDBCFetchPlan.html[
 org.apache.openjpa.persistence.jdbc.JDBCFetchPlan] to add additional JDBC-specific tuning methods.
-Unless you have customized OpenJPA to use a non-relational back-end (see <<_ref_guide_enterprise_abstractstore>> ), all [class]``FetchPlan``s in OpenJPA implement [class]``JDBCFetchPlan``, so feel free to cast to this interface.
+Unless you have customized OpenJPA to use a non-relational back-end (see <<ref_guide_enterprise_abstractstore>> ), all [class]``FetchPlan``s in OpenJPA implement [class]``JDBCFetchPlan``, so feel free to cast to this interface.
 
 Fetch plans pass on from parent components to child components.
 The [class]``EntityManagerFactory`` settings (via your configuration properties) for things like the fetch size, result set type, and custom fetch groups are passed on to the fetch plan of the [class]``EntityManager``s it produces.
@@ -174,47 +176,48 @@ Note that the opposite, however, is not true.
 Modifying the fetch plan of a [class]``Query`` or [class]``Extent`` does not affect the [class]``EntityManager``'s configuration.
 Likewise, modifying an [class]``EntityManager``'s configuration does not affect the [class]``EntityManagerFactory``.
 
-<<_ref_guide_fetch>> includes examples using [class]``FetchPlan``s.
+<<ref_guide_fetch>> includes examples using [class]``FetchPlan``s.
 
-[[_ref_guide_runtime_openjpaentitytransaction]]
+[[ref_guide_runtime_openjpaentitytransaction]]
 ===== OpenJPAEntityTransaction
 (((OpenJPAEntityTransaction)))
 
 link:../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityTransaction.html[
 org.apache.openjpa.persistence.OpenJPAEntityTransaction] extends [class]``jakarta.persistence.EntityTransaction`` to provide additional transaction-debugging capabilities and some concurrency-related commit and rollback features.
 
-[[_ref_guide_runtime_openjpapersistence]]
+[[ref_guide_runtime_openjpapersistence]]
 ===== OpenJPAPersistence
 (((OpenJPAPersistence)))
 
 link:../../apidocs/org/apache/openjpa/persistence/OpenJPAPersistence.html[
 org.apache.openjpa.persistence.OpenJPAPersistence] is a static helper class that adds OpenJPA-specific utility methods to [class]``jakarta.persistence.Persistence``.
 
-[[_ref_guide_locking]]
+[[ref_guide_locking]]
 ==== Object Locking
 (((locking)))
 
 Controlling how and when objects are locked is an important part of maximizing the performance of your application under load.
 This section describes OpenJPA's APIs for explicit locking, as well as its rules for implicit locking.
 
-[[_ref_guide_locking_default]]
+[[ref_guide_locking_default]]
 ===== Configuring Default Locking
 (((locking , defaults configuration)))
 
 
 (((ReadLockLevel)))
-(((WriteLockLevel))) You can control OpenJPA's default transactional read and write lock levels through the <<_openjpa.readlocklevel,
-`openjpa.ReadLockLevel`>> and <<_openjpa.writelocklevel,`openjpa.WriteLockLevel`>> configuration properties.
-Each property accepts a value of ``none``, ``read``, ``write``, ``optimistic``, ``optimistic-force-increment``, ``pessimistic-read``, ``pessimistic-write``, ``pessimistic-force-increment``, or a number corresponding to a lock level defined by the <<_ref_guide_locking_lockmgr,lock manager>> in use.
+(((WriteLockLevel))) You can control OpenJPA's default transactional read and write lock levels through the <<openjpa.ReadLockLevel,
+`openjpa.ReadLockLevel`>> and <<openjpa.WriteLockLevel,`openjpa.WriteLockLevel`>> configuration properties.
+Each property accepts a value of ``none``, ``read``, ``write``, ``optimistic``, ``optimistic-force-increment``, ``pessimistic-read``, ``pessimistic-write``, ``pessimistic-force-increment``, or a number corresponding to a lock level defined by the <<ref_guide_locking_lockmgr,lock manager>> in use.
 These properties apply only to non-optimistic transactions; during optimistic transactions, OpenJPA never locks objects by default.
 
 
 (((LockTimeout)))
-(((locking , timeout))) You can control the default amount of time OpenJPA will wait when trying to obtain locks through the <<_openjpa.locktimeout,
+(((locking , timeout))) You can control the default amount of time OpenJPA will wait when trying to obtain locks through the <<openjpa.LockTimeout,
 `openjpa.LockTimeout`>> configuration property.
 Set this property to the number of milliseconds you are willing to wait for a lock before OpenJPA will throw an exception, or to -1 for no limit.
 It defaults to -1.
 
+[[ref_guide_locking_default_conf]]
 .Setting Default Lock Levels
 ====
 [source]
@@ -226,7 +229,7 @@ It defaults to -1.
 ----
 ====
 
-[[_ref_guide_locking_runtime]]
+[[ref_guide_locking_runtime]]
 ===== Configuring Lock Levels at Runtime
 
 At runtime, you can override the default lock levels through the [class]``FetchPlan`` interface described above.
@@ -249,6 +252,7 @@ Controlling locking through these runtime APIs works even during optimistic tran
 At the end of the transaction, OpenJPA resets the fetch plan's lock levels to ``none``.
 You cannot lock objects outside of a transaction.
 
+[[ref_guide_locking_fetch]]
 .Setting Runtime Lock Levels
 ====
 [source]
@@ -280,7 +284,7 @@ em.getTransaction().commit();
 ----
 ====
 
-[[_ref_guide_locking_apis]]
+[[ref_guide_locking_apis]]
 ===== Object Locking APIs
 (((locking , runtime APIs)))
 
@@ -312,6 +316,7 @@ public void lockAll(Collection pcs, LockModeType mode, long timeout);
 Methods that do not take a lock level or timeout parameter default to the current fetch plan.
 The example below demonstrates these methods in action.
 
+[[ref_guide_locking_explicit]]
 .Locking APIs
 ====
 [source]
@@ -338,13 +343,13 @@ oem.getTransaction().commit();
 ----
 ====
 
-[[_ref_guide_locking_lockmgr]]
+[[ref_guide_locking_lockmgr]]
 ===== Lock Manager
 
 
 (((LockManager))) OpenJPA delegates the actual work of locking objects to the system's link:../../apidocs/org/apache/openjpa/kernel/LockManager.html[
 org.apache.openjpa.kernel.LockManager].
-This plugin is controlled by the <<_openjpa.lockmanager,
+This plugin is controlled by the <<openjpa.LockManager,
 `openjpa.LockManager`>> configuration property.
 You can write your own lock manager, or use one of the bundled options:
 
@@ -374,6 +379,7 @@ The `pessimistic` LockManager can be configured to additionally perform the vers
 In order for the `version` or `mixed` lock managers to prevent the dirty read phenomenon, the underlying data store's transaction isolation level must be set to the equivalent of "read committed" or higher.
 ====
 
+[[ref_guide_locking_disable]]
 .Disabling Locking
 ====
 [source]
@@ -383,7 +389,7 @@ In order for the `version` or `mixed` lock managers to prevent the dirty read ph
 ----
 ====
 
-[[_ref_guide_locking_rules]]
+[[ref_guide_locking_rules]]
 ===== Rules for Locking Behavior
 (((locking , behavior)))
 
@@ -398,7 +404,7 @@ The rules below outline OpenJPA's implicit locking behavior in these cases.
 . When an object is already locked at a given lock level, re-locking at a lower level has no effect. Locks cannot be downgraded during a transaction.
 
 
-[[_ref_guide_locking_issues]]
+[[ref_guide_locking_issues]]
 ===== Known Issues and Limitations
 (((locking , caveats)))
 
@@ -430,7 +436,7 @@ fp.setReadLockMode(LockModeType.NONE);
 ----
 
 
-[[_ref_guide_savepoints]]
+[[ref_guide_savepoints]]
 ==== Savepoints
 
 Savepoints allow for fine grained control over the transactional behavior of your application.
@@ -440,7 +446,7 @@ This feature is useful for multi-stage transactions, such as editing a set of ob
 Savepoints also provide more flexibility to conditional transaction behavior, such as choosing to commit or rollback a portion of the transaction based on the results of the changes.
 This chapter describes how to use and configure OpenJPA savepoints.
 
-[[_reg_guide_savepoints_using]]
+[[reg_guide_savepoints_using]]
 ===== Using Savepoints
 
 OpenJPA's link:../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html[
@@ -472,6 +478,7 @@ While savepoints made after this savepoint will also be released, there are no o
 
 The following simple example illustrates setting, releasing, and rolling back to a savepoint.
 
+[[ref_guide_savepoints_example]]
 .Using Savepoints
 ====
 [source]
@@ -505,18 +512,18 @@ oem.getTransaction().commit();
 ----
 ====
 
-[[_ref_guide_savepoints_conf]]
+[[ref_guide_savepoints_conf]]
 ===== Configuring Savepoints
 
 OpenJPA uses the link:../../apidocs/org/apache/openjpa/kernel/SavepointManager[
-org.apache.openjpa.kernel.SavepointManager]<<_ref_guide_conf_plugins,plugin>> to handle preserving the savepoint state.
+org.apache.openjpa.kernel.SavepointManager]<<ref_guide_conf_plugins,plugin>> to handle preserving the savepoint state.
 OpenJPA includes the following [class]``SavepointManager`` plugins:
 
 * ``in-mem``: The default. This is an alias for the link:../../apidocs/org/apache/openjpa/kernel/InMemorySavepointManager.html[ org.apache.openjpa.kernel.InMemorySavepointManager]. This plugin stores all state, including field values, in memory. Due to this behavior, each set savepoint is designed for small to medium transactional object counts.
 * ``jdbc``: This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/kernel/JDBC3SavepointManager.html[ org.apache.openjpa.jdbc.kernel.JDBC3SavepointManager]. This plugin requires `JDBC 3` and [class]``java.sql.Savepoint`` support to operate. Note that this plugin implements savepoints by issuing a flush to the database.
 
 
-[[_ref_guide_enterprise_methodql]]
+[[ref_guide_enterprise_methodql]]
 ==== MethodQL
 (((MethodQL)))
 (((Query , MethodQL)))
@@ -580,10 +587,10 @@ public static boolean xxx(StoreContext ctx, ClassMetaData meta, boolean subclass
 
 In both method versions, the given `params` map contains the names and values of all the parameters for the query.
 
-[[_ref_guide_sequence]]
+[[ref_guide_sequence]]
 ==== Generators
 
-The JPA Overview's <<_jpa_overview_mapping>> details using generators to automatically populate identity fields in JPA.
+The JPA Overview's <<jpa_overview_mapping>> details using generators to automatically populate identity fields in JPA.
 
 OpenJPA represents all generators internally with the link:../../apidocs/org/apache/openjpa/kernel/Seq.html[
 org.apache.openjpa.kernel.Seq] interface.
@@ -596,7 +603,7 @@ OpenJPA also supplies the following built-in [class]``Seq``s:
 It is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/kernel/TableJDBCSeq.html[
 org.apache.openjpa.jdbc.kernel.TableJDBCSeq] class.
 The [class]``TableJDBCSeq`` uses a special single-row table to store a global sequence number.
-If the table does not already exist, it is created the first time you run the <<_ref_guide_mapping_mappingtool,mapping tool>> on a class that requires it.
+If the table does not already exist, it is created the first time you run the <<ref_guide_mapping_mappingtool,mapping tool>> on a class that requires it.
 You can also use the class's [method]``main`` method to manipulate the table; see the [method]``TableJDBCSeq.main`` method Javadoc for usage details.
 
 This [class]``Seq`` has the following properties:
@@ -639,10 +646,11 @@ Set the `sequenceName` attribute to a plugin string describing your choice.
 If specifying your own class name, you must include parentheses at the end of the class name, even if you have no plugin properties to configure.
 (E.g., ``sequenceName="com.example.SeqImpl()"``.
 
-See <<_jpa_overview_mapping_sequence>> in the JPA Overview for details on defining ``SequenceGenerator``s.
+See <<jpa_overview_mapping_sequence>> in the JPA Overview for details on defining ``SequenceGenerator``s.
 
-See <<_ref_guide_conf_plugins>> for plugin string formatting.
+See <<ref_guide_conf_plugins>> for plugin string formatting.
 
+[[ref_guide_sequence_named]]
 .Named Seq Sequence
 ====
 [source]
@@ -672,9 +680,10 @@ Note that if you want to use a plugin string without any arguments, you must sti
 ====
 
 OpenJPA maintains a _system_ sequence to generate datastore identity values for classes that do not declare a specific datastore identity strategy.
-You can configure the system sequence through the <<_openjpa.sequence,`openjpa.Sequence`>> configuration property.
+You can configure the system sequence through the <<openjpa.Sequence,`openjpa.Sequence`>> configuration property.
 This property accepts a plugin string describing a [class]``Seq`` instance.
 
+[[ref_guide_sequence_systemex]]
 .System Sequence Configuration
 ====
 [source]
@@ -695,7 +704,7 @@ Or, because `AUTO` is the default strategy, use the annotation without attribute
 private long id;
 ----
 
-[[_ref_guide_sequence_runtime]]
+[[ref_guide_sequence_runtime]]
 ===== Runtime Access
 
 OpenJPA allows you to access named generators at runtime through the [method]``OpenJPAEntityManager.getNamedGenerator`` method:
@@ -715,7 +724,7 @@ Additionally, they allow you to access the implicit generator used by default fo
 See the link:../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html[
 Javadoc] for the [method]``OpenJPAEntityManager.getIdentityGenerator`` and [method]``OpenJPAEntityManager.getFieldGenerator`` methods for API details.
 
-[[_ref_guide_runtime_pm_event]]
+[[ref_guide_runtime_pm_event]]
 ==== Transaction Events
 (((transactions , events)))
 
@@ -736,9 +745,9 @@ These methods are outside the bounds of the published OpenJPA APIs, and are subj
 
 For details on the transaction framework, see the 
 `org.apache.openjpa.event` package link:../../apidocs/org/apache/openjpa/event/package-summary.html[Javadoc].
-Also see <<_ref_guide_event>> for a description of OpenJPA's remote event support.
+Also see <<ref_guide_event>> for a description of OpenJPA's remote event support.
 
-[[_ref_guide_enterprise_abstractstore]]
+[[ref_guide_enterprise_abstractstore]]
 ==== Non-Relational Stores
 
 It is possible to adapt OpenJPA to access a non-relational datastore by creating an implementation of the link:../../apidocs/org/apache/openjpa/kernel/StoreManager.html[

@@ -1,4 +1,4 @@
-[[_jpa_overview_sqlquery]]
+[[jpa_overview_sqlquery]]
 === SQL Queries
 (((SQL queries)))
 (((Query , SQL)))
@@ -12,11 +12,11 @@ Whatever the reason, SQL queries can remain an essential part of an application.
 
 You are probably familiar with executing SQL queries by obtaining a [class]``java.sql.Connection``, using the JDBC APIs to create a [class]``Statement``, and executing that [class]``Statement`` to obtain a [class]``ResultSet``.
 And of course, you are free to continue using this low-level approach to SQL execution in your JPA applications.
-However, JPA also supports executing SQL queries through the [class]``jakarta.persistence.Query`` interface introduced in <<_jpa_overview_query>>.
+However, JPA also supports executing SQL queries through the [class]``jakarta.persistence.Query`` interface introduced in <<jpa_overview_query>>.
 Using a JPA SQL query, you can retrieve either persistent objects or projections of column values.
 The following sections detail each use.
 
-[[_jpa_overview_sqlquery_create]]
+[[jpa_overview_sqlquery_create]]
 ==== Creating SQL Queries
 
 The [class]``EntityManager`` has two factory methods suitable for creating SQL queries:
@@ -33,6 +33,7 @@ The first method is used to create a new [class]``Query`` instance that will ret
 The second method uses a `SqlResultSetMapping` to determine the type of object or objects to return.
 The example below shows these methods in action.
 
+[[jpa_overview_sqlquery_createex]]
 .Creating a SQL Query
 ====
 [source]
@@ -51,7 +52,7 @@ processMagazines(query.getResultList());
 OpenJPA will assume any SQL that does not begin with the ``SELECT`` keyword (ignoring case) is a stored procedure call, and invoke it as such at the JDBC level.
 ====
 
-[[_jpa_overview_sqlquery_obj]]
+[[jpa_overview_sqlquery_obj]]
 ==== Retrieving Persistent Objects with SQL
 (((SQL queries , retrieving persistent objects)))
 
@@ -71,6 +72,7 @@ It uses the following simple mapping between a class and the database:
 image::img/sqlquery-model.png[]
 
 
+[[jpa_overview_sqlquery_objex]]
 .Retrieving Persistent Objects
 ====
 [source]
@@ -87,6 +89,7 @@ for (Magazine mag : results)
 The query above works as advertised, but isn't very flexible.
 Let's update it to take in parameters for the minimum and maximum price, so we can reuse it to find magazines in any price range:
 
+[[jpa_overview_sqlquery_obj_paramex]]
 .SQL Query Parameters
 ====
 [source]

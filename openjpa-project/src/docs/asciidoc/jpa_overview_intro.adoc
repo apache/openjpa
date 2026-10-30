@@ -1,4 +1,4 @@
-[[_jpa_overview_intro]]
+[[jpa_overview_intro]]
 === Introduction
 
 (((EJB3 Persistence)))
@@ -8,17 +8,17 @@ Unless otherwise noted, the information presented applies to all JPA implementat
 
 [NOTE]
 ====
-For coverage of OpenJPA's many extensions to the JPA specification, see the <<_ref_guide_intro,Reference Guide>>.
+For coverage of OpenJPA's many extensions to the JPA specification, see the <<ref_guide_intro,Reference Guide>>.
 ====
 
-[[_jpa_overview_intro_audience]]
+[[jpa_overview_intro_audience]]
 ==== Intended Audience
 
 This document is intended for developers who want to learn about JPA in order to use it in their applications.
 It assumes that you have a strong knowledge of object-oriented concepts and Java, including annotations and generics.
 It also assumes some experience with relational databases and the Structured Query Language (SQL).
 
-[[_jpa_overview_intro_transpers]]
+[[jpa_overview_intro_transpers]]
 ==== Lightweight Persistence
 (((lightweight persistence)))
 (((persistent data)))__Persistent data__ is information that can outlive the program that creates it.

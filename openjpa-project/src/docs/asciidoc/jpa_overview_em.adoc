@@ -1,4 +1,4 @@
-[[_jpa_overview_em]]
+[[jpa_overview_em]]
 === EntityManager
 (((EntityManager)))
 
@@ -29,7 +29,7 @@ The methods of the [class]``EntityManager`` can be divided into the following fu
 * Closing.
 
 
-[[_jpa_overview_em_trans]]
+[[jpa_overview_em_trans]]
 ==== Transaction Association
 (((EntityManager , obtaining the Transaction)))
 
@@ -39,7 +39,7 @@ The methods of the [class]``EntityManager`` can be divided into the following fu
 public EntityTransaction getTransaction();
 ----
 
-Every [class]``EntityManager`` has a one-to-one relation with an <<_jpa_overview_trans,[class]``EntityTransaction``>> instance.
+Every [class]``EntityManager`` has a one-to-one relation with an <<jpa_overview_trans,[class]``EntityTransaction``>> instance.
 In fact, many vendors use a single class to implement both the [class]``EntityManager`` and [class]``EntityTransaction`` interfaces.
 If your application requires multiple concurrent transactions, you will use multiple [class]``EntityManager``s.
 
@@ -47,7 +47,7 @@ You can retrieve the [class]``EntityTransaction`` associated with an [class]``En
 Note that most JPA implementations can integrate with an application server's managed transactions.
 If you take advantage of this feature, you will control transactions by declarative demarcation or through the Java Transaction API (JTA) rather than through the [class]``EntityTransaction``.
 
-[[_jpa_overview_em_lifecycle]]
+[[jpa_overview_em_lifecycle]]
 ==== Entity Lifecycle Management
 (((EntityManager , lifecycle operations)))
 
@@ -70,7 +70,7 @@ For a given entity ``A``, the [method]``persist`` method behaves as follows:
 * If `A` is an existing managed entity, it is ignored. However, the persist operation cascades as defined below.
 * If `A` is a removed entity, it becomes managed.
 * If `A` is a detached entity, an [class]``IllegalArgumentException`` is thrown.
-* The persist operation recurses on all relation fields of `A` whose <<_jpa_overview_meta_cascade,cascades>> include ``CascadeType.PERSIST``.
+* The persist operation recurses on all relation fields of `A` whose <<jpa_overview_meta_cascade,cascades>> include ``CascadeType.PERSIST``.
 
 This action can only be used in the context of an active transaction.
 
@@ -92,7 +92,7 @@ For a given entity ``A``, the [method]``remove`` method behaves as follows:
 * If `A` is an existing managed entity, it becomes removed.
 * If `A` is a removed entity, it is ignored.
 * If `A` is a detached entity, an [class]``IllegalArgumentException`` is thrown.
-* The remove operation recurses on all relation fields of `A` whose <<_jpa_overview_meta_cascade,cascades>> include ``CascadeType.REMOVE``.
+* The remove operation recurses on all relation fields of `A` whose <<jpa_overview_meta_cascade,cascades>> include ``CascadeType.REMOVE``.
 
 This action can only be used in the context of an active transaction.
 
@@ -112,7 +112,7 @@ For a given entity ``A``, the [method]``refresh`` method behaves as follows:
 * If `A` is an existing managed entity, its state is refreshed from the datastore.
 * If `A` is a removed entity, it is ignored.
 * If `A` is a detached entity, an [class]``IllegalArgumentException`` is thrown.
-* The refresh operation recurses on all relation fields of `A` whose <<_jpa_overview_meta_cascade,cascades>> include ``CascadeType.REFRESH``.
+* The refresh operation recurses on all relation fields of `A` whose <<jpa_overview_meta_cascade,cascades>> include ``CascadeType.REFRESH``.
 
 
 [source]
@@ -132,7 +132,7 @@ Similarly, a client/server application might transfer persistent objects to a cl
 This is sometimes referred to as the _data transfer object_ or _value
 object_ pattern, and it allows fine-grained manipulation of data objects without incurring the overhead of multiple remote method invocations.
 
-JPA provides support for this pattern by automatically detaching entities when they are serialized or when a persistence context ends (see <<_jpa_overview_emfactory_perscontext>> for an exploration of persistence contexts). The JPA _merge_ API re-attaches detached entities.
+JPA provides support for this pattern by automatically detaching entities when they are serialized or when a persistence context ends (see <<jpa_overview_emfactory_perscontext>> for an exploration of persistence contexts). The JPA _merge_ API re-attaches detached entities.
 This allows you to detach a persistent instance, modify the detached instance offline, and merge the instance back into an [class]``EntityManager`` (either the same one that detached the instance, or a new one). The changes will then be applied to the existing instance from the datastore.
 
 A detached entity maintains its persistent identity, but cannot load additional state from the datastore.
@@ -148,7 +148,7 @@ If you attempt to merge an instance whose representation has changed in the data
 [NOTE]
 ====
 OpenJPA offers enhancements to JPA detachment functionality, including additional options to control which fields are detached.
-See <<_ref_guide_detach>> in the Reference Guide for details.
+See <<ref_guide_detach>> in the Reference Guide for details.
 ====
 
 For a given entity ``A``, the [method]``merge`` method behaves as follows:
@@ -157,7 +157,7 @@ For a given entity ``A``, the [method]``merge`` method behaves as follows:
 * If `A` is a new entity, a new managed entity `A'`  is created and the state of `A` is copied into ``A'``.
 * If `A` is an existing managed entity, it is ignored. However, the merge operation still cascades as defined below.
 * If `A` is a removed entity, an [class]``IllegalArgumentException`` is thrown.
-* The merge operation recurses on all relation fields of `A` whose <<_jpa_overview_meta_cascade,cascades>> include ``CascadeType.MERGE``.
+* The merge operation recurses on all relation fields of `A` whose <<jpa_overview_meta_cascade,cascades>> include ``CascadeType.MERGE``.
 
 The following diagram illustrates the lifecycle of an entity with respect to the APIs presented in this section.
 
@@ -165,7 +165,7 @@ The following diagram illustrates the lifecycle of an entity with respect to the
 image::img/jpa-state-transitions.png[]
 
 
-[[_jpa_overview_em_lifeexamples]]
+[[jpa_overview_em_lifeexamples]]
 ==== Lifecycle Examples
 
 The examples below demonstrate how to use the lifecycle methods presented in the previous section.
@@ -173,6 +173,7 @@ The examples are appropriate for out-of-container use.
 Within a container, [class]``EntityManager``s are usually injected, and transactions are usually managed.
 You would therefore omit the [method]``createEntityManager`` and [method]``close`` calls, as well as all transaction demarcation code.
 
+[[jpa_overview_em_lifecycle_persist]]
 .Persisting Objects
 ====
 (((persistent objects , persisting , example)))
@@ -204,6 +205,7 @@ em.close();
 ----
 ====
 
+[[jpa_overview_em_lifecycle_update]]
 .Updating Objects
 ====
 [source]
@@ -229,6 +231,7 @@ em.close();
 ----
 ====
 
+[[jpa_overview_em_lifecycle_delete]]
 .Removing Objects
 ====
 [source]
@@ -252,6 +255,7 @@ em.close();
 ----
 ====
 
+[[jpa_overview_em_detachex]]
 .Detaching and Merging
 ====
 This example demonstrates a common client/server scenario.
@@ -296,12 +300,12 @@ em.close();
 ----
 ====
 
-[[_jpa_overview_em_identity]]
+[[jpa_overview_em_identity]]
 ==== Entity Identity Management
 
 Each [class]``EntityManager`` is responsible for managing the persistent identities of the managed objects in the persistence context.
 The following methods allow you to interact with the management of persistent identities.
-The behavior of these methods is deeply affected by the persistence context type of the [class]``EntityManager``; see <<_jpa_overview_emfactory_perscontext>> for an explanation of persistence contexts.
+The behavior of these methods is deeply affected by the persistence context type of the [class]``EntityManager``; see <<jpa_overview_emfactory_perscontext>> for an explanation of persistence contexts.
 
 [source]
 ----
@@ -342,7 +346,7 @@ public boolean contains(Object entity);
 (((EntityManager , contains))) Returns true if the given entity is part of the current persistence context, and false otherwise.
 Removed entities are not considered part of the current persistence context.
 
-[[_jpa_overview_em_cache]]
+[[jpa_overview_em_cache]]
 ==== Cache Management
 (((EntityManager , cache)))
 
@@ -357,7 +361,7 @@ public void flush();
 (((transactions , flushing changes before commit))) The [method]``flush`` method writes any changes that have been made in the current transaction to the datastore.
 If the [class]``EntityManager`` does not already have a connection to the datastore, it obtains one for the flush and retains it for the duration of the transaction.
 Any exceptions during flush cause the transaction to be marked for rollback.
-See <<_jpa_overview_trans>>.
+See <<jpa_overview_trans>>.
 
 Flushing requires an active transaction.
 If there isn't a transaction in progress, the [method]``flush`` method throws a [class]``TransactionRequiredException``.
@@ -378,13 +382,13 @@ jakarta.persistence.FlushModeType] constants are:
 * ``COMMIT``: Only flush when committing, or when told to do so through the [method]``flush`` method. Query results may not take into account changes made in the current transaction.
 * ``AUTO``: The implementation is permitted to flush before queries to ensure that the results reflect the most recent object state.
 
-You can also set the flush mode on individual <<_jpa_overview_query,[class]``Query``>> instances.
+You can also set the flush mode on individual <<jpa_overview_query,[class]``Query``>> instances.
 
 [NOTE]
 ====
 OpenJPA only flushes before a query if the query might be affected by data changed in the current transaction.
 Additionally, OpenJPA allows fine-grained control over flushing behavior.
-See the Reference Guide's <<_ref_guide_dbsetup_retain>>.
+See the Reference Guide's <<ref_guide_dbsetup_retain>>.
 ====
 
 [source]
@@ -397,7 +401,7 @@ public void clear();
 (((EntityManager , clear))) Clearing the [class]``EntityManager`` effectively ends the persistence context.
 All entities managed by the [class]``EntityManager`` become detached.
 
-[[_jpa_overview_em_query]]
+[[jpa_overview_em_query]]
 ==== Query Factory
 (((EntityManager , as Query factory)))
 
@@ -409,7 +413,7 @@ public Query createQuery(String query);
 
 [class]``Query`` objects are used to find entities matching certain criteria.
 The [method]``createQuery`` method creates a query using the given Java Persistence Query Language (JPQL) string.
-See <<_jpa_overview_query>> for details.
+See <<jpa_overview_query>> for details.
 
 [source]
 ----
@@ -419,7 +423,7 @@ public Query createNamedQuery(String name);
 
 This method retrieves a query defined in metadata by name.
 The returned [class]``Query`` instance is initialized with the information declared in metadata.
-For more information on named queries, read <<_jpa_overview_query_named>>.
+For more information on named queries, read <<jpa_overview_query_named>>.
 
 [source]
 ----
@@ -430,9 +434,9 @@ public Query createNativeQuery(String sql, String resultMapping);
 ----
 
 _Native_ queries are queries in the datastore's native language.
-For relational databases, this is the Structured Query Language (SQL). <<_jpa_overview_sqlquery>> elaborates on JPA's native query support.
+For relational databases, this is the Structured Query Language (SQL). <<jpa_overview_sqlquery>> elaborates on JPA's native query support.
 
-[[_jpa_overview_em_locking]]
+[[jpa_overview_em_locking]]
 ==== Entity Locking
 (((EntityManager , locking)))
 
@@ -473,15 +477,15 @@ Returns the lock mode currently held by the given entity.
 [NOTE]
 ====
 * OpenJPA differentiates between `PESSIMISTIC_READ` and ``PESSIMISTIC_WRITE`` lock modes only with DB2 databases. While running with other databases, there is no distinction between these two modes because ``PESSIMISTIC_READ`` lock mode is upgraded to ``PESSIMISTIC_WRITE``.
-* OpenJPA has additional APIs for controlling entity locking. See <<_ref_guide_locking>> in the Reference Guide for details.
+* OpenJPA has additional APIs for controlling entity locking. See <<ref_guide_locking>> in the Reference Guide for details.
 
 ====
 
-[[_jpa_overview_em_properties]]
+[[jpa_overview_em_properties]]
 ==== Retrieving Properties Information
 (((EntityManager , properties information)))
 
-[[_jpa_overview_em_closing]]
+[[jpa_overview_em_closing]]
 ==== Closing
 
 [source]

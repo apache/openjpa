@@ -1,4 +1,4 @@
-[[_ref_guide_instrumentation]]
+[[ref_guide_instrumentation]]
 === Instrumentation
 (((instrumentation)))
 
@@ -10,11 +10,11 @@ When enabled, JMX-based remote monitoring tools such as https://openjdk.org/tool
 Additionally, custom applications can gather metrics by using the JMX API to query OpenJPA's MBeans.
 The [class]``openjpa-integration-jmx`` integration module contains an example of how to access the cache MBeans within program code.
 
-[[_ref_guide_instrumentation_config]]
+[[ref_guide_instrumentation_config]]
 ==== Configuration
 (((configuration)))
 
-Instrumentation is enabled using the <<_openjpa.instrumentation,`openjpa.Instrumentation`>> configuration property.
+Instrumentation is enabled using the <<openjpa.Instrumentation,`openjpa.Instrumentation`>> configuration property.
 The base value is the instrumentation provider.
 The alias "jmx" enables the JMX Platform MBean provider.
 Instruments are specified on the `Instrument` attribute of the provider.
@@ -33,7 +33,7 @@ For example:
             <property name="openjpa.Instrumentation" value="jmx(Instrument='DataCache,QueryCache,QuerySQLCache')"/>
 ----
 
-[[_ref_guide_instrumentation_config_jmx]]
+[[ref_guide_instrumentation_config_jmx]]
 ===== JMX Platform MBean Enablement
 (((configuration , jmx)))
 
@@ -52,11 +52,11 @@ To enable remote instrumentation on a specific port, specify which port to use o
 
 Additional information regarding the use and configuration of JMX Platform MBeans can be found in the https://openjdk.org/groups/jmx/[Java Management Extensions (JMX) Technology Overview].
 
-[[_ref_guide_instrumentation_custom]]
+[[ref_guide_instrumentation_custom]]
 ==== Custom Providers and Instruments
 
 OpenJPA includes built-in support for a JMX Platform MBean provider, but a custom instrumentation providers can be created by implementing the link:../../apidocs/org/apache/openjpa/lib/instrumentation/InstrumentationProvider.html[InstrumentationProvider] interface or more simply by extending link:../../apidocs/org/apache/openjpa/lib/instrumentation/AbstractInstrumentationProvider.html[AbstractInstrumentationProvider].
-To use the custom instrumentation provider, include the class in your classpath and specify the class name as the base value on the <<_openjpa.instrumentation,`openjpa.Instrumentation`>> configuration property.
+To use the custom instrumentation provider, include the class in your classpath and specify the class name as the base value on the <<openjpa.Instrumentation,`openjpa.Instrumentation`>> configuration property.
 
 OpenJPA includes instruments for various caches, but you can also create your own instruments.
 To create a custom instrument you need to implement the link:../../apidocs/org/apache/openjpa/lib/instrumentation/Instrument.html[Instrument] interface or more simply extend link:../../apidocs/org/apache/openjpa/lib/instrumentation/AbstractInstrument.html[AbstractInstrument].
