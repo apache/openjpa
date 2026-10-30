@@ -2199,7 +2199,12 @@
                         <include>**/src/**/*.properties</include>
                         <include>**/src/**/*.sh</include>
                         <include>**/src/**/*.txt</include>
+                        <!--
+                            *.vm scanning is turned off for now due to include has preference
+                            and there is no chance to include all but exclude some
+                            please see: https://lists.apache.org/thread.html/6dp8p9v6hk6xjh5n3wdo7p1r0m89hkj3
                         <include>**/src/**/*.vm</include>
+                        -->
                         <include>**/src/**/*.xml</include>
                     </inputIncludes>
                 </configuration>
