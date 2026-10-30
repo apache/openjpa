@@ -183,6 +183,7 @@
                                         <exclude>css/**</exclude>
                                         <exclude>img/**</exclude>
                                         <exclude>**/*.xsl</exclude>
+                                        <exclude>**/*.graffle</exclude>
                                     </excludes>
                                 </resource>
                             </resources>
@@ -259,6 +260,7 @@
                                 <iconfont-remote>false</iconfont-remote>
                                 <webfonts>false</webfonts>
                                 <source-highlighter>coderay</source-highlighter>
+                                <toclevels>10</toclevels>
                                 <project-version>${project.version}</project-version>
                                 <current-year>${current.year}</current-year>
                                 <publish-date>${project.build.outputTimestamp}</publish-date>
@@ -291,6 +293,10 @@
                                         <require>asciidoctor-multipage</require>
                                     </requires>
                                     <outputDirectory>${docbook.gen.base.folder}/multihtml</outputDirectory>
+                                    <attributes>
+                                        <toc>left</toc>
+                                        <multipage-level>5</multipage-level>
+                                    </attributes>
                                 </configuration>
                             </execution>
                             <execution>
