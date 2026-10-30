@@ -301,7 +301,10 @@ com.xyz.CustomLogFactory(Prefix="LOG MSG")
 [[_ref_guide_audit]]
 ==== OpenJPA Audit
 
-=== Configuration
+Transactional applications often require to audit changes in persistent objects.
+OpenJPA can enable audit facility for all persistent entities in few simple steps.
+
+===== Configuration
 
 _Annotate Persistent Entity_ Any persistence entity can be enabled for audit by annotating with ``org.apache.openjpa.audit.Auditable``.
 
@@ -332,7 +335,7 @@ The _latest_ state of an instance designates the state which is commited to the 
 The __original__state designates the state when the instance entered the managed persistent context.
 For example, when a new instance is persisted or a existing instance is loaded from the database.
 
-=== Developing custom auditing
+===== Developing custom auditing
 
 For real use case, an application will prefer more than printing the changed instances.
 The application, in such case, needs to implement `org.apache.openjpa.audit.Auditor` interface.

@@ -302,7 +302,9 @@ Both interfaces provide methods to evict data from the cache and detect whether 
 The OpenJPA facade adds methods to pin and unpin records, additional methods to evict data, and provides basic statistics of number of read or write requests and hit ratio of the cache.
 
 [[_ref_guide_cache_use_jpa]]
-====== Using the JPA standard Cache interface[class]``jakarta.persistence.Cache``
+====== Using the JPA standard Cache interface
+
+You may obtain the [class]``jakarta.persistence.Cache`` through the `EntityManagerFactory.getCache()` method.
 
 .Accessing the Cache
 ====
@@ -894,32 +896,27 @@ Prepared Query Cache will recognize the second execution as same as the first, a
 ====
 * A JPQL query may not always translate into a _single_ SQL query. The JPQL queries that require multiple select statements are never cached.
 * Same JPQL query may result into different SQL statements under different execution context. Execution context parameters such as fetch configuration or locking mode determine the resultant SQL. However, Prepared SQL Cache__does not__ capture the execution context parameters while caching a generated SQL.
-* The named or positional parameters of a JPQL query can be set to different values across executions. In general, the corresponding cached SQL statement will be re-parameterized accordingly. However, the parameter value itself can determine the SQL query. For example, when a JPQL query compares a relation field for equality against a parameter ``p``, whether the actual value of `p` is `null` or not will determine the generated SQL statement. Another example is collection valued parameter for``IN`` expression. Each element of a collection valued parameter results into a SQL parameter. If a collection valued parameter across executions are set to different number of elements, then the parameters of the cached SQL do not correspond. If such situations are encountered while re-parameterizing the cached SQL, the cached version is not reused and the original JPQL query is used to generate a new SQL statement for execution.
-* JPQL query that returns a _numeric_ value such as``SELECT count(p) FROM PObject p`` is never cached.
+* The named or positional parameters of a JPQL query can be set to different values across executions. In general, the corresponding cached SQL statement will be re-parameterized accordingly. However, the parameter value itself can determine the SQL query. For example, when a JPQL query compares a relation field for equality against a parameter ``p``, whether the actual value of `p` is `null` or not will determine the generated SQL statement. Another example is collection valued parameter for ``IN`` expression. Each element of a collection valued parameter results into a SQL parameter. If a collection valued parameter across executions are set to different number of elements, then the parameters of the cached SQL do not correspond. If such situations are encountered while re-parameterizing the cached SQL, the cached version is not reused and the original JPQL query is used to generate a new SQL statement for execution.
+* JPQL query that returns a _numeric_ value such as ``SELECT count(p) FROM PObject p`` is never cached.
 
 Several mechanisms are available to the application to bypass SQL caching for a JPQL query.
 
-* {empty}
-
-
-[source]
+* A user application can disable Prepared SQL Cache for entire lifetime of a persistence context by invoking the following method on OpenJPA's EntityManager SPI interface:
++
+[source,java]
 ----
-
-	OpenJPAEntityManagerSPI.setQuerySQLCache(boolean)
+OpenJPAEntityManagerSPI.setQuerySQLCache(boolean)
 ----
-* A user application can instruct particular execution of a JPQL query to ignore any cached SQL query, by setting``QueryHints.HINT_IGNORE_PREPARED_QUERY`` or``"openjpa.hint.IgnorePreparedQuery"`` to `true` via standard `jakarta.persistence.Query.setHint(String, Object)` method. If a SQL query has been cached corresponding to the JPQL query prior to this execution, then the cached SQL remains in the cache and will be reused for any subsequent execution of the same JPQL query.
-* A user application can instruct all subsequent execution of a JPQL query to ignore any cached SQL query, by setting``QueryHints.HINT_INVALIDATE_PREPARED_QUERY`` or``"openjpa.hint.InvalidatePreparedQuery"`` to `true` The SQL query is removed from the cache. Also the JPQL query will never be cached again during the lifetime of the entire persistence unit.
-*``openjpa.jdbc.QuerySQLCache``
-
-
-
-[source]
+* A user application can instruct particular execution of a JPQL query to ignore any cached SQL query, by setting `QueryHints.HINT_IGNORE_PREPARED_QUERY` or `"openjpa.hint.IgnorePreparedQuery"` to `true` via standard `jakarta.persistence.Query.setHint(String, Object)` method. If a SQL query has been cached corresponding to the JPQL query prior to this execution, then the cached SQL remains in the cache and will be reused for any subsequent execution of the same JPQL query.
+* A user application can instruct all subsequent execution of a JPQL query to ignore any cached SQL query, by setting `QueryHints.HINT_INVALIDATE_PREPARED_QUERY` or `"openjpa.hint.InvalidatePreparedQuery"` to `true`. The SQL query is removed from the cache. Also the JPQL query will never be cached again during the lifetime of the entire persistence unit.
+* Plug-in property `openjpa.jdbc.QuerySQLCache` can be configured to exclude certain JPQL queries as shown below.
++
+[source,xml]
 ----
-
-	<property name="openjpa.jdbc.QuerySQLCache" value="true(excludes='select c from Company c;select d from Department d')"/>
+<property name="openjpa.jdbc.QuerySQLCache" value="true(excludes='select c from Company c;select d from Department d')"/>
 ----
-+``+select c from Company c``
-+``+select d from Department d``
++
+will never cache JPQL queries `select c from Company c` and `select d from Department d`.
 
 
 

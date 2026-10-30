@@ -2,3 +2,23 @@
 There are two sets of properties that may be specified: those that are specific to OpenJPA and those that have been defined by the JPA specification.
 In some cases, two properties may be equivalent, but have different keys.
 For example, _openjpa.LockTimeout_  and _jakarta.persistence.lock.timeout_ are two different keys for the same property. 
+
+There are two methods that can be used to retrieve information related to properties:
+
+[source,java]
+----
+public Map<String,Object> getProperties();
+public Set<String> getSupportedProperties();
+----
+
+* [method]``getProperties`` - Provides a list of current properties.
+If a property has more than one key, the key that will be returned is the one that was used when the property was set.
+If the property was not explicitly set, the key defined by the JPA specification will be returned with the default value.
+* [method]``getSupportedProperties`` - Returns a set of supported property keys.
+This includes keys defined by the JPA specification as well as keys specific to OpenJPA.
+If a property has more than one key, all possible keys will be returned.
+
+[NOTE]
+====
+The [method]``getSupportedProperties`` method is an OpenJPA extension to the JPA specification.
+====

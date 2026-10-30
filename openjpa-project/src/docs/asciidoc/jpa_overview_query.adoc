@@ -1802,15 +1802,21 @@ Examples:
 o.country IN ('UK', 'US', 'France')
 ----
 
+is true for UK and false for Peru, and is equivalent to the expression:
+
 [source]
 ----
 (o.country = 'UK') OR (o.country = 'US') OR (o.country = ' France')
 ----
 
+In the following expression:
+
 [source]
 ----
 o.country NOT IN ('UK', 'US', 'France')
 ----
+
+is false for UK and true for Peru, and is equivalent to the expression:
 
 [source]
 ----
@@ -1900,6 +1906,7 @@ The syntax for the use of the comparison operator `MEMBER OF` in an `collection_
 
 This expression tests whether the designated value is a member of the collection specified by the collection-valued path expression.
 
+Expressions that evaluate to embeddable types are not supported in collection member expressions.
 
 If the collection valued path expression designates an empty collection, the value of the 
 `MEMBER OF` expression is `FALSE` and the value of the ``NOT MEMBER OF`` expression is ``TRUE``.
