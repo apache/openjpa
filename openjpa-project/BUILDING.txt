@@ -3,7 +3,7 @@ Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
 --------------------------------------------------------------------------------
 
 These instructions describe how to build OpenJPA from source code using the
-Apache Maven 2 build tool. They are written for use from the console, and are
+Apache Maven 3 build tool. They are written for use from the console, and are
 known to work on Windows, Linux and Mac OSX.
 
 The most up to date version of these instructions may be found on the OpenJPA
@@ -11,15 +11,15 @@ website at http://openjpa.apache.org/building.html
 
    1. Ensure that Java SE 6 is installed and on your path by running:
           java -version
-      OpenJPA requires Java 1.6 or later to build and for runtime.
-   2. Install the build tool Apache Maven 2.2.1 or later, from:
+      OpenJPA requires Java 17 or later to build and for runtime.
+   2. Install the build tool Apache Maven 3.9.12 or later, from:
           http://maven.apache.org/
       If it is installed correctly, typing mvn -v from the console will result
-      in the text like "Apache Maven 2.2.1 (r801777; 2009-08-06 21:16:01+0200)"
+      in the text like "Apache Maven 3.9.12"
    3. Extract the source archive if you have not already done so.
       The source will create a new directory named:
       openjpa-<version>-source. Where <version> is the OpenJPA
-      version, for example apache-openjpa-2.2.0-source.
+      version, for example apache-openjpa-4.2.0-source.
    4. Change to the OpenJPA source directory, which has already been created in
       the previous step.
    5. Build OpenJPA by running: mvn package or better mvn install.
@@ -48,37 +48,24 @@ An example session is as follows:
 $ cd /tmp/
 
 $ java -version
-java version "1.6.0_17"
-Java(TM) SE Runtime Environment (build 1.6.0_17-b04-248-10M3025)
-Java HotSpot(TM) 64-Bit Server VM (build 14.3-b01-101, mixed mode)
+openjdk version "17.0.20.1" 2026-08-18
+OpenJDK Runtime Environment Temurin-17.0.20.1+1 (build 17.0.20.1+1)
+OpenJDK 64-Bit Server VM Temurin-17.0.20.1+1 (build 17.0.20.1+1, mixed mode, sharing)
 
 $ mvn -v
-Apache Maven 2.2.1 (r801777; 2009-08-06 21:16:01+0200)
-
+Apache Maven 3.10.0 (c43a36b8d67be7e0805a411bc0898af1a51f5472)
  ...
 
-$ svn --version
-svn, version 1.5.5 (r34862)
-   compiled Jan  5 2009, 12:30:39
+$ git --version
+git version 2.53.0
 
-$ svn co https://svn.apache.org/repos/asf/openjpa/trunk/
-A  trunk/openjpa-lib
-A  trunk/openjpa-lib/src
-A  trunk/openjpa-lib/src/test
-A  trunk/openjpa-lib/src/test/java
-A  trunk/openjpa-lib/src/test/java/org
-A  trunk/openjpa-lib/src/test/java/org/apache
-A  trunk/openjpa-lib/src/test/java/org/apache/openjpa
-A  trunk/openjpa-lib/src/test/java/org/apache/openjpa/lib
-A  trunk/openjpa-lib/src/test/java/org/apache/openjpa/lib/test
-A  trunk/openjpa-lib/src/test/java/org/apache/openjpa/lib/test/AbstractTestCase.java
-
- ...
-
-A  trunk/openjpa-persistence/pom.xml
-Checked out revision 1065345.
-
-$ cd trunk/
+$ git clone https://github.com/apache/openjpa.git
+Cloning into 'openjpa'...
+remote: Enumerating objects: ...
+ 
+ $ cd openjpa
+ 
+ $ git checkout 4.2.0
 
 $ mvn clean install -DskipTests -DfailIfNoTests=false
 
@@ -158,8 +145,8 @@ $ mvn clean install -DskipTests -DfailIfNoTests=false
 
 $ ls openjpa-project/target/site/downloads/
 
-apache-openjpa-2.2.0-SNAPSHOT-binary.zip
-apache-openjpa-2.2.0-SNAPSHOT-source.zip
+apache-openjpa-4.2.0-binary.zip
+apache-openjpa-4.2.0-source.zip
 
 
 
@@ -222,3 +209,16 @@ For running against a Oracle Docker installation:
 For starting tests in `openjpa-persistence-jdbc` inside a compiler you can also trigger all the enhancement manually via:
 
  $> mvn process-test-classes
+ 
+Building in a Docker container
+======================
+
+Sometimes it is preferred to build the project outside your local environment, that may be working with a different version of JDK, maven etc.
+In that case, you may build the project using a maven docker container. For that, you may replace the
+
+$ mvn clean install -DskipTests -DfailIfNoTests=false
+
+command for
+
+$ sudo docker run --rm --name openjpa-build -u $(id -u):$(id -g) -v ~/.m2:/opt/openjpa/.m2 -v $PWD:/opt/openjpa -e MAVEN_CONFIG=/opt/openjpa/.m2 -w /opt/openjpa maven:3-eclipse-temurin-17 mvn -Duser.home=/opt/openjpa clean install -DskipTests -DfailIfNoTests=false
+
