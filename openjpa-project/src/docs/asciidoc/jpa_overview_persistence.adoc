@@ -32,8 +32,7 @@ The optional map contains vendor-specific property settings used to further conf
 
 [path]_persistence.xml_ files define [class]``EntityManagerFactories``.
 The [method]``createEntityManagerFactory`` methods search for [path]_persistence.xml_ files within the [path]_META-INF_ directory of any `CLASSPATH`  element.
-For example, if your `CLASSPATH` contains the [path]_conf_ directory, you could place an [class]``EntityManagerFactory`` definition in [path]_
-conf/META-INF/persistence.xml_.
+For example, if your `CLASSPATH` contains the [path]_conf_ directory, you could place an [class]``EntityManagerFactory`` definition in [path]_conf/META-INF/persistence.xml_.
 
 The [method]``getPersistenceUtil`` method returns a PersistenceUtil interface that can be used to determine whether an entity or attribute of an entity is loaded.
 

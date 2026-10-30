@@ -1224,8 +1224,7 @@ The same metadata expressed in XML form:
 The <<_jpa_overview_mapping_inher_single,single table>> inheritance strategy results in a single table containing records for two or more different classes in an inheritance hierarchy.
 Similarly, using the <<_jpa_overview_mapping_inher_joined, joined>> strategy results in the superclass table holding records for superclass instances as well as for the superclass state of subclass instances.
 When selecting data, JPA needs a way to differentiate a row representing an object of one class from a row representing an object of another.
-That is the job of the _
-discriminator_ column.
+That is the job of the _discriminator_ column.
 
 The discriminator column is always in the table of the base entity.
 It holds a different value for records of each class, allowing the JPA runtime to determine what class of object each row represents.
@@ -2020,8 +2019,7 @@ And in XML:
 ===== Embedded Mapping
 (((mapping metadata , embedded fields)))
 
-<<_jpa_overview_meta>> describes JPA's concept of _
-embeddable_ objects.
+<<_jpa_overview_meta>> describes JPA's concept of _embeddable_ objects.
 The field values of embedded objects are stored as part of the owning record, rather than as a separate database record.
 Thus, instead of mapping a relation to an embeddable object as a foreign key, you map all the fields of the embeddable instance to columns in the owning field's table.
 

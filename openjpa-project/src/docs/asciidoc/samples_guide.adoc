@@ -14,9 +14,8 @@ The application can switch to either system simply by changing the bootstrap mec
 Depending on which configuration system you use, OpenJPA will read the corresponding metadata format.
 You can override some or all of this behavior using OpenJPA's configuration options, such as <<_openjpa.metadatafactory,openjpa.MetaDataFactory>>.
 
-To use this sample, you should ensure that either a [path]_jdo.properties
-_ or [path]_persistence.xml_ are in the [path]_
-META-INF_ directory in your [var]``CLASSPATH``.
+To use this sample, you should ensure that either a [path]_jdo.properties_
+ or [path]_persistence.xml_ are in the [path]_META-INF_ directory in your [var]``CLASSPATH``.
 The rest of the files for this sample are located in the [path]_samples/mixed_ directory of the OpenJPA installation.
 This tutorial requires JDK 5.
 To run this tutorial:
@@ -35,8 +34,8 @@ To run this tutorial:
 <class>samples.mixed.Operator</class>
 ----
 
-If you are using JDO, point the metadata factory at the [path]_.jdo
-_ resource containing your persistent classes:
+If you are using JDO, point the metadata factory at the [path]_.jdo_
+ resource containing your persistent classes:
 
 
 [source]
@@ -72,8 +71,7 @@ jpa>``
 [[_samples_guide_model_humres_jpa]]
 ===== Sample Human Resources Model
 
-The files for this sample are located in the [path]_
-samples/persistence/models/humres_ directory of the OpenJPA installation.
+The files for this sample are located in the [path]_samples/persistence/models/humres_ directory of the OpenJPA installation.
 This sample demonstrates the mapping of an example "Human Resources" schema.
 The following concepts are illustrated in this sample:
 

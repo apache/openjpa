@@ -120,8 +120,7 @@ You can also force the Apache Commons DBCP BasicDataSource to be used for connec
 
 (((ConnectionFactoryMode))) Certain application servers automatically enlist their [class]``DataSource`` s in global transactions.
 When this is the case, OpenJPA should not attempt to commit the underlying connection, leaving JDBC transaction completion to the application server.
-To notify OpenJPA that your third-party [class]``DataSource`` is managed by the application server, use the ``jta-data-source`` element of your [path]_
-persistence.xml_ file or set the <<_openjpa.connectionfactorymode,`openjpa.ConnectionFactoryMode`>> property to ``managed``.
+To notify OpenJPA that your third-party [class]``DataSource`` is managed by the application server, use the ``jta-data-source`` element of your [path]_persistence.xml_ file or set the <<_openjpa.connectionfactorymode,`openjpa.ConnectionFactoryMode`>> property to ``managed``.
 
 Note that OpenJPA can only use managed [class]``DataSource``s when it is also integrating with the application server's managed transactions.
 Also note that all XA [class]``DataSource``s are enlisted, and you must set this property when using any XA [class]``DataSource``.
@@ -1233,7 +1232,7 @@ There are several built-in options to choose from:
 ** ``PrimaryKeyColumn``: The name of the table's numeric primary key column. Defaults to ``ID``.
 ** ``SchemaColumn``: The name of the table's string column for holding the schema definition as an XML string. Defaults to ``SCHEMA_DEF``.
 * ``file``: This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/schema/FileSchemaFactory.html[ org.apache.openjpa.jdbc.schema.FileSchemaFactory] . This factory is a lot like the [class]``TableSchemaFactory``, and has the same advantages and disadvantages. Instead of storing its XML schema definition in a database table, though, it stores it in a file. This factory accepts the following properties:
-** ``File``: The resource name of the XML schema file. By default, the factory looks for a resource called [path]_ package.schema_, located in any top-level directory of the `CLASSPATH` or in the top level of any jar in your ``CLASSPATH``.
+** ``File``: The resource name of the XML schema file. By default, the factory looks for a resource called [path]_package.schema_, located in any top-level directory of the `CLASSPATH` or in the top level of any jar in your ``CLASSPATH``.
 
 You can switch freely between schema factories at any time.
 The XML file format used by some factories is detailed in <<_ref_guide_schema_xml>> . As with any OpenJPA plugin, you can also implement your own schema factory if you have needs not met by the existing options.
@@ -1356,8 +1355,8 @@ java org.apache.openjpa.jdbc.schema.SchemaTool -a dropDB
 
 .Schema Reflection
 ====
-Write an XML representation of the current schema to file [path]_schema.xml
-_.
+Write an XML representation of the current schema to file [path]_schema.xml_
+.
 
 [source]
 ----

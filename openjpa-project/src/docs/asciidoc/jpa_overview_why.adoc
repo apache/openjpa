@@ -219,8 +219,7 @@ Unfortunately, JDBC does not duplicate serialization's ease of use.
 The relational paradigm used by JDBC was not designed for storing objects, and therefore forces you to either abandon object-oriented programming for the portions of your code that deal with persistent data, or to find a way of mapping object-oriented concepts like inheritance to relational databases yourself.
 * (((ORM)))
 (((JPA , vs ORM products))) There are many proprietary software products that can perform the mapping between objects and relational database tables for you.
-These _
-object-relational mapping_ (ORM) frameworks allow you to focus on the object model and not concern yourself with the mismatch between the object-oriented and relational paradigms.
+These _object-relational mapping_ (ORM) frameworks allow you to focus on the object model and not concern yourself with the mismatch between the object-oriented and relational paradigms.
 Unfortunately, each of these product has its own set of APIs.
 Your code becomes tied to the proprietary interfaces of a single vendor.
 If the vendor raises prices, fails to fix show-stopping bugs, or falls behind in features, you cannot switch to another product without rewriting all of your persistence code.

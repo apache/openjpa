@@ -238,8 +238,7 @@ Running the tool will generate [path]_.java_ files for each generated class (and
 
 After you are satisfied with the generated classes and their mappings, you should first compile the classes with ``javac``, ``jikes``, or your favorite Java compiler.
 Make sure the classes are located in the directory corresponding to the `-package` flag you gave the reverse mapping tool.
-Next, if you have generated an [path]_
-orm.xml_, move that file to a [path]_META-INF_ directory within a directory in your classpath.
+Next, if you have generated an [path]_orm.xml_, move that file to a [path]_META-INF_ directory within a directory in your classpath.
 Finally, enhance the classes if necessary (see <<_ref_guide_pc_enhance>>).
 
 Your persistent classes are now ready to access your existing schema.
@@ -1496,8 +1495,7 @@ The following sections examine each.
 Value handlers make it trivial to map any type that you can break down into one or more simple values.
 All value handlers implement the [class]``org.apache.openjpa.jdbc.meta.ValueHandler`` interface; see its link:../../apidocs/org/apache/openjpa/jdbc/meta/ValueHandler.html[ Javadoc
 ] for details.
-Also, examine the built-in handlers in the [path]_
-src/openjpa/jdbc/meta/strats_ directory of your OpenJPA source distribution.
+Also, examine the built-in handlers in the [path]_src/openjpa/jdbc/meta/strats_ directory of your OpenJPA source distribution.
 Use these functional implementations as examples when you create your own value handlers.
 
 [[_ref_guide_mapping_custom_fieldstrat]]

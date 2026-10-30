@@ -138,8 +138,8 @@ If you do not specify any files, the task will run on the classes listed in your
 You must, however, supply the classpath you wish the enhancer to run with.
 This classpath must include, at minimum, the openjpa jar(s), persistence.xml and the target classes.
 
-Following is an example of using the enhancer task in a [path]_build.xml
-_ file:
+Following is an example of using the enhancer task in a [path]_build.xml_
+ file:
 
 .Invoking the Enhancer from Ant
 ====
@@ -188,10 +188,9 @@ The application identity tool task allows you to invoke the application identity
 The task's parameters correspond exactly to the long versions of the command-line arguments to the <<_ref_guide_pc_appid_appidtool,[class]``org.apache.openjpa.enhance.ApplicationIdTool``>>.
 
 The application identity tool task accepts a nested `fileset` tag to specify the files that should be processed.
-You can specify [path]_
-.java_ or [path]_.class_ files.
-If you do not specify any files, the task will run on the classes listed in your [path]_persistence.xml
-_ file or <<_openjpa.metadatafactory,
+You can specify [path]_.java_ or [path]_.class_ files.
+If you do not specify any files, the task will run on the classes listed in your [path]_persistence.xml_
+ file or <<_openjpa.metadatafactory,
 `openjpa.MetaDataFactory`>> property.
 
 Following is an example of using the application identity tool task in a [path]_build.xml_ file:

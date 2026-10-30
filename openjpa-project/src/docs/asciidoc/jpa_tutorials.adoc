@@ -56,8 +56,7 @@ It is important to load all persistent entity classes at startup so that OpenJPA
 Often this happens automatically.
 Some parts of this tutorial, however, do require that all entity classes be loaded explicitly.
 The JPA standard includes persistent class listings in its XML configuration format.
-Add the following lines to [path]_
-../../META-INF/persistence.xml_ between the `<provider>`  and the `<properties>` elements:
+Add the following lines to [path]_../../META-INF/persistence.xml_ between the `<provider>`  and the `<properties>` elements:
 
 
 [source]
@@ -95,13 +94,13 @@ Note that your OpenJPA install directory should be in the [var]``CLASSPATH``, as
 `tutorial.persistence` package.
 ====
 
-. Make sure you are in the [path]_ tutorial/persistence_ directory. All examples throughout the tutorial assume that you are in this directory.
+. Make sure you are in the [path]_tutorial/persistence_ directory. All examples throughout the tutorial assume that you are in this directory.
 . Examine [path]_Animal.java_, [path]_Dog.java_, and [path]_SeedDatabase.java_
 
 These files are good examples of the simplicity JPA engenders.
 As noted earlier, persisting an object or manipulating an object's persistent data requires almost no JPA-specific code.
-For a very simple example of creating persistent objects, please see the `seed` method of [path]_SeedDatabase.java
-_.
+For a very simple example of creating persistent objects, please see the `seed` method of [path]_SeedDatabase.java_
+.
 Note the objects are created with normal Java constructors.
 The files [path]_Animal.java_ and [path]_Dog.java_ are also good examples of how JPA allows you to manipulate persistent data without writing any specific JPA code, by providing simple annotations.
 
@@ -183,8 +182,7 @@ See <<_ref_guide_pc_enhance>> of the Reference Guide for more information on the
 
 [NOTE]
 ====
-The `-p` flag points the enhancer to your [path]_
-persistence.xml_ configuration file.
+The `-p` flag points the enhancer to your [path]_persistence.xml_ configuration file.
 All OpenJPA tools look for default configuration in a resource called [path]_openjpa.xml_ or [path]_META-INF/openjpa.xml_.
 Thus you can avoid passing the ``-p`` argument to tools by using this configuration file name in place of [path]_persistence.xml_.
 See <<_ref_guide_conf>> in the Reference Guide for details on OpenJPA configuration.
@@ -256,8 +254,7 @@ First, let's add some code to [path]_AnimalMaintenance.java_ that allows us to e
 
 . Add code to [path]_AnimalMaintenance.java_.
 
-Modify the [method]``getAnimals`` method of [path]_
-AnimalMaintenance.java_ to look like this:
+Modify the [method]``getAnimals`` method of [path]_AnimalMaintenance.java_ to look like this:
 
 
 [source]
@@ -325,10 +322,9 @@ We will create a new dog, obtain a [class]``Transaction`` from a [class]``Entity
 This reflection-based system is in place to keep this tutorial short and remove repetitive creation mechanisms.
 It is not a required part of the JPA specification.
 
-. Add the following code to [path]_ AnimalMaintenance.java_.
+. Add the following code to [path]_AnimalMaintenance.java_.
 
-Modify the [method]``persistObject`` method of [path]_
-AnimalMaintenance.java_ to look like this:
+Modify the [method]``persistObject`` method of [path]_AnimalMaintenance.java_ to look like this:
 
 
 [source]
@@ -399,8 +395,7 @@ This section demonstrates how to remove data from the datastore.
 
 . Add the following code to [path]_AnimalMaintenance.java_.
 
-Modify the [method]``deleteObjects`` method of [path]_
-AnimalMaintenance.java_ to look like this:
+Modify the [method]``deleteObjects`` method of [path]_AnimalMaintenance.java_ to look like this:
 
 
 [source]
@@ -467,8 +462,8 @@ Provided with this tutorial is a file called [path]_Rabbit.java_ which contains 
 . Examine [path]_Rabbit.java_.
 . The Rabbit class above contains a bidirectional relationship between parents and children. From the Java side of things, a bidirectional relationship is simply a pair of fields that are conceptually linked. There is no special Java work necessary to express bidirectionality. However, you must identify the relationship as bidirectional using JPA <<_jpa_overview_meta, annotations>> so the mapping tool can create the most efficient schema.
 
-Insert this snippet of code immediately _before_ the ``children`` field declaration in the [path]_Rabbit.java
-_ file.
+Insert this snippet of code immediately _before_ the ``children`` field declaration in the [path]_Rabbit.java_
+ file.
 
 
 [source]
@@ -927,8 +922,8 @@ Enhance the Car class.
 java org.apache.openjpa.enhance.PCEnhancer Car.java
 ----
 
-Run the mapping tool; make sure that your [path]_ META-INF/persistence.xml
-_ file includes the same connection information (e.g.
+Run the mapping tool; make sure that your [path]_META-INF/persistence.xml_
+ file includes the same connection information (e.g.
 Driver, URL, etc.) as your JCA installation.
 You should update your JCA configuration to include [class]``samples.persistence.j2ee.Car`` in the <<_openjpa.metadatafactory,MetaDataFactory>> property:
 
@@ -944,10 +939,8 @@ You should update your JCA configuration to include [class]``samples.persistence
 java org.apache.openjpa.jdbc.meta.MappingTool Car.java
 ----
 
-Build an J2EE application archive by running Ant against the [path]_
-build.xml_.
-This will create [path]_
-openjpa-persistence-j2ee-sample.ear_.
+Build an J2EE application archive by running Ant against the [path]_build.xml_.
+This will create [path]_openjpa-persistence-j2ee-sample.ear_.
 This ear can now be deployed to your appserver.
 Be sure to add the class [class]``samples.j2ee.Car`` to the `openjpa.PersistentClasses` OpenJPA configuration property.
 This will automatically register the Entity.
