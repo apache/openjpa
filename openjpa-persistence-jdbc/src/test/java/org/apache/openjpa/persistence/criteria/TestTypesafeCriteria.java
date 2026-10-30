@@ -475,7 +475,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    public void testIndexExpressionAndLietral() {
+    public void testIndexExpressionAndLiteral() {
         String jpql = "SELECT w.name FROM Course c JOIN c.studentWaitList w "
                     + "WHERE c.name = 'Calculus' AND INDEX(w) = 0";
 

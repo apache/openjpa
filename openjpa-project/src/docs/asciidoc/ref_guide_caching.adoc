@@ -424,6 +424,7 @@ The examples above include calls to [method]``evict`` to manually remove data fr
 Rather than evicting objects from the data cache directly, you can also configure OpenJPA to automatically evict objects from the data cache when you use the [class]``
 OpenJPAEntityManager``'s eviction APIs.
 
+[#_ref_guide_cache_pmevict]
 .Automatic Data Cache Eviction
 ====
 [source]
@@ -752,7 +753,7 @@ Note that when loading objects in a transaction, the appropriate datastore trans
 So, transactional code will maintain its integrity.
 * [class]``Extent``s are not cached. So, if you plan on iterating over a list of all the objects in an [class]``Extent`` on a regular basis, you will only benefit from caching if you do so with a [class]``Query `` instead:
 
-
+[#_ref_guide_cache_limits_extent]
 .Query Replaces Extent
 ====
 [source]
@@ -869,7 +870,7 @@ Following salient points to be noted regarding usage of Prepared Query Cache.
 
 For example, contrast the following two examples of executing JPQL queries.
 
-
+[#_jpa_caching_hardcode_jpql]
 .Hardcoded Selection Value in JPQL Query
 ====
 [source]
@@ -888,7 +889,7 @@ Prepared Query Cache will not recognize the second execution as same as the firs
 While in <<_jpa_caching_parametrize_jpql>>, the selection value for the `p.name` field is parameterized.
 Prepared Query Cache will recognize the second execution as same as the first, and will execute the cached SQL statement directly.
 
-
+[#_jpa_caching_parametrize_jpql]
 .Parameterized Selection Value in JPQL Query
 ====
 [source]

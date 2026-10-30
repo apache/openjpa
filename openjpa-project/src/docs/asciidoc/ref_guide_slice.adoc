@@ -160,6 +160,7 @@ The database slices participate in a global transaction provided each slice is c
             the transaction is not ensured.
 ====
 
+[[_collocation_constraint]]
 ===== Collocation Constraint
 
 No relationship can exist across database slices.

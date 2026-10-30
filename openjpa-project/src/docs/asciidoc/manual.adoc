@@ -1,7 +1,13 @@
-= Apache OpenJPA {project-version} User's Guide
-The Apache Software Foundation
+= Apache OpenJPA {project-version} User's Guide: Official User Guide for Apache OpenJPA.
+:revdate: Published {publish-date}.
+// commented out due to it's date actuially
+//:revnumber: {build-number}.
+:revremark: The Apache Software Foundation
+:version-label!: {project-version}
+
 :description: Official User Guide for Apache OpenJPA.
 :keywords: Apache OpenJPA, User Guide
+:copyright: Copyright © 2006-{current-year} The Apache Software Foundation. All Rights Reserved.
 :toc: left
 :toclevels: 10
 :icons: font
@@ -69,3 +75,6 @@ include::ref_guide_instrumentation.adoc[]
 include::jpa_resources.adoc[]
 include::supported_databases.adoc[]
 include::migration_considerations.adoc[]
+
+'''
+{copyright}

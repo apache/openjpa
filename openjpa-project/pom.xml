@@ -204,6 +204,24 @@
             <build>
                 <plugins>
                     <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <version>3.6.2</version>
+                        <executions>
+                            <execution>
+                                <id>timestamp-property</id>
+                                <goals>
+                                    <goal>timestamp-property</goal>
+                                </goals>
+                                <phase>generate-resources</phase>
+                                <configuration>
+                                    <name>current.year</name>
+                                    <pattern>yyyy</pattern>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
                         <groupId>org.jruby.maven</groupId>
                         <artifactId>gem-maven-plugin</artifactId>
                         <version>3.0.6</version>
@@ -242,6 +260,8 @@
                                 <webfonts>false</webfonts>
                                 <source-highlighter>coderay</source-highlighter>
                                 <project-version>${project.version}</project-version>
+                                <current-year>${current.year}</current-year>
+                                <publish-date>${project.build.outputTimestamp}</publish-date>
                             </attributes>
                             <preserveDirectories>true</preserveDirectories>
                             <sourceDocumentName>manual.adoc</sourceDocumentName>

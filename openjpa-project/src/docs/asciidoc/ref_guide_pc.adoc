@@ -453,6 +453,7 @@ org.apache.openjpa.enhance.ApplicationIdTool].
 <<_ref_guide_integration_appidtool>> describes the application identity tool's Ant task.
 ====
 
+[#_ref_guide_pc_appid_appidtool]
 .Using the Application Identity Tool
 ====
 [source]
