@@ -5,9 +5,8 @@
 
 image::img/entitymanager.png[]
 
-The diagram above presents an overview of the [class]``EntityManager `` interface.
-For a complete treatment of the [class]``
-EntityManager`` API, see the https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/entitymanager[
+The diagram above presents an overview of the [class]``EntityManager`` interface.
+For a complete treatment of the [class]``EntityManager`` API, see the https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/entitymanager[
 Javadoc] documentation.
 Methods whose parameter signatures consist of an ellipsis (...) are overloaded to take multiple parameter types.
 
@@ -41,10 +40,10 @@ public EntityTransaction getTransaction();
 ----
 
 Every [class]``EntityManager`` has a one-to-one relation with an <<_jpa_overview_trans,[class]``EntityTransaction``>> instance.
-In fact, many vendors use a single class to implement both the [class]``EntityManager`` and [class]``EntityTransaction `` interfaces.
+In fact, many vendors use a single class to implement both the [class]``EntityManager`` and [class]``EntityTransaction`` interfaces.
 If your application requires multiple concurrent transactions, you will use multiple [class]``EntityManager``s.
 
-You can retrieve the [class]``EntityTransaction`` associated with an [class]``EntityManager`` through the [method]``getTransaction `` method.
+You can retrieve the [class]``EntityTransaction`` associated with an [class]``EntityManager`` through the [method]``getTransaction`` method.
 Note that most JPA implementations can integrate with an application server's managed transactions.
 If you take advantage of this feature, you will control transactions by declarative demarcation or through the Java Transaction API (JTA) rather than through the [class]``EntityTransaction``.
 
@@ -70,7 +69,7 @@ For a given entity ``A``, the [method]``persist`` method behaves as follows:
 * If `A` is a new entity, it becomes managed.
 * If `A` is an existing managed entity, it is ignored. However, the persist operation cascades as defined below.
 * If `A` is a removed entity, it becomes managed.
-* If `A` is a detached entity, an [class]`` IllegalArgumentException`` is thrown.
+* If `A` is a detached entity, an [class]``IllegalArgumentException`` is thrown.
 * The persist operation recurses on all relation fields of `A` whose <<_jpa_overview_meta_cascade,cascades>> include ``CascadeType.PERSIST``.
 
 This action can only be used in the context of an active transaction.
@@ -92,7 +91,7 @@ For a given entity ``A``, the [method]``remove`` method behaves as follows:
 * If `A` is a new entity, it is ignored. However, the remove operation cascades as defined below.
 * If `A` is an existing managed entity, it becomes removed.
 * If `A` is a removed entity, it is ignored.
-* If `A` is a detached entity, an [class]`` IllegalArgumentException`` is thrown.
+* If `A` is a detached entity, an [class]``IllegalArgumentException`` is thrown.
 * The remove operation recurses on all relation fields of `A` whose <<_jpa_overview_meta_cascade,cascades>> include ``CascadeType.REMOVE``.
 
 This action can only be used in the context of an active transaction.
@@ -112,7 +111,7 @@ For a given entity ``A``, the [method]``refresh`` method behaves as follows:
 * If `A` is a new entity, it is ignored. However, the refresh operation cascades as defined below.
 * If `A` is an existing managed entity, its state is refreshed from the datastore.
 * If `A` is a removed entity, it is ignored.
-* If `A` is a detached entity, an [class]`` IllegalArgumentException`` is thrown.
+* If `A` is a detached entity, an [class]``IllegalArgumentException`` is thrown.
 * The refresh operation recurses on all relation fields of `A` whose <<_jpa_overview_meta_cascade,cascades>> include ``CascadeType.REFRESH``.
 
 
@@ -157,7 +156,7 @@ For a given entity ``A``, the [method]``merge`` method behaves as follows:
 * If `A` is a detached entity, its state is copied into existing managed instance `A'` of the same entity identity, or a new managed copy of `A` is created.
 * If `A` is a new entity, a new managed entity `A'`  is created and the state of `A` is copied into ``A'``.
 * If `A` is an existing managed entity, it is ignored. However, the merge operation still cascades as defined below.
-* If `A` is a removed entity, an [class]`` IllegalArgumentException`` is thrown.
+* If `A` is a removed entity, an [class]``IllegalArgumentException`` is thrown.
 * The merge operation recurses on all relation fields of `A` whose <<_jpa_overview_meta_cascade,cascades>> include ``CascadeType.MERGE``.
 
 The following diagram illustrates the lifecycle of an entity with respect to the APIs presented in this section.
@@ -171,9 +170,8 @@ image::img/jpa-state-transitions.png[]
 
 The examples below demonstrate how to use the lifecycle methods presented in the previous section.
 The examples are appropriate for out-of-container use.
-Within a container, [class]`` EntityManager``s are usually injected, and transactions are usually managed.
-You would therefore omit the [method]``
-createEntityManager`` and [method]``close`` calls, as well as all transaction demarcation code.
+Within a container, [class]``EntityManager``s are usually injected, and transactions are usually managed.
+You would therefore omit the [method]``createEntityManager`` and [method]``close`` calls, as well as all transaction demarcation code.
 
 .Persisting Objects
 ====
@@ -332,8 +330,7 @@ Hollow entities do not have any state loaded.
 The state only gets loaded when you attempt to access a persistent field.
 At that time, the implementation may throw an [class]``EntityNotFoundException`` if it discovers that the entity does not exist in the datastore.
 The implementation may also throw an [class]``EntityNotFoundException`` from the [method]``getReference`` method itself.
-Unlike [method]``
-find``, [method]``getReference`` does not return null.
+Unlike [method]``find``, [method]``getReference`` does not return null.
 
 [source]
 ----
@@ -358,13 +355,12 @@ public void flush();
 
 (((flush)))
 (((transactions , flushing changes before commit))) The [method]``flush`` method writes any changes that have been made in the current transaction to the datastore.
-If the [class]``EntityManager `` does not already have a connection to the datastore, it obtains one for the flush and retains it for the duration of the transaction.
+If the [class]``EntityManager`` does not already have a connection to the datastore, it obtains one for the flush and retains it for the duration of the transaction.
 Any exceptions during flush cause the transaction to be marked for rollback.
 See <<_jpa_overview_trans>>.
 
 Flushing requires an active transaction.
-If there isn't a transaction in progress, the [method]``flush`` method throws a [class]``
-TransactionRequiredException``.
+If there isn't a transaction in progress, the [method]``flush`` method throws a [class]``TransactionRequiredException``.
 
 [source]
 ----
@@ -399,7 +395,7 @@ public void clear();
 
 
 (((EntityManager , clear))) Clearing the [class]``EntityManager`` effectively ends the persistence context.
-All entities managed by the [class]``EntityManager `` become detached.
+All entities managed by the [class]``EntityManager`` become detached.
 
 [[_jpa_overview_em_query]]
 ==== Query Factory
@@ -496,11 +492,10 @@ public void close();
 ----
 
 When an [class]``EntityManager`` is no longer needed, you should call its [method]``close`` method.
-Closing an [class]``
-EntityManager`` releases any resources it is using.
-The persistence context ends, and the entities managed by the [class]``EntityManager `` become detached.
+Closing an [class]``EntityManager`` releases any resources it is using.
+The persistence context ends, and the entities managed by the [class]``EntityManager`` become detached.
 Any [class]``Query`` instances the [class]``EntityManager`` created become invalid.
-Calling any method other than [method]``isOpen`` on a closed [class]``EntityManager `` results in an [class]``IllegalStateException``.
+Calling any method other than [method]``isOpen`` on a closed [class]``EntityManager`` results in an [class]``IllegalStateException``.
 You cannot close a [class]``EntityManager`` that is in the middle of a transaction.
 
 If you are in a managed environment using injected entity managers, you should not close them.

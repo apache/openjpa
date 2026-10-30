@@ -5,9 +5,8 @@
 
 The standard JPA runtime environment was originally just __local__ and __online__.
 It is _local_ in that components such as [class]``EntityManager``s and queries connect directly to the datastore and execute their actions in the same JVM as the code using them.
-It is _online_ in that all changes to managed objects must be made in the context of an active [class]`` EntityManager``.
-These two properties, combined with the fact that [class]``
-EntityManager``s cannot be serialized for storage or network transfer, made the standard JPA runtime difficult to incorporate into some enterprise and client/server program designs.
+It is _online_ in that all changes to managed objects must be made in the context of an active [class]``EntityManager``.
+These two properties, combined with the fact that [class]``EntityManager``s cannot be serialized for storage or network transfer, made the standard JPA runtime difficult to incorporate into some enterprise and client/server program designs.
 
 JPA has now provided _offline_ capability through the detach() and merge() methods on the EntityManager interface.
 OpenJPA has extended this to include additional detach...() and merge...() methods.
@@ -203,7 +202,7 @@ public class Magazine
 (((remote , events , RemoteCommitListener))) The remote event notification framework allows a subset of the information available through OpenJPA's transaction events (see <<_ref_guide_runtime_pm_event>>) to be broadcast to remote listeners.
 OpenJPA's <<_ref_guide_cache,data cache>>, for example, uses remote events to remain synchronized when deployed in multiple JVMs.
 
-To enable remote events, you must configure the [class]`` EntityManagerFactory `` to use a `RemoteCommitProvider` (see below).
+To enable remote events, you must configure the [class]``EntityManagerFactory`` to use a `RemoteCommitProvider` (see below).
 
 When a `RemoteCommitProvider` is properly configured, you can register link:../../apidocs/org/apache/openjpa/event/RemoteCommitListener.html[
 RemoteCommitListener]s that will be alerted with a list of modified object ids whenever a transaction on a remote machine successfully commits.
@@ -221,7 +220,7 @@ The JMS remote commit provider can be configured by setting the <<_openjpa.remot
 The JMS provider understands the following properties:
 
 * ``Topic``: The topic that the remote commit provider should publish notifications to and subscribe to for notifications sent from other JVMs. Defaults to `topic/OpenJPACommitProviderTopic`
-* ``TopicConnectionFactory``: The JNDI name of a [class]`` jakarta.jms.TopicConnectionFactory`` factory to use for finding topics. Defaults to `` java:/ConnectionFactory``. This setting may vary depending on the application server in use; consult the application server's documentation for details of the default JNDI name for the [class]`` jakarta.jms.TopicConnectionFactory`` instance. For example, under Weblogic, the JNDI name for the TopicConnectionFactory is `` jakarta.jms.TopicConnectionFactory``.
+* ``TopicConnectionFactory``: The JNDI name of a [class]``jakarta.jms.TopicConnectionFactory`` factory to use for finding topics. Defaults to ``java:/ConnectionFactory``. This setting may vary depending on the application server in use; consult the application server's documentation for details of the default JNDI name for the [class]``jakarta.jms.TopicConnectionFactory`` instance. For example, under Weblogic, the JNDI name for the TopicConnectionFactory is ``jakarta.jms.TopicConnectionFactory``.
 * ``ExceptionReconnectAttempts``: The number of times to attempt to reconnect if the JMS system notifies OpenJPA of a serious connection error. Defaults to 0, meaning OpenJPA will log the error but otherwise ignore it, hoping the connection is still valid.
 * ``\*``: All other configuration properties will be interpreted as settings to pass to the JNDI [class]``InitialContext`` on construction. For example, you might set the `java.naming.provider.url`  property to the URL of the context provider.
 
@@ -239,8 +238,7 @@ To configure a factory to use the JMS provider, your properties might look like 
 
 [NOTE]
 ====
-Because of the nature of JMS, it is important that you invoke [method]``
-EntityManagerFactory.close`` when finished with a factory.
+Because of the nature of JMS, it is important that you invoke [method]``EntityManagerFactory.close`` when finished with a factory.
 If you do not do so, a daemon thread will stay up in the JVM, preventing the JVM from exiting.
 ====
 
@@ -250,7 +248,7 @@ If you do not do so, a daemon thread will stay up in the JVM, preventing the JVM
 
 The TCP remote commit provider has several options that are defined as host specifications containing a host name or IP address and an optional port separated by a colon.
 For example, the host specification 
-`saturn.bea.com:1234` represents an [class]``InetAddress`` retrieved by invoking [method]``InetAddress.getByName("saturn.bea.com") `` and a port of 1234.
+`saturn.bea.com:1234` represents an [class]``InetAddress`` retrieved by invoking [method]``InetAddress.getByName("saturn.bea.com")`` and a port of 1234.
 
 The TCP provider can be configured by setting the 
 `openjpa.RemoteCommitProvider` plugin property to contain the appropriate configuration settings.

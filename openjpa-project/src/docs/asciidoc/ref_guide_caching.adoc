@@ -343,8 +343,7 @@ cache.evictAll();
 [[_ref_guide_cache_use_openjpa]]
 ====== Using the OpenJPA StoreCache extensions
 
-You obtain the [class]``StoreCache`` through the [method]``
-OpenJPAEntityManagerFactory.getStoreCache`` method.
+You obtain the [class]``StoreCache`` through the [method]``OpenJPAEntityManagerFactory.getStoreCache`` method.
 
 .Accessing the StoreCache
 ====
@@ -380,8 +379,7 @@ public void evictAll(Class cls, Collection oids);
 
 The [method]``evict`` methods tell the cache to release data.
 Each method takes an entity class and one or more identity values, and releases the cached data for the corresponding persistent instances.
-The [method]``
-evictAll`` method with no arguments clears the cache.
+The [method]``evictAll`` method with no arguments clears the cache.
 Eviction is useful when the datastore is changed by a separate process outside OpenJPA's control.
 In this scenario, you typically have to manually evict the data from the datastore cache; otherwise the OpenJPA runtime, oblivious to the changes, will maintain its stale copy.
 
@@ -421,8 +419,7 @@ Javadoc] for information on additional functionality it provides.
 Also, <<_ref_guide_runtime>> discusses OpenJPA's other extensions to the standard set of JPA runtime interfaces.
 
 The examples above include calls to [method]``evict`` to manually remove data from the data cache.
-Rather than evicting objects from the data cache directly, you can also configure OpenJPA to automatically evict objects from the data cache when you use the [class]``
-OpenJPAEntityManager``'s eviction APIs.
+Rather than evicting objects from the data cache directly, you can also configure OpenJPA to automatically evict objects from the data cache when you use the [class]``OpenJPAEntityManager``'s eviction APIs.
 
 [#_ref_guide_cache_pmevict]
 .Automatic Data Cache Eviction
@@ -525,8 +522,7 @@ The object id list is not cached until the list returned at query execution time
 
 OpenJPA exposes a high-level interface to the query cache through the link:../../apidocs/org/apache/openjpa/persistence/QueryResultCache.html[
 org.apache.openjpa.persistence.QueryResultCache] class.
-You can access this class through the [class]``
-OpenJPAEntityManagerFactory``.
+You can access this class through the [class]``OpenJPAEntityManagerFactory``.
 
 .Accessing the QueryResultCache
 ====
@@ -599,7 +595,7 @@ select e from Employee e where e.company.address = :addr
 ----
 
 If you extract field values from the parameter in your query string, or if the parameter is used in collection element comparisons, the query is not cached.
-* Queries that result in projections of custom field types or [class]`` BigDecimal`` or [class]``BigInteger`` fields are not cached.
+* Queries that result in projections of custom field types or [class]``BigDecimal`` or [class]``BigInteger`` fields are not cached.
 
 Cache results are removed from the cache when instances of classes in a cached query's access path are touched.
 That is, if a query accesses data in class [class]``A``, and instances of class [class]``A`` are modified, deleted, or inserted, then the cached query result is dropped from the cache.
@@ -646,8 +642,7 @@ qcache.evict(q);
 When using one of OpenJPA's distributed cache implementations, it is necessary to perform this in every JVM - the change notification is not propagated automatically.
 When using a third-party coherent caching solution, it is not necessary to do this in every JVM (although it won't hurt to do so), as the cache results are stored directly in the coherent cache.
 
-Queries can also be pinned and unpinned through the [class]``
-QueryResultCache``.
+Queries can also be pinned and unpinned through the [class]``QueryResultCache``.
 The semantics of these operations are the same as pinning and unpinning data from the data cache.
 
 [source]
@@ -715,17 +710,14 @@ oq.getFetchPlan().setQueryResultCacheEnabled(true);
 (((caching , query cache , extension)))
 
 The provided data cache classes can be easily extended to add additional functionality.
-If you are adding new behavior, you should extend [class]``
-org.apache.openjpa.datacache.ConcurrentDataCache``.
-To use your own storage mechanism, extend [class]``org.apache.openjpa.datacache.AbstractDataCache `` (preferred), or implement [class]``org.apache.openjpa.datacache.DataCache `` directly.
-If you want to implement a distributed cache that uses an unsupported method for communications, create an implementation of [class]``
-org.apache.openjpa.event.RemoteCommitProvider``.
+If you are adding new behavior, you should extend [class]``org.apache.openjpa.datacache.ConcurrentDataCache``.
+To use your own storage mechanism, extend [class]``org.apache.openjpa.datacache.AbstractDataCache`` (preferred), or implement [class]``org.apache.openjpa.datacache.DataCache`` directly.
+If you want to implement a distributed cache that uses an unsupported method for communications, create an implementation of [class]``org.apache.openjpa.event.RemoteCommitProvider``.
 This process is described in greater detail in <<_ref_guide_event_customization>>.
 
 The query cache is just as easy to extend.
 Add functionality by extending the default [class]``org.apache.openjpa.datacache.ConcurrentQueryCache``.
-Implement your own storage mechanism for query results by extending [class]``
-org.apache.openjpa.datacache.AbstractQueryCache`` (preferred) or implementing the [class]``org.apache.openjpa.datacache.QueryCache`` interface directly.
+Implement your own storage mechanism for query results by extending [class]``org.apache.openjpa.datacache.AbstractQueryCache`` (preferred) or implementing the [class]``org.apache.openjpa.datacache.QueryCache`` interface directly.
 
 [[_ref_guide_cache_notes]]
 ===== Important Notes
@@ -751,7 +743,7 @@ If you do not, then understand that some of your non-transactional data may not 
 
 Note that when loading objects in a transaction, the appropriate datastore transactions will be obtained.
 So, transactional code will maintain its integrity.
-* [class]``Extent``s are not cached. So, if you plan on iterating over a list of all the objects in an [class]``Extent`` on a regular basis, you will only benefit from caching if you do so with a [class]``Query `` instead:
+* [class]``Extent``s are not cached. So, if you plan on iterating over a list of all the objects in an [class]``Extent`` on a regular basis, you will only benefit from caching if you do so with a [class]``Query`` instead:
 
 [#_ref_guide_cache_limits_extent]
 .Query Replaces Extent

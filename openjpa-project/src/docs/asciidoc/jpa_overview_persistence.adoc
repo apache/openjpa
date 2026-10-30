@@ -16,8 +16,7 @@ OpenJPAPersistence] helper class to provide additional utility methods.
 
 Within a container, you will typically use _injection_ to access an [class]``EntityManagerFactory``.
 Applications operating outside of a container, however, can use the https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/persistence[
-Persistence] class to obtain [class]``
-EntityManagerFactory`` objects in a vendor-neutral fashion.
+Persistence] class to obtain [class]``EntityManagerFactory`` objects in a vendor-neutral fashion.
 
 [source]
 ----
@@ -31,11 +30,9 @@ Each [method]``createEntityManagerFactory`` method searches the system for an [c
 Use `null` for an unnamed factory.
 The optional map contains vendor-specific property settings used to further configure the factory.
 
-[path]_persistence.xml_ files define [class]``
-EntityManagerFactories``.
-The [method]``createEntityManagerFactory `` methods search for [path]_persistence.xml_ files within the [path]_META-INF_ directory of any `CLASSPATH`  element.
-For example, if your `CLASSPATH` contains the [path]_conf_ directory, you could place an [class]``
-EntityManagerFactory`` definition in [path]_
+[path]_persistence.xml_ files define [class]``EntityManagerFactories``.
+The [method]``createEntityManagerFactory`` methods search for [path]_persistence.xml_ files within the [path]_META-INF_ directory of any `CLASSPATH`  element.
+For example, if your `CLASSPATH` contains the [path]_conf_ directory, you could place an [class]``EntityManagerFactory`` definition in [path]_
 conf/META-INF/persistence.xml_.
 
 The [method]``getPersistenceUtil`` method returns a PersistenceUtil interface that can be used to determine whether an entity or attribute of an entity is loaded.
@@ -370,25 +367,23 @@ Version 1.0 of the persistence schema can be found at http://java.sun.com/xml/ns
 </xsd:schema>
 ----
 
-The root element of a [path]_persistence.xml_ file is ``
-persistence``, which then contains one or more 
+The root element of a [path]_persistence.xml_ file is ``persistence``, which then contains one or more 
 `persistence-unit` definitions.
 The root element should include the version attribute with the appropriate version, `1.0` for a version 1.0 file and `2.0` for a version 2.0 file.
 Each persistence unit describes the configuration for the entity managers created by the persistence unit's entity manager factory.
 The persistence unit can specify these elements and attributes.
 
-* ``name``: This is the name you pass to the [method]`` Persistence.createEntityManagerFactory`` methods described above. The name attribute is required.
+* ``name``: This is the name you pass to the [method]``Persistence.createEntityManagerFactory`` methods described above. The name attribute is required.
 * ``transaction-type``: Whether to use managed (``JTA``) or local (``RESOURCE_LOCAL``) transaction management.
 * ``provider``: If you are using a third-party JPA vendor, this element names its implementation of the https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/spi/persistenceprovider[ PersistenceProvider] bootstrapping interface.
 
 
 [NOTE]
 ====
-Set the `provider` to [class]``
-org.apache.openjpa.persistence.PersistenceProviderImpl`` to use OpenJPA.
+Set the `provider` to [class]``org.apache.openjpa.persistence.PersistenceProviderImpl`` to use OpenJPA.
 ====
-* ``jta-data-source``: The JNDI name of a JDBC [class]`` DataSource`` that is automatically enlisted in JTA transactions. This may be an XA [class]``DataSource``.
-* ``non-jta-data-source``: The JNDI name of a JDBC [class]`` DataSource`` that is not enlisted in JTA transactions.
+* ``jta-data-source``: The JNDI name of a JDBC [class]``DataSource`` that is automatically enlisted in JTA transactions. This may be an XA [class]``DataSource``.
+* ``non-jta-data-source``: The JNDI name of a JDBC [class]``DataSource`` that is not enlisted in JTA transactions.
 * ``mapping-file``*: The resource names of XML mapping files for entities and embeddable classes. You can also specify mapping information in an [path]_orm.xml_ file in your [path]_META-INF_ directory. If present, the [path]_orm.xml_ mapping file will be read automatically.
 * ``jar-file``*: The names of jar files containing entities and embeddable classes. The implementation will scan the jar for annotated classes.
 * ``class``*: The class names of entities and embeddable classes.
@@ -432,8 +427,7 @@ Here is a typical [path]_persistence.xml_ file for a non-EE environment:
 
 The example below demonstrates the [class]``Persistence`` class in action.
 You will typically execute code like this on application startup, then cache the resulting factory for future use.
-This bootstrapping code is only necessary in non-EE environments; in an EE environment [class]``
-EntityManagerFactories`` are typically injected.
+This bootstrapping code is only necessary in non-EE environments; in an EE environment [class]``EntityManagerFactories`` are typically injected.
 
 .Obtaining an EntityManagerFactory
 ====

@@ -112,8 +112,7 @@ OpenJPA supports final classes and final methods.
 
 All entity classes must declare one or more fields which together form the persistent identity of an instance.
 These are called _identity_  or _primary key_ fields.
-In our [class]``
-Magazine`` class, `isbn` and `title` are identity fields, because no two magazine records in the datastore can have the same `isbn` and `title` values. <<_jpa_overview_meta_id>> will show you how to denote your identity fields in JPA metadata. <<_jpa_overview_pc_identity>> below examines persistent identity.
+In our [class]``Magazine`` class, `isbn` and `title` are identity fields, because no two magazine records in the datastore can have the same `isbn` and `title` values. <<_jpa_overview_meta_id>> will show you how to denote your identity fields in JPA metadata. <<_jpa_overview_pc_identity>> below examines persistent identity.
 
 [NOTE]
 ====
@@ -133,8 +132,7 @@ This prevents overwriting the previous commit with stale data.
 A version field is not required, but without one concurrent threads or processes might succeed in making conflicting changes to the same record at the same time.
 This is unacceptable to most applications. <<_jpa_overview_meta_version>> shows you how to designate a version field in JPA metadata.
 
-The version field must be an integral type ([class]`` int``, [class]``Long``, etc), a [class]``
-java.sql.Timestamp``, a [class]``java.time.LocalDateTime``  or a [class]``java.time.Instant``.
+The version field must be an integral type ([class]``int``, [class]``Long``, etc), a [class]``java.sql.Timestamp``, a [class]``java.time.LocalDateTime``  or a [class]``java.time.Instant``.
 You should consider version fields immutable.
 Changing the field value has undefined results.
 
@@ -154,7 +152,7 @@ It allows persistent classes to inherit from non-persistent classes, persistent 
 It is even possible to form inheritance hierarchies in which persistence skips generations.
 There are, however, a few important limitations:
 
-* Persistent classes cannot inherit from certain natively-implemented system classes such as [class]``java.net.Socket`` and [class]`` java.lang.Thread``.
+* Persistent classes cannot inherit from certain natively-implemented system classes such as [class]``java.net.Socket`` and [class]``java.lang.Thread``.
 * If a persistent class inherits from a non-persistent class, the fields of the non-persistent superclass cannot be persisted.
 * All classes in an inheritance tree must use the same identity type. We cover entity identity in <<_jpa_overview_pc_identity>>.
 
@@ -238,8 +236,7 @@ Additionally, there are often ways of using JPA's other features to circumvent a
 (((identity , qualitative)))
 (((qualitative identity))) Java recognizes two forms of object identity: numeric identity and qualitative identity.
 If two references are _numerically_ identical, then they refer to the same JVM instance in memory.
-You can test for this using the ``==`` operator. _Qualitative_ identity, on the other hand, relies on some user-defined criteria to determine whether two objects are "equal". You test for qualitative identity using the [method]``
-equals`` method.
+You can test for this using the ``==`` operator. _Qualitative_ identity, on the other hand, relies on some user-defined criteria to determine whether two objects are "equal". You test for qualitative identity using the [method]``equals`` method.
 By default, this method simply relies on numeric identity.
 
 JPA introduces another form of object identity, called _entity
@@ -251,9 +248,7 @@ Entity identity tests whether two persistent objects represent the same state in
 If two entities of the same type have the same identity field values, then the two entities represent the same state in the datastore.
 Each entity's identity field values must be unique among all other entities of the same type.
 
-Identity fields must be primitives, primitive wrappers, [class]``
-String``s, [class]``Date``s, [class]``
-Timestamp``s, [class]``UUID``s or embeddable types.
+Identity fields must be primitives, primitive wrappers, [class]``String``s, [class]``Date``s, [class]``Timestamp``s, [class]``UUID``s or embeddable types.
 
 [NOTE]
 ====
@@ -387,11 +382,11 @@ image::img/appid-hierarchy.png[]
 An alternative to having a single identity class for an entire inheritance hierarchy is to have one identity class per level in the inheritance hierarchy.
 The requirements for using a hierarchy of identity classes are as follows:
 
-* The inheritance hierarchy of identity classes must exactly mirror the hierarchy of the persistent classes that they identify. In the example pictured above, abstract class [class]``Person`` is extended by abstract class [class]``Employee``, which is extended by non-abstract class [class]`` FullTimeEmployee``, which is extended by non-abstract class [class]``Manager``. The corresponding identity classes, then, are an abstract [class]``PersonId`` class, extended by an abstract [class]``EmployeeId`` class, extended by a non-abstract [class]`` FullTimeEmployeeId`` class, extended by a non-abstract [class]`` ManagerId`` class.
-* Subclasses in the identity hierarchy may define additional identity fields until the hierarchy becomes non-abstract. In the aforementioned example, [class]`` Person`` defines an identity field ``ssn``, [class]`` Employee`` defines additional identity field ``userName ``, and [class]``FullTimeEmployee`` adds a final identity field, ``empId``. However, [class]``Manager`` may not define any additional identity fields, since it is a subclass of a non-abstract class. The hierarchy of identity classes, of course, must match the identity field definitions of the persistent class hierarchy.
-* It is not necessary for each abstract class to declare identity fields. In the previous example, the abstract [class]``Person`` and [class]`` Employee`` classes could declare no identity fields, and the first concrete subclass [class]``FullTimeEmployee`` could define one or more identity fields.
-* All subclasses of a concrete identity class must be [method]``equals `` and [method]``hashCode``-compatible with the concrete superclass. This means that in our example, a [class]``ManagerId `` instance and a [class]``FullTimeEmployeeId`` instance with the same identity field values should have the same hash code, and should compare equal to each other using the [method]``equals`` method of either one. In practice, this requirement reduces to the following coding practices:
-.. Use `instanceof` instead of comparing [class]``Class `` objects in the [method]``equals`` methods of your identity classes.
+* The inheritance hierarchy of identity classes must exactly mirror the hierarchy of the persistent classes that they identify. In the example pictured above, abstract class [class]``Person`` is extended by abstract class [class]``Employee``, which is extended by non-abstract class [class]``FullTimeEmployee``, which is extended by non-abstract class [class]``Manager``. The corresponding identity classes, then, are an abstract [class]``PersonId`` class, extended by an abstract [class]``EmployeeId`` class, extended by a non-abstract [class]``FullTimeEmployeeId`` class, extended by a non-abstract [class]``ManagerId`` class.
+* Subclasses in the identity hierarchy may define additional identity fields until the hierarchy becomes non-abstract. In the aforementioned example, [class]``Person`` defines an identity field ``ssn``, [class]``Employee`` defines additional identity field ``userName``, and [class]``FullTimeEmployee`` adds a final identity field, ``empId``. However, [class]``Manager`` may not define any additional identity fields, since it is a subclass of a non-abstract class. The hierarchy of identity classes, of course, must match the identity field definitions of the persistent class hierarchy.
+* It is not necessary for each abstract class to declare identity fields. In the previous example, the abstract [class]``Person`` and [class]``Employee`` classes could declare no identity fields, and the first concrete subclass [class]``FullTimeEmployee`` could define one or more identity fields.
+* All subclasses of a concrete identity class must be [method]``equals`` and [method]``hashCode``-compatible with the concrete superclass. This means that in our example, a [class]``ManagerId`` instance and a [class]``FullTimeEmployeeId`` instance with the same identity field values should have the same hash code, and should compare equal to each other using the [method]``equals`` method of either one. In practice, this requirement reduces to the following coding practices:
+.. Use `instanceof` instead of comparing [class]``Class`` objects in the [method]``equals`` methods of your identity classes.
 .. An identity class that extends another non-abstract identity class should not override [method]``equals`` or [method]``hashCode``.
 
 
@@ -426,10 +421,9 @@ This is equivalent to the XML element tag ``post-load``.
 [class]``PostLoad`` is often used to initialize non-persistent fields whose values depend on the values of persistent fields, such as a complex data structure.
 * (((PreUpdate)))https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/preupdate[
 PreUpdate]: Methods marked with this annotation will be invoked just the persistent values in your objects are flushed to the datastore.
-This is equivalent to the XML element tag ``
-pre-update``.
+This is equivalent to the XML element tag ``pre-update``.
 
-[class]``PreUpdate`` is the complement to [class]``PostLoad ``.
+[class]``PreUpdate`` is the complement to [class]``PostLoad``.
 While methods marked with [class]``PostLoad`` are most often used to initialize non-persistent values from persistent data, methods annotated with [class]``PreUpdate`` is normally used to set persistent fields with information cached in non-persistent data.
 * (((PostUpdate)))https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/postupdate[
 PostUpdate]: Methods marked with this annotation will be invoked after changes to a given instance have been stored to the datastore.
@@ -439,8 +433,7 @@ This is equivalent to the XML element tag ``post-update``.
 PreRemove]: Methods marked with this annotation will be invoked before an object transactions to the deleted state.
 Access to persistent fields is valid within this method.
 You might use this method to cascade the deletion to related objects based on complex criteria, or to perform other cleanup.
-This is equivalent to the XML element tag ``
-pre-remove``.
+This is equivalent to the XML element tag ``pre-remove``.
 * (((PostRemove)))https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/postremove[
 PostRemove]: Methods marked with this annotation will be invoked after an object has been marked as to be deleted.
 This is equivalent to the XML element tag ``post-remove``.
@@ -509,7 +502,7 @@ JPA allows for this, requiring only that listener classes have a public no-arg c
 Like persistent classes, your listener classes can consume any number of callbacks.
 The callback methods must take in a single [class]``java.lang.Object`` argument which represents the persistent object that triggered the event.
 
-Entities can enumerate listeners using the [class]``EntityListeners `` annotation.
+Entities can enumerate listeners using the [class]``EntityListeners`` annotation.
 This annotation takes an array of listener classes as its value.
 
 Below is an example of how to declare an entity and its corresponding listener classes.

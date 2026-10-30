@@ -7,8 +7,7 @@ The OpenJPA distribution comes with a number of examples that illustrate the usa
 ==== JDO - JPA Persistence Interoperability
 
 This sample demonstrates how to combine JDO and JPA in a single application.
-The [path]_MachineMain.java_ program uses both [class]``
-EntityManager``s and [class]``PersistenceManager``s in a single transaction including persist, delete and query operations.
+The [path]_MachineMain.java_ program uses both [class]``EntityManager``s and [class]``PersistenceManager``s in a single transaction including persist, delete and query operations.
 
 The sample includes both annotated persistent classes as well as JDOR metadata information.
 The application can switch to either system simply by changing the bootstrap mechanism.

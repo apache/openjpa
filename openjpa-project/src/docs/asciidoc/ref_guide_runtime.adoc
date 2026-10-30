@@ -26,8 +26,7 @@ So that you won't feel lost, the list below associates each specification interf
 * [class]``org.apache.openjpa.persistence.FetchPlan``: _[class]``__org.apache.openjpa.kernel.FetchConfiguration__``_
 * [class]``org.apache.openjpa.persistence.Generator``: _[class]``__org.apache.openjpa.kernel.Seq__``_
 
-The <<_ref_guide_runtime_openjpapersistence,[class]``
-org.apache.openjpa.persistence.OpenJPAPersistence``>> helper allows you to convert between [class]``EntityManagerFactories`` and [class]``BrokerFactories``, [class]``EntityManager``s and [class]``Broker``s.
+The <<_ref_guide_runtime_openjpapersistence,[class]``org.apache.openjpa.persistence.OpenJPAPersistence``>> helper allows you to convert between [class]``EntityManagerFactories`` and [class]``BrokerFactories``, [class]``EntityManager``s and [class]``Broker``s.
 
 [[_ref_guide_runtime_broker_finalization]]
 ===== Broker Finalization
@@ -40,7 +39,7 @@ To avoid this overhead, set the <<_openjpa.brokerimpl,`openjpa.BrokerImpl`>> con
 [[_ref_guide_runtime_broker_extension]]
 ===== Broker Customization and Eviction
 
-As a <<_ref_guide_conf_plugins,plugin string>>, this property can be used to configure the [class]`` BrokerImpl`` with the following properties:
+As a <<_ref_guide_conf_plugins,plugin string>>, this property can be used to configure the [class]``BrokerImpl`` with the following properties:
 
 * ``EvictFromDataCache``: When evicting an object through the [method]``OpenJPAEntityManager.evict`` methods, whether to also evict it from the OpenJPA's <<_ref_guide_cache,data cache>>. Defaults to ``false``.
 
@@ -82,15 +81,14 @@ public static OpenJPAEntityManager cast(EntityManager em);
 public static OpenJPAQuery cast(Query q);
 ----
 
-We provide additional information on the [class]``OpenJPAPersistence `` helper <<_ref_guide_runtime_openjpapersistence,
+We provide additional information on the [class]``OpenJPAPersistence`` helper <<_ref_guide_runtime_openjpapersistence,
 below>>.
 
 [[_ref_guide_runtime_emfactory]]
 ===== OpenJPAEntityManagerFactory
 (((EntityManagerFactory , OpenJPA extensions)))
 
-The [class]``org.apache.openjpa.persistence.OpenJPAEntityManagerFactory `` interface extends the basic [class]``
-jakarta.persistence.EntityManagerFactory`` with OpenJPA-specific features.
+The [class]``org.apache.openjpa.persistence.OpenJPAEntityManagerFactory`` interface extends the basic [class]``jakarta.persistence.EntityManagerFactory`` with OpenJPA-specific features.
 The [class]``OpenJPAEntityManagerFactory`` offers APIs to access the OpenJPA data and query caches and to perform other OpenJPA-specific operations.
 See the link:../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManagerFactory.html[
 interface Javadoc] for details.
@@ -102,18 +100,15 @@ interface Javadoc] for details.
 All OpenJPA [class]``EntityManager``s implement the link:../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html[
 org.apache.openjpa.persistence.OpenJPAEntityManager
 ] interface.
-This interface extends the standard [class]``
-jakarta.persistence.EntityManager``.
-Just as the standard [class]``
-EntityManager`` is the primary window into JPA services, the [class]``OpenJPAEntityManager`` is the primary window from JPA into OpenJPA-specific functionality.
+This interface extends the standard [class]``jakarta.persistence.EntityManager``.
+Just as the standard [class]``EntityManager`` is the primary window into JPA services, the [class]``OpenJPAEntityManager`` is the primary window from JPA into OpenJPA-specific functionality.
 We strongly encourage you to investigate the API extensions this interface contains.
 
 [[_ref_guide_runtime_jpaquery]]
 ===== OpenJPAQuery
 (((Query , OpenJPA extensions)))
 
-OpenJPA extends JPA's standard query functionality with the [class]``
-org.apache.openjpa.persistence.OpenJPAQuery`` interface.
+OpenJPA extends JPA's standard query functionality with the [class]``org.apache.openjpa.persistence.OpenJPAQuery`` interface.
 See its link:../../apidocs/org/apache/openjpa/persistence/OpenJPAQuery.html[Javadoc
 ] for details on the convenience methods it provides.
 
@@ -163,29 +158,23 @@ See <<_ref_guide_cache_query>> for details on query caching in OpenJPA.
 (((FetchPlan)))
 (((eager fetching)))
 
-Many of the aforementioned OpenJPA interfaces give you access to an [class]``
-org.apache.openjpa.persistence.FetchPlan`` instance.
-The [class]``
-FetchPlan`` allows you to exercise some control over how objects are fetched from the datastore, including <<_ref_guide_dbsetup_lrs,
+Many of the aforementioned OpenJPA interfaces give you access to an [class]``org.apache.openjpa.persistence.FetchPlan`` instance.
+The [class]``FetchPlan`` allows you to exercise some control over how objects are fetched from the datastore, including <<_ref_guide_dbsetup_lrs,
 large result set support>>, <<_ref_guide_fetch,custom fetch
 groups>>, and <<_ref_guide_locking,lock levels>>.
 
 OpenJPA goes one step further, extending [class]``FetchPlan`` with link:../../apidocs/org/apache/openjpa/persistence/jdbc/JDBCFetchPlan.html[
 org.apache.openjpa.persistence.jdbc.JDBCFetchPlan] to add additional JDBC-specific tuning methods.
-Unless you have customized OpenJPA to use a non-relational back-end (see <<_ref_guide_enterprise_abstractstore>> ), all [class]``
-FetchPlan``s in OpenJPA implement [class]``
-JDBCFetchPlan``, so feel free to cast to this interface.
+Unless you have customized OpenJPA to use a non-relational back-end (see <<_ref_guide_enterprise_abstractstore>> ), all [class]``FetchPlan``s in OpenJPA implement [class]``JDBCFetchPlan``, so feel free to cast to this interface.
 
 Fetch plans pass on from parent components to child components.
-The [class]``
-EntityManagerFactory`` settings (via your configuration properties) for things like the fetch size, result set type, and custom fetch groups are passed on to the fetch plan of the [class]``EntityManager``s it produces.
-The settings of each [class]``EntityManager``, in turn, are passed on to each [class]``Query`` and [class]``Extent `` it returns.
+The [class]``EntityManagerFactory`` settings (via your configuration properties) for things like the fetch size, result set type, and custom fetch groups are passed on to the fetch plan of the [class]``EntityManager``s it produces.
+The settings of each [class]``EntityManager``, in turn, are passed on to each [class]``Query`` and [class]``Extent`` it returns.
 Note that the opposite, however, is not true.
-Modifying the fetch plan of a [class]``Query`` or [class]``Extent `` does not affect the [class]``EntityManager``'s configuration.
-Likewise, modifying an [class]``EntityManager``'s configuration does not affect the [class]`` EntityManagerFactory``.
+Modifying the fetch plan of a [class]``Query`` or [class]``Extent`` does not affect the [class]``EntityManager``'s configuration.
+Likewise, modifying an [class]``EntityManager``'s configuration does not affect the [class]``EntityManagerFactory``.
 
-<<_ref_guide_fetch>> includes examples using [class]``
-FetchPlan``s.
+<<_ref_guide_fetch>> includes examples using [class]``FetchPlan``s.
 
 [[_ref_guide_runtime_openjpaentitytransaction]]
 ===== OpenJPAEntityTransaction
@@ -216,8 +205,7 @@ This section describes OpenJPA's APIs for explicit locking, as well as its rules
 (((ReadLockLevel)))
 (((WriteLockLevel))) You can control OpenJPA's default transactional read and write lock levels through the <<_openjpa.readlocklevel,
 `openjpa.ReadLockLevel`>> and <<_openjpa.writelocklevel,`openjpa.WriteLockLevel`>> configuration properties.
-Each property accepts a value of ``
-none``, ``read``, ``write``, ``optimistic``, ``optimistic-force-increment``, ``pessimistic-read``, ``pessimistic-write``, ``pessimistic-force-increment``, or a number corresponding to a lock level defined by the <<_ref_guide_locking_lockmgr,lock manager>> in use.
+Each property accepts a value of ``none``, ``read``, ``write``, ``optimistic``, ``optimistic-force-increment``, ``pessimistic-read``, ``pessimistic-write``, ``pessimistic-force-increment``, or a number corresponding to a lock level defined by the <<_ref_guide_locking_lockmgr,lock manager>> in use.
 These properties apply only to non-optimistic transactions; during optimistic transactions, OpenJPA never locks objects by default.
 
 
@@ -241,11 +229,10 @@ It defaults to -1.
 [[_ref_guide_locking_runtime]]
 ===== Configuring Lock Levels at Runtime
 
-At runtime, you can override the default lock levels through the [class]``
-FetchPlan`` interface described above.
-At the beginning of each datastore transaction, OpenJPA initializes the [class]`` EntityManager ``'s fetch plan with the default lock levels and timeouts described in the previous section.
+At runtime, you can override the default lock levels through the [class]``FetchPlan`` interface described above.
+At the beginning of each datastore transaction, OpenJPA initializes the [class]``EntityManager``'s fetch plan with the default lock levels and timeouts described in the previous section.
 By changing the fetch plan's locking properties, you can control how objects loaded at different points in the transaction are locked.
-You can also use the fetch plan of an individual [class]``Query `` to apply your locking changes only to objects loaded through that [class]``Query``.
+You can also use the fetch plan of an individual [class]``Query`` to apply your locking changes only to objects loaded through that [class]``Query``.
 
 [source]
 ----
@@ -523,10 +510,10 @@ oem.getTransaction().commit();
 
 OpenJPA uses the link:../../apidocs/org/apache/openjpa/kernel/SavepointManager[
 org.apache.openjpa.kernel.SavepointManager]<<_ref_guide_conf_plugins,plugin>> to handle preserving the savepoint state.
-OpenJPA includes the following [class]``SavepointManager `` plugins:
+OpenJPA includes the following [class]``SavepointManager`` plugins:
 
 * ``in-mem``: The default. This is an alias for the link:../../apidocs/org/apache/openjpa/kernel/InMemorySavepointManager.html[ org.apache.openjpa.kernel.InMemorySavepointManager]. This plugin stores all state, including field values, in memory. Due to this behavior, each set savepoint is designed for small to medium transactional object counts.
-* ``jdbc``: This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/kernel/JDBC3SavepointManager.html[ org.apache.openjpa.jdbc.kernel.JDBC3SavepointManager]. This plugin requires `JDBC 3` and [class]`` java.sql.Savepoint `` support to operate. Note that this plugin implements savepoints by issuing a flush to the database.
+* ``jdbc``: This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/kernel/JDBC3SavepointManager.html[ org.apache.openjpa.jdbc.kernel.JDBC3SavepointManager]. This plugin requires `JDBC 3` and [class]``java.sql.Savepoint`` support to operate. Note that this plugin implements savepoints by issuing a flush to the database.
 
 
 [[_ref_guide_enterprise_methodql]]
@@ -600,7 +587,7 @@ The JPA Overview's <<_jpa_overview_mapping>> details using generators to automat
 
 OpenJPA represents all generators internally with the link:../../apidocs/org/apache/openjpa/kernel/Seq.html[
 org.apache.openjpa.kernel.Seq] interface.
-This interface supplies all the context you need to create your own custom generators, including the current persistence environment, the JDBC [class]``DataSource ``, and other essentials.
+This interface supplies all the context you need to create your own custom generators, including the current persistence environment, the JDBC [class]``DataSource``, and other essentials.
 The link:../../apidocs/org/apache/openjpa/jdbc/kernel/AbstractJDBCSeq.html[
 org.apache.openjpa.jdbc.kernel.AbstractJDBCSeq] helps you create custom JDBC-based sequences.
 OpenJPA also supplies the following built-in [class]``Seq``s:
@@ -617,27 +604,25 @@ This [class]``Seq`` has the following properties:
 ** ``PrimaryKeyColumn``: The name of the primary key column for the sequence table. Defaults to ``ID``.
 ** ``SequenceColumn``: The name of the column that will hold the current sequence value. Defaults to ``SEQUENCE_VALUE``.
 ** ``Allocate``: The number of values to allocate on each database trip. Defaults to 50, meaning the class will set aside the next 50 numbers each time it accesses the sequence table, which in turn means it only has to make a database trip to get new sequence numbers once every 50 sequence number requests.
-* ``class-table``: This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/kernel/ClassTableJDBCSeq.html[ org.apache.openjpa.jdbc.kernel.ClassTableJDBCSeq] . This [class]``Seq`` is like the [class]``TableJDBCSeq `` above, but maintains a separate table row, and therefore a separate sequence number, for each base persistent class. It has all the properties of the [class]``TableJDBCSeq``. Its table name defaults to `` OPENJPA_SEQUENCES_TABLE``. It also adds the following properties:
-** ``IgnoreUnmapped``: Whether to ignore unmapped base classes, and instead use one row per least-derived mapped class. Defaults to `` false``.
+* ``class-table``: This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/kernel/ClassTableJDBCSeq.html[ org.apache.openjpa.jdbc.kernel.ClassTableJDBCSeq] . This [class]``Seq`` is like the [class]``TableJDBCSeq`` above, but maintains a separate table row, and therefore a separate sequence number, for each base persistent class. It has all the properties of the [class]``TableJDBCSeq``. Its table name defaults to ``OPENJPA_SEQUENCES_TABLE``. It also adds the following properties:
+** ``IgnoreUnmapped``: Whether to ignore unmapped base classes, and instead use one row per least-derived mapped class. Defaults to ``false``.
 ** ``UseAliases``: Whether to use each class' entity name as the primary key value of each row, rather than the full class name. Defaults to ``false``.
 
 
-As with the [class]``TableJDBCSeq``, the [class]``
-ClassTableJDBCSeq`` creates its table automatically during mapping tool runs.
+As with the [class]``TableJDBCSeq``, the [class]``ClassTableJDBCSeq`` creates its table automatically during mapping tool runs.
 However, you can manually manipulate the table through the class' [method]``main`` method.
-See the Javadoc for the [method]`` ClassTableJDBCSeq.main`` method for usage details.
+See the Javadoc for the [method]``ClassTableJDBCSeq.main`` method for usage details.
 * (((generators , value-table)))``value-table``: This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/kernel/ValueTableJDBCSeq.html[
-org.apache.openjpa.jdbc.kernel.ValueTableJDBCSeq] . This [class]``Seq`` is like the [class]``ClassTableJDBCSeq `` above, but has an arbitrary number of rows for sequence values, rather than a fixed pattern of one row per class.
+org.apache.openjpa.jdbc.kernel.ValueTableJDBCSeq] . This [class]``Seq`` is like the [class]``ClassTableJDBCSeq`` above, but has an arbitrary number of rows for sequence values, rather than a fixed pattern of one row per class.
 Its table defaults to ``OPENJPA_SEQUENCES_TABLE``.
 It has all the properties of the [class]``TableJDBCSeq``, plus:
 ** ``PrimaryKeyValue``: The primary key value used by this instance.
 
 
-As with the [class]``TableJDBCSeq``, the [class]``
-ValueTableJDBCSeq`` creates its table automatically during mapping tool runs.
+As with the [class]``TableJDBCSeq``, the [class]``ValueTableJDBCSeq`` creates its table automatically during mapping tool runs.
 However, you can manually manipulate the table through the class' [method]``main`` method.
 See the Javadoc for the [method]``ValueTableJDBCSeq.main`` method for usage details.
-* ``native``: This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/kernel/NativeJDBCSeq.html[ org.apache.openjpa.jdbc.kernel.NativeJDBCSeq]. Many databases have a concept of "native sequences" - a built-in mechanism for obtaining incrementing numbers. For example, in Oracle database, you can create a database sequence with a statement like ``CREATE SEQUENCE MYSEQUENCE ``. Sequence values can then be atomically obtained and incremented with the statement ``SELECT MYSEQUENCE.NEXTVAL FROM DUAL``. OpenJPA provides support for this common mechanism of sequence generation with the [class]`` NativeJDBCSeq``, which accepts the following properties:
+* ``native``: This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/kernel/NativeJDBCSeq.html[ org.apache.openjpa.jdbc.kernel.NativeJDBCSeq]. Many databases have a concept of "native sequences" - a built-in mechanism for obtaining incrementing numbers. For example, in Oracle database, you can create a database sequence with a statement like ``CREATE SEQUENCE MYSEQUENCE``. Sequence values can then be atomically obtained and incremented with the statement ``SELECT MYSEQUENCE.NEXTVAL FROM DUAL``. OpenJPA provides support for this common mechanism of sequence generation with the [class]``NativeJDBCSeq``, which accepts the following properties:
 ** ``Sequence``: The name of the database sequence. Defaults to ``OPENJPA_SEQUENCE``.
 ** ``InitialValue``: The initial sequence value. Defaults to 1.
 ** ``Increment``: The amount the sequence increments. Defaults to 1.
@@ -728,7 +713,7 @@ The [class]``OpenJPAEntityManager`` includes additional APIs to retrieve the ide
 With these APIs, you do not have to know the generator name.
 Additionally, they allow you to access the implicit generator used by default for datastore identity classes.
 See the link:../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html[
-Javadoc] for the [method]`` OpenJPAEntityManager.getIdentityGenerator `` and [method]``OpenJPAEntityManager.getFieldGenerator `` methods for API details.
+Javadoc] for the [method]``OpenJPAEntityManager.getIdentityGenerator`` and [method]``OpenJPAEntityManager.getFieldGenerator`` methods for API details.
 
 [[_ref_guide_runtime_pm_event]]
 ==== Transaction Events

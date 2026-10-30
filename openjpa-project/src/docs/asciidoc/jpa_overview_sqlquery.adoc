@@ -10,9 +10,7 @@ Or maybe a certain query requires database-specific SQL your JPA implementation 
 Or maybe your DBA has spent hours crafting the perfect select statement for a query in your application's critical path.
 Whatever the reason, SQL queries can remain an essential part of an application.
 
-You are probably familiar with executing SQL queries by obtaining a [class]``
-java.sql.Connection``, using the JDBC APIs to create a [class]``
-Statement``, and executing that [class]``Statement`` to obtain a [class]``ResultSet``.
+You are probably familiar with executing SQL queries by obtaining a [class]``java.sql.Connection``, using the JDBC APIs to create a [class]``Statement``, and executing that [class]``Statement`` to obtain a [class]``ResultSet``.
 And of course, you are free to continue using this low-level approach to SQL execution in your JPA applications.
 However, JPA also supports executing SQL queries through the [class]``jakarta.persistence.Query`` interface introduced in <<_jpa_overview_query>>.
 Using a JPA SQL query, you can retrieve either persistent objects or projections of column values.

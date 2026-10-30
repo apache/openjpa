@@ -198,11 +198,9 @@ your application.
 _scalability_
 |
 
-Under certain settings, [class]`` EntityManager`` s, OpenJPA [class]``Extent`` iterators, and [class]``Query`` results may be backed by resources in the database.
+Under certain settings, [class]``EntityManager`` s, OpenJPA [class]``Extent`` iterators, and [class]``Query`` results may be backed by resources in the database.
 
-For example, if you have configured OpenJPA to use scrollable cursors and lazy object instantiation by default, each query result will hold open a [class]``
-ResultSet`` object, which, in turn, will hold open a [class]``
-Statement`` object (preventing it from being re-used). Garbage collection will clean up these resources, so it is never necessary to explicitly close them, but it is always faster if it is done at the application level.
+For example, if you have configured OpenJPA to use scrollable cursors and lazy object instantiation by default, each query result will hold open a [class]``ResultSet`` object, which, in turn, will hold open a [class]``Statement`` object (preventing it from being re-used). Garbage collection will clean up these resources, so it is never necessary to explicitly close them, but it is always faster if it is done at the application level.
 
 |**
                             Use detached state managers **

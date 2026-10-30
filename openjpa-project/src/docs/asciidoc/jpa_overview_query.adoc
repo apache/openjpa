@@ -54,7 +54,7 @@ List<Magazine> results = (List<Magazine>) q.getResultList();
 
 A JPQL query has an internal namespace declared in the `from` clause of the query.
 Arbitrary identifiers are assigned to entities so that they can be referenced elsewhere in the query.
-In the query example above, the identifier `x` is assigned to the entity [class]`` Magazine ``.
+In the query example above, the identifier `x` is assigned to the entity [class]``Magazine``.
 
 [NOTE]
 ====
@@ -67,7 +67,7 @@ In the case of the query above, the query's result list will contain instances o
 
 [NOTE]
 ====
-When selecting entities, you can optionally use the keyword ``object ``.
+When selecting entities, you can optionally use the keyword ``object``.
 The clauses `select x` and `SELECT
 OBJECT(x)` are synonymous.
 ====
@@ -274,7 +274,7 @@ Consider:
 SELECT x FROM Magazine x, IN(x.articles) y WHERE y.authorName = 'John Doe'
 ----
 
-This query says that for each [class]``Magazine```` x ``, traverse the `articles` relation and check each [class]``Article````y``, and pass the filter if ``y``'s `authorName` field is equal to "John Doe". In short, this query will return all magazines that have any articles written by John Doe.
+This query says that for each [class]``Magazine````x``, traverse the `articles` relation and check each [class]``Article````y``, and pass the filter if ``y``'s `authorName` field is equal to "John Doe". In short, this query will return all magazines that have any articles written by John Doe.
 
 [NOTE]
 ====
@@ -354,8 +354,7 @@ SELECT x FROM Magazine x join fetch x.articles a join fetch a.publishers p WHERE
 
 [NOTE]
 ====
-Specifying the `join fetch` declaration is functionally equivalent to adding the fields to the Query's [class]``
-FetchConfiguration``.
+Specifying the `join fetch` declaration is functionally equivalent to adding the fields to the Query's [class]``FetchConfiguration``.
 See <<_ref_guide_fetch>>.
 ====
 
@@ -373,8 +372,7 @@ For example:
 
 SELECT x FROM Magazine x WHERE CONCAT(x.title, 's') = 'JDJs'
 ----
-* (((SUBSTRING function)))``SUBSTRING(string, startIndex, [length])``: Returns the part of the `string` argument starting at `startIndex` (1-based) and optionally ending at `length` characters past ``
-startIndex``.
+* (((SUBSTRING function)))``SUBSTRING(string, startIndex, [length])``: Returns the part of the `string` argument starting at `startIndex` (1-based) and optionally ending at `length` characters past ``startIndex``.
 If the `length` argument is not specified, the substring from the `startIndex` to the end of the `string` is returned.
 
 
@@ -383,7 +381,7 @@ If the `length` argument is not specified, the substring from the `startIndex` t
 
 SELECT x FROM Magazine x WHERE SUBSTRING(x.title, 1, 1) = 'J'
 ----
-* (((TRIM function)))``TRIM([LEADING | TRAILING | BOTH] [character FROM] string``: Trims the specified character from either the beginning ( ``LEADING ``) end ( ``TRAILING``) or both ( `` BOTH ``) of the string argument.
+* (((TRIM function)))``TRIM([LEADING | TRAILING | BOTH] [character FROM] string``: Trims the specified character from either the beginning ( ``LEADING``) end ( ``TRAILING``) or both ( ``BOTH``) of the string argument.
 If no trim character is specified, the space character will be trimmed.
 
 
@@ -416,8 +414,7 @@ SELECT x FROM Magazine x WHERE UPPER(x.title) = 'JAVAPRO'
 
 SELECT x FROM Magazine x WHERE LENGTH(x.title) = 3
 ----
-* (((LOCATE function)))``LOCATE(searchString, candidateString [, startIndex])``: Returns the first index of `searchString` in ``
-candidateString``.
+* (((LOCATE function)))``LOCATE(searchString, candidateString [, startIndex])``: Returns the first index of `searchString` in ``candidateString``.
 Positions are 1-based.
 If the string is not found, returns 0.
 
@@ -547,8 +544,7 @@ SELECT c FROM Customer AS c WHERE EXTRACT(DATE FROM c.createdTimestamp)  { d '19
 
 All JPQL queries are polymorphic, which means the `from` clause of a query includes not only instances of the specific entity class to which it refers, but all subclasses of that class as well.
 The instances returned by a query include instances of the subclasses that satisfy the query conditions.
-For example, the following query may return instances of [class]`` Magazine ``, as well as [class]``Tabloid`` and [class]``Digest `` instances, where [class]``Tabloid`` and [class]``
-Digest`` are [class]``Magazine`` subclasses.
+For example, the following query may return instances of [class]``Magazine``, as well as [class]``Tabloid`` and [class]``Digest`` instances, where [class]``Tabloid`` and [class]``Digest`` are [class]``Magazine`` subclasses.
 
 [source]
 ----
@@ -578,7 +574,7 @@ public Query setParameter (int pos, Object value);
 ----
 
 Specify positional parameters in your JPQL string using an integer prefixed by a question mark.
-You can then populate the [class]``Query`` object with positional parameter values via calls to the [method]``setParameter `` method above.
+You can then populate the [class]``Query`` object with positional parameter values via calls to the [method]``setParameter`` method above.
 The method returns the [class]``Query`` instance for optional method chaining.
 
 [source]
@@ -599,7 +595,7 @@ public Query setParameter(String name, Object value);
 ----
 
 Named parameters are denoted by prefixing an arbitrary name with a colon in your JPQL string.
-You can then populate the [class]`` Query`` object with parameter values using the method above.
+You can then populate the [class]``Query`` object with parameter values using the method above.
 Like the positional parameter method, this method returns the [class]``Query`` instance for optional method chaining.
 
 [source]
@@ -1016,8 +1012,7 @@ Entity names are scoped within the persistence unit and must be unique within th
 ====== JPQL Schema Example
 
 This example assumes that the application developer provides several entity classes, representing magazines, publishers, authors, and articles.
-The abstract schema types for these entities are ``Magazine``, ``
-Publisher``, ``Author``, and ``Article``.
+The abstract schema types for these entities are ``Magazine``, ``Publisher``, ``Author``, and ``Article``.
 
 Several Entities with Abstract Persistence Schemas Defined in the Same Persistence Unit.
 The entity `Publisher` has a one-to-many relationships with ``Magazine``.
@@ -1033,9 +1028,7 @@ SELECT DISTINCT mag FROM Magazine AS mag JOIN mag.articles AS art WHERE art.publ
 ----
 
 This query navigates over the association-field `authors` of the abstract schema type `Magazine` to find articles, and uses the state-field `published` of `Article` to select those magazines that have at least one article that is not published.
-Although predefined reserved identifiers, such as ``DISTINCT``, ``
-FROM``, ``AS``, ``JOIN``, ``
-WHERE``, and `FALSE` appear in upper case in this example, predefined reserved identifiers are case insensitive.
+Although predefined reserved identifiers, such as ``DISTINCT``, ``FROM``, ``AS``, ``JOIN``, ``WHERE``, and `FALSE` appear in upper case in this example, predefined reserved identifiers are case insensitive.
 
 The 
 `SELECT` clause of this example designates the return type of this query to be of type ``Magazine``.
@@ -1082,11 +1075,9 @@ The following subsections discuss the constructs used in the `FROM` clause.
 
 An identifier is a character sequence of unlimited length.
 The character sequence must begin with a Java identifier start character, and all other characters must be Java identifier part characters.
-An identifier start character is any character for which the method [method]``
-Character.isJavaIdentifierStart`` returns ``true``.
+An identifier start character is any character for which the method [method]``Character.isJavaIdentifierStart`` returns ``true``.
 This includes the underscore (_) character and the dollar sign ($) character.
-An identifier part character is any character for which the method [method]``
-Character.isJavaIdentifierPart`` returns ``true``.
+An identifier part character is any character for which the method [method]``Character.isJavaIdentifierPart`` returns ``true``.
 The question mark (?) character is reserved for use by the Java Persistence query language.
 The following are reserved identifiers:
 
@@ -1458,8 +1449,7 @@ SELECT pub FROM Publisher pub LEFT JOIN pub.magazines mag WHERE pub.revenue  100
 ----
 SELECT pub FROM Publisher pub LEFT OUTER JOIN pub.magazines mags WHERE pub.revenue  1000000
 ---- An important use case for `LEFT JOIN` is in enabling the prefetching of related data items as a side effect of a query.
-This is accomplished by specifying the `LEFT JOIN` as a ``
-FETCH JOIN``.
+This is accomplished by specifying the `LEFT JOIN` as a ``FETCH JOIN``.
 
 [[_jpa_langref_fetch_joins]]
 ====== JPQL Fetch Joins
@@ -2520,7 +2510,7 @@ The Java type that is contained in the result of a query using an aggregate func
 * `AVG` returns Double.
 * `SUM` returns Long when applied to state-fields of integral types (other than BigInteger); Double when applied to state-fields of floating point types; BigInteger when applied to state-fields of type BigInteger; and BigDecimal when applied to state-fields of type BigDecimal.
 
-If ``SUM ``, ``AVG``, ``MAX``, or `MIN`  is used, and there are no values to which the aggregate function can be applied, the result of the aggregate function is ``NULL``.
+If ``SUM``, ``AVG``, ``MAX``, or `MIN`  is used, and there are no values to which the aggregate function can be applied, the result of the aggregate function is ``NULL``.
 
 If `COUNT` is used, and there are no values to which 
 `COUNT` can be applied, the result of the aggregate function is 0.

@@ -87,16 +87,16 @@ Just as OpenJPA can maintain your entity's identity without any `Id`  fields, Op
 ===== Persistent Field Values
 (((persistent fields)))
 
-JPA defines ``Basic``, ``Lob``, ``Embedded ``, ``ManyToOne``, and `OneToOne` persistence strategies for direct field values.
+JPA defines ``Basic``, ``Lob``, ``Embedded``, ``ManyToOne``, and `OneToOne` persistence strategies for direct field values.
 OpenJPA supports all of these standard strategies, but adds one of its own: ``Persistent``.
 The link:../../apidocs/org/apache/openjpa/persistence/Persistent.html[
 org.apache.openjpa.persistence.Persistent] metadata annotation can represent any direct field value, including custom types.
 It has the following properties:
 
-* ``FetchType fetch``: Whether to load the field eagerly or lazily. Corresponds exactly to the same-named property of standard JPA annotations such as <<_jpa_overview_meta_basic,[class]`` Basic ``>>. Defaults to ``FetchType.EAGER``.
-* ``CascadeType[] cascade``: Array of enum values defining cascade behavior for this field. Corresponds exactly to the same-named property of standard JPA annotations such as <<_jpa_overview_meta_manytoone,[class]`` ManyToOne``>>. Defaults to empty array.
-* ``String mappedBy``: Names the field in the related entity that maps this bidirectional relation. Corresponds to the same-named property of standard JPA annotations such as <<_jpa_overview_meta_onetoone,[class]`` OneToOne``>>.
-* ``boolean optional``: Whether the value can be null. Corresponds to the same-named property of standard JPA annotations such as <<_jpa_overview_meta_manytoone,[class]`` ManyToOne``>>, but can apply to non-entity object values as well. Defaults to ``true``.
+* ``FetchType fetch``: Whether to load the field eagerly or lazily. Corresponds exactly to the same-named property of standard JPA annotations such as <<_jpa_overview_meta_basic,[class]``Basic``>>. Defaults to ``FetchType.EAGER``.
+* ``CascadeType[] cascade``: Array of enum values defining cascade behavior for this field. Corresponds exactly to the same-named property of standard JPA annotations such as <<_jpa_overview_meta_manytoone,[class]``ManyToOne``>>. Defaults to empty array.
+* ``String mappedBy``: Names the field in the related entity that maps this bidirectional relation. Corresponds to the same-named property of standard JPA annotations such as <<_jpa_overview_meta_onetoone,[class]``OneToOne``>>.
+* ``boolean optional``: Whether the value can be null. Corresponds to the same-named property of standard JPA annotations such as <<_jpa_overview_meta_manytoone,[class]``ManyToOne``>>, but can apply to non-entity object values as well. Defaults to ``true``.
 * ``boolean embedded``: Set this property to `true`  if the field value is stored as an embedded object.
 
 Though you can use the [class]``Persistent`` annotation in place of most of the standard direct field annotations mentioned above, we recommend primarily using it for non-standard and custom types for which no standard JPA annotation exists.
@@ -114,9 +114,9 @@ org.apache.openjpa.persistence.PersistentCollection] metadata annotation to repr
 It has the following properties:
 
 * ``Class elementType``: The class of the collection elements. This information is usually taken from the parameterized collection element type. You must supply it explicitly, however, if your field isn't a parameterized type.
-* ``FetchType fetch``: Whether to load the collection eagerly or lazily. Corresponds exactly to the same-named property of standard JPA annotations such as <<_jpa_overview_meta_basic,[class]`` Basic``>>. Defaults to ``FetchType.LAZY``.
+* ``FetchType fetch``: Whether to load the collection eagerly or lazily. Corresponds exactly to the same-named property of standard JPA annotations such as <<_jpa_overview_meta_basic,[class]``Basic``>>. Defaults to ``FetchType.LAZY``.
 * ``String mappedBy``: Names the field in the related entity that maps this bidirectional relation. Corresponds to the same-named property of standard JPA annotations such as <<_jpa_overview_meta_manytomany,[class]``ManyToMany``>>.
-* ``CascadeType[] elementCascade``: Array of enum values defining cascade behavior for the collection elements. Corresponds exactly to the ``cascade`` property of standard JPA annotations such as <<_jpa_overview_meta_manytomany,[class]`` ManyToMany``>>. Defaults to empty array.
+* ``CascadeType[] elementCascade``: Array of enum values defining cascade behavior for the collection elements. Corresponds exactly to the ``cascade`` property of standard JPA annotations such as <<_jpa_overview_meta_manytomany,[class]``ManyToMany``>>. Defaults to empty array.
 * ``boolean elementEmbedded``: Set this property to `true`  if the elements are stored as embedded objects.
 
 
@@ -130,9 +130,9 @@ It has the following properties:
 
 * ``Class keyType``: The class of the map keys. This information is usually taken from the parameterized map key type. You must supply it explicitly, however, if your field isn't a parameterized type.
 * ``Class elementType``: The class of the map values. This information is usually taken from the parameterized map value type. You must supply it explicitly, however, if your field isn't a parameterized type.
-* ``FetchType fetch``: Whether to load the collection eagerly or lazily. Corresponds exactly to the same-named property of standard JPA annotations such as <<_jpa_overview_meta_basic,[class]`` Basic``>>. Defaults to ``FetchType.LAZY``.
-* ``CascadeType[] keyCascade``: Array of enum values defining cascade behavior for the map keys. Corresponds exactly to the `cascade`  property of standard JPA annotations such as <<_jpa_overview_meta_manytoone,[class]`` ManyToOne``>>. Defaults to empty array.
-* ``CascadeType[] elementCascade``: Array of enum values defining cascade behavior for the map values. Corresponds exactly to the ``cascade`` property of standard JPA annotations such as <<_jpa_overview_meta_manytoone,[class]`` ManyToOne``>>. Defaults to empty array.
+* ``FetchType fetch``: Whether to load the collection eagerly or lazily. Corresponds exactly to the same-named property of standard JPA annotations such as <<_jpa_overview_meta_basic,[class]``Basic``>>. Defaults to ``FetchType.LAZY``.
+* ``CascadeType[] keyCascade``: Array of enum values defining cascade behavior for the map keys. Corresponds exactly to the `cascade`  property of standard JPA annotations such as <<_jpa_overview_meta_manytoone,[class]``ManyToOne``>>. Defaults to empty array.
+* ``CascadeType[] elementCascade``: Array of enum values defining cascade behavior for the map values. Corresponds exactly to the ``cascade`` property of standard JPA annotations such as <<_jpa_overview_meta_manytoone,[class]``ManyToOne``>>. Defaults to empty array.
 * ``boolean keyEmbedded``: Set this property to `true`  if the map keys are stored as embedded objects.
 * ``boolean elementEmbedded``: Set this property to  `true` if the map values are stored as embedded objects.
 

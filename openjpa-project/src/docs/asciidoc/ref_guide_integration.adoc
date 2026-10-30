@@ -129,8 +129,7 @@ See the code formatting documentation in <<_ref_guide_conf_devtools_format>> for
 (((enhancer , Ant task)))
 
 The enhancer task allows you to invoke the OpenJPA enhancer directly from within the Ant build process.
-The task's parameters correspond exactly to the long versions of the command-line arguments to the <<_ref_guide_pc_enhance,[class]``
-org.apache.openjpa.enhance.PCEnhancer``>>.
+The task's parameters correspond exactly to the long versions of the command-line arguments to the <<_ref_guide_pc_enhance,[class]``org.apache.openjpa.enhance.PCEnhancer``>>.
 
 The enhancer task accepts a nested `fileset` tag to specify the files that should be processed.
 You can specify [path]_.java_ or [path]_.class_ files.
@@ -186,8 +185,7 @@ _ file:
 (((application identity tool , Ant task)))
 
 The application identity tool task allows you to invoke the application identity tool directly from within the Ant build process.
-The task's parameters correspond exactly to the long versions of the command-line arguments to the <<_ref_guide_pc_appid_appidtool,[class]``
-org.apache.openjpa.enhance.ApplicationIdTool``>>.
+The task's parameters correspond exactly to the long versions of the command-line arguments to the <<_ref_guide_pc_appid_appidtool,[class]``org.apache.openjpa.enhance.ApplicationIdTool``>>.
 
 The application identity tool task accepts a nested `fileset` tag to specify the files that should be processed.
 You can specify [path]_
@@ -261,8 +259,7 @@ Following is an example of a [path]_build.xml_ target that invokes the mapping t
 
 The reverse mapping tool task allows you to directly invoke the reverse mapping tool from within Ant.
 While many users will only run the reverse mapping process once, others will make it part of their build process.
-The task's parameters correspond exactly to the long versions of the command-line arguments to the <<_ref_guide_pc_reverse_reversemappingtool,[class]``
-org.apache.openjpa.jdbc.meta.ReverseMappingTool``>>.
+The task's parameters correspond exactly to the long versions of the command-line arguments to the <<_ref_guide_pc_reverse_reversemappingtool,[class]``org.apache.openjpa.jdbc.meta.ReverseMappingTool``>>.
 
 Following is an example of a [path]_build.xml_ target that invokes the reverse mapping tool:
 
@@ -291,8 +288,7 @@ Following is an example of a [path]_build.xml_ target that invokes the reverse m
 (((schema tool , Ant task)))
 
 The schema tool task allows you to directly invoke the schema tool from within the Ant build process.
-The task's parameters correspond exactly to the long versions of the command-line arguments to the <<_ref_guide_schema_schematool,[class]``
-org.apache.openjpa.jdbc.schema.SchemaTool``>>.
+The task's parameters correspond exactly to the long versions of the command-line arguments to the <<_ref_guide_schema_schematool,[class]``org.apache.openjpa.jdbc.schema.SchemaTool``>>.
 
 Following is an example of a [path]_build.xml_ target that invokes the schema tool:
 

@@ -33,7 +33,7 @@ java org.apache.openjpa.jdbc.meta.MappingTool Magazine.java
 
 In addition to the universal flags of the <<_ref_guide_conf_devtools,configuration framework>>, the mapping tool accepts the following command line arguments:
 
-* ``-schemaAction/-sa <add | refresh | drop | build | retain | reflect | createDB | dropDB | import | export | none> ``: The action to take on the schema. These options correspond to the same-named actions on the schema tool described in <<_ref_guide_schema_schematool>>. Actions can be composed in a comma-separated list. Unless you are running the mapping tool on all of your persistent types at once or dropping a mapping, we strongly recommend you use the default `add` action or the ``build`` action. Otherwise you may end up inadvertently dropping schema components that are used by classes you are not currently running the tool over.
+* ``-schemaAction/-sa <add | refresh | drop | build | retain | reflect | createDB | dropDB | import | export | none>``: The action to take on the schema. These options correspond to the same-named actions on the schema tool described in <<_ref_guide_schema_schematool>>. Actions can be composed in a comma-separated list. Unless you are running the mapping tool on all of your persistent types at once or dropping a mapping, we strongly recommend you use the default `add` action or the ``build`` action. Otherwise you may end up inadvertently dropping schema components that are used by classes you are not currently running the tool over.
 * ``-schemaFile/-sf <stdout | output file>``: Use this option to write the planned schema to an XML document rather than modify the database. The document can then be manipulated and committed to the database with the <<_ref_guide_schema_schematool, schema tool>>.
 * ``-sqlFile/-sql <stdout | output file>``: Use this option to write the planned schema modifications to a SQL script rather than modify the database. Combine this with a `schemaAction` of `build`  to generate a script that recreates the schema for the current mappings, even if the schema already exists.
 * ``-sqlEncode/-se <encoding>``: Use this option with `-sqlFile` to write the SQL script in a different Java character set encoding than the default JVM locale, such as ``-sqlTerminator/-st <terminal>``: Use this option with `-sqlFile` to write the SQL terminating with a different character instead of a semicolon.
@@ -227,18 +227,16 @@ configuration flags>>, including <<_ref_guide_conf_devtools_format,code formatti
 ** ``-useBuiltinIdentityClass/-bic <true/t | false/f>``: Set to `false` to prevent the tool from using built-in application identity classes when possible. This will force the tool to create custom application identity classes even when there is only one primary key column.
 ** ``-innerIdentityClasses/-inn <true/t | false/f>``: Set to ``true`` to have any generated application identity classes be created as static inner classes within the persistent classes. Defaults to ``false``.
 ** ``-identityClassSuffix/-is <suffix>``: Suffix to append to class names to form application identity class names, or for inner identity classes, the inner class name. Defaults to ``Id``.
-** ``-typeMap/-typ <type mapping>``: A string that specifies the default Java classes to generate for each SQL type that is seen in the schema. The format is `` SQLTYPE1=JavaClass1,SQLTYPE2=JavaClass2 ``. The SQL type name first looks for a customization based on `` SQLTYPE(SIZE,PRECISION)``, then ``SQLTYPE(SIZE)``, then ``SQLTYPE``. So if a column whose type name is ``CHAR`` is found, it will first look for the  `CHAR(50,0)` type name specification, then it will look for `` CHAR(50)``, and finally it will just look for ``CHAR``. For example, to generate a char array for every `CHAR` column whose size is exactly 50, and to generate a `short` for every type name of ``INTEGER``, you might specify: `` CHAR(50)=char[],INTEGER=short``. Note that since various databases report different type names differently, one database's type name specification might not work for another database. Enable `TRACE` level logging on the `MetaData` channel to track which type names OpenJPA is examining.
+** ``-typeMap/-typ <type mapping>``: A string that specifies the default Java classes to generate for each SQL type that is seen in the schema. The format is ``SQLTYPE1=JavaClass1,SQLTYPE2=JavaClass2``. The SQL type name first looks for a customization based on ``SQLTYPE(SIZE,PRECISION)``, then ``SQLTYPE(SIZE)``, then ``SQLTYPE``. So if a column whose type name is ``CHAR`` is found, it will first look for the  `CHAR(50,0)` type name specification, then it will look for ``CHAR(50)``, and finally it will just look for ``CHAR``. For example, to generate a char array for every `CHAR` column whose size is exactly 50, and to generate a `short` for every type name of ``INTEGER``, you might specify: ``CHAR(50)=char[],INTEGER=short``. Note that since various databases report different type names differently, one database's type name specification might not work for another database. Enable `TRACE` level logging on the `MetaData` channel to track which type names OpenJPA is examining.
 ** ``-customizerClass/-cc <class name>``: The full class name of a link:../../apidocs/org/apache/openjpa/jdbc/meta/ReverseCustomizer.html[ org.apache.openjpa.jdbc.meta.ReverseCustomizer] customization plugin. If you do not specify a reverse customizer of your own, the system defaults to a link:../../apidocs/org/apache/openjpa/jdbc/meta/PropertiesReverseCustomizer.html[ PropertiesReverseCustomizer]. This customizer allows you to specify simple customization options in the properties file given with the `-customizerProperties` flag below. We present the available property keys <<_ref_guide_pc_reverse_custom, below>>.
 ** `-customizerProperties/-cp <properties file or resource>` : The path or resource name of a properties file to pass to the reverse customizer on initialization.
 ** `-customizer./-c.<property name> <property value>` : The given property name will be matched with the corresponding Java bean property in the specified reverse customizer, and set to the given value.
 
 
-Running the tool will generate [path]_.java_ files for each generated class (and its application identity class, if applicable), along with JPA annotations (if enabled by setting ``-annotations true``), or an [path]_orm.xml_ file (if not disabled with ``
--metadata none``) containing the corresponding persistence metadata.
+Running the tool will generate [path]_.java_ files for each generated class (and its application identity class, if applicable), along with JPA annotations (if enabled by setting ``-annotations true``), or an [path]_orm.xml_ file (if not disabled with ``-metadata none``) containing the corresponding persistence metadata.
 . Examine the generated class, metadata, and mapping information, and modify it as necessary. Remember that the reverse mapping tool only provides a starting point, and you are free to make whatever modifications you like to the code it generates.
 
-After you are satisfied with the generated classes and their mappings, you should first compile the classes with ``javac``, ``
-jikes``, or your favorite Java compiler.
+After you are satisfied with the generated classes and their mappings, you should first compile the classes with ``javac``, ``jikes``, or your favorite Java compiler.
 Make sure the classes are located in the directory corresponding to the `-package` flag you gave the reverse mapping tool.
 Next, if you have generated an [path]_
 orm.xml_, move that file to a [path]_META-INF_ directory within a directory in your classpath.
@@ -273,7 +271,7 @@ The customizer recognizes the following properties:
 * ``<class name>.rename <new class name>``: Override the given tool-generated name `<class name>` with a new value. Use full class names, including package. You are free to rename a class to a new package. Specify a value of `none` to reject the class and leave the corresponding table unmapped.
 * ``<table name>.class-name <new class name>``: Assign the given fully-qualified class name to the type created from the table with name ``<table name>``. Use a value of `none`  to prevent reverse mapping this table. This property can be used in place of the `rename` property.
 * ``<class name>.identity <datastore | builtin | identity class name>``: Set this property to `datastore` to use datastore identity for the class ``<class name>``, ``builtin`` to use a built-in identity class, or the desired application identity class name. Give full class names, including package. You are free to change the package of the identity class this way. If the persistent class has been renamed, use the new class name for this property key. Remember that datastore identity requires a table with a single numeric primary key column, and built-in identity requires a single primary key column of any type.
-* ``<class name>.<field name>.rename <new field name> ``: Override the tool-generated `<field name>` in class `<class name>` with the given name. Use the field owner's full class name in the property key. If the field owner's class was renamed, use the new class name. The property value should be the new field name, without the preceding class name. Use a value of `none` to reject the generated mapping and remove the field from the class.
+* ``<class name>.<field name>.rename <new field name>``: Override the tool-generated `<field name>` in class `<class name>` with the given name. Use the field owner's full class name in the property key. If the field owner's class was renamed, use the new class name. The property value should be the new field name, without the preceding class name. Use a value of `none` to reject the generated mapping and remove the field from the class.
 * ``<table name>.<column name>.field-name <new field name>``: Set the generated field name for the `<table name>` table's `<column name>` column. If this is a multi-column mapping, any of the columns can be used. Use a value of ``none`` to prevent the column and its associated columns from being reverse-mapped.
 * `<class name>.<field name>.type <field type>` : The type to give the named field. Use full class names. If the field or the field's owner class has been renamed, use the new name.
 * ``<class name>.<field name>.value``: The initial value for the named field. The given string will be placed as-is in the generated Java code, so be sure it is valid Java. If the field or the field's owner class has been renamed, use the new name.
@@ -351,15 +349,15 @@ The <<_openjpa.jdbc.mappingdefaults,
 This is a plugin property (see <<_ref_guide_conf_plugins>>), so you can substitute your own implementation or configure the existing ones.
 OpenJPA includes the following standard implementations:
 
-* ``jpa``: Provides defaults in compliance with the JPA standard. This is an alias for the link:../../apidocs/org/apache/openjpa/persistence/jdbc/PersistenceMappingDefaults.html[ org.apache.openjpa.persistence.jdbc.PersistenceMappingDefaults ] class. This class extends the [class]`` MappingDefaultsImpl`` class described below, so it has all the same properties (though with different default values), as well as:
+* ``jpa``: Provides defaults in compliance with the JPA standard. This is an alias for the link:../../apidocs/org/apache/openjpa/persistence/jdbc/PersistenceMappingDefaults.html[ org.apache.openjpa.persistence.jdbc.PersistenceMappingDefaults ] class. This class extends the [class]``MappingDefaultsImpl`` class described below, so it has all the same properties (though with different default values), as well as:
 ** ``PrependFieldNameToJoinTableInverseJoinColumns``: Whether to prepend the owning field name to the names of inverse join columns in join tables. Defaults to true per the JPA specification. Set to false for compatibility with older OpenJPA versions which did not prepend the field name.
 * ``default``: This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/meta/MappingDefaultsImpl.html[ org.apache.openjpa.jdbc.meta.MappingDefaultsImpl] class. This default implementation is highly configurable. It has the following properties:
 ** ``DefaultMissingInfo``: Whether to default missing column and table names rather than throw an exception. If set to false, full explicit mappings are required at runtime and when using mapping tool actions like ``buildSchema`` and ``validate``.
 ** ``RemoveHungarianNotation``: Switches on/off removal of Hungarian notation when generating column names. Fields such as `mFoobar` and `strBarFoo` would become columns named `foobar` and ``barfoo`` respectively. OpenJPA will search for the first instance of a uppercase character in the field name and then truncate the column name to remove anything before it.
 ** ``BaseClassStrategy``: The default mapping strategy for base classes. You can specify a built-in strategy alias or the full class name of a <<_ref_guide_mapping_custom_class,custom class strategy>>. You can also use OpenJPA's plugin format (see <<_ref_guide_conf_plugins>>) to pass arguments to the strategy instance. See the link:../../apidocs/org/apache/openjpa/jdbc/meta/strats/package-summary.html[ org.apache.openjpa.jdbc.meta.strats] package for available strategies.
 ** ``SubclassStrategy``: The default mapping strategy for subclasses. You can specify a builtin strategy alias or the full class name of a <<_ref_guide_mapping_custom_class, custom class strategy>>. You can also use OpenJPA's plugin format (see <<_ref_guide_conf_plugins>>) to pass arguments to the strategy instance. Common strategies are `vertical` and ``flat``, the default. See the link:../../apidocs/org/apache/openjpa/jdbc/meta/strats/package-summary.html[ org.apache.openjpa.jdbc.meta.strats] package for all available strategies.
-** ``VersionStrategy``: The default version strategy for classes without a version field. You can specify a builtin strategy alias or the full class name of a <<_ref_guide_mapping_custom_versdiscrim, custom version strategy>>. You can also use OpenJPA's plugin format (see <<_ref_guide_conf_plugins>>) to pass arguments to the strategy instance. Common strategies are ``none``, `` state-comparison``, `` timestamp``, and `` version-number``, the default. See the link:../../apidocs/org/apache/openjpa/jdbc/meta/strats/package-summary.html[ org.apache.openjpa.jdbc.meta.strats] package for all available strategies.
-** ``DiscriminatorStrategy``: The default discriminator strategy when no discriminator value is given. You can specify a builtin strategy alias or the full class name of a <<_ref_guide_mapping_custom_versdiscrim, custom discriminator strategy>>. You can also use OpenJPA's plugin format (see <<_ref_guide_conf_plugins>>) to pass arguments to the strategy instance. Common strategies are `final` for a base class without subclasses, `none` to use joins to subclass tables rather than a discriminator column, and `` class-name``, the default. See the link:../../apidocs/org/apache/openjpa/jdbc/meta/strats/package-summary.html[ org.apache.openjpa.jdbc.meta.strats] package for all available strategies.
+** ``VersionStrategy``: The default version strategy for classes without a version field. You can specify a builtin strategy alias or the full class name of a <<_ref_guide_mapping_custom_versdiscrim, custom version strategy>>. You can also use OpenJPA's plugin format (see <<_ref_guide_conf_plugins>>) to pass arguments to the strategy instance. Common strategies are ``none``, ``state-comparison``, ``timestamp``, and ``version-number``, the default. See the link:../../apidocs/org/apache/openjpa/jdbc/meta/strats/package-summary.html[ org.apache.openjpa.jdbc.meta.strats] package for all available strategies.
+** ``DiscriminatorStrategy``: The default discriminator strategy when no discriminator value is given. You can specify a builtin strategy alias or the full class name of a <<_ref_guide_mapping_custom_versdiscrim, custom discriminator strategy>>. You can also use OpenJPA's plugin format (see <<_ref_guide_conf_plugins>>) to pass arguments to the strategy instance. Common strategies are `final` for a base class without subclasses, `none` to use joins to subclass tables rather than a discriminator column, and ``class-name``, the default. See the link:../../apidocs/org/apache/openjpa/jdbc/meta/strats/package-summary.html[ org.apache.openjpa.jdbc.meta.strats] package for all available strategies.
 ** ``FieldStrategies``: This property associates field types with custom strategies. The format of this property is similar to that of plugin strings (see <<_ref_guide_conf_plugins>> ), without the class name. It is a comma-separated list of key/value pairs, where each key is a possible field type, and each value is itself a plugin string describing the strategy for that type. We present an example below. See <<_ref_guide_mapping_custom_field>> for information on custom field strategies.
 ** ``ForeignKeyDeleteAction``: The default delete action of foreign keys representing relations to other objects. Recognized values include ``restrict``, ``cascade``, `null` , ``default``. These values correspond exactly to the standard database foreign key actions of the same names.
 
@@ -405,8 +403,7 @@ The example below turns on foreign key generation during schema creation and ass
 
 An important decision in the object-relational mapping process is how and where to store the data necessary to map your persistent classes to the database schema.
 
-<<_ref_guide_meta_factory>> introduced OpenJPA's [class]``
-MetaDataFactory`` interface.
+<<_ref_guide_meta_factory>> introduced OpenJPA's [class]``MetaDataFactory`` interface.
 OpenJPA uses this same interface to abstract the storage and retrieval of mapping information.
 OpenJPA includes the built-in mapping factories below, and you can create your own factory if you have custom needs.
 You control which mapping factory OpenJPA uses with the <<_openjpa.jdbc.mappingfactory,
@@ -453,8 +450,8 @@ See <<_ref_guide_mapping_custom>> for an examination of custom mappings.
 In some cases you might have a schema in which one of the join criteria is that a column in the source or target table must have some constant value.
 OpenJPA calls joins involving constant values __constant joins__.
 
-To form a constant join in JPA mapping, first set the ``JoinColumn ``'s `name` attribute to the name of the column.
-If the column with the constant value is the target of the join, give its fully qualified name in the form ``<table name>.<column name> ``.
+To form a constant join in JPA mapping, first set the ``JoinColumn``'s `name` attribute to the name of the column.
+If the column with the constant value is the target of the join, give its fully qualified name in the form ``<table name>.<column name>``.
 Next, set the `referencedColumnName` attribute to the constant value.
 If the constant value is a string, place it in single quotes to differentiate it from a column name.
 
@@ -463,7 +460,7 @@ image::img/joins-constant.png[]
 
 Consider the tables above.
 First, we want to join row `T1.R1` to row ``T2.R1``.
-If we just join column `T1.FK` to ``T2.PK1``, we will wind up matching both `T2.R1`  and `` T2.R2``.
+If we just join column `T1.FK` to ``T2.PK1``, we will wind up matching both `T2.R1`  and ``T2.R2``.
 So in addition to joining 
 `T1.FK` to ``T2.PK1``, we also have to specify that ``T2.PK2`` has the value ``a``.
 Here is how we'd accomplish this in mapping metadata.
@@ -604,8 +601,7 @@ Each [class]``VersionColumn`` has the following properties:
 All properties correspond exactly to the same-named properties on the standard [class]``Column`` annotation, described in <<_jpa_overview_mapping_column>>.
 
 By default, OpenJPA assumes that surrogate versioning uses a version number strategy.
-You can choose a different strategy with the [class]``
-VersionStrategy`` annotation described in <<_version_strategy>>.
+You can choose a different strategy with the [class]``VersionStrategy`` annotation described in <<_version_strategy>>.
 
 If multiple columns are used for surrogate versioning, then each column, by default, uses a version number.
 But column definition for each version column can be set independently to other numeric types.
@@ -651,8 +647,7 @@ Remember to annotate custom field types with [class]``Persistent``, as described
 ===== Join Column Attribute Targets
 
 <<_jpa_overview_mapping_rel>> in the JPA Overview introduced you to the [class]``JoinColumn`` annotation.
-A [class]``
-JoinColumn``'s  `referencedColumnName` property declares which column in the table of the related type this join column links to.
+A [class]``JoinColumn``'s  `referencedColumnName` property declares which column in the table of the related type this join column links to.
 Suppose, however, that the related type is unmapped, or that it is part of a table-per-class inheritance hierarchy.
 Each subclass that might be assigned to the field could reside in a different table, and could use entirely different names for its primary key columns.
 It becomes impossible to supply a single ``referencedColumnName`` that works for all subclasses.
@@ -660,21 +655,19 @@ It becomes impossible to supply a single ``referencedColumnName`` that works for
 OpenJPA rectifies this by allowing you to declare which _attribute_  in the related type each join column links to, rather than which column.
 If the attribute is mapped differently in various subclass tables, OpenJPA automatically forms the proper join for the subclass record at hand.
 The link:../../apidocs/org/apache/openjpa/persistence/jdbc/XJoinColumn.html[
-org.apache.openjpa.persistence.jdbc.XJoinColumn] annotation has all the same properties as the standard [class]``JoinColumn `` annotation, but adds an additional 
+org.apache.openjpa.persistence.jdbc.XJoinColumn] annotation has all the same properties as the standard [class]``JoinColumn`` annotation, but adds an additional 
 `referencedAttributeName` property for this purpose.
-Simply use a [class]``XJoinColumn`` in place of a [class]``JoinColumn `` whenever you need to access this added functionality.
+Simply use a [class]``XJoinColumn`` in place of a [class]``JoinColumn`` whenever you need to access this added functionality.
 
 For compound keys, use the link:../../apidocs/org/apache/openjpa/persistence/jdbc/XJoinColumns.html[
 org.apache.openjpa.persistence.jdbc.XJoinColumns] annotation.
-The value of this annotation is an array of individual [class]``
-XJoinColumn``s.
+The value of this annotation is an array of individual [class]``XJoinColumn``s.
 
 [[_ref_guide_mapping_jpa_embed]]
 ===== Embedded Mapping
 
 JPA uses the [class]``AttributeOverride`` annotation to override the default mappings of an embeddable class.
-The JPA Overview details this process in <<_jpa_overview_mapping_embed>>. [class]``
-AttributeOverride``s suffice for simple mappings, but do not allow you to override complex mappings.
+The JPA Overview details this process in <<_jpa_overview_mapping_embed>>. [class]``AttributeOverride``s suffice for simple mappings, but do not allow you to override complex mappings.
 Also, JPA has no way to differentiate between a null embedded object and one with default values for all of its fields.
 
 OpenJPA overcomes these shortcomings with the link:../../apidocs/org/apache/openjpa/persistence/jdbc/EmbeddedMapping.html[
@@ -690,9 +683,8 @@ A value of `false` signals that you explicitly do not want a null-indicator colu
 * ``String nullIndicatorFieldName``: Rather than name a null indicator column, you can name a field of the embedded type. OpenJPA will use the column of this field as the null-indicator column.
 * ``MappingOverride[] overrides``: This array allows you to override any mapping of the embedded object.
 
-The [class]``EmbeddedMapping``'s `overrides` array serves the same purpose as standard JPA's [class]``AttributeOverride ``s and [class]``AssociationOverride`` s.
-In fact, you can also use the [class]``MappingOverride`` annotation on an entity class to override a complex mapping of its mapped superclass, just as you can with [class]`` AttributeOverride`` and [class]``
-AssociationOverride`` s.
+The [class]``EmbeddedMapping``'s `overrides` array serves the same purpose as standard JPA's [class]``AttributeOverride`` s and [class]``AssociationOverride`` s.
+In fact, you can also use the [class]``MappingOverride`` annotation on an entity class to override a complex mapping of its mapped superclass, just as you can with [class]``AttributeOverride`` and [class]``AssociationOverride`` s.
 The [class]``MappingOverrides`` annotation, whose value is an array of [class]``MappingOverride`` s, allows you to override multiple mapped superclass mappings.
 
 Each link:../../apidocs/org/apache/openjpa/persistence/jdbc/MappingOverride.html[
@@ -705,9 +697,9 @@ org.apache.openjpa.persistence.jdbc.MappingOverride
 * ``ContainerTable containerTable``: Table for the new collection or map field mapping. We cover collection mappings in <<_ref_guide_mapping_jpa_coll>>, and map mappings in <<_ref_guide_mapping_jpa_map>>.
 * ``ElementJoinColumn[] elementJoinColumns``: Element join columns for the new collection or map field mapping. You will see how to use element join columns in <<_ref_guide_mapping_jpa_coll_joincols>>.
 
-The following example defines an embeddable [class]`` PathCoordinate `` class with a custom mapping of a [class]``java.awt.Point `` field to two columns.
-It then defines an entity which embeds a [class]`` PointCoordinate`` and overrides the default mapping for the point field.
-The entity also declares that if the [class]``PathCoordinate ``'s `siteName` field column is null, it means that no [class]``PathCoordinate`` is stored in the embedded record; the owning field will load as null.
+The following example defines an embeddable [class]``PathCoordinate`` class with a custom mapping of a [class]``java.awt.Point`` field to two columns.
+It then defines an entity which embeds a [class]``PointCoordinate`` and overrides the default mapping for the point field.
+The entity also declares that if the [class]``PathCoordinate``'s `siteName` field column is null, it means that no [class]``PathCoordinate`` is stored in the embedded record; the owning field will load as null.
 
 .Overriding Complex Mappings
 ====
@@ -770,8 +762,8 @@ This annotation has the following properties:
 * `ForeignKey joinForeignKey`
 * `Index joinIndex`
 
-The ``name``, ``catalog``, ``schema ``, and `joinColumns` properties describe the container table and how it joins to the owning entity's table.
-These properties correspond to the same-named properties on the standard [class]`` JoinTable`` annotation, described in <<_jpa_overview_mapping_assoccoll>> . If left unspecified, the name of the table defaults to the first five characters of the entity table name, plus an underscore, plus the field name.
+The ``name``, ``catalog``, ``schema``, and `joinColumns` properties describe the container table and how it joins to the owning entity's table.
+These properties correspond to the same-named properties on the standard [class]``JoinTable`` annotation, described in <<_jpa_overview_mapping_assoccoll>> . If left unspecified, the name of the table defaults to the first five characters of the entity table name, plus an underscore, plus the field name.
 The `joinForeignKey` and  `joinIndex` properties override default foreign key and index generation for the join columns.
 We explore foreign keys and indexes later in this chapter.
 
@@ -786,15 +778,13 @@ Element join columns are equivalent to standard JPA join columns, except that th
 You represent an element join column with OpenJPA's link:../../apidocs/org/apache/openjpa/persistence/jdbc/ElementJoinColumn.html[
 org.apache.openjpa.persistence.jdbc.ElementJoinColumn
 ] annotation.
-To declare a compound join, enclose an array of [class]``
-ElementJoinColumn``s in the link:../../apidocs/org/apache/openjpa/persistence/jdbc/ElementJoinColumns.html[
+To declare a compound join, enclose an array of [class]``ElementJoinColumn``s in the link:../../apidocs/org/apache/openjpa/persistence/jdbc/ElementJoinColumns.html[
 org.apache.openjpa.persistence.jdbc.ElementJoinColumns
 ] annotation.
 
-An [class]``ElementJoinColumn`` always resides in a container table, so it does not have the  `table` property of a standard [class]`` JoinColumn``.
-Like [class]`` XJoinColumn``s above, [class]`` ElementJoinColumn``s can reference a linked attribute rather than a static linked column.
-Otherwise, the [class]``
-ElementJoinColumn`` and standard [class]``JoinColumn`` annotations are equivalent.
+An [class]``ElementJoinColumn`` always resides in a container table, so it does not have the  `table` property of a standard [class]``JoinColumn``.
+Like [class]``XJoinColumn``s above, [class]``ElementJoinColumn``s can reference a linked attribute rather than a static linked column.
+Otherwise, the [class]``ElementJoinColumn`` and standard [class]``JoinColumn`` annotations are equivalent.
 See <<_jpa_overview_mapping_rel>> in the JPA Overview for a review of the [class]``JoinColumn`` annotation.
 
 [[_ref_guide_mapping_jpa_coll_order]]
@@ -808,7 +798,7 @@ org.apache.openjpa.persistence.jdbc.OrderColumn] annotation or the JPA 2.0 [clas
 OpenJPA's link:../../apidocs/org/apache/openjpa/persistence/jdbc/OrderColumn[
 org.apache.openjpa.persistence.jdbc.OrderColumn] annotation has the following properties:
 
-* ``String name``: Defaults to ``the name of the relationship property or field of the entity or embeddable class + _ORDER``. To use the JPA 1.0 default order column name ``ORDR``, set the <<_openjpa.compatibility>> option `UseJPA2DefaultOrderColumnName` to `` false``.
+* ``String name``: Defaults to ``the name of the relationship property or field of the entity or embeddable class + _ORDER``. To use the JPA 1.0 default order column name ``ORDR``, set the <<_openjpa.compatibility>> option `UseJPA2DefaultOrderColumnName` to ``false``.
 * `boolean enabled`
 * `int precision`
 * `String columnDefinition`
@@ -830,7 +820,7 @@ Standard JPA supports [class]``OneToMany`` fields without a ``mappedBy`` inverse
 image::img/inv-key-coll.png[]
 
 Consider the model above. [class]``Subscription`` has a collection of [class]``LineItem`` s, but [class]``LineItem`` has no inverse relation to [class]``Subscription``.
-To retrieve all of the [class]``LineItem`` records for a [class]``Subscription ``, we join the `SUB_ID` inverse foreign key column in the `LINE_ITEM` table to the primary key column of the ``SUB`` table.
+To retrieve all of the [class]``LineItem`` records for a [class]``Subscription``, we join the `SUB_ID` inverse foreign key column in the `LINE_ITEM` table to the primary key column of the ``SUB`` table.
 The example below shows how to represent this model in mapping annotations.
 Note that OpenJPA automatically assumes an inverse foreign key mapping when element join columns are given, but no container or join table is given.
 
@@ -961,7 +951,7 @@ You can override the configured defaults on individual joins, field values, coll
 
 The link:../../apidocs/org/apache/openjpa/persistence/jdbc/Index.html[
 org.apache.openjpa.persistence.jdbc.Index] annotation represents an index on the columns of a field.
-It is also used within the <<_ref_guide_mapping_jpa_coll_table,[class]``ContainerTable ``>> annotation to index join columns.
+It is also used within the <<_ref_guide_mapping_jpa_coll_table,[class]``ContainerTable``>> annotation to index join columns.
 To index the columns of a collection element, use the link:../../apidocs/org/apache/openjpa/persistence/jdbc/ElementIndex.html[org.apache.openjpa.persistence.jdbc.ElementIndex] annotation.
 These annotations have the following properties:
 
@@ -976,8 +966,7 @@ These annotations have the following properties:
 
 The link:../../apidocs/org/apache/openjpa/persistence/jdbc/ForeignKey.html[
 org.apache.openjpa.persistence.jdbc.ForeignKey] annotation represents a foreign key on the columns of a field.
-It is also used within the <<_ref_guide_mapping_jpa_coll_table,[class]``
-ContainerTable``>> annotation to set a database foreign key on join columns.
+It is also used within the <<_ref_guide_mapping_jpa_coll_table,[class]``ContainerTable``>> annotation to set a database foreign key on join columns.
 To set a constraint to the columns of a collection element, use the link:../../apidocs/org/apache/openjpa/persistence/jdbc/ElementForeignKey.html[org.apache.openjpa.persistence.jdbc.ElementForeignKey] annotation.
 These annotations have the following properties:
 
@@ -985,8 +974,8 @@ These annotations have the following properties:
 * ``String name``: The name of the foreign key. OpenJPA will choose a name if you do not provide one, or will create an anonymous key.
 * ``boolean deferred``: Whether to create a deferred key if supported by the database.
 * ``boolean implicit``: Whether to mark a relation field value as implicitly referring to a related entity. This property can be used, for example, when a field value represents primary key field of a related entity, but for legacy or other logistic reasons, the field is declared as the same type of the primary key of the related entity instead of a reference to the entity itself. Hence no actual mapping can be defined on the field itself. If this implicit property is set, then no other property on the ForeignKey annotation can be set to their non-default value. This setting does not manifest as a database foreign key constraint.
-* ``ForeignKeyAction deleteAction``: Value from the link:../../apidocs/org/apache/openjpa/persistence/jdbc/ForeignKeyAction.html[ org.apache.openjpa.persistence.jdbc.ForeignKeyAction ] enum identifying the desired delete action. Defaults to `` RESTRICT``.
-* ``ForeignKeyAction updateAction``: Value from the link:../../apidocs/org/apache/openjpa/persistence/jdbc/ForeignKeyAction.html[ org.apache.openjpa.persistence.jdbc.ForeignKeyAction ] enum identifying the desired update action. Defaults to `` RESTRICT``.
+* ``ForeignKeyAction deleteAction``: Value from the link:../../apidocs/org/apache/openjpa/persistence/jdbc/ForeignKeyAction.html[ org.apache.openjpa.persistence.jdbc.ForeignKeyAction ] enum identifying the desired delete action. Defaults to ``RESTRICT``.
+* ``ForeignKeyAction updateAction``: Value from the link:../../apidocs/org/apache/openjpa/persistence/jdbc/ForeignKeyAction.html[ org.apache.openjpa.persistence.jdbc.ForeignKeyAction ] enum identifying the desired update action. Defaults to ``RESTRICT``.
 
 Keep in mind that OpenJPA uses foreign key information at runtime to avoid constraint violations; it is important, therefore, that your <<_ref_guide_mapping_defaults,mapping defaults>> and foreign key annotations combine to accurately reflect your existing database constraints, or that  you configure OpenJPA to reflect on your database schema to discover existing foreign keys (see <<_ref_guide_schema_info_factory>>).
 
@@ -996,7 +985,7 @@ Keep in mind that OpenJPA uses foreign key information at runtime to avoid const
 
 The link:../../apidocs/org/apache/openjpa/persistence/jdbc/Unique.html[
 org.apache.openjpa.persistence.jdbc.Unique] annotation represents a unique constraint on the columns of a field.
-It is more convenient than using the `uniqueConstraints` property of standard JPA [class]``Table`` and [class]``SecondaryTable `` annotations, because you can apply it directly to the constrained field.
+It is more convenient than using the `uniqueConstraints` property of standard JPA [class]``Table`` and [class]``SecondaryTable`` annotations, because you can apply it directly to the constrained field.
 The [class]``Unique`` annotation has the following properties:
 
 * ``boolean enabled``: Set this property to `false`  to explicitly tell OpenJPA not to constrain these columns, when OpenJPA would otherwise do so.
@@ -1408,7 +1397,7 @@ See <<_ref_guide_perfpack_eager>> for a discussion of eager fetching.
 ====== Nonpolymorphic
 
 All fields in Java are polymorphic.
-If you declare a field of type ``T ``, you can assign any subclass of `T` to the field as well.
+If you declare a field of type ``T``, you can assign any subclass of `T` to the field as well.
 This is very convenient, but can make relation traversal very inefficient under some inheritance strategies.
 It can even make querying across the field impossible.
 Often, you know that certain fields do not need to be entirely polymorphic.
@@ -1505,8 +1494,7 @@ The following sections examine each.
 (((custom mapping , field mapping , value handler)))
 
 Value handlers make it trivial to map any type that you can break down into one or more simple values.
-All value handlers implement the [class]``
-org.apache.openjpa.jdbc.meta.ValueHandler`` interface; see its link:../../apidocs/org/apache/openjpa/jdbc/meta/ValueHandler.html[ Javadoc
+All value handlers implement the [class]``org.apache.openjpa.jdbc.meta.ValueHandler`` interface; see its link:../../apidocs/org/apache/openjpa/jdbc/meta/ValueHandler.html[ Javadoc
 ] for details.
 Also, examine the built-in handlers in the [path]_
 src/openjpa/jdbc/meta/strats_ directory of your OpenJPA source distribution.
@@ -1525,8 +1513,7 @@ Creating a custom field strategy is more difficult than writing a custom value h
 ====== Configuration
 
 OpenJPA gives you two ways to configure your custom field mappings.
-The ``FieldStrategies`` property of the built-in [class]``
-MappingDefaults`` implementations allows you to globally associate field types with their corresponding custom value handler or strategy.
+The ``FieldStrategies`` property of the built-in [class]``MappingDefaults`` implementations allows you to globally associate field types with their corresponding custom value handler or strategy.
 OpenJPA will automatically use your custom strategies when it encounters a field of the associated type.
 OpenJPA will use your custom value handlers whenever it encounters a field of the associated type. <<_ref_guide_mapping_defaults>> described mapping defaults in detail.
 
@@ -1540,8 +1527,7 @@ You can configure the named strategy or handler's bean properties in these exten
 ==== Orphaned Keys
 
 Unless you apply database foreign key constraints extensively, it is possible to end up with orphaned keys in your database.
-For example, suppose [class]``
-Magazine````m`` has a reference to [class]``Article ````a``.
+For example, suppose [class]``Magazine````m`` has a reference to [class]``Article````a``.
 If you delete `a` without nulling ``m``'s reference, ``m``'s database record will wind up with an orphaned key to the non-existent `a`  record.
 
 [NOTE]
@@ -1554,9 +1540,9 @@ OpenJPA's <<_openjpa.orphanedkeyaction,
 You can set this plugin string (see <<_ref_guide_conf_plugins>>) to a custom implementation of the link:../../apidocs/org/apache/openjpa/event/OrphanedKeyAction.html[org.apache.openjpa.event.OrphanedKeyAction] interface, or use one of the built-in options:
 
 * ``log``: This is the default setting. This option logs a message for each orphaned key. It is an alias for the link:../../apidocs/org/apache/openjpa/event/LogOrphanedKeyAction.html[ org.apache.openjpa.event.LogOrphanedKeyAction] class, which has the following additional properties:
-** ``Channel``: The channel to log to. Defaults to `` openjpa.Runtime``.
-** ``Level``: The level to log at. Defaults to ``WARN ``.
-* ``exception``: Throw an [class]`` EntityNotFoundException`` when OpenJPA discovers an orphaned key. This is an alias for the link:../../apidocs/org/apache/openjpa/event/ExceptionOrphanedKeyAction.html[ org.apache.openjpa.event.ExceptionOrphanedKeyAction ] class.
+** ``Channel``: The channel to log to. Defaults to ``openjpa.Runtime``.
+** ``Level``: The level to log at. Defaults to ``WARN``.
+* ``exception``: Throw an [class]``EntityNotFoundException`` when OpenJPA discovers an orphaned key. This is an alias for the link:../../apidocs/org/apache/openjpa/event/ExceptionOrphanedKeyAction.html[ org.apache.openjpa.event.ExceptionOrphanedKeyAction ] class.
 * ``none``: Ignore orphaned keys. This is an alias for the link:../../apidocs/org/apache/openjpa/event/NoneOrphanedKeyAction.html[ org.apache.openjpa.event.NoneOrphanedKeyAction] class.
 
 
