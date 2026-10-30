@@ -189,6 +189,24 @@
                             </resources>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>place-apidocs</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${site.docs.folder}/javadoc</outputDirectory>
+                            <changeDetection>always</changeDetection>
+                            <resources>
+                                <resource>
+                                    <directory>${project.parent.build.directory}/reports/apidocs</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                                <resource></resource>
+                            </resources>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>

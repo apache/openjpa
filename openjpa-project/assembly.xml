@@ -63,10 +63,6 @@
             <outputDirectory>docs</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>../target/site/apidocs</directory>
-            <outputDirectory>docs/javadoc</outputDirectory>
-        </fileSet>
-        <fileSet>
             <directory>../openjpa-persistence/target/classes/org/apache/openjpa/persistence</directory>
             <outputDirectory>docs/schema</outputDirectory>
             <includes>

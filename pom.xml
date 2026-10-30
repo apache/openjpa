@@ -33,7 +33,7 @@
     <artifactId>openjpa-parent</artifactId>
     <packaging>pom</packaging>
     <name>OpenJPA Parent POM</name>
-    <description>Apache OpenJPA implementation of Jakarta JPA 3.2</description>
+    <description>Apache OpenJPA implementation of Jakarta JPA 4.2</description>
 
     <version>4.2.0-SNAPSHOT</version>
 
@@ -48,7 +48,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <checkstyle.suppressions.location>openjpa-project${file.separator}suppressions.xml</checkstyle.suppressions.location>
 
-        <site.deploy.url>scp://people.apache.org/home/${site.deploy.user.name}/public_html/openjpa/${project.version}/staging-site</site.deploy.url>
         <!-- the test settings can be overridden my specific profiles -->
         <test.jvm.maxheapsize>1024m</test.jvm.maxheapsize>
         <test.jvm.arguments>-Xmx${test.jvm.maxheapsize} -XX:+HeapDumpOnOutOfMemoryError</test.jvm.arguments>
@@ -116,10 +115,10 @@
 
     <organization>
         <name>Apache Software Foundation</name>
-        <url>http://www.apache.org</url>
+        <url>https://www.apache.org</url>
     </organization>
 
-    <url>http://openjpa.apache.org</url>
+    <url>https://openjpa.apache.org</url>
 
     <issueManagement>
         <system>jira</system>
@@ -127,8 +126,8 @@
     </issueManagement>
 
     <ciManagement>
-        <system>Jenkins</system>
-        <url>https://builds.apache.org/job/OpenJPA-trunk-deploy/</url>
+        <system>GitHub Actions</system>
+        <url>https://github.com/apache/openjpa/actions</url>
     </ciManagement>
 
     <inceptionYear>2006</inceptionYear>
@@ -157,19 +156,12 @@
         </mailingList>
     </mailingLists>
 
-    <distributionManagement>
-        <site>
-            <id>people.apache.org</id>
-            <url>${site.deploy.url}</url>
-        </site>
-    </distributionManagement>
-
     <scm>
         <connection>scm:git:https://gitbox.apache.org/repos/asf/openjpa.git</connection>
         <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/openjpa.git</developerConnection>
         <url>https://gitbox.apache.org/repos/asf/openjpa.git</url>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
     <modules>
         <module>openjpa-lib</module>
@@ -324,16 +316,35 @@
                         </configuration>
                         <executions>
                             <execution>
-                                <id>attach-javadoc</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>aggregate-jar</goal>
-                                </goals>
-                            </execution>
-                            <execution>
                                 <phase>process-classes</phase>
                                 <goals>
-                                    <goal>aggregate</goal>
+                                    <goal>aggregate-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+            <activation>
+                <property>
+                    <name>builddocs</name>
+                    <value>true</value>
+                </property>
+            </activation>
+        </profile>
+        <profile>
+            <id>site-profile</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-site-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>generate-site</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>site</goal>
                                 </goals>
                             </execution>
                         </executions>
@@ -1993,7 +2004,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-report-plugin</artifactId>
-                    <version>${version.maven.surefire}</version>
+                    <version>${surefire.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -2263,7 +2274,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.9.0</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -2279,7 +2290,7 @@
                 <reportSets>
                     <reportSet>
                         <reports>
-                            <report>javadoc</report>
+                            <report>javadoc-no-fork</report>
                         </reports>
                     </reportSet>
                 </reportSets>
