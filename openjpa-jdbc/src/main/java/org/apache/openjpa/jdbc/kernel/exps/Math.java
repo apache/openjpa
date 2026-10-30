@@ -36,7 +36,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 public class Math
     extends AbstractVal {
 
-    
+
     private static final long serialVersionUID = 1L;
     public static final String ADD = "+";
     public static final String SUBTRACT = "-";
@@ -160,8 +160,8 @@ public class Math
 
     private static Class operandType(Val val, ExpContext ctx) {
         Class type = val.getType();
-        if (type == Object.class && val instanceof Param && ctx.params != null) {
-            Object o = ((Param) val).getValue(ctx.params);
+        if (type == Object.class && val instanceof Param valP && ctx.params != null) {
+            Object o = valP.getValue(ctx.params);
             if (o != null) {
                 return o.getClass();
             }
