@@ -1,3 +1,4 @@
+<!-- Licensed under the Apache License, Version 2.0 (the "License") http://www.apache.org/licenses/LICENSE-2.0 -->
 # OpenJPA JPA 3.2 TCK Runner
 
 This module runs the Jakarta Persistence 3.2 Technology Compatibility Kit (TCK)

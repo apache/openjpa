@@ -1,3 +1,4 @@
+// Licensed under the Apache License, Version 2.0 (the "License") http://www.apache.org/licenses/LICENSE-2.0
 = Supported Java8 Time types
 
 This is a temporary document to describe the state of the java.time.* integration in Apache OpenJPA.
