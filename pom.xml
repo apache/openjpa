@@ -78,7 +78,7 @@
         <derby.version>10.16.1.1</derby.version> <!-- 10.17 requires java-21 -->
         <hsqldb.version>2.7.4</hsqldb.version>
         <mysql.connector.version>26.10.0</mysql.connector.version>
-        <mariadb.connector.version>3.5.9</mariadb.connector.version>
+        <mariadb.connector.version>3.5.11</mariadb.connector.version>
         <postgresql.connector.version>42.7.14</postgresql.connector.version>
         <mssql.connector.version>13.4.0.jre11</mssql.connector.version>
 
