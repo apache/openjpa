@@ -287,6 +287,9 @@
                                 </goals>
                                 <configuration>
                                     <outputDirectory>${docbook.gen.base.folder}/html</outputDirectory>
+                                    <attributes>
+                                        <toc>left</toc>
+                                    </attributes>
                                 </configuration>
                             </execution>
                             <execution>
@@ -305,6 +308,7 @@
                                     <outputDirectory>${docbook.gen.base.folder}/multihtml</outputDirectory>
                                     <attributes>
                                         <toc>left</toc>
+                                        <stylesheet>css/multipage.css</stylesheet>
                                         <multipage-level>5</multipage-level>
                                     </attributes>
                                 </configuration>

@@ -2189,6 +2189,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
+                <reportSets>
+                    <reportSet>
+                        <reports><!-- no reports are required -->
+                            <report>index</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -2211,5 +2218,4 @@
             </plugin>
         </plugins>
     </reporting>
-
 </project>
