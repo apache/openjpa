@@ -1,0 +1,40 @@
+////
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+////
+[[openjpa_intro]]
+=== About
+
+OpenJPA is Apache's implementation of https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2[Java Persistence 3.2 API]  specification for the transparent persistence of Java objects.
+This document provides an overview of the JPA standard and technical details on the use of OpenJPA.
+
+This document is intended for OpenJPA users.
+It is divided into several parts:
+
+* The <<jpa_overview_intro,JPA Overview>> describes the fundamentals of the JPA specification.
+* The <<ref_guide_intro,OpenJPA Reference Guide>> contains detailed documentation on all aspects of OpenJPA. Browse through this guide to familiarize yourself with the many advanced features and customization opportunities OpenJPA provides. Later, you can use the guide when you need details on a specific aspect of OpenJPA.
+* Appendices
+
+** The appendix <<jpa_resources,JPA Resources>> provides links to other resources.
+** The appendix <<supported_databases, Supported Databases>> provides information on databases supported by OpenJPA.
+** The appendix <<migration_considerations, Migration Considerations>> provides information related to migration to a different release.
+
+
+ifdef::backend-docbook[]
+[index]
+== Index
+endif::backend-docbook[]

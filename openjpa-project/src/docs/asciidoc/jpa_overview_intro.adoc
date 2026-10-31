@@ -1,0 +1,54 @@
+////
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+////
+[[jpa_overview_intro]]
+=== Introduction
+
+(((EJB3 Persistence)))
+(((JPA))) The Java Persistence API (JPA) is a specification for the persistence of Java objects to any relational datastore.
+This document provides an overview of JPA 3.2.
+Unless otherwise noted, the information presented applies to all JPA implementations.
+
+[NOTE]
+====
+For coverage of OpenJPA's many extensions to the JPA specification, see the <<ref_guide_intro,Reference Guide>>.
+====
+
+[[jpa_overview_intro_audience]]
+==== Intended Audience
+
+This document is intended for developers who want to learn about JPA in order to use it in their applications.
+It assumes that you have a strong knowledge of object-oriented concepts and Java, including annotations and generics.
+It also assumes some experience with relational databases and the Structured Query Language (SQL).
+
+[[jpa_overview_intro_transpers]]
+==== Lightweight Persistence
+(((lightweight persistence)))
+(((persistent data)))__Persistent data__ is information that can outlive the program that creates it.
+The majority of complex programs use persistent data: GUI applications need to store user preferences across program invocations, web applications track user movements and orders over long periods of time, etc.
+
+_Lightweight persistence_ is the storage and retrieval of persistent data with little or no work from you, the developer.
+For example, Java serialization
+(((serialization))) is a form of lightweight persistence because it can be used to persist Java objects directly to a file with very little effort.
+Serialization's capabilities as a lightweight persistence mechanism pale in comparison to those provided by JPA, however.
+The next chapter compares JPA to serialization and other available persistence mechanisms.
+
+ifdef::backend-docbook[]
+[index]
+== Index
+endif::backend-docbook[]

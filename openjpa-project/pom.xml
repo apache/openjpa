@@ -52,35 +52,25 @@
             ${user.name}@apache.org
         </openjpa.release.keyAlias>
 
-        <openjpa.assembly.finalName>
-            ${project.artifactId}-${project.version}</openjpa.assembly.finalName>
-        <openjpa.assembly.outputDirectory>
-        ${project.basedir}/target/site/downloads
-        </openjpa.assembly.outputDirectory>
+        <openjpa.assembly.finalName>${project.artifactId}-${project.version}</openjpa.assembly.finalName>
+        <openjpa.assembly.outputDirectory>${project.basedir}/target/site/downloads</openjpa.assembly.outputDirectory>
 
         <openjpa.assembly.binarySuffix>binary</openjpa.assembly.binarySuffix>
-        <openjpa.assembly.binaryBase>
-        ${openjpa.assembly.outputDirectory}/${openjpa.assembly.finalName}-${openjpa.assembly.binarySuffix}
-        </openjpa.assembly.binaryBase>
-        <openjpa.assembly.binaryFile>
-        ${openjpa.assembly.binaryBase}.zip
-        </openjpa.assembly.binaryFile>
+        <openjpa.assembly.prefix>${openjpa.assembly.outputDirectory}/${openjpa.assembly.finalName}-</openjpa.assembly.prefix>
+        <openjpa.assembly.binaryBase>${openjpa.assembly.prefix}${openjpa.assembly.binarySuffix}</openjpa.assembly.binaryBase>
+        <openjpa.assembly.binaryFile>${openjpa.assembly.binaryBase}.zip</openjpa.assembly.binaryFile>
 
         <openjpa.assembly.sourceSuffix>source</openjpa.assembly.sourceSuffix>
-        <openjpa.assembly.sourceBase>
-        ${openjpa.assembly.outputDirectory}/${openjpa.assembly.finalName}-${openjpa.assembly.sourceSuffix}
-        </openjpa.assembly.sourceBase>
-        <openjpa.assembly.sourceFile>
-        ${openjpa.assembly.sourceBase}.zip
-        </openjpa.assembly.sourceFile>
+        <openjpa.assembly.sourceBase>${openjpa.assembly.prefix}${openjpa.assembly.sourceSuffix}</openjpa.assembly.sourceBase>
+        <openjpa.assembly.sourceFile>${openjpa.assembly.sourceBase}.zip</openjpa.assembly.sourceFile>
 
-        <parent.site.docs>
-        ${project.basedir}/target/site/docs
-        </parent.site.docs>
+        <site.docs.folder>${project.build.directory}/site/docs</site.docs.folder>
 
-        <docbook.source>${project.basedir}/src/doc/manual</docbook.source>
-        <docbook.target>${project.build.directory}/docbook</docbook.target>
-        <docbook.version>1.67.2</docbook.version>
+        <docbook.gen.base.folder>${project.build.directory}/generated-docs</docbook.gen.base.folder>
+        <asciidoctor-maven-plugin.version>3.2.0</asciidoctor-maven-plugin.version>
+        <asciidoctorj-version>3.0.1</asciidoctorj-version>
+        <asciidoctor-multipage.version>0.0.19</asciidoctor-multipage.version>
+        <jruby.version>9.4.12.0</jruby.version>
         <local.repository>${settings.localRepository}</local.repository>
 
         <!--
@@ -110,10 +100,6 @@
         <jai.groupId>com.sun</jai.groupId>
         <jai.version>1.1.3</jai.version>
 
-        <nightly.version>latest</nightly.version>
-        <!-- authentication for nightly uploads -->
-        <nightly.user.name>${user.name}</nightly.user.name>
-        <nightly.password>passw0rd</nightly.password>
         <checkstyle.suppressions.location>suppressions.xml</checkstyle.suppressions.location>
     </properties>
 
@@ -173,21 +159,47 @@
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>prefilter-site</id>
-                        <phase>site</phase>
+                        <id>place-docs</id>
+                        <phase>process-resources</phase>
                         <goals>
-                            <goal>resources</goal>
+                            <goal>copy-resources</goal>
                         </goals>
+                        <configuration>
+                            <outputDirectory>${site.docs.folder}</outputDirectory>
+                            <changeDetection>always</changeDetection>
+                            <resources>
+                                <resource>
+                                    <directory>${docbook.gen.base.folder}</directory>
+                                    <filtering>false</filtering>
+                                    <excludes>
+                                        <exclude>css/**</exclude>
+                                        <exclude>img/**</exclude>
+                                        <exclude>**/*.xsl</exclude>
+                                        <exclude>**/*.graffle</exclude>
+                                    </excludes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>place-apidocs</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${site.docs.folder}/javadoc</outputDirectory>
+                            <changeDetection>always</changeDetection>
+                            <resources>
+                                <resource>
+                                    <directory>${project.parent.build.directory}/reports/apidocs</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                                <resource></resource>
+                            </resources>
+                        </configuration>
                     </execution>
                 </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <configuration>
-                    <siteDirectory>target/filtered-site</siteDirectory>
-                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -202,134 +214,147 @@
             <id>docbook-profile</id>
             <build>
                 <plugins>
-                    <!-- build the docs when processing resources -->
                     <plugin>
-                        <groupId>com.agilejava.docbkx</groupId>
-                        <artifactId>docbkx-maven-plugin</artifactId>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <version>3.6.2</version>
                         <executions>
                             <execution>
-                                <id>build-pdf-doc</id>
-                                <phase>process-resources</phase>
-                                <goals><goal>generate-pdf</goal></goals>
+                                <id>timestamp-property</id>
+                                <goals>
+                                    <goal>timestamp-property</goal>
+                                </goals>
+                                <phase>generate-resources</phase>
                                 <configuration>
-                                    <sourceDirectory>
-                                        ${docbook.source}
-                                    </sourceDirectory>
-                                    <targetDirectory>
-                                        ${docbook.target}
-                                    </targetDirectory>
-                                    <includes>manual.xml</includes>
-                                    <foCustomization>
-                                        ${docbook.source}/manual-pdf.xsl
-                                    </foCustomization>
-                                    <imgSrcPath>
-                                        ${docbook.source}/
-                                    </imgSrcPath>
-                                    <postProcess>
-                                        <!-- copy to parent module for
-                                             expanded access in upload -->
-                                        <mkdir dir="${parent.site.docs}" />
-                                        <delete file="${docbook.target}/manual.fo" />
-                                        <copy todir="${parent.site.docs}">
-                                            <fileset dir="${docbook.target}">
-                                                <include name="manual.pdf" />
-                                            </fileset>
-                                        </copy>
-                                    </postProcess>
+                                    <name>current.year</name>
+                                    <pattern>yyyy</pattern>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.jruby.maven</groupId>
+                        <artifactId>gem-maven-plugin</artifactId>
+                        <version>3.0.6</version>
+                        <configuration>
+                            <jrubyVersion>${jruby.version}</jrubyVersion>
+                            <gemHome>${project.build.directory}/gems</gemHome>
+                            <gemPath>${project.build.directory}/gems</gemPath>
+                        </configuration>
+                        <executions>
+                            <!-- Install required gems in target directory -->
+                            <execution>
+                                <id>install-gems</id>
+                                <goals>
+                                    <goal>initialize</goal>
+                                </goals>
+                                <phase>initialize</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.asciidoctor</groupId>
+                        <artifactId>asciidoctor-maven-plugin</artifactId>
+                        <version>${asciidoctor-maven-plugin.version}</version>
+                        <configuration>
+                            <backend>html</backend>
+                            <doctype>book</doctype>
+                            <attributes>
+                                <gemPath>${project.build.directory}/gems-provided</gemPath>
+                                <allow-uri-read>allow-uri-read</allow-uri-read>
+                                <stylesheet>css/docbook.css</stylesheet>
+                                <linkcss>true</linkcss>
+                                <icontype>svg</icontype>
+                                <icons>image</icons>
+                                <iconsdir>img/icons</iconsdir>
+                                <iconfont-remote>false</iconfont-remote>
+                                <webfonts>false</webfonts>
+                                <source-highlighter>coderay</source-highlighter>
+                                <toclevels>10</toclevels>
+                                <project-version>${project.version}</project-version>
+                                <current-year>${current.year}</current-year>
+                                <publish-date>${project.build.outputTimestamp}</publish-date>
+                            </attributes>
+                            <preserveDirectories>true</preserveDirectories>
+                            <sourceDocumentName>manual.adoc</sourceDocumentName>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>output-html</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>process-asciidoc</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${docbook.gen.base.folder}/html</outputDirectory>
+                                    <attributes>
+                                        <toc>left</toc>
+                                    </attributes>
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>build-chunked-doc</id>
-                                <phase>process-resources</phase>
-                                <goals><goal>generate-html</goal></goals>
+                                <id>output-docbook</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>process-asciidoc</goal>
+                                </goals>
                                 <configuration>
-                                    <sourceDirectory>
-                                        ${docbook.source}
-                                    </sourceDirectory>
-                                    <targetDirectory>
-                                        ${docbook.target}
-                                    </targetDirectory>
-                                    <includes>manual.xml</includes>
-                                    <chunkedOutput>true</chunkedOutput>
-                                    <chunkQuietly>false</chunkQuietly>
-                                    <htmlCustomization>
-                                        ${docbook.source}/manual-xhtml-chunk.xsl
-                                    </htmlCustomization>
-                                    <postProcess>
-                                        <!-- rename manual to index -->
-                                        <move file="${docbook.target}/manual.html" tofile="${docbook.target}/index.html" />
-                                        <!-- Replace a 'base href' token to 'base target' in the index.html -->
-                                        <!-- This base href was inserted by manual-xhtml-chunk.xsl parameter 'html.base' -->
-                                        <replace file="${docbook.target}/index.html" token="base href" value="base target" />
-                                        <!-- Copy main.html from original location to docbook target  -->
-                                        <copy file="${docbook.source}/main.html" tofile="${docbook.target}/main.html" />
-                                        <!-- copy over images and styles -->
-                                        <mkdir dir="${docbook.target}/img" />
-                                        <copy todir="${docbook.target}/img">
-                                            <fileset dir="${docbook.source}/img">
-                                                <include name="*.*" />
-                                            </fileset>
-                                        </copy>
-
-                                        <mkdir dir="${docbook.target}/css" />
-                                        <copy todir="${docbook.target}/css">
-                                            <fileset dir="${docbook.source}/css">
-                                                <include name="*.*" />
-                                            </fileset>
-                                        </copy>
-
-                                        <!-- copy to parent module for
-                                             expanded access in upload -->
-                                        <mkdir dir="${parent.site.docs}" />
-                                        <copy todir="${parent.site.docs}">
-                                            <fileset dir="${docbook.target}">
-                                                <include name="*.*" />
-                                            </fileset>
-                                        </copy>
-                                    </postProcess>
+                                    <backend>multipage_html5</backend>
+                                    <doctype>book</doctype>
+                                    <gemPath>${project.build.directory}/gems</gemPath>
+                                    <requires>
+                                        <require>asciidoctor-multipage</require>
+                                    </requires>
+                                    <outputDirectory>${docbook.gen.base.folder}/multihtml</outputDirectory>
+                                    <attributes>
+                                        <toc>left</toc>
+                                        <stylesheet>css/multipage.css</stylesheet>
+                                        <multipage-level>5</multipage-level>
+                                    </attributes>
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>build-single-doc</id>
-                                <phase>process-resources</phase>
-                                <goals><goal>generate-html</goal></goals>
+                                <id>output-pdf</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>process-asciidoc</goal>
+                                </goals>
                                 <configuration>
-                                    <sourceDirectory>
-                                        ${docbook.source}
-                                    </sourceDirectory>
-                                    <targetDirectory>
-                                        ${docbook.target}
-                                    </targetDirectory>
-                                    <includes>manual.xml</includes>
-                                    <chunkedOutput>false</chunkedOutput>
-                                    <htmlCustomization>
-                                        ${docbook.source}/manual-xhtml.xsl
-                                    </htmlCustomization>
-                                    <postProcess>
-                                        <!-- copy to parent module for
-                                             expanded access in upload -->
-                                        <mkdir dir="${parent.site.docs}" />
-                                        <copy todir="${parent.site.docs}">
-                                            <fileset dir="${docbook.target}">
-                                                <include name="manual.html" />
-                                            </fileset>
-                                        </copy>
-                                    </postProcess>
+                                    <backend>pdf</backend>
+                                    <attributes>
+                                        <pagenums />
+                                        <idprefix />
+                                        <idseparator>-</idseparator>
+                                        <toc />
+                                    </attributes>
+                                    <outputDirectory>${docbook.gen.base.folder}</outputDirectory>
                                 </configuration>
                             </execution>
                         </executions>
                         <dependencies>
-                        <dependency>
-                            <groupId>net.sf.docbook</groupId>
-                            <artifactId>docbook-xml</artifactId>
-                            <version>5.0</version>
-                            <type>pom</type>
-                            <scope>runtime</scope>
-                        </dependency>
+                            <dependency>
+                                <groupId>org.asciidoctor</groupId>
+                                <artifactId>asciidoctorj-pdf</artifactId>
+                                <version>2.3.27</version>
+                            </dependency>
                         </dependencies>
                     </plugin>
                 </plugins>
             </build>
+            <dependencies>
+                <dependency>
+                    <groupId>rubygems</groupId>
+                    <artifactId>asciidoctor-multipage</artifactId>
+                    <version>${asciidoctor-multipage.version}</version>
+                    <type>gem</type>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>rubygems</groupId>
+                            <artifactId>asciidoctor</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+            </dependencies>
             <activation>
                 <property>
                     <name>builddocs</name>
@@ -337,48 +362,12 @@
                 </property>
             </activation>
 
-        </profile>
-        <!--
-          Upload distribution files, javadoc and manual to openjpa.apache.org/builds/${nightly.version}.
-          This profile is designed to be run nightly by a continuous build server, but can
-          also be run manually.
-
-          The nightly.user.name and nightly.password properties need to be set prior to using
-          this profile, ie :
-          $ mvn -Dnightly.user.name=mikedd -Dnightly.password=mikesPassword -Pnightly-upload package
-          or (using a profile defined in $user.home/.m2/settings.xml )
-          $ mvn -Pnightly-upload,mikes-nightly-credentials package
-          -->
-        <profile>
-            <id>nightly-upload</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <configuration>
-                                    <target>
-                                        <ant antfile="upload.xml" target="upload" inheritRefs="true">
-                                            <property name="nightly.user.name" value="${nightly.user.name}" />
-                                            <property name="nightly.password" value="${nightly.password}" />
-                                            <property name="nightly.keyfile" value="${nightly.keyfile}" />
-                                            <property name="nightly.passphrase" value="${nightly.passphrase}" />
-                                            <property name="nightly.version" value="${nightly.version}" />
-                                            <property name="project.version" value="${project.version}" />
-                                        </ant>
-                                    </target>
-                                </configuration>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
+            <repositories>
+                <repository>
+                    <id>mavengems</id>
+                    <url>mavengem:https://rubygems.org</url>
+                </repository>
+            </repositories>
         </profile>
     </profiles>
 

@@ -1,0 +1,407 @@
+////
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+////
+[[ref_guide_meta]]
+=== Metadata
+
+The JPA Overview covers JPA metadata in <<jpa_overview_meta>>.
+This chapter discusses OpenJPA's extensions to standard JPA metadata.
+
+[[ref_guide_meta_factory]]
+==== Metadata Factory
+(((metadata , loading and storing)))
+
+The <<openjpa.MetaDataFactory,`openjpa.MetaDataFactory` >> configuration property controls metadata loading and storing.
+This property takes a plugin string (see <<ref_guide_conf_plugins>>) describing a concrete link:../../apidocs/org/apache/openjpa/meta/MetaDataFactory.html[
+org.apache.openjpa.meta.MetaDataFactory] implementation.
+A metadata factory can load mapping information as well as persistence metadata, or it can leave mapping information to a separate __mapping factory__ (see <<ref_guide_mapping_factory>>). OpenJPA recognizes the following built-in metadata factories:
+
+* ``jpa``: Standard JPA metadata. This is an alias for the link:../../apidocs/org/apache/openjpa/persistence/PersistenceMetaDataFactory.html[ org.apache.openjpa.persistence.PersistenceMetaDataFactory].
+
+JPA has built-in settings for listing your persistent classes, which the <<jpa_overview_persistence_xml,JPA Overview>> describes.
+OpenJPA supports these JPA standard settings by translating them into its own internal metadata factory properties.
+Each internal property represents a different mechanism for locating persistent types; you can choose the mechanism or combination of mechanisms that are most convenient.
+See <<ref_guide_pc_pcclasses>> for a discussion of when it is necessary to list your persistent classes.
+
+* ``Types``: A semicolon-separated list of fully-qualified persistent class names.
+* ``Resources``: A semicolon-separated list of resource paths to metadata files or jar archives. Each jar archive will be scanned for annotated JPA entities.
+* ``URLs``: A semicolon-separated list of URLs of metadata files or jar archives. Each jar archive will be scanned for annotated JPA entities.
+* ``ClasspathScan``: A semicolon-separated list of directories or jar archives listed in your classpath. Each directory and jar archive will be scanned for annotated JPA entities.
+
+
+[[ref_guide_meta_stdfactoryex]]
+.Setting a Standard Metadata Factory
+====
+[source]
+----
+
+<property name="openjpa.MetaDataFactory" value="jpa(ClasspathScan=build;lib.jar)"/>
+----
+====
+
+[[ref_guide_meta_customfactoryex]]
+.Setting a Custom Metadata Factory
+====
+[source]
+----
+
+<property name="openjpa.MetaDataFactory" value="com.xyz.CustomMetaDataFactory"/>
+----
+====
+
+[[ref_guide_meta_repository]]
+==== Metadata Repository
+
+The openjpa.MetaDataRepository configuration property controls the configuration of the MetaDataRepository.
+The following are valid properties:
+
+* ``Preload``: A boolean property. If true, OpenJPA will eagerly load the repository on EntityManagerFactory creation. As a result, all Entity classes will be eagerly loaded by the JVM. Once MetaData preloading completes, all locking is removed from the MetaDataRepository and this will result in a much more scalable repository. If false, the repository will be lazily loaded as Entity classes are loaded by the JVM. The default value is false.
+
+
+[[ref_guide_meta_repo]]
+.Setting the Preload Property on Metadata Repository
+====
+[source]
+----
+
+<property name="openjpa.MetaDataRepository" value="Preload=true"/>
+----
+====
+
+[[ref_guide_meta_jpa]]
+==== Additional JPA Metadata
+
+This section describes OpenJPA's core additions to standard entity metadata.
+We present the object-relational mapping syntax to support these additions in <<ref_guide_mapping_jpa>>.
+Finally, <<ref_guide_meta_ext>> covers additional extensions to JPA metadata that allow you to access auxiliary OpenJPA features.
+
+[[ref_guide_meta_jpa_datastoreid]]
+===== Datastore Identity
+(((identity , datastore)))
+
+JPA typically requires you to declare one or more `Id` fields to act as primary keys.
+OpenJPA, however, can create and maintain a surrogate primary key value when you do not declare any `Id` fields.
+This form of persistent identity is called __datastore identity__. <<ref_guide_pc_oid>> discusses OpenJPA's support for datastore identity in JPA.
+We cover how to map your datastore identity primary key column in <<ref_guide_mapping_jpa_datastoreid>>
+
+[[ref_guide_meta_jpa_version]]
+===== Surrogate Version
+
+Just as OpenJPA can maintain your entity's identity without any `Id`  fields, OpenJPA can maintain your entity's optimistic version without any `Version` fields. <<ref_guide_mapping_jpa_version>> shows you how to map surrogate version columns.
+
+[[ref_guide_meta_jpa_persistent]]
+===== Persistent Field Values
+(((persistent fields)))
+
+JPA defines ``Basic``, ``Lob``, ``Embedded``, ``ManyToOne``, and `OneToOne` persistence strategies for direct field values.
+OpenJPA supports all of these standard strategies, but adds one of its own: ``Persistent``.
+The link:../../apidocs/org/apache/openjpa/persistence/Persistent.html[
+org.apache.openjpa.persistence.Persistent] metadata annotation can represent any direct field value, including custom types.
+It has the following properties:
+
+* ``FetchType fetch``: Whether to load the field eagerly or lazily. Corresponds exactly to the same-named property of standard JPA annotations such as <<jpa_overview_meta_basic,[class]``Basic``>>. Defaults to ``FetchType.EAGER``.
+* ``CascadeType[] cascade``: Array of enum values defining cascade behavior for this field. Corresponds exactly to the same-named property of standard JPA annotations such as <<jpa_overview_meta_manytoone,[class]``ManyToOne``>>. Defaults to empty array.
+* ``String mappedBy``: Names the field in the related entity that maps this bidirectional relation. Corresponds to the same-named property of standard JPA annotations such as <<jpa_overview_meta_onetoone,[class]``OneToOne``>>.
+* ``boolean optional``: Whether the value can be null. Corresponds to the same-named property of standard JPA annotations such as <<jpa_overview_meta_manytoone,[class]``ManyToOne``>>, but can apply to non-entity object values as well. Defaults to ``true``.
+* ``boolean embedded``: Set this property to `true`  if the field value is stored as an embedded object.
+
+Though you can use the [class]``Persistent`` annotation in place of most of the standard direct field annotations mentioned above, we recommend primarily using it for non-standard and custom types for which no standard JPA annotation exists.
+For example, <<ref_guide_mapping_jpa_columns>> demonstrates the use of the [class]``Persistent`` annotation to denote a persistent [class]``java.awt.Point`` field.
+
+[[ref_guide_meta_jpa_persistent_coll]]
+===== Persistent Collection Fields
+(((persistent fields,collection metadata)))
+
+JPA standardizes support for collections of entities with the 
+`OneToMany` and `ManyToMany` persistence strategies.
+OpenJPA supports these strategies, and may be extended for other strategies as well.
+For extended strategies, use the link:../../apidocs/org/apache/openjpa/persistence/PersistentCollection.html[
+org.apache.openjpa.persistence.PersistentCollection] metadata annotation to represents any persistent collection field.
+It has the following properties:
+
+* ``Class elementType``: The class of the collection elements. This information is usually taken from the parameterized collection element type. You must supply it explicitly, however, if your field isn't a parameterized type.
+* ``FetchType fetch``: Whether to load the collection eagerly or lazily. Corresponds exactly to the same-named property of standard JPA annotations such as <<jpa_overview_meta_basic,[class]``Basic``>>. Defaults to ``FetchType.LAZY``.
+* ``String mappedBy``: Names the field in the related entity that maps this bidirectional relation. Corresponds to the same-named property of standard JPA annotations such as <<jpa_overview_meta_manytomany,[class]``ManyToMany``>>.
+* ``CascadeType[] elementCascade``: Array of enum values defining cascade behavior for the collection elements. Corresponds exactly to the ``cascade`` property of standard JPA annotations such as <<jpa_overview_meta_manytomany,[class]``ManyToMany``>>. Defaults to empty array.
+* ``boolean elementEmbedded``: Set this property to `true`  if the elements are stored as embedded objects.
+
+
+[[ref_guide_meta_jpa_persistent_map]]
+===== Persistent Map Fields
+
+JPA has limited support for maps.
+If you extend JPA's standard map support to encompass new mappings, use the link:../../apidocs/org/apache/openjpa/persistence/PersistentMap.html[
+org.apache.openjpa.persistence.PersistentMap] metadata annotation to represent your custom persistent map fields.
+It has the following properties:
+
+* ``Class keyType``: The class of the map keys. This information is usually taken from the parameterized map key type. You must supply it explicitly, however, if your field isn't a parameterized type.
+* ``Class elementType``: The class of the map values. This information is usually taken from the parameterized map value type. You must supply it explicitly, however, if your field isn't a parameterized type.
+* ``FetchType fetch``: Whether to load the collection eagerly or lazily. Corresponds exactly to the same-named property of standard JPA annotations such as <<jpa_overview_meta_basic,[class]``Basic``>>. Defaults to ``FetchType.LAZY``.
+* ``CascadeType[] keyCascade``: Array of enum values defining cascade behavior for the map keys. Corresponds exactly to the `cascade`  property of standard JPA annotations such as <<jpa_overview_meta_manytoone,[class]``ManyToOne``>>. Defaults to empty array.
+* ``CascadeType[] elementCascade``: Array of enum values defining cascade behavior for the map values. Corresponds exactly to the ``cascade`` property of standard JPA annotations such as <<jpa_overview_meta_manytoone,[class]``ManyToOne``>>. Defaults to empty array.
+* ``boolean keyEmbedded``: Set this property to `true`  if the map keys are stored as embedded objects.
+* ``boolean elementEmbedded``: Set this property to  `true` if the map values are stored as embedded objects.
+
+
+[[ref_guide_meta_ext]]
+==== Metadata Extensions
+(((metadata , extensions)))
+
+OpenJPA extends standard metadata to allow you to access advanced OpenJPA functionality.
+This section covers persistence metadata extensions; we discuss mapping metadata extensions in <<ref_guide_mapping_ext>>.
+All metadata extensions are optional; OpenJPA will rely on its defaults when no explicit data is provided.
+
+[[ref_guide_meta_class]]
+===== Class Extensions
+
+OpenJPA recognizes the following class extensions:
+
+[[fetch-groups]]
+====== [[fetch-groups]]Fetch Groups
+
+The link:../../apidocs/org/apache/openjpa/persistence/FetchGroups.html[
+org.apache.openjpa.persistence.FetchGroups] and link:../../apidocs/org/apache/openjpa/persistence/FetchGroup.html[
+org.apache.openjpa.persistence.FetchGroup] annotations allow you to define fetch groups in your JPA entities. <<ref_guide_fetch>> discusses OpenJPA's support for fetch groups in general; see <<ref_guide_fetch_custom>> for how to use these annotations in particular.
+
+[[data-cache]]
+====== [[data-cache]]Data Cache
+(((metadata , extensions , data cache)))
+
+<<ref_guide_cache>> examines caching in OpenJPA.
+Metadata extensions allow individual classes to override system caching defaults.
+
+OpenJPA defines the link:../../apidocs/org/apache/openjpa/persistence/DataCache.html[
+org.apache.openjpa.persistence.DataCache] annotation for caching information.
+This annotation has the following properties:
+
+* ``boolean enabled``: Whether to cache data for instances of the class. Defaults to `true` for base classes, or the superclass value for subclasses. If you set this property to ``false``, all other properties are ignored.
+* ``int timeout``: The number of milliseconds data for the class remains valid. Use -1 for no timeout. Defaults to the <<openjpa.DataCacheTimeout, `openjpa.DataCacheTimeout` >> property value.
+
+
+[[detached-state-field]]
+====== [[detached-state-field]]Detached State
+
+The OpenJPA <<ref_guide_pc_enhance,enhancer>> may add a synthetic field to detachable classes to hold detached state (see <<ref_guide_detach_graph>> for details). You can instead declare your own detached state field or suppress the creation of a detached state field altogether.
+In the latter case, your class must not use <<ref_guide_pc_oid,datastore identity>>, and should declare a version field to detect optimistic concurrency errors during detached modifications.
+
+OpenJPA defines the link:../../apidocs/org/apache/openjpa/persistence/DetachedState.html[
+org.apache.openjpa.persistence.DetachedState] annotation for controlling detached state.
+When used to annotate a class, [class]``DetachedState`` recognizes the following properties:
+
+* ``boolean enabled``: Set to false to suppress the use of detached state.
+* ``String fieldName``: Use this property to declare your own detached state field. The field must be of type [class]``Object``. Typically this property is only used if the field is inherited from a non-persisted superclass. If the field is declared in your entity class, you will typically annotate the field directly, as described below.
+
+If you declare your own detached state field, you can annotate that field with [class]``DetachedState`` directly, rather than placing the annotation at the class level and using the `fieldName` property.
+When placed on a field, [class]``DetachedState`` acts as a marker annotation; it does not recognize any properties.
+Your annotated field must be of type [class]``Object``.
+
+[[ref_guide_meta_field]]
+===== Field Extensions
+
+OpenJPA recognizes the following field extensions:
+
+[[dependent]]
+====== Dependent
+
+In a _dependent_ relation, the referenced object is deleted whenever the owning object is deleted, or whenever the relation is severed by nulling or resetting the owning field.
+For example, if the 
+`Magazine.coverArticle` field is marked dependent, then setting ``Magazine.coverArticle`` to a new [class]``Article`` instance will automatically delete the old [class]``Article`` stored in the field.
+Similarly, deleting a [class]``Magazine`` object will automatically delete its current cover [class]``Article``.
+(This latter processing is analogous to using JPA's CascadeType.REMOVE functionality as described in <<jpa_overview_meta_cascade>>.) You can prevent an orphaned dependent object from being automatically deleted by assigning it to another relation in the same transaction.
+
+OpenJPA offers a family of marker annotations to denote dependent relations in JPA entities:
+
+* link:../../apidocs/org/apache/openjpa/persistence/Dependent.html[ org.apache.openjpa.persistence.Dependent]: Marks a direct relation as dependent.
+* link:../../apidocs/org/apache/openjpa/persistence/ElementDependent.html[ org.apache.openjpa.persistence.ElementDependent] : Marks the entity elements of a collection, array, or map field as dependent.
+* link:../../apidocs/org/apache/openjpa/persistence/KeyDependent.html[ org.apache.openjpa.persistence.KeyDependent]: Marks the key entities in a map field as dependent.
+
+
+[[load-fetch-group]]
+====== [[load-fetch-group]]Load Fetch Group
+(((metadata , extensions , load fetch group)))
+
+The link:../../apidocs/org/apache/openjpa/persistence/LoadFetchGroup.html[
+org.apache.openjpa.persistence.LoadFetchGroup] annotation specifies a field's load fetch group. <<ref_guide_fetch>> discusses OpenJPA's support for fetch groups in general; see <<ref_guide_fetch_custom>> for how to use this annotation in particular.
+
+[[lrs]]
+====== LRS
+
+This boolean extension, denoted by the OpenJPA link:../../apidocs/org/apache/openjpa/persistence/LRS.html[
+org.apache.openjpa.persistence.LRS] annotation, indicates that a field should use OpenJPA's special large result set collection or map proxies.
+A complete description of large result set proxies is available in <<ref_guide_pc_scos_proxy_lrs>>.
+
+[[inverse-logical]]
+====== [[inverse-logical]]Inverse-Logical
+(((metadata , extensions , inverse-logical)))
+
+This extension names the inverse field in a logical bidirectional relation.
+To create a logical bidirectional relation in OpenJPA, use the link:../../apidocs/org/apache/openjpa/persistence/InverseLogical.html[
+org.apache.openjpa.persistence.InverseLogical] annotation.
+We discuss logical bidirectional relations and this extension in detail in <<ref_guide_inverses>>.
+
+[[read-only]]
+====== [[read-only]]Read-Only
+
+The read-only extension makes a field unwritable.
+The extension only applies to existing persistent objects; new object fields are always writeable.
+
+To mark a field read-only in JPA metadata, set the link:../../apidocs/org/apache/openjpa/persistence/ReadOnly.html[
+org.apache.openjpa.persistence.ReadOnly] annotation to an link:../../apidocs/org/apache/openjpa/persistence/UpdateAction.html[
+org.apache.openjpa.persistence.UpdateAction] enum value.
+The [class]``UpdateAction`` enum includes:
+
+* ``UpdateAction.IGNORE``: Updates to the field are completely ignored. The field is not considered dirty. The new value will not even get stored in the OpenJPA <<ref_guide_cache,data cache>>.
+* ``UpdateAction.RESTRICT``: Any attempt to change the field will result in an immediate exception.
+
+
+[[type]]
+====== Type
+(((metadata , extensions , type)))
+
+OpenJPA has three levels of support for relations:
+
+. Relations that hold a reference to an object of a concrete persistent class are supported by storing the primary key values of the related instance in the database.
+. Relations that hold a reference to an object of an unknown persistent class are supported by storing the stringified identity value of the related instance. This level of support does not allow queries across the relation.
+. Relations that hold an unknown object or interface. The only way to support these relations is to serialize their value to the database. This does not allow you to query the field, and is not very efficient.
+
+Clearly, when you declare a field's type to be another persistence-capable class, OpenJPA uses level 1 support.
+By default, OpenJPA assumes that any interface-typed fields you declare will be implemented only by other persistent classes, and assigns interfaces level 2 support.
+The exception to this rule is the [class]``java.io.Serializable`` interface.
+If you declare a field to be of type [class]``Serializable``, OpenJPA lumps it together with [class]``java.lang.Object`` fields and other non-interface, unrecognized field types, which are all assigned level 3 support.
+
+With OpenJPA's type family of metadata extensions, you can control the level of support given to your unknown/interface-typed fields.
+Setting the value of this extension to [class]``Entity`` indicates that the field value will always be some persistent object, and gives level 2 support.
+Setting the value of this extension to the class of a concrete persistent type is even better; it gives you level 1 support (just as if you had declared your field to be of that type in the first place). Setting this extension to [class]``Object`` uses level 3 support.
+This is useful when you have an interface relation that may *not* hold other persistent objects (recall that OpenJPA assumes interface fields will always hold persistent instances by default).
+
+This extension is also used with OpenJPA's externalization feature, described in <<ref_guide_pc_extern>>.
+
+OpenJPA defines the following type annotations for field values, collection, array, and map elements, and map keys, respectively:
+
+* link:../../apidocs/org/apache/openjpa/persistence/Type.html[ org.apache.openjpa.persistence.Type]
+* link:../../apidocs/org/apache/openjpa/persistence/ElementType.html[ org.apache.openjpa.persistence.ElementType]
+* link:../../apidocs/org/apache/openjpa/persistence/KeyType.html[ org.apache.openjpa.persistence.KeyType]
+
+
+[[externalizer]]
+====== Externalizer
+
+The OpenJPA link:../../apidocs/org/apache/openjpa/persistence/Externalizer.html[
+org.apache.openjpa.persistence.Externalizer] annotation names a method to transform a field value into a value of another type.
+See <<ref_guide_pc_extern>> for details.
+
+[[factory]]
+====== Factory
+
+The OpenJPA link:../../apidocs/org/apache/openjpa/persistence/Factory.html[
+org.apache.openjpa.persistence.Factory] annotation names a method to re-create a field value from its externalized form.
+See <<ref_guide_pc_extern>> for details.
+
+[[external-values]]
+====== [[external-values]]External Values
+(((metadata , extensions , external values)))
+
+The OpenJPA link:../../apidocs/org/apache/openjpa/persistence/ExternalValues.html[
+org.apache.openjpa.persistence.ExternalValues] annotation declares values for transformation of simple fields to different constant values in the datastore.
+See <<ref_guide_pc_extern_values>> for details.
+
+[[ref_guide_meta_example]]
+===== Example
+
+The following example shows you how to specify extensions in metadata.
+
+[[ref_guide_metaex]]
+.OpenJPA Metadata Extensions
+====
+[source]
+----
+
+import org.apache.openjpa.persistence.*;
+
+@Entity
+@DataCache(enabled=false)
+public class Magazine
+{
+    @ManyToMany
+    @LRS
+    private Collection<Subscriber> subscribers;
+
+    @ExternalValues({"true=1", "false=2"})
+    @Type(int.class)
+    private boolean weekly;
+
+    ...
+}
+----
+====
+
+[[ref_guide_meta_xml]]
+===== XML extensions
+
+OpenJPA has extended the JPA 2.0 schema to include elements and attributes corresponding to OpenJPA extended metadata and mapping annotations.
+The schema are contained in 2 files: http://openjpa.apache.org/builds/latest/docs/schema/extendable/extendable-orm.xsd[
+extendable-orm.xsd] and http://openjpa.apache.org/builds/latest/docs/schema/openjpa-orm.xsd[openjpa-orm.xsd].
+The extendable-orm.xsd file provides copies of some of the JPA 2.0 schema elements with additional schema to make it extendable.
+The openjpa-orm.xsd file extends the extendable-orm.xsd with OpenJPA specific elements and attributes representing OpenJPA annotations.
+Currently, only a subset of annotations have actually been implemented, and some of those have been partially tested.
+The current status can be found by comments in the http://openjpa.apache.org/builds/latest/docs/schema/openjpa-orm.xsd[openjpa-orm.xsd] schema file.
+
+In order to use the OpenJPA extensions in your mapping file you must include the namespaces for these 2 new schemas as well as for the schema for JPA 2.0, as shown in the following example:
+
+[[ref_guide_schema_ex]]
+.OpenJPA Schema Extensions
+====
+[source]
+----
+
+<entity-mappings xmlns="http://www.apache.org/openjpa/ns/orm/extendable"
+    xmlns:openjpa="http://www.apache.org/openjpa/ns/orm"
+    xmlns:orm="http://java.sun.com/xml/ns/persistence/orm"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    version="2.0">
+
+    <entity class="org.apache.openjpa.persistence.jdbc.annotations.MultiColumnVersionPC"
+        metadata-complete="true">
+        <table name="MCV"/>
+        <attributes>
+            <id name="id">
+                <orm:generated-value/>
+            </id>
+            <basic name="id"/>
+            <basic name="name"/>
+        </attributes>
+        <openjpa:entity version-strategy="version-numbers">
+            <openjpa:version-columns>
+                <openjpa:version-column name="v1"/>
+                <openjpa:version-column name="v2"/>
+                <openjpa:version-column name="v3"
+                    column-definition="FLOAT"
+                    scale="3"
+                    precision="10"/>
+            </openjpa:version-columns>
+        </openjpa:entity>
+    </entity>
+
+</entity-mappings>
+----
+====
+
+ifdef::backend-docbook[]
+[index]
+== Index
+endif::backend-docbook[]

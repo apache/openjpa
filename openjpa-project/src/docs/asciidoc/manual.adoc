@@ -1,0 +1,98 @@
+////
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+////
+= Apache OpenJPA {project-version} User's Guide: Official User Guide for Apache OpenJPA.
+:revdate: Published {publish-date}.
+// commented out due to it's date actuially
+//:revnumber: {build-number}.
+:revremark: The Apache Software Foundation
+:version-label!: {project-version}
+
+:description: Official User Guide for Apache OpenJPA.
+:keywords: Apache OpenJPA, User Guide
+:copyright: Copyright © 2006-{current-year} The Apache Software Foundation. All Rights Reserved.
+:toc: left
+:toclevels: 10
+:icons: font
+:sectlinks:
+
+:sectnums:
+:sectnumlevels: 10
+
+[[introduction]]
+== Introduction
+
+include::openjpa_intro.adoc[]
+include::openjpa_legal.adoc[]
+
+[[jpa_overview]]
+== Java Persistence API
+
+include::jpa_overview_intro.adoc[]
+include::jpa_overview_why.adoc[]
+include::jpa_overview_arch.adoc[]
+include::jpa_overview_pc.adoc[]
+include::jpa_overview_meta.adoc[]
+include::jpa_overview_persistence.adoc[]
+include::jpa_overview_emfactory.adoc[]
+include::jpa_overview_em.adoc[]
+include::jpa_overview_trans.adoc[]
+include::jpa_overview_query.adoc[]
+include::jpa_overview_criteria.adoc[]
+include::jpa_overview_sqlquery.adoc[]
+include::jpa_overview_mapping.adoc[]
+include::jpa_overview_conclusion.adoc[]
+
+//[[tutorials]]
+//== Tutorials
+//
+//include::jpa_tutorials.adoc[]
+
+[[ref_guide]]
+== Reference Guide
+
+include::ref_guide_intro.adoc[]
+include::ref_guide_conf.adoc[]
+include::ref_guide_logging.adoc[]
+include::ref_guide_dbsetup.adoc[]
+include::ref_guide_pc.adoc[]
+include::ref_guide_meta.adoc[]
+include::ref_guide_mapping.adoc[]
+include::ref_guide_deploy.adoc[]
+include::ref_guide_runtime.adoc[]
+include::ref_guide_caching.adoc[]
+include::ref_guide_encryption.adoc[]
+include::ref_guide_remote.adoc[]
+include::ref_guide_slice.adoc[]
+include::ref_guide_integration.adoc[]
+include::ref_guide_optimization.adoc[]
+include::ref_guide_instrumentation.adoc[]
+
+//[[samples_guide_part]]
+//== Samples
+//
+//include::samples_guide.adoc[]
+
+== Appendices
+
+include::jpa_resources.adoc[]
+include::supported_databases.adoc[]
+include::migration_considerations.adoc[]
+
+'''
+{copyright}

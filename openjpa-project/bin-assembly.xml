@@ -46,12 +46,12 @@
             </includes>
         </fileSet>
         <fileSet>
-        	<directory>../openjpa-persistence/target/classes/org/apache/openjpa/persistence</directory>
-        	<outputDirectory>docs/schema</outputDirectory>
-        	<includes>
-        		<include>extendable-orm.xsd</include>
-        		<include>openjpa-orm.xsd</include>
-        	</includes>
+            <directory>../openjpa-persistence/target/classes/org/apache/openjpa/persistence</directory>
+            <outputDirectory>docs/schema</outputDirectory>
+            <includes>
+                <include>extendable-orm.xsd</include>
+                <include>openjpa-orm.xsd</include>
+            </includes>
         </fileSet>
     </fileSets>
     <dependencySets>

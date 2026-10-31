@@ -8,12 +8,12 @@ Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
 These instructions describe how perform an official release of the Apache OpenJPA project.
 
 
-== Prerequisits
+== Prerequisites
 
 
 * You need a valid Apache account and
 * Maven installed on your box
-* Java 8
+* Java 17
 
 
 == Manual Release Preparation Steps

@@ -1,0 +1,98 @@
+////
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+////
+[[samples_guide]]
+=== OpenJPA Sample Code
+
+The OpenJPA distribution comes with a number of examples that illustrate the usage of various features.
+
+[[samples_guide_interop]]
+==== JDO - JPA Persistence Interoperability
+
+This sample demonstrates how to combine JDO and JPA in a single application.
+The [path]_MachineMain.java_ program uses both [class]``EntityManager``s and [class]``PersistenceManager``s in a single transaction including persist, delete and query operations.
+
+The sample includes both annotated persistent classes as well as JDOR metadata information.
+The application can switch to either system simply by changing the bootstrap mechanism.
+Depending on which configuration system you use, OpenJPA will read the corresponding metadata format.
+You can override some or all of this behavior using OpenJPA's configuration options, such as <<openjpa.MetaDataFactory,openjpa.MetaDataFactory>>.
+
+To use this sample, you should ensure that either a [path]_jdo.properties_
+ or [path]_persistence.xml_ are in the [path]_META-INF_ directory in your [var]``CLASSPATH``.
+The rest of the files for this sample are located in the [path]_samples/mixed_ directory of the OpenJPA installation.
+This tutorial requires JDK 5.
+To run this tutorial:
+
+* Ensure that your environment is set properly as described in the README and that your current path is in the mixed sample directory.
+* You may want to edit `ConnectionURL` to point to an absolute URL (e.g. [path]_C:/openjpa/mixed-sample-db_) if using a file-based database like ``HSQL``.
+* Include the list of persistent classes in your configuration file. For JPA, you will want to add the following lines to [path]_persistence.xml_ before the `<property>` lines:
+
+
+[source]
+----
+
+<class>samples.mixed.Machine</class>
+<class>samples.mixed.Crane</class>
+<class>samples.mixed.Bulldozer</class>
+<class>samples.mixed.Operator</class>
+----
+
+If you are using JDO, point the metadata factory at the [path]_.jdo_
+ resource containing your persistent classes:
+
+
+[source]
+----
+
+openjpa.MetaDataFactory: Resources=samples/mixed/package.jdo
+----
+* Compile the classes:
+
+``javac *.java``
+* You should then proceed to pass in the configuration file you are using to the enhancer: (Optional)
+
+``java org.apache.openjpa.enhance.PCEnhancer -p persistence.xml Machine.java Crane.java Bulldozer.java
+Operator.java``
+* Similarly, you should pass in the same argument to ``org.apache.openjpa.jdbc.meta.MappingTool``:
+
+``java org.apache.openjpa.jdbc.meta.MappingTool -p persistence.xml -a buildSchema Machine.java
+Crane.java Bulldozer.java Operator.java``
+
+or
+
+``java org.apache.openjpa.jdbc.meta.MappingTool -p jdo.properties -a buildSchema Machine.java Crane.java
+Bulldozer.java Operator.java``
+* You can now run the sample application. The first argument is which operation you want the program to run. The second argument tells the application which bootstrap system to use:
+
+``java samples.mixed.MachineMain <create | delete> <jdo |
+jpa>``
+
+
+[[samples_guide_jpadiv]]
+==== JPA
+
+[[samples_guide_model_humres_jpa]]
+===== Sample Human Resources Model
+
+The files for this sample are located in the [path]_samples/persistence/models/humres_ directory of the OpenJPA installation.
+This sample demonstrates the mapping of an example "Human Resources" schema.
+The following concepts are illustrated in this sample:
+
+* Value Mappings
+* One to One Mappings
+* One to Many Mappings (with and without inverses)

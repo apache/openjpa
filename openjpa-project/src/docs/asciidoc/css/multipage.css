@@ -1,0 +1,43 @@
+/* Licensed under the Apache License, Version 2.0 (the "License") http://www.apache.org/licenses/LICENSE-2.0 */
+@import url(docbook.css);
+
+body.book.toc2.toc-left {
+    display: grid;
+    grid-template-columns: 1fr 4fr;;
+    grid-template-areas:
+        "header1  header1"
+        "header2  header2"
+        "sidebar main"
+        "sidebar  footer";
+    background-color: #fff;
+    color: #444;
+
+    width: calc(100vw - 1.5rem);
+    height: 100vh;
+    overflow: hidden;
+}
+body.book.toc2.toc-left #header {
+    display: contents;
+}
+body.book.toc2.toc-left #header h1 {
+    grid-area: header1;
+    text-align: center;
+}
+body.book.toc2.toc-left #header .details {
+    grid-area: header2;
+    text-align: right;
+    height: 1.5rem;
+}
+body.book.toc2.toc-left #toc {
+    grid-area: sidebar;
+    height: calc(100vh - 10rem);
+    overflow-y: auto;
+}
+body.book.toc2.toc-left #content {
+    grid-area: main;
+    overflow-y: auto;
+    height: calc(100vh - 12rem);
+}
+body.book.toc2.toc-left #footer {
+    grid-area: footer;
+}
