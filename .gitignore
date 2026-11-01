@@ -14,5 +14,5 @@ nbactions*.xml
 
 .claude
 CLAUDE.md
-scripts/.report/
+.report/
 

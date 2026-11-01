@@ -1,6 +1,5 @@
-Building Apache OpenJPA
-Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
---------------------------------------------------------------------------------
+# Building Apache OpenJPA
+<!-- Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0 -->
 
 These instructions describe how to build OpenJPA from source code using the
 Apache Maven 3 build tool. They are written for use from the console, and are
@@ -9,26 +8,26 @@ known to work on Windows, Linux and Mac OSX.
 The most up to date version of these instructions may be found on the OpenJPA
 website at http://openjpa.apache.org/building.html
 
-   1. Ensure that Java SE 6 is installed and on your path by running:
-          java -version
-      OpenJPA requires Java 17 or later to build and for runtime.
-   2. Install the build tool Apache Maven 3.9.12 or later, from:
-          http://maven.apache.org/
-      If it is installed correctly, typing mvn -v from the console will result
-      in the text like "Apache Maven 3.9.12"
-   3. Extract the source archive if you have not already done so.
-      The source will create a new directory named:
-      openjpa-<version>-source. Where <version> is the OpenJPA
-      version, for example apache-openjpa-4.2.0-source.
-   4. Change to the OpenJPA source directory, which has already been created in
-      the previous step.
-   5. Build OpenJPA by running: mvn package or better mvn install.
-      The first time you run the build, many dependencies are automatically
-      resolved and downloaded. It is common for dependency downloading to fail
-      the first time, which will fail the build. If any of these dependency
-      downloads fail, just re-run the command. You may also add the following
-      to your ~/.m2/setting.xml file
-      (see http://maven.apache.org/guides/mini/guide-mirror-settings.html)
+1. Ensure that Java SE 6 is installed and on your path by running:
+        java -version
+    OpenJPA requires Java 17 or later to build and for runtime.
+2. Install the build tool Apache Maven 3.9.12 or later, from:
+        http://maven.apache.org/
+    If it is installed correctly, typing mvn -v from the console will result
+    in the text like "Apache Maven 3.9.12"
+3. Extract the source archive if you have not already done so.
+    The source will create a new directory named:
+    openjpa-<version>-source. Where <version> is the OpenJPA
+    version, for example apache-openjpa-4.2.0-source.
+4. Change to the OpenJPA source directory, which has already been created in
+    the previous step.
+5. Build OpenJPA by running: mvn package or better mvn install.
+    The first time you run the build, many dependencies are automatically
+    resolved and downloaded. It is common for dependency downloading to fail
+    the first time, which will fail the build. If any of these dependency
+    downloads fail, just re-run the command. You may also add the following
+    to your ~/.m2/setting.xml file
+    (see http://maven.apache.org/guides/mini/guide-mirror-settings.html)
 
        <settings>
            <mirrors>
@@ -40,11 +39,12 @@ website at http://openjpa.apache.org/building.html
            </mirrors>
         </settings>
 
-        If any tests fail, and you want to ignore the failures, instead run:
-        mvn package -DskipTests
+If any tests fail, and you want to ignore the failures, instead run:
+`mvn package -DskipTests`
 
 An example session is as follows:
 
+```
 $ cd /tmp/
 
 $ java -version
@@ -62,12 +62,12 @@ git version 2.53.0
 $ git clone https://github.com/apache/openjpa.git
 Cloning into 'openjpa'...
 remote: Enumerating objects: ...
- 
- $ cd openjpa
- 
- $ git checkout 4.2.0
 
-$ mvn clean install -DskipTests -DfailIfNoTests=false
+$ cd openjpa
+
+$ git checkout 4.2.0
+
+$ mvn clean install -DskipTests
 
 [INFO] Scanning for projects...
 [INFO] Reactor build order:
@@ -143,15 +143,29 @@ $ mvn clean install -DskipTests -DfailIfNoTests=false
 [INFO] Final Memory: 118M/232M
 [INFO] ------------------------------------------------------------------------
 
+$ mvn package -Dbuilddocs
+
 $ ls openjpa-project/target/site/downloads/
 
+apache-openjpa-4.2.0-binary-nodocs.zip
 apache-openjpa-4.2.0-binary.zip
 apache-openjpa-4.2.0-source.zip
 
+$ ls openjpa-project/target/site/docs/
 
+html
+javadoc
+manual.pdf
+multihtml
+```
 
-Advanced Build Options
-======================
+`SNAPSHOT` documentation will be uploaded to https://nightlies.apache.org/ by
+Jenkins: https://ci-builds.apache.org/job/OpenJPA/job/openjpa/
+
+`RELEASE` documentation should be manually added to correspondent folder at
+https://github.com/apache/openjpa-site/tree/builds
+
+# Advanced Build Options
 
 
 To speed up the local build time you might want to exclude the tests which
@@ -159,66 +173,55 @@ check locking timeouts as they take a really long time (mostly waiting for
 timeout expiration).
 
 This can be achieved by building the project with
-$ mvn clean install -Dsurefire.excludes.locking=**/*
+`mvn clean install -Dsurefire.excludes.locking=**/*`
+
+# Building and deploying the Site
+
+The site (including docbook documentation) is prepared during `mvn package -Dbuilddocs` step above
+
+The generated resources are available at `openjpa-project/target/site/docs/`
 
 
-
-Building and deploying the Site
-===============================
-
-$ mvn site site:deploy -Pjavadoc-profile,docbook-profile
-
-To generate the docbook documentation you need to cd into the openjpa-project directory and run
-
-$ cd ./openjpa-project
-$ mvn clean install -Papache-release,docbook-profile
-
-The generated PDF is available under ./target/docbook/manual.pdf
-
-
-Running unit tests in the Debugger
-==================================
+# Running unit tests in the Debugger
 
 By default all tests run against a derby database.
 To run the tests in the debugger simply add the following JVM properties
 
- -ea -Dopenjpa.ConnectionURL=jdbc:derby:target/database/openjpa-derby-database;create=true -Dopenjpa.ConnectionDriverName=org.apache.derby.jdbc.EmbeddedDriver
+`-ea -Dopenjpa.ConnectionURL=jdbc:derby:target/database/openjpa-derby-database;create=true -Dopenjpa.ConnectionDriverName=org.apache.derby.jdbc.EmbeddedDriver`
 
 For running against a MySQL Docker installation:
- -ea -Dopenjpa.ConnectionDriverName=com.mysql.jdbc.Driver -Dopenjpa.ConnectionURL=jdbc:mysql://localhost:3306/openjpatst -Dopenjpa.ConnectionUserName=openjpatst -Dopenjpa.ConnectionPassword=openjpatst
+`-ea -Dopenjpa.ConnectionDriverName=com.mysql.jdbc.Driver -Dopenjpa.ConnectionURL=jdbc:mysql://localhost:3306/openjpatst -Dopenjpa.ConnectionUserName=openjpatst -Dopenjpa.ConnectionPassword=openjpatst`
 
 Running against a PostgreSQL Docker installation:
- -ea -Dopenjpa.ConnectionDriverName=org.postgresql.Driver -Dopenjpa.ConnectionURL=jdbc:postgresql://localhost:5432/openjpatst -Dopenjpa.ConnectionUserName=postgres -Dopenjpa.ConnectionPassword=postgres
+`-ea -Dopenjpa.ConnectionDriverName=org.postgresql.Driver -Dopenjpa.ConnectionURL=jdbc:postgresql://localhost:5432/openjpatst -Dopenjpa.ConnectionUserName=postgres -Dopenjpa.ConnectionPassword=postgres`
 
 For running against a MariaDB Docker installation:
- -ea -Dopenjpa.ConnectionDriverName=org.mariadb.jdbc.Driver -Dopenjpa.ConnectionURL=jdbc:mariadb://localhost:3306/openjpatst -Dopenjpa.ConnectionUserName=root -Dopenjpa.ConnectionPassword=openjpatst
+`-ea -Dopenjpa.ConnectionDriverName=org.mariadb.jdbc.Driver -Dopenjpa.ConnectionURL=jdbc:mariadb://localhost:3306/openjpatst -Dopenjpa.ConnectionUserName=root -Dopenjpa.ConnectionPassword=openjpatst`
 
 For running against a h2 based installation:
- -ea -Dopenjpa.ConnectionDriverName=org.h2.Driver -Dopenjpa.ConnectionURL=jdbc:h2:./target/database/openjpa-h2-database -Dopenjpa.ConnectionUserName=root -Dopenjpa.ConnectionPassword=openjpatst
+`-ea -Dopenjpa.ConnectionDriverName=org.h2.Driver -Dopenjpa.ConnectionURL=jdbc:h2:./target/database/openjpa-h2-database -Dopenjpa.ConnectionUserName=root -Dopenjpa.ConnectionPassword=openjpatst`
 
 For running against a hsqldb based installation:
- -ea -Dopenjpa.ConnectionDriverName=org.hsqldb.jdbcDriver -Dopenjpa.ConnectionURL=jdbc:hsqldb:mem:openjpa20-hsqldb-database -Dopenjpa.ConnectionUserName=sa -Dopenjpa.ConnectionPassword=
+`-ea -Dopenjpa.ConnectionDriverName=org.hsqldb.jdbcDriver -Dopenjpa.ConnectionURL=jdbc:hsqldb:mem:openjpa20-hsqldb-database -Dopenjpa.ConnectionUserName=sa -Dopenjpa.ConnectionPassword=`
 
 For running tests against a Microsoft SQLServer Docker based installation:
- -ea -Dopenjpa.ConnectionDriverName=com.microsoft.sqlserver.jdbc.SQLServerDriver -Dopenjpa.ConnectionURL=jdbc:sqlserver://localhost:1433;sendTimeAsDatetime=false -Dopenjpa.ConnectionUserName=SA -Dopenjpa.ConnectionPassword=OpenJP8tst
+`-ea -Dopenjpa.ConnectionDriverName=com.microsoft.sqlserver.jdbc.SQLServerDriver -Dopenjpa.ConnectionURL=jdbc:sqlserver://localhost:1433;sendTimeAsDatetime=false -Dopenjpa.ConnectionUserName=SA -Dopenjpa.ConnectionPassword=OpenJP8tst`
 
 For running against a Oracle Docker installation:
- -ea -Dopenjpa.ConnectionDriverName=oracle.jdbc.driver.OracleDriver -Dopenjpa.ConnectionURL=jdbc:oracle:thin:@localhost:1521:xe -Dopenjpa.ConnectionUserName=openjpatst -Dopenjpa.ConnectionPassword=openjpatst
+`-ea -Dopenjpa.ConnectionDriverName=oracle.jdbc.driver.OracleDriver -Dopenjpa.ConnectionURL=jdbc:oracle:thin:@localhost:1521:xe -Dopenjpa.ConnectionUserName=openjpatst -Dopenjpa.ConnectionPassword=openjpatst`
 
 
 For starting tests in `openjpa-persistence-jdbc` inside a compiler you can also trigger all the enhancement manually via:
 
- $> mvn process-test-classes
- 
-Building in a Docker container
-======================
+`mvn process-test-classes`
+
+# Building in a Docker container
 
 Sometimes it is preferred to build the project outside your local environment, that may be working with a different version of JDK, maven etc.
 In that case, you may build the project using a maven docker container. For that, you may replace the
 
-$ mvn clean install -DskipTests -DfailIfNoTests=false
+`mvn clean install -DskipTests -DfailIfNoTests=false`
 
 command for
 
-$ sudo docker run --rm --name openjpa-build -u $(id -u):$(id -g) -v ~/.m2:/opt/openjpa/.m2 -v $PWD:/opt/openjpa -e MAVEN_CONFIG=/opt/openjpa/.m2 -w /opt/openjpa maven:3-eclipse-temurin-17 mvn -Duser.home=/opt/openjpa clean install -DskipTests -DfailIfNoTests=false
-
+`docker run --rm --name openjpa-build -u $(id -u):$(id -g) -v ~/.m2:/opt/openjpa/.m2 -v $PWD:/opt/openjpa -e MAVEN_CONFIG=/opt/openjpa/.m2 -w /opt/openjpa maven:3-eclipse-temurin-17 mvn -Duser.home=/opt/openjpa clean install -DskipTests -DfailIfNoTests=false`
