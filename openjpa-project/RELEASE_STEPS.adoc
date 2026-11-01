@@ -69,16 +69,6 @@ $> mvn release:perform
 
 This will finally do a clean checkout from the freshly generated tag and
 
-=== Build Documentation and Release assemblies
-
-First step will build aggregated javadocs
-
-$> mvn site
-
-Second step will build proper zip archives and upload them to Maven
-
-$> mvn deploy -Dbuilddocs -DperformRelease -f openjpa-project/
-
 == Verifying the Maven Staging Repository
 
 Login in to https://repository.apache.org/
