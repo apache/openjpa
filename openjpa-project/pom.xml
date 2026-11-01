@@ -24,7 +24,7 @@
     <!--
         To build the distribution files from project root:
 
-        mvn clean compile package -Dtest=false -DfailIfNoTests=false
+            mvn package -Dbuilddocs
 
         To build and deploy a fully signed release with docs, run:
 
@@ -48,21 +48,11 @@
     <description>OpenJPA Project Docs and Assemblies</description>
 
     <properties>
-        <openjpa.release.keyAlias>
-            ${user.name}@apache.org
-        </openjpa.release.keyAlias>
-
         <openjpa.assembly.finalName>${project.artifactId}-${project.version}</openjpa.assembly.finalName>
         <openjpa.assembly.outputDirectory>${project.basedir}/target/site/downloads</openjpa.assembly.outputDirectory>
 
-        <openjpa.assembly.binarySuffix>binary</openjpa.assembly.binarySuffix>
-        <openjpa.assembly.prefix>${openjpa.assembly.outputDirectory}/${openjpa.assembly.finalName}-</openjpa.assembly.prefix>
-        <openjpa.assembly.binaryBase>${openjpa.assembly.prefix}${openjpa.assembly.binarySuffix}</openjpa.assembly.binaryBase>
-        <openjpa.assembly.binaryFile>${openjpa.assembly.binaryBase}.zip</openjpa.assembly.binaryFile>
-
-        <openjpa.assembly.sourceSuffix>source</openjpa.assembly.sourceSuffix>
-        <openjpa.assembly.sourceBase>${openjpa.assembly.prefix}${openjpa.assembly.sourceSuffix}</openjpa.assembly.sourceBase>
-        <openjpa.assembly.sourceFile>${openjpa.assembly.sourceBase}.zip</openjpa.assembly.sourceFile>
+        <openjpa.assembly.binaryName>${openjpa.assembly.finalName}-binary</openjpa.assembly.binaryName>
+        <openjpa.assembly.sourceName>${openjpa.assembly.finalName}-source</openjpa.assembly.sourceName>
 
         <site.docs.folder>${project.build.directory}/site/docs</site.docs.folder>
 
@@ -73,49 +63,12 @@
         <jruby.version>9.4.12.0</jruby.version>
         <local.repository>${settings.localRepository}</local.repository>
 
-        <!--
-            Java imaging apis are needed to include images in a PDF.
-            //X THAT seems not to be true anymore with the new dockbkx plugin!
-            JIMI or JAI may be used. Neither is available in a maven
-            repository and should be downloaded and installed manually
-            to your local repository.
-
-            JAI can be found here:
-            http://download.java.net/media/jai/builds/release/1_1_3/
-
-            ie :
-            $ mvn install:install-file -Dfile=jai_core.jar \
-              -DgroupId=com.sun -DartifactId=jai_core \
-              -Dversion=1.1.3 -Dpackaging=jar
-            $ mvn install:install-file -Dfile=jai_codec.jar \
-              -DgroupId=com.sun -DartifactId=jai_codec \
-              -Dpackaging=jar -Dversion=1.1.3
-
-            Alternatively if you have installed the JAI artifacts to an
-            internal repository you can specify it on the command line:
-              -Djai.maven.repo=REPOS_URL
-              -Djai.groupId=com.sun
-            -->
-        <jai.maven.repo>https://m2proxy.atlassian.com/repository/public</jai.maven.repo>
-        <jai.groupId>com.sun</jai.groupId>
-        <jai.version>1.1.3</jai.version>
-
         <checkstyle.suppressions.location>suppressions.xml</checkstyle.suppressions.location>
     </properties>
 
     <build>
         <!-- needed to let maven pass the "compile" phase -->
         <testSourceDirectory>/none/</testSourceDirectory>
-
-        <!-- filter site resources -->
-        <resources>
-            <resource>
-                <directory>${project.basedir}/src/site</directory>
-                <!-- targetPath is relative to target/classes/ -->
-                <targetPath>../filtered-site</targetPath>
-                <filtering>false</filtering>
-            </resource>
-        </resources>
 
         <plugins>
             <plugin>
@@ -124,82 +77,6 @@
                 <configuration>
                     <skip>true</skip>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>bin</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>assembly.xml</descriptor>
-                                <descriptor>source-assembly.xml</descriptor>
-                                <descriptor>bin-assembly.xml</descriptor>
-                            </descriptors>
-                            <outputDirectory>${openjpa.assembly.outputDirectory}</outputDirectory>
-                            <workDirectory>target/work</workDirectory>
-                            <skipAssembly>${skip-bin-assembly}</skipAssembly>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!--
-                Copy over site files from src/site to target/filtered-site
-                so we can filter resources and include other generated
-                content from the openjpa-project module.
-            -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>place-docs</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${site.docs.folder}</outputDirectory>
-                            <changeDetection>always</changeDetection>
-                            <resources>
-                                <resource>
-                                    <directory>${docbook.gen.base.folder}</directory>
-                                    <filtering>false</filtering>
-                                    <excludes>
-                                        <exclude>css/**</exclude>
-                                        <exclude>img/**</exclude>
-                                        <exclude>**/*.xsl</exclude>
-                                        <exclude>**/*.graffle</exclude>
-                                    </excludes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>place-apidocs</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${site.docs.folder}/javadoc</outputDirectory>
-                            <changeDetection>always</changeDetection>
-                            <resources>
-                                <resource>
-                                    <directory>${project.parent.build.directory}/reports/apidocs</directory>
-                                    <filtering>false</filtering>
-                                </resource>
-                                <resource></resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
@@ -215,6 +92,110 @@
             <build>
                 <plugins>
                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <configuration>
+                            <outputDirectory>${openjpa.assembly.outputDirectory}</outputDirectory>
+                            <workDirectory>target/work</workDirectory>
+                            <skipAssembly>${skip-bin-assembly}</skipAssembly>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <attach>false</attach>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>bin</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <finalName>${openjpa.assembly.binaryName}</finalName>
+                                    <descriptors>
+                                        <descriptor>src/assembly/assembly.xml</descriptor>
+                                    </descriptors>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>bin-nodocs</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <finalName>${openjpa.assembly.binaryName}-nodocs</finalName>
+                                    <descriptors>
+                                        <descriptor>src/assembly/bin-assembly.xml</descriptor>
+                                    </descriptors>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>source</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <finalName>${openjpa.assembly.sourceName}</finalName>
+                                    <descriptors>
+                                        <descriptor>src/assembly/source-assembly.xml</descriptor>
+                                    </descriptors>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!--
+                        Copy over site files from src/site to target/filtered-site
+                        so we can filter resources and include other generated
+                        content from the openjpa-project module.
+                    -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>place-docs</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${site.docs.folder}</outputDirectory>
+                                    <changeDetection>always</changeDetection>
+                                    <resources>
+                                        <resource>
+                                            <directory>${docbook.gen.base.folder}</directory>
+                                            <filtering>false</filtering>
+                                            <excludes>
+                                                <exclude>css/**</exclude>
+                                                <exclude>img/**</exclude>
+                                                <exclude>**/*.xsl</exclude>
+                                                <exclude>**/*.graffle</exclude>
+                                            </excludes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>place-apidocs</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${site.docs.folder}/javadoc</outputDirectory>
+                                    <changeDetection>always</changeDetection>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.parent.build.directory}/site/apidocs</directory>
+                                            <filtering>false</filtering>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>build-helper-maven-plugin</artifactId>
                         <version>3.6.2</version>
@@ -228,6 +209,32 @@
                                 <configuration>
                                     <name>current.year</name>
                                     <pattern>yyyy</pattern>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>attach-zips</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>attach-artifact</goal>
+                                </goals>
+                                <configuration>
+                                    <artifacts>
+                                        <artifact>
+                                            <file>${openjpa.assembly.outputDirectory}/${openjpa.assembly.binaryName}.zip</file>
+                                            <type>zip</type>
+                                            <classifier>binary</classifier>
+                                        </artifact>
+                                        <artifact>
+                                            <file>${openjpa.assembly.outputDirectory}/${openjpa.assembly.binaryName}.zip</file>
+                                            <type>zip</type>
+                                            <classifier>binary-nodocs</classifier>
+                                        </artifact>
+                                        <artifact>
+                                            <file>${openjpa.assembly.outputDirectory}/${openjpa.assembly.sourceName}.zip</file>
+                                            <type>zip</type>
+                                            <classifier>source</classifier>
+                                        </artifact>
+                                    </artifacts>
                                 </configuration>
                             </execution>
                         </executions>
@@ -368,6 +375,66 @@
                     <url>mavengem:https://rubygems.org</url>
                 </repository>
             </repositories>
+        </profile>
+        <profile>
+            <id>create-checksums</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>net.nicoulaj.maven.plugins</groupId>
+                        <artifactId>checksum-maven-plugin</artifactId>
+                        <version>1.11</version>
+                        <executions>
+                            <execution>
+                                <id>calculate-checksums</id>
+                                <goals>
+                                    <goal>files</goal>
+                                </goals>
+                                <phase>package</phase>
+                                <configuration>
+                                    <individualFiles>true</individualFiles>
+                                    <appendFilename>true</appendFilename>
+                                    <algorithms>
+                                        <algorithm>SHA-512</algorithm>
+                                    </algorithms>
+                                    <fileSets>
+                                        <fileSet>
+                                            <directory>${openjpa.assembly.outputDirectory}</directory>
+                                            <includes>
+                                                <include>${openjpa.assembly.binaryName}.zip</include>
+                                                <include>${openjpa.assembly.binaryName}-nodocs.zip</include>
+                                                <include>${openjpa.assembly.sourceName}.zip</include>
+                                            </includes>
+                                        </fileSet>
+                                    </fileSets>
+                                    <csvSummary>false</csvSummary>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>package</phase>
+                                <configuration>
+                                    <ascDirectory>${openjpa.assembly.outputDirectory}</ascDirectory>
+                                </configuration>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 

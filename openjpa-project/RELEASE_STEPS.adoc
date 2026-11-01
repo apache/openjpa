@@ -21,16 +21,19 @@ These instructions describe how perform an official release of the Apache OpenJP
 * Make sure you have the latest version checked out and no local modifications
  $> git pull --rebase
  $> git status
- This should not show any dirty files
+
+This should not show any dirty files
 
 * Run a full build
  $> mvn clean install
+
+This should should any build errors
 
 == Update the Release Notes
 Edit openjpa-project/RELEASE-NOTES.html and add a new section for the new release.
 Just remove all the bug content from the previous release.
 
-Make sure all the ticets for the upcoming release are set to resolved
+Make sure all the tickets for the upcoming release are set to resolved
 You can grab the content for the new release at
 https://issues.apache.org/jira/browse/OPENJPA/?selectedTab=com.atlassian.jira.jira-projects-plugin:versions-panel
 Just copy over the html content for the generated ReleaseNotes.
@@ -66,7 +69,15 @@ $> mvn release:perform
 
 This will finally do a clean checkout from the freshly generated tag and
 
+=== Build Documentation and Release assemblies
 
+First step will build aggregated javadocs
+
+$> mvn site
+
+Second step will build proper zip archives and upload them to Maven
+
+$> mvn deploy -Dbuilddocs -DperformRelease -f openjpa-project/
 
 == Verifying the Maven Staging Repository
 

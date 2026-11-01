@@ -204,23 +204,6 @@
             </properties>
         </profile>
 
-        <profile>
-            <id>sign-release</id>
-            <activation>
-                <property>
-                    <name>sign-release</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
         <!--
             Generate the documentation using the YDoc UML generation plugin.
             Assumes you have the YDoc libraries locally, as well as a valid
@@ -250,6 +233,9 @@
 
         <profile>
             <id>site-profile</id>
+            <properties>
+                <skipTests>true</skipTests>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -1974,7 +1960,7 @@
                         <preparationGoals>clean install</preparationGoals>
 
                         <goals>deploy</goals>
-                        <arguments>-Papache-release,docbook-profile,test-derby,bval</arguments>
+                        <arguments>-Papache-release,test-derby,bval</arguments>
                         <autoVersionSubmodules>true</autoVersionSubmodules>
 
                         <!-- special config for git -->
@@ -2044,12 +2030,6 @@
                     <groupId>org.apache.openjpa</groupId>
                     <artifactId>openjpa-maven-plugin</artifactId>
                     <version>${project.version}</version>
-                </plugin>
-
-                <plugin>
-                    <groupId>com.agilejava.docbkx</groupId>
-                    <artifactId>docbkx-maven-plugin</artifactId>
-                    <version>2.0.17</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -2205,13 +2185,15 @@
                     <quiet>true</quiet>
                     <release>${java.class.version}</release>
                     <links>
-                        <link>https://docs.oracle.com/en/java/javase/11/docs/api/</link>
+                        <link>https://docs.oracle.com/en/java/javase/17/docs/api/</link>
                     </links>
                 </configuration>
                 <reportSets>
                     <reportSet>
+                        <id>aggregate</id>
+                        <inherited>false</inherited>
                         <reports>
-                            <report>javadoc-no-fork</report>
+                            <report>aggregate-no-fork</report>
                         </reports>
                     </reportSet>
                 </reportSets>
