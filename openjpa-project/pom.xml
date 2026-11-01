@@ -225,7 +225,7 @@
                                             <classifier>binary</classifier>
                                         </artifact>
                                         <artifact>
-                                            <file>${openjpa.assembly.outputDirectory}/${openjpa.assembly.binaryName}.zip</file>
+                                            <file>${openjpa.assembly.outputDirectory}/${openjpa.assembly.binaryName}-nodocs.zip</file>
                                             <type>zip</type>
                                             <classifier>binary-nodocs</classifier>
                                         </artifact>
@@ -393,7 +393,7 @@
                             <execution>
                                 <id>calculate-checksums</id>
                                 <goals>
-                                    <goal>files</goal>
+                                    <goal>artifacts</goal>
                                 </goals>
                                 <phase>package</phase>
                                 <configuration>
@@ -402,16 +402,6 @@
                                     <algorithms>
                                         <algorithm>SHA-512</algorithm>
                                     </algorithms>
-                                    <fileSets>
-                                        <fileSet>
-                                            <directory>${openjpa.assembly.outputDirectory}</directory>
-                                            <includes>
-                                                <include>${openjpa.assembly.binaryName}.zip</include>
-                                                <include>${openjpa.assembly.binaryName}-nodocs.zip</include>
-                                                <include>${openjpa.assembly.sourceName}.zip</include>
-                                            </includes>
-                                        </fileSet>
-                                    </fileSets>
                                     <csvSummary>false</csvSummary>
                                 </configuration>
                             </execution>
