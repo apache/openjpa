@@ -1970,7 +1970,7 @@
                                     the jar doesn't end in the local m2 repo. It will only be in the opanjpa-all/target folder.
                                     For now I forced an 'install', but we should ultimately just fix the openbooks example.
                                 -->
-                                <goals>clean install</goals>
+                                <preparationGoals>clean install</preparationGoals>
                                 <arguments>-DskipTests</arguments>
                             </configuration>
                         </execution>

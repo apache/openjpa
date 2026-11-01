@@ -193,6 +193,27 @@
                                     </resources>
                                 </configuration>
                             </execution>
+                            <execution>
+                                <id>place-schemas</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${site.docs.folder}/schema</outputDirectory>
+                                    <changeDetection>always</changeDetection>
+                                    <resources>
+                                        <resource>
+                                            <directory>../openjpa-persistence/target/classes/org/apache/openjpa/persistence</directory>
+                                            <filtering>false</filtering>
+                                            <includes>
+                                                <include>extendable-orm.xsd</include>
+                                                <include>openjpa-orm.xsd</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
                         </executions>
                     </plugin>
                     <plugin>

@@ -28,4 +28,13 @@
         <componentDescriptor>src/assembly/components/notice.xml</componentDescriptor>
         <componentDescriptor>src/assembly/components/binaries.xml</componentDescriptor>
     </componentDescriptors>
+    <fileSets>
+        <fileSet>
+            <directory>target/site/docs</directory>
+            <outputDirectory>docs</outputDirectory>
+            <includes>
+                <include>schema/*</include>
+            </includes>
+        </fileSet>
+    </fileSets>
 </assembly>

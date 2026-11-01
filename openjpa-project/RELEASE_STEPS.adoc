@@ -27,7 +27,7 @@ This should not show any dirty files
 * Run a full build
  $> mvn clean install
 
-This should should any build errors
+This should show any possible build errors
 
 == Update the Release Notes
 Edit openjpa-project/RELEASE-NOTES.html and add a new section for the new release.
@@ -50,7 +50,7 @@ http://maven.apache.org/maven-release/maven-release-plugin/
 
 === Running the release prepare steps
 
-$> mvn release:prepare
+$> mvn release:prepare@release-prepare
 
 Depending on your location you probably get an error for the first time.
 This happens if you hit a svn mirror which is not updated quickly enough.
@@ -65,7 +65,7 @@ Please verify that the tag looks good and that all pom.xml files really got upda
 
 === Running the release perform steps
 
-$> mvn release:perform
+$> mvn release:perform@release-perform
 
 This will finally do a clean checkout from the freshly generated tag and
 
