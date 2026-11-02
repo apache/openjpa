@@ -50,6 +50,28 @@
                             <addBundlesToPrimaryFeature>false</addBundlesToPrimaryFeature>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>verify</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>mvn:org.apache.karaf.features/framework/${karaf.version}/xml/features</descriptor>
+                                <descriptor>file:${project.build.directory}/feature/feature.xml</descriptor>
+                            </descriptors>
+                            <distribution>org.apache.karaf.features:framework</distribution>
+                            <javase>17</javase>
+                            <framework>
+                                <feature>framework</feature>
+                            </framework>
+                            <features>
+                                <feature>openjpa</feature>
+                            </features>
+                            <verifyTransitive>false</verifyTransitive>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -76,5 +98,22 @@
             </plugin>
         </plugins>
     </build>
+
+    <dependencies>
+        <!-- built before this module, so karaf:verify can resolve the bundle -->
+        <dependency>
+            <groupId>org.apache.openjpa</groupId>
+            <artifactId>openjpa</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.features</groupId>
+            <artifactId>framework</artifactId>
+            <version>${karaf.version}</version>
+            <type>kar</type>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 
 </project>

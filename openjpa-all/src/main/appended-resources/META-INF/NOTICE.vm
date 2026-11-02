@@ -18,15 +18,11 @@
 ##
 
 openjpa-all includes software developed by the:
-    Apache Commons Collections project
-    Apache Commons Collections project
+    Apache BVal project
     Apache Commons DBCP project
-    Apache Commons Lang project
     Apache Commons Logging project
     Apache Commons Pool project
-    Apache Geronimo project
-        Java EE Specs - JMS 1.1, JTA 1.1, Bean Validation 1.0 and JPA 2.0
-    SERP project
+    Apache XBean project
 
 
 The following copyright notice(s) were affixed to portions of this code

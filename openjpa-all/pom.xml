@@ -106,7 +106,7 @@
                                         <Implementation-Title>Apache OpenJPA Aggregate JAR with dependencies</Implementation-Title>
                                         <Specification-Title>Jakarta Persistence</Specification-Title>
                                         <Specification-Vendor>Eclipse Foundation</Specification-Vendor>
-                                        <Specification-Version>3.0</Specification-Version>
+                                        <Specification-Version>3.2</Specification-Version>
                                     </manifestEntries>
                                 </transformer>
                             </transformers>
