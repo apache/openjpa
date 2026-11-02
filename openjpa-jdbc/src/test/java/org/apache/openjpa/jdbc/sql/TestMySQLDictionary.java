@@ -138,4 +138,11 @@ public class TestMySQLDictionary {
         assertEquals("WEEK({1}, 3)", dict.getExtractDateTimeFieldFunction(DateTimeExtractField.WEEK));
         assertEquals("EXTRACT(DAY FROM {1})", dict.getExtractDateTimeFieldFunction(DateTimeExtractField.DAY));
     }
+
+    @Test
+    public void testExtractSecondKeepsFraction() {
+        DBDictionary dict = new MySQLDictionary();
+        assertEquals("(EXTRACT(SECOND FROM {1}) + EXTRACT(MICROSECOND FROM {1}) / 1000000.0)",
+            dict.getExtractDateTimeFieldFunction(DateTimeExtractField.SECOND));
+    }
 }

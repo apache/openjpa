@@ -20,6 +20,8 @@ package org.apache.openjpa.persistence.simple;
 
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.H2Dictionary;
+import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
+import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -287,7 +289,9 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
 
     public void testExtractSecondKeepsFractionFromColumns() {
-        if (!(getDbDictionary(emf) instanceof H2Dictionary)) {
+        DBDictionary dict = getDbDictionary(emf);
+        if (!(dict instanceof H2Dictionary || dict instanceof MySQLDictionary
+            || dict instanceof MariaDBDictionary)) {
             // the default column types of other databases may drop the fraction of a second
             return;
         }

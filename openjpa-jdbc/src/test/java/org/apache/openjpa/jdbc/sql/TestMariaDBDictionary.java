@@ -260,6 +260,13 @@ public class TestMariaDBDictionary {
         assertEquals("EXTRACT(DAY FROM {1})", dict.getExtractDateTimeFieldFunction(DateTimeExtractField.DAY));
     }
 
+    @Test
+    public void testExtractSecondKeepsFraction() {
+        DBDictionary dict = newConfiguredDictionary(null);
+        assertEquals("(EXTRACT(SECOND FROM {1}) + EXTRACT(MICROSECOND FROM {1}) / 1000000.0)",
+            dict.getExtractDateTimeFieldFunction(DateTimeExtractField.SECOND));
+    }
+
     private static Sequence sequence() {
         Schema schema = new Schema();
         Sequence seq = new Sequence(DBIdentifier.newSequence("OJPA3014_SEQ"), schema);
