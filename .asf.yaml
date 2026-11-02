@@ -14,13 +14,13 @@
 # limitations under the License.
 
 github:
-  description: "Apache Wicket - Java persistence project"
+  description: "Apache OpenJPA - Java persistence project"
   homepage: https://openjpa.apache.org/
   labels:
     - apache
     - java
-    - Java EE
-    - JPA
+    - jakarta-ee
+    - jpa
 
   rulesets:
     - name: "Default Branch Protection"
