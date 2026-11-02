@@ -640,6 +640,14 @@ To draw from that sequence, configure the query - see <<jpa_4.2_SequenceGenerato
 
 Identity column sequences (``ISEQ$$_*``) are treated as system sequences and excluded from drop actions, `AUDSYS` is treated as a system schema, an `@Index` duplicating the primary key is skipped, `CEILING()` is translated to ``CEIL()``, and the new Jakarta Persistence 3.2 functions are mapped to Oracle syntax (``EXCEPT`` as `MINUS` before Oracle 21, ``LEFT``/``RIGHT`` via ``SUBSTR``). These are fixes; workarounds for the old behavior can be removed.
 
+[[jpa_4.2_H2BigInteger]]
+==== BigInteger columns on H2
+
+On H2 a [class]``BigInteger`` attribute now gets a `NUMERIC` column instead of a `BIGINT` column, and so does a foreign key referencing a [class]``BigInteger`` primary key (OPENJPA-3058).
+A `BIGINT` column cannot hold a value with more than 19 digits, so storing such a value failed with ``Numeric value out of range``.
+Tables created by earlier releases are not altered by the mapping tool or `SynchronizeMappings` and keep their `BIGINT` columns, which still work for values in the range of a `long`.
+To store larger values, alter the columns, for example ``ALTER TABLE ACCOUNT ALTER COLUMN BALANCE SET DATA TYPE NUMERIC``, including the foreign key columns that reference a [class]``BigInteger`` primary key.
+
 [[jpa_4.2_HSQLDB]]
 ==== HSQLDB
 
