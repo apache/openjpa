@@ -888,6 +888,23 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
                 }
             }
         }
+        // the ON condition of a join is reached through the root the join is made from or,
+        // in a subquery, through the correlated join it is made from
+        if (_roots != null) {
+            for (Root<?> root : _roots) {
+                if (root instanceof CriteriaExpression criteriaRoot) {
+                    criteriaRoot.acceptVisit(visitor);
+                }
+            }
+        }
+        SubqueryImpl<?> delegator = getDelegator();
+        if (delegator != null) {
+            for (Join<?,?> corrJoin : delegator.getCorrelatedJoins()) {
+                if (corrJoin instanceof CriteriaExpression criteriaJoin) {
+                    criteriaJoin.acceptVisit(visitor);
+                }
+            }
+        }
 
         if (_subqueries != null) {
             for (Subquery<?> subq : _subqueries) {
