@@ -89,6 +89,7 @@
         <javadoc.additionalparam />
 
         <xbean.version>5.0.0</xbean.version>
+        <karaf.version>4.4.12</karaf.version>
         <bval.version>3.1.0</bval.version>
         <log4j2.version>2.26.1</log4j2.version>
         <ant.version>1.10.18</ant.version>
@@ -2036,7 +2037,7 @@
                 <plugin>
                     <groupId>org.apache.karaf.tooling</groupId>
                     <artifactId>karaf-maven-plugin</artifactId>
-                    <version>4.4.12</version>
+                    <version>${karaf.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
