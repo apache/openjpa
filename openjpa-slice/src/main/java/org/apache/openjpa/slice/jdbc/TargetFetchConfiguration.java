@@ -52,13 +52,17 @@ public class TargetFetchConfiguration extends JDBCFetchConfigurationImpl impleme
     @Override
     public void setHint(String key, Object value) {
         super.setHint(key, value);
-        _explicitTarget = SlicePersistence.HINT_TARGET.equals(key);
+        if (SlicePersistence.HINT_TARGET.equals(key)) {
+            _explicitTarget = true;
+        }
     }
 
     @Override
     public void setHint(String key, Object value, Object original) {
         super.setHint(key, value, original);
-        _explicitTarget = SlicePersistence.HINT_TARGET.equals(key);
+        if (SlicePersistence.HINT_TARGET.equals(key)) {
+            _explicitTarget = true;
+        }
     }
 
     public void setTargets(String[] targets) {
