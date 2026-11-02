@@ -42,11 +42,11 @@ public class TestArithmeticResultType extends SingleEMFTestCase {
 
     @Override
     public void setUp() {
-        super.setUp(CLEAR_TABLES, NumericOperands.class);
+        super.setUp(DROP_TABLES, NumericOperands.class);
         cb = emf.getCriteriaBuilder();
         em = emf.createEntityManager();
         em.getTransaction().begin();
-        em.persist(new NumericOperands(1, 7, 3, (short) 2, 10L, 4L, new BigDecimal("2")));
+        em.persist(new NumericOperands(1, 7, 3, (short) 2, 10L, 4L, new BigDecimal("2.5")));
         em.getTransaction().commit();
         em.clear();
     }
@@ -94,10 +94,10 @@ public class TestArithmeticResultType extends SingleEMFTestCase {
         assertResult(Long.valueOf(28), r -> cb.prod(r.<Integer> get("intA"), r.<Long> get("longB")));
         assertResult(Long.valueOf(12), r -> cb.sum(r.<Integer> get("intA"), 5L));
         assertResult(Long.valueOf(-2), r -> cb.diff(5L, r.<Integer> get("intA")));
-        assertDecimal(new BigDecimal("9"), r -> cb.sum(r.<Integer> get("intA"), r.<BigDecimal> get("decA")));
-        assertDecimal(new BigDecimal("9"), r -> cb.sum(r.<BigDecimal> get("decA"), r.<Integer> get("intA")));
-        assertDecimal(new BigDecimal("-2"), r -> cb.neg(r.<BigDecimal> get("decA")));
-        assertDecimal(new BigDecimal("20"), r -> cb.prod(r.<Long> get("longA"), r.<BigDecimal> get("decA")));
+        assertDecimal(new BigDecimal("9.5"), r -> cb.sum(r.<Integer> get("intA"), r.<BigDecimal> get("decA")));
+        assertDecimal(new BigDecimal("9.5"), r -> cb.sum(r.<BigDecimal> get("decA"), r.<Integer> get("intA")));
+        assertDecimal(new BigDecimal("-2.5"), r -> cb.neg(r.<BigDecimal> get("decA")));
+        assertDecimal(new BigDecimal("25"), r -> cb.prod(r.<Long> get("longA"), r.<BigDecimal> get("decA")));
         assertEquals(BigDecimal.class,
             select(r -> cb.quot(r.<Integer> get("intA"), r.<BigDecimal> get("decA"))).getClass());
         assertResult(Double.valueOf(9.5), r -> cb.sum(r.<Integer> get("intA"), 2.5));
@@ -126,7 +126,7 @@ public class TestArithmeticResultType extends SingleEMFTestCase {
         assertValue(Long.valueOf(7), row[4]);
         assertValue(Integer.valueOf(2), row[5]);
         assertEquals(BigDecimal.class, row[6].getClass());
-        assertEquals("value " + row[6], 0, new BigDecimal("5").compareTo((BigDecimal) row[6]));
+        assertEquals("value " + row[6], 0, new BigDecimal("5.5").compareTo((BigDecimal) row[6]));
 
         row = (Object[]) em.createQuery("SELECT n.shortA + n.shortA, n.shortA - n.shortA, "
             + "n.shortA * n.shortA, n.shortA / n.shortA, n.shortA + n.intA FROM NumericOperands n")

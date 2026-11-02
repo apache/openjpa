@@ -35,11 +35,11 @@ public class TestUnarySign extends SingleEMFTestCase {
 
     @Override
     public void setUp() {
-        super.setUp(CLEAR_TABLES, SignedOperands.class);
+        super.setUp(DROP_TABLES, SignedOperands.class);
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
-            em.persist(new SignedOperands(1, 7, 3, (short) 2, 10L, new BigDecimal("25"), 1.5));
-            em.persist(new SignedOperands(2, -4, 5, (short) -3, -20L, new BigDecimal("-15"), -0.5));
+            em.persist(new SignedOperands(1, 7, 3, (short) 2, 10L, new BigDecimal("25.5"), 1.5));
+            em.persist(new SignedOperands(2, -4, 5, (short) -3, -20L, new BigDecimal("-15.5"), -0.5));
             em.getTransaction().commit();
         }
     }
@@ -51,7 +51,7 @@ public class TestUnarySign extends SingleEMFTestCase {
         assertValue(Integer.valueOf(-3), row[1]);
         assertValue(Integer.valueOf(-2), row[2]);
         assertValue(Long.valueOf(-10), row[3]);
-        assertDecimal(new BigDecimal("-25"), row[4]);
+        assertDecimal(new BigDecimal("-25.5"), row[4]);
         assertValue(Double.valueOf(-1.5), row[5]);
     }
 
@@ -59,7 +59,7 @@ public class TestUnarySign extends SingleEMFTestCase {
         Object[] row = single("SELECT +n.intA, +n.longA, +n.decA FROM SignedOperands n WHERE n.id = 1");
         assertValue(Integer.valueOf(7), row[0]);
         assertValue(Long.valueOf(10), row[1]);
-        assertDecimal(new BigDecimal("25"), row[2]);
+        assertDecimal(new BigDecimal("25.5"), row[2]);
     }
 
     public void testUnaryMinusOnNegativeValue() {
@@ -127,7 +127,7 @@ public class TestUnarySign extends SingleEMFTestCase {
                 .setParameter("value", -1.5d).getResultList());
             assertEquals(List.of(2L), em.createQuery("SELECT n.id FROM SignedOperands n "
                 + "WHERE n.decA = -:value", Long.class)
-                .setParameter("value", new BigDecimal("15")).getResultList());
+                .setParameter("value", new BigDecimal("15.5")).getResultList());
             assertEquals(List.of(), em.createQuery("SELECT n.id FROM SignedOperands n "
                 + "WHERE n.decA = -:value", Long.class)
                 .setParameter("value", new BigDecimal("15.4")).getResultList());
@@ -170,7 +170,7 @@ public class TestUnarySign extends SingleEMFTestCase {
             assertValue(Integer.valueOf(-7), row[0]);
             assertValue(Integer.valueOf(-2), row[1]);
             assertValue(Long.valueOf(-10), row[2]);
-            assertDecimal(new BigDecimal("-25"), row[3]);
+            assertDecimal(new BigDecimal("-25.5"), row[3]);
             assertValue(Double.valueOf(-1.5), row[4]);
             assertValue(Integer.valueOf(-10), row[5]);
             assertValue(Integer.valueOf(7), row[6]);
