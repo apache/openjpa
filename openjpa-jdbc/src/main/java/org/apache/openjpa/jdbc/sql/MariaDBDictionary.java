@@ -25,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Types;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -202,14 +203,35 @@ public class MariaDBDictionary extends DBDictionary {
 
     /**
      * EXTRACT(WEEK) counts weeks from Sunday; mode 3 of WEEK gives the ISO week
-     * that JPA defines.
+     * that JPA defines. EXTRACT(SECOND) returns the whole seconds only; the
+     * fraction of the second that JPA includes is added from
+     * EXTRACT(MICROSECOND).
      */
     @Override
     public String getExtractDateTimeFieldFunction(DateTimeExtractField extField) {
         if (extField == DateTimeExtractField.WEEK) {
             return "WEEK({1}, 3)";
         }
+        if (extField == DateTimeExtractField.SECOND) {
+            return "(" + super.getExtractDateTimeFieldFunction(extField) + " + "
+                + extractDateTimeFieldFunction.replace("{0}", "MICROSECOND") + " / 1000000.0)";
+        }
         return super.getExtractDateTimeFieldFunction(extField);
+    }
+
+    /**
+     * {@link java.sql.Time} has no fraction of a second, so a {@link LocalTime}
+     * is passed to and read from the driver as it is, keeping the fraction that
+     * a <code>TIME(6)</code> column or <code>EXTRACT(SECOND)</code> holds.
+     */
+    @Override
+    public void setLocalTime(PreparedStatement stmnt, int idx, LocalTime val, Column col) throws SQLException {
+        stmnt.setObject(idx, val);
+    }
+
+    @Override
+    public LocalTime getLocalTime(ResultSet rs, int column) throws SQLException {
+        return rs.getObject(column, LocalTime.class);
     }
 
     @Override

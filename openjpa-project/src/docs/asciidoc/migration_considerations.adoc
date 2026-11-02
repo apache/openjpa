@@ -613,6 +613,8 @@ MariaDB 10.2 and earlier keep the sequence table fallback described in <<jpa_4.2
 `EXTRACT(WEEK FROM ...)` now returns the ISO week, as the specification defines it, by rendering ``WEEK(x, 3)``.
 Before, MySQL and MariaDB computed it with weeks starting on Sunday, so queries on such dates return different values: for example 2024-01-01 is now week 1 instead of 0, and 2023-12-31 is week 52 instead of 53.
 A configured `ExtractDateTimeFieldFunction` no longer applies to `WEEK` on these databases.
+`EXTRACT(SECOND FROM ...)` now includes the fraction of the second, as the specification requires, by adding `EXTRACT(MICROSECOND FROM ...) / 1000000.0` to the whole seconds that MySQL and MariaDB return.
+A [class]``LocalTime`` (and so an [class]``OffsetTime``) is now passed to and read from the driver as such instead of as a [class]``java.sql.Time``, which has no fraction of a second, so its fraction is kept in parameters and in `TIME(6)` columns.
 
 Since the version is now parsed from the server's reply even when a driver that is not MariaDB aware passes it on with its `5.5.5-` replication compatibility prefix, such a deployment reaches the features gated on 10.2 as well: temporal columns are generated as `DATETIME(6)` rather than ``DATETIME``, as they already were for the same server reached through ``mariadb-java-client``.
 A schema created by an earlier release keeps whole-second `DATETIME` columns until they are altered, and reading them is unaffected.
