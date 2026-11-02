@@ -39,11 +39,12 @@ This product includes software developed by http://www.apache.org/[ The Apache S
 
 The openjpa-all aggregate JAR includes software developed by the:
 
-* Apache Commons Collections project
-* Apache Commons Lang project
+* Apache BVal project
+* Apache Commons DBCP project
 * Apache Commons Logging project
 * Apache Commons Pool project
-* Apache Geronimo project (JMS 1.1, JTA 1.1 and JPA 2.0 spec APIs)
+* Apache XBean project
+* Eclipse Jakarta EE projects (Persistence, Transactions, Messaging and Annotations APIs), included under the https://www.eclipse.org/legal/epl-2.0[Eclipse Public License v. 2.0]
 * JPA 3.2 schemas
 
 
