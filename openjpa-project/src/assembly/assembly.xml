@@ -22,29 +22,13 @@
     <formats>
         <format>zip</format>
     </formats>
+    <baseDirectory>${openjpa.assembly.finalName}</baseDirectory>
     <includeBaseDirectory>true</includeBaseDirectory>
+    <componentDescriptors>
+        <componentDescriptor>src/assembly/components/notice.xml</componentDescriptor>
+        <componentDescriptor>src/assembly/components/binaries.xml</componentDescriptor>
+    </componentDescriptors>
     <fileSets>
-        <fileSet>
-            <directory>target/aggregate</directory>
-            <outputDirectory>/</outputDirectory>
-        </fileSet>
-        <fileSet>
-            <includes>
-                <include>README</include>
-                <include>DISCLAIMER</include>
-                <include>LICENSE</include>
-                <include>STATUS</include>
-                <include>NOTICE</include>
-                <include>README.txt</include>
-                <include>DISCLAIMER.txt</include>
-                <include>STATUS.txt</include>
-                <include>RELEASE-NOTES</include>
-                <include>RELEASE-NOTES.html</include>
-                <include>RELEASE-NOTES.txt</include>
-                <include>CHANGES</include>
-                <include>CHANGES.txt</include>
-            </includes>
-        </fileSet>
         <!--
         <fileSet>
             <directory>licenses</directory>
@@ -61,14 +45,6 @@
         <fileSet>
             <directory>target/site/docs</directory>
             <outputDirectory>docs</outputDirectory>
-        </fileSet>
-        <fileSet>
-            <directory>../openjpa-persistence/target/classes/org/apache/openjpa/persistence</directory>
-            <outputDirectory>docs/schema</outputDirectory>
-            <includes>
-                <include>extendable-orm.xsd</include>
-                <include>openjpa-orm.xsd</include>
-            </includes>
         </fileSet>
         <fileSet>
             <directory>../openjpa-examples/image-gallery</directory>
@@ -111,34 +87,4 @@
             </excludes>
         </fileSet>
     </fileSets>
-    <dependencySets>
-        <dependencySet>
-            <outputDirectory>/</outputDirectory>
-            <unpack>false</unpack>
-            <scope>runtime</scope>
-            <includes>
-                <include>org.apache.openjpa:openjpa</include>
-                <include>org.apache.openjpa:openjpa-all</include>
-            </includes>
-        </dependencySet>
-        <dependencySet>
-            <outputDirectory>/lib</outputDirectory>
-            <unpack>false</unpack>
-            <scope>runtime</scope>
-            <includes>
-                <include>org.apache.derby:derby</include>
-
-                <include>org.apache.commons:commons-pool2</include>
-                <include>commons-logging:commons-logging</include>
-                <include>org.apache.commons:commons-dbcp2</include>
-
-                <include>org.apache.geronimo.specs:geronimo-jta_1.1_spec</include>
-                <include>org.apache.geronimo.specs:geronimo-jpa_2.2_spec</include>
-                <include>org.apache.geronimo.specs:geronimo-jms_1.1_spec</include>
-                <include>org.apache.geronimo.specs:geronimo-validation_1.0_spec</include>
-                <include>org.apache.bval:org.apache.bval.bundle</include>
-                <include>org.apache.xbean:xbean-asm9-shaded</include>
-            </includes>
-        </dependencySet>
-    </dependencySets>
 </assembly>
