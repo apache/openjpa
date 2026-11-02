@@ -46,6 +46,9 @@ class Sign
 
     @Override
     protected Object operate(Object o, Class c) {
+        if (o == null) {
+            return null;
+        }
         c = Filters.wrap(c);
         float value = 0;
         if (c == Integer.class || c == Float.class || c == Double.class || c == Long.class)

@@ -56,6 +56,9 @@ class Floor
 
     @Override
     protected Object operate(Object o, Class c) {
+        if (o == null) {
+            return null;
+        }
         c = Filters.wrap(c);
         if (c == Integer.class)
             return Math.floor(((Number) o).intValue());
