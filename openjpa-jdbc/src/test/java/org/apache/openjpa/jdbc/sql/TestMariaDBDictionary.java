@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.sql;
 
 import static org.apache.openjpa.jdbc.sql.Columns.column;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -265,6 +266,27 @@ public class TestMariaDBDictionary {
         DBDictionary dict = newConfiguredDictionary(null);
         assertEquals("(EXTRACT(SECOND FROM {1}) + EXTRACT(MICROSECOND FROM {1}) / 1000000.0)",
             dict.getExtractDateTimeFieldFunction(DateTimeExtractField.SECOND));
+    }
+
+    /**
+     * Before 11.1 MariaDB rejects a multi-table DELETE whose subquery reads
+     * the target table (error 1093), so the keys are matched in a derived
+     * table there (OPENJPA-3036).
+     */
+    @Test
+    public void testBulkTargetInSubselectFrom111() throws Exception {
+        for (String productVersion : new String[] { "10.11.19-MariaDB", "11.0.6-MariaDB",
+            "5.5.5-10.11.19-MariaDB" }) {
+            MariaDBDictionary dict = newConfiguredDictionary(null);
+            dict.connectedConfiguration(connection(productVersion));
+            assertFalse(productVersion, dict.allowsBulkTargetInSubselect);
+        }
+        for (String productVersion : new String[] { "11.1.6-MariaDB", "11.4.13-MariaDB-ubu2404",
+            "12.3.3-MariaDB-ubu2404" }) {
+            MariaDBDictionary dict = newConfiguredDictionary(null);
+            dict.connectedConfiguration(connection(productVersion));
+            assertTrue(productVersion, dict.allowsBulkTargetInSubselect);
+        }
     }
 
     private static Sequence sequence() {

@@ -616,6 +616,8 @@ A configured `ExtractDateTimeFieldFunction` no longer applies to `WEEK` on these
 `EXTRACT(SECOND FROM ...)` now includes the fraction of the second, as the specification requires, by adding `EXTRACT(MICROSECOND FROM ...) / 1000000.0` to the whole seconds that MySQL and MariaDB return.
 A [class]``LocalTime`` (and so an [class]``OffsetTime``) is now passed to and read from the driver as such instead of as a [class]``java.sql.Time``, which has no fraction of a second, so its fraction is kept in parameters and in `TIME(6)` columns.
 
+On MariaDB before 11.1, a bulk update or delete whose WHERE clause has a subquery on the target table now matches the primary keys of the affected rows in a derived table, as on MySQL (``AllowsBulkTargetInSubselect=false``), because these servers reject the multi-table `DELETE` that OpenJPA generates for it.
+
 Since the version is now parsed from the server's reply even when a driver that is not MariaDB aware passes it on with its `5.5.5-` replication compatibility prefix, such a deployment reaches the features gated on 10.2 as well: temporal columns are generated as `DATETIME(6)` rather than ``DATETIME``, as they already were for the same server reached through ``mariadb-java-client``.
 A schema created by an earlier release keeps whole-second `DATETIME` columns until they are altered, and reading them is unaffected.
 The version gate assigns `timestampTypeName` and `dateFractionDigits` outright, so a value configured in <<openjpa.jdbc.DBDictionary>> does not survive it; subclass [class]``MariaDBDictionary`` to generate the previous types.

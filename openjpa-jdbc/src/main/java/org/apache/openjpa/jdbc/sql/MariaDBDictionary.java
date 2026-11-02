@@ -271,6 +271,14 @@ public class MariaDBDictionary extends DBDictionary {
             fractionalTypeNameSet.add(timeTypeName);
         }
 
+        // Before 11.1 MariaDB rejects a multi-table DELETE - the form that
+        // requiresTargetForDelete produces - whose WHERE clause has a subquery
+        // that reads the target table (error 1093), so match the keys of the
+        // affected rows in a derived table as on MySQL (OPENJPA-3036).
+        if (maj < 11 || (maj == 11 && min < 1)) {
+            allowsBulkTargetInSubselect = false;
+        }
+
         // MariaDB 10.3 introduced sequence objects: CREATE SEQUENCE with
         // NEXTVAL()/NEXT VALUE FOR. Older servers have none, and a named
         // @SequenceGenerator falls back to a table sequence there
