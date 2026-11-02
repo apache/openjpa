@@ -47,7 +47,7 @@ public class SimpleCase extends Val {
             Object o2 = ((WhenScalar) exp).getVal1().
                     eval(candidate, orig, ctx, params);
             if (o1 != null && o2 != null) {
-                Class c = Filters.promote(o1.getClass(), o2.getClass());
+                Class c = Filters.promoteForComparison(o1.getClass(), o2.getClass());
                 o1 = Filters.convert(o1, c);
                 o2 = Filters.convert(o2, c);
             }
@@ -67,7 +67,7 @@ public class SimpleCase extends Val {
             Object o2 = ((WhenScalar) exp).getVal1().
                     eval(candidate, null, ctx, params);
             if (o1 != null && o2 != null) {
-                Class c = Filters.promote(o1.getClass(), o2.getClass());
+                Class c = Filters.promoteForComparison(o1.getClass(), o2.getClass());
                 o1 = Filters.convert(o1, c);
                 o2 = Filters.convert(o2, c);
             }

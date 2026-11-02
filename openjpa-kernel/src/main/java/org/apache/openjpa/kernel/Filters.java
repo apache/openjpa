@@ -25,6 +25,7 @@ import java.math.RoundingMode;
 import java.security.PrivilegedActionException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -200,6 +201,30 @@ public class Filters {
     }
 
     /**
+     * Given the types of two values that are compared, return the type they
+     * should both be converted to before the comparison. This is
+     * {@link #promote}, except that a java.time value compared to a
+     * java.util.Date is compared as the java.time type, and two different
+     * java.util.Date types are compared as timestamps if one of them is a
+     * timestamp and as plain dates otherwise.
+     */
+    public static Class<?> promoteForComparison(Class<?> c1, Class<?> c2) {
+        if (Temporal.class.isAssignableFrom(c1) && Date.class.isAssignableFrom(c2)) {
+            return c1;
+        }
+        if (Temporal.class.isAssignableFrom(c2) && Date.class.isAssignableFrom(c1)) {
+            return c2;
+        }
+        if (c1 != c2 && Date.class.isAssignableFrom(c1) && Date.class.isAssignableFrom(c2)) {
+            if (Timestamp.class.isAssignableFrom(c1) || Timestamp.class.isAssignableFrom(c2)) {
+                return Timestamp.class;
+            }
+            return Date.class;
+        }
+        return promote(c1, c2);
+    }
+
+    /**
      * Return whether the given type is not a standard persistent type.
      */
     private static boolean isNonstandardType(Class<?> c) {
@@ -322,6 +347,9 @@ public class Filters {
             else if (Date.class.isAssignableFrom(type) && o instanceof Calendar) {
                 return ((Calendar) o).getTime();
             }
+            else if (o instanceof Date && type == Timestamp.class) {
+                return new Timestamp(((Date) o).getTime());
+            }
             else if (Number.class.isAssignableFrom(type)) {
                 Integer i = null;
                 if (o instanceof Character) {
@@ -351,7 +379,7 @@ public class Filters {
                     if (o instanceof java.sql.Timestamp) {
                         return ((java.sql.Timestamp) o).toLocalDateTime();
                     } else if (o instanceof java.util.Date) {
-                        return ((java.util.Date)o).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+                        return toInstant((java.util.Date) o).atZone(ZoneId.systemDefault()).toLocalDateTime();
                     } else if (o instanceof CharSequence) {
                         return LocalDateTime.parse((CharSequence) o);
                     }
@@ -359,7 +387,7 @@ public class Filters {
                     if (o instanceof java.sql.Time) {
                         return ((java.sql.Time) o).toLocalTime();
                     } else if (o instanceof java.util.Date) {
-                        return ((java.util.Date)o).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+                        return toInstant((java.util.Date) o).atZone(ZoneId.systemDefault()).toLocalTime();
                     } else if (o instanceof CharSequence) {
                         return LocalTime.parse((CharSequence) o);
                     }
@@ -367,7 +395,7 @@ public class Filters {
                     if (o instanceof java.sql.Time) {
                         return ((java.sql.Time) o).toLocalTime().atOffset(OffsetDateTime.now().getOffset());
                     } else if (o instanceof java.util.Date) {
-                        return ((java.util.Date)o).toInstant().atZone(ZoneId.systemDefault()).toOffsetDateTime().toOffsetTime();
+                        return toInstant((java.util.Date) o).atZone(ZoneId.systemDefault()).toOffsetDateTime().toOffsetTime();
                     } else if (o instanceof CharSequence) {
                         return OffsetTime.parse((CharSequence) o);
                     }
@@ -375,7 +403,7 @@ public class Filters {
                     if (o instanceof java.sql.Timestamp) {
                         return ((java.sql.Timestamp) o).toInstant().atZone(ZoneId.systemDefault()).toOffsetDateTime();
                     } else if (o instanceof java.util.Date) {
-                        return ((java.util.Date)o).toInstant().atZone(ZoneId.systemDefault()).toOffsetDateTime();
+                        return toInstant((java.util.Date) o).atZone(ZoneId.systemDefault()).toOffsetDateTime();
                     } else if (o instanceof CharSequence) {
                         return OffsetDateTime.parse((CharSequence) o);
                     }
@@ -434,6 +462,14 @@ public class Filters {
         } else {
             throw new ClassCastException(_loc.get("cant-convert", o, o.getClass(), type).getMessage());
         }
+    }
+
+    /**
+     * The instant of the given date. java.sql.Date and java.sql.Time do not
+     * support {@link Date#toInstant}.
+     */
+    private static Instant toInstant(Date date) {
+        return (date instanceof Timestamp) ? date.toInstant() : Instant.ofEpochMilli(date.getTime());
     }
 
     private static boolean allowNumericConversion(Class<?> actual, Class<?> target, boolean strict) {
