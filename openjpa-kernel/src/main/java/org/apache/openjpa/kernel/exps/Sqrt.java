@@ -43,6 +43,9 @@ class Sqrt
 
     @Override
     protected Object operate(Object o, Class c) {
+        if (o == null) {
+            return null;
+        }
         return Math.sqrt(((Number) o).doubleValue());
     }
 }

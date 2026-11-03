@@ -58,9 +58,6 @@ import org.apache.openjpa.util.UserException;
  */
 public class Filters {
 
-    private static final BigDecimal ZERO_BIGDECIMAL = new BigDecimal(0D);
-    private static final BigInteger ZERO_BIGINTEGER = new BigInteger("0");
-
     private static final int OP_ADD = 0;
     private static final int OP_SUBTRACT = 1;
     private static final int OP_MULTIPLY = 2;
@@ -531,48 +528,34 @@ public class Filters {
     }
 
     /**
-     * Perform the given operation on two numbers.
+     * Perform the given operation on two numbers. As in SQL, the result is
+     * null if either number is null.
      */
     private static Object op(Object o1, Class<?> c1, Object o2, Class<?> c2, int op) {
+        if (o1 == null || o2 == null) {
+            return null;
+        }
         Class<?> promote = promote(c1, c2);
         if (promote == int.class) {
-            int n1 = (o1 == null) ? 0 : ((Number) o1).intValue();
-            int n2 = (o2 == null) ? 0 : ((Number) o2).intValue();
-            return op(n1, n2, op);
+            return op(((Number) o1).intValue(), ((Number) o2).intValue(), op);
         }
         if (promote == float.class) {
-            float n1 = (o1 == null) ? 0F : ((Number) o1).floatValue();
-            float n2 = (o2 == null) ? 0F : ((Number) o2).floatValue();
-            return op(n1, n2, op);
+            return op(((Number) o1).floatValue(), ((Number) o2).floatValue(), op);
         }
         if (promote == double.class) {
-            double n1 = (o1 == null) ? 0D : ((Number) o1).doubleValue();
-            double n2 = (o2 == null) ? 0D : ((Number) o2).doubleValue();
-            return op(n1, n2, op);
+            return op(((Number) o1).doubleValue(), ((Number) o2).doubleValue(), op);
         }
         if (promote == long.class) {
-            long n1 = (o1 == null) ? 0L : ((Number) o1).longValue();
-            long n2 = (o2 == null) ? 0L : ((Number) o2).longValue();
-            return op(n1, n2, op);
+            return op(((Number) o1).longValue(), ((Number) o2).longValue(), op);
         }
         if (promote == BigDecimal.class) {
-            BigDecimal n1 = (o1 == null) ? ZERO_BIGDECIMAL
-                : (BigDecimal) convert(o1, promote);
-            BigDecimal n2 = (o2 == null) ? ZERO_BIGDECIMAL
-                : (BigDecimal) convert(o2, promote);
-            return op(n1, n2, op);
+            return op((BigDecimal) convert(o1, promote), (BigDecimal) convert(o2, promote), op);
         }
         if (promote == BigInteger.class) {
-            BigInteger n1 = (o1 == null) ? ZERO_BIGINTEGER
-                : (BigInteger) convert(o1, promote);
-            BigInteger n2 = (o2 == null) ? ZERO_BIGINTEGER
-                : (BigInteger) convert(o2, promote);
-            return op(n1, n2, op);
+            return op((BigInteger) convert(o1, promote), (BigInteger) convert(o2, promote), op);
         }
         // default to int
-        int n1 = (o1 == null) ? 0 : ((Number) o1).intValue();
-        int n2 = (o2 == null) ? 0 : ((Number) o2).intValue();
-        return op(n1, n2, op);
+        return op(((Number) o1).intValue(), ((Number) o2).intValue(), op);
     }
 
     /**

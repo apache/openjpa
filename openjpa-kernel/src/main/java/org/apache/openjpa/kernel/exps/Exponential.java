@@ -42,6 +42,9 @@ class Exponential
 
     @Override
     protected Object operate(Object o, Class c) {
+        if (o == null) {
+            return null;
+        }
         return Math.exp(((Number) o).doubleValue());
     }
 }

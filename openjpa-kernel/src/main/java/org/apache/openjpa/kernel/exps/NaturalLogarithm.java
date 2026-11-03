@@ -42,6 +42,9 @@ class NaturalLogarithm
 
     @Override
     protected Object operate(Object o, Class c) {
+        if (o == null) {
+            return null;
+        }
         return Math.log(((Number) o).doubleValue());
     }
 }

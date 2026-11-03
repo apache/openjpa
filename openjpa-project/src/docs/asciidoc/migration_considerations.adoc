@@ -104,6 +104,16 @@ Relative precedence of the additive and the multiplicative operators is unchange
 Queries that relied on the previous grouping have to be parenthesized explicitly.
 No compatibility option exists.
 
+[[jpa_4.2_InMemoryNullArithmetic]]
+==== Arithmetic with null is null in memory
+
+A query evaluated in memory, for example over a candidate collection, or a bulk update executed in memory took a null operand of `+`, `-`, `*`, `/`, `MOD`, `POWER` and `ROUND` as zero, so `-e.intField` or `e.intField + 1` returned a number for a null field and a division by a null operand failed.
+As in the database, the result is now null, and `ABS`, `SQRT`, `SIGN`, `CEILING`, `FLOOR`, `EXP` and `LN` of null are null as well.
+A bulk update stores null instead of a number.
+A comparison with such a result is evaluated like a comparison with a null field: `=`, `<`, `>` and `BETWEEN` do not match, while `<>` matches, unlike in the database, because in memory `<>` is true when exactly one side is null.
+The public methods [method]``Filters.add``, [method]``subtract``, [method]``multiply``, [method]``divide``, [method]``mod``, [method]``power`` and [method]``round`` return null for a null argument.
+No compatibility option exists.
+
 [[jpa_4.2_QueryValueConversion]]
 ==== Query value conversion
 

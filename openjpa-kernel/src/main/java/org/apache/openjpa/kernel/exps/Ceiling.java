@@ -56,6 +56,9 @@ class Ceiling
 
     @Override
     protected Object operate(Object o, Class c) {
+        if (o == null) {
+            return null;
+        }
         c = Filters.wrap(c);
         if (c == Integer.class)
             return Math.ceil(((Number) o).intValue());

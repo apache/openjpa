@@ -1368,6 +1368,9 @@ public class JDBCStoreQuery
         org.apache.openjpa.jdbc.kernel.exps.Abs absVal =
             (org.apache.openjpa.jdbc.kernel.exps.Abs) value;
         Object val = getValue(absVal.getValue(), ob, params, sm);
+        if (val == null) {
+            return null;
+        }
         Class c = val.getClass();
         if (c == Integer.class)
             return Math.abs(((Integer) val).intValue());
@@ -1385,6 +1388,9 @@ public class JDBCStoreQuery
         org.apache.openjpa.jdbc.kernel.exps.Sqrt sqrtVal =
             (org.apache.openjpa.jdbc.kernel.exps.Sqrt) value;
         Object val = getValue(sqrtVal.getValue(), ob, params, sm);
+        if (val == null) {
+            return null;
+        }
         Class c = val.getClass();
         if (c == Integer.class)
             return Math.sqrt(((Integer) val).doubleValue());
