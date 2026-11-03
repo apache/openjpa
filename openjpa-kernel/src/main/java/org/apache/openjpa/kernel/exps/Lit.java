@@ -39,8 +39,26 @@ class Lit
      * Constructor. Provide constant value.
      */
     public Lit(Object val, int ptype) {
-        _val = val;
+        _val = toTemporal(val, ptype);
         _ptype = ptype;
+    }
+
+    /**
+     * A JDBC escape such as <code>{d '2021-01-03'}</code> is passed to the
+     * database as it is, but in memory it has to be the date, time or
+     * timestamp it stands for. Text that is not a valid escape is kept.
+     */
+    private static Object toTemporal(Object val, int ptype) {
+        if (!(val instanceof String)
+            || (ptype != TYPE_DATE && ptype != TYPE_TIME && ptype != TYPE_TIMESTAMP)) {
+            return val;
+        }
+        try {
+            Object temporal = Filters.parseJDBCTemporalSyntax((String) val);
+            return (temporal == null) ? val : temporal;
+        } catch (IllegalArgumentException e) {
+            return val;
+        }
     }
 
     @Override

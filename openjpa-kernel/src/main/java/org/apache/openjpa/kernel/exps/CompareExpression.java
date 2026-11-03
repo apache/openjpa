@@ -50,7 +50,7 @@ abstract class CompareExpression
         Object o1 = _val1.eval(candidate, orig, ctx, params);
         Object o2 = _val2.eval(candidate, orig, ctx, params);
         if (o1 != null && o2 != null) {
-            Class c = Filters.promote(o1.getClass(), o2.getClass());
+            Class c = Filters.promoteForComparison(o1.getClass(), o2.getClass());
             o1 = Filters.convert(o1, c);
             o2 = Filters.convert(o2, c);
         }
@@ -68,7 +68,7 @@ abstract class CompareExpression
             : c2.iterator().next();
 
         if (o1 != null && o2 != null) {
-            Class c = Filters.promote(o1.getClass(), o2.getClass());
+            Class c = Filters.promoteForComparison(o1.getClass(), o2.getClass());
             o1 = Filters.convert(o1, c);
             o2 = Filters.convert(o2, c);
         }
