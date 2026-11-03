@@ -81,12 +81,16 @@ The following example shows how to target a query only to a pair of slices with 
               }
 ----
 
+The target hint applies to bulk `UPDATE` and `DELETE` statements, in JPQL and in native SQL, in the same way as to queries: such a statement runs only on the hinted slices.
+If the hint names no active slice, the query fails with an exception instead of running on all slices.
+
 To confine queries to a subset of slices via setting query hints can be considered intrusive to existing application.
 The alternative means of targeting queries is to configure a __Query Target Policy__.
 This policy is configured via plug-in property [class]``openjpa.slice.QueryTargetPolicy``.
 The plug-in property is fully-qualified class name of an implementation for [class]``org.apache.openjpa.slice.QueryTargetPolicy`` interface.
 This interface contract allows a user application to target a query to a subset of slices based on the query and its bound parameters.
 The query target policy is consulted only when no explicit target hint is set on the query.
+It is consulted for bulk `UPDATE` and `DELETE` statements as well.
 By default, the policy executes a query on all available slices.
 
 A similar policy interface [class]``org.apache.openjpa.slice.FinderTargetPolicy`` is available to target queries that originate from [class]``find()`` by primary key.

@@ -182,6 +182,15 @@ Delete dependent entities explicitly (separate bulk deletes or ``em.remove()``) 
 A bulk `UPDATE` or `DELETE` that still has to be executed in memory now flushes the persistence context, which is described in <<jpa_4.2_InMemoryBulkFlush>>.
 See also <<jpa_langref_bulk_ops>>.
 
+[[jpa_4.2_SliceBulkTargets]]
+==== Slice target applies to bulk UPDATE and DELETE
+
+With Slice, a JPQL bulk `UPDATE` and a native SQL `UPDATE` or `DELETE` now run only on the slices named by the `openjpa.hint.slice.Target` hint, as queries and a JPQL bulk `DELETE` already did.
+Before, they ran on all slices.
+A configured `QueryTargetPolicy` is now consulted for all bulk statements too.
+A target hint that names no active slice now fails with an exception; before, the query ran on all slices.
+Without a target hint or policy, a statement still runs on all slices (OPENJPA-3057).
+
 [[jpa_4.2_InMemoryBulkFlush]]
 ==== An in-memory bulk operation flushes the persistence context
 

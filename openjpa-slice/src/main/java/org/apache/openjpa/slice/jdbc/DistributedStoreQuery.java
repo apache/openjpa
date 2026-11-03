@@ -19,7 +19,6 @@
 package org.apache.openjpa.slice.jdbc;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -223,16 +222,18 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 
 		@Override
         public Number executeUpdate(StoreQuery q, Object[] params) {
-			Iterator<StoreQuery> qs = owner._queries.iterator();
-			List<Future<Number>> futures = null;
+			List<Future<Number>> futures = new ArrayList<>();
 			int result = 0;
             ExecutorService threadPool = SliceThread.getPool();
-			for (Executor ex : executors) {
-				if (futures == null)
-                    futures = new ArrayList<>();
+			List<SliceStoreManager> targets = findTargets();
+			for (int i = 0; i < owner._queries.size(); i++) {
+                StoreManager sm = owner.getDistributedStore().getSlice(i);
+				if (!targets.contains(sm)) {
+					continue;
+				}
 				UpdateExecutor call = new UpdateExecutor();
-				call.executor = ex;
-				call.query = qs.next();
+				call.executor = executors.get(i);
+				call.query = owner._queries.get(i);
 				call.params = params;
 				futures.add(threadPool.submit(call));
 			}

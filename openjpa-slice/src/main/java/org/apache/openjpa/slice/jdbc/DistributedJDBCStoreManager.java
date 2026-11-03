@@ -21,6 +21,7 @@ package org.apache.openjpa.slice.jdbc;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashMap;
@@ -62,6 +63,7 @@ import org.apache.openjpa.slice.SlicePersistence;
 import org.apache.openjpa.slice.SliceThread;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.StoreException;
+import org.apache.openjpa.util.UserException;
 
 /**
  * A Store manager for multiple physical databases referred as <em>slice</em>.
@@ -522,7 +524,8 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
      * {@link FetchConfiguration#getHint(String) fetch configuration}.
      *
      * @return all active slices if a) the hint is not specified or b) a null
-     * value or c) a non-String or d) matches no active slice.
+     * value or c) a non-String.
+     * @throws UserException if the hint names no active slice.
      */
     List<SliceStoreManager> getTargets(FetchConfiguration fetch) {
         if (fetch == null)
@@ -540,8 +543,14 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
                 }
             }
         }
-        if (targets.isEmpty())
-            return _slices;
+        if (targets.isEmpty()) {
+            List<String> active = new ArrayList<>();
+            for (SliceStoreManager slice : _slices) {
+                active.add(slice.getName());
+            }
+            throw new UserException(_loc.get("no-target-slice",
+                Arrays.toString(targetNames), active));
+        }
         return targets;
     }
 

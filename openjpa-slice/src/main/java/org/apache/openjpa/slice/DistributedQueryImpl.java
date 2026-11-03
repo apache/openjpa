@@ -19,6 +19,7 @@
 package org.apache.openjpa.slice;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.openjpa.kernel.Broker;
@@ -49,16 +50,68 @@ public class DistributedQueryImpl extends QueryImpl {
      */
     @Override
     public Object execute(Map params) {
+        applyTargetPolicy(params);
+        return super.execute(params);
+    }
+
+    /**
+     * Overrides to run a bulk delete on the targets of the policy as well.
+     */
+    @Override
+    public long deleteAll(Object[] params) {
+        applyTargetPolicy(toMap(params));
+        return super.deleteAll(params);
+    }
+
+    @Override
+    public long deleteAll(Map params) {
+        applyTargetPolicy(params);
+        return super.deleteAll(params);
+    }
+
+    /**
+     * Overrides to run a bulk update on the targets of the policy as well.
+     */
+    @Override
+    public long updateAll(Object[] params) {
+        applyTargetPolicy(toMap(params));
+        return super.updateAll(params);
+    }
+
+    @Override
+    public long updateAll(Map params) {
+        applyTargetPolicy(params);
+        return super.updateAll(params);
+    }
+
+    /**
+     * Sets the targets given by the configured policy, unless the user has set
+     * the targets via hint explicitly on this query.
+     */
+    private void applyTargetPolicy(Map params) {
         TargetFetchConfiguration fetch = (TargetFetchConfiguration)getFetchConfiguration();
         if (!fetch.isExplicitTarget()) {
             QueryTargetPolicy policy = _conf.getQueryTargetPolicyInstance();
             if (policy != null) {
-                String[] targets = policy.getTargets(getQueryString(), Collections.unmodifiableMap(params),
+                Map safe = (params == null) ? Collections.emptyMap() : Collections.unmodifiableMap(params);
+                String[] targets = policy.getTargets(getQueryString(), safe,
                         getLanguage(), _conf.getActiveSliceNames(), this.getBroker());
                 fetch.setTargets(targets);
             }
         }
-        return super.execute(params);
+    }
+
+    /**
+     * Positional parameters keyed by their position, starting with 1.
+     */
+    private static Map<Object, Object> toMap(Object[] params) {
+        Map<Object, Object> map = new HashMap<>();
+        if (params != null) {
+            for (int i = 0; i < params.length; i++) {
+                map.put(i + 1, params[i]);
+            }
+        }
+        return map;
     }
 
     /**
