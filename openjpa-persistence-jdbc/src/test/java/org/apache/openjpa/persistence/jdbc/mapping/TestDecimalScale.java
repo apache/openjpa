@@ -37,13 +37,15 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.H2Dictionary;
 import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
+import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Fractional values of decimal attributes must survive a round trip through
  * a schema created by OpenJPA. On H2 2.x an unsized NUMERIC column has scale
  * 0, so 2.5 used to be stored as 3 (OPENJPA-3051). MySQL and MariaDB read an
- * unsized DECIMAL as DECIMAL(10,0) (OPENJPA-3062).
+ * unsized DECIMAL as DECIMAL(10,0) (OPENJPA-3062), SQL Server as
+ * DECIMAL(18,0) (OPENJPA-3064).
  */
 public class TestDecimalScale extends SingleEMFTestCase {
 
@@ -141,6 +143,21 @@ public class TestDecimalScale extends SingleEMFTestCase {
         assertSize(cols, "UNSIZED", 65, 30);
         assertSize(cols, "SCALEONLY", 65, 3);
         assertSize(cols, "DOUBLESCALE", 65, 2);
+    }
+
+    /**
+     * SQL Server reads an unsized DECIMAL as DECIMAL(18,0) (OPENJPA-3064).
+     */
+    public void testColumnTypesOnSQLServer() throws SQLException {
+        if (!(((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance()
+            instanceof SQLServerDictionary)) {
+            return;
+        }
+        Map<String, int[]> cols = getColumnSizes();
+        assertSize(cols, "AMOUNT", 10, 2);
+        assertSize(cols, "UNSIZED", 38, 10);
+        assertSize(cols, "SCALEONLY", 38, 3);
+        assertSize(cols, "DOUBLESCALE", 38, 2);
     }
 
     private Map<String, int[]> getColumnSizes() throws SQLException {

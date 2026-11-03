@@ -40,6 +40,7 @@ import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.lib.util.Localizer;
@@ -58,6 +59,23 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
 
     private static final Localizer _loc =
         Localizer.forPackage(SQLServerDictionary.class);
+
+    /**
+     * The largest precision of a decimal column on SQL Server.
+     */
+    private static final int MAX_DECIMAL_PRECISION = 38;
+
+    /**
+     * The largest scale of a decimal column on SQL Server, which cannot be
+     * larger than the precision.
+     */
+    private static final int MAX_DECIMAL_SCALE = MAX_DECIMAL_PRECISION;
+
+    /**
+     * The scale of an unsized decimal column. It leaves 28 digits before the
+     * decimal point, more than a <code>long</code> has.
+     */
+    private static final int UNSIZED_DECIMAL_SCALE = 10;
 
     private String schemaCase = SCHEMA_CASE_PRESERVE;
     /**
@@ -91,6 +109,11 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
         // rather than as their numeric code point. Schemas created by earlier
         // releases need an explicit StoreCharsAsNumbers=true (OPENJPA-3033).
         storeCharsAsNumbers = false;
+
+        // the precision and scale of a decimal column are part of its DDL type,
+        // an unsized DECIMAL is DECIMAL(18,0) (OPENJPA-3064)
+        fixedSizeTypeNameSet.remove("NUMERIC");
+        fixedSizeTypeNameSet.remove("DECIMAL");
 
         // reservedWordSet subset that CANNOT be used as valid column names
         // (i.e., without surrounding them with double-quotes)
@@ -205,6 +228,47 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
             requiresWarnings &&
             (props.toLowerCase(Locale.ENGLISH).indexOf("maxcachedstatements=0") == -1))
             log.warn(_loc.get("sqlserver-cachedstmnts"));
+    }
+
+    /**
+     * DATEPART(WEEK) counts the weeks from January 1st; DATEPART(ISO_WEEK)
+     * gives the ISO-8601 week that JPA defines. DATEPART(SECOND) returns the
+     * whole seconds only; the fraction of the second that JPA includes is
+     * added from DATEPART(NANOSECOND).
+     */
+    @Override
+    public String getExtractDateTimeFieldFunction(DateTimeExtractField extField) {
+        if (extField == DateTimeExtractField.WEEK) {
+            return extractDateTimeFieldFunction.replace("{0}", "ISO_WEEK");
+        }
+        if (extField == DateTimeExtractField.SECOND) {
+            return "(" + super.getExtractDateTimeFieldFunction(extField) + " + "
+                + extractDateTimeFieldFunction.replace("{0}", "NANOSECOND") + " / 1000000000.0)";
+        }
+        return super.getExtractDateTimeFieldFunction(extField);
+    }
+
+    /**
+     * SQL Server reads an unsized <code>NUMERIC</code> or <code>DECIMAL</code>
+     * as <code>DECIMAL(18,0)</code>, which rounds every value to an integer. A
+     * decimal column of a non integral Java type without a precision is
+     * created with the largest precision and the given scale, or a scale of
+     * 10 if none is given, so that the fraction of the value is kept. A scale
+     * above 38, which SQL Server rejects, is lowered to 38. A
+     * <code>NumericTypeName</code> or <code>DecimalTypeName</code> set by the
+     * user is kept.
+     */
+    @Override
+    public String getTypeName(Column col) {
+        if (isUnsizedDecimal(col)) {
+            String typeName = getTypeName(col.getType());
+            if ("NUMERIC".equalsIgnoreCase(typeName) || "DECIMAL".equalsIgnoreCase(typeName)) {
+                int scale = col.getDecimalDigits() > 0
+                    ? Math.min(col.getDecimalDigits(), MAX_DECIMAL_SCALE) : UNSIZED_DECIMAL_SCALE;
+                return typeName + "(" + MAX_DECIMAL_PRECISION + ", " + scale + ")";
+            }
+        }
+        return super.getTypeName(col);
     }
 
     @Override
