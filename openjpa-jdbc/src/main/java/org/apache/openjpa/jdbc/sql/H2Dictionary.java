@@ -290,14 +290,16 @@ public class H2Dictionary extends DBDictionary {
         }
     }
 
+    /**
+     * A <code>BigInteger</code> is stored in a <code>NUMERIC</code> column, as
+     * a <code>BIGINT</code> column cannot hold a value with more than 19
+     * digits (OPENJPA-3058). The other overloads delegate to this one.
+     */
     @Override
-    public int getJDBCType(int metaTypeCode, boolean lob) {
-        int type = super.getJDBCType(metaTypeCode, lob);
-        switch (type) {
-        case Types.BIGINT:
-            if (metaTypeCode == JavaTypes.BIGINTEGER)
-                return Types.NUMERIC;
-            break;
+    public int getJDBCType(int metaTypeCode, boolean lob, int precis, int scale) {
+        int type = super.getJDBCType(metaTypeCode, lob, precis, scale);
+        if (type == Types.BIGINT && metaTypeCode == JavaTypes.BIGINTEGER) {
+            return getPreferredType(Types.NUMERIC);
         }
         return type;
     }
