@@ -591,6 +591,20 @@ The reverse mapping tool follows the same setting.
 On these databases it now maps a `CHAR(1)` column to a `char` or [class]``Character`` field instead of a [class]``String`` field.
 Set `StoreCharsAsNumbers=true` while running the tool to keep generating [class]``String`` fields.
 
+[[jpa_4.2_H2DecimalColumns]]
+==== Decimal columns on H2
+
+[class]``H2Dictionary`` now writes the precision and scale of a decimal column into the generated DDL (OPENJPA-3051).
+Previous releases created every such column as a plain `NUMERIC`, which H2 2.x reads as `NUMERIC(100000, 0)`, so a value such as `2.5` was stored and read back as `3`.
+An attribute mapped with `@Column(precision = 10, scale = 2)` now gets a `NUMERIC(10, 2)` column.
+On H2 2.x a [class]``BigDecimal``, [class]``Number``, `double` or `float` attribute mapped to a decimal column without a precision, for example a [class]``BigDecimal`` without `@Column(precision)`, now gets a `DECFLOAT(38)` column, which keeps the fraction of the value; a `scale` given without a precision is not used.
+Like an unsized `NUMBER` on Oracle, such a column keeps up to 38 significant digits and does not keep trailing zeros: `2.50` is read back as `2.5`, so compare the values with `compareTo` rather than `equals`.
+Integral attributes such as [class]``BigInteger`` keep their plain `NUMERIC` column, and a `columnDefinition` is used as given.
+A `NumericTypeName` or `DecimalTypeName` set on the dictionary is used as before, for unsized columns too.
+
+Tables created by earlier releases are not altered by the mapping tool or `SynchronizeMappings` and keep rounding to integers.
+Migrate the affected columns, for example ``ALTER TABLE PRODUCT ALTER COLUMN PRICE SET DATA TYPE NUMERIC(10, 2)``, and check the stored values, which were already rounded.
+
 [[jpa_4.2_PostgreSQL]]
 ==== PostgreSQL
 

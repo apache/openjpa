@@ -1,0 +1,151 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package org.apache.openjpa.persistence.jdbc.mapping;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.RoundingMode;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import jakarta.persistence.EntityManager;
+
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.H2Dictionary;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+/**
+ * Fractional values of decimal attributes must survive a round trip through
+ * a schema created by OpenJPA. On H2 2.x an unsized NUMERIC column has scale
+ * 0, so 2.5 used to be stored as 3 (OPENJPA-3051).
+ */
+public class TestDecimalScale extends SingleEMFTestCase {
+
+    @Override
+    public void setUp() {
+        super.setUp(DROP_TABLES, DecimalScaleEntity.class);
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            em.persist(new DecimalScaleEntity(1, new BigDecimal("2.5"), new BigDecimal("1234.5678"),
+                new BigDecimal("0.125"), new BigInteger("1234567890123"), 7.25));
+            em.persist(new DecimalScaleEntity(2, new BigDecimal("100"), new BigDecimal("100"),
+                null, null, null));
+            em.getTransaction().commit();
+        }
+    }
+
+    public void testFractionIsKeptOnFind() {
+        try (EntityManager em = emf.createEntityManager()) {
+            DecimalScaleEntity e = em.find(DecimalScaleEntity.class, 1L);
+            assertDecimal("2.5", e.getAmount());
+            assertDecimal("1234.5678", e.getUnsized());
+            assertDecimal("0.125", e.getScaleOnly());
+            assertEquals(new BigInteger("1234567890123"), e.getBigInteger());
+            assertEquals(7.25, e.getDoubleScale(), 0.0);
+        }
+    }
+
+    public void testFractionIsKeptOnUpdate() {
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            em.find(DecimalScaleEntity.class, 1L).setAmount(new BigDecimal("0.75"));
+            em.getTransaction().commit();
+        }
+        try (EntityManager em = emf.createEntityManager()) {
+            assertDecimal("0.75", em.find(DecimalScaleEntity.class, 1L).getAmount());
+        }
+    }
+
+    public void testFractionIsComparedInQuery() {
+        try (EntityManager em = emf.createEntityManager()) {
+            List<Long> ids = em.createQuery("SELECT e.id FROM DecimalScaleEntity e "
+                + "WHERE e.amount = :amount AND e.unsized > 1234.5", Long.class)
+                .setParameter("amount", new BigDecimal("2.5"))
+                .getResultList();
+            assertEquals(List.of(1L), ids);
+
+            BigDecimal sum = em.createQuery("SELECT e.amount + e.scaleOnly FROM DecimalScaleEntity e "
+                + "WHERE e.id = 1", BigDecimal.class).getSingleResult();
+            assertDecimal("2.625", sum);
+        }
+    }
+
+    public void testWholeNumberKeepsPlainScale() {
+        if (!isH2()) {
+            return;
+        }
+        try (EntityManager em = emf.createEntityManager()) {
+            DecimalScaleEntity e = em.find(DecimalScaleEntity.class, 2L);
+            assertEquals(new BigDecimal("100"), e.getUnsized());
+            assertEquals("100", e.getUnsized().toString());
+        }
+    }
+
+    public void testQuotientHasLimitedDigits() {
+        try (EntityManager em = emf.createEntityManager()) {
+            BigDecimal quot = em.createQuery("SELECT e.unsized / 3 FROM DecimalScaleEntity e "
+                + "WHERE e.id = 2", BigDecimal.class).getSingleResult();
+            assertEquals(0, new BigDecimal("33.3").compareTo(quot.setScale(1, RoundingMode.DOWN)));
+            assertTrue(quot.toPlainString(), quot.toPlainString().length() < 100);
+        }
+    }
+
+    public void testColumnTypesOnH2() throws SQLException {
+        if (!isH2()) {
+            return;
+        }
+        Map<String, int[]> cols = new HashMap<>();
+        try (Connection conn = ((JDBCConfiguration) emf.getConfiguration()).getDataSource2(null).getConnection()) {
+            DatabaseMetaData meta = conn.getMetaData();
+            try (ResultSet rs = meta.getColumns(null, null, "MAP_DECSCALE", null)) {
+                while (rs.next()) {
+                    cols.put(rs.getString("COLUMN_NAME").toUpperCase(Locale.ENGLISH),
+                        new int[] { rs.getInt("COLUMN_SIZE"), rs.getInt("DECIMAL_DIGITS") });
+                }
+            }
+        }
+        assertSize(cols, "AMOUNT", 10, 2);
+        // DECFLOAT(38) has no fixed scale
+        assertSize(cols, "UNSIZED", 38, 0);
+        assertSize(cols, "SCALEONLY", 38, 0);
+        assertSize(cols, "DOUBLESCALE", 38, 0);
+    }
+
+    private boolean isH2() {
+        return ((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance() instanceof H2Dictionary;
+    }
+
+    private static void assertSize(Map<String, int[]> cols, String name, int size, int digits) {
+        int[] col = cols.get(name);
+        assertNotNull(name + " in " + cols.keySet(), col);
+        assertEquals(name + " size", size, col[0]);
+        assertEquals(name + " digits", digits, col[1]);
+    }
+
+    private static void assertDecimal(String expected, BigDecimal actual) {
+        assertNotNull(actual);
+        assertEquals(expected + " <> " + actual, 0, new BigDecimal(expected).compareTo(actual));
+    }
+}

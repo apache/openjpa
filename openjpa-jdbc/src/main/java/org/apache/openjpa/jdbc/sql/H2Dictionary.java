@@ -161,6 +161,10 @@ public class H2Dictionary extends DBDictionary {
     				"INFORMATION_SCHEMA.ROLES", "INFORMATION_SCHEMA.SESSIONS", "INFORMATION_SCHEMA.SESSION_STATE",
     				"INFORMATION_SCHEMA.SETTINGS", "INFORMATION_SCHEMA.USERS");
 
+    // 38 digits as most databases allow for NUMERIC, this also limits the
+    // digits of a quotient, which DECFLOAT computes to its full precision
+    private final static String UNSIZED_DECIMAL_TYPE_NAME = "DECFLOAT(38)";
+
     public H2Dictionary() {
         platform = "H2";
         // H2 supports CHAR, so Java char fields are stored as CHAR(1)
@@ -198,6 +202,11 @@ public class H2Dictionary extends DBDictionary {
         // H2 defaults the LIKE escape character to a backslash, so an
         // explicit ESCAPE clause is required (OPENJPA-3009)
         requiresSearchStringEscapeForLike = true;
+
+        // the precision and scale of a decimal column are part of its DDL type,
+        // H2 2.x would round an unsized NUMERIC to an integer (OPENJPA-3051)
+        fixedSizeTypeNameSet.remove("NUMERIC");
+        fixedSizeTypeNameSet.remove("DECIMAL");
 
         reservedWordSet.addAll(Arrays.asList(new String[] {
                 "ALL",
@@ -291,6 +300,49 @@ public class H2Dictionary extends DBDictionary {
             break;
         }
         return type;
+    }
+
+    /**
+     * H2 2.x reads an unsized <code>NUMERIC</code> or <code>DECIMAL</code> as
+     * <code>NUMERIC(100000, 0)</code>, which rounds every value to an integer.
+     * A decimal column of a non integral Java type without a precision is
+     * created as <code>DECFLOAT(38)</code> instead, which keeps the fraction of
+     * the value like an unsized <code>NUMBER</code> on Oracle. A
+     * <code>NumericTypeName</code> or <code>DecimalTypeName</code> set by the
+     * user is kept.
+     */
+    @Override
+    public String getTypeName(Column col) {
+        if (versionLaterThan(1) && isUnsizedDecimal(col)) {
+            String typeName = getTypeName(col.getType());
+            if ("NUMERIC".equalsIgnoreCase(typeName) || "DECIMAL".equalsIgnoreCase(typeName)) {
+                return UNSIZED_DECIMAL_TYPE_NAME;
+            }
+        }
+        return super.getTypeName(col);
+    }
+
+    private static boolean isUnsizedDecimal(Column col) {
+        if (!DBIdentifier.isEmpty(col.getTypeIdentifier()) || col.isAutoAssigned() || col.getSize() > 0) {
+            return false;
+        }
+        if (col.getType() != Types.NUMERIC && col.getType() != Types.DECIMAL) {
+            return false;
+        }
+        switch (col.getJavaType()) {
+            case JavaTypes.BYTE:
+            case JavaTypes.BYTE_OBJ:
+            case JavaTypes.SHORT:
+            case JavaTypes.SHORT_OBJ:
+            case JavaTypes.INT:
+            case JavaTypes.INT_OBJ:
+            case JavaTypes.LONG:
+            case JavaTypes.LONG_OBJ:
+            case JavaTypes.BIGINTEGER:
+                return false;
+            default:
+                return true;
+        }
     }
 
     @Override
@@ -448,6 +500,20 @@ public class H2Dictionary extends DBDictionary {
     @Override
     public void setOffsetDateTime(PreparedStatement stmnt, int idx, OffsetDateTime val, Column col) throws SQLException {
         stmnt.setObject(idx, val);
+    }
+
+    /**
+     * A <code>DECFLOAT</code> value is read back with its trailing zeros
+     * removed, so 100 has a negative scale and prints as <code>1E+2</code>.
+     * Such a value is returned with scale 0 instead.
+     */
+    @Override
+    public BigDecimal getBigDecimal(ResultSet rs, int column) throws SQLException {
+        BigDecimal val = super.getBigDecimal(rs, column);
+        if (val != null && val.scale() < 0) {
+            return val.setScale(0);
+        }
+        return val;
     }
 
     @Override
