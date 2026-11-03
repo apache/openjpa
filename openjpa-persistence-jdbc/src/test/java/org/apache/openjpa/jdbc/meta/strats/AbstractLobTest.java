@@ -30,6 +30,7 @@ import jakarta.persistence.Query;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.datacache.DataCachePCData;
 import org.apache.openjpa.jdbc.sql.DB2Dictionary;
+import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
@@ -48,7 +49,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     protected static boolean firstTestExecuted;
 
     protected List<Class<?>> supportedDatabases =
-        new ArrayList<>(Arrays.asList(MySQLDictionary.class, DB2Dictionary.class));
+        new ArrayList<>(Arrays.asList(MySQLDictionary.class, MariaDBDictionary.class, DB2Dictionary.class));
 
     @Override
     public void setUp() throws Exception {

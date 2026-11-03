@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import java.io.Reader;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -48,8 +49,10 @@ import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.util.ExceptionInfo;
+import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.StoreException;
 
 /*
@@ -57,6 +60,8 @@ import org.apache.openjpa.util.StoreException;
  *
  */
 public class MariaDBDictionary extends DBDictionary {
+    private static final Localizer _loc = Localizer.forPackage(MariaDBDictionary.class);
+
     public static final String SELECT_HINT = "openjpa.hint.MariaDBSelectHint";
 
     public static final String DELIMITER_BACK_TICK = "`";
@@ -540,6 +545,36 @@ public class MariaDBDictionary extends DBDictionary {
 
         // most mysql drivers deserialize on getObject
         return rs.getObject(column);
+    }
+
+    /**
+     * Write the reader with {@link ResultSet#updateCharacterStream(int, Reader)}
+     * instead of the writer of {@link java.sql.Clob#setCharacterStream(long)}.
+     * The Connector/J clob writer starts at a wrong position when the clob was
+     * read from a result set and fails with an ArrayIndexOutOfBoundsException.
+     */
+    @Override
+    public void updateClob(Select sel, JDBCStore store, Reader reader)
+        throws SQLException {
+        SQLBuffer sql = sel.toSelect(true, store.getFetchConfiguration());
+        Connection conn = store.getConnection();
+        try (PreparedStatement stmnt = sql.prepareStatement(conn, store.getFetchConfiguration(),
+            ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+            setTimeouts(stmnt, store.getFetchConfiguration(), true);
+            try (ResultSet res = stmnt.executeQuery()) {
+                if (!res.next()) {
+                    throw new InternalException(_loc.get("stream-exception"));
+                }
+                res.updateCharacterStream(1, reader);
+                res.updateRow();
+            }
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                // ignore
+            }
+        }
     }
 
     @Override
