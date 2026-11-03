@@ -330,18 +330,18 @@ public class H2Dictionary extends DBDictionary {
             return false;
         }
         switch (col.getJavaType()) {
-        case JavaTypes.BYTE:
-        case JavaTypes.BYTE_OBJ:
-        case JavaTypes.SHORT:
-        case JavaTypes.SHORT_OBJ:
-        case JavaTypes.INT:
-        case JavaTypes.INT_OBJ:
-        case JavaTypes.LONG:
-        case JavaTypes.LONG_OBJ:
-        case JavaTypes.BIGINTEGER:
-            return false;
-        default:
-            return true;
+            case JavaTypes.BYTE:
+            case JavaTypes.BYTE_OBJ:
+            case JavaTypes.SHORT:
+            case JavaTypes.SHORT_OBJ:
+            case JavaTypes.INT:
+            case JavaTypes.INT_OBJ:
+            case JavaTypes.LONG:
+            case JavaTypes.LONG_OBJ:
+            case JavaTypes.BIGINTEGER:
+                return false;
+            default:
+                return true;
         }
     }
 
