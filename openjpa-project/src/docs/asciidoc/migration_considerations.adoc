@@ -615,6 +615,22 @@ A `NumericTypeName` or `DecimalTypeName` set on the dictionary is used as before
 Tables created by earlier releases are not altered by the mapping tool or `SynchronizeMappings` and keep rounding to integers.
 Migrate the affected columns, for example ``ALTER TABLE PRODUCT ALTER COLUMN PRICE SET DATA TYPE NUMERIC(10, 2)``, and check the stored values, which were already rounded.
 
+[[jpa_4.2_MySQLDecimalColumns]]
+==== Decimal columns on MySQL and MariaDB
+
+MySQL and MariaDB read a `DECIMAL` or `NUMERIC` column without a precision as `DECIMAL(10,0)`, so a value such as `2.5` was stored and read back as `3` (OPENJPA-3062).
+[class]``MySQLDictionary`` and [class]``MariaDBDictionary`` now create a [class]``BigDecimal``, [class]``Number``, `double` or `float` attribute mapped to a decimal column without a precision with the largest precision these databases allow, 65 digits.
+The scale is the `scale` of the mapping if one is given, otherwise 30, the largest scale MySQL allows: a [class]``BigDecimal`` without `@Column(precision)` gets a `NUMERIC(65, 30)` column and `@Column(scale = 2)` gets `NUMERIC(65, 2)`, which the database reports as `DECIMAL(65,30)` and `DECIMAL(65,2)`.
+A larger `scale` is lowered to the largest scale the database allows, 30 on MySQL and 38 on MariaDB.
+Values are read back with the scale of the column, `2.5` as `2.500000000000000000000000000000` in the first case, so compare them with `compareTo` rather than `equals`.
+An exact type was chosen over `DOUBLE` so that decimal values are not rounded to binary fractions.
+Columns mapped with a precision, for example `@Column(precision = 10, scale = 2)`, get `NUMERIC(10, 2)` as before, and a column of JDBC type `DECIMAL` now keeps its precision and scale as well.
+Integral attributes such as [class]``BigInteger`` keep their column type, and a `columnDefinition` is used as given.
+A `NumericTypeName` or `DecimalTypeName` set on the dictionary is used as before, for unsized columns too.
+
+Tables created by earlier releases are not altered by the mapping tool or `SynchronizeMappings`: an existing `DECIMAL(10,0)` column is accepted as it is and keeps rounding to integers.
+Migrate the affected columns, for example ``ALTER TABLE PRODUCT MODIFY PRICE DECIMAL(10, 2)``, and check the stored values, which were already rounded.
+
 [[jpa_4.2_PostgreSQL]]
 ==== PostgreSQL
 

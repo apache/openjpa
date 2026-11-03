@@ -33,13 +33,17 @@ import java.util.Map;
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.H2Dictionary;
+import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
+import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Fractional values of decimal attributes must survive a round trip through
  * a schema created by OpenJPA. On H2 2.x an unsized NUMERIC column has scale
- * 0, so 2.5 used to be stored as 3 (OPENJPA-3051).
+ * 0, so 2.5 used to be stored as 3 (OPENJPA-3051). MySQL and MariaDB read an
+ * unsized DECIMAL as DECIMAL(10,0) (OPENJPA-3062).
  */
 public class TestDecimalScale extends SingleEMFTestCase {
 
@@ -116,21 +120,41 @@ public class TestDecimalScale extends SingleEMFTestCase {
         if (!isH2()) {
             return;
         }
+        Map<String, int[]> cols = getColumnSizes();
+        assertSize(cols, "AMOUNT", 10, 2);
+        // DECFLOAT(38) has no fixed scale
+        assertSize(cols, "UNSIZED", 38, 0);
+        assertSize(cols, "SCALEONLY", 38, 0);
+        assertSize(cols, "DOUBLESCALE", 38, 0);
+    }
+
+    /**
+     * MySQL and MariaDB read an unsized DECIMAL as DECIMAL(10,0) (OPENJPA-3062).
+     */
+    public void testColumnTypesOnMySQLAndMariaDB() throws SQLException {
+        DBDictionary dict = ((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance();
+        if (!(dict instanceof MySQLDictionary) && !(dict instanceof MariaDBDictionary)) {
+            return;
+        }
+        Map<String, int[]> cols = getColumnSizes();
+        assertSize(cols, "AMOUNT", 10, 2);
+        assertSize(cols, "UNSIZED", 65, 30);
+        assertSize(cols, "SCALEONLY", 65, 3);
+        assertSize(cols, "DOUBLESCALE", 65, 2);
+    }
+
+    private Map<String, int[]> getColumnSizes() throws SQLException {
         Map<String, int[]> cols = new HashMap<>();
         try (Connection conn = ((JDBCConfiguration) emf.getConfiguration()).getDataSource2(null).getConnection()) {
             DatabaseMetaData meta = conn.getMetaData();
-            try (ResultSet rs = meta.getColumns(null, null, "MAP_DECSCALE", null)) {
+            try (ResultSet rs = meta.getColumns(conn.getCatalog(), null, "MAP_DECSCALE", null)) {
                 while (rs.next()) {
                     cols.put(rs.getString("COLUMN_NAME").toUpperCase(Locale.ENGLISH),
                         new int[] { rs.getInt("COLUMN_SIZE"), rs.getInt("DECIMAL_DIGITS") });
                 }
             }
         }
-        assertSize(cols, "AMOUNT", 10, 2);
-        // DECFLOAT(38) has no fixed scale
-        assertSize(cols, "UNSIZED", 38, 0);
-        assertSize(cols, "SCALEONLY", 38, 0);
-        assertSize(cols, "DOUBLESCALE", 38, 0);
+        return cols;
     }
 
     private boolean isH2() {

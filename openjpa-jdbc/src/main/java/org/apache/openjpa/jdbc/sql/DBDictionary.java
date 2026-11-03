@@ -2163,6 +2163,36 @@ public class DBDictionary
     }
 
     /**
+     * Whether the given column is a <code>NUMERIC</code> or <code>DECIMAL</code>
+     * column of a non integral Java type that has no column definition and no
+     * precision. Such a column may have a scale. Databases that read an unsized
+     * decimal type with scale 0 use this to create a type that keeps the
+     * fraction of the value instead.
+     */
+    protected boolean isUnsizedDecimal(Column col) {
+        if (!DBIdentifier.isEmpty(col.getTypeIdentifier()) || col.isAutoAssigned() || col.getSize() > 0) {
+            return false;
+        }
+        if (col.getType() != Types.NUMERIC && col.getType() != Types.DECIMAL) {
+            return false;
+        }
+        switch (col.getJavaType()) {
+            case JavaTypes.BYTE:
+            case JavaTypes.BYTE_OBJ:
+            case JavaTypes.SHORT:
+            case JavaTypes.SHORT_OBJ:
+            case JavaTypes.INT:
+            case JavaTypes.INT_OBJ:
+            case JavaTypes.LONG:
+            case JavaTypes.LONG_OBJ:
+            case JavaTypes.BIGINTEGER:
+                return false;
+            default:
+                return true;
+        }
+    }
+
+    /**
      * Returns the type name for the specific constant as defined
      * by {@link java.sql.Types}.
      *

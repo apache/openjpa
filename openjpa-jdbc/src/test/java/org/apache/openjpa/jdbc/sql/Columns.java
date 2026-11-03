@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import java.sql.Types;
+
 import org.apache.openjpa.jdbc.schema.Column;
 
 /**
@@ -40,6 +42,17 @@ final class Columns {
             col.setTypeName(typeName);
         }
         col.setSize(size);
+        return col;
+    }
+
+    /**
+     * A <code>NUMERIC</code> column of the given Java type, mapped with the
+     * given precision and scale, as for <code>@Column(precision, scale)</code>.
+     */
+    static Column decimal(int javaType, int precision, int scale) {
+        Column col = column(Types.NUMERIC, null, precision);
+        col.setJavaType(javaType);
+        col.setDecimalDigits(scale);
         return col;
     }
 }
