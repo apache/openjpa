@@ -312,6 +312,55 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
         return cols;
     }
 
+    /**
+     * SQL Server refuses to drop a column that the primary key, a unique
+     * constraint, an index, a default constraint or a foreign key of the
+     * table depends on, while most other databases drop these with the
+     * column. The schema tool drops single columns when a table holds columns
+     * that are not mapped, for example the columns of a subclass that is not
+     * listed. Drop the objects that depend on the column, as found in the
+     * catalog views, and then the column, in one transaction, so that nothing
+     * is dropped if the column cannot be dropped, for example because a
+     * foreign key of another table references the primary key.
+     */
+    @Override
+    public String[] getDropColumnSQL(Column column) {
+        String[] dropColumn = super.getDropColumnSQL(column);
+        if (dropColumn.length == 0) {
+            return dropColumn;
+        }
+        String table = getFullName(column.getTable(), false);
+        String tableLiteral = "N'" + table.replace("'", "''") + "'";
+        String columnLiteral = "N'" + toDBName(column.getIdentifier(), false).replace("'", "''") + "'";
+        String tableId = "OBJECT_ID(" + tableLiteral + ")";
+        String columnId = "COLUMNPROPERTY(" + tableId + ", " + columnLiteral + ", 'ColumnId')";
+        String dropConstraint = "N'ALTER TABLE ' + " + tableLiteral + " + N' DROP CONSTRAINT ' + QUOTENAME(";
+        StringBuilder sql = new StringBuilder()
+            .append("DECLARE @sql NVARCHAR(MAX) = N''; ")
+            .append("SELECT @sql = @sql + ").append(dropConstraint).append("f.name) + N'; ' ")
+            .append("FROM sys.foreign_keys f WHERE f.parent_object_id = ").append(tableId)
+            .append(" AND EXISTS (SELECT 1 FROM sys.foreign_key_columns fc ")
+            .append("WHERE fc.constraint_object_id = f.object_id AND fc.parent_column_id = ")
+            .append(columnId).append("); ")
+            .append("SELECT @sql = @sql + CASE WHEN i.is_primary_key = 1 OR i.is_unique_constraint = 1 ")
+            .append("THEN ").append(dropConstraint).append("i.name) ")
+            .append("ELSE N'DROP INDEX ' + QUOTENAME(i.name) + N' ON ' + ").append(tableLiteral)
+            .append(" END + N'; ' FROM sys.indexes i WHERE i.object_id = ").append(tableId)
+            .append(" AND EXISTS (SELECT 1 FROM sys.index_columns ic ")
+            .append("WHERE ic.object_id = i.object_id AND ic.index_id = i.index_id AND ic.column_id = ")
+            .append(columnId).append("); ")
+            .append("SELECT @sql = @sql + ").append(dropConstraint).append("d.name) + N'; ' ")
+            .append("FROM sys.default_constraints d WHERE d.parent_object_id = ").append(tableId)
+            .append(" AND d.parent_column_id = ").append(columnId).append("; ")
+            .append("BEGIN TRY BEGIN TRANSACTION; EXEC sp_executesql @sql; ");
+        for (String s : dropColumn) {
+            sql.append(s).append("; ");
+        }
+        sql.append("COMMIT TRANSACTION; END TRY ")
+            .append("BEGIN CATCH IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION; THROW; END CATCH");
+        return new String[]{ sql.toString() };
+    }
+
     @Override
     protected void appendLength(SQLBuffer buf, int type) {
         if (type == Types.VARCHAR)

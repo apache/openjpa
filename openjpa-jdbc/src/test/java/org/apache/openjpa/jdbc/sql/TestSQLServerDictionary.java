@@ -20,10 +20,13 @@ package org.apache.openjpa.jdbc.sql;
 
 import static org.apache.openjpa.jdbc.sql.Columns.decimal;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.sql.Types;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.meta.JavaTypes;
 import org.junit.Test;
@@ -110,5 +113,30 @@ public class TestSQLServerDictionary {
         DBDictionary dict = new SQLServerDictionary();
         assertEquals("DATEPART(ISO_WEEK, {1})", dict.getExtractDateTimeFieldFunction(DateTimeExtractField.WEEK));
         assertEquals("DATEPART(DAY, {1})", dict.getExtractDateTimeFieldFunction(DateTimeExtractField.DAY));
+    }
+
+    /**
+     * SQL Server refuses to drop a column that the primary key or an index
+     * depends on, so these are dropped first, in the same transaction as the
+     * column (OPENJPA-3064).
+     */
+    @Test
+    public void testDropColumnDropsDependentObjectsFirst() {
+        DBDictionary dict = new SQLServerDictionary();
+        Table table = new Table(DBIdentifier.newTable("TPRODUCT"), null);
+        Column col = table.addColumn(DBIdentifier.newColumn("id"));
+        String[] sql = dict.getDropColumnSQL(col);
+        assertEquals(1, sql.length);
+        assertTrue(sql[0], sql[0].contains("FROM sys.foreign_keys f"));
+        assertTrue(sql[0], sql[0].contains("FROM sys.indexes i"));
+        assertTrue(sql[0], sql[0].contains("FROM sys.default_constraints d"));
+        assertTrue(sql[0], sql[0].contains("COLUMNPROPERTY(OBJECT_ID(N'TPRODUCT'), N'id', 'ColumnId')"));
+        assertTrue(sql[0], sql[0].contains("BEGIN TRY BEGIN TRANSACTION; EXEC sp_executesql @sql; "
+            + "ALTER TABLE TPRODUCT DROP COLUMN id; COMMIT TRANSACTION; END TRY"));
+        assertTrue(sql[0], sql[0].endsWith(
+            "BEGIN CATCH IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION; THROW; END CATCH"));
+
+        dict.supportsAlterTableWithDropColumn = false;
+        assertEquals(0, dict.getDropColumnSQL(col).length);
     }
 }
