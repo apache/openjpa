@@ -706,6 +706,19 @@ To store larger values, alter the columns, for example ``ALTER TABLE ACCOUNT ALT
 Use `openjpa.jdbc.DBDictionary=hsql(SupportsSelectForUpdate=false,SupportsQueryTimeout=true)` and `@Column(columnDefinition="TIME WITH TIME ZONE")` to restore the previous behavior.
 On H2 2.x, table truncation now skips the `INFORMATION_SCHEMA` meta tables. `EXTRACT(WEEK FROM ...)` is rendered as ``EXTRACT(ISO_WEEK FROM ...)``, because H2 numbers a plain `WEEK` by the week definition of the JVM default locale, and `EXTRACT(SECOND)` now includes the fraction of the second, as the specification requires, instead of the whole seconds only.
 
+[[jpa_4.2_HSQLDBDecimalColumns]]
+==== Decimal columns and casts on HSQLDB
+
+On HSQLDB 2.x a [class]``BigDecimal``, [class]``Number``, `double` or `float` attribute mapped to a decimal column without a precision now gets a `NUMERIC(128,32)` column instead of a plain `NUMERIC`, which HSQLDB reads as `NUMERIC(128,0)`, so a value such as `2.5` was stored and read back as `2` (OPENJPA-3063).
+HSQLDB has no decimal floating point type, so such a column keeps up to 32 fractional digits and returns the value with scale 32: `2.5` is read back as `2.50000000000000000000000000000000`, so compare the values with `compareTo` rather than `equals`.
+Integral attributes such as [class]``BigInteger`` keep their plain `NUMERIC` column, a `columnDefinition` is used as given, and a `NumericTypeName` or `DecimalTypeName` set on the dictionary is used as before.
+Tables created by earlier releases are not altered by the mapping tool or `SynchronizeMappings`; migrate the affected columns, for example ``ALTER TABLE PRODUCT ALTER COLUMN PRICE SET DATA TYPE NUMERIC(128,32)``.
+
+[class]``HSQLDictionary`` now casts a parameter in `EXTRACT` to `DATE`, `TIME(9)` or `TIMESTAMP(9)` (``RequiresCastForExtractOperand``), so `EXTRACT(SECOND ...)` keeps the fraction of the second.
+A string literal, or a parameter bound to a string, returned by a `CASE` expression is cast to `VARCHAR` (``RequiresCastForCaseStringResult``), so ``CASE WHEN ... THEN 'young' ELSE 'old' END`` returns `old` instead of `old  `.
+A [class]``LocalTime`` value is bound and read with its fractional seconds on HSQLDB 2.4 and later.
+A `@Lob` attribute mapped before the first connection to the database now gets a `CLOB` or `BLOB` column instead of the `VARCHAR` or `VARBINARY` used for HSQLDB 1.x.
+
 [[jpa_4.2_SPIChanges]]
 ==== SPI changes for custom store, dictionary and expression implementations
 

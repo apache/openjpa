@@ -19,8 +19,10 @@
 package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.sql.SQLException;
+import java.sql.Types;
 
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Raw;
 import org.apache.openjpa.jdbc.sql.Result;
@@ -119,9 +121,28 @@ public class GeneralCaseExpression
             _exp[i].appendTo(sel, ctx, cstate.states[i], buf);
 
         buf.append(" ELSE ");
-        _val.appendTo(sel, ctx, cstate.states[i], buf, 0);
+        appendResult(sel, ctx, cstate.states[i], buf, _val);
 
         buf.append(" END ");
+    }
+
+    /**
+     * Append a result of a CASE expression. A string literal or parameter is
+     * cast to <code>VARCHAR</code> on a database that would pad the result to
+     * the length of the longest result, see
+     * {@link DBDictionary#requiresCastForCaseStringResult}. A JPQL parameter
+     * has no declared type, so the bound value decides.
+     */
+    static void appendResult(Select sel, ExpContext ctx, ExpState state, SQLBuffer buf, Val val) {
+        DBDictionary dict = ctx.store.getDBDictionary();
+        if (dict.requiresCastForCaseStringResult && val instanceof Const constVal
+            && (val.getType() == String.class || constVal.getValue(ctx, state) instanceof String)) {
+            SQLBuffer result = new SQLBuffer(dict);
+            val.appendTo(sel, ctx, state, result, 0);
+            dict.appendCast(buf, result, Types.VARCHAR);
+        } else {
+            val.appendTo(sel, ctx, state, buf, 0);
+        }
     }
 
     @Override
