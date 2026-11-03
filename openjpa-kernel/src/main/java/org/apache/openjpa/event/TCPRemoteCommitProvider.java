@@ -511,7 +511,7 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
             _port = port;
             _log = log;
             _receiveSocket = new ServerSocket(_port, 50, bindAddr);
-            _selfAddress = bindAddr.getAddress();
+            _selfAddress = bindAddr == null ? InetAddress.getLocalHost().getAddress() : bindAddr.getAddress();
 
             if (_log.isTraceEnabled()) {
                 _log.info(s_loc.get("tcp-start-listener", String.valueOf(_port)));
