@@ -19,7 +19,9 @@
 
 package org.apache.openjpa.persistence.criteria;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import jakarta.persistence.criteria.CollectionJoin;
 import jakarta.persistence.criteria.Expression;
@@ -348,10 +350,24 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
         return fetch;
     }
 
+    /**
+     * Visits this node, the ON condition if this receiver is a join, and then the joins
+     * made from this receiver. The ON condition may refer back to this receiver or to
+     * one of its parents, so a node that has been visited is not visited again.
+     */
     @Override
     public void acceptVisit(CriteriaExpressionVisitor visitor) {
-        Expressions.acceptVisit(visitor, this,
-            _joins == null ? null : _joins.toArray(new ExpressionImpl<?>[_joins.size()]));
+        if (visitor.isVisited(this)) {
+            return;
+        }
+        List<Expression<?>> children = new ArrayList<>();
+        if (this instanceof Join<?,?> join && join.getOn() != null) {
+            children.add(join.getOn());
+        }
+        if (_joins != null) {
+            children.addAll(_joins);
+        }
+        Expressions.acceptVisit(visitor, this, children.toArray(new Expression<?>[children.size()]));
     }
 
     @Override
