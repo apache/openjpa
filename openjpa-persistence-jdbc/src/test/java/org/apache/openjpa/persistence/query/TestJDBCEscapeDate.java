@@ -29,6 +29,7 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.H2Dictionary;
 import org.apache.openjpa.jdbc.sql.HSQLDictionary;
+import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
@@ -99,7 +100,8 @@ public class TestJDBCEscapeDate extends SingleEMFTestCase {
                 "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.123456'}",
                 "select {t '00:00:00'}, a.empId from Employee a",
             };
-        } else if (dict instanceof PostgresDictionary || dict instanceof H2Dictionary || dict instanceof MySQLDictionary) {
+        } else if (dict instanceof PostgresDictionary || dict instanceof H2Dictionary || dict instanceof MySQLDictionary
+            || dict instanceof MariaDBDictionary) {
             jpql = new String[] {
                 "select a from Employee a where a.hireDate >= {d '2009-08-25'}",
                 "select a from Employee a where a.hireDate >= {d '2009-8-5'}",

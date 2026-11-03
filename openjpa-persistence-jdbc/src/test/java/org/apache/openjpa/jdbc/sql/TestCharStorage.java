@@ -120,7 +120,8 @@ public class TestCharStorage extends PersistenceTestCase {
      */
     private static void assertDefault(DBDictionary dict) {
         if (dict instanceof DerbyDictionary || dict instanceof SQLServerDictionary
-            || dict instanceof H2Dictionary) {
+            || dict instanceof H2Dictionary || dict instanceof MySQLDictionary
+            || dict instanceof MariaDBDictionary) {
             assertFalse(dict.platform + " must store chars as CHAR by default", dict.storeCharsAsNumbers);
         }
     }
