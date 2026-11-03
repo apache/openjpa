@@ -339,24 +339,24 @@ public class Filters {
                     return str.charAt(0);
                 }
             }
-            else if (Calendar.class.isAssignableFrom(type) && o instanceof Date) {
+            else if (Calendar.class.isAssignableFrom(type) && o instanceof Date d) {
                 Calendar cal = Calendar.getInstance();
-                cal.setTime((Date) o);
+                cal.setTime(d);
                 return cal;
             }
-            else if (Date.class.isAssignableFrom(type) && o instanceof Calendar) {
-                return ((Calendar) o).getTime();
+            else if (Date.class.isAssignableFrom(type) && o instanceof Calendar c) {
+                return c.getTime();
             }
-            else if (o instanceof Date && type == Timestamp.class) {
-                return new Timestamp(((Date) o).getTime());
+            else if (o instanceof Date d && type == Timestamp.class) {
+                return new Timestamp(d.getTime());
             }
             else if (Number.class.isAssignableFrom(type)) {
                 Integer i = null;
-                if (o instanceof Character) {
-                    i = Integer.valueOf((Character) o);
+                if (o instanceof Character c) {
+                    i = Integer.valueOf(c);
                 }
-                else if (o instanceof String && ((String) o).length() == 1) {
-                    i = Integer.valueOf(((String) o));
+                else if (o instanceof String s && s.length() == 1) {
+                    i = Integer.valueOf(s);
                 }
 
                 if (i != null) {
@@ -368,44 +368,44 @@ public class Filters {
             } else if (Temporal.class.isAssignableFrom(type)) {
                 // handling of Java8 time API.
                 if (LocalDate.class.equals(type)) {
-                    if (o instanceof java.sql.Date) {
-                        return ((java.sql.Date) o).toLocalDate();
-                    } else if (o instanceof java.util.Date) {
-                        return new java.sql.Date(((java.util.Date)o).getTime()).toLocalDate();
-                    } else if (o instanceof CharSequence) {
-                        return LocalDate.parse((CharSequence) o);
+                    if (o instanceof java.sql.Date d) {
+                        return d.toLocalDate();
+                    } else if (o instanceof java.util.Date d) {
+                        return new java.sql.Date(d.getTime()).toLocalDate();
+                    } else if (o instanceof CharSequence c) {
+                        return LocalDate.parse(c);
                     }
                 } else if (LocalDateTime.class.equals(type)) {
-                    if (o instanceof java.sql.Timestamp) {
-                        return ((java.sql.Timestamp) o).toLocalDateTime();
-                    } else if (o instanceof java.util.Date) {
-                        return toInstant((java.util.Date) o).atZone(ZoneId.systemDefault()).toLocalDateTime();
-                    } else if (o instanceof CharSequence) {
-                        return LocalDateTime.parse((CharSequence) o);
+                    if (o instanceof java.sql.Timestamp t) {
+                        return t.toLocalDateTime();
+                    } else if (o instanceof java.util.Date d) {
+                        return toInstant(d).atZone(ZoneId.systemDefault()).toLocalDateTime();
+                    } else if (o instanceof CharSequence c) {
+                        return LocalDateTime.parse(c);
                     }
                 } else if (LocalTime.class.equals(type)) {
-                    if (o instanceof java.sql.Time) {
-                        return ((java.sql.Time) o).toLocalTime();
-                    } else if (o instanceof java.util.Date) {
-                        return toInstant((java.util.Date) o).atZone(ZoneId.systemDefault()).toLocalTime();
-                    } else if (o instanceof CharSequence) {
-                        return LocalTime.parse((CharSequence) o);
+                    if (o instanceof java.sql.Time t) {
+                        return t.toLocalTime();
+                    } else if (o instanceof java.util.Date d) {
+                        return toInstant(d).atZone(ZoneId.systemDefault()).toLocalTime();
+                    } else if (o instanceof CharSequence c) {
+                        return LocalTime.parse(c);
                     }
                 } else if (OffsetTime.class.equals(type)) {
-                    if (o instanceof java.sql.Time) {
-                        return ((java.sql.Time) o).toLocalTime().atOffset(OffsetDateTime.now().getOffset());
-                    } else if (o instanceof java.util.Date) {
-                        return toInstant((java.util.Date) o).atZone(ZoneId.systemDefault()).toOffsetDateTime().toOffsetTime();
-                    } else if (o instanceof CharSequence) {
-                        return OffsetTime.parse((CharSequence) o);
+                    if (o instanceof java.sql.Time t) {
+                        return t.toLocalTime().atOffset(OffsetDateTime.now().getOffset());
+                    } else if (o instanceof java.util.Date d) {
+                        return toInstant(d).atZone(ZoneId.systemDefault()).toOffsetDateTime().toOffsetTime();
+                    } else if (o instanceof CharSequence c) {
+                        return OffsetTime.parse(c);
                     }
                 } else if (OffsetDateTime.class.equals(type)) {
-                    if (o instanceof java.sql.Timestamp) {
-                        return ((java.sql.Timestamp) o).toInstant().atZone(ZoneId.systemDefault()).toOffsetDateTime();
-                    } else if (o instanceof java.util.Date) {
-                        return toInstant((java.util.Date) o).atZone(ZoneId.systemDefault()).toOffsetDateTime();
-                    } else if (o instanceof CharSequence) {
-                        return OffsetDateTime.parse((CharSequence) o);
+                    if (o instanceof java.sql.Timestamp t) {
+                        return t.toInstant().atZone(ZoneId.systemDefault()).toOffsetDateTime();
+                    } else if (o instanceof java.util.Date d) {
+                        return toInstant(d).atZone(ZoneId.systemDefault()).toOffsetDateTime();
+                    } else if (o instanceof CharSequence c) {
+                        return OffsetDateTime.parse(c);
                     }
                 }
 
