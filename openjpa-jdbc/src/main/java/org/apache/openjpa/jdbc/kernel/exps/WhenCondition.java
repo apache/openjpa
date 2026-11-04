@@ -73,7 +73,7 @@ public class WhenCondition
 
         _exp.appendTo(sel, ctx, bstate.state1, buf);
         buf.append(" THEN ");
-        _val.appendTo(sel, ctx, bstate.state2, buf, 0);
+        GeneralCaseExpression.appendResult(sel, ctx, bstate.state2, buf, _val);
 
     }
 

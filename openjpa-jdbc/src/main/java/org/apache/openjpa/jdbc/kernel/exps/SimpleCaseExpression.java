@@ -147,7 +147,7 @@ public class SimpleCaseExpression
             _exp[i].appendTo(sel, ctx, cstate.states[i+1], buf);
         }
         buf.append(" ELSE ");
-        _val.appendTo(sel, ctx, cstate.states[_exp.length+1], buf, 0);
+        GeneralCaseExpression.appendResult(sel, ctx, cstate.states[_exp.length+1], buf, _val);
 
         buf.append(" END ");
     }

@@ -23,8 +23,10 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -55,6 +57,10 @@ public class HSQLDictionary extends DBDictionary {
     private int dbMajorVersion;
     private int dbMinorVersion;
     private int violation_of_unique_index_or_constraint;
+
+    // the precision and scale of the decimal casts, also used for decimal
+    // columns without a precision (OPENJPA-3063)
+    private static final String UNSIZED_DECIMAL_SIZE = "(128,32)";
 
     private SQLBuffer _oneBuffer = new SQLBuffer(this).append("1");
 
@@ -87,6 +93,11 @@ public class HSQLDictionary extends DBDictionary {
 
         requiresCastForMathFunctions = true;
         requiresCastForComparisons = true;
+        // EXTRACT(SECOND FROM ?) fails with "data type cast needed for parameter"
+        requiresCastForExtractOperand = true;
+        // a string literal is a CHAR, so CASE WHEN ... THEN 'young' ELSE 'old'
+        // END returns 'old  ', padded to the length of the longest result
+        requiresCastForCaseStringResult = true;
 
         reservedWordSet.addAll(Arrays.asList(new String[]{
             "BEFORE", "BIGINT", "BINARY", "CACHED", "DATETIME", "LIMIT",
@@ -196,7 +207,9 @@ public class HSQLDictionary extends DBDictionary {
             // instead so comparisons happen on the normalized local time.
             return Types.TIME;
         }
-        if (dbMajorVersion > 1) {
+        // the version is not known before the first connection, a mapping
+        // resolved earlier must not get the HSQLDB 1.x types (OPENJPA-3063)
+        if (dbMajorVersion != 1) {
             return super.getPreferredType(type);
         }
         switch (type) {
@@ -207,6 +220,27 @@ public class HSQLDictionary extends DBDictionary {
             default:
                 return super.getPreferredType(type);
         }
+    }
+
+    /**
+     * HSQLDB 2.x reads an unsized <code>NUMERIC</code> or <code>DECIMAL</code>
+     * as <code>NUMERIC(128, 0)</code>, which rounds every value to an integer.
+     * A decimal column of a non integral Java type without a precision is
+     * created as <code>NUMERIC(128,32)</code> instead, the type the decimal
+     * casts of this dictionary use, see {@link #appendLength(SQLBuffer, int)}.
+     * HSQLDB has no decimal floating point type, and a <code>DOUBLE</code>
+     * would not keep decimal fractions exact. A <code>NumericTypeName</code>
+     * or <code>DecimalTypeName</code> set by the user is kept.
+     */
+    @Override
+    public String getTypeName(Column col) {
+        if (dbMajorVersion != 1 && isUnsizedDecimal(col)) {
+            String typeName = getTypeName(col.getType());
+            if ("NUMERIC".equalsIgnoreCase(typeName) || "DECIMAL".equalsIgnoreCase(typeName)) {
+                return typeName + UNSIZED_DECIMAL_SIZE;
+            }
+        }
+        return super.getTypeName(col);
     }
 
     @Override
@@ -373,6 +407,32 @@ public class HSQLDictionary extends DBDictionary {
         }
     }
 
+    /**
+     * A {@link java.sql.Time} has no fractional seconds, so a
+     * {@link LocalTime} is bound and read as it is on HSQLDB 2.4 and later.
+     */
+    @Override
+    public void setLocalTime(PreparedStatement stmnt, int idx, LocalTime val, Column col)
+        throws SQLException {
+        if (supportsJavaTime()) {
+            stmnt.setObject(idx, val);
+        } else {
+            super.setLocalTime(stmnt, idx, val, col);
+        }
+    }
+
+    @Override
+    public LocalTime getLocalTime(ResultSet rs, int column) throws SQLException {
+        if (supportsJavaTime()) {
+            return rs.getObject(column, LocalTime.class);
+        }
+        return super.getLocalTime(rs, column);
+    }
+
+    private boolean supportsJavaTime() {
+        return dbMajorVersion > 2 || (dbMajorVersion == 2 && dbMinorVersion >= 4);
+    }
+
     @Override
     protected void appendSelectRange(SQLBuffer buf, long start, long end,
         boolean subselect) {
@@ -398,10 +458,25 @@ public class HSQLDictionary extends DBDictionary {
         // for requiresCastForMathFunctions / requiresCastForComparisons would
         // corrupt decimal values; always spell out precision and scale.
         if (type == Types.NUMERIC || type == Types.DECIMAL) {
-            buf.append("(128,32)");
+            buf.append(UNSIZED_DECIMAL_SIZE);
         } else {
             super.appendLength(buf, type);
         }
+    }
+
+    /**
+     * A plain <code>TIME</code> has no fractional seconds and a plain
+     * <code>TIMESTAMP</code> six digits, so an operand of EXTRACT is cast to
+     * <code>TIME(9)</code> or <code>TIMESTAMP(9)</code> to keep its nanoseconds
+     * for <code>EXTRACT(SECOND ...)</code>. Other casts keep the plain types,
+     * which round a parameter to the precision of the column it is compared to.
+     */
+    @Override
+    public String getExtractOperandCastType(int type) {
+        if (type == Types.TIME || type == Types.TIMESTAMP) {
+            return getTypeName(type) + "(9)";
+        }
+        return super.getExtractOperandCastType(type);
     }
 
     @Override

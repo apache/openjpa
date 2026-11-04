@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.sql.SQLException;
 import java.sql.Time;
+import java.sql.Types;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetTime;
@@ -177,12 +178,12 @@ public class ExtractDateTimeField extends AbstractVal {
         }
         Object value = constVal.getValue(ctx, valueState);
         if (value instanceof LocalDate || value instanceof java.sql.Date) {
-            return dict.dateTypeName;
+            return dict.getExtractOperandCastType(Types.DATE);
         }
         if (value instanceof LocalTime || value instanceof OffsetTime || value instanceof Time) {
-            return dict.timeTypeName;
+            return dict.getExtractOperandCastType(Types.TIME);
         }
-        return dict.timestampTypeName;
+        return dict.getExtractOperandCastType(Types.TIMESTAMP);
     }
 
     @Override
