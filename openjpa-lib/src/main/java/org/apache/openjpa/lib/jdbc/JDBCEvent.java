@@ -78,7 +78,7 @@ public class JDBCEvent extends EventObject {
     public static final short BEFORE_ROLLBACK = 9;
 
     /**
-     * Type code indicating that a rollback just occured.
+     * Type code indicating that a rollback just occurred.
      */
     public static final short AFTER_ROLLBACK = 10;
 
