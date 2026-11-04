@@ -51,9 +51,7 @@ public class StoreFacadeTypeRegistry {
      * Return the implementation for the given facade and store.
      *
      * @param facadeType the facade interface
-     * @param storeType the store's
-     * {@link org.apache.openjpa.kernel.StoreManager} type, or null for generic
-     * @param implType the registered implementor
+     * @param storeType the store's {@link org.apache.openjpa.kernel.StoreManager} type, or null for generic
      */
     public Class getImplementation(Class facadeType, Class storeType) {
         // traverse store type hierarchy to store manager to find most specific
@@ -74,9 +72,7 @@ public class StoreFacadeTypeRegistry {
      * provided it the facade type is assignable from the deafult type.
      *
      * @param facadeType the facade interface
-     * @param storeType the store's
-     * {@link org.apache.openjpa.kernel.StoreManager} type, or null for generic
-     * @param implType the registered implementor
+     * @param storeType the store's {@link org.apache.openjpa.kernel.StoreManager} type, or null for generic
      * @param defaultType class if no registered implementation is available.
      */
     public Class getImplementation(Class facadeType, Class storeType,

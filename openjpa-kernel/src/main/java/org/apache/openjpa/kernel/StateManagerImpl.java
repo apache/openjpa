@@ -176,7 +176,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     /**
      * <p>set to <code>false</code> to prevent the postLoad method from
      * sending lifecycle callback events.</p>
-     * <p>Callbacks are enabled by default</>
+     * <p>Callbacks are enabled by default</p>
      */
     private boolean postLoadCallback = true;
 

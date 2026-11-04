@@ -163,7 +163,7 @@ public class ProxyMaps
     }
 
     /**
-     * Call before invoking {@link Properties#loadXML} on super.
+     * Call before invoking {@link Properties#loadFromXML} on super.
      */
     public static void beforeLoadFromXML(ProxyMap map, InputStream in) {
         dirty(map, true);

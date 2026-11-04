@@ -384,7 +384,7 @@ public interface FetchConfiguration
      * This is same as calling {@linkplain #setHint(String, Object, Object)} with the third
      * argument being the same as the second.
      *
-     * @param name the name of the hint
+     * @param key the name of the hint
      * @param value the value of the hint. If the hint has a corresponding setter, then
      * the type of value must be same as the setter argument.
      *
@@ -395,18 +395,18 @@ public interface FetchConfiguration
     /**
      * Get the hint value for the specific key as originally set by the caller, or null if the hint is not specified.
      *
-	 * @param name the hint name
-	 * @since 0.4.0
-	 */
-	Object getHint (String key);
+     * @param key the hint name
+     * @since 0.4.0
+     */
+    Object getHint (String key);
 
-	/**
+    /**
      * Get an immutable view of the currently active hints and their values.
-	 * The values are as specified by the user.
-	 *
-	 * @since 2.0.0
-	 */
-	Map<String, Object> getHints();
+     * The values are as specified by the user.
+     *
+     * @since 2.0.0
+     */
+    Map<String, Object> getHints();
 
 	/**
 	 * Affirm if the given hint has been set in this receiver.

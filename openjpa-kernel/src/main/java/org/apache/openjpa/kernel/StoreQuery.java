@@ -36,7 +36,7 @@ import org.apache.openjpa.meta.FieldMetaData;
 /**
  * Component that executes queries against the datastore. For
  * expression-based queries, consider subclassing
- * {@link ExpressionStoreManagerQuery}.
+ * {@link ExpressionStoreQuery}.
  *
  * @author Abe White
  * @since 0.4.0
@@ -208,9 +208,6 @@ public interface StoreQuery
          * pack results itself, each element of the returned result object
          * provider should be an object array containing the projection values.
          *
-         * @param lrs true if the query result should be treated as a
-         * large result set, assuming the query is not an
-         * aggregate and does not have grouping
          * @see #isPacking
          */
         ResultObjectProvider executeQuery(StoreQuery q, Object[] params,
@@ -248,7 +245,7 @@ public interface StoreQuery
 
         /**
          * Extract the value of the <code>orderIndex</code>th ordering
-         * expression in {@link Query#getOrderingClauses} from the
+         * expression in {@code javax.management.Query#getOrderingClauses} from the
          * given result object. The result object will be an object from
          * the result object provider returned from {@link #executeQuery}.
          * This method is used when several result lists have to be merged

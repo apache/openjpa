@@ -90,7 +90,7 @@ public interface BrokerFactory
      * @param pass  Password to use when obtaining a connection. Will be ignored if a connection factory is
      *     obtained from JNDI.
      * @param managed Whether managed transactions will be used by this Broker
-     * @param connRetainMode {@link ConnectionRetainMode}
+     * @param connRetainMode {@link ConnectionRetainModes}
      * @param findExisting Whether the internal pool of brokers should be used.
      * @param cfName  JTA ConnectionFactory to use
      * @param cf2Name  Non-JTA ConnectionFactory to use.
@@ -166,7 +166,7 @@ public interface BrokerFactory
     /**
      * Creates the database schema and tables required by the persistence
      * unit. Implements the {@code create} action of the JPA 3.2
-     * {@link jakarta.persistence.SchemaManager} contract.
+     * {@code jakarta.persistence.SchemaManager} contract.
      *
      * @since 4.2.0
      */
@@ -175,7 +175,7 @@ public interface BrokerFactory
     /**
      * Drops the database schema and tables managed by the persistence
      * unit. Implements the {@code drop} action of the JPA 3.2
-     * {@link jakarta.persistence.SchemaManager} contract.
+     * {@code jakarta.persistence.SchemaManager} contract.
      *
      * @since 4.2.0
      */
@@ -184,7 +184,7 @@ public interface BrokerFactory
     /**
      * Validates that the live database schema matches the metadata of the
      * persistence unit. Implements the {@code validate} action of the
-     * JPA 3.2 {@link jakarta.persistence.SchemaManager} contract.
+     * JPA 3.2 {@code jakarta.persistence.SchemaManager} contract.
      *
      * @since 4.2.0
      */
@@ -193,7 +193,7 @@ public interface BrokerFactory
     /**
      * Truncates all rows from tables managed by the persistence unit.
      * Implements the {@code truncate} action of the JPA 3.2
-     * {@link jakarta.persistence.SchemaManager} contract.
+     * {@code jakarta.persistence.SchemaManager} contract.
      *
      * @since 4.2.0
      */

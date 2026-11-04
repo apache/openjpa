@@ -58,7 +58,7 @@ public interface InstrumentationManager extends Closeable {
     /**
      * Stops all instruments for all managed providers for a given level
      * and context.
-     * @param level  instrumentation level
+     * @param broker  instrumentation level
      * @param context  instrumentation context (broker, factory, config,...)
      */
     void stop(InstrumentationLevel broker, Object context);

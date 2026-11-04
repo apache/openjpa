@@ -250,7 +250,7 @@ public interface StoreManager
      * The current version will roll over to this next version upon successful
      * commit.
      *
-     * @see org.apache.openjpa.util.ApplicationIds#assign()
+     * @see org.apache.openjpa.util.ApplicationIds#assign
      */
     Collection<Exception> flush(Collection<OpenJPAStateManager> sms);
 
@@ -269,7 +269,7 @@ public interface StoreManager
      * be ignored if it is more efficient to assign within {@link #flush}
      * @see org.apache.openjpa.util.ImplHelper#generateFieldValue
      * @see org.apache.openjpa.util.ImplHelper#generateIdentityValue
-     * @see org.apache.openjpa.util.ApplicationIds#assign()
+     * @see org.apache.openjpa.util.ApplicationIds#assign
      * @since 0.3.3
      */
     boolean assignObjectId(OpenJPAStateManager sm, boolean preFlush);

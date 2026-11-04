@@ -1846,7 +1846,7 @@ public interface OpenJPAConfiguration
      * Sets the plug-in string that describes the policy to distribute cached instances
      * across named partitions of L2 data cache.
      *
-     * @param a plug-in string for {@link CacheDistributionPolicy}.
+     * @param policyPlugin plug-in string for {@link CacheDistributionPolicy}.
      * @since 2.0.0
      */
     void setCacheDistributionPolicy(String policyPlugin);
@@ -1958,7 +1958,7 @@ public interface OpenJPAConfiguration
     void setOptimizeIdCopy(Boolean optimizeIds);
 
     /**
-     * Indicates if the {@link Thread#contextClassLoader} should be used
+     * Indicates if the {@link Thread#getContextClassLoader()} should be used
      * as fallback if the result class for {@code select new} is not found
      * by the classloader of the entity.
      *
@@ -1967,7 +1967,7 @@ public interface OpenJPAConfiguration
     boolean getUseTCCLinSelectNew();
 
     /**
-     * Indicates if the {@link Thread#contextClassLoader} should be used
+     * Indicates if the {@link Thread#getContextClassLoader()} should be used
      * as fallback if the result class for {@code select new} is not found
      * by the classloader of the entity.
      *
@@ -1976,7 +1976,7 @@ public interface OpenJPAConfiguration
     void setUseTCCLinSelectNew(boolean useTcclForSelectNew);
 
     /**
-     * Indicates if the {@link Thread#contextClassLoader} should be used
+     * Indicates if the {@link Thread#getContextClassLoader()} should be used
      * as fallback if the result class for {@code select new} is not found
      * by the classloader of the entity.
      *

@@ -27,7 +27,7 @@ import org.apache.openjpa.util.UserException;
 /**
  * An immutable representation of a Specification supported by OpenJPA.
  *
- * Available via {@linkplain OpenJPAConfiguration#getSpecificationInstance()()}
+ * Available via {@linkplain OpenJPAConfiguration#getSpecificationInstance()}
  * for configuration that may depend on Specification version.
  *
  * @author Pinaki Poddar
@@ -120,8 +120,8 @@ public class Specification {
      * receiver.
 
      * @return 0 if they are equal.
-     *       > 0 if this receiver is higher version.
-     *       < 0 if this receiver is lower version.
+     *  {@code >} 0 if this receiver is higher version.
+     *  {@code <} 0 if this receiver is lower version.
      */
     public int compareVersion(Specification other) {
         return _major > other._major ? 1 : _major == other._major ? 0 : -1;

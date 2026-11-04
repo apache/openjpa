@@ -24,7 +24,7 @@ import org.apache.openjpa.kernel.ExpressionStoreQuery;
 import org.apache.openjpa.meta.ClassMetaData;
 
 /**
- * Parser for query languages that will be used by a {@link ExpressionQuery}.
+ * Parser for query languages that will be used by a {@link ExpressionStoreQuery}.
  * A QueryParser is responsible for translating from some string-based query
  * language into {@link Expression}s. Parsers should be stateless.
  *

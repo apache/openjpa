@@ -93,7 +93,7 @@ public class OSGiManagedRuntime extends AbstractManagedRuntime {
      *  {@link #deregisterServiceListener(BundleContext)}, when
      *  the bundle context is being stopped.</p>
      *
-     * @param bundle The bundle, which is currently being started.
+     * @param bundleContext The bundle context, which is currently being started.
      * @throws InvalidSyntaxException When the filter expression is invalid.
      */
     public static synchronized void registerServiceListener(BundleContext bundleContext)

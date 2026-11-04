@@ -42,7 +42,6 @@ public interface JMXInstrument extends Instrument {
     /**
      * Gets the context reference for the instrument.  Required to register
      * the instrument under a unique id.
-     * @param cref the context reference for the instrument
      */
     String getContextRef();
 
