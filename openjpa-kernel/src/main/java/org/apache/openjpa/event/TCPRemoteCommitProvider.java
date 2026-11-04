@@ -59,6 +59,7 @@ import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.Serialization;
+import org.apache.openjpa.util.UserException;
 
 
 /**
