@@ -123,10 +123,7 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
     public void setBindAddress(final String address) throws UnknownHostException {
         InetAddress addr = InetAddress.getByName(address);
         if (!localAddresses.contains(addr)) {
-            if (log.isWarnEnabled()) {
-                log.warn(s_loc.get("tcp-address-notself", addr));
-            }
-            return;
+            throw new UserException(s_loc.get("tcp-address-notself", addr));
         }
         _bindAddress = addr;
         _localhost = addr.getAddress();
