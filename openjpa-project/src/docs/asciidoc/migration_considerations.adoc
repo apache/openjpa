@@ -686,6 +686,29 @@ To restore the previous SQL set ``openjpa.jdbc.DBDictionary=sqlserver(CurrentDat
 [class]``SQLServerDictionary`` declares no ``NextSequenceQuery``, although SQL Server has had sequence objects since 2012, so a named `@SequenceGenerator` that used to fail is now backed by a counter row instead of by the sequence it names.
 To draw from that sequence, configure the query - see <<jpa_4.2_SequenceGeneratorWithoutSequences>>.
 
+`EXTRACT(WEEK FROM ...)` now returns the ISO week, as the specification defines it, by rendering ``DATEPART(ISO_WEEK, x)`` (OPENJPA-3064).
+Before, SQL Server counted the weeks from January 1st, so queries on such dates return different values: for example 2023-12-31 is now week 52 instead of 53.
+`EXTRACT(SECOND FROM ...)` now includes the fraction of the second, as the specification requires, by adding `DATEPART(NANOSECOND, x) / 1000000000.0` to the whole seconds that `DATEPART(SECOND, x)` returns.
+
+When the schema tool drops a single column, for example with `SchemaAction='drop'` on a table that holds columns of classes that are not mapped, it now drops the primary key, unique constraints, indexes, default constraints and foreign keys of the table that contain the column first, as other databases do with the column itself; SQL Server refused to drop such a column before.
+The objects and the column are dropped in one transaction: if the column cannot be dropped, for example because a foreign key of another table references the primary key, nothing is dropped.
+
+[[jpa_4.2_SQLServerDecimalColumns]]
+==== Decimal columns on Microsoft SQL Server
+
+SQL Server reads a `DECIMAL` or `NUMERIC` column without a precision as `DECIMAL(18,0)`, so a value such as `2.5` was stored and read back as `3` (OPENJPA-3064).
+[class]``SQLServerDictionary`` now writes the precision and scale of a decimal column into the generated DDL: an attribute mapped with `@Column(precision = 10, scale = 2)` gets a `NUMERIC(10, 2)` column.
+A [class]``BigDecimal``, [class]``Number``, `double` or `float` attribute mapped to a decimal column without a precision gets the largest precision SQL Server allows, 38 digits.
+The scale is the `scale` of the mapping if one is given, at most 38, otherwise 10, which leaves 28 digits before the decimal point: a [class]``BigDecimal`` without `@Column(precision)` gets a `NUMERIC(38, 10)` column and `@Column(scale = 2)` gets `NUMERIC(38, 2)`.
+Values are read back with the scale of the column, `2.5` as `2.5000000000` in the first case, so compare them with `compareTo` rather than `equals`.
+An exact type was chosen over `FLOAT` so that decimal values are not rounded to binary fractions.
+Since the precision is now part of the DDL, a `@Column(precision)` above 38 gives DDL that SQL Server rejects; before, such a column was created as `DECIMAL(18,0)`.
+Integral attributes such as [class]``BigInteger`` keep their column type, and a `columnDefinition` is used as given.
+A `NumericTypeName` or `DecimalTypeName` set on the dictionary is used as before, for unsized columns too.
+
+Tables created by earlier releases are not altered by the mapping tool or `SynchronizeMappings`: an existing `DECIMAL(18,0)` column is accepted as it is and keeps rounding to integers.
+Migrate the affected columns, for example ``ALTER TABLE PRODUCT ALTER COLUMN PRICE DECIMAL(10, 2)``, and check the stored values, which were already rounded.
+
 [[jpa_4.2_Oracle]]
 ==== Oracle
 

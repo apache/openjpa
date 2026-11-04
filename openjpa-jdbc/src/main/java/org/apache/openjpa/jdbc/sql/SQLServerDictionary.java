@@ -40,6 +40,7 @@ import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.lib.util.Localizer;
@@ -58,6 +59,23 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
 
     private static final Localizer _loc =
         Localizer.forPackage(SQLServerDictionary.class);
+
+    /**
+     * The largest precision of a decimal column on SQL Server.
+     */
+    private static final int MAX_DECIMAL_PRECISION = 38;
+
+    /**
+     * The largest scale of a decimal column on SQL Server, which cannot be
+     * larger than the precision.
+     */
+    private static final int MAX_DECIMAL_SCALE = MAX_DECIMAL_PRECISION;
+
+    /**
+     * The scale of an unsized decimal column. It leaves 28 digits before the
+     * decimal point, more than a <code>long</code> has.
+     */
+    private static final int UNSIZED_DECIMAL_SCALE = 10;
 
     private String schemaCase = SCHEMA_CASE_PRESERVE;
     /**
@@ -91,6 +109,11 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
         // rather than as their numeric code point. Schemas created by earlier
         // releases need an explicit StoreCharsAsNumbers=true (OPENJPA-3033).
         storeCharsAsNumbers = false;
+
+        // the precision and scale of a decimal column are part of its DDL type,
+        // an unsized DECIMAL is DECIMAL(18,0) (OPENJPA-3064)
+        fixedSizeTypeNameSet.remove("NUMERIC");
+        fixedSizeTypeNameSet.remove("DECIMAL");
 
         // reservedWordSet subset that CANNOT be used as valid column names
         // (i.e., without surrounding them with double-quotes)
@@ -207,6 +230,47 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
             log.warn(_loc.get("sqlserver-cachedstmnts"));
     }
 
+    /**
+     * DATEPART(WEEK) counts the weeks from January 1st; DATEPART(ISO_WEEK)
+     * gives the ISO-8601 week that JPA defines. DATEPART(SECOND) returns the
+     * whole seconds only; the fraction of the second that JPA includes is
+     * added from DATEPART(NANOSECOND).
+     */
+    @Override
+    public String getExtractDateTimeFieldFunction(DateTimeExtractField extField) {
+        if (extField == DateTimeExtractField.WEEK) {
+            return extractDateTimeFieldFunction.replace("{0}", "ISO_WEEK");
+        }
+        if (extField == DateTimeExtractField.SECOND) {
+            return "(" + super.getExtractDateTimeFieldFunction(extField) + " + "
+                + extractDateTimeFieldFunction.replace("{0}", "NANOSECOND") + " / 1000000000.0)";
+        }
+        return super.getExtractDateTimeFieldFunction(extField);
+    }
+
+    /**
+     * SQL Server reads an unsized <code>NUMERIC</code> or <code>DECIMAL</code>
+     * as <code>DECIMAL(18,0)</code>, which rounds every value to an integer. A
+     * decimal column of a non integral Java type without a precision is
+     * created with the largest precision and the given scale, or a scale of
+     * 10 if none is given, so that the fraction of the value is kept. A scale
+     * above 38, which SQL Server rejects, is lowered to 38. A
+     * <code>NumericTypeName</code> or <code>DecimalTypeName</code> set by the
+     * user is kept.
+     */
+    @Override
+    public String getTypeName(Column col) {
+        if (isUnsizedDecimal(col)) {
+            String typeName = getTypeName(col.getType());
+            if ("NUMERIC".equalsIgnoreCase(typeName) || "DECIMAL".equalsIgnoreCase(typeName)) {
+                int scale = col.getDecimalDigits() > 0
+                    ? Math.min(col.getDecimalDigits(), MAX_DECIMAL_SCALE) : UNSIZED_DECIMAL_SCALE;
+                return typeName + "(" + MAX_DECIMAL_PRECISION + ", " + scale + ")";
+            }
+        }
+        return super.getTypeName(col);
+    }
+
     @Override
     public Column[] getColumns(DatabaseMetaData meta, String catalog,
         String schemaName, String tableName, String columnName, Connection conn)
@@ -246,6 +310,55 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
                 cols[i].setType(Types.CLOB);
         }
         return cols;
+    }
+
+    /**
+     * SQL Server refuses to drop a column that the primary key, a unique
+     * constraint, an index, a default constraint or a foreign key of the
+     * table depends on, while most other databases drop these with the
+     * column. The schema tool drops single columns when a table holds columns
+     * that are not mapped, for example the columns of a subclass that is not
+     * listed. Drop the objects that depend on the column, as found in the
+     * catalog views, and then the column, in one transaction, so that nothing
+     * is dropped if the column cannot be dropped, for example because a
+     * foreign key of another table references the primary key.
+     */
+    @Override
+    public String[] getDropColumnSQL(Column column) {
+        String[] dropColumn = super.getDropColumnSQL(column);
+        if (dropColumn.length == 0) {
+            return dropColumn;
+        }
+        String table = getFullName(column.getTable(), false);
+        String tableLiteral = "N'" + table.replace("'", "''") + "'";
+        String columnLiteral = "N'" + toDBName(column.getIdentifier(), false).replace("'", "''") + "'";
+        String tableId = "OBJECT_ID(" + tableLiteral + ")";
+        String columnId = "COLUMNPROPERTY(" + tableId + ", " + columnLiteral + ", 'ColumnId')";
+        String dropConstraint = "N'ALTER TABLE ' + " + tableLiteral + " + N' DROP CONSTRAINT ' + QUOTENAME(";
+        StringBuilder sql = new StringBuilder()
+            .append("DECLARE @sql NVARCHAR(MAX) = N''; ")
+            .append("SELECT @sql = @sql + ").append(dropConstraint).append("f.name) + N'; ' ")
+            .append("FROM sys.foreign_keys f WHERE f.parent_object_id = ").append(tableId)
+            .append(" AND EXISTS (SELECT 1 FROM sys.foreign_key_columns fc ")
+            .append("WHERE fc.constraint_object_id = f.object_id AND fc.parent_column_id = ")
+            .append(columnId).append("); ")
+            .append("SELECT @sql = @sql + CASE WHEN i.is_primary_key = 1 OR i.is_unique_constraint = 1 ")
+            .append("THEN ").append(dropConstraint).append("i.name) ")
+            .append("ELSE N'DROP INDEX ' + QUOTENAME(i.name) + N' ON ' + ").append(tableLiteral)
+            .append(" END + N'; ' FROM sys.indexes i WHERE i.object_id = ").append(tableId)
+            .append(" AND EXISTS (SELECT 1 FROM sys.index_columns ic ")
+            .append("WHERE ic.object_id = i.object_id AND ic.index_id = i.index_id AND ic.column_id = ")
+            .append(columnId).append("); ")
+            .append("SELECT @sql = @sql + ").append(dropConstraint).append("d.name) + N'; ' ")
+            .append("FROM sys.default_constraints d WHERE d.parent_object_id = ").append(tableId)
+            .append(" AND d.parent_column_id = ").append(columnId).append("; ")
+            .append("BEGIN TRY BEGIN TRANSACTION; EXEC sp_executesql @sql; ");
+        for (String s : dropColumn) {
+            sql.append(s).append("; ");
+        }
+        sql.append("COMMIT TRANSACTION; END TRY ")
+            .append("BEGIN CATCH IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION; THROW; END CATCH");
+        return new String[]{ sql.toString() };
     }
 
     @Override
