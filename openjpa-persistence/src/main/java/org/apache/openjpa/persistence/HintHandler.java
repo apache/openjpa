@@ -52,11 +52,12 @@ import org.apache.openjpa.lib.util.StringDistance;
  *    as public static final fields. These fields are collected by reflection.
  *    The values are handled by invoking methods on the owning {@link QueryImpl}
  *
- * 2. Some hint keys are collected from bean-style property names of {@link
- *    JDBCFetchPlan} by {@link Reflection#getBeanStylePropertyNames(Class)
- *    reflection} and prefixed with <code>openjpa.FetchPlan</code>.
- *    Their values are used to set the corresponding property of {@link
- *    FetchPlan} via {@link #hintToSetter(FetchPlan, String, Object) reflection}
+ * 2. Some hint keys are collected from bean-style property names of
+ *    {@code org.apache.openjpa.persistence.jdbc.JDBCFetchPlan}
+ *    by {@link Reflection#getBeanStylePropertyNames(Class)}
+ *    reflection and prefixed with <code>openjpa.FetchPlan</code>.
+ *    Their values are used to set the corresponding property of {@link FetchPlan}
+ *    via {@link Filters#hintToSetter(Object, String, Object)} reflection
  *
  * 3. Currently defined <code>jakarta.persistence.*</code> hint keys have
  *    a equivalent counterpart to one of these FetchPlan keys.

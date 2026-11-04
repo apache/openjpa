@@ -38,17 +38,17 @@ import org.apache.openjpa.meta.FieldMetaData;
  * Specific implementation of this interface is distinguished by the nature of
  * the source and the representation available for type system in the source.
  *
- * @param T the M2 representation of type based on the nature of the source
+ * @param <T> the M2 representation of type based on the nature of the source
  * e.g. {@linkplain TypeElement} for annotation processing of *.java files or
  * {@link Class} for compiled bytecode.
  *
- * @param M the corresponding M2 representation for member of type T
+ * @param <M> the corresponding M2 representation for member of type T
  *
  * @author Pinaki Poddar
  *
  * @since 2.0.0
  */
-public interface MetadataProcessor<T,M> {
+public interface MetadataProcessor<T, M> {
 	/**
 	 * Determine the access type of the given type.
 	 *

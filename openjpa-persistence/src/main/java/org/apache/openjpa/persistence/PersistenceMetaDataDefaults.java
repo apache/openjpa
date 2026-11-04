@@ -661,8 +661,8 @@ public class PersistenceMetaDataDefaults
 
     /**
      * Gets the members that are backing members for attributes being persisted.
-     * Unlike {@linkplain #getPersistentFields(ClassMetaData)} and
-     * {@linkplain #getPersistentMethods(ClassMetaData)} which returns
+     * Unlike {@linkplain #getPersistentFields(ClassMetaData, boolean)} and
+     * {@linkplain #getPersistentMethods(ClassMetaData, boolean)} which returns
      * <em>possible</em> candidates, the result of this method is definite.
      *
      * Side-effect of this method is if the given class metadata has

@@ -497,35 +497,35 @@ public interface QueryDefinition extends Subquery {
      *
      * @param b -
      *          boolean value
-         * @return the corresponding Expression literal
-         */
-	Expression literal(boolean b);
+     * @return the corresponding Expression literal
+     */
+    Expression literal(boolean b);
 
-	/**
-         * Create an Expression corresponding to a Calendar value.
-         *
-         * @param c -
-         *          Calendar value
-         * @return the corresponding Expression literal
-         */
-	Expression literal(Calendar c);
+    /**
+     * Create an Expression corresponding to a Calendar value.
+     *
+     * @param c -
+     *          Calendar value
+     * @return the corresponding Expression literal
+     */
+    Expression literal(Calendar c);
 
-	/**
-         * Create an Expression corresponding to a Date value.
-         *
-         * @param d -
-         *          Date value
-         * @return the corresponding Expression literal
-         */
-	Expression literal(Date d);
+    /**
+     * Create an Expression corresponding to a Date value.
+     *
+     * @param d -
+     *          Date value
+     * @return the corresponding Expression literal
+     */
+    Expression literal(Date d);
 
-	/**
-         * Create an Expression corresponding to a character value.
-         *
-         * @param character value
-         * @return the corresponding Expression literal
-         */
-	Expression literal(char c);
+    /**
+     * Create an Expression corresponding to a character value.
+     *
+     * @param c value
+     * @return the corresponding Expression literal
+     */
+    Expression literal(char c);
 
 	/**
 	 * Create an Expression corresponding to an entity class.
@@ -536,14 +536,14 @@ public interface QueryDefinition extends Subquery {
 	 */
 	Expression literal(Class cls);
 
-	/**
-         * Create an Expression corresponding to an enum.
-         *
-         * @param e -
-         *          enum
-         * @return the corresponding Expression literal
-         */
-	Expression literal(Enum<?> e);
+    /**
+     * Create an Expression corresponding to an enum.
+     *
+     * @param e -
+     *          enum
+     * @return the corresponding Expression literal
+     */
+    Expression literal(Enum<?> e);
 
 	/**
 	 * Create an Expression corresponding to a null value.
@@ -552,11 +552,11 @@ public interface QueryDefinition extends Subquery {
 	 */
 	Expression nullLiteral();
 
-	/**
-         * Specify use of a parameter of the given name.
-         *
-         * @param parameter name
-         * @return an Expression corresponding to a named parameter
-         */
-	Expression param(String name);
+    /**
+     * Specify use of a parameter of the given name.
+     *
+     * @param name parameter
+     * @return an Expression corresponding to a named parameter
+     */
+    Expression param(String name);
 }

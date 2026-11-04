@@ -370,8 +370,8 @@ public interface FetchPlan {
     /**
      * Set the hint for the given key to the given value.
      *
+     * @param key the name of the hint.
      * @param value the value of the hint.
-     * @param name the name of the hint.
      *
      * @since 2.0.0
      */

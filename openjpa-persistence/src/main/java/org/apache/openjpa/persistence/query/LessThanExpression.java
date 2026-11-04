@@ -19,13 +19,13 @@
 package org.apache.openjpa.persistence.query;
 
 /**
- * Denotes e1 < e2 Expression.
+ * Denotes {@code e1 < e2} Expression.
  *
  * @author Pinaki Poddar
  *
  */
 public class LessThanExpression extends BinaryExpressionPredicate {
-	
+
     private static final long serialVersionUID = 1L;
 
     public LessThanExpression(Expression op1, Expression op2) {

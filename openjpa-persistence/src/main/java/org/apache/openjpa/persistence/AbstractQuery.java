@@ -114,7 +114,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      * As native queries may not be parsed and hence their declared parameters may not be known, setting an positional
      * parameter has the side-effect of a positional parameter being declared.
      *
-     * @param position
+     * @param pos
      *            positive, integer position of the parameter
      * @param value
      *            an assignment compatible value
@@ -352,7 +352,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
     /**
      * Return the value bound to the parameter.
      *
-     * @param param
+     * @param p
      *            parameter object
      * @return parameter value
      * @throws IllegalStateException
@@ -445,7 +445,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      * Get the positional parameter with the given position. The parameter may just have been declared and not bound to
      * a value.
      *
-     * @param position
+     * @param pos
      *            specified in the user query.
      * @return parameter object
      * @throws IllegalArgumentException
@@ -548,7 +548,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      * @return a Map where the key represents the original identifier of the parameter (can be a String, Integer or a
      *         ParameterExpression itself) and the value is the concrete Parameter instance either constructed as a
      *         result of this call or supplied by declaring the parameter explicitly via
-     *         {@linkplain #declareParameter(Parameter)}.
+     *         {@linkplain #declareParameter(Object, Parameter)}.
      */
     public Map<Object, Parameter<?>> getDeclaredParameters() {
         if (_declaredParams == null) {
@@ -593,7 +593,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      * @param key
      *            this is the key to identify the parameter later in the context of this query. Valid key types are
      *            Integer, String or ParameterExpression itself.
-     * @param the
+     * @param param
      *            parameter instance to be declared
      */
     public void declareParameter(Object key, Parameter<?> param) {

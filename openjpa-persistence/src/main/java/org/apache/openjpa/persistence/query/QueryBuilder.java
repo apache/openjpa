@@ -34,7 +34,7 @@ public interface QueryBuilder {
      * Create a query definition object with the given root. The root must be an
      * entity class.
      *
-     * @param cls -
+     * @param root -
      *            an entity class
      * @return root domain object
      */

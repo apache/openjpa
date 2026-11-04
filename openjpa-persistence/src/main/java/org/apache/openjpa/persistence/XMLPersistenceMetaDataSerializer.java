@@ -1202,7 +1202,7 @@ public class XMLPersistenceMetaDataSerializer
 
     /**
      * Serialize field mapping content; this will be called before
-     * {@link #serializeValueMappingContent}. Does nothing by default.
+     * {@link #serializeCascades}. Does nothing by default.
      */
     protected void serializeFieldMappingContent(FieldMetaData fmd,
         PersistenceStrategy strategy)
@@ -1399,7 +1399,7 @@ public class XMLPersistenceMetaDataSerializer
     protected class SerializationComparator
         extends MetaDataInheritanceComparator {
 
-        
+
         private static final long serialVersionUID = 1L;
 
         @Override

@@ -907,7 +907,7 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
      * {@linkplain CriteriaQueryImpl#registerParameter(ParameterExpressionImpl)
      * registered} in a Criteriaquery during tree traversal.
      *
-     * @see ParameterExpressionImpl#assignAutoName(String)
+     * @see ParameterExpressionImpl#ParameterExpressionImpl(Class, String)
      */
     @Override
     public <T> ParameterExpression<T> parameter(Class<T> paramClass) {
