@@ -112,7 +112,7 @@ public class RemoteCommitEvent
     /**
      * When the event type is PAYLOAD_OIDS_WITH_ADDS, return the set of
      * object IDs for added objects. This will only be callable when the
-     * backward compatability property transmitAddObjectIds is true.
+     * backward compatibility property transmitAddObjectIds is true.
      */
     public Collection getPersistedObjectIds() {
         if (_payload != PAYLOAD_OIDS_WITH_ADDS) {
