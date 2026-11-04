@@ -30,9 +30,10 @@ import org.apache.openjpa.meta.JavaTypes;
 import org.junit.Test;
 
 /**
- * Tests the <code>StoreCharsAsNumbers</code> default of the Derby, H2 and
- * SQL Server dictionaries, which store Java <code>char</code> fields in
- * <code>CHAR</code> columns unless configured otherwise (OPENJPA-3033).
+ * Tests the <code>StoreCharsAsNumbers</code> default of the Derby, H2,
+ * SQL Server, MySQL and MariaDB dictionaries, which store Java
+ * <code>char</code> fields in <code>CHAR</code> columns unless configured
+ * otherwise (OPENJPA-3001, OPENJPA-3033, OPENJPA-3060).
  */
 public class TestStoreCharsAsNumbersDefaults {
 
@@ -64,6 +65,26 @@ public class TestStoreCharsAsNumbersDefaults {
     @Test
     public void testSQLServerExplicitStoreCharsAsNumbers() {
         assertExplicitNumbers(new SQLServerDictionary());
+    }
+
+    @Test
+    public void testMySQLStoresCharsAsCharByDefault() {
+        assertNativeCharDefault(new MySQLDictionary());
+    }
+
+    @Test
+    public void testMySQLExplicitStoreCharsAsNumbers() {
+        assertExplicitNumbers(new MySQLDictionary());
+    }
+
+    @Test
+    public void testMariaDBStoresCharsAsCharByDefault() {
+        assertNativeCharDefault(new MariaDBDictionary());
+    }
+
+    @Test
+    public void testMariaDBExplicitStoreCharsAsNumbers() {
+        assertExplicitNumbers(new MariaDBDictionary());
     }
 
     @Test
