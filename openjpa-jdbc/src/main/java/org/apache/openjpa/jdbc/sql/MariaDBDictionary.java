@@ -199,6 +199,8 @@ public class MariaDBDictionary extends DBDictionary {
         supportsUnsizedCharOnCast = false;
         // MariaDB has no BIGINT cast target; SIGNED [INTEGER] yields a 64 bit signed value
         longCastTypeName = "SIGNED";
+        // MariaDB supports the CHAR data type, as MySQL does (OPENJPA-3001)
+        storeCharsAsNumbers = false;
     }
 
     /**
