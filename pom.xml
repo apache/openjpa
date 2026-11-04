@@ -47,7 +47,8 @@
         <openjpa.Log>DefaultLevel=INFO</openjpa.Log>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <checkstyle.suppressions.location>openjpa-project${file.separator}suppressions.xml</checkstyle.suppressions.location>
-        <!-- apache-rat-plugin 0.17/0.18 are not thread safe (CME and ignored excludes in parallel builds, mvn -T) -->
+        <!-- apache-rat-plugin 0.17/0.18 are not thread safe (CME and ignored excludes in parallel builds, mvn -T).
+             Fixed in RAT 1.0.0 (https://issues.apache.org/jira/browse/RAT-573); update once it is released -->
         <version.apache-rat-plugin>0.16.1</version.apache-rat-plugin>
 
         <!-- the test settings can be overridden my specific profiles -->
