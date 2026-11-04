@@ -82,6 +82,7 @@ public class HSQLDictionary extends DBDictionary {
         trimLeadingFunction = "LTRIM({0})";
         trimTrailingFunction = "RTRIM({0})";
         trimBothFunction = "LTRIM(RTRIM({0}))";
+        currentTimeFunction = "CURTIME()";
 
         supportsQueryTimeout = false;
         supportsSelectStartIndex = true;
