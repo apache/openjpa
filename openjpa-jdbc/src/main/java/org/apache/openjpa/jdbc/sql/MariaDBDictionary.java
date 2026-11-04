@@ -193,7 +193,10 @@ public class MariaDBDictionary extends DBDictionary {
         setLeadingDelimiter(DELIMITER_BACK_TICK);
         setTrailingDelimiter(DELIMITER_BACK_TICK);
 
+        // the precision and scale of a decimal column are part of its DDL type,
+        // an unsized DECIMAL is DECIMAL(10,0) (OPENJPA-3062)
         fixedSizeTypeNameSet.remove("NUMERIC");
+        fixedSizeTypeNameSet.remove("DECIMAL");
 
         dateFractionDigits = 0;
         supportsUnsizedCharOnCast = false;
@@ -656,6 +659,22 @@ public class MariaDBDictionary extends DBDictionary {
     }
 
     /**
+     * The largest precision of a decimal column on MariaDB.
+     */
+    private static final int MAX_DECIMAL_PRECISION = 65;
+
+    /**
+     * The largest scale of a decimal column on MariaDB.
+     */
+    private static final int MAX_DECIMAL_SCALE = 38;
+
+    /**
+     * The scale of an unsized decimal column. MariaDB allows a scale of 38,
+     * 30 is the largest scale MySQL allows and keeps the DDL the same on both.
+     */
+    private static final int UNSIZED_DECIMAL_SCALE = 30;
+
+    /**
      * OPENJPA-740 Special case for MySql special column types,
      * like LONGTEXT, LONGBLOG etc..
      * @see org.apache.openjpa.jdbc.sql.DBDictionary#getTypeName(org.apache.openjpa.jdbc.schema.Column)
@@ -685,9 +704,31 @@ public class MariaDBDictionary extends DBDictionary {
                 return mediumTextTypeName;
             else
                 return longTextTypeName;
+        } else if (isUnsizedDecimal(col)) {
+            return getUnsizedDecimalTypeName(col);
         } else {
             return super.getTypeName(col);
         }
+    }
+
+    /**
+     * MariaDB reads an unsized <code>NUMERIC</code> or <code>DECIMAL</code> as
+     * <code>DECIMAL(10,0)</code>, which rounds every value to an integer. A
+     * decimal column of a non integral Java type without a precision is
+     * created with the largest precision and the given scale, or a scale of
+     * 30 if none is given, so that the fraction of the value is kept. A scale
+     * above 38, which MariaDB rejects, is lowered to 38. A
+     * <code>NumericTypeName</code> or <code>DecimalTypeName</code> set by the
+     * user is kept.
+     */
+    private String getUnsizedDecimalTypeName(Column col) {
+        String typeName = getTypeName(col.getType());
+        if (!"NUMERIC".equalsIgnoreCase(typeName) && !"DECIMAL".equalsIgnoreCase(typeName)) {
+            return super.getTypeName(col);
+        }
+        int scale = col.getDecimalDigits() > 0
+            ? Math.min(col.getDecimalDigits(), MAX_DECIMAL_SCALE) : UNSIZED_DECIMAL_SCALE;
+        return typeName + "(" + MAX_DECIMAL_PRECISION + ", " + scale + ")";
     }
 
     @Override

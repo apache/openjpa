@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import jakarta.persistence.EntityManager;
 
@@ -41,6 +42,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * text of the escape.
  */
 public class TestInMemoryJDBCEscapeLiterals extends SingleEMFTestCase {
+
+    private static final Pattern TIMESTAMP_TEXT =
+        Pattern.compile("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}(\\.\\d+)?");
 
     @Override
     public void setUp() {
@@ -172,40 +176,63 @@ public class TestInMemoryJDBCEscapeLiterals extends SingleEMFTestCase {
     }
 
     public void testCaseAndNullIfInMemory() {
-        EntityManager em = emf.createEntityManager();
-        List<?> all = em.createQuery("SELECT e FROM AllFieldTypes e").getResultList();
+        try (EntityManager em = emf.createEntityManager()) {
+            List<?> all = em.createQuery("SELECT e FROM AllFieldTypes e").getResultList();
 
-        String[] select = {
-            "CASE e.sqlDateField WHEN {d '2021-01-03'} THEN 1 ELSE 0 END",
-            "CASE e.sqlTimeField WHEN {t '10:00:00'} THEN 1 ELSE 0 END",
-            "CASE e.sqlTimestampField WHEN {ts '2021-01-03 10:00:00'} THEN 1 ELSE 0 END",
-            "CASE e.dateField WHEN {ts '2021-01-03 10:00:00'} THEN 1 ELSE 0 END",
-            "CASE e.localDateField WHEN {d '2021-01-03'} THEN 1 ELSE 0 END",
-            "CASE e.localTimeField WHEN {t '10:00:00'} THEN 1 ELSE 0 END",
-            "CASE e.localDateTimeField WHEN {ts '2021-01-03 10:00:00'} THEN 1 ELSE 0 END",
-            "NULLIF(e.sqlDateField, {d '2021-01-03'})",
-            "NULLIF(e.sqlTimestampField, {ts '2021-01-03 10:00:00'})",
-            "NULLIF(e.localDateField, {d '2021-01-03'})",
-        };
-        for (String s : select) {
-            String jpql = "SELECT " + s + " FROM AllFieldTypes e";
-            List<String> db = sorted(em.createQuery(jpql).getResultList());
-            assertEquals(jpql, 2, db.size());
-            assertFalse(jpql, db.get(0).equals(db.get(1)));
-            assertEquals(jpql, db, sorted(inMemory(em, all, jpql)));
-        }
+            String[] select = {
+                "CASE e.sqlDateField WHEN {d '2021-01-03'} THEN 1 ELSE 0 END",
+                "CASE e.sqlTimeField WHEN {t '10:00:00'} THEN 1 ELSE 0 END",
+                "CASE e.sqlTimestampField WHEN {ts '2021-01-03 10:00:00'} THEN 1 ELSE 0 END",
+                "CASE e.dateField WHEN {ts '2021-01-03 10:00:00'} THEN 1 ELSE 0 END",
+                "CASE e.localDateField WHEN {d '2021-01-03'} THEN 1 ELSE 0 END",
+                "CASE e.localTimeField WHEN {t '10:00:00'} THEN 1 ELSE 0 END",
+                "CASE e.localDateTimeField WHEN {ts '2021-01-03 10:00:00'} THEN 1 ELSE 0 END",
+                "NULLIF(e.sqlDateField, {d '2021-01-03'})",
+                "NULLIF(e.sqlTimestampField, {ts '2021-01-03 10:00:00'})",
+                "NULLIF(e.localDateField, {d '2021-01-03'})",
+            };
+            for (String s : select) {
+                String jpql = "SELECT " + s + " FROM AllFieldTypes e";
+                List<String> db = sorted(timestamps(em.createQuery(jpql).getResultList()));
+                assertEquals(jpql, 2, db.size());
+                assertFalse(jpql, db.get(0).equals(db.get(1)));
+                assertEquals(jpql, db, sorted(inMemory(em, all, jpql)));
+            }
 
-        // the database returns these as java.sql types, so only the in-memory
-        // values are checked
-        String[][] nullIf = {
-            { "NULLIF(e.localTimeField, {t '10:00:00'})", "18:30" },
-            { "NULLIF(e.localDateTimeField, {ts '2021-01-03 10:00:00'})", "2022-06-15T18:30" },
-        };
-        for (String[] n : nullIf) {
-            String jpql = "SELECT " + n[0] + " FROM AllFieldTypes e";
-            assertEquals(jpql, Arrays.asList(n[1], "null"), sorted(inMemory(em, all, jpql)));
+            // the database returns these as java.sql types, so only the in-memory
+            // values are checked
+            String[][] nullIf = {
+                { "NULLIF(e.localTimeField, {t '10:00:00'})", "18:30" },
+                { "NULLIF(e.localDateTimeField, {ts '2021-01-03 10:00:00'})", "2022-06-15T18:30" },
+            };
+            for (String[] n : nullIf) {
+                String jpql = "SELECT " + n[0] + " FROM AllFieldTypes e";
+                assertEquals(jpql, Arrays.asList(n[1], "null"), sorted(inMemory(em, all, jpql)));
+            }
         }
-        em.close();
+    }
+
+    /**
+     * The type of NULLIF over a timestamp field and an escape is not known
+     * to OpenJPA, so the value the driver returns is passed on. MySQL 8.4
+     * reports the result of NULLIF on a DATETIME column as a character type,
+     * so its driver returns the text of the timestamp, such as
+     * <code>2022-06-15 18:30:00.000000</code>. MySQL 9 reports a DATETIME, which
+     * its driver returns as a {@link LocalDateTime}. Both are compared as the
+     * {@link Timestamp} they stand for.
+     */
+    private static List<?> timestamps(List<?> values) {
+        List<Object> result = new ArrayList<>();
+        for (Object value : values) {
+            if (value instanceof String && TIMESTAMP_TEXT.matcher((String) value).matches()) {
+                result.add(Timestamp.valueOf((String) value));
+            } else if (value instanceof LocalDateTime) {
+                result.add(Timestamp.valueOf((LocalDateTime) value));
+            } else {
+                result.add(value);
+            }
+        }
+        return result;
     }
 
     private static List<?> inMemory(EntityManager em, List<?> candidates, String jpql) {
