@@ -1700,8 +1700,7 @@ public class XMLPersistenceMappingParser
      * Process all deferred embeddable overrides for a given class.
      * This should only occur after the embeddable is mapped.
      *
-     * @param embedType  embeddable class
-     * @param access class level access for embeddable
+     * @param cls  embeddable class
      * @throws SAXException
      */
     @Override

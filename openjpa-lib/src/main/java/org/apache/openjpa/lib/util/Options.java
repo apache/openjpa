@@ -93,7 +93,6 @@ public class Options extends TypedProperties {
      * @param args the command-line arguments
      * @return all arguments in the original array beyond the
      * flag/value pair list
-     * @author Patrick Linskey
      */
     public String[] setFromCmdLine(String[] args) {
         if (args == null || args.length == 0)

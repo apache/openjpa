@@ -133,8 +133,8 @@ public class XMLFormatter implements ObjectFormatter<Document> {
      * Encodes the closure of given collection of  managed instance into a new XML document
      * according to JEST Instance XML Schema.
      *
-     * @param sm a collection of managed instances.
-     * @param parent the parent node to which the new node be attached.
+     * @param sms a collection of managed instances.
+     * @param model the parent node to which the new node be attached.
      */
     @Override
     public Document encode(final Collection<OpenJPAStateManager> sms, Metamodel model) {

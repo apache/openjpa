@@ -591,7 +591,6 @@ public class ConfigurationImpl
     /**
      * Find the given localized string, or return null if not found.
      */
-    @SuppressWarnings("unchecked")
     private String findLocalized(String key, boolean fatal, Class<?> scope) {
         // find the localizer package that contains this key
         Localizer loc = null;
@@ -740,8 +739,9 @@ public class ConfigurationImpl
      * Gets all known property keys.
      * The keys are harvested from the property names (including the equivalent names) of the registered values.
      * A key may be prefixed if the corresponding property name was without a prefix.
+     * The values that are marked private via {@link Value#makePrivate} are filtered out.
+     *
      * @see #fixPrefix(String)
-     * The Values that are {@linkplain Value#makePrivate() marked private} are filtered out.
      */
     @Override
     public Set<String> getPropertyKeys() {

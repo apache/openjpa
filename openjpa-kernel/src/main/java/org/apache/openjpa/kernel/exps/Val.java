@@ -33,7 +33,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 public abstract class Val
     implements Value {
 
-    
+
     private static final long serialVersionUID = 1L;
     private ClassMetaData _meta = null;
     private String _alias = null;
@@ -75,7 +75,7 @@ public abstract class Val
     /**
      * Return a list of values resulting from evaluating each given
      * candidate. By default, this implementation invokes
-     * {@link #eval(Object,Object,StoreContext,Map)} for
+     * {@link #eval(Object, Object, StoreContext, Object[])} for
      * each instance and packs the return value into a new list. Aggregates
      * should override.
      */

@@ -33,7 +33,7 @@ public class IOR {
     public static final char DASH = '-';
     /**
      * Stringified representation of a managed instance identity.
-     * The simple Java type name and the persistent identity separated by a {@link Constants#DASH dash}.
+     * The simple Java type name and the persistent identity separated by a {@link #DASH} dash.
      *
      * @param sm a managed instance.
      */

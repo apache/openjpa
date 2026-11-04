@@ -445,7 +445,7 @@ public class Compatibility {
      * Whether OpenJPA should use the new default order column name defined
      * by JPA 2.0: name; "_"; "ORDER" or the pre-JPA 2.0 default name "ordr".
      *
-     * @param useJPA2 true if the JPA 2.0 default name should be used.  false if
+     * @param useJPA2Name true if the JPA 2.0 default name should be used.  false if
      * the 1.x name should be used.
      *
      * @since 2.0.0
@@ -792,7 +792,7 @@ public class Compatibility {
      * In compliance with the JPA specification, the default value is true.
      *
      * @since
-     * @param returnNullOnAggregate whether OpenJPA will return null for aggregate
+     * @param returnNullOnEmptyAggregateResult whether OpenJPA will return null for aggregate
      * expressions when the query result is empty.
      */
     public void setReturnNullOnAggregateResult(boolean returnNullOnEmptyAggregateResult) {

@@ -44,7 +44,6 @@ public final class ClassUtil {
      * loader of the current thread will be used.
      *
      * @throws RuntimeException on load error
-     * @author Abe White, taken from the Serp project
      */
     public static Class toClass(String str, ClassLoader loader) {
         return toClass(str, false, loader);
@@ -56,7 +55,6 @@ public final class ClassUtil {
      * loader of the current thread will be used.
      *
      * @throws RuntimeException on load error
-     * @author Abe White, taken from the Serp project
      */
     public static Class toClass(String str, boolean resolve,
                                 ClassLoader loader) {

@@ -186,7 +186,7 @@ public class ValidatorImpl extends AbstractValidator {
     /**
      * Add the validation group(s) for the specified event.  Event definitions
      * are defined in LifecycleEvent
-     * @param event
+     * @param validationGroupName
      * @param group
      */
     public void addValidationGroup(String validationGroupName, String group) {
@@ -206,6 +206,7 @@ public class ValidatorImpl extends AbstractValidator {
     /**
      * Converts a comma separated list of validation groups into an array
      * of classes.
+     * @param vgName
      * @param group
      */
     private Class<?>[] getValidationGroup(String vgName, String group) {

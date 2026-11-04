@@ -58,7 +58,7 @@ import org.apache.openjpa.lib.conf.Configurable;
  * irreversible or <em>strong</em>) or addition/removal of exclusion patterns
  * (which is reversible or <em>weak</em>).
  *
- * @see #markUncachable(String)
+ * @see #markUncachable(String, Exclusion)
  * @see #addExclusionPattern(String)
  * @see #setExcludes(String)
  * @see #removeExclusionPattern(String)
@@ -112,7 +112,7 @@ public interface PreparedQueryCache extends Configurable {
      * @return true if the given query is cached. false if it can not be cached
 	 * due to exclusion.
 	 *
-	 * @see #markUncachable(String)
+	 * @see #markUncachable(String, Exclusion)
 	 * @see #setExcludes(String)
 	 * @see #addExclusionPattern(String)
 	 */

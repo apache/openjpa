@@ -30,6 +30,7 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.kernel.exps.Context;
+import org.apache.openjpa.kernel.exps.Val;
 import org.apache.openjpa.kernel.exps.Value;
 
 /**

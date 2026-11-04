@@ -159,7 +159,7 @@ public class IdentifierRule {
      * 1) Can be up to 128 characters long
      * 2) Must begin with a letter
      * 3) Can contain letters, digits, and underscores
-     * 4) Can't contain spaces or special characters such as #, $, &, %, or
+     * 4) Can't contain spaces or special characters such as #, $, &amp;, %, or
      *    punctuation.
      * 5) Can't be reserved words
      */

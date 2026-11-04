@@ -47,7 +47,7 @@ public class ValidationUtils {
      * provided configuration.
      * @param conf
      * @return true if a Validator was created, false otherwise.
-     * @throws If a Validator was required but could not be created.
+     * @throws ValidationUnavailableException If a Validator was required but could not be created.
      */
     public static boolean setupValidation(OpenJPAConfiguration conf) {
         Log log = conf.getConfigurationLog();

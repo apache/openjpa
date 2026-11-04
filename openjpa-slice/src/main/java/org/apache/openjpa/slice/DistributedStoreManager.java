@@ -35,9 +35,9 @@ public interface DistributedStoreManager extends StoreManager {
      * Adds the given slice with the given properties. This newly added slice
      * will participate in the current and subsequent transaction.
      *
-     * @param name logical name of the to be added slice. Must be different from
+     * @param slice logical name of the to be added slice. Must be different from
      * any currently available slices.
-     * @see DistributedBroker#addSlice(String, Map)
+     * @see org.apache.openjpa.slice.jdbc.DistributedJDBCConfigurationImpl#addSlice(String, Map)
      * @see DistributedBrokerFactory#addSlice(String, Map)
      *
      * @return the store manager for the newly added slice.

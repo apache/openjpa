@@ -131,7 +131,7 @@ public class Join
 
     /**
      * When joining a relation, set target type and how to deal with
-     * subclasses.  See subclass constants in {@link #Select}.
+     * subclasses.  See subclass constants in {@link Select}.
      */
     public void setRelation(ClassMapping target, int subs, Joins joins) {
         _target = target;

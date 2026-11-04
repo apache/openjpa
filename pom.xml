@@ -98,8 +98,9 @@
         <dbcp2.version>2.14.0</dbcp2.version>
         <pool2.version>2.13.1</pool2.version>
 
+        <jakarta.persistence.level>3.2</jakarta.persistence.level>
         <jakarta.annotation-api.version>2.1.1</jakarta.annotation-api.version>
-        <jakarta.persistence-api.version>3.2.0</jakarta.persistence-api.version>
+        <jakarta.persistence-api.version>${jakarta.persistence.level}.0</jakarta.persistence-api.version>
         <jakarta.transaction-api.version>2.0.1</jakarta.transaction-api.version>
         <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
         <jakarta.jms-api.version>3.1.0</jakarta.jms-api.version>
@@ -2205,6 +2206,7 @@
                     <release>${java.class.version}</release>
                     <links>
                         <link>https://docs.oracle.com/en/java/javase/17/docs/api/</link>
+                        <link>https://jakarta.ee/specifications/persistence/${jakarta.persistence.level}/apidocs/</link>
                     </links>
                 </configuration>
                 <reportSets>

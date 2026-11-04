@@ -62,7 +62,7 @@ public abstract class AbstractJDBCSavepointManager
 
     /**
      * Return whether to retain in-memory copies of field values for restore
-     * on rollback. Defaults to {@link OpenJPAConfiguration#getRestoreState).
+     * on rollback. Defaults to {@link OpenJPAConfiguration#getRestoreState}.
      */
     public boolean getRestoreFieldState() {
         return _restore;
@@ -105,7 +105,7 @@ public abstract class AbstractJDBCSavepointManager
      */
     protected class ConnectionSavepoint extends OpenJPASavepoint {
 
-        
+
         private static final long serialVersionUID = 1L;
         private Object _savepoint;
 

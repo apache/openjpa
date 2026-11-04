@@ -30,7 +30,6 @@ import org.apache.openjpa.enhance.FieldManager;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.Reflection;
-import org.apache.openjpa.enhance.ReflectingPersistenceCapable;
 import org.apache.openjpa.kernel.ObjectIdStateManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StateManagerImpl;
@@ -60,7 +59,7 @@ public class ApplicationIds {
      * will be returned in the same order as the metadata primary key fields.
      * Values for PC primary key fields will be the primary key value or
      * oid value of the related instance (depending on
-     * {@link FieldMetaData#isObjectIdFieldIdOfPC}).
+     * {@link ClassMetaData#isObjectIdTypeShared()}).
      */
     public static Object[] toPKValues(Object oid, ClassMetaData meta) {
         if (meta == null)
@@ -137,7 +136,7 @@ public class ApplicationIds {
      * Return a new object id constructed from the given primary key values.
      * Values for PC primary key fields should be the primary key value or
      * oid value of the related instance (depending on
-     * {@link FieldMetaData#isObjectIdFieldIdOfPC}).
+     * {@link ClassMetaData#isObjectIdTypeShared()}).
      */
     public static Object fromPKValues(Object[] pks, ClassMetaData meta) {
         if (meta == null || pks == null)

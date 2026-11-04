@@ -41,7 +41,7 @@ public interface DistributedBrokerFactory extends BrokerFactory {
      * @param properties key-value pair of configuration for the slice to be
      * added. The keys must have openjpa.slice.&lt;name&gt;.* as prefix.
      *
-     * @see DistributedConfiguration#addSlice(String, Map)
+     * @see org.apache.openjpa.slice.jdbc.DistributedJDBCConfigurationImpl#addSlice(String, Map)
      */
     Slice addSlice(String name, Map properties);
 }

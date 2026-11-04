@@ -210,7 +210,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
 
     /**
      * Sets the names of the columns on which a unique constraint is set.
-     * @param columnsNames are passed as a single String concatenated with
+     * @param columnNames are passed as a single String concatenated with
      * a '|' character. This method parses it back to array of Strings.
      */
     public void setUniqueColumns(String columnNames) {
@@ -636,8 +636,9 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
     /**
      * Resolve a fully qualified table name
      *
-     * @param class
+     * @param mapping
      *            mapping to get the schema name
+     * @param table
      * @deprecated
      */
     @Deprecated
@@ -648,8 +649,9 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
     /**
      * Resolve a fully qualified table name
      *
-     * @param class
+     * @param mapping
      *            mapping to get the schema name
+     * @param table
      */
     public DBIdentifier resolveTableIdentifier(ClassMapping mapping, Table table) {
         DBIdentifier sName = mapping.getTable().getSchemaIdentifier();

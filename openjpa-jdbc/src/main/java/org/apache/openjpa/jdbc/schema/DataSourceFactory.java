@@ -176,7 +176,6 @@ public class DataSourceFactory {
     /**
      * Install things deferred until the DBDictionary instance is available.
      *
-     * @author Steve Kim
      */
     public static DecoratingDataSource installDBDictionary(DBDictionary dict,
         DecoratingDataSource ds, final JDBCConfiguration conf,

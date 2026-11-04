@@ -29,7 +29,7 @@ import org.apache.openjpa.lib.util.collections.MapBackedSet;
 
 /**
  * A concurrent set whose values may be stored as weak or soft references. If
- * the constructor is invoked with <code>refType</code> set to {@link #HARD},
+ * the constructor is invoked with <code>refType</code> set to {@link AbstractReferenceMap.ReferenceStrength#HARD},
  * this uses a JDK1.5 {@link ConcurrentHashMap} under the covers. Otherwise,
  * it uses a {@link ConcurrentReferenceHashMap}.
  *

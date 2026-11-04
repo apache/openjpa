@@ -54,7 +54,7 @@ public class SpecificationPlugin extends ObjectValue implements ValueListener {
      *
      * @param str can be null to set the Specification to null.
      * If non-null, then the String must be in Specification format
-     * @see Specification#create(String)
+     * @see Specification#Specification(String)
      */
     @Override
     public void setString(String str) {
@@ -87,7 +87,7 @@ public class SpecificationPlugin extends ObjectValue implements ValueListener {
      * If the given Specification is same as the current Specification then
      * it must have a major version number equal or less than the current one.
      *
-     * @exception fatal UserException if the given Specification is same as
+     * @exception UserException if the given Specification is same as
      * the current Specification but has a higher major version.
      *
      * @see Specification#equals(Object)

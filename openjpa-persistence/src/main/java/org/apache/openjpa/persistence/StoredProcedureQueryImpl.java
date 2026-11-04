@@ -49,7 +49,7 @@ import org.apache.openjpa.util.UserException;
  * <br>
  * A {@link StoredProcedureQuery stored procedure query} differs from other query types because it may return
  * more than one result set, apart from an optional update count, whereas the traditional query processing in OpenJPA
- * via the abstractions of {@link ResultObjectProvider} and {@link org.apache.openjpa.jdbc.sql.Result}
+ * via the abstractions of {@link ResultObjectProvider} and {@code org.apache.openjpa.jdbc.sql.Result}
  * assumed that a query will return its
  * result in a single list.
  * <br>
@@ -539,7 +539,7 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
 	public Integer getTimeout() {
 		return _delegate.getTimeout();
 	}
-	
+
 	@Override
 	public Object getSingleResultOrNull() {
 		execute();
@@ -559,5 +559,5 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
 			throw new jakarta.persistence.PersistenceException(ex);
 		}
 	}
-	
+
 }

@@ -49,7 +49,6 @@ import org.apache.openjpa.kernel.QueryContext;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.kernel.exps.Resolver;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -132,7 +131,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
     /**
      *  Return the metamodel embeddable type representing the embeddable class.
      *
-     *  @param cls  the type of the represented embeddable class
+     *  @param clazz  the type of the represented embeddable class
      *  @return the metamodel embeddable type
      *  @throws IllegalArgumentException if not an embeddable class
      */
@@ -158,9 +157,9 @@ public class MetamodelImpl implements Metamodel, Resolver {
 	                    "load", entityName == null ? "null" : Exceptions.toString(entityName)).getMessage()));
 	}
 
-	/**
+    /**
      *  Return the metamodel entity type representing the entity.
-     *  @param cls  the type of the represented entity
+     *  @param clazz  the type of the represented entity
      *  @return the metamodel entity type
      *  @throws IllegalArgumentException if not an entity
      */
@@ -230,7 +229,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
     /**
      *  Return the metamodel managed type representing the
      *  entity, mapped superclass, or embeddable class.
-     *  @param cls  the type of the represented managed class
+     *  @param clazz the type of the represented managed class
      *  @return the metamodel managed type
      *  @throws IllegalArgumentException if not a managed class
      */
@@ -248,7 +247,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
 
     /**
      *  Return the type representing the basic, entity, mapped superclass, or embeddable class.
-     *  This method differs from {@linkplain #type(Class)} as it also creates a basic or pesudo
+     *  This method differs from {@linkplain #managedType(Class)} as it also creates a basic or pesudo
      *  type for the given class argument if not already available in this receiver.
      *
      *  @param cls  the type of the represented managed class

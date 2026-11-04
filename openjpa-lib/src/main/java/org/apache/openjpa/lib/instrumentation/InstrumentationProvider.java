@@ -77,7 +77,6 @@ public interface InstrumentationProvider {
 
     /**
      * Gets configuration options for this provider
-     * @param options
      */
     String getOptions();
 

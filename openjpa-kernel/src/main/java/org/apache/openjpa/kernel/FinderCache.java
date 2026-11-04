@@ -72,7 +72,7 @@ public interface FinderCache<K,V,R> extends Configurable {
      * Get the FinderQuery for the given key.
      *
      * @param key for which the finder is looked up
-     * @param fecth may contain hints to control lookup operation
+     * @param fetch may contain hints to control lookup operation
      *
      * @return FinderQuery for the given mapping.
      */

@@ -1159,7 +1159,7 @@ public class AnnotationPersistenceMetaDataSerializer
 
     /**
      * Serialize field mapping content; this will be called before
-     * {@link #serializeValueMappingContent}. Does nothing by default.
+     * {@link #serializeCascades(ValueMetaData, AnnotationBuilder)}. Does nothing by default.
      */
     protected void serializeFieldMappingContent(FieldMetaData fmd, PersistenceStrategy strategy, AnnotationBuilder ab) {
     }
@@ -1421,7 +1421,7 @@ public class AnnotationPersistenceMetaDataSerializer
     protected class SerializationComparator
         extends MetaDataInheritanceComparator {
 
-        
+
         private static final long serialVersionUID = 1L;
 
         @Override

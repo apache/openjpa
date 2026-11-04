@@ -51,7 +51,6 @@ public interface Instrument {
     /**
      * Sets the context of the instrument.  Typically, a reference to a broker
      * or broker factory.
-     * @return the context associated with the instrument.
      */
     void setContext(Object context);
 
