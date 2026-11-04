@@ -263,7 +263,7 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
 
             for (String host : toks) {
                 HostAddress newAddress = new HostAddress(host);
-                if (localAddresses.contains(newAddress._address)) {
+                if (newAddress._port == _port && localAddresses.contains(newAddress._address)) {
                     // This string matches the hostname for for ourselves, we
                     // don't actually need to send ourselves messages.
                     if (log.isTraceEnabled()) {
