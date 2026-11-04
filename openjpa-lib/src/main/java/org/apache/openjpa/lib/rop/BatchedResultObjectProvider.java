@@ -30,8 +30,6 @@ package org.apache.openjpa.lib.rop;
  * to iterating multiple results and update count mirror the methods in JDBC {@link java.sql.Statement}.
  * <br>
  *
- * @see org.apache.openjpa.kernel.QueryResultCallback
- *
  * @author Pinaki Poddar
  *
  */
