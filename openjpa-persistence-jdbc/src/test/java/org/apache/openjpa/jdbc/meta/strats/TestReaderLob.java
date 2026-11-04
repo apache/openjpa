@@ -22,6 +22,8 @@ import java.io.CharArrayReader;
 import java.io.IOException;
 import java.io.Reader;
 
+import jakarta.persistence.EntityManager;
+
 /**
  * Defines all the abstract methods from AbstractLobTest to tests the
  * the LOB support with a Reader.
@@ -80,5 +82,38 @@ public class TestReaderLob extends AbstractLobTest {
     @Override
     protected void changeStream(LobEntity le, String s) {
         le.setStream(new CharArrayReader(s.toCharArray()));
+    }
+
+    /**
+     * Inserts and updates content of more than 8 KB with characters that take
+     * more than one byte in UTF-8.
+     */
+    public void testInsertAndUpdateMultiByteContent() throws IOException {
+        String s = repeatString("\u00e4\u00f6\u00fc \u20ac\u00df, ", 2000);
+        insert(newLobEntity(s, 1));
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            LobEntity entity = em.find(ReaderLobEntity.class, 1);
+            assertEquals(s, getStreamContentAsString(entity.getStream()));
+            changeStream(entity, "short \u20ac");
+            em.getTransaction().commit();
+        }
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            LobEntity entity = em.find(ReaderLobEntity.class, 1);
+            assertEquals("short \u20ac", getStreamContentAsString(entity.getStream()));
+            em.getTransaction().commit();
+        }
+    }
+
+    public void testInsertEmpty() throws IOException {
+        insert(newLobEntity("", 1));
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            LobEntity entity = em.find(ReaderLobEntity.class, 1);
+            assertNotNull(entity.getStream());
+            assertEquals("", getStreamContentAsString(entity.getStream()));
+            em.getTransaction().commit();
+        }
     }
 }
