@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.conf;
 
+import java.sql.Driver;
+
 import javax.sql.DataSource;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;

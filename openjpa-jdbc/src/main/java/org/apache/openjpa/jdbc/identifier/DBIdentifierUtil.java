@@ -85,7 +85,6 @@ public interface DBIdentifierUtil extends IdentifierUtil {
      * @param name
      * @param table
      * @param maxLen
-     * @param checkForUniqueness
      */
     DBIdentifier getValidIndexIdentifier(DBIdentifier name, Table table, int maxLen);
 
@@ -93,9 +92,8 @@ public interface DBIdentifierUtil extends IdentifierUtil {
      * Returns a valid index identifier, based upon the configuration and
      * provided parameters.
      * @param name
-     * @param table
+     * @param schema
      * @param maxLen
-     * @param checkForUniqueness
      */
     DBIdentifier getValidSequenceIdentifier(DBIdentifier name, Schema schema, int maxLen);
 
@@ -170,7 +168,7 @@ public interface DBIdentifierUtil extends IdentifierUtil {
     /**
      * Converts the name of the specified delimiter to the appropriate
      * case as defined by the configuration.
-     * @param columns
+     * @param schema
      */
     DBIdentifier convertSchemaCase(DBIdentifier schema);
 

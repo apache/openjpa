@@ -85,7 +85,7 @@ public interface VersionStrategy
     int compareVersion(Object v1, Object v2);
 
     /**
-     * @return a Map<Column,Object> specifying how to update each version
+     * @return a {@link Map} {@code Map<Column, Object>} specifying how to update each version
      * column during a bulk update.
      *
      * @since 1.0.0

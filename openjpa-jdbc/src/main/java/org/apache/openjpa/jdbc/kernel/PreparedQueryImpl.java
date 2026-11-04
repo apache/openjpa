@@ -105,7 +105,7 @@ public class PreparedQueryImpl implements PreparedQuery {
      * Construct.
      *
      * @param id an identifier for this query to be used as cache key
-     * @param corresponding data store language query string
+     * @param sql data store language query string
      * @param compiled a compiled query
      */
     public PreparedQueryImpl(String id, String sql, Query compiled) {

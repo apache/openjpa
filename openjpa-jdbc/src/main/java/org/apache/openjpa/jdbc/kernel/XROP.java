@@ -198,7 +198,7 @@ public class XROP implements BatchedResultObjectProvider {
     /**
      * Affirms if more result sets are available.
      * <br>
-     * <b.NOTE</b>: The side effect is to advance to the statement's next result.
+     * <b>NOTE</b>: The side effect is to advance to the statement's next result.
      */
     @Override
     public boolean hasMoreResults() {

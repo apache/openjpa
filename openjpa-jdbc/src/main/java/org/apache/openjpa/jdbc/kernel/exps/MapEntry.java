@@ -27,7 +27,7 @@ import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.meta.ClassMetaData;
 
 /**
- * Returns the Map.Entry<K,V> of a map value.
+ * Returns the {@link Map.Entry}{@code Map.Entry<K,V>} of a map value.
  *
  * @author Catalina Wei
  * @since 2.0.0
@@ -35,7 +35,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 public class MapEntry
     extends AbstractVal {
 
-    
+
     private static final long serialVersionUID = 1L;
     private final Val _key;
     private final Val _val;

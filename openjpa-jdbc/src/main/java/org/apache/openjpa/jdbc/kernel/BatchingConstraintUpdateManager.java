@@ -34,10 +34,10 @@ import org.apache.openjpa.util.OpenJPAException;
  * <P>This is the default plug-in class for UpdateManager to support statement
  * batching. You can plug-in your own statement batch implementation through
  * the following property:
- * <PRE>
- *   < property name="openjpa.jdbc.UpdateManager"
+ * {@code
+ *   <property name="openjpa.jdbc.UpdateManager"
  *     value="org.apache.openjpa.jdbc.kernel.YourOperationOrderUpdateManager" />
- * </PRE></P>
+ * }</P>
  * @author Teresa Kan
  */
 

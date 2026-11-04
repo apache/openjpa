@@ -186,7 +186,8 @@ public class Normalizer {
 
     /**
      * Joins two names using the default identifier rules.
-     * @param names
+     * @param name1
+     * @param name2
      */
     public static String joinNames(String name1, String name2) {
         return joinNames(new String[] { name1, name2});
@@ -226,8 +227,7 @@ public class Normalizer {
 
     /**
      * Combines multiple names using default identifier rules.
-     * @param name1
-     * @param name2
+     * @param names
      */
     public static String combine(String...names) {
         return normalizer.combineNames(defaultRule, names);
@@ -245,8 +245,7 @@ public class Normalizer {
 
     /**
      * Removes Hungarian notation from a string.
-     * @param name1
-     * @param name2
+     * @param name
      */
     public static String removeHungarianNotation(String name) {
         return normalizer.removeHungarianNotation(defaultRule, name);

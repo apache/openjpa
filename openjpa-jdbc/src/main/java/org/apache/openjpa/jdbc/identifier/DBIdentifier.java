@@ -687,7 +687,7 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
     /**
      * Returns a new DBIdentifier with the given string appended.
      * @param name
-     * @param length
+     * @param str
      */
     public static DBIdentifier append(DBIdentifier name, String str) {
         DBIdentifier sName = name.clone();
@@ -701,7 +701,7 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
      * Returns a new DBIdentifier with the given string combined using
      * delimiting rules and appropriate separators.
      * @param name
-     * @param length
+     * @param str
      */
     public static DBIdentifier combine(DBIdentifier name, String str) {
         DBIdentifier sName = name.clone();

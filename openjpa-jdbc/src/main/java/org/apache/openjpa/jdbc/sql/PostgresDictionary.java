@@ -121,8 +121,10 @@ public class PostgresDictionary extends DBDictionary {
      * Statement used to determine whether a sequence is owned.  Owned
      * sequences are managed by the database and are considered system
      * sequences.
+     * {@code
      * parm 1: '<table_name.schema_name>'
      * parm 2: '<column_name>'
+     * }
      */
     public String isOwnedSequenceSQL = "SELECT pg_get_serial_sequence(?, ?)";
 

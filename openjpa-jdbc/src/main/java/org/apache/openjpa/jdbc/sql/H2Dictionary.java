@@ -46,7 +46,7 @@ import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.StoreException;
 
 /**
- * Dictionary for H2 ({@link http://www.h2database.com}).
+ * Dictionary for H2 (<a href="https://www.h2database.com">https://www.h2database.com</a>).
  *
  * @since 0.9.7
  */

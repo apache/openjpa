@@ -33,10 +33,10 @@ import java.sql.SQLException;
  * If your application likes to store boolean values in a {@code CHAR(1)} field with {@code "T"} and
  * {@code "F"} values then you might configure the {@link org.apache.openjpa.jdbc.sql.DBDictionary}
  * to use  the {@code "STRING_TF"} BooleanRepresentation:
- * <pre>
- * &lt;property name="openjpa.jdbc.DBDictionary"
- *     value="(BitTypeName=CHAR(1),BooleanTypeName=CHAR(1),BooleanRepresentation=STRING_10)"/&gt
- * </pre>
+ * {@code
+ *   <property name="openjpa.jdbc.DBDictionary"
+ *     value="(BitTypeName=CHAR(1),BooleanTypeName=CHAR(1),BooleanRepresentation=STRING_10)"/>
+ * }
  *
  * Please note that you still need to adopt the mapping separately by setting the
  * {@code BitTypeName} and/or {@code BooleanTypeName} (depending on your database) to
@@ -49,21 +49,21 @@ import java.sql.SQLException;
  *     {@link org.apache.openjpa.jdbc.sql.BooleanRepresentationFactory#BUILTIN_BOOLEAN_REPRESENTATIONS}
  *     , e.g.:
  *         <pre>
- * &lt;property name="openjpa.jdbc.DBDictionary" value="(BooleanRepresentation=STRING_YN)"/&gt
+ * <property name="openjpa.jdbc.DBDictionary" value="(BooleanRepresentation=STRING_YN)"/>
  *         </pre>
  *     </li>
  *     <li>
  *         Two slash ({@code '/'}) separated true/false value strings:
  *         <pre>
- * &lt;property name="openjpa.jdbc.DBDictionary" value="(BooleanRepresentation=oui/non)"/&gt
+ * <property name="openjpa.jdbc.DBDictionary" value="(BooleanRepresentation=oui/non)"/>
  *         </pre>
  *     </li>
  *     <li>
  *         A fully qualified class name of your own {@link org.apache.openjpa.jdbc.sql.BooleanRepresentation}
  *         implementation, e.g.:
  *         <pre>
- * &lt;property name="openjpa.jdbc.DBDictionary"
- *     value="(BooleanRepresentation=com.mycompany.MyOwnBoolRepresentation)"/&gt
+ * <property name="openjpa.jdbc.DBDictionary"
+ *     value="(BooleanRepresentation=com.mycompany.MyOwnBoolRepresentation)"/>
  *         </pre>
  *     </li>
  * </ul>
