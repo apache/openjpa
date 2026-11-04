@@ -308,6 +308,12 @@ public class DBDictionary
      * parameter.
      */
     public boolean requiresCastForExtractOperand = false;
+    /**
+     * If true, a string literal, or a parameter bound to a string, returned by
+     * a CASE expression is cast to VARCHAR, for databases that type a string literal as CHAR and
+     * pad the result of the CASE to the length of its longest result.
+     */
+    public boolean requiresCastForCaseStringResult = false;
     public boolean supportsModOperator = false;
     public boolean supportsXMLColumn = false;
     public boolean supportsCaseConversionForLob = false;
@@ -3752,6 +3758,17 @@ public class DBDictionary
     }
 
     protected void appendLength(SQLBuffer buf, int type) {
+    }
+
+    /**
+     * Return the SQL type to cast a parameter or literal operand of EXTRACT
+     * to, see {@link #requiresCastForExtractOperand}.
+     *
+     * @param type the JDBC type of the operand, {@link Types#DATE},
+     * {@link Types#TIME} or {@link Types#TIMESTAMP}
+     */
+    public String getExtractOperandCastType(int type) {
+        return getTypeName(type);
     }
 
 

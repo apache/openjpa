@@ -70,7 +70,7 @@ public class WhenScalar
         BinaryOpExpState bstate = (BinaryOpExpState) state;
         _val1.appendTo(sel, ctx, bstate.state1, buf, 0);
         buf.append(" THEN ");
-        _val2.appendTo(sel, ctx, bstate.state2, buf, 0);
+        GeneralCaseExpression.appendResult(sel, ctx, bstate.state2, buf, _val2);
     }
 
     @Override
