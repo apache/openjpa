@@ -279,13 +279,28 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
             return;
         }
 
-        EntityManager em = emf.createEntityManager();
-        final TypedQuery<Java8TimeTypes> qry = em.createQuery(
-            "select j from Java8TimeTypes AS j where j.localTimeField <= LOCAL TIME", Java8TimeTypes.class);
-        final List<Java8TimeTypes> times = qry.getResultList();
-        assertNotNull(times);
-        assertFalse(times.isEmpty());
-        em.close();
+        // LOCAL TIME is the time of the database server, which may run in another
+        // time zone than this JVM, so the expected rows are computed from it
+        try (EntityManager em = emf.createEntityManager()) {
+            final String now = "select LOCAL TIME from Java8TimeTypes AS j where j.id = 1";
+            final LocalTime before = em.createQuery(now, LocalTime.class).getSingleResult();
+            final List<Integer> ids = em.createQuery(
+                "select j.id from Java8TimeTypes AS j where j.localTimeField <= LOCAL TIME", Integer.class)
+                .getResultList();
+            final LocalTime after = em.createQuery(now, LocalTime.class).getSingleResult();
+            if (after.isBefore(before)) {
+                // the database passed midnight while the test was running
+                return;
+            }
+            for (Java8TimeTypes entity : List.of(entity1, entity2)) {
+                if (!entity.getLocalTimeField().isAfter(before)) {
+                    assertTrue(entity.getLocalTimeField() + " <= " + before, ids.contains(entity.getId()));
+                }
+                if (entity.getLocalTimeField().isAfter(after)) {
+                    assertFalse(entity.getLocalTimeField() + " > " + after, ids.contains(entity.getId()));
+                }
+            }
+        }
     }
 
     public void testExtractSecondKeepsFractionFromColumns() {
