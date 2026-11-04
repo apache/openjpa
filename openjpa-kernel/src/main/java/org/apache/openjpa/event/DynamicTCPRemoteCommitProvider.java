@@ -19,7 +19,6 @@
 package org.apache.openjpa.event;
 
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Timer;
@@ -30,7 +29,7 @@ public abstract class DynamicTCPRemoteCommitProvider extends TCPRemoteCommitProv
 
     private int _cacheDurationMillis = 30000;
 
-    public DynamicTCPRemoteCommitProvider() throws UnknownHostException, SocketException {
+    public DynamicTCPRemoteCommitProvider() throws UnknownHostException {
         super();
     }
 

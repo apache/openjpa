@@ -97,19 +97,26 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
     protected List<HostAddress> _addresses = new ArrayList<>();
     protected final ReentrantLock _addressesLock;
 
-    public TCPRemoteCommitProvider() throws UnknownHostException, SocketException {
+    public TCPRemoteCommitProvider() throws UnknownHostException {
         // obtain a unique ID.
         synchronized (TCPRemoteCommitProvider.class) {
             _id = s_idSequence++;
         }
 
+        InetAddress local = InetAddress.getLocalHost();
+        Set<InetAddress> temp;
         // cache the local IP addresses.
-        localAddresses = NetworkInterface.networkInterfaces()
+        try {
+            temp = NetworkInterface.networkInterfaces()
                 .flatMap(NetworkInterface::inetAddresses)
                 .collect(Collectors.toUnmodifiableSet());
+        } catch (SocketException se) {
+            temp = Set.of(local);
+        }
+        localAddresses = temp;
 
         // cache our own IP address.
-        _localhost = InetAddress.getLocalHost().getAddress();
+        _localhost = local.getAddress();
 
         _addressesLock = new ReentrantLock();
         setNumBroadcastThreads(2);
@@ -290,20 +297,21 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
         super.endConfiguration();
         synchronized (s_portListenerMap) {
             // see if a listener exists for this port.
-            _listener = s_portListenerMap.get(String.valueOf(_port));
+            String key = getAddress(_bindAddress, _port);
+            _listener = s_portListenerMap.get(key);
 
             if (_listener == null || (!_listener.isRunning() && _listener._port == _port)) {
                 try {
                     _listener = new TCPPortListener(_port, _bindAddress, log);
                     _listener.listen();
-                    s_portListenerMap.put(String.valueOf(_port), _listener);
+                    s_portListenerMap.put(key, _listener);
                 } catch (Exception e) {
-                    throw new GeneralException(s_loc.get("tcp-init-exception", String.valueOf(_port)), e).setFatal(true);
+                    throw new GeneralException(s_loc.get("tcp-init-exception", key), e).setFatal(true);
                 }
             } else if (_listener.isRunning()) {
                 if (_listener._port != _port) {
                     // this really shouldn't be able to happen.
-                    throw new GeneralException(s_loc.get("tcp-not-equal", String.valueOf(_port))).setFatal(true);
+                    throw new GeneralException(s_loc.get("tcp-not-equal", key)).setFatal(true);
                 }
             } else {
                 throw new InternalException(s_loc.get("tcp-listener-broken"));
@@ -937,6 +945,17 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
     }
 
     private static String getAddress(final Socket s) {
-        return s.getInetAddress().getHostAddress() + ":" + s.getPort();
+        return getAddress(s.getInetAddress(), s.getPort());
+    }
+
+    private static String getAddress(final InetAddress inAddr, final int port) {
+        String host = ""; // to bypass compiler error
+        try {
+            host = (inAddr == null ? InetAddress.getLocalHost() : inAddr).getHostAddress();
+        } catch (UnknownHostException e) {
+            // no-op
+            // we will fail in constructor in case this code will throw
+        }
+        return host + ":" + port;
     }
 }
