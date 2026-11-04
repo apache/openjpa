@@ -2411,8 +2411,9 @@ public class XMLPersistenceMetaDataParser
      * parser then sees and processes the deferrals of the enclosing parse.
      */
     public void shareDeferredEmbeddables(XMLPersistenceMetaDataParser parser) {
-        if (parser == null || parser == this)
+        if (parser == null || parser == this) {
             return;
+        }
         _embeddables = parser._embeddables;
         _embeddableAccess = parser._embeddableAccess;
     }
