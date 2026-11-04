@@ -71,7 +71,6 @@ public class ProcessingException extends RuntimeException {
     /**
      * Prints the stack trace in a HTML format on the given response output stream.
      *
-     * @param response
      * @throws IOException
      */
     @Override

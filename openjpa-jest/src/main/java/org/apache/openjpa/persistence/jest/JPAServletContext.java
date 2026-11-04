@@ -27,7 +27,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 /**
- * An operating context provides a {@link EntityManage persistence context} and utility functions within
+ * An operating context provides a {@link jakarta.persistence.EntityManager persistence context} and utility functions within
  * which all JEST commands execute.
  *
  * @author Pinaki Poddar
@@ -65,7 +65,8 @@ public interface JPAServletContext {
      * or simple name of the actual persistent Java class.
      *
      * @return meta-data for the given name.
-     * @exception raises runtime exception if the given name can not be identified to a persistent
+     *
+     * raises runtime exception if the given name can not be identified to a persistent
      * Java type.
      */
     ClassMetaData resolve(String alias);

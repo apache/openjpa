@@ -45,9 +45,9 @@ import javax.servlet.http.HttpServletRequest;
  * <p>
  * A JEST command often attaches special semantics to a standard URI syntax. For example, all JEST
  * URI enforces that the first segment of a servlet path denotes the command moniker e.g. the URI<br>
- * <code>http://www.jpa.com/jest/find/plan=myPlan?type=Person&1234</code><br>
- * with context root <code>http://www.jpa.com/jest</code> has the servlet path <code>/find/plan=myPlan</code>
- * and query string <code>type=Person&1234</code>.
+ * {@code http://www.jpa.com/jest/find/plan=myPlan?type=Person&1234}<br>
+ * with context root {@code http://www.jpa.com/jest} has the servlet path <code>/find/plan=myPlan</code>
+ * and query string {@codetype=Person&1234}.
  * <br>
  * The first path segment <code>find</code> will determine that the command is to <em>find</em> a
  * persistent entity of type <code>Person</code> and primary key <code>1234</code> using a fetch plan
@@ -72,7 +72,7 @@ public interface JESTCommand {
     /**
      * Parse the given request to populate qualifiers and parameters of this command.
      * A command can interpret and consume certain path segments or parameters of the
-     * original request. During {@link #process(ServletRequest, ServletResponse, JPAServletContext) processing}
+     * original request. During {@link #process() processing}
      * phase, the parameters and qualifiers are accessed from the parsed command itself rather than
      * from the original HTTP request.
      */

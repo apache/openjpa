@@ -88,7 +88,7 @@ public interface ObjectFormatter<T> {
      * @param title TODO
      * @param desc TODO
      * @param uri TODO
-     * @param writer a text-oriented output stream
+     * @param out a text-oriented output stream
      * @throws IOException
      */
     T writeOut(Collection<OpenJPAStateManager> objs, Metamodel model,
@@ -98,7 +98,10 @@ public interface ObjectFormatter<T> {
      * Encodes the given domain model, then write it into the given output stream.
      *
      * @param model a meta-model of managed types
-     * @param writer a text-oriented output stream
+     * @param title TODO
+     * @param desc TODO
+     * @param uri TODO
+     * @param out a text-oriented output stream
      *
      * @throws IOException
      */

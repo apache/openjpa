@@ -42,7 +42,7 @@ public class TokenReplacedStream {
      *
      * @param in a non-null input stream
      * @param out a character oriented writer
-     * @param replacements an even number of Strings. Any occurrence of the even-indexed i-th String in the
+     * @param prs an even number of Strings. Any occurrence of the even-indexed i-th String in the
      * input stream will be replaced by the (i+1)-th String in the output writer.
      */
     public void replace(InputStream in, Writer out, String... prs) throws IOException {

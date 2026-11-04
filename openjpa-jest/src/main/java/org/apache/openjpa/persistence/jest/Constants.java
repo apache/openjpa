@@ -52,7 +52,7 @@ public interface Constants {
 
 
     /**
-     * Root element of XML instances. Must match the name defined in <A href="jest-instance.xsd>jest-instance.xsd</A>.
+     * Root element of XML instances. Must match the name defined in {@code jest-instance.xsd}.
      */
     String ROOT_ELEMENT_INSTANCE   = "instances";
     String ATTR_ID      = "id";
@@ -84,7 +84,7 @@ public interface Constants {
     String ELEMENT_ERROR_TRACE     = "stacktrace";
 
     /**
-     * Root element of XML meta-model. Must match the name defined in <A href="jest-model.xsd>jest-model.xsd</A>.
+     * Root element of XML meta-model. Must match the name defined in {@code jest-model.xsd}.
      */
     String ROOT_ELEMENT_MODEL      = "metamodel";
 

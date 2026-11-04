@@ -120,7 +120,7 @@ public class JESTContext implements JPAServletContext {
         return _request;
     }
 
-    
+
     @Override
     public String getRequestURI() {
         StringBuffer buf = _request.getRequestURL();
@@ -156,11 +156,11 @@ public class JESTContext implements JPAServletContext {
      * scripts. The browser will resolve such hyperlinks relative to the original response.
      * <br>
      * For example, let the original request URL be:<br>
-     * <code>http://host:port/demo/jest/find?type=Actor&Robert</code>
+     * {@code http://host:port/demo/jest/find?type=Actor&Robert}
      * <br>
      * The response to this request is a HTML page that contained a hyperlink to <code>jest.css</code> stylesheet
-     * in its &lt;head&gt; section.<br>
-     * <code>&lt;link ref="jest.css" .....></code>
+     * in its {@code <head>} section.<br>
+     * {@code <link ref="jest.css" .....>}
      * <br>
      * The browser will resolve the hyperlink by sending back another request as<br>
      * <code>http://host:port/demo/jest/find/jest.css</code>
