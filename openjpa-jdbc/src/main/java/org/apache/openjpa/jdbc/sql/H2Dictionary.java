@@ -324,29 +324,6 @@ public class H2Dictionary extends DBDictionary {
         return super.getTypeName(col);
     }
 
-    private static boolean isUnsizedDecimal(Column col) {
-        if (!DBIdentifier.isEmpty(col.getTypeIdentifier()) || col.isAutoAssigned() || col.getSize() > 0) {
-            return false;
-        }
-        if (col.getType() != Types.NUMERIC && col.getType() != Types.DECIMAL) {
-            return false;
-        }
-        switch (col.getJavaType()) {
-            case JavaTypes.BYTE:
-            case JavaTypes.BYTE_OBJ:
-            case JavaTypes.SHORT:
-            case JavaTypes.SHORT_OBJ:
-            case JavaTypes.INT:
-            case JavaTypes.INT_OBJ:
-            case JavaTypes.LONG:
-            case JavaTypes.LONG_OBJ:
-            case JavaTypes.BIGINTEGER:
-                return false;
-            default:
-                return true;
-        }
-    }
-
     @Override
     public int getPreferredType(int type) {
         if(type == Types.BIT)

@@ -185,7 +185,10 @@ public class MySQLDictionary
         setLeadingDelimiter(DELIMITER_BACK_TICK);
         setTrailingDelimiter(DELIMITER_BACK_TICK);
 
+        // the precision and scale of a decimal column are part of its DDL type,
+        // an unsized DECIMAL is DECIMAL(10,0) (OPENJPA-3062)
         fixedSizeTypeNameSet.remove("NUMERIC");
+        fixedSizeTypeNameSet.remove("DECIMAL");
 
         dateFractionDigits = 0;
         supportsUnsizedCharOnCast = false;
@@ -559,6 +562,21 @@ public class MySQLDictionary
     }
 
     /**
+     * The largest precision of a decimal column on MySQL.
+     */
+    private static final int MAX_DECIMAL_PRECISION = 65;
+
+    /**
+     * The largest scale of a decimal column on MySQL.
+     */
+    private static final int MAX_DECIMAL_SCALE = 30;
+
+    /**
+     * The scale of an unsized decimal column, the largest scale MySQL allows.
+     */
+    private static final int UNSIZED_DECIMAL_SCALE = MAX_DECIMAL_SCALE;
+
+    /**
      * OPENJPA-740 Special case for MySql special column types,
      * like LONGTEXT, LONGBLOG etc..
      * @see org.apache.openjpa.jdbc.sql.DBDictionary#getTypeName(org.apache.openjpa.jdbc.schema.Column)
@@ -588,9 +606,31 @@ public class MySQLDictionary
                 return mediumTextTypeName;
             else
                 return longTextTypeName;
+        } else if (isUnsizedDecimal(col)) {
+            return getUnsizedDecimalTypeName(col);
         } else {
             return super.getTypeName(col);
         }
+    }
+
+    /**
+     * MySQL reads an unsized <code>NUMERIC</code> or <code>DECIMAL</code> as
+     * <code>DECIMAL(10,0)</code>, which rounds every value to an integer. A
+     * decimal column of a non integral Java type without a precision is
+     * created with the largest precision and the given scale, or a scale of
+     * 30 if none is given, so that the fraction of the value is kept. A scale
+     * above 30, which MySQL rejects, is lowered to 30. A
+     * <code>NumericTypeName</code> or <code>DecimalTypeName</code> set by the
+     * user is kept.
+     */
+    private String getUnsizedDecimalTypeName(Column col) {
+        String typeName = getTypeName(col.getType());
+        if (!"NUMERIC".equalsIgnoreCase(typeName) && !"DECIMAL".equalsIgnoreCase(typeName)) {
+            return super.getTypeName(col);
+        }
+        int scale = col.getDecimalDigits() > 0
+            ? Math.min(col.getDecimalDigits(), MAX_DECIMAL_SCALE) : UNSIZED_DECIMAL_SCALE;
+        return typeName + "(" + MAX_DECIMAL_PRECISION + ", " + scale + ")";
     }
 
     @Override
