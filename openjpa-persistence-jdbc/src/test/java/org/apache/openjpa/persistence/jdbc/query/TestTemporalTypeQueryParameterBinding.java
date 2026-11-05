@@ -22,12 +22,17 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.Parameter;
 import jakarta.persistence.Query;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.TypedQuery;
 
 import org.apache.openjpa.persistence.ArgumentException;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.common.utils.BufferedLogFactory;
 import org.apache.openjpa.persistence.jdbc.query.domain.TimeEntity;
 import org.apache.openjpa.persistence.jdbc.query.domain.TimeKeeper;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -67,6 +72,8 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
     public void setUp() throws Exception {
         super.setUp(CLEAR_TABLES,
                 "openjpa.jdbc.DBDictionary", "(dateFractionDigits=6)",
+                "openjpa.Log", BufferedLogFactory.class.getName() + "(DefaultLevel=WARN, SQL=TRACE)",
+                "openjpa.ConnectionFactoryProperties", "PrintParameters=true",
                 TimeKeeper.class, TimeEntity.class);
         em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -122,6 +129,105 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
 
         assertEquals(1, q.getResultList().size());
     }
+
+    /**
+     * setParameter(Parameter, Calendar, TemporalType) must bind the Calendar converted to the requested temporal
+     * type, like the int/String variants do. The query is executed twice: the first execution binds against the
+     * columns, the second one runs from the prepared query cache, which binds without column information. Without
+     * the conversion the second execution binds every Calendar as a Timestamp.
+     */
+    public void testParameterObjectConvertedFromCalendarValue() {
+        BufferedLogFactory log = (BufferedLogFactory) ((OpenJPAEntityManagerFactorySPI) emf).getConfiguration()
+            .getLogFactory();
+        for (int i = 0; i < 2; i++) {
+            Calendar c1 = Calendar.getInstance();
+            Calendar c2 = Calendar.getInstance();
+            Calendar c3 = Calendar.getInstance();
+            c1.setTimeInMillis(T1);
+            c2.setTimeInMillis(T2);
+            c3.setTimeInMillis(T3);
+
+            TypedQuery<TimeKeeper> q = em.createQuery(JPQL_NAMED, TimeKeeper.class);
+            Parameter<Calendar> d = (Parameter<Calendar>) q.getParameter("d");
+            Parameter<Calendar> t = (Parameter<Calendar>) q.getParameter("t");
+            Parameter<Calendar> ts = (Parameter<Calendar>) q.getParameter("ts");
+            q.setParameter(d, c1, TemporalType.DATE);
+            q.setParameter(t, c2, TemporalType.TIME);
+            q.setParameter(ts, c3, TemporalType.TIMESTAMP);
+
+            log.clear();
+            assertEquals("execution " + (i + 1), 1, q.getResultList().size());
+            assertBoundTypes("execution " + (i + 1), log.getBuffer(), "(Date)", "(Time)", "(Timestamp)");
+        }
+    }
+
+    /**
+     * The value bound with setParameter(Parameter, Calendar, TemporalType) is the Calendar given by the caller.
+     * The temporal type only applies when the query is executed.
+     */
+    public void testParameterObjectKeepsCalendarValue() {
+        Calendar c1 = Calendar.getInstance();
+        c1.setTimeInMillis(T1);
+
+        TypedQuery<TimeKeeper> q = em.createQuery(JPQL_NAMED, TimeKeeper.class);
+        Parameter<Calendar> d = (Parameter<Calendar>) q.getParameter("d");
+        q.setParameter(d, c1, TemporalType.DATE);
+
+        Calendar bound = q.getParameterValue(d);
+        assertSame(c1, bound);
+        assertSame(c1, q.getParameterValue("d"));
+    }
+
+    /**
+     * Binding a Calendar again without a temporal type must not apply the temporal type of an earlier binding.
+     */
+    public void testParameterObjectRebindDropsTemporalType() {
+        Calendar c1 = Calendar.getInstance();
+        Calendar c2 = Calendar.getInstance();
+        Calendar c3 = Calendar.getInstance();
+        c1.setTimeInMillis(T1);
+        c2.setTimeInMillis(T2);
+        c3.setTimeInMillis(T3);
+
+        TypedQuery<TimeKeeper> q = em.createQuery(JPQL_NAMED, TimeKeeper.class);
+        Parameter<Calendar> d = (Parameter<Calendar>) q.getParameter("d");
+        Parameter<Calendar> t = (Parameter<Calendar>) q.getParameter("t");
+        Parameter<Calendar> ts = (Parameter<Calendar>) q.getParameter("ts");
+        q.setParameter(d, c1, TemporalType.TIMESTAMP);
+        q.setParameter(d, c1, TemporalType.DATE);
+        q.setParameter(t, c2, TemporalType.TIME);
+        q.setParameter(ts, c3, TemporalType.DATE);
+        q.setParameter(ts, c3);
+
+        BufferedLogFactory log = (BufferedLogFactory) ((OpenJPAEntityManagerFactorySPI) emf).getConfiguration()
+            .getLogFactory();
+        log.clear();
+        q.getResultList();
+        // ts is bound as the plain Calendar, which DBDictionary binds as a Timestamp, not as a Date
+        assertBoundTypes("rebind", log.getBuffer(), "(Date)", "(Time)", "(Timestamp)");
+    }
+
+    /**
+     * Asserts that the SQL log holds a statement on TimeKeeper whose parameters were bound with the given JDBC
+     * setter types, in that order.
+     */
+    private static void assertBoundTypes(String message, List<String> sqlLog, String... types) {
+        for (String line : sqlLog) {
+            int params = line.indexOf("[params=");
+            if (!line.contains("TimeKeeper") || params < 0) {
+                continue;
+            }
+            String[] bound = line.substring(params + "[params=".length()).split(", ");
+            assertEquals(message + ": " + line, types.length, bound.length);
+            for (int i = 0; i < types.length; i++) {
+                assertTrue(message + ": parameter " + (i + 1) + " should be bound as " + types[i] + " in " + line,
+                    bound[i].startsWith(types[i] + " "));
+            }
+            return;
+        }
+        fail(message + ": no SELECT on TimeKeeper with parameters in the SQL log " + sqlLog);
+    }
+
     public void testNamedParameterConvertedFromDateValue() {
         Date d1 = new Date(T1);
         Date d2 = new Date(T2);

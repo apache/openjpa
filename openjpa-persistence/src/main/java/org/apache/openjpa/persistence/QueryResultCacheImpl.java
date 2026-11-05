@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence;
 
 import java.util.Collections;
+import java.util.Map;
 
 import jakarta.persistence.Query;
 
@@ -88,11 +89,17 @@ public class QueryResultCacheImpl
      */
     private QueryKey toQueryKey(Query q) {
         QueryImpl impl = (QueryImpl) q;
-        if (impl.hasPositionalParameters())
-            return QueryKey.newInstance(impl.getDelegate(),
-                impl.getPositionalParameters());
-        return QueryKey.newInstance(impl.getDelegate(),
-            impl.getNamedParameters());
+        // use the values the query is executed with (a Calendar bound with a TemporalType
+        // is converted on execution), so that the key matches the key the result is cached under
+        Map<Object, Object> values = impl.getParameterValues();
+        if (impl.hasPositionalParameters()) {
+            Object[] params = impl.getPositionalParameters();
+            for (Map.Entry<Object, Object> e : values.entrySet())
+                if (e.getKey() instanceof Integer)
+                    params[(Integer) e.getKey() - 1] = e.getValue();
+            return QueryKey.newInstance(impl.getDelegate(), params);
+        }
+        return QueryKey.newInstance(impl.getDelegate(), values);
     }
 
     @Override
