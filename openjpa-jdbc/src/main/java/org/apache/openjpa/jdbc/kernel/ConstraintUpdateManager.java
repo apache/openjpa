@@ -467,7 +467,7 @@ public class ConstraintUpdateManager
         for (Object o : cycle) {
             Edge edge = (Edge) o;
             Object userObject = edge.getUserObject();
-            if (userObject instanceof ForeignKey && ((ForeignKey) userObject).isLogical()) {
+            if (userObject instanceof ForeignKey ufk && ufk.isLogical()) {
                 return edge;
             }
         }
