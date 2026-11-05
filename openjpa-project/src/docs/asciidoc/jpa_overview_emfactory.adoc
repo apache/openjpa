@@ -49,7 +49,7 @@ These strategies allow vendors to pool factories, cutting down on resource utili
 ==== Obtaining EntityManagers
 (((EntityManager , obtaining)))
 
-[source]
+[source, java]
 ----
 
 public EntityManager createEntityManager();
@@ -126,7 +126,7 @@ As you'll see in <<jpa_overview_em>>, you can also merge the previously-detached
 ====
 The following code illustrates the behavior of entities under an [class]``EntityManager`` using a transaction persistence context.
 
-[source]
+[source, java]
 ----
 
 EntityManager em; // injected
@@ -159,6 +159,7 @@ assertTrue(mag4 == mag3);
 Magazine mag5 = em.find(Magazine.class, magId);
 assertTrue(mag5 != mag3);
 ----
+
 ====
 
 [[jpa_overview_emfactory_perscontext_extend]]
@@ -173,7 +174,7 @@ Entities only become detached when you finally close the [class]``EntityManager`
 ====
 The following code illustrates the behavior of entities under an [class]``EntityManager`` using an extended persistence context.
 
-[source]
+[source, java]
 ----
 
 EntityManagerFactory emf = ...
@@ -202,6 +203,7 @@ assertTrue(mag5 == mag1);
 // instance finally becomes detached when EM closes
 em.close();
 ----
+
 ====
 
 [[jpa_overview_emf_properties]]
@@ -211,7 +213,7 @@ em.close();
 [[jpa_overview_emfactory_close]]
 ==== Closing the EntityManagerFactory
 
-[source]
+[source, java]
 ----
 
 public boolean isOpen();
@@ -234,7 +236,7 @@ Once a factory is closed, all methods except [method]``isOpen`` throw an [class]
 ==== PersistenceUnitUtil
 (((EntityManagerFactory , util)))
 
-[source]
+[source, java]
 ----
 
 public PersistenceUnitUtil getPersistenceUnitUtil();
@@ -242,7 +244,8 @@ public PersistenceUnitUtil getPersistenceUnitUtil();
 
 The [class]``EntityManagerFactory`` method [method]``getPersistenceUnitUtil`` provides access to a [class]``PersistenceUnitUtil`` utility. [class]``PersistenceUnitUtil`` can be used to obtain the identity of a managed object and determine the load state of the entity or one of its attributes.
 If the object is not managed by one of the entity managers created from the entity manager factory from which the utility was obtained, the [method]``getIdentifier`` method will return null and the [method]``isLoaded`` methods will return false.
-[source]
+
+[source, java]
 ----
 
 EntityManagerFactory emf = Persistence.createEntityManagerFactory();

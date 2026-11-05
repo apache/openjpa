@@ -28,41 +28,53 @@ The syntax is designed to construct a _Query Tree_ whose nodes represent the sem
 
 The CriteriaBuilder interface is the factory for CriteriaQuery.
 A CriteriaBuilder is obtained from either an EntityManagerFactory or an EntityManager as follows:
-[source]
+
+[source, java]
 ----
 
 EntityManager em = ... ;
 CriteriaBuilder queryBuilder = em.getCriteriaBuilder();
 CriteriaQuery qdef = queryBuilder.createQuery();
-----	The first step in constructing a query definition is specification of query roots.
+----
+
+The first step in constructing a query definition is specification of query roots.
 Query roots specify the domain objects on which the query is evaluated.
 Query root is an instance of the Root<T> interface.
 A query root is added to a CriteriaQuery by [method]``addRoot(Class c)`` method.
-[source]
+
+[source, java]
 ----
 
-    	Root<Customer> customer = qdef.from(Customer.class);
-----	A query domain can be further refined by joining to other domain objects.
+    Root<Customer> customer = qdef.from(Customer.class);
+----
+
+A query domain can be further refined by joining to other domain objects.
 For example, for the above query definition to operate over customers and their orders, use [method]``join(String attribute)``:
-[source]
+
+[source, java]
 ----
 
 Root<Order> order = customer.join(customer.get(Customer_.orders));
-----		where Customer_.orders represent a field of canonical metamodel class for Customer.
+----
+
+where Customer_.orders represent a field of canonical metamodel class for Customer.
 These canonical metamodel classes are generated during compilation by processing the persistent annotation in the source code of Customer.java.
 
 The condition of a query definition is set via [method]``where(Predicate p)`` where the argument designates a conditional predicate.
 Conditional predicates are often composed of one or more comparisons between the attribute values of the domain objects and some variable.
 For example, to select the Customer whose name is _"John Doe"_ and has orders that are not yet delivered, you can build the predicate and set it to the query definition as:
-[source]
-----
 
+[source, java]
+----
            qdef.where(customer.get(Customer_.name).equal("John Doe")
                .and(order.get(Order_.status).equal(OrderStatus.DELIVERED).not()));
-----		The [method]``select()`` method defines the result of the query.
+----
+
+The [method]``select()`` method defines the result of the query.
 If left unspecified, the select projection is assumed to be the root domain object.
 However, you can specify the selected projections explicitly as a list:
-[source]
+
+[source, java]
 ----
 
             qdef.select(customer.get(Customer_.name), order.get(Order_.status));
@@ -76,7 +88,8 @@ On the other hand, using canonical metamodel for path navigate enforces compile 
 ==== Executing a CriteriaQuery
 
 A CriteriaQuery is executed in a similar fashion to a string-based JPQL query via the EntityManager and Query interfaces.
-[source]
+
+[source, java]
 ----
 
 EntityManager em = ...
@@ -93,7 +106,8 @@ https://developer.ibm.com/articles/j-typesafejpa/[A developerworks article] expl
 Criteria API has provided an alternative means to string-based JPQL to execute a query.
 However, JPA 2.0 specification has not explicitly specified any equivalence between a dynamically constructed CriteriaQuery and a JPQL string.
 OpenJPA provides a mechanism to convert a CriteriaQuery to an equivalent JPQL query string via the extended OpenJPACriteriaQuery API.
-[source]
+
+[source, java]
 ----
 
 public interface OpenJPACriteriaQuery extends CriteriaQuery {
@@ -108,11 +122,13 @@ public interface OpenJPACriteriaQuery extends CriteriaQuery {
 
 Annotation processing tool generates source code for a metamodel class given the annotated source code of persistent entity.
 This tool is invoked during compilation for JDK6 compiler if OpenJPA and JPA libraries are specified in the compiler `-classpath` option _and_ Annotation processor option `-Aopenjpa.metamodel=true` is specified.
-[source]
+
+[source, shell]
 ----
 
  $ javac -classpath path/to/openjpa-all.jar -Aopenjpa.metamodel=true mypackage/MyEntity.java
 ----
+
 will generate source code for canonical meta-model class ``mypackage.MyEntity_``.
 The source code is generated relative to the directory specified in `-s` option of `javac` compiler and defaulted to the current directory.
 

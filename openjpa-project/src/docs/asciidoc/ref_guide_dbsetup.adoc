@@ -69,7 +69,8 @@ If, on the other hand, the listed driver is a [class]``javax.sql.DataSource``, t
 [[ref_guide_dbsetup_builtin_ex]]
 .Properties for the OpenJPA DataSource
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.ConnectionUserName" value="user"/>
@@ -79,6 +80,7 @@ If, on the other hand, the listed driver is a [class]``javax.sql.DataSource``, t
 <property name="openjpa.ConnectionFactoryProperties"
     value="PrettyPrint=true, PrettyPrintLineLength=80, PrintParameters=true"/>
 ----
+
 ====
 
 [[ref_guide_dbsetup_dbcp]]
@@ -86,11 +88,13 @@ If, on the other hand, the listed driver is a [class]``javax.sql.DataSource``, t
 (((DBCP , DataSource)))
 
 Additional Commons DBCP arguments can be provided in ``openjpa.connectionProperties``, such as:
-[source]
+
+[source, xml]
 ----
 
     MaxTotal=10,MaxIdle=5,MinIdle=2,MaxWait=60000
 ----
+
 Please visit the Commons DBCP website for the entire list of http://commons.apache.org/dbcp/configuration.html[configuration options] and explanations.
 
 [[ref_guide_dbsetup_thirdparty]]
@@ -112,7 +116,8 @@ To configure these features use the <<openjpa.ConnectionFactoryProperties,`openj
 [[ref_guide_dbsetup_thirdparty_ex]]
 .Properties File for a Third-Party DataSource
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.ConnectionDriverName" value="oracle.jdbc.pool.OracleDataSource"/>
@@ -123,7 +128,7 @@ To configure these features use the <<openjpa.ConnectionFactoryProperties,`openj
 
 You can also force the Apache Commons DBCP BasicDataSource to be used for connection pooling when provided on the classpath by substituting it as the ``ConnectionDriverName`` and setting ``ConnectionProperties=DriverClassName`` to the actual JDBC driver value -
 
-[source]
+[source, xml]
 ----
 
 <property name="openjpa.ConnectionDriverName" value="org.apache.commons.dbcp.BasicDataSource"/>
@@ -131,6 +136,7 @@ You can also force the Apache Commons DBCP BasicDataSource to be used for connec
     value="DriverClassName=oracle.jdbc.pool.OracleDataSource, PortNumber=1521, ServerName=saturn, DatabaseName=solarsid, DriverType=thin, MaxIdle=0"/>
 <property name="openjpa.ConnectionFactoryProperties" value="QueryTimeout=5000"/>
 ----
+
 ====
 
 [[ref_guide_dbsetup_thirdparty_enlist]]
@@ -153,7 +159,8 @@ These properties are outlined in <<ref_guide_conf>>.
 [[ref_guide_enterprise_xa_conf_ex]]
 .Managed DataSource Configuration
 ====
-[source]
+
+[source, xml]
 ----
 
 <!-- managed DataSource -->
@@ -166,6 +173,7 @@ These properties are outlined in <<ref_guide_conf>>.
     <property name="openjpa.Connection2DriverName" value="oracle.jdbc.driver.OracleDriver"/>
 </properties>
 ----
+
 ====
 
 [[ref_guide_dbsetup_setDSatRuntime]]
@@ -180,13 +188,15 @@ One use case for this function is to store production connection information in 
 
 .Setting DataSource at Runtime
 ====
-[source]
+
+[source, java]
 ----
 Map<Object,Object> props = new HashMap<Object,Object>();
 props.put("jakarta.persistence.jtaDataSource", "jdbc/myDataSource");
 props.put("jakarta.persistence.nonJtaDataSource", "jdbc/myNonJTADataSource");
 emf = Persistence.createEntityManagerFactory("example", props);
 ----
+
 ====
 
 [[ref_guide_dbsetup_setDSPerEM]]
@@ -251,7 +261,8 @@ OpenJPA will ensure that the underlying native connection is not released if a d
 [[ref_guide_dbsetup_conn_jpa]]
 .Using the EntityManager's Connection
 ====
-[source]
+
+[source, java]
 ----
 
 import java.sql.Connection;
@@ -267,6 +278,7 @@ Connection conn = (Connection) em.unwrap(java.sql.Connection.class);
 
 conn.close();
 ----
+
 ====
 
 The example below shows how to use a connection directly from the [class]``DataSource``, rather than using an [class]``EntityManager``'s connection.
@@ -274,7 +286,8 @@ The example below shows how to use a connection directly from the [class]``DataS
 [[ref_guide_dbsetup_conn_from_factory_jpa]]
 .Using the EntityManagerFactory's DataSource
 ====
-[source]
+
+[source, java]
 ----
 
 import java.sql.*;
@@ -293,6 +306,7 @@ Connection conn = dataSource.getConnection();
 
 conn.close();
 ----
+
 ====
 
 [[ref_guide_dbsetup_dbsupport]]
@@ -369,11 +383,13 @@ The `DBDictionary` property uses OpenJPA's <<ref_guide_conf_plugins,plugin synta
 [[ref_guide_dbsetup_dbdict]]
 .Specifying a DBDictionary
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.jdbc.DBDictionary" value="hsql(SimulateLocking=true)"/>
 ----
+
 ====
 
 [[ref_guide_dbsetup_dbdictprops]]
@@ -804,9 +820,9 @@ Different defaults for other dictionaries provided by OpenJPA are in the followi
 |
                     			MySQLDictionary
 |
-                    			
+
 `|`
-                    			
+
 
 |
                     			AccessDictionary
@@ -818,9 +834,9 @@ Different defaults for other dictionaries provided by OpenJPA are in the followi
 |
                     			HerdDBDictionary
 |
-                    			
+
 `|`
-                    			
+
 |===
 
 Some databases support more than one set of delimiters, often based on configuration.
@@ -854,11 +870,13 @@ openjpa-project/src/doc/manual/ref_guide_dbsetup.xml
 [[ref_guide_dbsetup_isoex]]
 .Specifying a Transaction Isolation
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.jdbc.TransactionIsolation" value="repeatable-read"/>
 ----
+
 ====
 
 [[ref_guide_dbsetup_sql92]]
@@ -870,7 +888,7 @@ You can configure OpenJPA to use either SQL 92-style join syntax, in which joins
 OpenJPA only supports outer joins when using SQL 92 syntax or a database-specific syntax with outer join support.
 
 The <<openjpa.jdbc.DBDictionary,
-`openjpa.jdbc.DBDictionary`>> plugin accepts the 
+`openjpa.jdbc.DBDictionary`>> plugin accepts the
 `JoinSyntax` property to set the system's default syntax.
 The available values are:
 
@@ -883,17 +901,20 @@ You can change the join syntax at runtime through the OpenJPA fetch configuratio
 [[ref_guide_dbsetup_sql92_conf]]
 .Specifying the Join Syntax Default
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.jdbc.DBDictionary" value="JoinSyntax=sql92"/>
 ----
+
 ====
 
 [[ref_guide_dbsetup_sql92_fetch]]
 .Specifying the Join Syntax at Runtime
 ====
-[source]
+
+[source, java]
 ----
 
 import org.apache.openjpa.persistence.jdbc.*;
@@ -906,6 +927,7 @@ JDBCFetchPlan fetch = (JDBCFetchPlan) kq.getFetchPlan();
 fetch.setJoinSyntax(JoinSyntax.SQL92);
 List results = q.getResultList();
 ----
+
 ====
 
 [[ref_guide_dbsetup_multidb]]
@@ -1020,18 +1042,21 @@ flush
 [[ref_guide_dbsetup_sql92_retain_conf]]
 .Specifying Connection Usage Defaults
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.ConnectionRetainMode" value="on-demand"/>
 <property name="openjpa.FlushBeforeQueries" value="true"/>
 ----
+
 ====
 
 [[ref_guide_dbsetup_sql92_retain_runtime]]
 .Specifying Connection Usage at Runtime
 ====
-[source]
+
+[source, java]
 ----
 
 import org.apache.openjpa.persistence.*;
@@ -1041,6 +1066,7 @@ Map props = new HashMap();
 props.put("openjpa.ConnectionRetainMode", "always");
 EntityManager em = emf.createEntityManager(props);
 ----
+
 ====
 
 [[ref_guide_dbsetup_stmtbatch]]
@@ -1074,7 +1100,8 @@ The example below shows how to enable and disable statement batching via your co
 [[ref_guide_dbsetup_stmtbatch_exmple1]]
 .Enable SQL statement batching
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.jdbc.DBDictionary" value="db2(batchLimit=25)"/>
@@ -1083,18 +1110,21 @@ Or
 <property name="openjpa.jdbc.DBDictionary" value="batchLimit=25"/>
 <property name="openjpa.jdbc.DBDictionary" value="batchLimit=-1"/>
 ----
+
 ====
 
 [[ref_guide_dbsetup_stmtbatch_exmple2]]
 .Disable SQL statement batching
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.jdbc.DBDictionary" value="db2(batchLimit=0)"/>
 Or
 <property name="openjpa.jdbc.DBDictionary" value="batchLimit=0"/>
 ----
+
 ====
 
 By default, org.apache.openjpa.jdbc.kernel.BatchingConstraintUpdateManager is the default statement batching implementation.
@@ -1108,11 +1138,13 @@ You specify this implementation in the persistence.xml file as the following exa
 [[ref_guide_dbsetup_stmtbatch_exmple3]]
 .Plug-in custom statement batching implementation
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.jdbc.UpdateManager" value="mycomp.MyUpdateManager"/>
 ----
+
 ====
 
 [[ref_guide_dbsetup_lrs]]
@@ -1166,7 +1198,8 @@ Available values are:
 [[ref_guide_dbsetup_lrs_def]]
 .Specifying Result Set Defaults
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.FetchBatchSize" value="20"/>
@@ -1174,6 +1207,7 @@ Available values are:
 <property name="openjpa.jdbc.FetchDirection" value="forward"/>
 <property name="openjpa.jdbc.LRSSize" value="last"/>
 ----
+
 ====
 
 Many <<ref_guide_runtime,OpenJPA runtime components>> also have methods to configure these properties on a case-by-case basis through their fetch configuration.
@@ -1182,7 +1216,8 @@ See <<ref_guide_runtime>>.
 [[ref_guide_dbsetup_lrs_runtime]]
 .Specifying Result Set Behavior at Runtime
 ====
-[source]
+
+[source, java]
 ----
 
 import java.sql.*;
@@ -1199,6 +1234,7 @@ fetch.setFetchDirection(FetchDirection.FORWARD);
 fetch.setLRSSizeAlgorithm(LRSSizeAlgorithm.LAST);
 List results = q.getResultList();
 ----
+
 ====
 
 [[ref_guide_schema_def]]
@@ -1231,12 +1267,12 @@ Each is presented below.
 (((Schemas)))
 (((schema , schemas list)))
 
-By default, schema reflection acts on all the schemas your JDBC driver can "see". You can limit the schemas and tables OpenJPA acts on with the 
+By default, schema reflection acts on all the schemas your JDBC driver can "see". You can limit the schemas and tables OpenJPA acts on with the
 `openjpa.jdbc.Schemas` configuration property.
 This property accepts a comma-separated list of schemas and tables.
 To list a schema, list its name.
 To list a table, list its full name in the form ``<schema-name>.<table-name>``.
-If a table does not have a schema or you do not know its schema, list its name as 
+If a table does not have a schema or you do not know its schema, list its name as
 `.<table-name>` (notice the preceding '.'). For example, to list the `BUSOBJS` schema, the `ADDRESS` table in the `GENERAL` schema, and the `SYSTEM_INFO` table, regardless of what schema it is in, use the string:
 
 [source]
@@ -1338,11 +1374,12 @@ We present some examples of schema tool usage below.
 (((schema , create with schema tool)))
 Add the necessary schema components to the database to match the given XML document, but don't drop any data:
 
-[source]
+[source, shell]
 ----
 
 java org.apache.openjpa.jdbc.schema.SchemaTool targetSchema.xml
 ----
+
 ====
 
 [[ref_guide_schema_schematool_script]]
@@ -1351,7 +1388,7 @@ java org.apache.openjpa.jdbc.schema.SchemaTool targetSchema.xml
 Repeat the same action as the first example, but this time don't change the database.
 Instead, write any planned changes to a SQL script:
 
-[source]
+[source, shell]
 ----
 
 java org.apache.openjpa.jdbc.schema.SchemaTool -f script.sql targetSchema.xml
@@ -1359,11 +1396,12 @@ java org.apache.openjpa.jdbc.schema.SchemaTool -f script.sql targetSchema.xml
 
 Write a SQL script that will re-create the current database:
 
-[source]
+[source, shell]
 ----
 
 java org.apache.openjpa.jdbc.schema.SchemaTool -a createDB -f script.sql
 ----
+
 ====
 
 [[ref_guide_schema_schematool_table_cleanup]]
@@ -1372,11 +1410,12 @@ java org.apache.openjpa.jdbc.schema.SchemaTool -a createDB -f script.sql
 (((testing , refresh schema and delete all contents of all tables)))
 Refresh the schema and delete all contents of all tables that OpenJPA knows about:
 
-[source]
+[source, shell]
 ----
 
 java org.apache.openjpa.jdbc.schema.SchemaTool -a refresh,deleteTableContents
 ----
+
 ====
 
 [[ref_guide_schema_schematool_drop]]
@@ -1384,11 +1423,12 @@ java org.apache.openjpa.jdbc.schema.SchemaTool -a refresh,deleteTableContents
 ====
 Drop the current database:
 
-[source]
+[source, shell]
 ----
 
 java org.apache.openjpa.jdbc.schema.SchemaTool -a dropDB
 ----
+
 ====
 
 [[ref_guide_schema_schematool_reflect]]
@@ -1397,11 +1437,12 @@ java org.apache.openjpa.jdbc.schema.SchemaTool -a dropDB
 Write an XML representation of the current schema to file [path]_schema.xml_
 .
 
-[source]
+[source, shell]
 ----
 
 java org.apache.openjpa.jdbc.schema.SchemaTool -a reflect -f schema.xml
 ----
+
 ====
 
 [[ref_guide_schema_xml]]
@@ -1411,7 +1452,7 @@ java org.apache.openjpa.jdbc.schema.SchemaTool -a reflect -f schema.xml
 The <<ref_guide_schema_schematool,schema tool>> and <<ref_guide_schema_info_factory, schema factories>> all use the same XML format to represent database schema.
 The Document Type Definition (DTD) for schema information is presented below, followed by examples of schema definitions in XML.
 
-[source]
+[source, xml]
 ----
 
 <!ELEMENT schemas (schema)+>
@@ -1495,7 +1536,7 @@ The Document Type Definition (DTD) for schema information is presented below, fo
 ====
 A very basic schema definition.
 
-[source]
+[source, xml]
 ----
 
 <schemas>
@@ -1514,6 +1555,7 @@ A very basic schema definition.
     </schema>
 </schemas>
 ----
+
 ====
 
 [[ref_guide_schema_xml_full]]
@@ -1521,7 +1563,7 @@ A very basic schema definition.
 ====
 Expansion of the above schema with primary keys, constraints, and indexes, some of which span multiple columns.
 
-[source]
+[source, xml]
 ----
 
 <schemas>
@@ -1553,6 +1595,7 @@ Expansion of the above schema with primary keys, constraints, and indexes, some 
     </schema>
 </schemas>
 ----
+
 ====
 
 ifdef::backend-docbook[]

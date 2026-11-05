@@ -72,7 +72,7 @@ It has the following attributes, which correspond to the annotation properties a
 * `schema`
 * `catalog`
 
-The `table` element also accepts nested 
+The `table` element also accepts nested
 `unique-constraint` elements representing unique constraints.
 We will detail unique constraints shortly.
 
@@ -86,7 +86,8 @@ The ``CONTRACT``, ``SUB``, and `LINE_ITEM`  tables are in the `CNTRCT` schema; a
 [[jpa_overview_mapping_classex]]
 .Mapping Classes
 ====
-[source]
+
+[source, java]
 ----
 
 package org.mag;
@@ -171,7 +172,7 @@ public class TrialSubscription
 
 The same mapping information expressed in XML:
 
-[source]
+[source, xml]
 ----
 
 <entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
@@ -221,6 +222,7 @@ The same mapping information expressed in XML:
     </embeddable>
 </entity-mappings>
 ----
+
 ====
 
 [[jpa_overview_mapping_unq]]
@@ -240,7 +242,7 @@ The JPA runtime must ensure that the SQL deleting `A` is sent to the database be
 * ``String name``: The name of the constraint. OpenJPA will choose a name if you do not provide one, or will create an anonymous constraint.
 * ``String[] columnNames``: The names of the columns the constraint spans.
 
-In XML, unique constraints are represented by nesting 
+In XML, unique constraints are represented by nesting
 `unique-constraint` elements within the  `table` element.
 Each `unique-constraint` element in turn nests ``column-name`` text elements to enumerate the constraint's columns.
 
@@ -249,7 +251,7 @@ Each `unique-constraint` element in turn nests ``column-name`` text elements to 
 ====
 The following defines a unique constraint on the  `TITLE` column of the `ART` table:
 
-[source]
+[source, java]
 ----
 
 @Entity
@@ -261,7 +263,7 @@ public class Article {
 
 The same metadata expressed in XML form:
 
-[source]
+[source, xml]
 ----
 
 <entity class="org.mag.Article">
@@ -274,6 +276,7 @@ The same metadata expressed in XML form:
     ...
 </entity>
 ----
+
 ====
 
 [[jpa_overview_mapping_column]]
@@ -330,7 +333,8 @@ Note that many of our identity fields do not need to specify column information,
 [[jpa_overview_mapping_identityex]]
 .Identity Mapping
 ====
-[source]
+
+[source, java]
 ----
 
 package org.mag;
@@ -439,7 +443,7 @@ public class TrialSubscription
 
 The same metadata for `Magazine` and `Company` expressed in XML form:
 
-[source]
+[source, xml]
 ----
 
 <entity class="org.mag.Magazine">
@@ -463,6 +467,7 @@ The same metadata for `Magazine` and `Company` expressed in XML form:
     </attributes>
 </entity>
 ----
+
 ====
 
 [[jpa_overview_mapping_sequence]]
@@ -509,7 +514,7 @@ Its attributes mirror the above annotation's properties:
 * `schema`
 
 To use a sequence generator, set your [class]``GeneratedValue`` annotation's `strategy` property to ``GenerationType.SEQUENCE``, and its `generator` property to the sequence generator's declared name.
-Or equivalently, set your 
+Or equivalently, set your
 `generated-value` XML element's `strategy` attribute to ``SEQUENCE`` and its `generator` attribute to the generator name.
 
 [[jpa_overview_mapping_sequence_tablegen]]
@@ -528,7 +533,7 @@ This property is required.
 If unspecified, your implementation will choose a default.
 * ``String valueColumnName``: The name of the column that holds the sequence value. If unspecified, your implementation will choose a default.
 * (((TableGenerator , pkColumnValue property)))``String pkColumnValue``: The primary key column value of the row in the generator table holding this sequence value.
-You can use the same generator table for multiple logical sequences by supplying different 
+You can use the same generator table for multiple logical sequences by supplying different
 `pkColumnValue` s.
 If you do not specify a value, the implementation will supply a default.
 * ``int initialValue``: The value of the generator's first issued number.
@@ -551,7 +556,7 @@ This element's attributes correspond exactly to the above annotation's propertie
 * `allocation-size`
 
 To use a table generator, set your [class]``GeneratedValue`` annotation's `strategy` property to ``GenerationType.TABLE``, and its `generator` property to the table generator's declared name.
-Or equivalently, set your 
+Or equivalently, set your
 `generated-value` XML element's `strategy` attribute to ``TABLE`` and its `generator` attribute to the generator name.
 
 [[jpa_overview_mapping_sequence_genex]]
@@ -563,7 +568,8 @@ Here are our updated mappings.
 [[jpa_overview_mapping_sequenceex]]
 .Generator Mapping
 ====
-[source]
+
+[source, java]
 ----
 
 package org.mag;
@@ -682,7 +688,7 @@ public class TrialSubscription
 
 The same metadata for `Article` and `Author` expressed in XML form:
 
-[source]
+[source, xml]
 ----
 
 <entity class="org.mag.Article">
@@ -712,6 +718,7 @@ The same metadata for `Article` and `Author` expressed in XML form:
     </attributes>
 </entity>
 ----
+
 ====
 
 [[jpa_overview_mapping_inher]]
@@ -749,13 +756,14 @@ The `InheritanceType.SINGLE_TABLE` strategy maps all classes in the hierarchy to
 
 image::img/inher-superclass-table.png[]
 
-In our model, [class]``Subscription`` is mapped to the 
+In our model, [class]``Subscription`` is mapped to the
 `CNTRCT.SUB` table. [class]``LifetimeSubscription``, which extends [class]``Subscription``, adds its field data to this table as well.
 
 [[jpa_overview_mapping_inher_singleex]]
 .Single Table Mapping
 ====
-[source]
+
+[source, java]
 ----
 
 @Entity
@@ -774,7 +782,7 @@ public class LifetimeSubscription
 
 The same metadata expressed in XML form:
 
-[source]
+[source, xml]
 ----
 
 <entity class="org.mag.subcribe.Subscription">
@@ -786,6 +794,7 @@ The same metadata expressed in XML form:
     ...
 </entity>
 ----
+
 ====
 
 Single table inheritance is the default strategy.
@@ -851,7 +860,8 @@ However, we include the primary key join column for illustrative purposes.
 [[jpa_overview_mapping_inher_joinedex]]
 .Joined Subclass Tables
 ====
-[source]
+
+[source, java]
 ----
 
 @Entity
@@ -877,7 +887,7 @@ public class Subscription {
 
 The same metadata expressed in XML form:
 
-[source]
+[source, xml]
 ----
 
 <entity class="org.mag.subcribe.Contract">
@@ -891,13 +901,14 @@ The same metadata expressed in XML form:
     ...
 </entity>
 ----
+
 ====
 
 When there are multiple identity columns, you must define multiple [class]``PrimaryKeyJoinColumn``s using the aptly-named [class]``PrimaryKeyJoinColumns`` annotation.
 This annotation's value is an array of [class]``PrimaryKeyJoinColumn`` s.
 We could rewrite [class]``LineItem``'s mapping as:
 
-[source]
+[source, java]
 ----
 
 @Entity
@@ -940,7 +951,7 @@ When executing a select against a hierarchy that uses joined subclass table inhe
 ===== Table Per Class
 (((mapping metadata , inheritance , TABLE_PER_CLASS strategy)))
 
-Like the `JOINED` strategy, the 
+Like the `JOINED` strategy, the
 `InheritanceType.TABLE_PER_CLASS` strategy uses a different table for each class in the hierarchy.
 Unlike the `JOINED` strategy, however, each table includes all state for an instance of the corresponding class.
 Thus to load a subclass instance, the JPA implementation must only read from the subclass table; it does not need to join to superclass tables.
@@ -958,7 +969,8 @@ These columns would default to the names used in [class]``Magazine``'s mapping m
 [[jpa_overview_mapping_inher_tpcex]]
 .Table Per Class Mapping
 ====
-[source]
+
+[source, java]
 ----
 
 @Entity
@@ -978,7 +990,7 @@ public class Tabloid
 
 And the same classes in XML:
 
-[source]
+[source, xml]
 ----
 
 <entity class="org.mag.Magazine">
@@ -991,6 +1003,7 @@ And the same classes in XML:
     ...
 </entity>
 ----
+
 ====
 
 [[jpa_overview_mapping_inher_tpc_adv]]
@@ -1028,7 +1041,8 @@ And here is the corresponding mapping metadata:
 [[jpa_overview_mapping_inher_togetherex]]
 .Inheritance Mapping
 ====
-[source]
+
+[source, java]
 ----
 
 package org.mag;
@@ -1149,7 +1163,7 @@ public class TrialSubscription
 
 The same metadata expressed in XML form:
 
-[source]
+[source, xml]
 ----
 
 <entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
@@ -1240,6 +1254,7 @@ The same metadata expressed in XML form:
     </entity>
 </entity-mappings>
 ----
+
 ====
 
 [[jpa_overview_mapping_discrim]]
@@ -1306,7 +1321,8 @@ Also, notice that entities using the default `DTYPE` discriminator column mappin
 [[jpa_overview_mapping_discrimex]]
 .Discriminator Mapping
 ====
-[source]
+
+[source, java]
 ----
 
 package org.mag;
@@ -1431,7 +1447,7 @@ public class TrialSubscription
 
 The same metadata expressed in XML:
 
-[source]
+[source, xml]
 ----
 
 <entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
@@ -1528,6 +1544,7 @@ The same metadata expressed in XML:
     </entity>
 </entity-mappings>
 ----
+
 ====
 
 [[jpa_overview_mapping_field]]
@@ -1626,7 +1643,8 @@ image::img/jpa-basic-field.png[]
 [[jpa_overview_mapping_basicex]]
 .Basic Field Mapping
 ====
-[source]
+
+[source, java]
 ----
 
 package org.mag;
@@ -1815,7 +1833,7 @@ public class TrialSubscription
 
 The same metadata expressed in XML:
 
-[source]
+[source, xml]
 ----
 
 <entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
@@ -1969,6 +1987,7 @@ The same metadata expressed in XML:
     </entity>
 </entity-mappings>
 ----
+
 ====
 
 [[jpa_overview_mapping_secondary]]
@@ -2002,7 +2021,8 @@ image::img/secondary-table.png[]
 [[jpa_overview_mapping_secondaryex]]
 .Secondary Table Field Mapping
 ====
-[source]
+
+[source, java]
 ----
 
 package org.mag;
@@ -2024,7 +2044,7 @@ public class Article {
 
 And in XML:
 
-[source]
+[source, xml]
 ----
 
 <entity class="org.mag.Article">
@@ -2041,6 +2061,7 @@ And in XML:
     </attributes>
 </entity>
 ----
+
 ====
 
 [[jpa_overview_mapping_embed]]
@@ -2076,7 +2097,7 @@ The corresponding XML element is ``association-override``.
 It has a single `name` attribute to name the field being overridden, and one or more `join-column` child elements.
 
 To declare multiple relation overrides, use the [class]``AssociationOverrides`` annotation, whose value is an array of [class]``AssociationOverride`` s.
-In XML, simply list multiple 
+In XML, simply list multiple
 `association-override` elements in succession.
 
 [[jpa_overview_mapping_embedex]]
@@ -2085,7 +2106,7 @@ In XML, simply list multiple
 In this example, [class]``Company`` overrides the default mapping of ``Address.street`` and ``Address.city``.
 All other embedded mappings are taken from the [class]``Address`` embeddable class.
 
-[source]
+[source, java]
 ----
 
 package org.mag.pub;
@@ -2127,7 +2148,7 @@ public class Address {
 
 The same metadata expressed in XML:
 
-[source]
+[source, xml]
 ----
 
 <entity class="org.mag.pub.Company">
@@ -2163,6 +2184,7 @@ The same metadata expressed in XML:
     </attributes>
 </embeddable>
 ----
+
 ====
 
 You can also use attribute overrides on an entity class to override mappings defined by its mapped superclass or table-per-class superclass.
@@ -2171,7 +2193,8 @@ The example below re-maps the `Document.version` field to the [class]``Contract`
 [[jpa_overview_mapping_joined_overex]]
 .Mapping Mapped Superclass Field
 ====
-[source]
+
+[source, java]
 ----
 
 @MappedSuperclass
@@ -2196,7 +2219,7 @@ public class Contract
 
 The same metadata expressed in XML form:
 
-[source]
+[source, xml]
 ----
 
 <mapped-superclass class="org.mag.subcribe.Document">
@@ -2219,6 +2242,7 @@ The same metadata expressed in XML form:
     </attributes>
 </entity>
 ----
+
 ====
 
 [[jpa_overview_mapping_rel]]
@@ -2268,7 +2292,8 @@ See <<ref_guide_mapping_notes_nonstdjoins>> in the Reference Guide for details.
 [[jpa_overview_mapping_relex]]
 .Direct Relation Field Mapping
 ====
-[source]
+
+[source, java]
 ----
 
 package org.mag;
@@ -2335,7 +2360,7 @@ public class Subscription {
 
 The same metadata expressed in XML form:
 
-[source]
+[source, xml]
 ----
 
 <entity class="org.mag.Magazine">
@@ -2383,9 +2408,10 @@ The same metadata expressed in XML form:
     </attributes>
 </entity>
 ----
+
 ====
 
-When the entities in a one to one relation join on shared primary key values rather than separate foreign key columns, use the [class]``PrimaryKeyJoinColumn(s)`` annotation or 
+When the entities in a one to one relation join on shared primary key values rather than separate foreign key columns, use the [class]``PrimaryKeyJoinColumn(s)`` annotation or
 `primary-key-join-column` elements in place of [class]``JoinColumn(s)`` /  `join-column` elements.
 
 [[jpa_overview_mapping_assoccoll]]
@@ -2426,7 +2452,8 @@ Here are the join table mappings for the diagram above.
 [[jpa_overview_mapping_assoccollex]]
 .Join Table Mapping
 ====
-[source]
+
+[source, java]
 ----
 
 package org.mag;
@@ -2484,7 +2511,7 @@ public class Author {
 
 The same metadata expressed in XML:
 
-[source]
+[source, xml]
 ----
 
 <entity class="org.mag.Magazine">
@@ -2532,6 +2559,7 @@ The same metadata expressed in XML:
     </attributes>
 </entity>
 ----
+
 ====
 
 [[jpa_overview_mapping_bidi]]
@@ -2540,7 +2568,7 @@ The same metadata expressed in XML:
 
 <<jpa_overview_meta_mappedby>> introduced bidirectional relations.
 To map a bidirectional relation, you map one field normally using the annotations we have covered throughout this chapter.
-Then you use the 
+Then you use the
 `mappedBy` property of the other field's metadata annotation or the corresponding `mapped-by` XML attribute to refer to the mapped field.
 Look for this pattern in these bidirectional relations as you peruse the complete mappings below:
 
@@ -2574,7 +2602,8 @@ The key for each map entry is the [class]``LineItem``'s `num`  field value.
 [[jpa_overview_mapping_mapex]]
 .Join Table Map Mapping
 ====
-[source]
+
+[source, java]
 ----
 
 package org.mag.subscribe;
@@ -2606,7 +2635,7 @@ public class Subscription {
 
 The same metadata expressed in XML:
 
-[source]
+[source, xml]
 ----
 
 <entity class="org.mag.subscribe.Subscription">
@@ -2636,6 +2665,7 @@ The same metadata expressed in XML:
     </attributes>
 </entity>
 ----
+
 ====
 
 [[jpa_overview_mapping_full]]
@@ -2659,7 +2689,8 @@ We have trimmed the mappings to take advantage of JPA defaults where possible.
 [[jpa_overview_mapping_fullex]]
 .Full Entity Mappings
 ====
-[source]
+
+[source, java]
 ----
 
 package org.mag;
@@ -2918,7 +2949,7 @@ public class TrialSubscription
 
 The same metadata expressed in XML form:
 
-[source]
+[source, xml]
 ----
 
 <entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
@@ -3152,6 +3183,7 @@ The same metadata expressed in XML form:
     </embeddable>
 </entity-mappings>
 ----
+
 ====
 
 ifdef::backend-docbook[]

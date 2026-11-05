@@ -90,11 +90,13 @@ To enable the basic single-factory cache set the <<openjpa.DataCache,`openjpa.Da
 [[ref_guide_cache_conf_sjvm]]
 .Single-JVM Data Cache
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.DataCache" value="true"/>
 ----
+
 ====
 
 To configure the data cache to remain up-to-date in a distributed environment, set the <<openjpa.RemoteCommitProvider,
@@ -118,22 +120,26 @@ Note that enabling the `Lru` cache can hurt performance as this map in not as sc
 [[ref_guide_cache_conf_lru]]
 .Lru Cache
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.DataCache" value="true(Lru=true)"/>
 <property name="openjpa.QueryCache" value="true(Lru=true)"/>
 ----
+
 ====
 
 [[ref_guide_cache_conf_size]]
 .Data Cache Size
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.DataCache" value="true(CacheSize=5000, SoftReferenceSize=0)"/>
 ----
+
 ====
 
 
@@ -146,7 +152,7 @@ This is the default value.
 ====
 Timeout [class]``Employee`` objects after 10 seconds.
 
-[source]
+[source, java]
 ----
 
 @Entity
@@ -155,6 +161,7 @@ public class Employee {
     ...
 }
 ----
+
 ====
 
 Entities may be explicitly excluded from the cache by providing a list of fully qualified class names in the `ExcludedTypes` argument.
@@ -164,7 +171,8 @@ The entities provided via `ExcludedTypes` will not be cached regardless of the [
 .Excluding entities
 [example]
 Exclude entities [class]``foo.bar.Person`` and [class]``foo.bar.Employee`` from the cache.
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.DataCache" value="true(ExcludedTypes=foo.bar.Person;foo.bar.Employee)"/>
@@ -178,7 +186,8 @@ Any entities which are not included in this list will not be cached.
 .Including entities
 [example]
 Include only entity [class]``foo.bar.FullTimeEmployee`` in the cache.
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.DataCache" value="true(Types=foo.bar.FullTimeEmployee)"/>
@@ -201,7 +210,7 @@ The tokens are, in order:
 
 For example, the following `openjpa.DataCache` setting schedules the default cache to evict values from the cache at 15 and 45 minutes past 3 PM on Sunday.
 
-[source]
+[source, xml]
 ----
 
 true(EvictionSchedule='15,45 15 * * 1')
@@ -213,7 +222,7 @@ The format of this property is a `\+` followed by the number of minutes between 
 For example, the following `openjpa.DataCache` setting schedules the default cache to evict values from the cache every 120 minutes.
 
 
-[source]
+[source, xml]
 ----
 
 true(EvictionSchedule='+120')
@@ -226,10 +235,11 @@ Setting `EvictOnBulkUpdate` to `false` will tell OpenJPA to not evict from the D
 The default for the value is ``true``.
 
 
-[source]
+[source, xml]
 ----
 <property name="openjpa.DataCache" value="true(EvictOnBulkUpdate=false)"/>
 ----
+
 ====
 
 [[ref_guide_shared_cache_mode_integration]]
@@ -249,7 +259,7 @@ The Types and ExcludeTypes property in openjpa.DataCache will be ingnored since 
 ====
 
 [[shared-cache-mode-none]]
-[source]
+[source, xml]
 ----
 
 <property name="openjpa.DataCache" value="true"/>
@@ -262,7 +272,7 @@ When the shared cache mode is set to NONE, the data cache will be disabled no ma
 ====
 
 [[shared-cache-mode-all]]
-[source]
+[source, xml]
 ----
 
 <property name="openjpa.DataCache" value="true(ExcludedTypes=foo.bar.Person;foo.bar.Employee)"/>
@@ -275,7 +285,7 @@ When the shared cache mode is set to ALL, all entities will be cached no matter 
 ====
 
 [[shared-cache-mode-enable-selective]]
-[source]
+[source, xml]
 ----
 
 <property name="openjpa.DataCache" value="true(ExcludedTypes=foo.bar.Person;foo.bar.Employee)"/>
@@ -299,13 +309,15 @@ To enable a partitioned cache set the `openjpa.DataCache` property to ``partitio
 [[ref_guide_cache_conf_partition]]
 .Partitioned Data Cache
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.CacheDistributionPolicy" value="org.acme.foo.DistributionPolicy"/>
 <property name="openjpa.DataCache" value="partitioned(PartitionType=concurrent,partitions=
                 '(name=a,cacheSize=100),(name=b,cacheSize=200)')"/>
 ----
+
 ====
 
 The distribution policy is configured by a full-qualified class name that implements ``org.apache.openjpa.datacahe.CacheDistributionPolicy``.
@@ -338,7 +350,8 @@ You may obtain the [class]``jakarta.persistence.Cache`` through the `EntityManag
 [[ref_guide_cache_access_jpa_standard]]
 .Accessing the Cache
 ====
-[source]
+
+[source, java]
 ----
 
 import jakarta.persistence.Cache;
@@ -350,12 +363,14 @@ EntityManagerFactory emf =
 Cache cache = emf.getCache();
 . . .
 ----
+
 ====
 
 [[ref_guide_cache_use_jpa_standard]]
 .Using the jakarta.persistence.Cache interface
 ====
-[source]
+
+[source, java]
 ----
 
 // Check whether the cache contains an entity with a provided ID
@@ -371,6 +386,7 @@ cache.evict(AnotherEntity.class);
 // evict everything from the cache
 cache.evictAll();
 ----
+
 ====
 
 [[ref_guide_cache_use_openJPA]]
@@ -381,7 +397,8 @@ You obtain the [class]``StoreCache`` through the [method]``OpenJPAEntityManagerF
 [[ref_guide_cache_access_jpa]]
 .Accessing the StoreCache
 ====
-[source]
+
+[source, java]
 ----
 
 import org.apache.openjpa.persistence.*;
@@ -390,19 +407,21 @@ OpenJPAEntityManagerFactory oemf = OpenJPAPersistence.cast(emf);
 StoreCache cache = oemf.getStoreCache();
 ...
 ----
+
 Alternatively you can just cast the same object returned from
 the EntityManager.getCache() method.
 
-[source]
+[source, java]
 ----
 
 import org.apache.openjpa.persistence.StoreCache;
 ...
 StoreCache cache = (StoreCache) emf.getCache();
 ----
+
 ====
 
-[source]
+[source, java]
 ----
 
 public void evict(Class cls, Object oid);
@@ -417,7 +436,7 @@ The [method]``evictAll`` method with no arguments clears the cache.
 Eviction is useful when the datastore is changed by a separate process outside OpenJPA's control.
 In this scenario, you typically have to manually evict the data from the datastore cache; otherwise the OpenJPA runtime, oblivious to the changes, will maintain its stale copy.
 
-[source]
+[source, java]
 ----
 
 public void pin(Class cls, Object oid);
@@ -437,7 +456,8 @@ Use pinning when you want a guarantee that a certain object will always be avail
 [[ref_guide_cache_use_jpa]]
 .StoreCache Usage
 ====
-[source]
+
+[source, java]
 ----
 
 import org.apache.openjpa.persistence.*;
@@ -447,6 +467,7 @@ StoreCache cache = oemf.getStoreCache();
 cache.pin(Magazine.class, popularMag.getId());
 cache.evict(Magazine.class, changedMag.getId());
 ----
+
 ====
 
 See the [class]``StoreCache``link:../../apidocs/org/apache/openjpa/persistence/StoreCache.html[
@@ -459,13 +480,14 @@ Rather than evicting objects from the data cache directly, you can also configur
 [[ref_guide_cache_pmevict]]
 .Automatic Data Cache Eviction
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.BrokerImpl" value="EvictFromDataCache=true"/>
 ----
 
-[source]
+[source, java]
 ----
 
 import org.apache.openjpa.persistence.*;
@@ -475,6 +497,7 @@ import org.apache.openjpa.persistence.*;
 OpenJPAEntityManager oem = OpenJPAPersistence.cast(em);
 oem.evict(changedMag);  // will evict from data cache also
 ----
+
 ====
 
 [[ref_guide_cache_statistics]]
@@ -489,14 +512,17 @@ By default all counts returned from the CacheStatistics interface will return 0.
 [[ref_guide_cache_enablestats]]
 .Configuring CacheStatistics
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.DataCache" value="true(EnableStatistics=true)"/>
 ----
+
 ====
 Once cache statistics are enabled you can access them via StoreCache
-[source]
+
+[source, java]
 ----
 
 import org.apache.openjpa.datacache.CacheStatistics;
@@ -504,9 +530,11 @@ import org.apache.openjpa.datacache.CacheStatistics;
 OpenJPAEntityManagerFactory oemf = OpenJPAPersistence.cast(emf);
 CacheStatistics statistics = oemf.getStoreCache().getCacheStatistics();
 ----
+
 The statistics includes number of read and write requests made to the cache since start and last reset.
 The statistics can be obtained also per class basis.
-[source]
+
+[source, java]
 ----
 
 public interface org.apache.openjpa.datacache.CacheStatistics extends java.io.Serializable{
@@ -541,6 +569,7 @@ public interface org.apache.openjpa.datacache.CacheStatistics extends java.io.Se
     public boolean isEnabled();
 }
 ----
+
 Collecting per-class statistics depends on determining the runtime type of a cached data element, when the given context does not permit determination of exact runtime type, the statistics is registered against generic [class]``java.lang.Object``.
 Also each method that accepts Class argument, treats null argument as [class]``java.lang.Object``
 
@@ -563,7 +592,8 @@ You can access this class through the [class]``OpenJPAEntityManagerFactory``.
 [[ref_guide_cache_queryaccess]]
 .Accessing the QueryResultCache
 ====
-[source]
+
+[source, java]
 ----
 
 import org.apache.openjpa.persistence.*;
@@ -573,6 +603,7 @@ import org.apache.openjpa.persistence.*;
 OpenJPAEntityManagerFactory oemf = OpenJPAPersistence.cast(emf);
 QueryResultCache qcache = oemf.getQueryResultCache();
 ----
+
 ====
 
 The default query cache implementation caches 100 query executions in a least-recently-used cache.
@@ -584,11 +615,13 @@ It is disabled by default.
 [[ref_guide_cache_cachesize]]
 .Query Cache Size
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.QueryCache" value="true(CacheSize=1000, SoftReferenceSize=100)"/>
 ----
+
 ====
 
 To disable the query cache (default), set the `openjpa.QueryCache`  property to ``false``:
@@ -596,11 +629,13 @@ To disable the query cache (default), set the `openjpa.QueryCache`  property to 
 [[ref_guide_cache_disablequery]]
 .Disabling the Query Cache
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.QueryCache" value="false"/>
 ----
+
 ====
 
 Query Cache's default behaviour on eviction is to evict all the queries from the cache if any of the entities that are in the access path of the query are modified.
@@ -612,11 +647,13 @@ To configure the `EvictPolicy` to timestamp, here is an example:
 [[ref_guide_cache_evictionPolicy]]
 .Query Cache Eviction Policy
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.QueryCache" value="true(EvictPolicy='timestamp')"/>
 ----
+
 ====
 
 There are certain situations in which the query cache is bypassed:
@@ -628,7 +665,7 @@ There are certain situations in which the query cache is bypassed:
 * Queries that use persistence-capable objects as parameters are only cached if the parameter is directly compared to field, as in:
 
 
-[source]
+[source, sql]
 ----
 
 select e from Employee e where e.company.address = :addr
@@ -644,7 +681,7 @@ It is possible to tell the query cache that a class has been altered.
 This is only necessary when the changes occur via direct modification of the database outside of OpenJPA's control.
 You can also evict individual queries, or clear the entire cache.
 
-[source]
+[source, java]
 ----
 
 public void evict(Query q);
@@ -658,7 +695,8 @@ Query] instance before calling the above methods.
 [[ref_guide_cache_query_classchange]]
 .Evicting Queries
 ====
-[source]
+
+[source, java]
 ----
 
 import org.apache.openjpa.persistence.*;
@@ -678,6 +716,7 @@ Query q = em.createQuery(...).
     setParameter(1, paramVal1);
 qcache.evict(q);
 ----
+
 ====
 
 When using one of OpenJPA's distributed cache implementations, it is necessary to perform this in every JVM - the change notification is not propagated automatically.
@@ -686,7 +725,7 @@ When using a third-party coherent caching solution, it is not necessary to do th
 Queries can also be pinned and unpinned through the [class]``QueryResultCache``.
 The semantics of these operations are the same as pinning and unpinning data from the data cache.
 
-[source]
+[source, java]
 ----
 
 public void pin(Query q);
@@ -701,7 +740,8 @@ The following example shows these APIs in action.
 [[ref_guide_cache_query_pin]]
 .Pinning, and Unpinning Query Results
 ====
-[source]
+
+[source, java]
 ----
 
 import org.apache.openjpa.persistence.*;
@@ -721,6 +761,7 @@ Query unpinQuery = em.createQuery(...).
     setParameter(1, paramVal1);
 qcache.unpin(unpinQuery);
 ----
+
 ====
 
 Pinning data into the cache instructs the cache to not expire the pinned results when cache flushing occurs.
@@ -731,7 +772,8 @@ You can disable caching on a per-[class]``EntityManager`` or per-[class]``Query`
 [[ref_guide_cache_query_disable]]
 .Disabling and Enabling Query Caching
 ====
-[source]
+
+[source, java]
 ----
 
 import org.apache.openjpa.persistence.*;
@@ -746,6 +788,7 @@ oem.getFetchPlan().setQueryResultCacheEnabled(false);
 OpenJPAQuery oq = oem.createQuery(...);
 oq.getFetchPlan().setQueryResultCacheEnabled(true);
 ----
+
 ====
 
 [[ref_guide_cache_extension]]
@@ -791,7 +834,8 @@ So, transactional code will maintain its integrity.
 [[ref_guide_cache_limits_extent]]
 .Query Replaces Extent
 ====
-[source]
+
+[source, java]
 ----
 
 import org.apache.openjpa.persistence.*;
@@ -809,6 +853,7 @@ OpenJPAQuery extentQuery = oem.createQuery(...);
 extentQuery.setSubclasses(false);
 Iterator cachedIterator = extentQuery.getResultList().iterator();
 ----
+
 ====
 
 
@@ -868,11 +913,13 @@ Prepared SQL Cache is configured by the <<openjpa.jdbc.QuerySQLCache,`openjpa.jd
 This property accepts a plugin string (see <<ref_guide_conf_plugins>>) with value of `true` or ``false``.
 The default is ``true``.
 The execution statistics of the cached queries can be optionally collected as
-[source]
+
+[source, xml]
 ----
 
   <property name="openjpa.jdbc.QuerySQLCache" value="true(EnableStatistics=true)">
 ----
+
 The link:../../apidocs/org/apache/openjpa/kernel/QueryStatistics.html[
 QueryStatistics] can be accessed via ``PreparedQueryCache.getStatistics()``.
 
@@ -908,7 +955,8 @@ For example, contrast the following two examples of executing JPQL queries.
 [[jpa_caching_hardcode_jpql]]
 .Hardcoded Selection Value in JPQL Query
 ====
-[source]
+
+[source, java]
 ----
 
 	String jpql = "SELECT p FROM Person p WHERE p.name='John'";
@@ -916,6 +964,7 @@ For example, contrast the following two examples of executing JPQL queries.
 	jpql = "SELECT p FROM Person p WHERE p.name='Tom'";
 	List toms = em.createQuery(jpql).getResultList();
 ----
+
 ====
 
 In <<jpa_caching_hardcode_jpql>>, the queries have _hardcoded_ the	selection value for the `p.name`	field.
@@ -927,13 +976,15 @@ Prepared Query Cache will recognize the second execution as same as the first, a
 [[jpa_caching_parametrize_jpql]]
 .Parameterized Selection Value in JPQL Query
 ====
-[source]
+
+[source, java]
 ----
 
 	String jpql = "SELECT p FROM Person p WHERE p.name=:name";
 	List johns = em.createQuery(jpql).setParameter("name","John").getResultList();
 	List toms = em.createQuery(jpql).setParameter("name","Tom").getResultList();
 ----
+
 ====
 * A JPQL query may not always translate into a _single_ SQL query. The JPQL queries that require multiple select statements are never cached.
 * Same JPQL query may result into different SQL statements under different execution context. Execution context parameters such as fetch configuration or locking mode determine the resultant SQL. However, Prepared SQL Cache__does not__ capture the execution context parameters while caching a generated SQL.
@@ -948,6 +999,7 @@ Several mechanisms are available to the application to bypass SQL caching for a 
 ----
 OpenJPAEntityManagerSPI.setQuerySQLCache(boolean)
 ----
+
 * A user application can instruct particular execution of a JPQL query to ignore any cached SQL query, by setting `QueryHints.HINT_IGNORE_PREPARED_QUERY` or `"openjpa.hint.IgnorePreparedQuery"` to `true` via standard `jakarta.persistence.Query.setHint(String, Object)` method. If a SQL query has been cached corresponding to the JPQL query prior to this execution, then the cached SQL remains in the cache and will be reused for any subsequent execution of the same JPQL query.
 * A user application can instruct all subsequent execution of a JPQL query to ignore any cached SQL query, by setting `QueryHints.HINT_INVALIDATE_PREPARED_QUERY` or `"openjpa.hint.InvalidatePreparedQuery"` to `true`. The SQL query is removed from the cache. Also the JPQL query will never be cached again during the lifetime of the entire persistence unit.
 * Plug-in property `openjpa.jdbc.QuerySQLCache` can be configured to exclude certain JPQL queries as shown below.

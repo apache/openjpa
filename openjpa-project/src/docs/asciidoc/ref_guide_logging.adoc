@@ -73,7 +73,7 @@ While pretty printing makes things easier to read, it can make output harder to 
 
 Pretty-printing properties configuration might look like so:
 
-[source]
+[source, xml]
 ----
 
 <property name="openjpa.Log" value="SQL=TRACE"/>
@@ -97,7 +97,7 @@ By default, OpenJPA uses a basic logging framework with the following output for
 
 For example, when loading an application that uses OpenJPA, a message like the following will be sent to the `openjpa.Runtime` channel:
 
-[source]
+[source, log]
 ----
 
 2107  INFO   [main] openjpa.Runtime - Starting OpenJPA 2.2.0
@@ -114,31 +114,37 @@ The default logging system accepts the following parameters:
 [[ref_guide_logging_openjpa_std_ex]]
 .Standard OpenJPA Log Configuration
 ====
-[source]
+
+[source, xml]
 ----
 
-property name="openjpa.Log" value="DefaultLevel=WARN, Runtime=INFO, Tool=INFO"/
+<property name="openjpa.Log" value="DefaultLevel=WARN, Runtime=INFO, Tool=INFO"/>
 ----
+
 ====
 
 [[ref_guide_logging_openjpa_sql_ex]]
 .Standard OpenJPA Log Configuration + All SQL Statements
 ====
-[source]
+
+[source, xml]
 ----
 
-property name="openjpa.Log" value="DefaultLevel=WARN, Runtime=INFO, Tool=INFO, SQL=TRACE"/
+<property name="openjpa.Log" value="DefaultLevel=WARN, Runtime=INFO, Tool=INFO, SQL=TRACE"/>
 ----
+
 ====
 
 [[ref_guide_logging_openjpa_file]]
 .Logging to a File
 ====
-[source]
+
+[source, xml]
 ----
 
-property name="openjpa.Log" value="File=/tmp/org.apache.openjpa.log, DefaultLevel=WARN, Runtime=INFO, Tool=INFO"/
+<property name="openjpa.Log" value="File=/tmp/org.apache.openjpa.log, DefaultLevel=WARN, Runtime=INFO, Tool=INFO"/>
 ----
+
 ====
 
 [[ref_guide_logging_noop]]
@@ -163,7 +169,8 @@ We present an example [path]_log4j.properties_ file below.
 [[ref_guide_logging_log4j_ex]]
 .Standard Log4J Logging
 ====
-[source]
+
+[source, conf]
 ----
 
 log4j.rootCategory=WARN, console
@@ -181,6 +188,7 @@ log4j.category.openjpa.jdbc.Schema=WARN
 
 log4j.appender.console=org.apache.log4j.ConsoleAppender
 ----
+
 ====
 
 [[ref_guide_logging_commons]]
@@ -207,7 +215,7 @@ By default, JDK's logging package looks in the [path]__JAVA_HOME/lib/logging.pro
 This can be overridden with the `java.util.logging.config.file` system property.
 For example:
 
-[source]
+[source, shell]
 ----
 
 java -Djava.util.logging.config.file=mylogging.properties com.company.MyClass
@@ -216,7 +224,8 @@ java -Djava.util.logging.config.file=mylogging.properties com.company.MyClass
 [[ref_guide_logging_jdk14_propfile]]
 .JDK Log Properties
 ====
-[source]
+
+[source, conf]
 ----
 
 # specify the handlers to create in the root logger
@@ -249,6 +258,7 @@ openjpa.jdbc.SQLDiag.level=INFO
 openjpa.jdbc.JDBC.level=INFO
 openjpa.jdbc.Schema.level=INFO
 ----
+
 ====
 
 [[ref_guide_logging_slf4j]]
@@ -273,7 +283,8 @@ We present a custom [class]``LogFactory`` below.
 [[ref_guide_logging_custom_ex]]
 .Custom Logging Class
 ====
-[source]
+
+[source, java]
 ----
 
 package com.xyz;
@@ -309,6 +320,7 @@ public class CustomLogFactory
     }
 }
 ----
+
 ====
 
 To make OpenJPA use your custom log factory, set the <<openjpa.Log,`openjpa.Log`>> configuration property to your factory's full class name.
@@ -331,7 +343,7 @@ OpenJPA can enable audit facility for all persistent entities in few simple step
 
 _Annotate Persistent Entity_ Any persistence entity can be enabled for audit by annotating with ``org.apache.openjpa.audit.Auditable``.
 
-[source]
+[source, java]
 ----
 
       @jakarta.persistence.Entity
@@ -346,9 +358,9 @@ By deafult, all of the above operations are audited.
 _Configure Persistence Configuration_ The audit facility is invoked at runtime via configuration of ``META-INF/persistence.xml``.
 The following property configures auditing via a default auditor
 
-[source]
+[source, xml]
 ----
-property name="openjpa.Auditor" value="default"/
+<property name="openjpa.Auditor" value="default"/>
 ----
 
 The default auditor does not do much.
@@ -364,7 +376,7 @@ For real use case, an application will prefer more than printing the changed ins
 The application, in such case, needs to implement `org.apache.openjpa.audit.Auditor` interface.
 This simple interface has the following method:
 
-[source]
+[source, java]
 ----
 
     /**
@@ -376,8 +388,8 @@ This simple interface has the following method:
 	 * @param updates the set of auditable objects being updated. Can be empty, but never null.
 	 * @param deletes the set of auditable objects being deleted. Can be empty, but never null.
 	 */
-	public void audit(Broker broker, CollectionAudited> newObjects, CollectionAudited> updates,
-			CollectionAudited> deletes);
+	public void audit(Broker broker, Collection<Audited> newObjects, Collection<Audited> updates,
+			Collection<Audited> deletes);
 ----
 
 OpenJPA runtime will invoke this method _before_ database commit.
@@ -396,10 +408,10 @@ The `org.apache.openjpa.audit.Auditor` interface is configurable.
 Hence any bean style getter and setter method on its implementation will be populated as usual for any other OpenJPA plugin.
 In the following example,
 
-[source]
+[source, xml]
 ----
 
-    property name="openjpa.Auditor" value="com.acme.Auditor(param2=10,param2='hello')"/
+    <property name="openjpa.Auditor" value="com.acme.Auditor(param2=10,param2='hello')"/>
 ----
 
 An instance of `com.acme.Auditor` will be instantiated and if it has been style getter and setter methods for `param1` and ``param2``, then the respective setters will be called with `10` and `"hello"` before the instance being used.

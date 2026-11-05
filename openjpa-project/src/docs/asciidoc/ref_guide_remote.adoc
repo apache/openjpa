@@ -53,7 +53,7 @@ See the migration section <<migration_detach_behavior,Detach Behavior>> for deta
 In JPA, objects detach automatically when they are serialized or when a <<jpa_overview_emfactory_perscontext,persistence context>> ends.
 The specification also allows objects to be explicitly detached using the following jakarta.persistence.EntityManager method:
 
-[source]
+[source, java]
 ----
 
 public void detach(Object)
@@ -62,7 +62,7 @@ public void detach(Object)
 link:../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html[
 OpenJPAEntityManager], however, provides additional detach methods.
 
-[source]
+[source, java]
 ----
 
 public <T> T detachCopy(T pc):
@@ -155,17 +155,19 @@ This may be useful for debugging or for legacy OpenJPA users who find difference
 [[ref_guide_detach_graph_confex]]
 .Configuring Detached State
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.DetachState" value="fetch-groups(DetachedStateField=true)"/>
 ----
+
 ====
 
 You can also alter the set of fields that will be included in the detached graph at runtime. link:../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html[
 OpenJPAEntityManager]s expose the following APIs for controlling detached state:
 
-[source]
+[source, java]
 ----
 
 public DetachStateType getDetachState();
@@ -174,7 +176,7 @@ public void setDetachState(DetachStateType type);
 
 The [class]``DetachStateType`` enum contains the following values:
 
-[source]
+[source, java]
 ----
 
 enum DetachStateType {
@@ -197,7 +199,7 @@ Declaring this field in your class metadata prevents the enhancer from adding an
 The detached state field must not be persistent.
 See <<detached-state-field>> for details on how to declare a detached state field.
 
-[source]
+[source, java]
 ----
 
 import org.apache.openjpa.persistence.*;
@@ -247,12 +249,14 @@ To configure a factory to use the JMS provider, your properties might look like 
 [[ref_guide_event_conf_jmsex]]
 .JMS Remote Commit Provider Configuration
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.RemoteCommitProvider"
     value="jms(ExceptionReconnectAttempts=5)"/>
 ----
+
 ====
 
 [NOTE]
@@ -286,12 +290,14 @@ To configure a factory to use the TCP provider, your properties might look like 
 [[ref_guide_event_conf_tcpex]]
 .TCP Remote Commit Provider Configuration
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.RemoteCommitProvider"
     value="tcp(Addresses=10.0.1.10;10.0.1.11;10.0.1.12;10.0.1.13)"/>
 ----
+
 ====
 
 [[ref_guide_event_conf_common]]
@@ -306,12 +312,14 @@ To transmit persisted object ids in our remote commit events using the JMS provi
 [[ref_guide_event_conf_jms2ex]]
 .JMS Remote Commit Provider transmitting Persisted Object Ids
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.RemoteCommitProvider"
     value="jms(ExceptionReconnectAttempts=5, TransmitPersistedObjectIds=true)"/>
 ----
+
 ====
 
 [[ref_guide_event_customization]]

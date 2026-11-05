@@ -173,7 +173,8 @@ Note that [class]``Magazine`` declares an identity class, and that [class]``Docu
 [[jpa_overview_meta_classlisting]]
 .Class Metadata
 ====
-[source]
+
+[source, java]
 ----
 
 package org.mag;
@@ -251,7 +252,7 @@ public class TrialSubscription
 
 The equivalent declarations in XML:
 
-[source]
+[source, xml]
 ----
 
 <entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
@@ -291,6 +292,7 @@ The equivalent declarations in XML:
     </embeddable>
 </entity-mappings>
 ----
+
 ====
 
 [[jpa_overview_meta_field]]
@@ -304,7 +306,7 @@ Under field access, the implementation injects state directly into your persiste
 To declare field access on an entire entity with XML metadata, set the ``access`` attribute of your `entity` XML element to ``FIELD``.
 To use field access for an entire entity using annotation metadata, simply place your metadata and mapping annotations on your field declarations:
 
-[source]
+[source, java]
 ----
 
 @ManyToOne
@@ -316,7 +318,7 @@ private Company publisher;
 (((persistent properties))) Property access, on the other hand, retrieves and loads state through JavaBean "getter" and "setter" methods.
 For a property `p` of type ``T``, you must define the following getter method:
 
-[source]
+[source, java]
 ----
 
 T getP();
@@ -324,7 +326,7 @@ T getP();
 
 For boolean properties, this is also acceptable:
 
-[source]
+[source, java]
 ----
 
 boolean isP();
@@ -332,7 +334,7 @@ boolean isP();
 
 You must also define the following setter method:
 
-[source]
+[source, java]
 ----
 
 void setP(T value);
@@ -340,7 +342,7 @@ void setP(T value);
 
 To implicitly use property access for an entire class by default, set your ``entity`` element's  `access` attribute to ``PROPERTY``, or place your metadata and mapping annotations on the getter method:
 
-[source]
+[source, java]
 ----
 
 @ManyToOne
@@ -363,7 +365,7 @@ Refer to the JPA specification for specific rules regarding the use of explicit 
 
 This entity definitions shows how multiple access types may be specified on an entity:
 
-[source]
+[source, java]
 ----
 
 @Entity
@@ -398,7 +400,7 @@ public class PaymentContract {
 
 The equivalent declarations in XML:
 
-[source]
+[source, xml]
 ----
 
 <entity-mappings xmlns="https://jakarta.ee/xml/ns/persistence/orm"
@@ -515,7 +517,7 @@ Read <<ref_guide_sequence>> and <<ref_guide_schema_def>> in the Reference Guide.
 (((EmbeddedId)))
 (((metadata , EmbeddedId)))
 
-If your entity has multiple identity values, you may declare multiple 
+If your entity has multiple identity values, you may declare multiple
 `@Id` fields, or you may declare a single `@EmbeddedId` field.
 The type of a field annotated with [class]``EmbeddedId`` must be an embeddable entity class.
 The fields of this embeddable class are considered the identity values of the owning entity.
@@ -615,7 +617,7 @@ The equivalent XML element is ``embedded``, which expects a single attribute:
 When an entity `A` references a single entity ``B``, and other ``A``s might also reference the same ``B``, we say there is a _many to one_ relation from `A` to ``B``.
 In our sample model, for example, each magazine has a reference to its publisher.
 Multiple magazines might have the same publisher.
-We say, then, that the 
+We say, then, that the
 `Magazine.publisher` field is a many to one relation from magazines to publishers.
 
 JPA indicates many to one relations between entities with the [class]``ManyToOne`` annotation.
@@ -663,7 +665,7 @@ See <<dependent>> for more details.
 [class]``CascadeType`` defines one additional value, ``CascadeType.ALL``, that acts as a shortcut for all of the values above.
 The following annotations are equivalent:
 
-[source]
+[source, java]
 ----
 
 @ManyToOne(cascade={CascadeType.PERSIST,CascadeType.REMOVE,
@@ -671,7 +673,7 @@ The following annotations are equivalent:
 private Company publisher;
 ----
 
-[source]
+[source, java]
 ----
 
 @ManyToOne(cascade=CascadeType.ALL)
@@ -682,7 +684,7 @@ In XML, these enumeration constants are available as child elements of the ``cas
 The `cascade` element is itself a child of ``many-to-one``.
 The following examples are equivalent:
 
-[source]
+[source, xml]
 ----
 
 <many-to-one name="publisher">
@@ -695,7 +697,7 @@ The following examples are equivalent:
 </many-to-one>
 ----
 
-[source]
+[source, xml]
 ----
 
 <many-to-one name="publisher">
@@ -712,7 +714,7 @@ The following examples are equivalent:
 When an entity `A` references multiple `B` entities, and no two ``A``s reference the same ``B``, we say there is a _one to many_ relation from ``A`` to ``B``.
 
 One to many relations are the exact inverse of the many to one relations we detailed in the preceding section.
-In that section, we said that the 
+In that section, we said that the
 `Magazine.publisher` field is a many to one relation from magazines to publishers.
 Now, we see that the `Company.mags` field is the inverse - a one to many relation from publishers to magazines.
 Each company may publish multiple magazines, but each magazine can have only one publisher.
@@ -732,7 +734,7 @@ The equivalent XML element is ``one-to-many``, which includes the following attr
 * ``fetch``: One of `EAGER` or ``LAZY``.
 * ``mapped-by``: The name of the field or property that owns the relation. See <<jpa_overview_meta_field>>.
 
-You may also nest the `cascade` element within a 
+You may also nest the `cascade` element within a
 `one-to-many` element.
 
 [[jpa_overview_meta_mappedby]]
@@ -790,7 +792,7 @@ The equivalent XML element is `one-to-one` which understands the following attri
 * ``fetch``: One of `EAGER` or ``LAZY``.
 * ``mapped-by``: The field that owns the relation. See <<jpa_overview_meta_field>>.
 
-You may also nest the `cascade` element within a 
+You may also nest the `cascade` element within a
 `one-to-one` element.
 
 [[jpa_overview_meta_manytomany]]
@@ -819,7 +821,7 @@ It accepts the following attributes:
 * ``fetch``: One of `EAGER` or ``LAZY``.
 * ``mapped-by``: The field that owns the relation. See <<jpa_overview_meta_field>>.
 
-You may also nest the `cascade` element within a 
+You may also nest the `cascade` element within a
 `many-to-many` element.
 
 [[jpa_overview_meta_orderby]]
@@ -834,7 +836,7 @@ The [class]``OrderBy`` annotation's value is a string defining the order of the 
 An empty value means to sort on the identity value(s) of the elements in ascending order.
 Any other value must be of the form:
 
-[source]
+[source, xml]
 ----
 
 <field name>[ ASC|DESC][, ...]
@@ -888,7 +890,7 @@ Version 2.0 of the schema must be used if JPA 2.0 elements are specified as XML 
 Many of the elements in the schema relate to object/relational mapping rather than metadata; these elements are discussed in <<jpa_overview_mapping>>.
 Version 1.0 of the orm schema can be found at http://java.sun.com/xml/ns/persistence/orm_1_0.xsd.
 
-[source]
+[source, xml]
 ----
 
 <?xml version="1.0" encoding="UTF-8"?>
@@ -2622,7 +2624,8 @@ We present the class definitions for our sample model below:
 [[jpa_overview_meta_complete_ex]]
 .Complete Metadata
 ====
-[source]
+
+[source, java]
 ----
 
 package org.mag;
@@ -2798,7 +2801,7 @@ public class TrialSubscription
 
 The same metadata declarations in XML:
 
-[source]
+[source, xml]
 ----
 
 <entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
@@ -2937,6 +2940,7 @@ The same metadata declarations in XML:
     </embeddable>
 </entity-mappings>
 ----
+
 ====
 
 <<jpa_overview_mapping>> will show you how to map your persistent classes to the datastore using additional annotations and XML markup.

@@ -47,7 +47,7 @@ To understand why these properties are so important to maintaining data integrit
 Suppose you create an application to manage bank accounts.
 The application includes a method to transfer funds from one user to another, and it looks something like this:
 
-[source]
+[source, java]
 ----
 
 public void transferFunds(User from, User to, double amnt) {
@@ -57,7 +57,7 @@ public void transferFunds(User from, User to, double amnt) {
 ----
 
 Now suppose that user Alice wants to transfer 100 dollars to user Bob.
-No problem; you simply invoke your [method]``transferFunds`` method, supplying Alice in the `from` parameter, Bob in the 
+No problem; you simply invoke your [method]``transferFunds`` method, supplying Alice in the `from` parameter, Bob in the
 `to` parameter, and `100.00` as the ``amnt``.
 The first line of the method is executed, and 100 dollars is subtracted from Alice's account.
 But then, something goes wrong.
@@ -117,7 +117,7 @@ JPA integrates with your container's _managed_ transactions, allowing you to use
 Outside of a container, though, you must demarcate transactions manually through JPA.
 The [class]``EntityTransaction`` interface controls unmanaged transactions in JPA.
 
-[source]
+[source, java]
 ----
 
 public void begin();
@@ -135,7 +135,7 @@ JPA implementations will automatically roll back transactions if any exception i
 Unless you are using an extended persistence context, committing or rolling back also ends the persistence context.
 All managed entities will be detached from the [class]``EntityManager``.
 
-[source]
+[source, java]
 ----
 
 public boolean isActive();
@@ -146,7 +146,8 @@ Finally, the [method]``isActive`` method returns `true`  if the transaction is i
 [[jpa_overview_trans_group]]
 .Grouping Operations with Transactions
 ====
-[source]
+
+[source, java]
 ----
 
 public void transferFunds(EntityManager em, User from, User to, double amnt) {
@@ -168,6 +169,7 @@ public void transferFunds(EntityManager em, User from, User to, double amnt) {
     }
 }
 ----
+
 ====
 
 ifdef::backend-docbook[]

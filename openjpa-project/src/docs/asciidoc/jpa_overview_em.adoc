@@ -51,7 +51,7 @@ The methods of the [class]``EntityManager`` can be divided into the following fu
 ==== Transaction Association
 (((EntityManager , obtaining the Transaction)))
 
-[source]
+[source, java]
 ----
 
 public EntityTransaction getTransaction();
@@ -71,7 +71,7 @@ If you take advantage of this feature, you will control transactions by declarat
 
 [class]``EntityManager``s perform several actions that affect the lifecycle state of entity instances.
 
-[source]
+[source, java]
 ----
 
 public void persist(Object entity);
@@ -92,7 +92,7 @@ For a given entity ``A``, the [method]``persist`` method behaves as follows:
 
 This action can only be used in the context of an active transaction.
 
-[source]
+[source, java]
 ----
 
 public void remove(Object entity);
@@ -114,7 +114,7 @@ For a given entity ``A``, the [method]``remove`` method behaves as follows:
 
 This action can only be used in the context of an active transaction.
 
-[source]
+[source, java]
 ----
 
 public void refresh(Object entity);
@@ -133,7 +133,7 @@ For a given entity ``A``, the [method]``refresh`` method behaves as follows:
 * The refresh operation recurses on all relation fields of `A` whose <<jpa_overview_meta_cascade,cascades>> include ``CascadeType.REFRESH``.
 
 
-[source]
+[source, java]
 ----
 
 public Object merge(Object entity);
@@ -195,7 +195,8 @@ You would therefore omit the [method]``createEntityManager`` and [method]``close
 .Persisting Objects
 ====
 (((persistent objects , persisting , example)))
-[source]
+
+[source, java]
 ----
 
 // create some objects
@@ -221,12 +222,14 @@ em.getTransaction().commit();
 // or we could continue using the EntityManager...
 em.close();
 ----
+
 ====
 
 [[jpa_overview_em_lifecycle_update]]
 .Updating Objects
 ====
-[source]
+
+[source, java]
 ----
 
 Magazine.MagazineId mi = new Magazine.MagazineId();
@@ -247,12 +250,14 @@ em.getTransaction().commit();
 // or we could continue using the EntityManager...
 em.close();
 ----
+
 ====
 
 [[jpa_overview_em_lifecycle_delete]]
 .Removing Objects
 ====
-[source]
+
+[source, java]
 ----
 
 // assume we have an object id for the company whose subscriptions
@@ -271,6 +276,7 @@ em.getTransaction().commit();
 // or we could continue using the EntityManager...
 em.close();
 ----
+
 ====
 
 [[jpa_overview_em_detachex]]
@@ -279,7 +285,7 @@ em.close();
 This example demonstrates a common client/server scenario.
 The client requests objects and makes changes to them, while the server handles the object lookups and transactions.
 
-[source]
+[source, java]
 ----
 
 // CLIENT:
@@ -316,6 +322,7 @@ merged.setModifier(getClientIdentityCode());
 em.getTransaction().commit();
 em.close();
 ----
+
 ====
 
 [[jpa_overview_em_identity]]
@@ -325,7 +332,7 @@ Each [class]``EntityManager`` is responsible for managing the persistent identit
 The following methods allow you to interact with the management of persistent identities.
 The behavior of these methods is deeply affected by the persistence context type of the [class]``EntityManager``; see <<jpa_overview_emfactory_perscontext>> for an explanation of persistence contexts.
 
-[source]
+[source, java]
 ----
 
 public <T> T find(Class<T> cls, Object oid);
@@ -338,7 +345,7 @@ If the instance is already present in the current persistence context, the cache
 Otherwise, a new instance will be constructed and loaded with state from the datastore.
 If no entity with the given type and identity exists in the datastore, this method returns null.
 
-[source]
+[source, java]
 ----
 
 public <T> T getReference(Class<T> cls, Object oid);
@@ -354,7 +361,7 @@ At that time, the implementation may throw an [class]``EntityNotFoundException``
 The implementation may also throw an [class]``EntityNotFoundException`` from the [method]``getReference`` method itself.
 Unlike [method]``find``, [method]``getReference`` does not return null.
 
-[source]
+[source, java]
 ----
 
 public boolean contains(Object entity);
@@ -368,7 +375,7 @@ Removed entities are not considered part of the current persistence context.
 ==== Cache Management
 (((EntityManager , cache)))
 
-[source]
+[source, java]
 ----
 
 public void flush();
@@ -384,7 +391,7 @@ See <<jpa_overview_trans>>.
 Flushing requires an active transaction.
 If there isn't a transaction in progress, the [method]``flush`` method throws a [class]``TransactionRequiredException``.
 
-[source]
+[source, java]
 ----
 
 public FlushModeType getFlushMode();
@@ -409,7 +416,7 @@ Additionally, OpenJPA allows fine-grained control over flushing behavior.
 See the Reference Guide's <<ref_guide_dbsetup_retain>>.
 ====
 
-[source]
+[source, java]
 ----
 
 public void clear();
@@ -423,7 +430,7 @@ All entities managed by the [class]``EntityManager`` become detached.
 ==== Query Factory
 (((EntityManager , as Query factory)))
 
-[source]
+[source, java]
 ----
 
 public Query createQuery(String query);
@@ -433,7 +440,7 @@ public Query createQuery(String query);
 The [method]``createQuery`` method creates a query using the given Java Persistence Query Language (JPQL) string.
 See <<jpa_overview_query>> for details.
 
-[source]
+[source, java]
 ----
 
 public Query createNamedQuery(String name);
@@ -443,7 +450,7 @@ This method retrieves a query defined in metadata by name.
 The returned [class]``Query`` instance is initialized with the information declared in metadata.
 For more information on named queries, read <<jpa_overview_query_named>>.
 
-[source]
+[source, java]
 ----
 
 public Query createNativeQuery(String sql);
@@ -460,7 +467,7 @@ For relational databases, this is the Structured Query Language (SQL). <<jpa_ove
 
 In the area of concurrency control, the JPA specification supports optimistic and pessimistic locking.
 
-[source]
+[source, java]
 ----
 
 public void lock(Object entity, LockModeType mode);
@@ -484,7 +491,7 @@ Entities can also be locked at the time when entity state gets loaded from the d
 This is achieved by supplying a lock mode to the respective versions of [method]``find`` and [method]``refresh`` methods.
 If an entity state is to be loaded by a query, a lock mode can be passed to the [method]``Query.setLockMode`` and [method]``TypedQuery.setLockMode`` methods.
 
-[source]
+[source, java]
 ----
 
 public LockModeType getLockMode(Object entity);
@@ -506,7 +513,7 @@ Returns the lock mode currently held by the given entity.
 [[jpa_overview_em_closing]]
 ==== Closing
 
-[source]
+[source, java]
 ----
 
 public boolean isOpen();

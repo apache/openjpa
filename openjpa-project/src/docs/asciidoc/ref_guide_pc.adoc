@@ -35,7 +35,7 @@ However, there are certain situations in which providing OpenJPA with a persiste
 * When OpenJPA manipulates classes in a persistent inheritance hierarchy, OpenJPA must be aware of all the classes in the hierarchy. If some of the classes have not been loaded into the JVM yet, OpenJPA may not know about them, and queries may return incorrect results.
 * If you configure OpenJPA to create the needed database schema on startup (see <<ref_guide_mapping_synch>>), OpenJPA must know all of your persistent classes up-front.
 
-When any of these conditions are a factor in your JPA application, use the ``class``, ``mapping-file``, and 
+When any of these conditions are a factor in your JPA application, use the ``class``, ``mapping-file``, and
 `jar-file` elements of JPA's standard XML format to list your persistent classes.
 See <<jpa_overview_persistence_xml>> for details.
 
@@ -83,11 +83,13 @@ You can also enhance via Ant; see <<ref_guide_integration_enhance>>.
 [[ref_guide_pc_enhance_enhancer]]
 .Using the OpenJPA Enhancer
 ====
-[source]
+
+[source, shell]
 ----
 
 java org.apache.openjpa.enhance.PCEnhancer Magazine.java
 ----
+
 ====
 
 The enhancer accepts the standard set of command-line arguments defined by the configuration framework (see <<ref_guide_conf_devtools>> ), along with the following flags:
@@ -135,17 +137,19 @@ Searching for metadata for every class loaded by the JVM can slow application in
 One way to speed things up is to take advantage of the optional persistent class list described in <<ref_guide_pc_pcclasses>>.
 If you declare a persistent class list, OpenJPA will only search for metadata for classes in that list.
 
-To employ the OpenJPA agent, invoke `java` with the 
+To employ the OpenJPA agent, invoke `java` with the
 `-javaagent` set to the path to your OpenJPA jar file.
 
 [[ref_guide_pc_enhance_runtime_ex]]
 .Using the OpenJPA Agent for Runtime Enhancement
 ====
-[source]
+
+[source, shell]
 ----
 
 java -javaagent:/home/dev/openjpa/lib/openjpa.jar com.xyz.Main
 ----
+
 ====
 
 You can pass settings to the agent using OpenJPA's plugin syntax (see <<ref_guide_conf_plugins>>). The agent accepts the long form of any of the standard configuration options (<<ref_guide_conf_devtools>> ). It also accepts the following options, the first three of which correspond exactly to the same-named options of the enhancer tool described in <<ref_guide_pc_enhance_build>>:
@@ -160,11 +164,13 @@ You can pass settings to the agent using OpenJPA's plugin syntax (see <<ref_guid
 [[ref_guide_pc_enhance_runtime_opt_ex]]
 .Passing Options to the OpenJPA Agent
 ====
-[source]
+
+[source, shell]
 ----
 
 java -javaagent:/home/dev/openjpa/lib/openjpa.jar=addDefaultConstructor=false com.xyz.Main
 ----
+
 ====
 
 [[ref_guide_pc_enhance_dynamic]]
@@ -179,7 +185,8 @@ Using this method of enhancement has the following caveats:
 * Just as with the Javaagent approach, if you declare a persistent class list, then OpenJPA will only search for metadata and try to enhance the listed classes.
 
 When then dynamic enhancer is loaded, the following informational message is logged:
-[source]
+
+[source, shell]
 ----
 
 [java] jpa.enhancement  INFO   [main] openjpa.Runtime - OpenJPA dynamically loaded the class enhancer. Any classes that were not enhanced at build time will be enhanced when they are loaded by the JVM.
@@ -213,7 +220,7 @@ enabled via the
 
 To enable Runtime Unenhanced Classes for a specific persistence unit, add the following property to persistence.xml:
 
-[source]
+[source, shell]
 ----
 
 <properties>
@@ -247,7 +254,7 @@ OpenJPA's managed interface feature allows you to define your object model entir
 To use this feature, you must annotate your managed interfaces with the [class]``ManagedInterface`` annotation, and use the ``OpenJPAEntityManager.createInstance(Class)`` method to create new records.
 Note that `createInstance()` returns unmanaged instances; you must pass them to ``EntityManager.persist()`` to store them in the database.
 
-[source]
+[source, shell]
 ----
 
 @ManagedInterface
@@ -262,7 +269,7 @@ public interface PersonIface {
 }
 ----
 
-[source]
+[source, shell]
 ----
 
 OpenJPAEntityManager em = ...;
@@ -291,7 +298,7 @@ OpenJPA manages the identity of your persistent objects for you through a surrog
 
 You can control how your JPA datastore identity value is generated through OpenJPA's link:../../apidocs/org/apache/openjpa/persistence/DataStoreId.html[
 org.apache.openjpa.persistence.DataStoreId] class annotation.
-This annotation has `strategy` and 
+This annotation has `strategy` and
 `generator` properties that mirror the same-named properties on the standard [class]``jakarta.persistence.GeneratedValue`` annotation described in <<jpa_overview_meta_id>> of the JPA Overview.
 
 To retrieve the identity value of a datastore identity entity, use the [method]``OpenJPAEntityManager.getObjectId(Object entity)`` method.
@@ -300,7 +307,8 @@ See <<ref_guide_runtime_em>> for more information on the [class]``OpenJPAEntityM
 [[ref_guide_pc_oid_datastoreentityex]]
 .JPA Datastore Identity Metadata
 ====
-[source]
+
+[source, shell]
 ----
 
 import org.apache.openjpa.persistence.*;
@@ -312,6 +320,7 @@ public class LineItem {
     ... no @Id fields declared ...
 }
 ----
+
 ====
 
 Internally, OpenJPA uses the public link:../../apidocs/org/apache/openjpa/util/Id.html[
@@ -334,7 +343,8 @@ When finding an entity identified by a relation, pass the id of the __relation__
 [[ref_guide_pc_oid_entitypk_simplefind]]
 .Finding an Entity with an Entity Identity Field
 ====
-[source]
+
+[source, shell]
 ----
 
 public Delivery createDelivery(Order order) {
@@ -349,6 +359,7 @@ public Delivery findDelivery(EntityManager em, Order order) {
     return em.find(Delivery.class, order.getId());
 }
 ----
+
 ====
 
 When your entity has multiple identity fields, at least one of which is a relation to another entity, you can use an identity class (see <<jpa_overview_pc_identitycls>> in the JPA Overview), or an embedded identity object.
@@ -358,7 +369,8 @@ If an embedded identity object is used, you must annotate the relation field wit
 [[ref_guide_pc_oid_entitypk_idcls]]
 .Id Class for Entity Identity Fields
 ====
-[source]
+
+[source, shell]
 ----
 
 @Entity
@@ -396,6 +408,7 @@ public class LineItemId {
                        // variable in LineItem that refers to Order.
 }
 ----
+
 ====
 
 In the example above, if [class]``Order`` had used an identity class [class]``OrderId`` in place of a simple [class]``long`` value, then the `LineItemId.order` field would have been of type [class]``OrderId``.
@@ -403,7 +416,8 @@ In the example above, if [class]``Order`` had used an identity class [class]``Or
 [[ref_guide_pc_oid_entitypk_embeded_id]]
 .Embedded Id for Entity Identity Fields
 ====
-[source]
+
+[source, shell]
 ----
 
 @Entity
@@ -444,6 +458,7 @@ public class LineItemId {
     public long orderId;
 }
 ----
+
 ====
 
 In the example above, the [class]``LineItem`` uses an embedded id to represent its primary key.
@@ -478,11 +493,13 @@ org.apache.openjpa.enhance.ApplicationIdTool].
 [[ref_guide_pc_appid_appidtool]]
 .Using the Application Identity Tool
 ====
-[source]
+
+[source, shell]
 ----
 
 java org.apache.openjpa.enhance.ApplicationIdTool -s Id Magazine.java
 ----
+
 ====
 
 The application identity tool accepts the standard set of command-line arguments defined by the configuration framework (see <<ref_guide_conf_devtools>>), including code formatting flags described in <<ref_guide_conf_devtools_format>>.
@@ -530,7 +547,7 @@ org.apache.openjpa.persistence.InverseLogical] annotation names a logical invers
 `Magazine.coverPhoto` and `Photograph.mag` are each mapped to different foreign keys in their respective tables, but form a logical bidirectional relation.
 Only one of the fields needs to declare the other as its logical inverse, though it is not an error to set the logical inverse of both fields.
 
-[source]
+[source, shell]
 ----
 
 import org.apache.openjpa.persistence.*;
@@ -554,6 +571,7 @@ public class Photograph {
     ...
 }
 ----
+
 ====
 
 Java does not provide any native facilities to ensure that both sides of a bidirectional relation remain consistent.
@@ -570,11 +588,13 @@ Under this setting, OpenJPA detects changes to either side of a bidirectional re
 [[ref_guide_inversesex]]
 .Enabling Managed Inverses
 ====
-[source]
+
+[source, shell]
 ----
 
 <property name="openjpa.InverseManager" value="true"/>
 ----
+
 ====
 
 The inverse manager has options to log a warning or throw an exception when it detects an inconsistent bidirectional relation, rather than correcting it.
@@ -587,11 +607,13 @@ You can force large result set fields to be included by setting the `ManageLRS` 
 [[ref_guide_inverses_logex]]
 .Log Inconsistencies
 ====
-[source]
+
+[source, shell]
 ----
 
 <property name="openjpa.InverseManager" value="true(Action=warn)"/>
 ----
+
 ====
 
 [[ref_guide_pc_scos]]
@@ -620,10 +642,10 @@ Therefore, you can use custom comparators on your persistent field simply by set
 [[ref_guide_pc_scos_order_initialvals]]
 .Using Initial Field Values
 ====
-Though the annotations are left out for simplicity, assume 
+Though the annotations are left out for simplicity, assume
 `employeesBySal` and `departments` are persistent fields in the class below.
 
-[source]
+[source, shell]
 ----
 
 public class Company {
@@ -643,6 +665,7 @@ public class Company {
     // rest of class definition...
 }
 ----
+
 ====
 
 [[ref_guide_pc_calendar_timezone]]
@@ -690,7 +713,8 @@ You can free the resources used by a large result set iterator by passing it to 
 [[ref_guide_pc_scos_proxy_lrs_itr]]
 .Using a Large Result Set Iterator
 ====
-[source]
+
+[source, shell]
 ----
 
 import org.apache.openjpa.persistence.*;
@@ -703,6 +727,7 @@ while (itr.hasNext())
     process((Employee) itr.next());
 OpenJPAPersistence.close(itr);
 ----
+
 ====
 
 You can also add and remove from large result set proxies, just as with standard fields.
@@ -718,7 +743,7 @@ The following restrictions apply to large result set fields:
 * Because they rely on their owning object for context, large result set proxies cannot be transferred from one persistent field to another. The following code would result in an error on commit:
 
 
-[source]
+[source, shell]
 ----
 
 Collection employees = company.getEmployees()  // employees is a lrs collection
@@ -730,7 +755,8 @@ anotherCompany.setEmployees(employees);
 [[ref_guide_pc_scos_proxy_lrs_extension]]
 .Marking a Large Result Set Field
 ====
-[source]
+
+[source, shell]
 ----
 
 import org.apache.openjpa.persistence.*;
@@ -744,6 +770,7 @@ public class Company {
     ...
 }
 ----
+
 ====
 
 [[ref_guide_pc_scos_proxy_custom]]
@@ -775,11 +802,13 @@ You can plug your custom proxy manager into the OpenJPA runtime through the <<op
 [[ref_guide_pc_scos_proxy_custom_ex]]
 .Configuring the Proxy Manager
 ====
-[source]
+
+[source, shell]
 ----
 
 <property name="openjpa.ProxyManager" value="TrackChanges=false"/>
 ----
+
 ====
 
 [[ref_guide_pc_scos_proxy_serial]]
@@ -901,7 +930,8 @@ The example below demonstrates a few forms of externalization.
 [[ref_guide_pc_externex]]
 .Using Externalization
 ====
-[source]
+
+[source, shell]
 ----
 
 import org.apache.openjpa.persistence.*;
@@ -939,6 +969,7 @@ public class Magazine {
     ...
 }
 ----
+
 ====
 
 You can query externalized fields using parameters.
@@ -956,7 +987,7 @@ Currently, queries are limited to fields that externalize to a primitive, primit
 ====
 Assume the [class]``Magazine`` class has the same fields as in the previous example.
 
-[source]
+[source, shell]
 ----
 
 // you can query using parameters
@@ -968,6 +999,7 @@ List results = q.getResultList();
 q = em.createQuery("select m from Magazine m where m.url = 'http://www.solarmetric.com'");
 results = q.getResultList();
 ----
+
 ====
 
 [[ref_guide_pc_extern_values]]
@@ -995,7 +1027,7 @@ org.apache.openjpa.persistence.Type] annotation to define the datastore type.
 ====
 This example uses external value translation to transform a string field to an integer in the database.
 
-[source]
+[source, shell]
 ----
 
 public class Magazine {
@@ -1007,6 +1039,7 @@ public class Magazine {
     ...
 }
 ----
+
 ====
 
 [[ref_guide_fetch]]
@@ -1054,7 +1087,7 @@ Each [class]``FetchAttribute`` has the following properties:
 ====
 Creates a _detail_ fetch group consisting of the ``publisher`` and `articles` relations.
 
-[source]
+[source, shell]
 ----
 
 import org.apache.openjpa.persistence.*;
@@ -1071,6 +1104,7 @@ public class Magazine {
    ...
 }
 ----
+
 ====
 
 A field can be a member of any number of fetch groups.
@@ -1087,7 +1121,8 @@ The value of the annotation is the name of a declared fetch group whose members 
 [[ref_guide_fetch_loadgroup]]
 .Load Fetch Group Metadata
 ====
-[source]
+
+[source, shell]
 ----
 
 import org.apache.openjpa.persistence.*;
@@ -1109,6 +1144,7 @@ public class Magazine {
    ...
 }
 ----
+
 ====
 
 [[ref_guide_fetch_conf]]
@@ -1133,7 +1169,7 @@ org.apache.openjpa.persistence.FetchPlan] object.
 The [class]``FetchPlan`` maintains the set of active fetch groups and the maximum fetch depth.
 It begins with the groups and depth defined in the ``openjpa.FetchGroups`` and `openjpa.MaxFetchDepth`  properties, but allows you to add or remove groups and change the maximum fetch depth for an individual [class]``EntityManager`` or [class]``Query`` through the methods below.
 
-[source]
+[source, shell]
 ----
 
 public FetchPlan addFetchGroup(String group);
@@ -1154,7 +1190,8 @@ public int getMaxFetchDepth();
 [[ref_guide_fetch_conf_query]]
 .Using the FetchPlan
 ====
-[source]
+
+[source, shell]
 ----
 
 import org.apache.openjpa.persistence.*;
@@ -1165,6 +1202,7 @@ OpenJPAQuery kq = OpenJPAPersistence.cast(em.createQuery(...));
 kq.getFetchPlan().setMaxFetchDepth(3).addFetchGroup("detail");
 List results = kq.getResultList();
 ----
+
 ====
 
 [[ref_guide_fetch_single_field]]
@@ -1176,7 +1214,7 @@ This allows you to add individual fields that are not in the default fetch group
 
 OpenJPA [class]``FetchPlan`` methods:
 
-[source]
+[source, shell]
 ----
 
 public FetchPlan addField(String field);
@@ -1210,7 +1248,8 @@ If you specify non-existent class / field pairs, nothing adverse will happen, bu
 [[ref_guide_fetch-conf_per_field]]
 .Adding an Eager Field
 ====
-[source]
+
+[source, shell]
 ----
 
 import org.apache.openjpa.persistence.*;
@@ -1221,6 +1260,7 @@ OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
 kem.getFetchPlan().addField(Magazine.class, "publisher");
 Magazine mag = em.find(Magazine.class, magId);
 ----
+
 ====
 
 [[ref_guide_fetch_impl]]
@@ -1287,7 +1327,7 @@ Rather than outer-joining to subclass tables, OpenJPA will issue the query separ
 In all other situations, parallel subclass fetch mode acts just like join mode in regards to vertically-mapped subclasses.
 
 When OpenJPA knows that it is selecting for a single object only, it never uses ``parallel`` mode, because the additional selects can be made lazily just as efficiently.
-This mode only increases efficiency over 
+This mode only increases efficiency over
 `join` mode when multiple objects with eager relations are being loaded, or when multiple selects might be faster than joining to all possible subclasses.
 
 
@@ -1309,18 +1349,21 @@ See <<ref_guide_runtime>> for details.
 [[ref_guide_perfpack_eager_def]]
 .Setting the Default Eager Fetch Mode
 ====
-[source]
+
+[source, shell]
 ----
 
 <property name="openjpa.jdbc.EagerFetchMode" value="parallel"/>
 <property name="openjpa.jdbc.SubclassFetchMode" value="join"/>
 ----
+
 ====
 
 [[ref_guide_perfpack_eager_runtime]]
 .Setting the Eager Fetch Mode at Runtime
 ====
-[source]
+
+[source, shell]
 ----
 
 import org.apache.openjpa.persistence.*;
@@ -1335,6 +1378,7 @@ fetch.setEagerFetchMode(FetchMode.PARALLEL);
 fetch.setSubclassFetchMode(FetchMode.JOIN);
 List results = q.getResultList();
 ----
+
 ====
 
 You can specify a default subclass fetch mode for an individual class with the metadata extension described in <<subclass-fetch-mode>>.
@@ -1350,7 +1394,7 @@ But an extension value of ``join`` won't cause any eager joining if the fetch co
 There are several important points that you should consider when using eager fetching:
 
 * (((eager fetching , with large result sets))) When you are using `parallel` eager fetch mode and you have large result sets enabled (see <<ref_guide_dbsetup_lrs>>) or you place a range on a query, OpenJPA performs the needed parallel selects on one page of results at a time.
-For example, suppose your 
+For example, suppose your
 `FetchBatchSize` is set to 20, and you perform a large result set query on a class that has collection fields in the configured fetch groups.
 OpenJPA will immediately cache the first `20` results of the query using `join` mode eager fetching only.
 Then, it will issue the extra selects needed to eager fetch your collection fields according to ``parallel`` mode.

@@ -147,7 +147,7 @@ Code that casts the result to [class]``ResultList`` or [class]``DelegatingResult
 
 Applications that depend on the previous streaming behaviour can restore it with the `MaterializeQueryResultList` compatibility option:
 
-[source]
+[source, xml]
 ----
 
 <property name="openjpa.Compatibility" value="MaterializeQueryResultList=false"/>
@@ -314,7 +314,7 @@ Flatten nested selections, use unique aliases and adjust catch blocks and `null`
 Rejecting nested compound selections removes a documented OpenJPA extension that supported arbitrarily nested tuple and array selections.
 Applications relying on it can restore the previous behavior with the compatibility option ``AllowNestedCompoundSelection``:
 
-[source]
+[source, xml]
 ----
 <property name="openjpa.Compatibility" value="AllowNestedCompoundSelection=true"/>
 ----
@@ -341,7 +341,7 @@ For [class]``Map``-valued fields without `@MapKeyColumn` the key column was prev
 Declare the existing column explicitly, for example ``@MapKeyColumn(name="KEY0")``, or rename the column in the database.
 Alternatively, set the <<openjpa.Compatibility>> option `UseSpecDefaultMapKeyColumnName` to ``false``, which restores the old default for all map fields that do not declare a key column:
 
-[source]
+[source, xml]
 ----
 
 <property name="openjpa.Compatibility" value="UseSpecDefaultMapKeyColumnName=false"/>
@@ -839,15 +839,19 @@ From the 2.3.0 release, `java.math.BigDecimal` fields are now mapped to the data
 
 In previous releases, the default value for the property RequiresSearchStringEscapeForLike is true and caused the unexpected escape clause appended to the SQL statement.
 For example, user created a named query like this:
-[source]
+
+[source, sql]
 ----
  SELECT o.computerName FROM CompUser o WHERE o.name LIKE ?
 ----
+
 At run time the following query is generated:
-[source]
+
+[source, sql]
 ----
  SELECT t0.computerName FROM CompUser t0 WHERE (t0.name LIKE ? ESCAPE '\')
 ----
+
 ESCAPE '\' shouldn't be appended to the query.
 
 From the 2.3.0 release, RequiresSearchStringEscapeForLike property is set to false by default.
@@ -861,7 +865,8 @@ This behavior affects both JPQL and Criteria queries.
 With this update, OpenJPA will return a null result value for these aggregate functions when a query returns no result.
 
 To re-enable the prior behavior, you need to set the following persistence property in your persistence.xml or when creating an EntityManagerFactory.
-[source]
+
+[source, xml]
 ----
 
     <property name="openjpa.Compatibility" value="ReturnNullOnAggregateResult=false"/>
@@ -911,7 +916,7 @@ In order for the existing applications to work with OpenJPA you may:
 * Regenerate the canonical metamodel classes
 * Set the Compatibility property `UseListAttributeForArrays` to `true` in persistence.xml
 
-[source]
+[source, xml]
 ----
  <property name="openjpa.Compatibility" value="UseListAttributeForArrays=true"/>
 ----
@@ -1000,7 +1005,8 @@ It is possible for a version 2.0 application to revert back to the 1.x.x behavio
 //                     </simplelist>
 
 In addition, a new method has been provided on the link:../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html[OpenJPAEntityManager] interface to return a copy of the entity:
-[source]
+
+[source, java]
 ----
 
     public <T> T detachCopy(T pc):
@@ -1089,14 +1095,16 @@ Depending on application characteristics, this default QueryCache enablement act
 Thus, the default value for the openjpa.QueryCache property is now __``__false__``__.
 
 To re-enable the default QueryCache behavior, you need to include the following property in your persistence.xml configuration.
-[source]
+
+[source, xml]
 ----
 
     <property name="openjpa.QueryCache" value="true"/>
 ----
 
 If your configuration had previously enabled the QueryCache explicitly, then you might have to include the `true` value into your configuration (if you relied on the previous default).  Otherwise, your current QueryCache enablement will continue to work.
-[source]
+
+[source, xml]
 ----
 
     <property name="openjpa.QueryCache" value="true(CacheSize=1000, SoftReferenceSize=100)"/>
