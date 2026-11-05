@@ -180,10 +180,13 @@ public class XMLPersistenceMetaDataParser
         new HashMap<>();
 
     // Map for storing deferred metadata which needs to be populated
-    // after embeddables are loaded.
-    private static final Map<Class<?>, ArrayList<MetaDataContext>>
+    // after embeddables are loaded. This is parse state and must not be
+    // static: parsers of different repositories may run concurrently in the
+    // same JVM (e.g. the enhancer in a parallel Maven build). Nested parsers
+    // of a multi-level parse share it, see shareDeferredEmbeddables().
+    private Map<Class<?>, ArrayList<MetaDataContext>>
         _embeddables = new HashMap<>();
-    private static final Map<Class<?>, Integer>
+    private Map<Class<?>, Integer>
         _embeddableAccess = new HashMap<>();
 
     // Hold fetch group info
@@ -2400,6 +2403,19 @@ public class XMLPersistenceMetaDataParser
             return fmds.contains(fmd);
         }
         return false;
+    }
+
+    /**
+     * Share the deferred embeddable metadata of the given parser, which is
+     * the parser of the enclosing parse in a multi-level parse. The nested
+     * parser then sees and processes the deferrals of the enclosing parse.
+     */
+    public void shareDeferredEmbeddables(XMLPersistenceMetaDataParser parser) {
+        if (parser == null || parser == this) {
+            return;
+        }
+        _embeddables = parser._embeddables;
+        _embeddableAccess = parser._embeddableAccess;
     }
 
     /*

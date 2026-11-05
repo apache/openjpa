@@ -159,16 +159,18 @@ public class PersistenceMetaDataFactory
         if (_xmlParser == null || _xmlParser.isParsing()) {
             Class<?> parseCls = null;
             ArrayList<Class<?>> parseList = null;
+            XMLPersistenceMetaDataParser outer = _xmlParser;
             // If there is an existing parser and it is parsing, push it on
             // the stack and return a new one.
-            if (_xmlParser != null) {
-                _stack.push(_xmlParser);
-                parseCls = _xmlParser.getParseClass();
-                parseList = _xmlParser.getParseList();
+            if (outer != null) {
+                _stack.push(outer);
+                parseCls = outer.getParseClass();
+                parseList = outer.getParseList();
             }
             _xmlParser = newXMLParser(true);
             _xmlParser.addToParseList(parseList);
             _xmlParser.addToParseList(parseCls);
+            _xmlParser.shareDeferredEmbeddables(outer);
             _xmlParser.setRepository(repos);
             if (_fieldOverride)
                 _xmlParser.setAnnotationParser(getAnnotationParser());
