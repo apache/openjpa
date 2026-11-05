@@ -23,8 +23,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
-import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.simple.Java8TimeTypes;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -132,22 +130,66 @@ public class TestExtractDateTimeField extends SingleEMFTestCase {
     }
 
     public void testExtractWeek() {
-        DBDictionary dict = getDBDictionary();
-        if (dict instanceof OracleDictionary) {
+        if (getDBDictionary() instanceof OracleDictionary) {
             // Oracle does not support EXTRACT(WEEK)
             return;
         }
-        if (dict instanceof DerbyDictionary) {
-            try (EntityManager em = emf.createEntityManager()) {
-                em.createQuery("SELECT EXTRACT(WEEK FROM e.localDateField) FROM Java8TimeTypes e")
-                        .getResultList();
-                fail("Expected EXTRACT(WEEK) to be rejected on Derby");
-            } catch (RuntimeException ex) {
-                assertTrue(ex.getMessage(), ex.getMessage().contains("does not support \"EXTRACT(WEEK)\""));
-            }
+        assertEquals(List.of(1, 52), extract("WEEK", "localDateField"));
+    }
+
+    /**
+     * The ISO week at year boundaries, in leap and common years, and from a column, a
+     * parameter and in the WHERE and ORDER BY clauses.
+     */
+    public void testExtractWeekAtYearBoundaries() {
+        if (getDBDictionary() instanceof OracleDictionary) {
             return;
         }
-        assertEquals(List.of(1, 52), extract("WEEK", "localDateField"));
+        LocalDate[] dates = {
+            LocalDate.of(2020, 12, 31), // Thursday of week 53 of 2020
+            LocalDate.of(2021, 1, 3), // Sunday of week 53 of 2020
+            LocalDate.of(2021, 1, 4), // Monday of week 1 of 2021
+            LocalDate.of(2019, 12, 30), // Monday of week 1 of 2020
+            LocalDate.of(2016, 1, 1), // Friday of week 53 of 2015
+            LocalDate.of(2017, 1, 1), // Sunday of week 52 of 2016, a leap year
+            LocalDate.of(2008, 12, 29), // Monday of week 1 of 2009
+            LocalDate.of(2000, 2, 29), // Tuesday of week 9 of 2000
+            LocalDate.of(1918, 9, 28), // Saturday of week 39 of 1918
+        };
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            for (int i = 0; i < dates.length; i++) {
+                Java8TimeTypes e = new Java8TimeTypes();
+                e.setId(10 + i);
+                e.setLocalDateField(dates[i]);
+                e.setLocalDateTimeField(dates[i].atTime(23, 59, 59));
+                em.persist(e);
+            }
+            em.getTransaction().commit();
+        }
+        List<Integer> expected = List.of(53, 53, 1, 1, 53, 52, 1, 9, 39);
+        try (EntityManager em = emf.createEntityManager()) {
+            assertEquals(expected, em.createQuery("SELECT EXTRACT(WEEK FROM e.localDateField) "
+                    + "FROM Java8TimeTypes e WHERE e.id >= 10 ORDER BY e.id", Integer.class).getResultList());
+            assertEquals(expected, em.createQuery("SELECT EXTRACT(WEEK FROM e.localDateTimeField) "
+                    + "FROM Java8TimeTypes e WHERE e.id >= 10 ORDER BY e.id", Integer.class).getResultList());
+
+            assertEquals(List.of(10, 11, 14), em.createQuery("SELECT e.id FROM Java8TimeTypes e "
+                    + "WHERE EXTRACT(WEEK FROM e.localDateField) = 53 ORDER BY e.id", Integer.class).getResultList());
+            assertEquals(List.of(12, 13, 16), em.createQuery("SELECT e.id FROM Java8TimeTypes e WHERE e.id >= 10 "
+                    + "AND EXTRACT(WEEK FROM e.localDateField) = EXTRACT(WEEK FROM :d) ORDER BY e.id", Integer.class)
+                    .setParameter("d", LocalDate.of(2024, 1, 7)).getResultList());
+            assertEquals(List.of(12, 13, 16, 17, 18, 15, 10, 11, 14), em.createQuery("SELECT e.id "
+                    + "FROM Java8TimeTypes e WHERE e.id >= 10 ORDER BY EXTRACT(WEEK FROM e.localDateField), e.id",
+                    Integer.class).getResultList());
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Integer> q = cb.createQuery(Integer.class);
+            Root<Java8TimeTypes> r = q.from(Java8TimeTypes.class);
+            q.select(r.get("id")).where(cb.equal(cb.parameter(Integer.class, "week"),
+                    cb.extract(LocalDateField.WEEK, r.get("localDateField"))));
+            assertEquals(List.of(18), em.createQuery(q).setParameter("week", 39).getResultList());
+        }
     }
 
     public void testCriteriaExtract() {
