@@ -241,6 +241,23 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
     }
 
     /**
+     * A <code>DATETIME</code> column, reported with three fractional digits,
+     * stores multiples of 1/300 of a second, which the driver's
+     * <code>DATETIME2</code> parameter of a millisecond value does not
+     * compare equal to: .123 is stored as .1233333. Multiples of 10
+     * milliseconds are exact in both types. A <code>DATETIME2(3)</code>
+     * column keeps whole milliseconds and is left to the default.
+     */
+    @Override
+    public int getTimestampPrecision(Column col) {
+        if (col != null && col.getPrecision() == 3
+            && "DATETIME".equalsIgnoreCase(col.getTypeIdentifier().getName())) {
+            return MILLI * 10;
+        }
+        return super.getTimestampPrecision(col);
+    }
+
+    /**
      * A SQL Server sequence created without <code>START WITH</code> starts at
      * the minimum value of its type, -2^63 for the default
      * <code>BIGINT</code>, rather than at 0, so an initial value of 0 is

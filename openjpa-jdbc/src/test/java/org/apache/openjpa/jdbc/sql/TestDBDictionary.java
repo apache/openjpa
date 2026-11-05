@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import org.apache.openjpa.jdbc.schema.Column;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -31,5 +32,27 @@ public class TestDBDictionary {
         assertEquals("fooba_r", dictionary.toSnakeCase("FoobaR"));
         assertEquals("o_f_o_ob", dictionary.toSnakeCase("oFOOb"));
         assertEquals("\"foo_bar\"", dictionary.toSnakeCase("\"fooBar\""));
+    }
+
+    /**
+     * A column whose precision (fractional digits of a second) is known holds
+     * multiples of the corresponding power of ten; otherwise timestamps are
+     * rounded to the dictionary's datePrecision (OPENJPA-3034).
+     */
+    @Test
+    public void timestampPrecision() {
+        final DBDictionary dictionary = new DBDictionary();
+        assertEquals(dictionary.datePrecision, dictionary.getTimestampPrecision(null));
+        Column col = new Column();
+        assertEquals(dictionary.datePrecision, dictionary.getTimestampPrecision(col));
+        int expected = 1_000_000_000;
+        for (int digits = 0; digits <= 9; digits++) {
+            col.setPrecision(digits);
+            assertEquals("digits " + digits, expected, dictionary.getTimestampPrecision(col));
+            expected /= 10;
+        }
+        // not a number of fractional digits, e.g. the precision of a procedure parameter
+        col.setPrecision(23);
+        assertEquals(dictionary.datePrecision, dictionary.getTimestampPrecision(col));
     }
 }

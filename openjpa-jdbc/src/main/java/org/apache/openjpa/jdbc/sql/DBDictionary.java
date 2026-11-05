@@ -1588,32 +1588,39 @@ public class DBDictionary
     }
 
     /**
+     * The granularity, in nanoseconds, to which a timestamp bound to the
+     * given column is rounded. A column whose precision - the number of
+     * fractional digits of a second it keeps - is known holds multiples of
+     * the corresponding power of ten; otherwise this is {@link #datePrecision}.
+     * Binding a value at the precision the column stores makes a value read
+     * back, or kept in memory, compare equal to the stored one, which a
+     * timestamp version column depends on.
+     *
+     * @param col the column the value is bound to; may be null
+     * @see Column#getPrecision()
+     */
+    public int getTimestampPrecision(Column col) {
+        if (col != null) {
+            int digits = col.getPrecision();
+            // a negative value means we don't know
+            if (digits >= 0 && digits <= 9) {
+                int precision = NANO;
+                for (int i = digits; i < 9; i++) {
+                    precision *= 10;
+                }
+                return precision;
+            }
+        }
+        return datePrecision;
+    }
+
+    /**
      * Set the given value as a parameter to the statement.
      */
     public void setTimestamp(PreparedStatement stmnt, int idx, Timestamp val, Calendar cal, Column col)
         throws SQLException {
 
-        int usePrecision = datePrecision;
-        if (col != null) {
-            int columnPrecision = col.getPrecision();
-            if (columnPrecision >= 0) { // negative value means we don't know
-                if (columnPrecision == 0) {
-                    usePrecision = SEC;
-                }
-                else if (columnPrecision == 3) {
-                    usePrecision = MILLI;
-                }
-                else if (columnPrecision == 6) {
-                    usePrecision = MICRO;
-                }
-                else if (columnPrecision == 9) {
-                    usePrecision = NANO;
-                }
-                // rest defaults to datePrecision
-            }
-        }
-
-        val = StateManagerImpl.roundTimestamp(val, usePrecision);
+        val = StateManagerImpl.roundTimestamp(val, getTimestampPrecision(col));
 
         if (cal == null)
             stmnt.setTimestamp(idx, val);

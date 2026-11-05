@@ -206,6 +206,33 @@ public class TestSQLServerDictionary {
         assertTrue(sql, sql.endsWith("WHERE SCHEMA_NAME(schema_id) = ? AND name = ?"));
     }
 
+    /**
+     * A DATETIME column (three fractional digits) keeps multiples of 1/300
+     * second; values are bound in multiples of 10 ms, which DATETIME stores
+     * exactly, so that a timestamp version compares equal (OPENJPA-3034).
+     * Other three digit columns, DATETIME2(3), keep whole milliseconds.
+     */
+    @Test
+    public void testTimestampPrecisionOfDatetimeColumn() {
+        SQLServerDictionary dict = new SQLServerDictionary();
+        Column col = new Column();
+        assertEquals("unknown precision: the dictionary default", dict.datePrecision,
+            dict.getTimestampPrecision(col));
+        col.setPrecision(3);
+        assertEquals("type unknown: three digits are milliseconds", 1_000_000, dict.getTimestampPrecision(col));
+        col.setTypeIdentifier(DBIdentifier.newColumnDefinition("datetime2"));
+        assertEquals("DATETIME2(3) keeps whole milliseconds", 1_000_000, dict.getTimestampPrecision(col));
+        col.setTypeIdentifier(DBIdentifier.newColumnDefinition("datetime"));
+        assertEquals(10_000_000, dict.getTimestampPrecision(col));
+        col.setTypeIdentifier(DBIdentifier.newColumnDefinition("DATETIME"));
+        assertEquals(10_000_000, dict.getTimestampPrecision(col));
+        col.setTypeIdentifier(DBIdentifier.newColumnDefinition("datetime2"));
+        col.setPrecision(7);
+        assertEquals(100, dict.getTimestampPrecision(col));
+        col.setPrecision(0);
+        assertEquals(1_000_000_000, dict.getTimestampPrecision(col));
+    }
+
     private static Sequence sequence(int initial) {
         Sequence seq = new Sequence(DBIdentifier.newSequence("OJPA3034_SEQ"), new Schema());
         seq.setInitialValue(initial);
