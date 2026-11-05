@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.event;
 
-import java.io.Serializable;
-
 import org.junit.Test;
 import static org.junit.Assert.*;
 

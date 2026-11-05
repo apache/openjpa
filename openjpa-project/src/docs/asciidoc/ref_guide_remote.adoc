@@ -98,8 +98,7 @@ These strategies will be assigned on a per-instance basis, such that during the 
 
 If you attempt to attach a versioned instance whose representation has changed in the datastore since detachment, OpenJPA will throw an optimistic concurrency exception upon commit or flush, just as if a normal optimistic conflict was detected.
 When attaching an instance whose database record has been deleted since detaching, or when attaching a detached instance into a manager that has a stale version of the object, OpenJPA will throw an optimistic concurrency exception from the attach method.
-In these cases, OpenJPA sets the 
-`RollbackOnly` flag on the transaction.
+In these cases, OpenJPA sets the `RollbackOnly` flag on the transaction.
 
 [[ref_guide_detach_graph]]
 ===== Defining the Detached Object Graph
@@ -267,14 +266,15 @@ If you do not do so, a daemon thread will stay up in the JVM, preventing the JVM
 (((remote , events , TCP)))
 
 The TCP remote commit provider has several options that are defined as host specifications containing a host name or IP address and an optional port separated by a colon.
-For example, the host specification 
+For example, the host specification
 `saturn.bea.com:1234` represents an [class]``InetAddress`` retrieved by invoking [method]``InetAddress.getByName("saturn.bea.com")`` and a port of 1234.
 
-The TCP provider can be configured by setting the 
+The TCP provider can be configured by setting the
 `openjpa.RemoteCommitProvider` plugin property to contain the appropriate configuration settings.
 The TCP provider understands the following properties:
 
 * ``Port``: The TCP port that the provider should listen on for commit notifications. Defaults to 5636.
+* ``BindAddress``: IP address provider should bind for commit notifications. Defaults to 0.0.0.0 (all available addresses).
 * ``Addresses``: A semicolon-separated list of IP addresses to which notifications should be sent. No default value.
 * ``NumBroadcastThreads``: The number of threads to create for the purpose of transmitting events to peers. You should increase this value as the number of concurrent transactions increases. The maximum number of concurrent transactions is a function of the size of the connection pool. See the ``MaxTotal`` property of  `openjpa.ConnectionFactoryProperties` in <<ref_guide_dbsetup_builtin>>. Setting a value of 0 will result in behavior where the thread invoking [method]``commit`` will perform the broadcast directly. Defaults to 2.
 * ``RecoveryTimeMillis``: Amount of time to wait in milliseconds before attempting to reconnect to a peer of the cluster when connectivity to the peer is lost. Defaults to 15000.
