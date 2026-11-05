@@ -20,13 +20,18 @@ package org.apache.openjpa.jdbc.sql;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.Locale;
 
 import javax.sql.DataSource;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
+import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.StoreException;
@@ -149,6 +154,123 @@ public class DerbyDictionary
             supportsSelectStartIndex = true;
             supportsSelectEndIndex   = true;
         }
+
+        // Derby 10.6 introduced sequence objects (CREATE SEQUENCE and
+        // NEXT VALUE FOR). Without a NextSequenceQuery a @SequenceGenerator
+        // was backed by a row of the OpenJPA sequence table (OPENJPA-3014),
+        // and the schema tool generated no CREATE SEQUENCE for it. A value
+        // seen here was configured explicitly and is left alone, together
+        // with the ALTER SEQUENCE handling that goes with it.
+        if (nextSequenceQuery == null && versionEqualOrLaterThan(10, 6)) {
+            nextSequenceQuery = "VALUES (NEXT VALUE FOR {0})";
+            // Derby has no ALTER SEQUENCE, so the increment of a sequence
+            // cannot be adjusted to the allocation size of its generator. The
+            // sequences OpenJPA creates have INCREMENT BY set to the
+            // allocation size; NativeJDBCSeq checks the increment of the
+            // sequence (getSequenceIncrement) instead of altering it, and
+            // only caches values if the increment is large enough.
+            disableAlterSeqenceIncrementBy = true;
+        }
+    }
+
+    /**
+     * Derby creates a sequence of type <code>INTEGER</code> unless told
+     * otherwise, which runs out at 2^31 - 1. Use <code>BIGINT</code>, as the
+     * values are read as longs anyway. Derby accepts the sequence elements in
+     * any order, so the clause is appended.
+     */
+    @Override
+    public String[] getCreateSequenceSQL(Sequence seq) {
+        String[] sql = super.getCreateSequenceSQL(seq);
+        if (sql != null) {
+            for (int i = 0; i < sql.length; i++) {
+                sql[i] = sql[i] + " AS BIGINT";
+            }
+        }
+        return sql;
+    }
+
+    /**
+     * Reads the increment of the sequence from <code>SYS.SYSSEQUENCES</code>.
+     * Without a schema the sequence is looked up in the current schema, where
+     * Derby resolves an unqualified name.
+     */
+    @Override
+    public Long getSequenceIncrement(Connection conn, Sequence seq)
+        throws SQLException {
+        if (nextSequenceQuery == null) {
+            return null;
+        }
+        boolean hasSchema = useSchemaName && !DBIdentifier.isNull(seq.getSchemaIdentifier());
+        String sql = "SELECT S.INCREMENT FROM SYS.SYSSEQUENCES S, SYS.SYSSCHEMAS SC "
+            + "WHERE S.SCHEMAID = SC.SCHEMAID AND S.SEQUENCENAME = ? AND SC.SCHEMANAME = "
+            + (hasSchema ? "?" : "CURRENT SCHEMA");
+        try (PreparedStatement stmnt = conn.prepareStatement(sql)) {
+            stmnt.setString(1, toCatalogName(seq.getIdentifier()));
+            if (hasSchema) {
+                stmnt.setString(2, toCatalogName(seq.getSchemaIdentifier()));
+            }
+            try (ResultSet rs = stmnt.executeQuery()) {
+                return rs.next() ? rs.getLong(1) : 0L;
+            }
+        }
+    }
+
+    /**
+     * The name of an identifier as Derby stores it in its catalog: an
+     * undelimited name in upper case, a delimited one as it is.
+     */
+    private String toCatalogName(DBIdentifier id) {
+        String name = toDBName(id);
+        String lead = getLeadingDelimiter();
+        String trail = getTrailingDelimiter();
+        if (lead != null && trail != null && name.length() >= lead.length() + trail.length()
+            && name.startsWith(lead) && name.endsWith(trail)) {
+            return name.substring(lead.length(), name.length() - trail.length());
+        }
+        return name.toUpperCase(Locale.ROOT);
+    }
+
+    /**
+     * Derby requires the <code>RESTRICT</code> keyword on
+     * <code>DROP SEQUENCE</code>.
+     */
+    @Override
+    public String[] getDropSequenceSQL(Sequence seq) {
+        return new String[]{ "DROP SEQUENCE " + getFullName(seq) + " RESTRICT" };
+    }
+
+    /**
+     * Derby lists sequences in <code>SYS.SYSSEQUENCES</code>. Without a
+     * schema the query is restricted to the current schema, as an unqualified
+     * sequence lives there; the <code>SYS</code> schema holds the internal
+     * sequences of identity columns, which never belong to the application.
+     */
+    @Override
+    protected String getSequencesSQL(String schemaName, String sequenceName) {
+        return getSequencesSQL(DBIdentifier.newSchema(schemaName),
+            DBIdentifier.newSequence(sequenceName));
+    }
+
+    @Override
+    protected String getSequencesSQL(DBIdentifier schemaName, DBIdentifier sequenceName) {
+        if (nextSequenceQuery == null) {
+            return null;
+        }
+        StringBuilder buf = new StringBuilder();
+        buf.append("SELECT SC.SCHEMANAME AS SEQUENCE_SCHEMA, ")
+            .append("S.SEQUENCENAME AS SEQUENCE_NAME ")
+            .append("FROM SYS.SYSSEQUENCES S, SYS.SYSSCHEMAS SC ")
+            .append("WHERE S.SCHEMAID = SC.SCHEMAID AND SC.SCHEMANAME <> 'SYS'");
+        if (!DBIdentifier.isNull(schemaName)) {
+            buf.append(" AND SC.SCHEMANAME = ?");
+        } else {
+            buf.append(" AND SC.SCHEMANAME = CURRENT SCHEMA");
+        }
+        if (!DBIdentifier.isNull(sequenceName)) {
+            buf.append(" AND UPPER(S.SEQUENCENAME) = UPPER(?)");
+        }
+        return buf.toString();
     }
 
     /**

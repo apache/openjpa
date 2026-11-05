@@ -4234,6 +4234,22 @@ public class DBDictionary
         return commonCreateAlterSequenceSQL(seq, false)[0];
     }
 
+    /**
+     * Return the <code>INCREMENT BY</code> that the given sequence has in the
+     * database. {@link org.apache.openjpa.jdbc.kernel.NativeJDBCSeq} asks for
+     * it when {@link #disableAlterSeqenceIncrementBy} is set, so that it only
+     * caches values between two calls of the sequence which the database will
+     * not hand out itself.
+     *
+     * @return <code>null</code> if this dictionary cannot read the increment
+     * of a sequence (the default), a value below 1 if the sequence was not
+     * found, the increment otherwise
+     */
+    public Long getSequenceIncrement(Connection conn, Sequence seq)
+        throws SQLException {
+        return null;
+    }
+
     private String[] commonCreateAlterSequenceSQL(Sequence seq, boolean create) {
         if (nextSequenceQuery == null)
             return null;

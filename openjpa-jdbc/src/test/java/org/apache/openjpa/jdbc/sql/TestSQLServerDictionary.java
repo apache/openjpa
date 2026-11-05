@@ -20,13 +20,21 @@ package org.apache.openjpa.jdbc.sql;
 
 import static org.apache.openjpa.jdbc.sql.Columns.decimal;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.reflect.Proxy;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.Types;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.schema.Schema;
+import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.meta.JavaTypes;
 import org.junit.Test;
@@ -138,5 +146,126 @@ public class TestSQLServerDictionary {
 
         dict.supportsAlterTableWithDropColumn = false;
         assertEquals(0, dict.getDropColumnSQL(col).length);
+    }
+
+    /**
+     * SQL Server has sequence objects since 2012 (major version 11), so a
+     * <code>@SequenceGenerator</code> is backed by a real sequence there
+     * rather than by the OpenJPA sequence table (OPENJPA-3034).
+     */
+    @Test
+    public void testSequenceSupportFrom2012() throws Exception {
+        SQLServerDictionary dict = newConfiguredDictionary(null);
+        dict.connectedConfiguration(connection(10));
+        assertNull("SQL Server 2008 has no sequence objects", dict.nextSequenceQuery);
+        assertNull(dict.getCreateSequenceSQL(sequence(10)));
+
+        dict = newConfiguredDictionary(null);
+        dict.connectedConfiguration(connection(14));
+        assertEquals("SELECT NEXT VALUE FOR {0}", dict.nextSequenceQuery);
+        String[] sql = dict.getCreateSequenceSQL(sequence(10));
+        assertEquals(1, sql.length);
+        assertEquals("CREATE SEQUENCE OJPA3034_SEQ START WITH 10 INCREMENT BY 5", sql[0]);
+        assertEquals("ALTER SEQUENCE OJPA3034_SEQ INCREMENT BY 5", dict.getAlterSequenceSQL(sequence(10)));
+        assertEquals("DROP SEQUENCE OJPA3034_SEQ", dict.getDropSequenceSQL(sequence(10))[0]);
+    }
+
+    /**
+     * Without START WITH a SQL Server sequence starts at the minimum of its
+     * type, so an initial value of 0 has to be spelled out.
+     */
+    @Test
+    public void testInitialValueZeroIsExplicit() throws Exception {
+        SQLServerDictionary dict = newConfiguredDictionary(null);
+        dict.connectedConfiguration(connection(16));
+        assertEquals("CREATE SEQUENCE OJPA3034_SEQ START WITH 0 INCREMENT BY 5",
+            dict.getCreateSequenceSQL(sequence(0))[0]);
+    }
+
+    @Test
+    public void testExplicitNextSequenceQuerySurvives() throws Exception {
+        SQLServerDictionary dict = newConfiguredDictionary("NextSequenceQuery='SELECT NEXT VALUE FOR {0} AS X'");
+        dict.connectedConfiguration(connection(16));
+        assertEquals("SELECT NEXT VALUE FOR {0} AS X", dict.nextSequenceQuery);
+    }
+
+    /**
+     * The predicates appear in the order {@link DBDictionary#getSequences}
+     * binds them; without a schema the lookup is scoped to the default schema.
+     */
+    @Test
+    public void testSequencesSQL() throws Exception {
+        SQLServerDictionary dict = newConfiguredDictionary(null);
+        assertNull("no sequence support, nothing to reflect",
+            dict.getSequencesSQL(DBIdentifier.NULL, DBIdentifier.NULL));
+        dict.connectedConfiguration(connection(16));
+        String sql = dict.getSequencesSQL(DBIdentifier.NULL, DBIdentifier.NULL);
+        assertTrue(sql, sql.contains("FROM sys.sequences WHERE schema_id = SCHEMA_ID()"));
+        assertEquals(sql, -1, sql.indexOf('?'));
+        sql = dict.getSequencesSQL(DBIdentifier.newSchema("dbo"), DBIdentifier.newSequence("S"));
+        assertTrue(sql, sql.endsWith("WHERE SCHEMA_NAME(schema_id) = ? AND name = ?"));
+    }
+
+    private static Sequence sequence(int initial) {
+        Sequence seq = new Sequence(DBIdentifier.newSequence("OJPA3034_SEQ"), new Schema());
+        seq.setInitialValue(initial);
+        seq.setIncrement(1);
+        seq.setAllocate(5);
+        return seq;
+    }
+
+    private static SQLServerDictionary newConfiguredDictionary(String props) {
+        SQLServerDictionary dict = new SQLServerDictionary();
+        Configurations.configureInstance(dict, new JDBCConfigurationImpl(), props, "DBDictionary");
+        return dict;
+    }
+
+    /**
+     * A {@link Connection} whose {@link DatabaseMetaData} reports a SQL Server
+     * of the given major version, accessed through the Microsoft driver.
+     */
+    private static Connection connection(final int majorVersion) {
+        final DatabaseMetaData meta = (DatabaseMetaData) Proxy.newProxyInstance(
+            TestSQLServerDictionary.class.getClassLoader(), new Class<?>[] { DatabaseMetaData.class },
+            (proxy, method, args) -> {
+                switch (method.getName()) {
+                    case "getDatabaseProductName":
+                        return "Microsoft SQL Server";
+                    case "getDatabaseProductVersion":
+                        return majorVersion + ".0.1000";
+                    case "getDatabaseMajorVersion":
+                        return majorVersion;
+                    case "getDriverName":
+                        return "Microsoft JDBC Driver 12.4 for SQL Server";
+                    case "getDriverMajorVersion":
+                        return 12;
+                    case "getURL":
+                        return "jdbc:sqlserver://localhost;selectMethod=cursor";
+                    case "getIdentifierQuoteString":
+                        return "\"";
+                    default:
+                        return defaultValue(method.getReturnType());
+                }
+            });
+        return (Connection) Proxy.newProxyInstance(TestSQLServerDictionary.class.getClassLoader(),
+            new Class<?>[] { Connection.class },
+            (proxy, method, args) -> "getMetaData".equals(method.getName())
+                ? meta : defaultValue(method.getReturnType()));
+    }
+
+    private static Object defaultValue(Class<?> type) {
+        if (type == boolean.class) {
+            return Boolean.FALSE;
+        }
+        if (type == int.class) {
+            return 0;
+        }
+        if (type == long.class) {
+            return 0L;
+        }
+        if (type == short.class) {
+            return (short) 0;
+        }
+        return null;
     }
 }
