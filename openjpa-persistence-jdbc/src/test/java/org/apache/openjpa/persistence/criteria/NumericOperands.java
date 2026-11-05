@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.criteria;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -40,6 +41,9 @@ public class NumericOperands {
     private long longA;
     private Long longB;
     private BigDecimal decA;
+    private float floatA;
+    private double doubleA;
+    private BigInteger bigIntA;
 
     public NumericOperands() {
     }
@@ -81,5 +85,29 @@ public class NumericOperands {
 
     public BigDecimal getDecA() {
         return decA;
+    }
+
+    public float getFloatA() {
+        return floatA;
+    }
+
+    public void setFloatA(float floatA) {
+        this.floatA = floatA;
+    }
+
+    public double getDoubleA() {
+        return doubleA;
+    }
+
+    public void setDoubleA(double doubleA) {
+        this.doubleA = doubleA;
+    }
+
+    public BigInteger getBigIntA() {
+        return bigIntA;
+    }
+
+    public void setBigIntA(BigInteger bigIntA) {
+        this.bigIntA = bigIntA;
     }
 }

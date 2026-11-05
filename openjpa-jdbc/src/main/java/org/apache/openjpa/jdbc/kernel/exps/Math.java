@@ -93,7 +93,7 @@ public class Math
             return _cast;
         Class c1 = _val1.getType();
         Class c2 = _val2.getType();
-        return Filters.promote(c1, c2);
+        return Filters.promoteArithmetic(c1, c2);
     }
 
     @Override
@@ -155,7 +155,7 @@ public class Math
         if (_cast != null) {
             return _cast;
         }
-        return Filters.promote(operandType(_val1, ctx), operandType(_val2, ctx));
+        return Filters.promoteArithmetic(operandType(_val1, ctx), operandType(_val2, ctx));
     }
 
     private static Class operandType(Val val, ExpContext ctx) {
