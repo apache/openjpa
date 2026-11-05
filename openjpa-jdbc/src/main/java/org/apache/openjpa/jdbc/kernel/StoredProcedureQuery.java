@@ -183,7 +183,7 @@ public class StoredProcedureQuery extends AbstractStoreQuery {
                     resetAutoCommit = true;
                 }
 
-                stmnt = conn.prepareCall(_proc.getCallSQL());
+                stmnt = conn.prepareCall(dict.getStoredProcedureCallSQL(_proc));
 
                 final StoredProcedureQuery spq = (StoredProcedureQuery) q;
                 // no parameter values at all: leave the (un)binding to the driver

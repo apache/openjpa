@@ -36,6 +36,7 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -450,6 +451,50 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
         buf.append(")[1]','").append(getTypeName(type));
         appendLength(buf, type);
         buf.append("')");
+    }
+
+    /**
+     * SQL Server reports a procedure as {@code name;version} and its parameters with a leading {@code @}.
+     * Both are stripped so that the procedure can be called by its name and its parameters can be
+     * referenced by the names they were declared with.
+     */
+    @Override
+    public StoredProcedure getStoredProcedure(DatabaseMetaData meta, DBIdentifier catalog, DBIdentifier schema,
+                                              String procedure) throws SQLException {
+        StoredProcedure sp = super.getStoredProcedure(meta, catalog, schema, procedure);
+        if (sp == null) {
+            return null;
+        }
+        String name = Normalizer.removeDelimiters(sp.getName());
+        int version = name == null ? -1 : name.lastIndexOf(';');
+        if (version > 0) {
+            sp.setName(name.substring(0, version));
+        }
+        for (Column col : sp.getColumns()) {
+            String param = Normalizer.removeDelimiters(col.getIdentifier().getName());
+            if (param != null && param.length() > 1 && param.charAt(0) == '@') {
+                col.setIdentifier(DBIdentifier.newColumn(param.substring(1)));
+            }
+        }
+        return sp;
+    }
+
+    /**
+     * SQL Server does not understand a bare {@code CALL} statement, hence the JDBC escape syntax
+     * {@code {call name(?, ...)}} is used.
+     */
+    @Override
+    public String getStoredProcedureCallSQL(StoredProcedure procedure) {
+        StringBuilder buf = new StringBuilder("{call ").append(procedure.getName());
+        int params = procedure.getColumns().length;
+        if (params > 0) {
+            buf.append('(');
+            for (int i = 0; i < params; i++) {
+                buf.append(i == 0 ? "?" : ",?");
+            }
+            buf.append(')');
+        }
+        return buf.append('}').toString();
     }
 
     /**
