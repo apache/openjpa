@@ -5510,7 +5510,7 @@ public class DBDictionary
         }
         names.add(procedure.toLowerCase(Locale.ROOT));
         names.add(procedure.toUpperCase(Locale.ROOT));
-        return new ArrayList<>(names);
+        return List.copyOf(names);
     }
 
     /**
