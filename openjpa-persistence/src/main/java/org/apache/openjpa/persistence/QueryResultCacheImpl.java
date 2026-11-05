@@ -94,9 +94,11 @@ public class QueryResultCacheImpl
         Map<Object, Object> values = impl.getParameterValues();
         if (impl.hasPositionalParameters()) {
             Object[] params = impl.getPositionalParameters();
-            for (Map.Entry<Object, Object> e : values.entrySet())
-                if (e.getKey() instanceof Integer)
-                    params[(Integer) e.getKey() - 1] = e.getValue();
+            for (Map.Entry<Object, Object> e : values.entrySet()) {
+                if (e.getKey() instanceof Integer intKey) {
+                    params[intKey - 1] = e.getValue();
+                }
+            }
             return QueryKey.newInstance(impl.getDelegate(), params);
         }
         return QueryKey.newInstance(impl.getDelegate(), values);
