@@ -562,6 +562,8 @@
                 <dbcp.minIdle>0</dbcp.minIdle>
 
                 <mysql.server.version>9.7</mysql.server.version>
+                <!-- 0 = case sensitive table names (Linux default); the JPA TCK needs 1 -->
+                <docker.mysql.lower_case_table_names>0</docker.mysql.lower_case_table_names>
             </properties>
 
             <build>
@@ -576,6 +578,12 @@
                                 <image>
                                     <name>mysql:${mysql.server.version}</name>
                                     <run>
+                                        <cmd>
+                                            <exec>
+                                                <arg>mysqld</arg>
+                                                <arg>--lower_case_table_names=${docker.mysql.lower_case_table_names}</arg>
+                                            </exec>
+                                        </cmd>
                                         <env>
                                             <MYSQL_DATABASE>${openjpa.mysql.dbname}</MYSQL_DATABASE>
                                             <MYSQL_USER>${connection.username}</MYSQL_USER>

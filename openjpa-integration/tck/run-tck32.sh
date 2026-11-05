@@ -142,6 +142,10 @@ setProps() {
     case ${DB_TYPE} in
         mysql)
             DB_URL="jdbc:mysql://${DB_HOST}/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&transformedBitIsBoolean=true"
+            # The TCK's SQL scripts create upper case tables (PERSON) while entities without @Table map to
+            # their entity name (Person): table names must be case insensitive, as on Windows/macOS.
+            # With --no-docker the server must be initialised with lower_case_table_names=1 as well.
+            JPROPS+=("-Ddocker.mysql.lower_case_table_names=1")
             ;;
         postgresql)
             DB_URL="jdbc:postgresql://${DB_HOST}/${DB_NAME}"
