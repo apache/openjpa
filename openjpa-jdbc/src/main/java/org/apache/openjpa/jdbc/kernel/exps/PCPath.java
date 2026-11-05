@@ -185,6 +185,30 @@ public class PCPath extends CandidatePath implements JDBCPath {
     }
 
     /**
+     * Return the fields that this path traverses from the candidate, in
+     * order, or null if it starts from a variable or a subquery, or if it
+     * traverses anything but fields, such as a map key or a type cast.
+     */
+    public FieldMapping[] getTraversedFields() {
+        if (_type != PATH) {
+            return null;
+        }
+        if (_actions == null) {
+            return new FieldMapping[0];
+        }
+        FieldMapping[] fields = new FieldMapping[_actions.size()];
+        int i = 0;
+        for (Object o : _actions) {
+            Action action = (Action) o;
+            if (action.op != Action.GET && action.op != Action.GET_OUTER) {
+                return null;
+            }
+            fields[i++] = (FieldMapping) action.data;
+        }
+        return fields;
+    }
+
+    /**
      * If this path is part of a contains clause, then alias it to the
      * proper contains id before initialization.
      */
