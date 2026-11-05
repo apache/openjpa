@@ -24,6 +24,7 @@ import java.util.Locale;
 
 import jakarta.persistence.EntityManagerFactory;
 
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
@@ -94,19 +95,10 @@ public class TestSchemaGenAnnotations extends SingleEMFTestCase {
             createUpper.contains("FK_DEPT"));
         assertTrue("Should contain THEORDERCOLUMN: " + createSql,
             createUpper.contains("THEORDERCOLUMN"));
-        // The key check: named FK constraint.
-        // ANSI SQL uses "CONSTRAINT <name> FOREIGN KEY", but MariaDB/MySQL
-        // legitimately emit "FOREIGN KEY <name>" (constraintNameMode =
-        // CONS_NAME_MID in their dictionaries). Accept either form.
-        assertTrue("Should contain CONSTRAINT MYCONSTRANT or FOREIGN KEY "
-            + "MYCONSTRANT: " + createSql,
-            createUpper.contains("CONSTRAINT MYCONSTRANT")
-                || createUpper.contains("FOREIGN KEY MYCONSTRANT"));
-        // ANSI: "FOREIGN KEY (FK_DEPT)"; MySQL/MariaDB: "FOREIGN KEY <name> (FK_DEPT)".
-        assertTrue("Should contain FOREIGN KEY (FK_DEPT) or FOREIGN KEY <name> (FK_DEPT): "
-            + createSql,
-            createUpper.contains("FOREIGN KEY (FK_DEPT)")
-                || createUpper.contains("FOREIGN KEY MYCONSTRANT (FK_DEPT)"));
+        // The key check: named FK constraint, "CONSTRAINT <name> FOREIGN KEY (<cols>)"
+        // (the TCK checks exactly this form).
+        String expected = namedForeignKey("MYCONSTRANT", "(FK_DEPT)");
+        assertTrue("Should contain " + expected + ": " + createSql, createUpper.contains(expected));
 
         // Check drop script
         String dropSql = new String(Files.readAllBytes(dropFile.toPath()));
@@ -150,13 +142,9 @@ public class TestSchemaGenAnnotations extends SingleEMFTestCase {
             createUpper.contains("CREATE TABLE SCHEMAGENSIMPLE_SECOND"));
         assertTrue("Should contain SECONDARY_ID column: " + createSql,
             createUpper.contains("SECONDARY_ID"));
-        // FK constraint. ANSI SQL uses "CONSTRAINT <name> FOREIGN KEY",
-        // but MariaDB/MySQL legitimately emit "FOREIGN KEY <name>"
-        // (constraintNameMode = CONS_NAME_MID). Accept either form.
-        assertTrue("Should contain CONSTRAINT MYCONSTRAINT or FOREIGN KEY "
-            + "MYCONSTRAINT: " + createSql,
-            createUpper.contains("CONSTRAINT MYCONSTRAINT")
-                || createUpper.contains("FOREIGN KEY MYCONSTRAINT"));
+        // FK constraint: "CONSTRAINT <name> FOREIGN KEY (<cols>)", as checked by the TCK.
+        String expected = namedForeignKey("MYCONSTRAINT", "");
+        assertTrue("Should contain " + expected + ": " + createSql, createUpper.contains(expected));
 
         // Drop script
         String dropSql = new String(Files.readAllBytes(dropFile.toPath()));
@@ -207,5 +195,17 @@ public class TestSchemaGenAnnotations extends SingleEMFTestCase {
         } finally {
             closeEMF(emf2);
         }
+    }
+
+    /**
+     * Expected text of a named foreign key: "CONSTRAINT &lt;name&gt; FOREIGN KEY &lt;cols&gt;",
+     * the form the TCK checks. Dictionaries that name constraints after their
+     * definition (CONS_NAME_AFTER, Informix) only get the name checked.
+     */
+    private String namedForeignKey(String name, String cols) {
+        if (DBDictionary.CONS_NAME_AFTER.equals(getDBDictionary().constraintNameMode)) {
+            return "CONSTRAINT " + name;
+        }
+        return ("CONSTRAINT " + name + " FOREIGN KEY " + cols).trim();
     }
 }
