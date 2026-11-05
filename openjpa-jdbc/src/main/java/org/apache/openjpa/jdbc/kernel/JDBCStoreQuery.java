@@ -632,14 +632,20 @@ public class JDBCStoreQuery
                 sql[i] = dict.toDelete(mappings[i], sel, params);
             } else {
                 TableUpdates tables = new TableUpdates(mappings[i], updates);
-                boolean joined = dict.allowsBulkUpdateOfJoinedTables(sel);
+                boolean single = tables.isOnly(mappings[i].getTable());
+                // an update that sets columns of several tables is issued as
+                // one UPDATE per table even where the database can change the
+                // joined tables in one statement, since such a statement
+                // counts the changed rows of every table, not the entities
+                boolean joined = dict.allowsBulkUpdateOfJoinedTables(sel)
+                    && single;
                 // without aliases the values are written into an UPDATE of a
                 // single table, so they cannot read the columns of another
                 // table; indicate that the query has to be executed in-memory
                 if (!joined && !tables.readsOnlyUpdatedTables(exps[i].alias)) {
                     return null;
                 }
-                if (!joined && !tables.isOnly(mappings[i].getTable())) {
+                if (!single) {
                     if (!prepareTableUpdates(dict, mappings[i], sel, params,
                         tables)) {
                         return null;
