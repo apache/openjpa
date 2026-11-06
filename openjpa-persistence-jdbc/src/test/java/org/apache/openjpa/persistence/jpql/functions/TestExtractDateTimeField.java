@@ -21,6 +21,8 @@ package org.apache.openjpa.persistence.jpql.functions;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
@@ -74,10 +76,6 @@ public class TestExtractDateTimeField extends SingleEMFTestCase {
     }
 
     public void testExtractQuarter() {
-        if (getDBDictionary() instanceof OracleDictionary) {
-            // Oracle does not support EXTRACT(QUARTER)
-            return;
-        }
         assertEquals(List.of(1, 4), extract("QUARTER", "localDateField"));
         assertEquals(List.of(2, 4), extract("QUARTER", "localDateTimeField"));
     }
@@ -94,17 +92,13 @@ public class TestExtractDateTimeField extends SingleEMFTestCase {
 
     public void testExtractHour() {
         assertEquals(List.of(13, 7), extract("HOUR", "localDateTimeField"));
-        if (!(getDBDictionary() instanceof OracleDictionary)) {
-            // Oracle has no TIME data type
-            assertEquals(List.of(13, 7), extract("HOUR", "localTimeField"));
-        }
+        // a time column is a DATE column on Oracle
+        assertEquals(List.of(13, 7), extract("HOUR", "localTimeField"));
     }
 
     public void testExtractMinute() {
         assertEquals(List.of(45, 5), extract("MINUTE", "localDateTimeField"));
-        if (!(getDBDictionary() instanceof OracleDictionary)) {
-            assertEquals(List.of(45, 5), extract("MINUTE", "localTimeField"));
-        }
+        assertEquals(List.of(45, 5), extract("MINUTE", "localTimeField"));
     }
 
     public void testExtractSecond() {
@@ -117,10 +111,34 @@ public class TestExtractDateTimeField extends SingleEMFTestCase {
         }
     }
 
-    public void testExtractInWhereClause() {
-        if (getDBDictionary() instanceof OracleDictionary) {
+    /**
+     * On Oracle an OffsetDateTime is held in a TIMESTAMP WITH TIME ZONE column, whose EXTRACT(HOUR) and
+     * EXTRACT(MINUTE) are in UTC, whereas the cast to TIMESTAMP keeps the time of the stored offset, as
+     * OffsetDateTime.getHour() returns it. Other databases convert such a value to UTC or to the time
+     * zone of the session when storing or reading it.
+     */
+    public void testExtractHourAndMinuteFromOffsetDateTimeOnOracle() {
+        if (!(getDBDictionary() instanceof OracleDictionary)) {
             return;
         }
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            Java8TimeTypes e = new Java8TimeTypes();
+            e.setId(3);
+            e.setOffsetDateTimeField(OffsetDateTime.of(2024, 5, 17, 13, 45, 30, 0, ZoneOffset.ofHoursMinutes(2, 30)));
+            em.persist(e);
+            em.getTransaction().commit();
+        }
+        try (EntityManager em = emf.createEntityManager()) {
+            assertEquals(13, em.find(Java8TimeTypes.class, 3).getOffsetDateTimeField().getHour());
+            assertEquals(List.of(13), em.createQuery("SELECT EXTRACT(HOUR FROM e.offsetDateTimeField) "
+                    + "FROM Java8TimeTypes e WHERE e.id = 3", Integer.class).getResultList());
+            assertEquals(List.of(45), em.createQuery("SELECT EXTRACT(MINUTE FROM e.offsetDateTimeField) "
+                    + "FROM Java8TimeTypes e WHERE e.id = 3", Integer.class).getResultList());
+        }
+    }
+
+    public void testExtractInWhereClause() {
         try (EntityManager em = emf.createEntityManager()) {
             List<Integer> ids = em.createQuery("SELECT e.id FROM Java8TimeTypes e "
                     + "WHERE EXTRACT(QUARTER FROM e.localDateField) = 4 AND EXTRACT(DAY FROM e.localDateField) = 31",
@@ -130,10 +148,6 @@ public class TestExtractDateTimeField extends SingleEMFTestCase {
     }
 
     public void testExtractWeek() {
-        if (getDBDictionary() instanceof OracleDictionary) {
-            // Oracle does not support EXTRACT(WEEK)
-            return;
-        }
         assertEquals(List.of(1, 52), extract("WEEK", "localDateField"));
     }
 
@@ -142,9 +156,6 @@ public class TestExtractDateTimeField extends SingleEMFTestCase {
      * parameter and in the WHERE and ORDER BY clauses.
      */
     public void testExtractWeekAtYearBoundaries() {
-        if (getDBDictionary() instanceof OracleDictionary) {
-            return;
-        }
         LocalDate[] dates = {
             LocalDate.of(2020, 12, 31), // Thursday of week 53 of 2020
             LocalDate.of(2021, 1, 3), // Sunday of week 53 of 2020
@@ -207,19 +218,17 @@ public class TestExtractDateTimeField extends SingleEMFTestCase {
                     .where(cb.equal(cb.extract(LocalDateTimeField.DAY, r2.get("localDateTimeField")), 17));
             assertEquals(List.of(1), em.createQuery(day).getResultList());
 
-            if (!(getDBDictionary() instanceof OracleDictionary)) {
-                CriteriaQuery<Integer> quarter = cb.createQuery(Integer.class);
-                Root<Java8TimeTypes> r3 = quarter.from(Java8TimeTypes.class);
-                quarter.select(cb.extract(LocalDateField.QUARTER, r3.get("localDateField")))
-                        .orderBy(cb.asc(r3.get("id")));
-                assertEquals(List.of(1, 4), em.createQuery(quarter).getResultList());
+            CriteriaQuery<Integer> quarter = cb.createQuery(Integer.class);
+            Root<Java8TimeTypes> r3 = quarter.from(Java8TimeTypes.class);
+            quarter.select(cb.extract(LocalDateField.QUARTER, r3.get("localDateField")))
+                    .orderBy(cb.asc(r3.get("id")));
+            assertEquals(List.of(1, 4), em.createQuery(quarter).getResultList());
 
-                CriteriaQuery<Integer> minute = cb.createQuery(Integer.class);
-                Root<Java8TimeTypes> r4 = minute.from(Java8TimeTypes.class);
-                minute.select(cb.extract(LocalTimeField.MINUTE, r4.get("localTimeField")))
-                        .orderBy(cb.asc(r4.get("id")));
-                assertEquals(List.of(45, 5), em.createQuery(minute).getResultList());
-            }
+            CriteriaQuery<Integer> minute = cb.createQuery(Integer.class);
+            Root<Java8TimeTypes> r4 = minute.from(Java8TimeTypes.class);
+            minute.select(cb.extract(LocalTimeField.MINUTE, r4.get("localTimeField")))
+                    .orderBy(cb.asc(r4.get("id")));
+            assertEquals(List.of(45, 5), em.createQuery(minute).getResultList());
         }
     }
 
@@ -233,15 +242,13 @@ public class TestExtractDateTimeField extends SingleEMFTestCase {
                     .getResultList();
             assertEquals(List.of(2), ids);
 
-            if (!(getDBDictionary() instanceof OracleDictionary)) {
-                ids = em.createQuery("SELECT e.id FROM Java8TimeTypes e "
-                        + "WHERE EXTRACT(QUARTER FROM e.localDateField) = EXTRACT(QUARTER FROM :d) "
-                        + "AND EXTRACT(MINUTE FROM e.localTimeField) = EXTRACT(MINUTE FROM :t)", Integer.class)
-                        .setParameter("d", LocalDate.of(2020, 2, 1))
-                        .setParameter("t", LocalTime.of(0, 45))
-                        .getResultList();
-                assertEquals(List.of(1), ids);
-            }
+            ids = em.createQuery("SELECT e.id FROM Java8TimeTypes e "
+                    + "WHERE EXTRACT(QUARTER FROM e.localDateField) = EXTRACT(QUARTER FROM :d) "
+                    + "AND EXTRACT(MINUTE FROM e.localTimeField) = EXTRACT(MINUTE FROM :t)", Integer.class)
+                    .setParameter("d", LocalDate.of(2020, 2, 1))
+                    .setParameter("t", LocalTime.of(0, 45))
+                    .getResultList();
+            assertEquals(List.of(1), ids);
         }
     }
 

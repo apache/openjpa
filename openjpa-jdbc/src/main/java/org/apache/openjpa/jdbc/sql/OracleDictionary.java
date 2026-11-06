@@ -59,6 +59,7 @@ import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
+import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.lib.jdbc.DelegatingDatabaseMetaData;
 import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
 import org.apache.openjpa.lib.util.Localizer;
@@ -1662,6 +1663,31 @@ public class OracleDictionary
             start.appendTo(buf);
         }
         buf.append(")");
+    }
+
+    /**
+     * Oracle has no EXTRACT(QUARTER) or EXTRACT(WEEK); both are read from TO_CHAR, IW being the
+     * ISO week that JPA defines. EXTRACT(HOUR/MINUTE/SECOND) is only allowed on TIMESTAMP values,
+     * whereas temporal values are usually held in DATE columns, so the value is cast to TIMESTAMP.
+     * EXTRACT(SECOND) then includes the fraction of the second, as JPA requires. The cast also drops
+     * the time zone of a TIMESTAMP WITH TIME ZONE value, such as an OffsetDateTime, so its hour and
+     * minute are those of the stored offset, as OffsetDateTime.getHour() returns them, and no longer
+     * those in UTC.
+     */
+    @Override
+    public String getExtractDateTimeFieldFunction(DateTimeExtractField extField) {
+        switch (extField) {
+            case QUARTER:
+                return "TO_NUMBER(TO_CHAR({1}, 'Q'))";
+            case WEEK:
+                return "TO_NUMBER(TO_CHAR({1}, 'IW'))";
+            case HOUR:
+            case MINUTE:
+            case SECOND:
+                return "EXTRACT(" + getExtractField(extField) + " FROM CAST({1} AS TIMESTAMP))";
+            default:
+                return super.getExtractDateTimeFieldFunction(extField);
+        }
     }
 
     // required to avoid ORA-01408: such column list already indexed

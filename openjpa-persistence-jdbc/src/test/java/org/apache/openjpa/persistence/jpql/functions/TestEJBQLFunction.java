@@ -855,11 +855,6 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractQUARTER() {
-        DBDictionary dict = getDbDictionary(getEmf());
-        if (dict instanceof OracleDictionary) {
-            // Oracle does not support EXTRACT(QUARTER)
-            return;
-        }
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT (QUARTER FROM {d '2006-03-21'}) = 2";
@@ -885,9 +880,8 @@ public class TestEJBQLFunction extends AbstractTestCase {
 
     public void testExtractWEEK() {
         DBDictionary dict = getDbDictionary(getEmf());
-        if (dict instanceof DerbyDictionary || dict instanceof OracleDictionary) {
+        if (dict instanceof DerbyDictionary) {
             // Derby has no function for the ISO week, see TestExtractDateTimeField
-            // Oracle does not support EXTRACT(WEEK) (https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/EXTRACT-datetime.html)
             return;
         }
         EntityManager em = currentEntityManager();
