@@ -883,11 +883,6 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractWEEK() {
-        DBDictionary dict = getDbDictionary(getEmf());
-        if (dict instanceof DerbyDictionary) {
-            // Derby has no function for the ISO week, see TestExtractDateTimeField
-            return;
-        }
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT (WEEK FROM {d '2006-03-21'}) <= 12";
