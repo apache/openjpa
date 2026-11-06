@@ -33,9 +33,7 @@ import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.kernel.exps.DateTimeExtractField;
-import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.StoreException;
-import org.apache.openjpa.util.UnsupportedException;
 
 /**
  * Dictionary for Apache Derby (formerly Cloudscape).
@@ -43,7 +41,34 @@ import org.apache.openjpa.util.UnsupportedException;
 public class DerbyDictionary
     extends AbstractDB2Dictionary {
 
-    private static final Localizer _loc = Localizer.forPackage(DerbyDictionary.class);
+    /**
+     * The ISO-8601 week of {1}. Derby has neither a week function nor a day number, and
+     * TIMESTAMPDIFF counts in the JVM time zone, so a daylight saving change shifts it
+     * by a day. The week is therefore computed with integer arithmetic on YEAR, MONTH and
+     * DAY in the proleptic Gregorian calendar, which works in any clause:
+     * <ul>
+     * <li>{@code jan1} modulo 7 is the day of the week of January 1st, 0 being Monday, as
+     * January 1st of year 1 is a Monday and 365 is 1 modulo 7.</li>
+     * <li>{@code thursday} is the day of the year, counted from 0, of the Thursday of the
+     * week of {1}. It is negative when that Thursday is in the previous year, and at least
+     * the length of the year when it is in the next one, which the modulo maps to week 1.</li>
+     * <li>The week is that day / 7 + 1, or, when that day is negative, the last week of the
+     * previous year: 53 if that year begins or ends on a Thursday, otherwise 52.</li>
+     * </ul>
+     */
+    private static final String ISO_WEEK_FUNCTION;
+
+    static {
+        String leapYear = "CASE WHEN MOD(YEAR({1}), 4) = 0 AND (MOD(YEAR({1}), 100) <> 0"
+            + " OR MOD(YEAR({1}), 400) = 0) THEN 1 ELSE 0 END";
+        String jan1 = "(YEAR({1}) - 1 + (YEAR({1}) - 1) / 4 - (YEAR({1}) - 1) / 100 + (YEAR({1}) - 1) / 400)";
+        String prevJan1 = "(YEAR({1}) - 2 + (YEAR({1}) - 2) / 4 - (YEAR({1}) - 2) / 100 + (YEAR({1}) - 2) / 400)";
+        String dayOfYear = "((275 * MONTH({1})) / 9 - (2 - (" + leapYear + ")) * ((MONTH({1}) + 9) / 12)"
+            + " + DAY({1}) - 30)";
+        String thursday = "(7 * ((" + jan1 + " + " + dayOfYear + " - 1) / 7) + 3 - " + jan1 + ")";
+        ISO_WEEK_FUNCTION = "COALESCE(NULLIF((MOD(" + thursday + ", 365 + (" + leapYear + ")) + 371) / 7 - 52, 0),"
+            + " CASE WHEN MOD(" + jan1 + ", 7) = 4 OR MOD(" + prevJan1 + ", 7) = 3 THEN 53 ELSE 52 END)";
+    }
 
     /**
      * If true, we will shutdown the embedded database when closing
@@ -131,8 +156,8 @@ public class DerbyDictionary
 
     /**
      * Derby has no EXTRACT, but a function per field. QUARTER is derived from the
-     * month. There is no function for the ISO week, so WEEK is rejected rather than
-     * rendered as invalid SQL.
+     * month, and WEEK, the ISO-8601 week, is computed arithmetically from the year,
+     * month and day.
      */
     @Override
     public String getExtractDateTimeFieldFunction(DateTimeExtractField extField) {
@@ -140,8 +165,7 @@ public class DerbyDictionary
             case QUARTER:
                 return "((MONTH({1}) + 2) / 3)";
             case WEEK:
-                throw new UnsupportedException(_loc.get("function-not-supported",
-                    getClass(), "EXTRACT(WEEK)"));
+                return ISO_WEEK_FUNCTION;
             default:
                 return extField.name() + "({1})";
         }
