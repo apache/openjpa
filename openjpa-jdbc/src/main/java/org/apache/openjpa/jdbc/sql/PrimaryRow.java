@@ -203,7 +203,9 @@ public class PrimaryRow
 
     /**
      * If this is a delete, delay foreign keys to other deleted objects if the
-     * key is restricted or cascade. If this is an update or insert, delay
+     * key is restricted, cascade or logical (the database may have a real
+     * constraint not reflected in the mapping, so the referencing row has to
+     * be deleted first). If this is an update or insert, delay
      * foreign keys to other inserts so that insert ordering respects FK
      * dependencies (including logical FKs, since the database may have real
      * constraints not reflected in the mapping). If the foreign
@@ -217,7 +219,8 @@ public class PrimaryRow
         if (getAction() == ACTION_DELETE)
             return sm.isDeleted() && !fk.isDeferred()
                 && (fk.getDeleteAction() == ForeignKey.ACTION_RESTRICT ||
-                    fk.getDeleteAction() == ForeignKey.ACTION_CASCADE);
+                    fk.getDeleteAction() == ForeignKey.ACTION_CASCADE ||
+                    fk.isLogical());
 
         if (!sm.isNew() || sm.isFlushed())
             return false;

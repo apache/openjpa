@@ -883,6 +883,8 @@ public class Column extends ReferenceCounter {
             setSize(from.getSize());
         if (getDecimalDigits() == 0)
             setDecimalDigits(from.getDecimalDigits());
+        if (getSecondPrecision() < 0)
+            setSecondPrecision(from.getSecondPrecision());
         if (getDefaultString() == null)
             setDefaultString(from.getDefaultString());
         if (!isNotNullExplicit() && from.isNotNullExplicit())

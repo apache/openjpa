@@ -458,6 +458,23 @@ public class ConstraintUpdateManager
     }
 
     /**
+     * Finds an edge of the dependency cycle that stems from a logical foreign
+     * key, one the mapping does not know to be enforced by the database.
+     * @param cycle Cycle in the dependency graph.
+     * @return Edge corresponding to a logical foreign key, or null.
+     */
+    private Edge findLogicalLink(List cycle) {
+        for (Object o : cycle) {
+            Edge edge = (Edge) o;
+            Object userObject = edge.getUserObject();
+            if (userObject instanceof ForeignKey ufk && ufk.isLogical()) {
+                return edge;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Re-calculates the DepthFirstSearch analysis of the graph
      * after some of the edges have been removed. Ensures
      * that the dependency graph is cycle free.
@@ -503,7 +520,19 @@ public class ConstraintUpdateManager
                 // find a nullable foreign key
                 Edge breakableLink = findBreakableLink(cycle);
                 if (breakableLink == null) {
-                    throw new UserException(_loc.get("no-nullable-fk"));
+                    // a logical foreign key is only ordered on the chance that
+                    // the database enforces it; if it closes a cycle that no
+                    // nullable key can break, drop the ordering it asks for
+                    // rather than fail, as before logical keys were ordered
+                    Edge logicalLink = findLogicalLink(cycle);
+                    if (logicalLink == null) {
+                        throw new UserException(_loc.get("no-nullable-fk"));
+                    }
+                    if (!logicalLink.isRemovedFromGraph()) {
+                        graph.removeEdge(logicalLink);
+                    }
+                    recalculate = true;
+                    continue;
                 }
 
                 // topologic node order must be re-calculated,  if the

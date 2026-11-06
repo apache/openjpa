@@ -40,6 +40,7 @@ import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.kernel.exps.Literal;
@@ -213,6 +214,15 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
             }
         }
 
+        // SQL Server 2012 introduced sequence objects. Without a
+        // NextSequenceQuery a @SequenceGenerator was backed by a row of the
+        // OpenJPA sequence table (OPENJPA-3014), and the schema tool generated
+        // no CREATE SEQUENCE for it. A value seen here was configured
+        // explicitly and is left alone.
+        if (nextSequenceQuery == null && meta.getDatabaseMajorVersion() >= 11) {
+            nextSequenceQuery = "SELECT NEXT VALUE FOR {0}";
+        }
+
         // warn about not using cursors for pre-2.0 MS driver
         // as connectURL includes selectMethod=direct
         if (((VENDOR_MICROSOFT.equalsIgnoreCase(driverVendor) &&
@@ -229,6 +239,73 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
             requiresWarnings &&
             (props.toLowerCase(Locale.ENGLISH).indexOf("maxcachedstatements=0") == -1))
             log.warn(_loc.get("sqlserver-cachedstmnts"));
+    }
+
+    /**
+     * A <code>DATETIME</code> column, reported with three fractional digits,
+     * stores multiples of 1/300 of a second, which the driver's
+     * <code>DATETIME2</code> parameter of a millisecond value does not
+     * compare equal to: .123 is stored as .1233333. Multiples of 10
+     * milliseconds are exact in both types. A <code>DATETIME2(3)</code>
+     * column keeps whole milliseconds and is left to the default.
+     */
+    @Override
+    public int getTimestampPrecision(Column col) {
+        if (col != null && col.getPrecision() == 3
+            && "DATETIME".equalsIgnoreCase(col.getTypeIdentifier().getName())) {
+            return MILLI * 10;
+        }
+        return super.getTimestampPrecision(col);
+    }
+
+    /**
+     * A SQL Server sequence created without <code>START WITH</code> starts at
+     * the minimum value of its type, -2^63 for the default
+     * <code>BIGINT</code>, rather than at 0, so an initial value of 0 is
+     * given explicitly.
+     */
+    @Override
+    public String[] getCreateSequenceSQL(Sequence seq) {
+        String[] sql = super.getCreateSequenceSQL(seq);
+        if (sql != null && seq.getInitialValue() == 0) {
+            String name = getFullName(seq);
+            for (int i = 0; i < sql.length; i++) {
+                int idx = sql[i].indexOf(name) + name.length();
+                sql[i] = sql[i].substring(0, idx) + " START WITH 0" + sql[i].substring(idx);
+            }
+        }
+        return sql;
+    }
+
+    /**
+     * SQL Server lists sequences in <code>sys.sequences</code>. Without a
+     * schema the query is restricted to the default schema of the user, where
+     * an unqualified sequence is created; <code>sys.sequences</code> only
+     * covers the current database.
+     */
+    @Override
+    protected String getSequencesSQL(String schemaName, String sequenceName) {
+        return getSequencesSQL(DBIdentifier.newSchema(schemaName),
+            DBIdentifier.newSequence(sequenceName));
+    }
+
+    @Override
+    protected String getSequencesSQL(DBIdentifier schemaName, DBIdentifier sequenceName) {
+        if (nextSequenceQuery == null) {
+            return null;
+        }
+        StringBuilder buf = new StringBuilder();
+        buf.append("SELECT SCHEMA_NAME(schema_id) AS SEQUENCE_SCHEMA, ")
+            .append("name AS SEQUENCE_NAME FROM sys.sequences");
+        if (!DBIdentifier.isNull(schemaName)) {
+            buf.append(" WHERE SCHEMA_NAME(schema_id) = ?");
+        } else {
+            buf.append(" WHERE schema_id = SCHEMA_ID()");
+        }
+        if (!DBIdentifier.isNull(sequenceName)) {
+            buf.append(" AND name = ?");
+        }
+        return buf.toString();
     }
 
     /**

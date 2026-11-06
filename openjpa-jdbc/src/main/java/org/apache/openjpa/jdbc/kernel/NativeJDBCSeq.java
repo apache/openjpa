@@ -223,6 +223,7 @@ public class NativeJDBCSeq
     protected synchronized void allocateInternal(int additional, JDBCStore store, ClassMapping mapping)
         throws SQLException {
         Connection conn = getConnection(store);
+        boolean checkIncrement = false;
         try {
             if (!alterIncrementBy) {
                 DBDictionary dict = _conf.getDBDictionaryInstance();
@@ -247,21 +248,63 @@ public class NativeJDBCSeq
                         }
                     }
                 } else {
-                    if (!alreadyLoggedAlterSeqDisabled) {
-                        Log log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
-                        if (log.isWarnEnabled()) {
-                            log.warn(_loc.get("alter-seq-disabled", _seqName));
-                        }
-                    }
-
-                    alreadyLoggedAlterSeqDisabled = true;
+                    // the increment can only be checked once the sequence is
+                    // known to exist, i.e. after the first value was drawn
+                    checkIncrement = true;
                 }
             }
             _nextValue = getSequence(conn);
+            if (checkIncrement) {
+                checkSequenceIncrement(conn);
+            }
             _maxValue = _nextValue + (long) _allocate * _increment;
         } finally {
             closeConnection(conn);
         }
+    }
+
+    /**
+     * The INCREMENT BY of the sequence cannot be altered to the allocation
+     * size. Values between two calls of the sequence may only be cached if
+     * the database will not hand them out itself, i.e. if the increment of
+     * the sequence in the database is at least the allocation size times the
+     * increment. Otherwise, or if the increment cannot be read although the
+     * dictionary supports it, fall back to an allocation size of one.
+     */
+    private void checkSequenceIncrement(Connection conn) {
+        DBDictionary dict = _conf.getDBDictionaryInstance();
+        Log log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
+        Long dbIncrement;
+        try {
+            dbIncrement = dict.getSequenceIncrement(conn, _seq);
+        } catch (SQLException se) {
+            if (log.isTraceEnabled()) {
+                log.trace(_loc.get("seq-increment-unreadable", _seqName), se);
+            }
+            dbIncrement = 0L;
+        }
+        if (dbIncrement == null) {
+            // the dictionary cannot tell, the user is responsible for it
+            if (!alreadyLoggedAlterSeqDisabled && log.isWarnEnabled()) {
+                log.warn(_loc.get("alter-seq-disabled", _seqName));
+            }
+            alreadyLoggedAlterSeqDisabled = true;
+            return;
+        }
+        long needed = (long) _allocate * _increment;
+        if (dbIncrement >= needed) {
+            return;
+        }
+        if (!alreadyLoggedAlterSeqDisabled && log.isWarnEnabled()) {
+            if (dbIncrement < 1) {
+                log.warn(_loc.get("seq-increment-unknown", _seqName));
+            } else {
+                log.warn(_loc.get("seq-increment-too-small", new Object[]{ _seqName,
+                    String.valueOf(dbIncrement), String.valueOf(_allocate), String.valueOf(needed) }));
+            }
+        }
+        alreadyLoggedAlterSeqDisabled = true;
+        _allocate = 1;
     }
 
     /**

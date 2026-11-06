@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
+import java.sql.Timestamp;
+
 import org.apache.openjpa.lib.util.TimestampHelper;
 
 /**
@@ -39,7 +41,7 @@ public class NanoPrecisionTimestampVersionStrategy
     }
 
     @Override
-    protected Object nextVersion(Object version) {
+    protected Timestamp currentTimestamp() {
         return TimestampHelper.getNanoPrecisionTimestamp();
     }
 }

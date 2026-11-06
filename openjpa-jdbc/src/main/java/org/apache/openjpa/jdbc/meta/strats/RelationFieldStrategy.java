@@ -460,7 +460,11 @@ public class RelationFieldStrategy
             field.deleteRow(sm, store, rm);
 
             // if our foreign key has a delete action, we need to set the
-            // related object so constraints can be evaluated
+            // related object so constraints can be evaluated. A logical
+            // foreign key may stand for a constraint the database has but the
+            // mapping does not know of (a schema not created by OpenJPA), so
+            // record the related object too when it is deleted in the same
+            // flush: the row referencing it is then deleted first.
             Object lastRelPc = sm.fetchObjectField(field.getIndex());
             if( lastRelPc == null) {
             	lastRelPc = sm.fetchInitialField(field.getIndex());
@@ -471,7 +475,8 @@ public class RelationFieldStrategy
                 ForeignKey fk = field.getForeignKey((ClassMapping)
                     rel.getMetaData());
                 if (fk.getDeleteAction() == ForeignKey.ACTION_RESTRICT ||
-                    fk.getDeleteAction() == ForeignKey.ACTION_CASCADE) {
+                    fk.getDeleteAction() == ForeignKey.ACTION_CASCADE ||
+                    (fk.isLogical() && rel.isDeleted())) {
                     Row row = field.getRow(sm, store, rm, Row.ACTION_DELETE);
                     row.setForeignKey(fk, null, rel);
                     // this is for bi-directional maps, the key and value of the
