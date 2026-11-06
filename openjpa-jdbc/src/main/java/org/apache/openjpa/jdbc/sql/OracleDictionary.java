@@ -279,6 +279,8 @@ public class OracleDictionary
 
         indexPhysicalForeignKeys = true; // Oracle does not automatically create an index for a foreign key so we will
         supportsUnsizedCharOnCast = false;
+        // Oracle supports the CHAR data type; an explicit StoreCharsAsNumbers=true is still respected
+        storeCharsAsNumbers = false;
     }
 
     private Method getMethodByReflection(String className, String methodName, Class<?>... paramTypes) {
@@ -415,6 +417,21 @@ public class OracleDictionary
             return false;
         return !requiresSubselectForRange(sel.getStartIndex(),
             sel.getEndIndex(), sel.isDistinct(), sel.getOrdering());
+    }
+
+    /**
+     * Oracle sizes a CHAR column in bytes unless NLS_LENGTH_SEMANTICS is CHAR, so a CHAR(1) column of an
+     * AL32UTF8 database cannot hold a non-ASCII character such as an accented letter. The column of a Java
+     * char or Character field is therefore declared with character length semantics, for example CHAR(1 CHAR).
+     */
+    @Override
+    protected String appendSize(Column col, String typeName) {
+        int javaType = col.getJavaType();
+        if (col.getType() == Types.CHAR && col.getSize() > 0 && "CHAR".equalsIgnoreCase(typeName)
+            && (javaType == JavaTypes.CHAR || javaType == JavaTypes.CHAR_OBJ)) {
+            return typeName + "(" + col.getSize() + " CHAR)";
+        }
+        return super.appendSize(col, typeName);
     }
 
     /**

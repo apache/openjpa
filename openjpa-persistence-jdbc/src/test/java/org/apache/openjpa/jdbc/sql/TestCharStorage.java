@@ -53,10 +53,11 @@ public class TestCharStorage extends PersistenceTestCase {
             assertDefault(dict);
             populate(emf, CharStorageEntity.class);
             int expectedType = dict.storeCharsAsNumbers ? Types.INTEGER : Types.CHAR;
-            assertColumnType(emf, "CHARSTORAGE", "CHARDATA", expectedType);
-            assertColumnType(emf, "CHARSTORAGE", "CHARACTERDATA", expectedType);
+            assertColumnType(emf, dict, "CHARSTORAGE", "CHARDATA", expectedType);
+            assertColumnType(emf, dict, "CHARSTORAGE", "CHARACTERDATA", expectedType);
             assertStoredValue(emf, "CHARSTORAGE", dict.storeCharsAsNumbers);
             assertRoundTripAndQueries(emf, CharStorageEntity.class);
+            assertNonAsciiRoundTrip(emf, CharStorageEntity.class);
         } finally {
             closeEMF(emf);
         }
@@ -104,24 +105,26 @@ public class TestCharStorage extends PersistenceTestCase {
         OpenJPAEntityManagerFactorySPI emf = createEMF(CharStorageBase.class, CharStorageNumericEntity.class, DROP_TABLES,
             DICT_PROP, withStoreCharsAsNumbers(System.getProperty(DICT_PROP), true));
         try {
-            assertTrue(dictionary(emf).storeCharsAsNumbers);
+            DBDictionary dict = dictionary(emf);
+            assertTrue(dict.storeCharsAsNumbers);
             populate(emf, CharStorageNumericEntity.class);
-            assertColumnType(emf, "CHARSTORAGE_NUM", "CHARDATA", Types.INTEGER);
-            assertColumnType(emf, "CHARSTORAGE_NUM", "CHARACTERDATA", Types.INTEGER);
+            assertColumnType(emf, dict, "CHARSTORAGE_NUM", "CHARDATA", Types.INTEGER);
+            assertColumnType(emf, dict, "CHARSTORAGE_NUM", "CHARACTERDATA", Types.INTEGER);
             assertStoredValue(emf, "CHARSTORAGE_NUM", true);
             assertRoundTripAndQueries(emf, CharStorageNumericEntity.class);
+            assertNonAsciiRoundTrip(emf, CharStorageNumericEntity.class);
         } finally {
             closeEMF(emf);
         }
     }
 
     /**
-     * Derby and SQL Server store chars as CHAR unless configured otherwise.
+     * Derby, SQL Server, H2, MySQL, MariaDB and Oracle store chars as CHAR unless configured otherwise.
      */
     private static void assertDefault(DBDictionary dict) {
         if (dict instanceof DerbyDictionary || dict instanceof SQLServerDictionary
             || dict instanceof H2Dictionary || dict instanceof MySQLDictionary
-            || dict instanceof MariaDBDictionary) {
+            || dict instanceof MariaDBDictionary || dict instanceof OracleDictionary) {
             assertFalse(dict.platform + " must store chars as CHAR by default", dict.storeCharsAsNumbers);
         }
     }
@@ -210,6 +213,31 @@ public class TestCharStorage extends PersistenceTestCase {
         }
     }
 
+    /**
+     * Characters outside of ASCII take more than one byte in a UTF-8 database. A generated column holds them
+     * all the same, which on Oracle needs a CHAR(1 CHAR) rather than a byte sized CHAR(1) column.
+     */
+    private static <T extends CharStorageBase> void assertNonAsciiRoundTrip(OpenJPAEntityManagerFactorySPI emf,
+        Class<T> type) throws Exception {
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            T entity = type.getDeclaredConstructor().newInstance();
+            entity.setId(3);
+            entity.setCharData('\u00e9');
+            entity.setCharacterData('\u20ac');
+            em.persist(entity);
+            em.getTransaction().commit();
+        }
+        try (EntityManager em = emf.createEntityManager()) {
+            T entity = em.find(type, 3);
+            assertEquals('\u00e9', entity.getCharData());
+            assertEquals(Character.valueOf('\u20ac'), entity.getCharacterData());
+            List<T> byParam = em.createQuery("SELECT e FROM " + type.getSimpleName() + " e WHERE e.characterData = :c", type)
+                .setParameter("c", Character.valueOf('\u20ac')).getResultList();
+            assertIds(byParam, 3);
+        }
+    }
+
     private static void assertIds(List<? extends CharStorageBase> result, int id) {
         assertEquals(1, result.size());
         assertEquals(id, result.get(0).getId());
@@ -230,8 +258,8 @@ public class TestCharStorage extends PersistenceTestCase {
         }
     }
 
-    private static void assertColumnType(OpenJPAEntityManagerFactorySPI emf, String table, String column,
-        int expected) throws SQLException {
+    private static void assertColumnType(OpenJPAEntityManagerFactorySPI emf, DBDictionary dict, String table,
+        String column, int expected) throws SQLException {
         try (Connection conn = connection(emf)) {
             DatabaseMetaData meta = conn.getMetaData();
             boolean found = false;
@@ -239,7 +267,13 @@ public class TestCharStorage extends PersistenceTestCase {
                 try (ResultSet rs = meta.getColumns(null, null, name, null)) {
                     while (rs.next()) {
                         if (column.equalsIgnoreCase(rs.getString("COLUMN_NAME"))) {
-                            assertEquals(table + "." + column, expected, rs.getInt("DATA_TYPE"));
+                            int actual = rs.getInt("DATA_TYPE");
+                            if (dict instanceof OracleDictionary && expected == Types.INTEGER
+                                && (actual == Types.NUMERIC || actual == Types.DECIMAL)) {
+                                // Oracle has no INTEGER type, integer columns are reported as NUMBER
+                                actual = Types.INTEGER;
+                            }
+                            assertEquals(table + "." + column, expected, actual);
                             if (expected == Types.CHAR) {
                                 assertEquals(table + "." + column + " size", 1, rs.getInt("COLUMN_SIZE"));
                             }

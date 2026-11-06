@@ -594,15 +594,17 @@ For dictionary subclasses: [class]``JDBCExpressionFactory`` no longer injects th
 [[jpa_4.2_StoreCharsAsNumbers]]
 ==== char attributes are stored as CHAR(1)
 
-`StoreCharsAsNumbers` now defaults to `false` on PostgreSQL 9 and later (OPENJPA-2971), MySQL (OPENJPA-3001), MariaDB (OPENJPA-3060), Apache Derby, H2 and Microsoft SQL Server (OPENJPA-3033), as it already did on DB2.
+`StoreCharsAsNumbers` now defaults to `false` on PostgreSQL 9 and later (OPENJPA-2971), MySQL (OPENJPA-3001), MariaDB (OPENJPA-3060), Apache Derby, H2, Microsoft SQL Server (OPENJPA-3033) and Oracle (OPENJPA-3028), as it already did on DB2.
 Java ``char``/[class]``Character`` attributes are then written and read as characters and map to `CHAR(1)` columns instead of `INTEGER` columns holding the code point.
 A pre-existing `CHAR(1)` column, such as the one in the Jakarta Persistence TCK schema, now works on these databases.
 On every database that stores chars as ``CHAR``, a generated column for a `char` or [class]``Character`` attribute without an explicit length is now `CHAR(1)` instead of `CHAR` sized by `CharacterColumnSize` (255), which Derby rejected.
+On Oracle this column is generated as `CHAR(1 CHAR)`, so that it holds any character even though Oracle sizes columns in bytes by default (`NLS_LENGTH_SEMANTICS=BYTE`).
+A byte sized `CHAR(1)` column, such as the one in the Jakarta Persistence TCK schema, only holds characters that take a single byte in the database character set; others, for example `é` in an `AL32UTF8` database, fail with ORA-12899.
 Existing wider `CHAR` columns keep working.
 
-Schemas created by earlier releases on PostgreSQL, MySQL, MariaDB, Derby, H2 or SQL Server hold such attributes in `INTEGER` columns, which now fail validation or return wrong values.
+Schemas created by earlier releases on PostgreSQL, MySQL, MariaDB, Derby, H2, SQL Server or Oracle hold such attributes in `INTEGER` (on Oracle `NUMBER`) columns, which now fail validation or return wrong values.
 Either migrate them to `CHAR(1)` or restore the previous mapping with an explicit ``StoreCharsAsNumbers=true``, for example ``openjpa.jdbc.DBDictionary=derby(StoreCharsAsNumbers=true)``; an explicitly configured value is always respected.
-Oracle, Sybase and the other databases keep storing chars as numbers by default.
+Sybase and the other databases keep storing chars as numbers by default.
 
 The reverse mapping tool follows the same setting.
 On these databases it now maps a `CHAR(1)` column to a `char` or [class]``Character`` field instead of a [class]``String`` field.
