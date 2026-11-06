@@ -58,6 +58,12 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
     protected Map<Parameter<?>, Object> _boundParams;
     protected Map<Object, Parameter<?>> _declaredParams;
 
+    /**
+     * Temporal types requested by setParameter(Parameter, Calendar, TemporalType). The Calendar stays the bound
+     * value (as returned by getParameterValue) and is converted to the temporal type when the query is executed.
+     */
+    private final Map<Parameter<?>, TemporalType> _calendarTemporalTypes = new HashMap<>();
+
     public AbstractQuery(QueryMetaData qmd, EntityManagerImpl em) {
         _qmd = qmd;
         _em = em;
@@ -78,7 +84,12 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
         for (Map.Entry<Object, Parameter<?>> entry : getDeclaredParameters().entrySet()) {
             Object paramKey = entry.getKey();
             Parameter<?> param = entry.getValue();
-            result.put(paramKey, _boundParams.get(param));
+            Object value = _boundParams.get(param);
+            TemporalType type = _calendarTemporalTypes.get(param);
+            if (type != null && value instanceof Calendar) {
+                value = convertTemporalType((Calendar) value, type);
+            }
+            result.put(paramKey, value);
         }
         return result;
     }
@@ -268,6 +279,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
     void clearBinding() {
         if (_boundParams != null)
             _boundParams.clear();
+        _calendarTemporalTypes.clear();
     }
 
     /**
@@ -403,14 +415,14 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
     public TypedQuery<X> setParameter(Parameter<Calendar> p, Calendar cal, TemporalType type) {
         _em.assertNotCloseInvoked();
         assertParameterBelongsToQuery(p);
-        // convertTemporalType returns a Date; wrap it back into a Calendar for binding
-        Object converted = convertTemporalType(cal, type);
-        if (converted instanceof Date && !(converted instanceof Calendar)) {
-            Calendar wrapped = Calendar.getInstance();
-            wrapped.setTime((Date) converted);
-            return setParameter(p, wrapped);
+        setParameter(p, cal);
+        // Keep the Calendar as the value bound to the Parameter<Calendar> and remember the temporal type, so that
+        // the Calendar is converted to java.sql.Date/Time/Timestamp when the query is executed
+        // (see getParameterValues()).
+        if (cal != null && type != null) {
+            _calendarTemporalTypes.put(p, type);
         }
-        return setParameter(p, (Calendar) converted);
+        return this;
     }
 
     /**
@@ -653,6 +665,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
     void bindValue(Parameter<?> param, Object value) {
         Object bindVal = assertValueAssignable(param, value);
         _boundParams.put(param, bindVal);
+        _calendarTemporalTypes.remove(param);
     }
 
     @Override
