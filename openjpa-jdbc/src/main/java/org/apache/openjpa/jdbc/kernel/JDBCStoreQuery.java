@@ -26,10 +26,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.openjpa.event.LifecycleEventManager;
 import org.apache.openjpa.jdbc.kernel.exps.ExpContext;
@@ -64,14 +68,18 @@ import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.OrderingMergedResultObjectProvider;
 import org.apache.openjpa.kernel.QueryHints;
+import org.apache.openjpa.kernel.exps.AbstractExpressionVisitor;
 import org.apache.openjpa.kernel.exps.Constant;
 import org.apache.openjpa.kernel.exps.Context;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.ExpressionParser;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.kernel.exps.Literal;
+import org.apache.openjpa.kernel.exps.Path;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.StringContains;
+import org.apache.openjpa.kernel.exps.Subquery;
+import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.kernel.exps.WildcardMatch;
 import org.apache.openjpa.lib.rop.MergedResultObjectProvider;
 import org.apache.openjpa.lib.rop.RangeResultObjectProvider;
@@ -526,7 +534,7 @@ public class JDBCStoreQuery
 
     private Number executeBulkOperation(ClassMetaData[] metas,
         boolean subclasses, ExpressionFactory[] facts, QueryExpressions[] exps,
-        Object[] params, Map updates) {
+        Object[] params, Map<Path, Value> updates) {
         Context[] ctxs = new Context[exps.length];
         for (int i = 0; i < exps.length; i++)
             ctxs[i] = exps[i].ctx();
@@ -570,6 +578,9 @@ public class JDBCStoreQuery
         // evaluated exactly once and no statement sees a mutated database; a
         // delete without criteria needs no keys and empties them outright
         OwnedTableDelete[] owned = null;
+        // an update of columns in several tables that the database cannot
+        // change in one statement is issued as one statement per table
+        TableUpdates[] tableUpdates = null;
         boolean cleanupOwnedTables = !isUpdate && cleansOwnedTables();
         JDBCExpressionFactory jdbcFactory;
         Select sel;
@@ -620,6 +631,31 @@ public class JDBCStoreQuery
             if (!isUpdate) {
                 sql[i] = dict.toDelete(mappings[i], sel, params);
             } else {
+                TableUpdates tables = new TableUpdates(mappings[i], updates);
+                boolean single = tables.isOnly(mappings[i].getTable());
+                // an update that sets columns of several tables is issued as
+                // one UPDATE per table even where the database can change the
+                // joined tables in one statement, since such a statement
+                // counts the changed rows of every table, not the entities
+                boolean joined = dict.allowsBulkUpdateOfJoinedTables(sel)
+                    && single;
+                // without aliases the values are written into an UPDATE of a
+                // single table, so they cannot read the columns of another
+                // table; indicate that the query has to be executed in-memory
+                if (!joined && !tables.readsOnlyUpdatedTables(exps[i].alias)) {
+                    return null;
+                }
+                if (!single) {
+                    if (!prepareTableUpdates(dict, mappings[i], sel, params,
+                        tables)) {
+                        return null;
+                    }
+                    if (tableUpdates == null) {
+                        tableUpdates = new TableUpdates[mappings.length];
+                    }
+                    tableUpdates[i] = tables;
+                    continue;
+                }
                 sql[i] = dict.toUpdate(mappings[i], sel, _store, params, updates);
             }
 
@@ -635,6 +671,10 @@ public class JDBCStoreQuery
         long count = 0;
         try {
             for (int i = 0; i < sql.length; i++) {
+                if (tableUpdates != null && tableUpdates[i] != null) {
+                    count += updateByKey(conn, dict, fetch, tableUpdates[i]);
+                    continue;
+                }
                 OwnedTableDelete del = (owned == null) ? null : owned[i];
                 if (del != null && del.keySelect != null) {
                     count += deleteByKey(conn, dict, fetch, del);
@@ -710,6 +750,198 @@ public class JDBCStoreQuery
             deleteIn(conn, dict, fetch, join.getTable(), join.getColumns()[0],
                 keys);
         return deleteIn(conn, dict, fetch, del.table, del.key, keys);
+    }
+
+    /**
+     * Prepare a bulk update of columns in several tables: one UPDATE statement
+     * per table and the select of the primary keys of the matching rows.
+     * Returns false if the columns of a table that hold the primary key
+     * cannot be found, so that the update has to be executed in-memory.
+     */
+    private boolean prepareTableUpdates(DBDictionary dict, ClassMapping mapping,
+        Select sel, Object[] params, TableUpdates tables) {
+        Column[] pks = mapping.getPrimaryKeyColumns();
+        if (pks.length == 0) {
+            return false;
+        }
+        for (Table table : tables.tables) {
+            Map<Path, Value> fields = tables.fields.get(table);
+            Map<Column,Object> versions = tables.versions.get(table);
+            Column[] keys = getKeyColumns(mapping, table, fields);
+            if (keys == null) {
+                return false;
+            }
+            tables.keyColumns.add(keys);
+            tables.statements.add(dict.toTableUpdate(table, sel, _store, params,
+                (fields == null) ? Collections.emptyMap() : fields,
+                (versions == null) ? Collections.emptyMap() : versions));
+        }
+        sel.clearSelects();
+        sel.setDistinct(true);
+        for (Column pk : pks) {
+            sel.select(pk);
+        }
+        tables.keySelect = sel.toSelect(false, null);
+        tables.keyCount = pks.length;
+        return true;
+    }
+
+    /**
+     * Return the columns of the given table that hold the primary key of the
+     * given mapping, in the order of its primary key columns, or null if
+     * there are none. The table is the table of the mapping or of one of its
+     * superclasses, or a secondary table of one of the given fields.
+     */
+    private static Column[] getKeyColumns(ClassMapping mapping, Table table,
+        Map<Path, Value> fields) {
+        Column[] cols = mapping.getPrimaryKeyColumns();
+        for (ClassMapping cls = mapping; cls != null;
+            cls = cls.getJoinablePCSuperclassMapping()) {
+            if (table.equals(cls.getTable())) {
+                return cols;
+            }
+            ForeignKey join = cls.getJoinForeignKey();
+            if (join != null && cls.getJoinablePCSuperclassMapping() != null) {
+                cols = getJoinedColumns(cols, join, false);
+                if (cols == null) {
+                    return null;
+                }
+            }
+        }
+
+        // a secondary table joined to the table of the class of the field
+        for (Path path : (fields == null) ? Collections.<Path>emptySet()
+            : fields.keySet()) {
+            ForeignKey join = ((FieldMapping) path.last()).getJoinForeignKey();
+            if (join != null && table.equals(join.getTable())) {
+                cols = getKeyColumns(mapping, join.getPrimaryKeyTable(), null);
+                return (cols == null) ? null
+                    : getJoinedColumns(cols, join, true);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Return the columns that the given foreign key joins to the given
+     * columns, or null if it does not join all of them.
+     *
+     * @param toLocal whether the given columns are the primary key columns of
+     * the foreign key, else its local columns
+     */
+    private static Column[] getJoinedColumns(Column[] cols, ForeignKey join,
+        boolean toLocal) {
+        Column[] joined = new Column[cols.length];
+        for (int i = 0; i < cols.length; i++) {
+            joined[i] = toLocal ? join.getColumn(cols[i])
+                : join.getPrimaryKeyColumn(cols[i]);
+            if (joined[i] == null) {
+                return null;
+            }
+        }
+        return joined;
+    }
+
+    /**
+     * Update the rows of every table of the given bulk update. The criteria
+     * are evaluated exactly once to materialize the primary keys of the
+     * matching rows; every table is then updated by those keys, so no
+     * statement sees the changes of another. Returns the number of matching
+     * rows.
+     */
+    private long updateByKey(Connection conn, DBDictionary dict,
+        JDBCFetchConfiguration fetch, TableUpdates tables) {
+        List<Object[]> keys = selectRows(conn, dict, fetch, tables.keySelect,
+            tables.keyCount);
+        if (keys.isEmpty()) {
+            return 0;
+        }
+        // a composite key binds one parameter per column for every row
+        int limit = Math.max(1, (dict.inClauseLimit > 0 ? dict.inClauseLimit
+            : IN_CLAUSE_CHUNK_SIZE) / tables.keyCount);
+        for (int t = 0; t < tables.statements.size(); t++) {
+            Column[] cols = tables.keyColumns.get(t);
+            for (int start = 0; start < keys.size(); start += limit) {
+                int end = Math.min(start + limit, keys.size());
+                SQLBuffer sql = new SQLBuffer(tables.statements.get(t));
+                sql.append(" WHERE ");
+                appendKeys(sql, cols, keys.subList(start, end));
+                executeBulkStatement(conn, dict, fetch, sql, true);
+            }
+        }
+        return keys.size();
+    }
+
+    /**
+     * Append a condition that matches the given keys in the given columns.
+     */
+    private static void appendKeys(SQLBuffer sql, Column[] cols,
+        List<Object[]> keys) {
+        if (cols.length == 1) {
+            sql.append(cols[0]).append(" IN (");
+            for (int i = 0; i < keys.size(); i++) {
+                if (i > 0) {
+                    sql.append(", ");
+                }
+                sql.appendValue(keys.get(i)[0], cols[0]);
+            }
+            sql.append(")");
+            return;
+        }
+        for (int i = 0; i < keys.size(); i++) {
+            sql.append((i == 0) ? "(" : " OR (");
+            for (int j = 0; j < cols.length; j++) {
+                if (j > 0) {
+                    sql.append(" AND ");
+                }
+                sql.append(cols[j]).append(" = ")
+                    .appendValue(keys.get(i)[j], cols[j]);
+            }
+            sql.append(")");
+        }
+    }
+
+    /**
+     * Read the rows of the given number of columns selected by the given
+     * statement.
+     */
+    private List<Object[]> selectRows(Connection conn, DBDictionary dict,
+        JDBCFetchConfiguration fetch, SQLBuffer sqlBuffer, int columns) {
+        List<Object[]> rows = new ArrayList<>();
+        PreparedStatement stmnt = null;
+        ResultSet rs = null;
+        try {
+            stmnt = prepareStatement(conn, sqlBuffer);
+            dict.setTimeouts(stmnt, fetch, false);
+            rs = stmnt.executeQuery();
+            while (rs.next()) {
+                Object[] row = new Object[columns];
+                for (int i = 0; i < columns; i++) {
+                    row[i] = dict.getObject(rs, i + 1, null);
+                }
+                rows.add(row);
+            }
+        }
+        catch (SQLException se) {
+            throw SQLExceptions.getStore(se, sqlBuffer.getSQL(),
+                _store.getDBDictionary());
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                }
+                catch (SQLException se) {
+                }
+            }
+            if (stmnt != null) {
+                try {
+                    stmnt.close();
+                }
+                catch (SQLException se) {
+                }
+            }
+        }
+        return rows;
     }
 
     /**
@@ -908,6 +1140,155 @@ public class JDBCStoreQuery
             }
         }
         return false;
+    }
+
+    /**
+     * The fields and version columns that a bulk update sets, grouped by the
+     * tables that hold their columns, and the statements that update those
+     * tables by the primary keys of the matching rows.
+     */
+    private static class TableUpdates {
+        private final Map<Table, Map<Path, Value>> fields =
+            new LinkedHashMap<>();
+        private final Map<Table, Map<Column,Object>> versions =
+            new LinkedHashMap<>();
+        private final Set<Table> tables = new LinkedHashSet<>();
+        private final List<Column[]> keyColumns = new ArrayList<>();
+        private final List<SQLBuffer> statements = new ArrayList<>();
+        private SQLBuffer keySelect;
+        private int keyCount;
+
+        TableUpdates(ClassMapping mapping, Map<Path, Value> updates) {
+            boolean version = false;
+            for (Map.Entry<Path, Value> e : updates.entrySet()) {
+                FieldMapping fm = (FieldMapping) e.getKey().last();
+                if (fm.isVersion()) {
+                    version = true;
+                }
+                // the SET clause only assigns the first column of a field
+                Column[] cols = fm.getColumns();
+                Table table = (cols.length == 0) ? mapping.getTable()
+                    : cols[0].getTable();
+                fields.computeIfAbsent(table, t -> new LinkedHashMap<>())
+                    .put(e.getKey(), e.getValue());
+                tables.add(table);
+            }
+
+            // the dictionary updates the version of the class of the first
+            // field unless the update sets a version field itself
+            if (!version) {
+                FieldMapping fm = (FieldMapping) updates.keySet().iterator()
+                    .next().last();
+                Map<Column,?> values = fm.getDefiningMapping().getVersion()
+                    .getBulkUpdateValues();
+                for (Map.Entry<Column,?> e : values.entrySet()) {
+                    Table table = e.getKey().getTable();
+                    versions.computeIfAbsent(table, t -> new LinkedHashMap<>())
+                        .put(e.getKey(), e.getValue());
+                    tables.add(table);
+                }
+            }
+        }
+
+        /**
+         * Whether all the columns to set are in the given table.
+         */
+        boolean isOnly(Table table) {
+            return tables.size() == 1 && tables.contains(table);
+        }
+
+        /**
+         * Whether the value of every field to set only reads columns of the
+         * table that holds the column of the field.
+         *
+         * @param alias the identification variable of the candidate, or null
+         * if unknown
+         */
+        boolean readsOnlyUpdatedTables(String alias) {
+            for (Map.Entry<Table, Map<Path, Value>> e : fields.entrySet()) {
+                for (Value val : e.getValue().values()) {
+                    if (val == null) {
+                        continue;
+                    }
+                    TableReadVisitor visitor = new TableReadVisitor(e.getKey(),
+                        alias);
+                    val.acceptVisit(visitor);
+                    if (visitor.readsOther) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+    }
+
+    /**
+     * Finds whether a value reads a column of the candidate that is not in a
+     * given table, or a column that is only reachable through a relation.
+     * Paths of the variables of a subquery are not considered; paths of the
+     * candidate within a subquery are.
+     */
+    private static class TableReadVisitor extends AbstractExpressionVisitor {
+        private final Table table;
+        private final String alias;
+        private int subqueries;
+        private boolean readsOther;
+
+        TableReadVisitor(Table table, String alias) {
+            this.table = table;
+            this.alias = alias;
+        }
+
+        @Override
+        public void enter(Value val) {
+            if (val instanceof Subquery) {
+                subqueries++;
+            } else if (val instanceof PCPath) {
+                PCPath path = (PCPath) val;
+                FieldMapping[] fields = path.getTraversedFields();
+                if (subqueries > 0 && (fields == null || (alias != null
+                    && path.getSchemaAlias() != null
+                    && !alias.equals(path.getSchemaAlias())))) {
+                    return;
+                }
+                if (!isInTable(fields)) {
+                    readsOther = true;
+                }
+            }
+        }
+
+        @Override
+        public void exit(Value val) {
+            if (val instanceof Subquery) {
+                subqueries--;
+            }
+        }
+
+        /**
+         * Whether the given fields of the candidate, all but the last of
+         * which have to be embedded, end in a field whose columns are all in
+         * the table.
+         */
+        private boolean isInTable(FieldMapping[] fields) {
+            if (fields == null || fields.length == 0) {
+                return false;
+            }
+            for (int i = 0; i < fields.length - 1; i++) {
+                if (fields[i].getEmbeddedMapping() == null) {
+                    return false;
+                }
+            }
+            Column[] cols = fields[fields.length - 1].getColumns();
+            if (cols.length == 0) {
+                return false;
+            }
+            for (Column col : cols) {
+                if (!table.equals(col.getTable())) {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 
     /**

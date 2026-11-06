@@ -114,6 +114,7 @@ import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.kernel.exps.Path;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
+import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.identifier.IdentifierConfiguration;
@@ -2803,27 +2804,8 @@ public class DBDictionary
             if (fmd.isVersion())
                 augmentUpdates = false;
 
-            Val val = (Val) next.getValue();
-            if (val == null)
-                val = new Null();
-            Column col = fmd.getColumns()[0];
-            if (allowAlias) {
-              sql.append(sel.getColumnAlias(col));
-            } else {
-              sql.append(toDBName(col.getIdentifier()));
-            }
-            sql.append(" = ");
-
-            ExpState state = val.initialize(sel, ctx, 0);
-            // JDBC Paths are always PCPaths; PCPath implements Val
-            ExpState pathState = ((Val) path).initialize(sel, ctx, 0);
-            calculateValue(val, sel, ctx, state, path, pathState);
-
-            // append the value with a null for the Select; i
-            // indicates that the
-            int length = val.length(sel, ctx, state);
-            for (int j = 0; j < length; j++)
-                val.appendTo((allowAlias) ? sel : null, ctx, state, sql, j);
+            appendUpdate(sel, ctx, sql, path, (Val) next.getValue(),
+                allowAlias);
 
             if (i.hasNext())
                 sql.append(", ");
@@ -2834,20 +2816,107 @@ public class DBDictionary
             FieldMapping fm = (FieldMapping) path.last();
 
             ClassMapping meta = fm.getDefiningMapping();
-            Map<Column,?> updates = meta.getVersion().getBulkUpdateValues();
-            for (Map.Entry e : updates.entrySet()) {
-                Column col = (Column) e.getKey();
-                Object val = e.getValue();
-                sql.append(", ").append(toDBName(col.getIdentifier())).append(" = ");
-                // Version update value for Numeric version is encoded in a String
-                // to make SQL such as version = version+1 while Time stamp version is parameterized
-                if (val instanceof String) {
-                    sql.append((String)val);
-                } else {
-                    sql.appendValue(val);
-                }
+            appendVersionUpdates(sql,
+                meta.getVersion().getBulkUpdateValues(), false);
+        }
+    }
+
+    /**
+     * Append the assignment of the given value to the column of the given
+     * path to the SET clause of a bulk update.
+     */
+    private void appendUpdate(Select sel, ExpContext ctx, SQLBuffer sql,
+        Path path, Val val, boolean allowAlias) {
+        FieldMapping fmd = (FieldMapping) path.last();
+        if (val == null)
+            val = new Null();
+        Column col = fmd.getColumns()[0];
+        if (allowAlias) {
+          sql.append(sel.getColumnAlias(col));
+        } else {
+          sql.append(toDBName(col.getIdentifier()));
+        }
+        sql.append(" = ");
+
+        ExpState state = val.initialize(sel, ctx, 0);
+        // JDBC Paths are always PCPaths; PCPath implements Val
+        ExpState pathState = ((Val) path).initialize(sel, ctx, 0);
+        calculateValue(val, sel, ctx, state, path, pathState);
+
+        // append the value with a null for the Select; i
+        // indicates that the
+        int length = val.length(sel, ctx, state);
+        for (int j = 0; j < length; j++)
+            val.appendTo((allowAlias) ? sel : null, ctx, state, sql, j);
+    }
+
+    /**
+     * Append the assignments of the given version columns to the SET clause
+     * of a bulk update.
+     *
+     * @param first whether the SET clause has no assignment yet
+     */
+    private void appendVersionUpdates(SQLBuffer sql, Map<Column,?> updates,
+        boolean first) {
+        for (Map.Entry e : updates.entrySet()) {
+            Column col = (Column) e.getKey();
+            Object val = e.getValue();
+            if (!first) {
+                sql.append(", ");
+            }
+            first = false;
+            sql.append(toDBName(col.getIdentifier())).append(" = ");
+            // Version update value for Numeric version is encoded in a String
+            // to make SQL such as version = version+1 while Time stamp version is parameterized
+            if (val instanceof String) {
+                sql.append((String)val);
+            } else {
+                sql.appendValue(val);
             }
         }
+    }
+
+    /**
+     * Whether {@link #toUpdate} changes a bulk update with the given select in
+     * one statement that names the tables of the select under their aliases,
+     * so that it can set a column of any of these tables, such as a column of
+     * a joined superclass table or of a secondary table. Otherwise the
+     * statement only changes the table of the mapping.
+     */
+    public boolean allowsBulkUpdateOfJoinedTables(Select sel) {
+        sel.addJoinClassConditions();
+        return supportsSubselect && allowsAliasInBulkClause
+            && getSelectTableAliases(sel).size() == 1;
+    }
+
+    /**
+     * Create an UPDATE statement without a WHERE clause that sets the given
+     * fields and version columns, all of which are in the given table. A bulk
+     * update that sets columns of several tables, which the database cannot
+     * change in one statement, is issued as one such statement per table,
+     * restricted by the caller to the primary keys of the matching rows.
+     *
+     * @param table the table to update
+     * @param sel the Select of the bulk update
+     * @param store the current store
+     * @param params the query parameters
+     * @param updates the fields to set, keyed by their paths
+     * @param versionUpdates the values of the version columns to set
+     */
+    public SQLBuffer toTableUpdate(Table table, Select sel, JDBCStore store,
+        Object[] params, Map<Path, Value> updates, Map<Column,?> versionUpdates) {
+        SQLBuffer sql = new SQLBuffer(this);
+        sql.append("UPDATE ").append(getFullName(table, false)).append(" SET ");
+        ExpContext ctx = new ExpContext(store, params,
+            store.getFetchConfiguration());
+        for (Iterator<Map.Entry<Path, Value>> i = updates.entrySet().iterator(); i.hasNext();) {
+            Map.Entry<Path, Value> next = i.next();
+            appendUpdate(sel, ctx, sql, next.getKey(), (Val) next.getValue(), false);
+            if (i.hasNext())
+                sql.append(", ");
+        }
+        appendVersionUpdates(sql, versionUpdates, updates.isEmpty());
+        return sql;
     }
 
     /**
