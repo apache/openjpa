@@ -1664,6 +1664,25 @@ public class OracleDictionary
         buf.append(")");
     }
 
+    /**
+     * Oracle reports a SYS_REFCURSOR parameter with the generic type {@link Types#OTHER} and the type
+     * name REF CURSOR, but its driver rejects registering an OUT parameter of type OTHER (ORA-17004).
+     * Such parameters are registered as {@link Types#REF_CURSOR} instead.
+     */
+    @Override
+    public StoredProcedure getStoredProcedure(DatabaseMetaData meta, DBIdentifier catalog, DBIdentifier schema,
+                                              String procedure) throws SQLException {
+        StoredProcedure sp = super.getStoredProcedure(meta, catalog, schema, procedure);
+        if (sp != null) {
+            for (Column col : sp.getColumns()) {
+                if (col.getType() == Types.OTHER && "REF CURSOR".equalsIgnoreCase(col.getTypeIdentifier().getName())) {
+                    col.setType(Types.REF_CURSOR);
+                }
+            }
+        }
+        return sp;
+    }
+
     // required to avoid ORA-01408: such column list already indexed
     @Override
     public boolean needsToCreateIndex(Index idx, Table table) {
