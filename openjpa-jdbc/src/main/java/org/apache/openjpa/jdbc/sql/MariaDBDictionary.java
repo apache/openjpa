@@ -111,7 +111,10 @@ public class MariaDBDictionary extends DBDictionary {
         distinctCountColumnSeparator = ",";
 
         supportsDeferredConstraints = false;
-        constraintNameMode = CONS_NAME_MID;
+        // Spec form CONSTRAINT <name> FOREIGN KEY / UNIQUE (...), as expected in
+        // generated schema scripts. MariaDB also accepts FOREIGN KEY <name> (...),
+        // but that form is not the standard one.
+        constraintNameMode = CONS_NAME_BEFORE;
         supportsMultipleNontransactionalResultSets = false;
         requiresAliasForSubselect = true; // new versions
         requiresTargetForDelete = true;

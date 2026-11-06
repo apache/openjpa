@@ -39,6 +39,14 @@ The script will:
 
 To skip starting the database container please add `--no-docker` command line option.
 
+MySQL must treat table names case insensitively: the TCK's SQL scripts create
+upper case tables such as `PERSON`, while entities without `@Table` map to their entity name
+(`Person`). On Linux the server default is case sensitive, so the dockerized MySQL is started with
+`--lower_case_table_names=1`. With `--no-docker` the server has to be initialised with
+`lower_case_table_names=1` too; otherwise OpenJPA creates its own `Person` table next to `PERSON`,
+the TCK cleanup (`DELETE FROM PERSON`) misses its rows and later tests fail with duplicate keys or
+foreign key violations.
+
 ## Configuration
 
 All settings have sensible defaults matching the dockerized database the script
