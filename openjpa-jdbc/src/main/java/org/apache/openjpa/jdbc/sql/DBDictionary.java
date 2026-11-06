@@ -114,6 +114,7 @@ import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.kernel.exps.Path;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
+import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.identifier.IdentifierConfiguration;
@@ -2896,15 +2897,14 @@ public class DBDictionary
      * @param versionUpdates the values of the version columns to set
      */
     public SQLBuffer toTableUpdate(Table table, Select sel, JDBCStore store,
-        Object[] params, Map updates, Map<Column,?> versionUpdates) {
+        Object[] params, Map<Path, Value> updates, Map<Column,?> versionUpdates) {
         SQLBuffer sql = new SQLBuffer(this);
         sql.append("UPDATE ").append(getFullName(table, false)).append(" SET ");
         ExpContext ctx = new ExpContext(store, params,
             store.getFetchConfiguration());
-        for (Iterator i = updates.entrySet().iterator(); i.hasNext();) {
-            Map.Entry next = (Map.Entry) i.next();
-            appendUpdate(sel, ctx, sql, (Path) next.getKey(),
-                (Val) next.getValue(), false);
+        for (Iterator<Map.Entry<Path, Value>> i = updates.entrySet().iterator(); i.hasNext();) {
+            Map.Entry<Path, Value> next = i.next();
+            appendUpdate(sel, ctx, sql, next.getKey(), (Val) next.getValue(), false);
             if (i.hasNext())
                 sql.append(", ");
         }

@@ -534,7 +534,7 @@ public class JDBCStoreQuery
 
     private Number executeBulkOperation(ClassMetaData[] metas,
         boolean subclasses, ExpressionFactory[] facts, QueryExpressions[] exps,
-        Object[] params, Map updates) {
+        Object[] params, Map<Path, Value> updates) {
         Context[] ctxs = new Context[exps.length];
         for (int i = 0; i < exps.length; i++)
             ctxs[i] = exps[i].ctx();
@@ -765,7 +765,7 @@ public class JDBCStoreQuery
             return false;
         }
         for (Table table : tables.tables) {
-            Map fields = tables.fields.get(table);
+            Map<Path, Value> fields = tables.fields.get(table);
             Map<Column,Object> versions = tables.versions.get(table);
             Column[] keys = getKeyColumns(mapping, table, fields);
             if (keys == null) {
@@ -793,7 +793,7 @@ public class JDBCStoreQuery
      * superclasses, or a secondary table of one of the given fields.
      */
     private static Column[] getKeyColumns(ClassMapping mapping, Table table,
-        Map fields) {
+        Map<Path, Value> fields) {
         Column[] cols = mapping.getPrimaryKeyColumns();
         for (ClassMapping cls = mapping; cls != null;
             cls = cls.getJoinablePCSuperclassMapping()) {
@@ -810,10 +810,9 @@ public class JDBCStoreQuery
         }
 
         // a secondary table joined to the table of the class of the field
-        for (Object path : (fields == null) ? Collections.emptySet()
+        for (Path path : (fields == null) ? Collections.<Path>emptySet()
             : fields.keySet()) {
-            ForeignKey join = ((FieldMapping) ((Path) path).last())
-                .getJoinForeignKey();
+            ForeignKey join = ((FieldMapping) path.last()).getJoinForeignKey();
             if (join != null && table.equals(join.getTable())) {
                 cols = getKeyColumns(mapping, join.getPrimaryKeyTable(), null);
                 return (cols == null) ? null
@@ -1149,7 +1148,7 @@ public class JDBCStoreQuery
      * tables by the primary keys of the matching rows.
      */
     private static class TableUpdates {
-        private final Map<Table, Map<Object,Object>> fields =
+        private final Map<Table, Map<Path, Value>> fields =
             new LinkedHashMap<>();
         private final Map<Table, Map<Column,Object>> versions =
             new LinkedHashMap<>();
@@ -1159,11 +1158,10 @@ public class JDBCStoreQuery
         private SQLBuffer keySelect;
         private int keyCount;
 
-        TableUpdates(ClassMapping mapping, Map updates) {
+        TableUpdates(ClassMapping mapping, Map<Path, Value> updates) {
             boolean version = false;
-            for (Object o : updates.entrySet()) {
-                Map.Entry e = (Map.Entry) o;
-                FieldMapping fm = (FieldMapping) ((Path) e.getKey()).last();
+            for (Map.Entry<Path, Value> e : updates.entrySet()) {
+                FieldMapping fm = (FieldMapping) e.getKey().last();
                 if (fm.isVersion()) {
                     version = true;
                 }
@@ -1179,8 +1177,8 @@ public class JDBCStoreQuery
             // the dictionary updates the version of the class of the first
             // field unless the update sets a version field itself
             if (!version) {
-                FieldMapping fm = (FieldMapping) ((Path) updates.keySet()
-                    .iterator().next()).last();
+                FieldMapping fm = (FieldMapping) updates.keySet().iterator()
+                    .next().last();
                 Map<Column,?> values = fm.getDefiningMapping().getVersion()
                     .getBulkUpdateValues();
                 for (Map.Entry<Column,?> e : values.entrySet()) {
@@ -1207,14 +1205,14 @@ public class JDBCStoreQuery
          * if unknown
          */
         boolean readsOnlyUpdatedTables(String alias) {
-            for (Map.Entry<Table, Map<Object,Object>> e : fields.entrySet()) {
-                for (Object val : e.getValue().values()) {
+            for (Map.Entry<Table, Map<Path, Value>> e : fields.entrySet()) {
+                for (Value val : e.getValue().values()) {
                     if (val == null) {
                         continue;
                     }
                     TableReadVisitor visitor = new TableReadVisitor(e.getKey(),
                         alias);
-                    ((Value) val).acceptVisit(visitor);
+                    val.acceptVisit(visitor);
                     if (visitor.readsOther) {
                         return false;
                     }
