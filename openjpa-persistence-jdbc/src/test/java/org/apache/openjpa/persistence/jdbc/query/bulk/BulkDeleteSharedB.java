@@ -45,8 +45,7 @@ public class BulkDeleteSharedB {
     @PersistentCollection
     @ContainerTable(name = "BULK_SHARED_COLL",
         joinColumns = {
-            @XJoinColumn(name = "OWNER_ID", referencedColumnName = "ID",
-                columnDefinition = "BIGINT"),
+            @XJoinColumn(name = "OWNER_ID", referencedColumnName = "ID"),
             @XJoinColumn(name = "DISC", referencedColumnName = "'B'",
                 columnDefinition = "VARCHAR(1)") })
     @ElementColumn(name = "VAL")
