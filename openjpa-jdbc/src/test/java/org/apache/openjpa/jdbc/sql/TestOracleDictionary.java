@@ -21,6 +21,7 @@ package org.apache.openjpa.jdbc.sql;
 import static org.junit.Assert.assertEquals;
 
 import org.apache.openjpa.kernel.exps.DateTimeExtractField;
+import org.apache.openjpa.kernel.exps.DateTimeExtractPart;
 import org.junit.Test;
 
 public class TestOracleDictionary {
@@ -65,5 +66,21 @@ public class TestOracleDictionary {
     @Test
     public void testCurrentDate() {
         assertEquals("TRUNC(CURRENT_DATE)", new OracleDictionary().currentDateFunction);
+    }
+
+    /**
+     * An Oracle DATE has a time of day and there is no TIME type, so EXTRACT(DATE) truncates the value
+     * and EXTRACT(TIME) moves its time of day to 1970-01-01.
+     */
+    @Test
+    public void testExtractDateAndTimePart() {
+        DBDictionary dict = new OracleDictionary();
+        assertEquals("TRUNC({1})", dict.getExtractDateTimePartFunction(DateTimeExtractPart.DATE));
+        assertEquals("(DATE '1970-01-01' + (CAST({1} AS DATE) - TRUNC({1})))",
+            dict.getExtractDateTimePartFunction(DateTimeExtractPart.TIME));
+
+        DBDictionary standard = new DBDictionary();
+        assertEquals("CAST({1} AS DATE)", standard.getExtractDateTimePartFunction(DateTimeExtractPart.DATE));
+        assertEquals("CAST({1} AS TIME)", standard.getExtractDateTimePartFunction(DateTimeExtractPart.TIME));
     }
 }

@@ -775,11 +775,6 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractTimeFromInstant() {
-        DBDictionary dict = getDbDictionary(getEmf());
-        if (dict instanceof OracleDictionary) {
-            // Oracle has no TIME data type
-            return;
-        }
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT(TIME FROM {ts '2005-03-21 01:32:21'}) = {t '01:32:21'}";
@@ -792,10 +787,6 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractDateFromLocalDateTime() {
-        if (getDbDictionary(getEmf()) instanceof OracleDictionary) {
-            // Oracle does not support TIME data type
-            return;
-        }
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT(DATE FROM LOCAL DATETIME) > {d '2025-01-10'}";
@@ -808,11 +799,6 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractTimeFromLocalTime() {
-        DBDictionary dict = getDbDictionary(getEmf());
-        if (dict instanceof OracleDictionary) {
-            // Oracle has no TIME data type
-            return;
-        }
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT(TIME FROM LOCAL TIME) = {t '01:32:20'}";

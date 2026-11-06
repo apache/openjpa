@@ -60,6 +60,7 @@ import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.kernel.exps.DateTimeExtractField;
+import org.apache.openjpa.kernel.exps.DateTimeExtractPart;
 import org.apache.openjpa.lib.jdbc.DelegatingDatabaseMetaData;
 import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
 import org.apache.openjpa.lib.util.Localizer;
@@ -1692,6 +1693,21 @@ public class OracleDictionary
             default:
                 return super.getExtractDateTimeFieldFunction(extField);
         }
+    }
+
+    /**
+     * An Oracle DATE has a time of day and there is no TIME type, so CAST(x AS DATE) would keep the
+     * time and CAST(x AS TIME) is invalid. The date is truncated to midnight instead, and the time is
+     * the time of day on 1970-01-01, as times are stored and bound. As a time is held in a DATE, it
+     * has whole seconds only, so the fraction of the second of a TIMESTAMP value is dropped. The value
+     * occurs twice in the SQL of the time, so a parameter is bound twice.
+     */
+    @Override
+    public String getExtractDateTimePartFunction(DateTimeExtractPart part) {
+        if (part == DateTimeExtractPart.DATE) {
+            return "TRUNC({1})";
+        }
+        return "(DATE '1970-01-01' + (CAST({1} AS DATE) - TRUNC({1})))";
     }
 
     // required to avoid ORA-01408: such column list already indexed

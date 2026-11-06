@@ -263,6 +263,28 @@ public class TestExtractDateTimeField extends SingleEMFTestCase {
         }
     }
 
+    /**
+     * EXTRACT(DATE) has no time of day and EXTRACT(TIME) no date, so they equal the date and
+     * the time they were extracted from, also on databases without a TIME type.
+     */
+    public void testExtractDateAndTime() {
+        try (EntityManager em = emf.createEntityManager()) {
+            assertEquals(List.of(1), em.createQuery("SELECT e.id FROM Java8TimeTypes e "
+                    + "WHERE EXTRACT(DATE FROM e.localDateTimeField) = {d '2024-05-17'}", Integer.class)
+                    .getResultList());
+            assertEquals(List.of(2), em.createQuery("SELECT e.id FROM Java8TimeTypes e "
+                    + "WHERE EXTRACT(TIME FROM e.localDateTimeField) = {t '07:05:09'}", Integer.class)
+                    .getResultList());
+            assertEquals(List.of(1, 2), em.createQuery("SELECT e.id FROM Java8TimeTypes e "
+                    + "WHERE EXTRACT(TIME FROM e.localDateTimeField) = e.localTimeField ORDER BY e.id", Integer.class)
+                    .getResultList());
+            assertEquals(List.of(2), em.createQuery("SELECT e.id FROM Java8TimeTypes e "
+                    + "WHERE EXTRACT(DATE FROM e.localDateTimeField) < {d '2024-01-01'} "
+                    + "AND EXTRACT(TIME FROM e.localDateTimeField) < {t '08:00:00'}", Integer.class)
+                    .getResultList());
+        }
+    }
+
     private List<Integer> extract(String field, String attribute) {
         try (EntityManager em = emf.createEntityManager()) {
             return em.createQuery("SELECT EXTRACT(" + field + " FROM e." + attribute + ") "
