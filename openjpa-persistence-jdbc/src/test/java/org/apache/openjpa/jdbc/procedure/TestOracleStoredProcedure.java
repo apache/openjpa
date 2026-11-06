@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.procedure;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -33,6 +34,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestOracleStoredProcedure extends SingleEMFTestCase {
 
     private static final String PROC = "OPENJPA_REFCURSOR_PROC";
+    private static final String NUMBER_PROC = "OPENJPA_NUMBER_OUT_PROC";
 
     @Override
     public void setUp() throws Exception {
@@ -68,6 +70,35 @@ public class TestOracleStoredProcedure extends SingleEMFTestCase {
         } finally {
             close(em, created ? PROC : null);
         }
+    }
+
+    /**
+     * Oracle reports an INTEGER OUT parameter, which is a NUMBER, as a BigDecimal. It is returned in the
+     * registered type if the conversion is exact, and unchanged otherwise.
+     */
+    public void testNumberOutParameterHasRegisteredType() {
+        EntityManager em = emf.createEntityManager();
+        boolean created = false;
+        try {
+            exec(em, "CREATE OR REPLACE PROCEDURE " + NUMBER_PROC + "(IN_PARAM IN NUMBER, OUT_PARAM OUT INTEGER) AS "
+                + "BEGIN OUT_PARAM := IN_PARAM; END;");
+            created = true;
+
+            assertEquals(Integer.valueOf(7), callNumberProc(em, Integer.class, new BigDecimal("7")));
+            assertEquals(Long.valueOf(3000000000L), callNumberProc(em, Long.class, new BigDecimal("3000000000")));
+            assertEquals(new BigDecimal("3000000000"), callNumberProc(em, Integer.class, new BigDecimal("3000000000")));
+        } finally {
+            close(em, created ? NUMBER_PROC : null);
+        }
+    }
+
+    private static Object callNumberProc(EntityManager em, Class<?> outType, BigDecimal in) {
+        StoredProcedureQuery spq = em.createStoredProcedureQuery(NUMBER_PROC);
+        spq.registerStoredProcedureParameter(1, BigDecimal.class, ParameterMode.IN);
+        spq.registerStoredProcedureParameter(2, outType, ParameterMode.OUT);
+        spq.setParameter(1, in);
+        spq.execute();
+        return spq.getOutputParameterValue(2);
     }
 
     private static int intValue(Object value) {

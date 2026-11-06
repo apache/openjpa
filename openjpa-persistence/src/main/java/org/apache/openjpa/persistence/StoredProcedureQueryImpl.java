@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -36,6 +38,7 @@ import jakarta.persistence.StoredProcedureQuery;
 import jakarta.persistence.TemporalType;
 
 import org.apache.openjpa.kernel.DelegatingResultList;
+import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.QueryResultCallback;
 import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
@@ -294,9 +297,11 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
         buildParametersIfNeeded();
         Set<Parameter<?>> params = _delegate.getParameters();
         boolean found = false;
+        Parameter<?> declared = null;
         for (Parameter<?> p : params) {
             if (p.getPosition() != null && p.getPosition().intValue() == position) {
                 found = true;
+                declared = p;
                 break;
             }
         }
@@ -312,7 +317,7 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
                 "Parameter position " + position
                     + " does not correspond to a parameter of the query");
         }
-        return _callback == null ? null : _callback.getOut(position);
+        return _callback == null ? null : toRegisteredType(_callback.getOut(position), declared);
     }
 
     @Override
@@ -320,9 +325,11 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
         // Validate that the name corresponds to a registered parameter
         buildParametersIfNeeded();
         boolean found = false;
+        Parameter<?> declared = null;
         for (Parameter<?> p : _delegate.getParameters()) {
             if (parameterName.equals(p.getName())) {
                 found = true;
+                declared = p;
                 break;
             }
         }
@@ -331,7 +338,60 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
                 "Parameter name '" + parameterName
                     + "' does not correspond to a parameter of the query");
         }
-        return _callback == null ? null : _callback.getOut(parameterName);
+        return _callback == null ? null : toRegisteredType(_callback.getOut(parameterName), declared);
+    }
+
+    /**
+     * Converts the numeric value of an OUT parameter to the numeric type the parameter was registered with.
+     * Drivers report the value in the type of the database, e.g. a BigDecimal for an INTEGER parameter,
+     * which is a NUMBER, on Oracle. A conversion to an integral type is done only if it is exact: a value
+     * with a fraction or outside the range of the registered type is returned unchanged.
+     */
+    private static Object toRegisteredType(Object value, Parameter<?> param) {
+        if (!(value instanceof Number number) || param == null || param.getParameterType() == null) {
+            return value;
+        }
+        Class<?> type = Filters.wrap(param.getParameterType());
+        if (!Number.class.isAssignableFrom(type) || type.isInstance(value)) {
+            return value;
+        }
+        if (type == Double.class) {
+            return number.doubleValue();
+        }
+        if (type == Float.class) {
+            return number.floatValue();
+        }
+        BigDecimal exact;
+        try {
+            exact = number instanceof BigDecimal decimal ? decimal : new BigDecimal(number.toString());
+        } catch (NumberFormatException e) {
+            // NaN, infinity or a Number without a decimal representation
+            return value;
+        }
+        try {
+            if (type == BigDecimal.class) {
+                return exact;
+            }
+            if (type == BigInteger.class) {
+                return exact.toBigIntegerExact();
+            }
+            if (type == Long.class) {
+                return exact.longValueExact();
+            }
+            if (type == Integer.class) {
+                return exact.intValueExact();
+            }
+            if (type == Short.class) {
+                return exact.shortValueExact();
+            }
+            if (type == Byte.class) {
+                return exact.byteValueExact();
+            }
+        } catch (ArithmeticException e) {
+            // not representable in the registered type without loss
+            return value;
+        }
+        return value;
     }
 
     @Override
