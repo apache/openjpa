@@ -5481,39 +5481,70 @@ public class DBDictionary
         if (_procs.containsKey(procedure)) {
             return _procs.get(procedure);
         }
-        StoredProcedure sp = findStoredProcedure(meta, catalog, schema, procedure);
-        // If not found and name has uppercase chars, try lowercase
-        // (databases like PostgreSQL fold unquoted identifiers to lowercase)
-        if (sp == null && !procedure.equals(procedure.toLowerCase(Locale.ROOT))) {
-            sp = findStoredProcedure(meta, catalog, schema, procedure.toLowerCase(Locale.ROOT));
+        StoredProcedure sp = null;
+        for (String name : getStoredProcedureNameCandidates(procedure)) {
+            sp = findStoredProcedure(meta, catalog, schema, name);
+            if (sp != null) {
+                break;
+            }
         }
-        _procs.put(procedure, sp);
+        if (sp != null) {
+            _procs.put(procedure, sp);
+        }
         return sp;
+    }
+
+    /**
+     * The names to look up a stored procedure with in the database metadata, in order of preference.
+     * Metadata lookups are case sensitive, but the procedure was most likely created with an unquoted
+     * name, which the database folded according to its {@link #schemaCase}: e.g. Derby and Oracle store
+     * unquoted names in upper case, PostgreSQL in lower case. Hence the given name is tried as is first,
+     * then folded to upper case if this database folds to upper case, then in lower case and finally
+     * in upper case.
+     */
+    protected List<String> getStoredProcedureNameCandidates(String procedure) {
+        Set<String> names = new LinkedHashSet<>();
+        names.add(procedure);
+        if (SCHEMA_CASE_UPPER.equals(getSchemaCase())) {
+            names.add(procedure.toUpperCase(Locale.ROOT));
+        }
+        names.add(procedure.toLowerCase(Locale.ROOT));
+        names.add(procedure.toUpperCase(Locale.ROOT));
+        return List.copyOf(names);
+    }
+
+    /**
+     * Gets the SQL to pass to {@link java.sql.Connection#prepareCall(String)} for calling the given procedure.
+     * Defaults to {@link StoredProcedure#getCallSQL()}.
+     */
+    public String getStoredProcedureCallSQL(StoredProcedure procedure) {
+        return procedure.getCallSQL();
     }
 
     private StoredProcedure findStoredProcedure(DatabaseMetaData meta, DBIdentifier catalog, DBIdentifier schema,
                                                 String procedure) throws SQLException {
-        ResultSet rs = meta.getProcedureColumns(
+        try (ResultSet rs = meta.getProcedureColumns(
                 getCatalogNameForMetadata(catalog),
                 getSchemaNameForMetadata(schema),
                 procedure,
-                null);
-        StoredProcedure sp = null;
-        if (rs.next()) {
-            sp = new StoredProcedure(rs);
-        } else {
-            ResultSet rsExist = meta.getProcedures(
-                    getCatalogNameForMetadata(catalog),
-                    getSchemaNameForMetadata(schema),
-                    procedure);
+                null)) {
+            if (rs.next()) {
+                return new StoredProcedure(rs);
+            }
+        }
+        try (ResultSet rsExist = meta.getProcedures(
+                getCatalogNameForMetadata(catalog),
+                getSchemaNameForMetadata(schema),
+                procedure)) {
             if (rsExist.next()) {
-                sp = new StoredProcedure((String) null);
+                StoredProcedure sp = new StoredProcedure((String) null);
                 sp.setCatalog(catalog);
                 sp.setSchema(schema);
                 sp.setName(procedure);
+                return sp;
             }
         }
-        return sp;
+        return null;
     }
 
     ///////////////////////////////
