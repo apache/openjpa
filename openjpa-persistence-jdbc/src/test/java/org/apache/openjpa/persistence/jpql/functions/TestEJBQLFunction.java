@@ -443,6 +443,25 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     /**
+     * SUBSTRING from a position behind the end of the string is the empty string, which Oracle
+     * cannot tell apart from NULL.
+     */
+    public void testSubstringBeyondString() {
+        EntityManager em = currentEntityManager();
+        String expected = getDbDictionary(getEmf()) instanceof OracleDictionary ? null : "";
+        String query = "SELECT SUBSTRING(u.name, 10) FROM CompUser AS u WHERE u.name = 'Seetha'";
+        List<?> result = em.createQuery(query).getResultList();
+        assertEquals(1, result.size());
+        assertEquals(expected, result.get(0));
+
+        query = "SELECT SUBSTRING(u.name, 10, 2) FROM CompUser AS u WHERE u.name = 'Seetha'";
+        result = em.createQuery(query).getResultList();
+        assertEquals(1, result.size());
+        assertEquals(expected, result.get(0));
+        endEm(em);
+    }
+
+    /**
      * RIGHT(s, 0) is the empty string, which Oracle cannot tell apart from NULL.
      */
     public void testRightWithZeroLength() {
