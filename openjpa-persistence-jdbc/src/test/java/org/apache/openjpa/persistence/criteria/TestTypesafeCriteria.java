@@ -1605,10 +1605,6 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     public void testCurrentTimeReturnsSQLTypes() {
-        if (getDictionary() instanceof OracleDictionary) {
-            // Oracle does not have CURRENT_TIME function, nor does it support DB generated identity
-            return;
-        }
         em.getTransaction().begin();
         Product pc = new Product();
         em.persist(pc);
@@ -1685,10 +1681,6 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     public void testBasicLocalTime() {
-        if (getDictionary() instanceof OracleDictionary) {
-            // Oracle does not have CURRENT_TIME function, nor does it support DB generated identity
-            return;
-        }
         em.getTransaction().begin();
         Order pc = new Order();
         em.persist(pc);

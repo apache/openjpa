@@ -22,7 +22,6 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.H2Dictionary;
 import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
-import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 import jakarta.persistence.EntityManager;
@@ -273,12 +272,6 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
 
     public void testGetCurrentLocalTime() {
-        DBDictionary dict = getDbDictionary(emf);
-        if (dict instanceof OracleDictionary) {
-            // Oracle has no TIME data type
-            return;
-        }
-
         // LOCAL TIME is the time of the database server, which may run in another
         // time zone than this JVM, so the expected rows are computed from it
         try (EntityManager em = emf.createEntityManager()) {

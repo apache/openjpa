@@ -50,4 +50,12 @@ public class TestOracleDictionary {
         assertEquals("EXTRACT(DAY FROM {1})", dict.getExtractDateTimeFieldFunction(DateTimeExtractField.DAY));
         assertEquals("EXTRACT(YEAR FROM {1})", dict.getExtractDateTimeFieldFunction(DateTimeExtractField.YEAR));
     }
+
+    /**
+     * Oracle has no CURRENT_TIME; a time is held as the time of day on 1970-01-01, as the driver binds it.
+     */
+    @Test
+    public void testCurrentTime() {
+        assertEquals("(DATE '1970-01-01' + (CURRENT_DATE - TRUNC(CURRENT_DATE)))", new OracleDictionary().currentTimeFunction);
+    }
 }

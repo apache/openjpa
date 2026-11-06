@@ -983,11 +983,6 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractHourFromLocalTime() {
-        DBDictionary dict = getDbDictionary(getEmf());
-        if (dict instanceof OracleDictionary) {
-            // Oracle does not have TIME data type
-            return;
-        }
         EntityManager em = currentEntityManager();
         String query = "SELECT CURRENT_TIME, (EXTRACT(HOUR FROM LOCAL TIME) - c.age) FROM CompUser as c WHERE c.age = 23";
 
