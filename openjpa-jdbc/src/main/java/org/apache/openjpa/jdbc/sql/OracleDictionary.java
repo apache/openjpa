@@ -1643,17 +1643,24 @@ public class OracleDictionary
     	buf.append(")");
     }
 
+    /**
+     * SUBSTR(str, -length) is NULL when length exceeds the length of the string, so the start
+     * position is computed from the length of the string instead. A length of 0 or less gives NULL,
+     * the empty string of Oracle. The string occurs twice in the SQL, so a parameter is bound twice.
+     */
     @Override
     public void right(SQLBuffer buf, FilterValue str, FilterValue length) {
-    	buf.append(rightFunctionName).append("(");
-    	str.appendTo(buf);
-    	buf.append(", -");
-    	if (length.getValue() instanceof Number) {
-    		buf.append(Long.toString(toLong(length)));
-    	} else {
-    		length.appendTo(buf);
-    	}
-    	buf.append(")");
+        buf.append(rightFunctionName).append("(");
+        str.appendTo(buf);
+        buf.append(", GREATEST(LENGTH(");
+        str.appendTo(buf);
+        buf.append(") - (");
+        if (length.getValue() instanceof Number) {
+            buf.append(Long.toString(toLong(length)));
+        } else {
+            length.appendTo(buf);
+        }
+        buf.append(") + 1, 1))");
     }
 
     @Override

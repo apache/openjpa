@@ -20,6 +20,9 @@ package org.apache.openjpa.jdbc.sql;
 
 import static org.junit.Assert.assertEquals;
 
+import java.lang.reflect.Proxy;
+
+import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.kernel.exps.DateTimeExtractPart;
 import org.junit.Test;
@@ -82,5 +85,46 @@ public class TestOracleDictionary {
         DBDictionary standard = new DBDictionary();
         assertEquals("CAST({1} AS DATE)", standard.getExtractDateTimePartFunction(DateTimeExtractPart.DATE));
         assertEquals("CAST({1} AS TIME)", standard.getExtractDateTimePartFunction(DateTimeExtractPart.TIME));
+    }
+
+    /**
+     * SUBSTR(str, -length) is NULL when length exceeds the length of the string, so RIGHT computes the
+     * start position from the length of the string. A length of 0 starts behind the last character, which
+     * gives NULL, the empty string of Oracle.
+     */
+    @Test
+    public void testRight() {
+        DBDictionary dict = new OracleDictionary();
+        SQLBuffer buf = new SQLBuffer(dict);
+        dict.right(buf, value(null, "t0.NAME"), value(3, "?"));
+        assertEquals("SUBSTR(t0.NAME, GREATEST(LENGTH(t0.NAME) - (3) + 1, 1))", buf.getSQL());
+
+        buf = new SQLBuffer(dict);
+        dict.right(buf, value(null, "t0.NAME"), value(0, "?"));
+        assertEquals("SUBSTR(t0.NAME, GREATEST(LENGTH(t0.NAME) - (0) + 1, 1))", buf.getSQL());
+
+        buf = new SQLBuffer(dict);
+        dict.right(buf, value(null, "t0.NAME"), value(null, "t0.LEN"));
+        assertEquals("SUBSTR(t0.NAME, GREATEST(LENGTH(t0.NAME) - (t0.LEN) + 1, 1))", buf.getSQL());
+    }
+
+    /**
+     * A query value with the given constant value, appending the given SQL.
+     */
+    private static FilterValue value(Object constant, String sql) {
+        return (FilterValue) Proxy.newProxyInstance(FilterValue.class.getClassLoader(), new Class<?>[] { FilterValue.class },
+            (proxy, method, args) -> {
+                switch (method.getName()) {
+                    case "getValue":
+                        return constant;
+                    case "appendTo":
+                        if (args[0] instanceof SQLBuffer buf) {
+                            buf.append(sql);
+                        }
+                        return null;
+                    default:
+                        throw new UnsupportedOperationException(method.getName());
+                }
+            });
     }
 }

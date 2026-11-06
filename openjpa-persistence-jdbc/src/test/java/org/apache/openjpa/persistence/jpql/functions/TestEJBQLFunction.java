@@ -442,6 +442,24 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    /**
+     * RIGHT(s, 0) is the empty string, which Oracle cannot tell apart from NULL.
+     */
+    public void testRightWithZeroLength() {
+        EntityManager em = currentEntityManager();
+        String expected = getDbDictionary(getEmf()) instanceof OracleDictionary ? null : "";
+        String query = "SELECT RIGHT(u.name, 0) FROM CompUser AS u WHERE u.name = 'Seetha'";
+        List<?> result = em.createQuery(query).getResultList();
+        assertEquals(1, result.size());
+        assertEquals(expected, result.get(0));
+
+        query = "SELECT RIGHT(u.name, :len) FROM CompUser AS u WHERE u.name = 'Seetha'";
+        result = em.createQuery(query).setParameter("len", 0).getResultList();
+        assertEquals(1, result.size());
+        assertEquals(expected, result.get(0));
+        endEm(em);
+    }
+
     public void testLeftAndRightOnStringLiteral() {
         EntityManager em = currentEntityManager();
         String query = "SELECT u.name FROM CompUser AS u WHERE LEFT('Seetha', 2) = LEFT(u.name, 2)"
