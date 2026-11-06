@@ -3571,7 +3571,7 @@ public class DBDictionary
         int type = 0;
         int rtype = 0;
         if (requiresCastForMathFunctions && (lc != rc || (lhs.isConstant() || rhs.isConstant()))) {
-            Class<?> c = Filters.promote(lc, rc);
+            Class<?> c = Filters.promoteArithmetic(lc, rc);
             type = getJDBCType(JavaTypes.getTypeCode(c), false);
             rtype = type;
             if (type != Types.VARBINARY && type != Types.BLOB) {

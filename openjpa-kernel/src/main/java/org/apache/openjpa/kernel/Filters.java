@@ -198,6 +198,33 @@ public class Filters {
     }
 
     /**
+     * Given the types of the two operands of an arithmetic operation, return
+     * the type of its result, which both operands are converted to before the
+     * operation. This is {@link #promote}, except that, as the numeric
+     * promotion rules of the specification require, an operation on a
+     * BigDecimal or BigInteger and a Double or Float has the floating point
+     * type: Double if an operand is Double, else Float, BigDecimal,
+     * BigInteger, Long and Integer, in that order.
+     */
+    public static Class<?> promoteArithmetic(Class<?> c1, Class<?> c2) {
+        Class<?> w1 = wrap(c1);
+        Class<?> w2 = wrap(c2);
+        if ((isBigNumber(w1) && isFloatingPoint(w2))
+            || (isFloatingPoint(w1) && isBigNumber(w2))) {
+            return (w1 == Double.class || w2 == Double.class) ? double.class : float.class;
+        }
+        return promote(c1, c2);
+    }
+
+    private static boolean isBigNumber(Class<?> c) {
+        return c == BigDecimal.class || c == BigInteger.class;
+    }
+
+    private static boolean isFloatingPoint(Class<?> c) {
+        return c == Double.class || c == Float.class;
+    }
+
+    /**
      * Given the types of two values that are compared, return the type they
      * should both be converted to before the comparison. This is
      * {@link #promote}, except that a java.time value compared to a
@@ -535,7 +562,7 @@ public class Filters {
         if (o1 == null || o2 == null) {
             return null;
         }
-        Class<?> promote = promote(c1, c2);
+        Class<?> promote = promoteArithmetic(c1, c2);
         if (promote == int.class) {
             return op(((Number) o1).intValue(), ((Number) o2).intValue(), op);
         }

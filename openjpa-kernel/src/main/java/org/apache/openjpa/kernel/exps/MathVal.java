@@ -46,7 +46,7 @@ abstract class MathVal
     public Class getType() {
         Class c1 = _val1.getType();
         Class c2 = _val2.getType();
-        return Filters.promote(c1, c2);
+        return Filters.promoteArithmetic(c1, c2);
     }
 
     @Override

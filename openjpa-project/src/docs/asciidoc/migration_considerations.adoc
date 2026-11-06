@@ -89,8 +89,15 @@ The result type of [method]``CriteriaBuilder.sum``, [method]``diff``, [method]``
 Previous releases used the type of the first operand, or [class]``Number`` when the first operand was a literal, and did not convert the value the database returned.
 For example, `cb.sum(intPath, longPath)` now returns a [class]``Long`` instead of an [class]``Integer``, `cb.sum(intPath, 2.5)` returns a [class]``Double`` instead of a truncated [class]``Integer``, and `cb.neg(intPath)` returns an [class]``Integer`` on databases such as MySQL that compute integer arithmetic as ``BIGINT``. [method]``Expression.getJavaType()`` of these expressions changes the same way.
 
-JPQL arithmetic is not changed apart from the promotion of [class]``Byte`` and [class]``Short`` to [class]``Integer``.
-In particular, a JPQL operation on a [class]``BigDecimal`` and a [class]``Float`` or [class]``Double`` operand still returns a [class]``BigDecimal``, where the Criteria API returns the floating point type.
+Application code that casts such results must be adapted to the new type or to [class]``Number``.
+
+[[jpa_4.2_JPQLArithmeticResultType]]
+==== JPQL arithmetic ranks Double and Float above BigDecimal
+
+JPQL arithmetic follows the same order as the Criteria API, in the database and when it is evaluated in memory.
+A JPQL operation on a [class]``BigDecimal`` or [class]``BigInteger`` and a [class]``Float`` or [class]``Double`` operand now returns the floating point type instead of a [class]``BigDecimal``, so `n.decimalField * n.doubleField` returns a [class]``Double`` (OPENJPA-3049).
+A JPQL literal with a decimal point, such as `1.5`, is an exact numeric literal of type [class]``BigDecimal`` as before: `n.floatField * 1.5` now returns a [class]``Float``, and `n.intField * 1.5` still returns a [class]``BigDecimal``, the same types as `cb.prod(floatPath, new BigDecimal("1.5"))` and `cb.prod(intPath, new BigDecimal("1.5"))`.
+Comparisons are not changed: a [class]``BigDecimal`` and a [class]``Double`` value are still compared as [class]``BigDecimal`` values.
 Application code that casts such results must be adapted to the new type or to [class]``Number``.
 
 [[jpa_4.2_JPQLArithmeticAssociativity]]
