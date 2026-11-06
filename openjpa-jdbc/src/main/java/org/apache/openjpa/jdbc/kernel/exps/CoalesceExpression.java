@@ -20,7 +20,6 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.sql.SQLException;
 
-import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Raw;
 import org.apache.openjpa.jdbc.sql.Result;
@@ -162,8 +161,7 @@ public class CoalesceExpression
     @Override
     public Object load(ExpContext ctx, ExpState state, Result res)
         throws SQLException {
-        return Filters.convert(res.getObject(this,
-            JavaSQLTypes.JDBC_DEFAULT, null), getType());
+        return Filters.convert(res.getObject(this, getLoadTypeCode(), null), getType());
     }
 
     @Override
