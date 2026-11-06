@@ -75,7 +75,7 @@ public class TestQuerySQLCache extends SQLListenerTestCase {
         assertNotNull(resultListNull1B);
         assertEquals(1, resultListNull1B.size());
 
-        // Test with non-NULL paramter, SQL should contain the = predicate
+        // Test with non-NULL parameter, SQL should contain the = predicate
         resetSQL();
         q.setParameter(1, 1L);
         List resultListNotNull = q.getResultList();
