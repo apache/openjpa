@@ -31,6 +31,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -544,17 +545,14 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
             createUpper.contains("CREATE TABLE SCHEMAGEN_COURSE_STUDENT"));
         assertTrue("Should contain ALTER TABLE with FK constraint",
             createUpper.contains("ALTER TABLE"));
-        // ANSI SQL uses "CONSTRAINT <name> FOREIGN KEY", but MariaDB/MySQL
-        // legitimately emit "FOREIGN KEY <name>" (constraintNameMode =
-        // CONS_NAME_MID). Accept either form.
-        assertTrue("Should contain CONSTRAINT COURSEIDCONSTRAINT or FOREIGN "
-            + "KEY COURSEIDCONSTRAINT",
-            createUpper.contains("CONSTRAINT COURSEIDCONSTRAINT")
-                || createUpper.contains("FOREIGN KEY COURSEIDCONSTRAINT"));
-        assertTrue("Should contain CONSTRAINT STUDENTIDCONSTRAINT or FOREIGN "
-            + "KEY STUDENTIDCONSTRAINT",
-            createUpper.contains("CONSTRAINT STUDENTIDCONSTRAINT")
-                || createUpper.contains("FOREIGN KEY STUDENTIDCONSTRAINT"));
+        // "CONSTRAINT <name> FOREIGN KEY", the form the TCK checks. Dictionaries that
+        // name constraints after their definition (Informix) only get the name checked.
+        boolean nameFirst = !DBDictionary.CONS_NAME_AFTER.equals(getDBDictionary().constraintNameMode);
+        String fkSuffix = nameFirst ? " FOREIGN KEY" : "";
+        assertTrue("Should contain CONSTRAINT COURSEIDCONSTRAINT" + fkSuffix,
+            createUpper.contains("CONSTRAINT COURSEIDCONSTRAINT" + fkSuffix));
+        assertTrue("Should contain CONSTRAINT STUDENTIDCONSTRAINT" + fkSuffix,
+            createUpper.contains("CONSTRAINT STUDENTIDCONSTRAINT" + fkSuffix));
 
         String dropSql = new String(Files.readAllBytes(dropFile.toPath()));
         System.out.println("=== JoinTable Drop Script ===");

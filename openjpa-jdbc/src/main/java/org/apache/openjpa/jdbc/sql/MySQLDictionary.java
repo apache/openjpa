@@ -98,7 +98,11 @@ public class MySQLDictionary
         distinctCountColumnSeparator = ",";
 
         supportsDeferredConstraints = false;
-        constraintNameMode = CONS_NAME_MID;
+        // CONSTRAINT <name> FOREIGN KEY / UNIQUE (...): since MySQL 8.0.16 the name in
+        // FOREIGN KEY <name> (...) only names the backing index and the constraint gets
+        // a generated <table>_ibfk_<n> name, so a later DROP FOREIGN KEY <name> fails.
+        // Note that FK constraint names must be unique per database, not per table.
+        constraintNameMode = CONS_NAME_BEFORE;
         supportsMultipleNontransactionalResultSets = false;
         requiresAliasForSubselect = true; // new versions
         requiresTargetForDelete = true;

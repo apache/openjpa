@@ -18,17 +18,13 @@
  */
 package org.apache.openjpa.persistence.jdbc.unique;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
-import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.jdbc.SQLSniffer;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
@@ -79,34 +75,9 @@ public class TestNamedUniqueConstraint extends SQLListenerTestCase {
     }
 
     private String getUniqueConstraint(String unique) {
-        if (dict instanceof MySQLDictionary || dict instanceof MariaDBDictionary) {
-            //CREATE TABLE N_UNIQUE_A (aid INTEGER NOT NULL, f1 INTEGER NOT NULL, f2 INTEGER NOT NULL,
-            //f3 INTEGER NOT NULL, f4 INTEGER NOT NULL, f5 INTEGER, f6 INTEGER, PRIMARY KEY (aid),
-            //UNIQUE U_N_UNQU__F1 (f1),
-            //UNIQUE uca_f1_f2 (f1, f2),
-            //UNIQUE uca_f3_f4 (f3, f4)) TYPE = innodb
-            return getUniqueConstraint(dict, unique);
-        }
+        // MySQL and MariaDB emit CONSTRAINT <name> UNIQUE (<cols>) like the other dictionaries
+        // that use CONS_NAME_BEFORE (OPENJPA-3038)
         return unique;
-    }
-
-    public static String getUniqueConstraint(DBDictionary dict, String unique) {
-        List<String> tokens = new ArrayList<>();
-        List<String> tokens1 = new ArrayList<>();
-        StringTokenizer st = new StringTokenizer(unique);
-        while (st.hasMoreTokens()) {
-            tokens.add(st.nextToken());
-        }
-        tokens1.add(tokens.get(1));
-        tokens1.add(tokens.get(0));
-        for (int i = 2; i < tokens.size(); i++) {
-            tokens1.add(tokens.get(i));
-        }
-        StringBuilder buf = new StringBuilder();
-        for (String token : tokens1) {
-            buf.append(token).append(" ");
-        }
-        return buf.toString().trim();
     }
 
     void assertSQLFragnments(List<String> list, String... keys) {

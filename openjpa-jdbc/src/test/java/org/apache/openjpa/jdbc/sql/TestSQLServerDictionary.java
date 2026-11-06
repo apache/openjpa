@@ -23,9 +23,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Types;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
@@ -294,5 +298,73 @@ public class TestSQLServerDictionary {
             return (short) 0;
         }
         return null;
+    }
+
+    /**
+     * SQL Server reports a procedure as <code>name;version</code>, its parameters with a
+     * leading <code>@</code> and an additional <code>@RETURN_VALUE</code>. The procedure must
+     * be called with the JDBC escape syntax, as SQL Server does not know a bare <code>CALL</code>.
+     */
+    @Test
+    public void testStoredProcedureIsCalledWithEscapeSyntax() throws SQLException {
+        DBDictionary dict = new SQLServerDictionary();
+        dict.setConfiguration(new JDBCConfigurationImpl());
+        DatabaseMetaData meta = procedureMetaData("GetEmpFirstNameFromOut;1",
+            new Object[] {"@RETURN_VALUE", DatabaseMetaData.procedureColumnReturn, Types.INTEGER, "int"},
+            new Object[] {"@IN_PARAM", DatabaseMetaData.procedureColumnIn, Types.INTEGER, "int"},
+            new Object[] {"@OUT_PARAM", DatabaseMetaData.procedureColumnInOut, Types.VARCHAR, "varchar"});
+
+        StoredProcedure sp = dict.getStoredProcedure(meta, null, null, "GetEmpFirstNameFromOut");
+        assertEquals("GetEmpFirstNameFromOut", sp.getName());
+        assertEquals(2, sp.getColumns().length);
+        assertEquals("IN_PARAM", sp.getInColumns()[0].getIdentifier().getName());
+        assertEquals("OUT_PARAM", sp.getInOutColumns()[0].getIdentifier().getName());
+        assertEquals("{call GetEmpFirstNameFromOut(?,?)}", dict.getStoredProcedureCallSQL(sp));
+
+        StoredProcedure noParams = dict.getStoredProcedure(procedureMetaData("DeleteAllEmp;1",
+            new Object[] {"@RETURN_VALUE", DatabaseMetaData.procedureColumnReturn, Types.INTEGER, "int"}),
+            null, null, "DeleteAllEmp");
+        assertEquals("{call DeleteAllEmp}", dict.getStoredProcedureCallSQL(noParams));
+    }
+
+    /**
+     * Emulates {@link DatabaseMetaData#getProcedureColumns} for a single procedure.
+     * Each column is given as name, column type, data type and type name.
+     */
+    private static DatabaseMetaData procedureMetaData(String procedure, Object[]... columns) {
+        InvocationHandler rs = new InvocationHandler() {
+            private int row = -1;
+
+            @Override
+            public Object invoke(Object proxy, Method method, Object[] args) {
+                switch (method.getName()) {
+                    case "next":
+                        return ++row < columns.length;
+                    case "close":
+                        return null;
+                    case "getString":
+                        switch ((Integer) args[0]) {
+                            case 3: return procedure;
+                            case 4: return (String) columns[row][0];
+                            case 7: return (String) columns[row][3];
+                            default: return null;
+                        }
+                    case "getShort":
+                        return (Integer) args[0] == 5 ? (short) (int) (Integer) columns[row][1] : (short) 0;
+                    case "getInt":
+                        return (Integer) args[0] == 6 ? (Integer) columns[row][2] : 0;
+                    default:
+                        throw new UnsupportedOperationException(method.getName());
+                }
+            }
+        };
+        return (DatabaseMetaData) Proxy.newProxyInstance(TestSQLServerDictionary.class.getClassLoader(),
+            new Class<?>[] {DatabaseMetaData.class}, (proxy, method, args) -> {
+                if ("getProcedureColumns".equals(method.getName())) {
+                    return Proxy.newProxyInstance(TestSQLServerDictionary.class.getClassLoader(),
+                        new Class<?>[] {ResultSet.class}, rs);
+                }
+                throw new UnsupportedOperationException(method.getName());
+            });
     }
 }
