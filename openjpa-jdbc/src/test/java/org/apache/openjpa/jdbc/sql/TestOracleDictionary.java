@@ -58,4 +58,12 @@ public class TestOracleDictionary {
     public void testCurrentTime() {
         assertEquals("(DATE '1970-01-01' + (CURRENT_DATE - TRUNC(CURRENT_DATE)))", new OracleDictionary().currentTimeFunction);
     }
+
+    /**
+     * The CURRENT_DATE of Oracle is a DATE with the time of day.
+     */
+    @Test
+    public void testCurrentDate() {
+        assertEquals("TRUNC(CURRENT_DATE)", new OracleDictionary().currentDateFunction);
+    }
 }

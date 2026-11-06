@@ -261,6 +261,36 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         em.close();
     }
 
+    /**
+     * CURRENT_DATE and LOCAL DATE are the date of the database server without a time of day,
+     * so they equal a date stored for today.
+     */
+    public void testCurrentDateEqualsDateOfToday() {
+        try (EntityManager em = emf.createEntityManager()) {
+            final String today = "select LOCAL DATE from Java8TimeTypes AS j where j.id = 1";
+            final LocalDate before = em.createQuery(today, LocalDate.class).getSingleResult();
+            em.getTransaction().begin();
+            Java8TimeTypes entity3 = new Java8TimeTypes();
+            entity3.setId(3);
+            entity3.setLocalDateField(before);
+            em.persist(entity3);
+            em.getTransaction().commit();
+
+            final List<Integer> current = em.createQuery(
+                "select j.id from Java8TimeTypes AS j where j.localDateField = CURRENT_DATE", Integer.class)
+                .getResultList();
+            final List<Integer> local = em.createQuery(
+                "select j.id from Java8TimeTypes AS j where j.localDateField = LOCAL DATE", Integer.class)
+                .getResultList();
+            if (!before.equals(em.createQuery(today, LocalDate.class).getSingleResult())) {
+                // the database passed midnight while the test was running
+                return;
+            }
+            assertEquals(List.of(3), current);
+            assertEquals(List.of(3), local);
+        }
+    }
+
     public void testGetCurrentLocalDateTime() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<Java8TimeTypes> qry

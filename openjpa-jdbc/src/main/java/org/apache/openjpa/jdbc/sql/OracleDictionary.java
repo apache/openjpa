@@ -218,6 +218,8 @@ public class OracleDictionary
         timeWithZoneTypeName = "DATE";
         // Oracle has no CURRENT_TIME; a time is a DATE on 1970-01-01, as the driver binds it
         currentTimeFunction = "(DATE '1970-01-01' + (CURRENT_DATE - TRUNC(CURRENT_DATE)))";
+        // CURRENT_DATE is a DATE with the time of day, which a date has not
+        currentDateFunction = "TRUNC(CURRENT_DATE)";
 
         // default TIMESTAMP is TIMESTAMP(6) which means MICROs
         datePrecision = MICRO;
