@@ -36,7 +36,7 @@ declare -A DOCKER_NAMES=(
     [mysql]=mysql
     [postgresql]=postgresql
     [mssql]=server
-    [oracle]=oracle-xe
+    [oracle]=oracle-free
 )
 
 declare -A VERSIONS=(

@@ -1484,20 +1484,16 @@
         <!--
             Profile for testing with Oracle DB against a Docker image
 
-            Attention: This might requiere a manual download of the Oracle JDBC driver.
-            This driver (ojdbc6.jar) can be downloaded at the Oracle homepage.
+            Uses the Oracle Database Free image (gvenzl/oracle-free, available for amd64 and arm64)
+            and the ojdbc11 driver from Maven Central:
 
-            Then determine which version you got
-            $> unzip -p ojdbc6.jar META-INF/MANIFEST.MF
-            This will contain something like
-            "Implementation-Version: 11.2.0.4.0"
-            Use this version to install the JDBC driver into your local Maven repository
-            with
-            $> mvn install:file ...
+            $> mvn -N -Ptest-oracle-docker docker:start
+            $> mvn install -Ptest-oracle-docker
+            $> mvn -N -Ptest-oracle-docker docker:stop
 
-            By default we use a ojdbc6 version hosted at Atlassian.
-            For this to work we also need to add a repository section.
-            We only use it for the ojdbc driver though.
+            docker:stop also removes the container and its volumes. The scripts in src/test/sql/oracle-docker
+            run once when the database is created; they raise the number of processes and sessions,
+            as the test suite opens more connections than the image allows by default.
         -->
         <profile>
             <id>test-oracle-docker</id>
@@ -1507,11 +1503,11 @@
                 </property>
             </activation>
             <properties>
-                <oracle.groupid>com.oracle.ojdbc</oracle.groupid>
-                <oracle.artifactid>ojdbc8</oracle.artifactid>
-                <oracle.version>19.3.0.0</oracle.version>
+                <oracle.groupid>com.oracle.database.jdbc</oracle.groupid>
+                <oracle.artifactid>ojdbc11</oracle.artifactid>
+                <oracle.version>23.26.4.0.0</oracle.version>
 
-                <oracle.server.version>18.4.0</oracle.server.version>
+                <oracle.server.version>23-slim</oracle.server.version>
                 <docker.external.oracle.port>1521</docker.external.oracle.port>
 
                 <connection.driver.name>oracle.jdbc.driver.OracleDriver</connection.driver.name>
@@ -1550,7 +1546,7 @@
                             <removeVolumes>true</removeVolumes>
                             <images>
                                 <image>
-                                    <name>gvenzl/oracle-xe:${oracle.server.version}</name>
+                                    <name>gvenzl/oracle-free:${oracle.server.version}</name>
                                     <run>
                                         <env>
                                             <ORACLE_PASSWORD>${openjpa.oracle.password}</ORACLE_PASSWORD>
@@ -1560,12 +1556,11 @@
                                         </env>
                                         <volumes>
                                             <bind>
-                                                <volume>${project.basedir}/src/test/sql/oracle-docker:/docker-entrypoint-initdb.d/</volume>
+                                                <volume>${project.basedir}/src/test/sql/oracle-docker:/container-entrypoint-initdb.d/</volume>
                                             </bind>
                                         </volumes>
                                         <ports>
                                             <port>${docker.external.oracle.port}:1521</port>
-                                            <port>5500:5500</port>
                                         </ports>
                                         <wait>
                                             <log>DATABASE IS READY TO USE</log>
