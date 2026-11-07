@@ -25,15 +25,16 @@ import static org.junit.Assert.assertTrue;
 import java.sql.Types;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
+import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.meta.JavaTypes;
 import org.junit.Test;
 
 /**
  * Tests the <code>StoreCharsAsNumbers</code> default of the Derby, H2,
- * SQL Server, MySQL and MariaDB dictionaries, which store Java
+ * SQL Server, MySQL, MariaDB and Oracle dictionaries, which store Java
  * <code>char</code> fields in <code>CHAR</code> columns unless configured
- * otherwise (OPENJPA-3001, OPENJPA-3033, OPENJPA-3060).
+ * otherwise (OPENJPA-3001, OPENJPA-3033, OPENJPA-3060, OPENJPA-3028).
  */
 public class TestStoreCharsAsNumbersDefaults {
 
@@ -85,6 +86,34 @@ public class TestStoreCharsAsNumbersDefaults {
     @Test
     public void testMariaDBExplicitStoreCharsAsNumbers() {
         assertExplicitNumbers(new MariaDBDictionary());
+    }
+
+    @Test
+    public void testOracleStoresCharsAsCharByDefault() {
+        assertNativeCharDefault(new OracleDictionary());
+    }
+
+    @Test
+    public void testOracleExplicitStoreCharsAsNumbers() {
+        assertExplicitNumbers(new OracleDictionary());
+    }
+
+    @Test
+    public void testOracleDeclaresCharColumnsWithCharacterSemantics() {
+        DBDictionary dict = configure(new OracleDictionary(), null);
+        assertEquals("CHAR(1 CHAR)", dict.getTypeName(column(Types.CHAR, JavaTypes.CHAR, 1)));
+        assertEquals("CHAR(1 CHAR)", dict.getTypeName(column(Types.CHAR, JavaTypes.CHAR_OBJ, 1)));
+        // other CHAR and VARCHAR columns keep the database's length semantics
+        assertEquals("CHAR(10)", dict.getTypeName(column(Types.CHAR, JavaTypes.STRING, 10)));
+        assertEquals("VARCHAR2(1)", dict.getTypeName(column(Types.VARCHAR, JavaTypes.CHAR, 1)));
+    }
+
+    private static Column column(int type, int javaType, int size) {
+        Column col = new Column();
+        col.setType(type);
+        col.setJavaType(javaType);
+        col.setSize(size);
+        return col;
     }
 
     @Test

@@ -22,7 +22,6 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.H2Dictionary;
 import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
-import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 import jakarta.persistence.EntityManager;
@@ -262,6 +261,36 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         em.close();
     }
 
+    /**
+     * CURRENT_DATE and LOCAL DATE are the date of the database server without a time of day,
+     * so they equal a date stored for today.
+     */
+    public void testCurrentDateEqualsDateOfToday() {
+        try (EntityManager em = emf.createEntityManager()) {
+            final String today = "select LOCAL DATE from Java8TimeTypes AS j where j.id = 1";
+            final LocalDate before = em.createQuery(today, LocalDate.class).getSingleResult();
+            em.getTransaction().begin();
+            Java8TimeTypes entity3 = new Java8TimeTypes();
+            entity3.setId(3);
+            entity3.setLocalDateField(before);
+            em.persist(entity3);
+            em.getTransaction().commit();
+
+            final List<Integer> current = em.createQuery(
+                "select j.id from Java8TimeTypes AS j where j.localDateField = CURRENT_DATE", Integer.class)
+                .getResultList();
+            final List<Integer> local = em.createQuery(
+                "select j.id from Java8TimeTypes AS j where j.localDateField = LOCAL DATE", Integer.class)
+                .getResultList();
+            if (!before.equals(em.createQuery(today, LocalDate.class).getSingleResult())) {
+                // the database passed midnight while the test was running
+                return;
+            }
+            assertEquals(List.of(3), current);
+            assertEquals(List.of(3), local);
+        }
+    }
+
     public void testGetCurrentLocalDateTime() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<Java8TimeTypes> qry
@@ -273,12 +302,6 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
 
     public void testGetCurrentLocalTime() {
-        DBDictionary dict = getDbDictionary(emf);
-        if (dict instanceof OracleDictionary) {
-            // Oracle has no TIME data type
-            return;
-        }
-
         // LOCAL TIME is the time of the database server, which may run in another
         // time zone than this JVM, so the expected rows are computed from it
         try (EntityManager em = emf.createEntityManager()) {

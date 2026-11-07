@@ -59,6 +59,8 @@ import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
+import org.apache.openjpa.kernel.exps.DateTimeExtractField;
+import org.apache.openjpa.kernel.exps.DateTimeExtractPart;
 import org.apache.openjpa.lib.jdbc.DelegatingDatabaseMetaData;
 import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
 import org.apache.openjpa.lib.util.Localizer;
@@ -215,6 +217,10 @@ public class OracleDictionary
         longVarbinaryTypeName = "BLOB";
         timeTypeName = "DATE";
         timeWithZoneTypeName = "DATE";
+        // Oracle has no CURRENT_TIME; a time is a DATE on 1970-01-01, as the driver binds it
+        currentTimeFunction = "(DATE '1970-01-01' + (CURRENT_DATE - TRUNC(CURRENT_DATE)))";
+        // CURRENT_DATE is a DATE with the time of day, which a date has not
+        currentDateFunction = "TRUNC(CURRENT_DATE)";
 
         // default TIMESTAMP is TIMESTAMP(6) which means MICROs
         datePrecision = MICRO;
@@ -279,6 +285,8 @@ public class OracleDictionary
 
         indexPhysicalForeignKeys = true; // Oracle does not automatically create an index for a foreign key so we will
         supportsUnsizedCharOnCast = false;
+        // Oracle supports the CHAR data type; an explicit StoreCharsAsNumbers=true is still respected
+        storeCharsAsNumbers = false;
     }
 
     private Method getMethodByReflection(String className, String methodName, Class<?>... paramTypes) {
@@ -415,6 +423,21 @@ public class OracleDictionary
             return false;
         return !requiresSubselectForRange(sel.getStartIndex(),
             sel.getEndIndex(), sel.isDistinct(), sel.getOrdering());
+    }
+
+    /**
+     * Oracle sizes a CHAR column in bytes unless NLS_LENGTH_SEMANTICS is CHAR, so a CHAR(1) column of an
+     * AL32UTF8 database cannot hold a non-ASCII character such as an accented letter. The column of a Java
+     * char or Character field is therefore declared with character length semantics, for example CHAR(1 CHAR).
+     */
+    @Override
+    protected String appendSize(Column col, String typeName) {
+        int javaType = col.getJavaType();
+        if (col.getType() == Types.CHAR && col.getSize() > 0 && "CHAR".equalsIgnoreCase(typeName)
+            && (javaType == JavaTypes.CHAR || javaType == JavaTypes.CHAR_OBJ)) {
+            return typeName + "(" + col.getSize() + " CHAR)";
+        }
+        return super.appendSize(col, typeName);
     }
 
     /**
@@ -1637,17 +1660,24 @@ public class OracleDictionary
     	buf.append(")");
     }
 
+    /**
+     * SUBSTR(str, -length) is NULL when length exceeds the length of the string, so the start
+     * position is computed from the length of the string instead. A length of 0 or less gives NULL,
+     * the empty string of Oracle. The string occurs twice in the SQL, so a parameter is bound twice.
+     */
     @Override
     public void right(SQLBuffer buf, FilterValue str, FilterValue length) {
-    	buf.append(rightFunctionName).append("(");
-    	str.appendTo(buf);
-    	buf.append(", -");
-    	if (length.getValue() instanceof Number) {
-    		buf.append(Long.toString(toLong(length)));
-    	} else {
-    		length.appendTo(buf);
-    	}
-    	buf.append(")");
+        buf.append(rightFunctionName).append("(");
+        str.appendTo(buf);
+        buf.append(", GREATEST(LENGTH(");
+        str.appendTo(buf);
+        buf.append(") - (");
+        if (length.getValue() instanceof Number) {
+            buf.append(Long.toString(toLong(length)));
+        } else {
+            length.appendTo(buf);
+        }
+        buf.append(") + 1, 1))");
     }
 
     @Override
@@ -1681,6 +1711,46 @@ public class OracleDictionary
             }
         }
         return sp;
+    }
+
+    /**
+     * Oracle has no EXTRACT(QUARTER) or EXTRACT(WEEK); both are read from TO_CHAR, IW being the
+     * ISO week that JPA defines. EXTRACT(HOUR/MINUTE/SECOND) is only allowed on TIMESTAMP values,
+     * whereas temporal values are usually held in DATE columns, so the value is cast to TIMESTAMP.
+     * EXTRACT(SECOND) then includes the fraction of the second, as JPA requires. The cast also drops
+     * the time zone of a TIMESTAMP WITH TIME ZONE value, such as an OffsetDateTime, so its hour and
+     * minute are those of the stored offset, as OffsetDateTime.getHour() returns them, and no longer
+     * those in UTC.
+     */
+    @Override
+    public String getExtractDateTimeFieldFunction(DateTimeExtractField extField) {
+        switch (extField) {
+            case QUARTER:
+                return "TO_NUMBER(TO_CHAR({1}, 'Q'))";
+            case WEEK:
+                return "TO_NUMBER(TO_CHAR({1}, 'IW'))";
+            case HOUR:
+            case MINUTE:
+            case SECOND:
+                return "EXTRACT(" + getExtractField(extField) + " FROM CAST({1} AS TIMESTAMP))";
+            default:
+                return super.getExtractDateTimeFieldFunction(extField);
+        }
+    }
+
+    /**
+     * An Oracle DATE has a time of day and there is no TIME type, so CAST(x AS DATE) would keep the
+     * time and CAST(x AS TIME) is invalid. The date is truncated to midnight instead, and the time is
+     * the time of day on 1970-01-01, as times are stored and bound. As a time is held in a DATE, it
+     * has whole seconds only, so the fraction of the second of a TIMESTAMP value is dropped. The value
+     * occurs twice in the SQL of the time, so a parameter is bound twice.
+     */
+    @Override
+    public String getExtractDateTimePartFunction(DateTimeExtractPart part) {
+        if (part == DateTimeExtractPart.DATE) {
+            return "TRUNC({1})";
+        }
+        return "(DATE '1970-01-01' + (CAST({1} AS DATE) - TRUNC({1})))";
     }
 
     // required to avoid ORA-01408: such column list already indexed

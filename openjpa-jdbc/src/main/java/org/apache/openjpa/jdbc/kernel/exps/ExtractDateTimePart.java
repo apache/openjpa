@@ -153,10 +153,14 @@ public class ExtractDateTimePart
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         ExtractDateTimePartExpState edtstate = (ExtractDateTimePartExpState) state;
-        sql.append("CAST( ");
-        _val.appendTo(sel, ctx, edtstate.valueState, sql, 0);
-        sql.append(" AS ");
-        sql.append(_part == DateTimeExtractPart.DATE ? "DATE)" : "TIME)");
+        String func = ctx.store.getDBDictionary().getExtractDateTimePartFunction(_part);
+        int start = 0;
+        for (int valPart = func.indexOf("{1}"); valPart != -1; valPart = func.indexOf("{1}", start)) {
+            sql.append(func.substring(start, valPart));
+            _val.appendTo(sel, ctx, edtstate.valueState, sql, 0);
+            start = valPart + 3;
+        }
+        sql.append(func.substring(start));
     }
 
     @Override

@@ -442,6 +442,43 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    /**
+     * SUBSTRING from a position behind the end of the string is the empty string, which Oracle
+     * cannot tell apart from NULL.
+     */
+    public void testSubstringBeyondString() {
+        EntityManager em = currentEntityManager();
+        String expected = getDbDictionary(getEmf()) instanceof OracleDictionary ? null : "";
+        String query = "SELECT SUBSTRING(u.name, 10) FROM CompUser AS u WHERE u.name = 'Seetha'";
+        List<?> result = em.createQuery(query).getResultList();
+        assertEquals(1, result.size());
+        assertEquals(expected, result.get(0));
+
+        query = "SELECT SUBSTRING(u.name, 10, 2) FROM CompUser AS u WHERE u.name = 'Seetha'";
+        result = em.createQuery(query).getResultList();
+        assertEquals(1, result.size());
+        assertEquals(expected, result.get(0));
+        endEm(em);
+    }
+
+    /**
+     * RIGHT(s, 0) is the empty string, which Oracle cannot tell apart from NULL.
+     */
+    public void testRightWithZeroLength() {
+        EntityManager em = currentEntityManager();
+        String expected = getDbDictionary(getEmf()) instanceof OracleDictionary ? null : "";
+        String query = "SELECT RIGHT(u.name, 0) FROM CompUser AS u WHERE u.name = 'Seetha'";
+        List<?> result = em.createQuery(query).getResultList();
+        assertEquals(1, result.size());
+        assertEquals(expected, result.get(0));
+
+        query = "SELECT RIGHT(u.name, :len) FROM CompUser AS u WHERE u.name = 'Seetha'";
+        result = em.createQuery(query).setParameter("len", 0).getResultList();
+        assertEquals(1, result.size());
+        assertEquals(expected, result.get(0));
+        endEm(em);
+    }
+
     public void testLeftAndRightOnStringLiteral() {
         EntityManager em = currentEntityManager();
         String query = "SELECT u.name FROM CompUser AS u WHERE LEFT('Seetha', 2) = LEFT(u.name, 2)"
@@ -775,11 +812,6 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractTimeFromInstant() {
-        DBDictionary dict = getDbDictionary(getEmf());
-        if (dict instanceof OracleDictionary) {
-            // Oracle has no TIME data type
-            return;
-        }
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT(TIME FROM {ts '2005-03-21 01:32:21'}) = {t '01:32:21'}";
@@ -792,10 +824,6 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractDateFromLocalDateTime() {
-        if (getDbDictionary(getEmf()) instanceof OracleDictionary) {
-            // Oracle does not support TIME data type
-            return;
-        }
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT(DATE FROM LOCAL DATETIME) > {d '2025-01-10'}";
@@ -808,11 +836,6 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractTimeFromLocalTime() {
-        DBDictionary dict = getDbDictionary(getEmf());
-        if (dict instanceof OracleDictionary) {
-            // Oracle has no TIME data type
-            return;
-        }
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT(TIME FROM LOCAL TIME) = {t '01:32:20'}";
@@ -855,11 +878,6 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractQUARTER() {
-        DBDictionary dict = getDbDictionary(getEmf());
-        if (dict instanceof OracleDictionary) {
-            // Oracle does not support EXTRACT(QUARTER)
-            return;
-        }
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT (QUARTER FROM {d '2006-03-21'}) = 2";
@@ -884,12 +902,6 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractWEEK() {
-        DBDictionary dict = getDbDictionary(getEmf());
-        if (dict instanceof DerbyDictionary || dict instanceof OracleDictionary) {
-            // Derby has no function for the ISO week, see TestExtractDateTimeField
-            // Oracle does not support EXTRACT(WEEK) (https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/EXTRACT-datetime.html)
-            return;
-        }
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT (WEEK FROM {d '2006-03-21'}) <= 12";
@@ -989,11 +1001,6 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     public void testExtractHourFromLocalTime() {
-        DBDictionary dict = getDbDictionary(getEmf());
-        if (dict instanceof OracleDictionary) {
-            // Oracle does not have TIME data type
-            return;
-        }
         EntityManager em = currentEntityManager();
         String query = "SELECT CURRENT_TIME, (EXTRACT(HOUR FROM LOCAL TIME) - c.age) FROM CompUser as c WHERE c.age = 23";
 
