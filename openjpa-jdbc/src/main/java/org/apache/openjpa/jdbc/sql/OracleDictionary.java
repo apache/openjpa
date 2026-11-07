@@ -1712,6 +1712,25 @@ public class OracleDictionary
     }
 
     /**
+     * Oracle reports a SYS_REFCURSOR parameter with the generic type {@link Types#OTHER} and the type
+     * name REF CURSOR, but its driver rejects registering an OUT parameter of type OTHER (ORA-17004).
+     * Such parameters are registered as {@link Types#REF_CURSOR} instead.
+     */
+    @Override
+    public StoredProcedure getStoredProcedure(DatabaseMetaData meta, DBIdentifier catalog, DBIdentifier schema,
+                                              String procedure) throws SQLException {
+        StoredProcedure sp = super.getStoredProcedure(meta, catalog, schema, procedure);
+        if (sp != null) {
+            for (Column col : sp.getColumns()) {
+                if (col.getType() == Types.OTHER && "REF CURSOR".equalsIgnoreCase(col.getTypeIdentifier().getName())) {
+                    col.setType(Types.REF_CURSOR);
+                }
+            }
+        }
+        return sp;
+    }
+
+    /**
      * Oracle has no EXTRACT(QUARTER) or EXTRACT(WEEK); both are read from TO_CHAR, IW being the
      * ISO week that JPA defines. EXTRACT(HOUR/MINUTE/SECOND) is only allowed on TIMESTAMP values,
      * whereas temporal values are usually held in DATE columns, so the value is cast to TIMESTAMP.

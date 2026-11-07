@@ -242,6 +242,62 @@ public class TestStoredProcedureQueryFixes extends SingleEMFTestCase {
         }
     }
 
+    /**
+     * The value of a numeric OUT parameter is returned in the numeric type the parameter was registered
+     * with, as databases report it in their own type (e.g. a BigDecimal for an INTEGER on Oracle).
+     */
+    public void testOutParameterHasRegisteredNumericType() throws Exception {
+        EntityManager em = emf.createEntityManager();
+        try {
+            exec(em, "DROP PROCEDURE XSUM", true);
+            exec(em, "CREATE PROCEDURE XSUM(IN A INTEGER,OUT S INTEGER,IN B INTEGER) " +
+                    "PARAMETER STYLE JAVA LANGUAGE JAVA EXTERNAL NAME " +
+                    "'" + TestStoredProcedureQueryFixes.class.getName() + ".sum'", false);
+
+            StoredProcedureQuery spq = em.createStoredProcedureQuery("XSUM");
+            spq.registerStoredProcedureParameter(1, Integer.class, ParameterMode.IN);
+            spq.registerStoredProcedureParameter(2, Long.class, ParameterMode.OUT);
+            spq.registerStoredProcedureParameter(3, Integer.class, ParameterMode.IN);
+            spq.setParameter(1, 3);
+            spq.setParameter(3, 4);
+            spq.execute();
+
+            assertEquals(7L, spq.getOutputParameterValue(2));
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
+     * A numeric OUT value that does not fit into the registered type is returned unchanged instead of being
+     * truncated.
+     */
+    public void testOutParameterIsNotNarrowedWithLoss() throws Exception {
+        EntityManager em = emf.createEntityManager();
+        try {
+            exec(em, "DROP PROCEDURE XSUM", true);
+            exec(em, "CREATE PROCEDURE XSUM(IN A INTEGER,OUT S INTEGER,IN B INTEGER) " +
+                    "PARAMETER STYLE JAVA LANGUAGE JAVA EXTERNAL NAME " +
+                    "'" + TestStoredProcedureQueryFixes.class.getName() + ".sum'", false);
+
+            assertEquals(40000, callSumAsShort(em, 30000, 10000));
+            assertEquals((short) 40, callSumAsShort(em, 30, 10));
+        } finally {
+            em.close();
+        }
+    }
+
+    private static Object callSumAsShort(EntityManager em, int a, int b) {
+        StoredProcedureQuery spq = em.createStoredProcedureQuery("XSUM");
+        spq.registerStoredProcedureParameter(1, Integer.class, ParameterMode.IN);
+        spq.registerStoredProcedureParameter(2, Short.class, ParameterMode.OUT);
+        spq.registerStoredProcedureParameter(3, Integer.class, ParameterMode.IN);
+        spq.setParameter(1, a);
+        spq.setParameter(3, b);
+        spq.execute();
+        return spq.getOutputParameterValue(2);
+    }
+
     // Derby stored procedure: s = a + b
     public static void sum(int a, int[] s, int b) {
         s[0] = a + b;
