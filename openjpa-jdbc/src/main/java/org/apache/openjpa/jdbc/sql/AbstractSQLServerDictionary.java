@@ -125,22 +125,25 @@ public abstract class AbstractSQLServerDictionary
         buf.append(" TOP ").append(Long.toString(end));
     }
 
+    /**
+     * SUBSTRING needs a length on SQL Server. Without one, the length of the string in bytes is used:
+     * it is never less than the number of characters left, also counts trailing blanks (which LEN
+     * ignores), and a start beyond the end of the string gives the empty string instead of the error
+     * a negative length would cause.
+     */
     @Override
     public void substring(SQLBuffer buf, FilterValue str, FilterValue start,
         FilterValue length) {
-        if (length != null)
+        if (length != null) {
             super.substring(buf, str, start, length);
-        else {
+        } else {
             buf.append("SUBSTRING(");
             str.appendTo(buf);
             buf.append(", ");
             start.appendTo(buf);
-            buf.append(", LEN(");
+            buf.append(", DATALENGTH(");
             str.appendTo(buf);
-            buf.append(")");
-            buf.append(" - (");
-            start.appendTo(buf);
-            buf.append(" - 1))");
+            buf.append("))");
         }
     }
 }
