@@ -200,3 +200,108 @@ jobs:
       - name: 'Remove snapshots before caching'
         if: always()
         run: find ~/.m2 -name '*SNAPSHOT' | xargs rm -Rf
+
+  hsqldb:
+    needs: check
+    if: needs.check.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    name: build (Java 21, test-hsqldb)
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Setup Java JDK
+        uses: actions/setup-java@v6.0.0
+        with:
+          distribution: 'zulu'
+          java-version: 21
+      - name: 'Cache Maven packages'
+        uses: actions/cache@v6.1.0
+        with:
+          path: ~/.m2
+          key: cache-21-test-hsqldb
+          restore-keys: cache-21-test-hsqldb
+      - name: 'Build with Maven'
+        run: mvn -Ptest-hsqldb -B clean install --file pom.xml
+      - name: 'Remove snapshots before caching'
+        if: always()
+        run: find ~/.m2 -name '*SNAPSHOT' | xargs rm -Rf
+
+  mssql:
+    needs: check
+    if: needs.check.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ['2017-latest', 'latest']
+    name: build (Java 21, test-mssql-docker, ${{ matrix.version }})
+    services:
+      mssql:
+        image: mcr.microsoft.com/mssql/server:${{ matrix.version }}
+        env:
+          ACCEPT_EULA: Y
+          SA_PASSWORD: OpenJP8tst
+        ports:
+          - 1433:1433
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Setup Java JDK
+        uses: actions/setup-java@v6.0.0
+        with:
+          distribution: 'zulu'
+          java-version: 21
+      - name: 'Cache Maven packages'
+        uses: actions/cache@v6.1.0
+        with:
+          path: ~/.m2
+          key: cache-21-test-mssql-docker
+          restore-keys: cache-21-test-mssql-docker
+      - name: 'Build with Maven'
+        run: mvn -Ptest-mssql-docker -B clean install --file pom.xml
+      - name: 'Remove snapshots before caching'
+        if: always()
+        run: find ~/.m2 -name '*SNAPSHOT' | xargs rm -Rf
+
+  oracle:
+    needs: check
+    if: needs.check.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ['23-slim']
+    name: build (Java 21, test-oracle-docker, ${{ matrix.version }})
+    services:
+      oracle:
+        image: gvenzl/oracle-free:${{ matrix.version }}
+        env:
+          ORACLE_PASSWORD: openjpatst
+          ORACLE_DATABASE: openjpatst
+          APP_USER: openjpatst
+          APP_USER_PASSWORD: openjpatst
+        ports:
+          - 1521:1521
+        options: >-
+          --health-cmd healthcheck.sh
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Setup Java JDK
+        uses: actions/setup-java@v6.0.0
+        with:
+          distribution: 'zulu'
+          java-version: 21
+      - name: 'Cache Maven packages'
+        uses: actions/cache@v6.1.0
+        with:
+          path: ~/.m2
+          key: cache-21-test-oracle-docker
+          restore-keys: cache-21-test-oracle-docker
+      - name: 'Build with Maven'
+        run: mvn -Ptest-oracle-docker -B clean install --file pom.xml
+      - name: 'Remove snapshots before caching'
+        if: always()
+        run: find ~/.m2 -name '*SNAPSHOT' | xargs rm -Rf
