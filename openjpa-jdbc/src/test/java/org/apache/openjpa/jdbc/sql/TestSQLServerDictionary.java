@@ -34,6 +34,7 @@ import java.sql.Types;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.Sequence;
@@ -237,6 +238,22 @@ public class TestSQLServerDictionary {
         assertEquals(1_000_000_000, dict.getTimestampPrecision(col));
     }
 
+    /**
+     * SUBSTRING without a length uses the length of the string in bytes, so a start beyond the end of the
+     * string gives the empty string and not a negative length, and trailing blanks are kept.
+     */
+    @Test
+    public void testSubstringWithoutLength() {
+        DBDictionary dict = new SQLServerDictionary();
+        SQLBuffer buf = new SQLBuffer(dict);
+        dict.substring(buf, value(null, "t0.NAME"), value(10, "?"), null);
+        assertEquals("SUBSTRING(t0.NAME, ?, DATALENGTH(t0.NAME))", buf.getSQL());
+
+        buf = new SQLBuffer(dict);
+        dict.substring(buf, value(null, "t0.NAME"), value(10, "?"), value(2, "?"));
+        assertEquals("SUBSTRING(t0.NAME, 10, 2)", buf.getSQL());
+    }
+
     private static Sequence sequence(int initial) {
         Sequence seq = new Sequence(DBIdentifier.newSequence("OJPA3034_SEQ"), new Schema());
         seq.setInitialValue(initial);
@@ -365,6 +382,26 @@ public class TestSQLServerDictionary {
                         new Class<?>[] {ResultSet.class}, rs);
                 }
                 throw new UnsupportedOperationException(method.getName());
+            });
+    }
+
+    /**
+     * A query value with the given constant value, appending the given SQL.
+     */
+    private static FilterValue value(Object constant, String sql) {
+        return (FilterValue) Proxy.newProxyInstance(FilterValue.class.getClassLoader(), new Class<?>[] {FilterValue.class},
+            (proxy, method, args) -> {
+                switch (method.getName()) {
+                    case "getValue":
+                        return constant;
+                    case "appendTo":
+                        if (args[0] instanceof SQLBuffer buf) {
+                            buf.append(sql);
+                        }
+                        return null;
+                    default:
+                        throw new UnsupportedOperationException(method.getName());
+                }
             });
     }
 }
