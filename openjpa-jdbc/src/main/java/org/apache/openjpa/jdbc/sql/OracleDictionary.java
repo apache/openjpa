@@ -810,9 +810,26 @@ public class OracleDictionary
         return rs.getObject(column, LocalDate.class);
     }
 
+    /**
+     * A time held in a DATE column, the default mapping of times on Oracle, loses the fraction of its
+     * second when it is stored. A time bound for such a column is bound at that precision, so that a
+     * time parameter equals the value stored for the same time.
+     */
     @Override
     public void setLocalTime(PreparedStatement stmnt, int idx, LocalTime val, Column col) throws SQLException {
-        stmnt.setObject(idx, val);
+        stmnt.setObject(idx, isTimeInDateColumn(col) ? val.withNano(0) : val);
+    }
+
+    private boolean isTimeInDateColumn(Column col) {
+        if (col == null) {
+            return false;
+        }
+        String typeName = col.getTypeName();
+        if (typeName != null) {
+            return typeName.toUpperCase(Locale.ENGLISH).startsWith("DATE");
+        }
+        return (col.getType() == Types.TIME && "DATE".equalsIgnoreCase(timeTypeName))
+            || (col.getType() == Types.TIME_WITH_TIMEZONE && "DATE".equalsIgnoreCase(timeWithZoneTypeName));
     }
 
     @Override

@@ -1377,23 +1377,27 @@ public class DBDictionary
      */
     public void setDate(PreparedStatement stmnt, int idx, Date val, Column col)
         throws SQLException {
-        if (col != null && col.getType() == Types.DATE)
+        if (col != null && col.getType() == Types.DATE) {
             setDate(stmnt, idx, new java.sql.Date(val.getTime()), null, col);
-        else if (col != null && col.getType() == Types.TIME)
+        } else if (col != null && col.getType() == Types.TIME) {
             setTime(stmnt, idx, new Time(val.getTime()), null, col);
-        else if (val instanceof Timestamp)
-            setTimestamp(stmnt, idx,(Timestamp) val, null, col);
-        else
+        } else if (val instanceof Timestamp timestamp) {
+            setTimestamp(stmnt, idx, timestamp, null, col);
+        } else {
             setTimestamp(stmnt, idx, new Timestamp(val.getTime()), null, col);
+        }
     }
 
     /**
      * Set the given value as a parameter to the statement.
+     * Without a calendar, a value for a DATE column or for no known column is bound as the date of its day,
+     * normalized to the start of the day as JDBC requires: drivers such as Oracle's store and compare the
+     * time of day of a {@link java.sql.Date} otherwise.
      */
     public void setDate(PreparedStatement stmnt, int idx, java.sql.Date val, Calendar cal, Column col)
         throws SQLException {
         if (cal == null) {
-            stmnt.setDate(idx, val);
+            stmnt.setDate(idx, col == null || col.getType() == Types.DATE ? Filters.toSqlDate(val) : val);
         }
         else {
             stmnt.setDate(idx, val, cal);

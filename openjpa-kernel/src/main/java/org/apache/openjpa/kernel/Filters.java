@@ -38,6 +38,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.apache.openjpa.enhance.Reflection;
@@ -494,6 +495,21 @@ public class Filters {
      */
     private static Instant toInstant(Date date) {
         return (date instanceof Timestamp) ? date.toInstant() : Instant.ofEpochMilli(date.getTime());
+    }
+
+    /**
+     * The {@link java.sql.Date} of the day of the given date in the default time zone, normalized to the
+     * start of that day as JDBC requires. {@code new java.sql.Date(millis)} keeps the time of day, which
+     * drivers such as Oracle's bind as part of a DATE value.
+     */
+    public static java.sql.Date toSqlDate(Date date) {
+        Calendar day = new GregorianCalendar();
+        day.setTime(date);
+        Calendar start = new GregorianCalendar();
+        start.clear();
+        start.set(Calendar.ERA, day.get(Calendar.ERA));
+        start.set(day.get(Calendar.YEAR), day.get(Calendar.MONTH), day.get(Calendar.DAY_OF_MONTH));
+        return new java.sql.Date(start.getTimeInMillis());
     }
 
     private static boolean allowNumericConversion(Class<?> actual, Class<?> target, boolean strict) {

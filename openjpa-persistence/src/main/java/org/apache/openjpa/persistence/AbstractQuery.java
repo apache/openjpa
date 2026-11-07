@@ -196,11 +196,14 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
 
     /**
      * Converts the given Date to a value corresponding to given temporal type.
+     * A {@link java.sql.Date} is the date of the day of the value, normalized to the start of the day as JDBC
+     * requires: drivers such as Oracle's bind the time of day of a date otherwise, and the value then never
+     * equals a stored date.
      */
     Object convertTemporalType(Date value, TemporalType type) {
         switch (type) {
         case DATE:
-            return new java.sql.Date(value.getTime());
+            return Filters.toSqlDate(value);
         case TIME:
             return new Time(value.getTime());
         case TIMESTAMP:
