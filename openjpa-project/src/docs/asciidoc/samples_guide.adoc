@@ -43,7 +43,7 @@ To run this tutorial:
 * Include the list of persistent classes in your configuration file. For JPA, you will want to add the following lines to [path]_persistence.xml_ before the `<property>` lines:
 
 
-[source]
+[source, xml]
 ----
 
 <class>samples.mixed.Machine</class>
@@ -56,14 +56,14 @@ If you are using JDO, point the metadata factory at the [path]_.jdo_
  resource containing your persistent classes:
 
 
-[source]
+[source, conf]
 ----
 
 openjpa.MetaDataFactory: Resources=samples/mixed/package.jdo
 ----
-* Compile the classes:
 
-``javac *.java``
+* Compile the classes: ``javac *.java``
+
 * You should then proceed to pass in the configuration file you are using to the enhancer: (Optional)
 
 ``java org.apache.openjpa.enhance.PCEnhancer -p persistence.xml Machine.java Crane.java Bulldozer.java

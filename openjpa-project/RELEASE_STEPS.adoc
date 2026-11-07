@@ -96,7 +96,8 @@ https://dist.apache.org/repos/dist/release/openjpa
 Add a new directory for the new version and upload the binaries.
 You might use the following getrelease.sh script for it:
 
------
+[code, bash]
+----
 #!/bin/sh
 mkdir $1
 cd $1
@@ -112,7 +113,7 @@ curl -O https://repository.apache.org/content/groups/public/org/apache/openjpa/o
 curl -O https://repository.apache.org/content/groups/public/org/apache/openjpa/openjpa-parent/${1}/openjpa-parent-${1}-source-release.zip.sha1
 
 cd ..
------
+----
 
 You also need to remove any now obsolete previous version.
 E.g. when releasing our release 2.4.2 we should remove 2.4.1.
@@ -125,9 +126,9 @@ Older still maintained versions remain on the dist area as long as the branch is
 The site for OpenJPA is maintained with the [Apache CMS](http://www.apache.org/dev/cmsref.html).
 The sources of the site are hosted in Subversion
 
------
+----
 svn co https://svn.apache.org/repos/asf/openjpa/site/trunk openjpa-site
------
+----
 
 
 ===  Update the download page

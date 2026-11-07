@@ -77,12 +77,13 @@ The JPA standard includes persistent class listings in its XML configuration for
 Add the following lines to [path]_../../META-INF/persistence.xml_ between the `<provider>`  and the `<properties>` elements:
 
 
-[source]
+[source, xml]
 ----
 
 <class>tutorial.persistence.Animal</class>
 <class>tutorial.persistence.Dog</class>
 ----
+
 * link:../../../tutorial/persistence/solutions[solutions ]: The solutions directory contains the complete solutions to this tutorial, including finished versions of the [path]_.java_ files listed above.
 
 
@@ -108,7 +109,7 @@ To do so, we must compile the [path]_.java_ files, as we would with any Java pro
 ====
 
 (((CLASSPATH))) Be sure that your [var]``CLASSPATH`` is set correctly.
-Note that your OpenJPA install directory should be in the [var]``CLASSPATH``, as the tutorial classes are located in the  `tutorial/persistence` directory under your OpenJPA install directory, and are in the 
+Note that your OpenJPA install directory should be in the [var]``CLASSPATH``, as the tutorial classes are located in the  `tutorial/persistence` directory under your OpenJPA install directory, and are in the
 `tutorial.persistence` package.
 ====
 
@@ -127,7 +128,7 @@ Notice that the class is a Plain Old Java Object (POJO), with several annotation
 First, let's examine the class level annotations:
 
 
-[source]
+[source, java]
 ----
 
 @Entity(name="Animal")
@@ -154,7 +155,7 @@ We could have chosen to use __ property access __, in which the implementation a
 In that case, we would have annotated our getter methods rather than our fields.
 
 
-[source]
+[source, java]
 ----
 
 @Id
@@ -178,7 +179,7 @@ For more information on these and other annotations, see <<jpa_overview_meta>>.
 . Compile the [path]_.java_ files.
 
 
-[source]
+[source, shell]
 ----
 
 javac *.java
@@ -188,7 +189,7 @@ You can use any Java compiler instead of ``javac``.
 . Enhance the persistent classes. (Optional)
 
 
-[source]
+[source, shell]
 ----
 
 java org.apache.openjpa.enhance.PCEnhancer Animal.java Dog.java
@@ -222,7 +223,7 @@ For more information on how to connect to a different database or how to add sup
 (((org.apache.openjpa.jdbc.meta.MappingTool))) Create the object-relational mappings and database schema.
 
 
-[source]
+[source, shell]
 ----
 
 java org.apache.openjpa.jdbc.meta.MappingTool Animal.java Dog.java
@@ -239,7 +240,7 @@ Additionally, <<ref_guide_mapping>> of the Reference Guide describes your other 
 If you are curious, you can view the schema OpenJPA created for the tutorial classes with OpenJPA's schema tool:
 
 
-[source]
+[source, shell]
 ----
 
 java org.apache.openjpa.jdbc.schema.SchemaTool -a reflect -f tmp.schema
@@ -251,7 +252,7 @@ You may delete the [path]_tmp.schema_ file before proceeding.
 . Populate the database with sample data.
 
 
-[source]
+[source, shell]
 ----
 
 java tutorial.persistence.SeedDatabase
@@ -275,7 +276,7 @@ First, let's add some code to [path]_AnimalMaintenance.java_ that allows us to e
 Modify the [method]``getAnimals`` method of [path]_AnimalMaintenance.java_ to look like this:
 
 
-[source]
+[source, java]
 ----
 
     /**
@@ -292,18 +293,20 @@ Modify the [method]``getAnimals`` method of [path]_AnimalMaintenance.java_ to lo
         return query.getResultList();
     }
 ----
+
 . Compile [path]_AnimalMaintenance.java_.
 
 
-[source]
+[source, shell]
 ----
 
 javac AnimalMaintenance.java
 ----
+
 . Take a look at the animals in the database.
 
 
-[source]
+[source, shell]
 ----
 
 java tutorial.persistence.AnimalMaintenance list Animal
@@ -313,7 +316,7 @@ Notice that [method]``list`` optionally takes a query filter.
 Let's explore the database some more, this time using filters:
 
 
-[source]
+[source, shell]
 ----
 
 java tutorial.persistence.AnimalMaintenance list "select a from Animal a where a.name = 'Binney'"
@@ -321,7 +324,7 @@ java tutorial.persistence.AnimalMaintenance list "select a from Animal a where a
 ----
 
 The Java Persistence Query Language (JPQL) is designed to look and behave much like an object oriented SQL dialect.
-The `name` and 
+The `name` and
 `price` fields identified in the above queries map to the member fields of those names in [class]``tutorial.persistence.Animal``.
 More details on JPQL syntax is available in <<jpa_overview_query>> of the JPA Overview.
 
@@ -345,7 +348,7 @@ It is not a required part of the JPA specification.
 Modify the [method]``persistObject`` method of [path]_AnimalMaintenance.java_ to look like this:
 
 
-[source]
+[source, java]
 ----
 
     /**
@@ -380,7 +383,7 @@ This class provides some convenience methods for obtaining an [class]``EntityMan
 . Recompile [path]_AnimalMaintenance.java_.
 
 
-[source]
+[source, shell]
 ----
 
 javac AnimalMaintenance.java
@@ -390,7 +393,7 @@ You now have a mechanism for adding new dogs to the database.
 Go ahead and add some by running `java tutorial.persistence.AnimalMaintenance add Dog
 <name> <price>` For example:
 
-[source]
+[source, shell]
 ----
 
 java tutorial.persistence.AnimalMaintenance add Dog Fluffy 35
@@ -398,7 +401,7 @@ java tutorial.persistence.AnimalMaintenance add Dog Fluffy 35
 
 You can view the contents of the database with:
 
-[source]
+[source, shell]
 ----
 
 java tutorial.persistence.AnimalMaintenance list Dog
@@ -416,7 +419,7 @@ This section demonstrates how to remove data from the datastore.
 Modify the [method]``deleteObjects`` method of [path]_AnimalMaintenance.java_ to look like this:
 
 
-[source]
+[source, java]
 ----
 
     /**
@@ -443,18 +446,20 @@ Modify the [method]``deleteObjects`` method of [path]_AnimalMaintenance.java_ to
         em.getTransaction().commit();
     }
 ----
+
 . Recompile [path]_AnimalMaintenance.java_.
 
 
-[source]
+[source, shell]
 ----
 
 javac AnimalMaintenance.java
 ----
+
 . Remove some animals from the database.
 
 
-[source]
+[source, shell]
 ----
 
 java tutorial.persistence.AnimalMaintenance remove <query>
@@ -484,7 +489,7 @@ Insert this snippet of code immediately _before_ the ``children`` field declarat
  file.
 
 
-[source]
+[source, java]
 ----
 
     @ManyToMany
@@ -494,42 +499,45 @@ Insert this snippet of code immediately _before_ the ``children`` field declarat
 ----
 
 The `@ManyToMany` annotation indicates that `children`  is one side of a many-to-many relation. `@JoinTable` describes how this relation maps to a database join table.
-The annotation's ``joinColumns`` name the join table's foreign key columns linking to the owning instance (the parent). In this case, column 
-`RABBIT_CHILDREN.PARENT_ID` is a foreign key to the parent's 
+The annotation's ``joinColumns`` name the join table's foreign key columns linking to the owning instance (the parent). In this case, column
+`RABBIT_CHILDREN.PARENT_ID` is a foreign key to the parent's
 `ID` primary key column.
 Similarly, the `inverseJoinColumns`  attribute denotes the foreign key columns linking to the collection elements (the children). For more details on the `@JoinTable` annotation, see <<jpa_overview_mapping>> of the JPA Overview.
 
-Now we'll map the other side of this bidirectional relation, the 
+Now we'll map the other side of this bidirectional relation, the
 `parents` field.
 Insert the following snippet of code immediately __before__ the `parents` field declaration in the [path]_Rabbit.java_ file.
 The `mappedBy` attribute identifies the name of the owning side of the relation.
 
 
-[source]
+[source, java]
 ----
 
     @ManyToMany(mappedBy="children")
 ----
+
 . Compile [path]_Rabbit.java_.
 
 
-[source]
+[source, shell]
 ----
 
 javac Rabbit.java
 ----
+
 . Enhance the [class]``Rabbit`` class. (Optional)
 
 
-[source]
+[source, shell]
 ----
 
 java org.apache.openjpa.enhance.PCEnhancer Rabbit.java
 ----
+
 . Refresh the object-relational mappings and database schema.
 
 
-[source]
+[source, shell]
 ----
 
 java org.apache.openjpa.jdbc.meta.MappingTool Rabbit.java
@@ -540,17 +548,18 @@ Now that we have a Rabbit class, let's get some preliminary rabbit data into the
 . Add a `<class>` entry for [class]``Rabbit`` to [path]_../../META-INF/persistence.xml_.
 
 
-[source]
+[source, xml]
 ----
 
 <class>tutorial.persistence.Rabbit</class>
 ----
+
 . Create some rabbits.
 
 Run the following commands a few times to add some male and female rabbits to the database:
 
 
-[source]
+[source, shell]
 ----
 
 java tutorial.persistence.AnimalMaintenance add Rabbit <name> false
@@ -560,15 +569,16 @@ java tutorial.persistence.AnimalMaintenance add Rabbit <name> true
 Now run some breeding iterations.
 
 
-[source]
+[source, shell]
 ----
 
 java tutorial.persistence.Rabbit breed 2
 ----
+
 . Look at your new rabbits.
 
 
-[source]
+[source, shell]
 ----
 
 java tutorial.persistence.AnimalMaintenance list Rabbit
@@ -590,34 +600,37 @@ Let's get it compiled and loaded:
 . Examine and compile [path]_Snake.java_.
 
 
-[source]
+[source, shell]
 ----
 
 javac Snake.java
 ----
+
 . Enhance the class. (Optional)
 
 
-[source]
+[source, shell]
 ----
 
 java org.apache.openjpa.enhance.PCEnhancer Snake.java
 ----
+
 . Refresh the mappings and database.
 
 As we have created a new persistent class, we must map it to the database and change the schema to match.
 So run the mapping tool:
 
 
-[source]
+[source, shell]
 ----
 
 java org.apache.openjpa.jdbc.meta.MappingTool Snake.java
 ----
+
 . Add a `<class>` entry for [class]``Snake`` to [path]_../../META-INF/persistence.xml_.
 
 
-[source]
+[source, xml]
 ----
 
 <class>tutorial.persistence.Snake</class>
@@ -625,7 +638,7 @@ java org.apache.openjpa.jdbc.meta.MappingTool Snake.java
 
 Once you have compiled everything, add a few snakes to the database using:
 
-[source]
+[source, shell]
 ----
 
 java tutorial.persistence.AnimalMaintenance add Snake "name" <length>
@@ -634,7 +647,7 @@ java tutorial.persistence.AnimalMaintenance add Snake "name" <length>
 Where [replaceable]``<length>`` is the length in feet for the new snake.
 To see the new snakes in the database, run:
 
-[source]
+[source, shell]
 ----
 
 java tutorial.persistence.AnimalMaintenance list Snake
@@ -649,7 +662,7 @@ First, let's modify [path]_Snake.java_ to contain a list of eaten rabbits.
 . Add the following code snippets to [path]_Snake.java_.
 
 
-[source]
+[source, java]
 ----
 
     // This list will be persisted into the database as
@@ -668,7 +681,7 @@ For more information on types of relations, see <<jpa_overview_mapping_field>> o
 Modify the `toString(boolean)` method to output the giTract list.
 
 
-[source]
+[source, java]
 ----
 
     public String toString(boolean detailed)
@@ -694,7 +707,7 @@ Modify the `toString(boolean)` method to output the giTract list.
 Add the following methods.
 
 
-[source]
+[source, java]
 ----
 
     /**
@@ -772,10 +785,11 @@ Add the following methods.
             + "\"snakequery\"");
     }
 ----
+
 . Add an `eater` field to [path]_Rabbit.java_, and a getter and setter.
 
 
-[source]
+[source, java]
 ----
 
     @ManyToOne @JoinColumn(name="EATER_ID")
@@ -802,16 +816,17 @@ The rabbit table has an ``EATER_ID`` column that is a foreign key to the `ID`  p
 . Compile [path]_Snake.java_ and [path]_Rabbit.java_ and optionally enhance the classes.
 
 
-[source]
+[source, shell]
 ----
 
 javac Snake.java Rabbit.java
 java org.apache.openjpa.enhance.PCEnhancer Snake.java Rabbit.java
 ----
+
 . Refresh the mappings and database.
 
 
-[source]
+[source, shell]
 ----
 
 java org.apache.openjpa.jdbc.meta.MappingTool Snake.java Rabbit.java
@@ -819,7 +834,7 @@ java org.apache.openjpa.jdbc.meta.MappingTool Snake.java Rabbit.java
 
 Now, experiment with the following commands:
 
-[source]
+[source, shell]
 ----
 
 java tutorial.persistence.Snake eat "select s from Snake s where s.name = '<name>'"
@@ -832,7 +847,7 @@ java tutorial.persistence.AnimalMaintenance details "select s from Snake s where
 Imagine that one of the snakes in the database was named Killer.
 To find out which rabbits Killer ate, we could run either of the following two queries:
 
-[source]
+[source, shell]
 ----
 
 java tutorial.persistence.AnimalMaintenance details "select s from Snake s where s.name = 'Killer'"
@@ -847,7 +862,7 @@ It is also possible to traverse collection fields.
 Imagine that there was a rabbit called Roger in the datastore and that one of the snakes ate it.
 In order to determine who ate Roger Rabbit, you could run a query like this:
 
-[source]
+[source, shell]
 ----
 
 java tutorial.persistence.AnimalMaintenance details "select s from Snake s inner join s.giTract r where r.name = 'Roger'"
@@ -925,7 +940,7 @@ the default name for a WebLogic 9 install would be simply ``openjpa-ejb``.
 
 Compile the source files in place both in this base directory as well as the nested [path]_ejb_ and [path]_jsp_ directories:
 
-[source]
+[source, shell]
 ----
 
 javac *.java  ejb/*.java jsp/*.java
@@ -934,7 +949,7 @@ javac *.java  ejb/*.java jsp/*.java
 Enhance the Car class.
 (Optional)
 
-[source]
+[source, shell]
 ----
 
 java org.apache.openjpa.enhance.PCEnhancer Car.java
@@ -945,13 +960,13 @@ Run the mapping tool; make sure that your [path]_META-INF/persistence.xml_
 Driver, URL, etc.) as your JCA installation.
 You should update your JCA configuration to include [class]``samples.persistence.j2ee.Car`` in the <<openjpa.MetaDataFactory,MetaDataFactory>> property:
 
-[source]
+[source, xml]
 ----
 
 <config-property name="MetaDataFactory">Types=samples.persistence.j2ee.Car</config-property/>
 ----
 
-[source]
+[source, shell]
 ----
 
 java org.apache.openjpa.jdbc.meta.MappingTool Car.java
@@ -963,7 +978,7 @@ This ear can now be deployed to your appserver.
 Be sure to add the class [class]``samples.j2ee.Car`` to the `openjpa.PersistentClasses` OpenJPA configuration property.
 This will automatically register the Entity.
 
-[source]
+[source, shell]
 ----
 
 ant -f build.xml

@@ -58,7 +58,8 @@ Following is an example of how to use the nested `config` tag in a [path]_build.
 [[ref_guide_integration_conf_config]]
 .Using the <config> Ant Tag
 ====
-[source]
+
+[source, xml]
 ----
 
 <mappingtool>
@@ -70,16 +71,18 @@ Following is an example of how to use the nested `config` tag in a [path]_build.
     connectionDriverName="oracle.jdbc.driver.OracleDriver" />
 </mappingtool>
 ----
+
 ====
 
-It is also possible to specify a `properties` or 
+It is also possible to specify a `properties` or
 `propertiesFile` attribute on the `config` tag, which will be used to locate a properties resource or file.
 The resource will be loaded relative to the current CLASSPATH.
 
 [[ref_guide_integration_props]]
 .Using the Properties Attribute of the <config> Tag
 ====
-[source]
+
+[source, xml]
 ----
 
 <mappingtool>
@@ -89,12 +92,14 @@ The resource will be loaded relative to the current CLASSPATH.
   <config properties="openjpa-dev.xml"/>
 </mappingtool>
 ----
+
 ====
 
 [[ref_guide_integration_propsfile]]
 .Using the PropertiesFile Attribute of the <config> Tag
 ====
-[source]
+
+[source, xml]
 ----
 
 <mappingtool>
@@ -104,6 +109,7 @@ The resource will be loaded relative to the current CLASSPATH.
   <config propertiesFile="../conf/openjpa-dev.xml"/>
 </mappingtool>
 ----
+
 ====
 
 Tasks also accept a nested `classpath` element, which you can use in place of the default classpath.
@@ -116,7 +122,8 @@ Following is an example of using a `classpath` tag:
 [[ref_guide_integration_conf_classpath]]
 .Using the <classpath> Ant Tag
 ====
-[source]
+
+[source, xml]
 ----
 
 <openjpac>
@@ -130,6 +137,7 @@ Following is an example of using a `classpath` tag:
   </classpath>
 </openjpac>
 ----
+
 ====
 
 Finally, tasks that invoke code-generation tools like the application identity tool and reverse mapping tool accept a nested `codeformat` element.
@@ -138,13 +146,15 @@ See the code formatting documentation in <<ref_guide_conf_devtools_format>> for 
 [[ref_guide_integration_conf_codeformat]]
 .Using the <codeformat> Ant Tag
 ====
-[source]
+
+[source, xml]
 ----
 
 <reversemappingtool package="com.xyz.jdo" directory="${basedir}/src">
   <codeformat tabSpaces="4" spaceBeforeParen="true" braceOnSameLine="false"/>
 </reversemappingtool>
 ----
+
 ====
 
 [[ref_guide_integration_enhance]]
@@ -167,7 +177,8 @@ Following is an example of using the enhancer task in a [path]_build.xml_
 [[ref_guide_integration_enhance_task]]
 .Invoking the Enhancer from Ant
 ====
-[source]
+
+[source, xml]
 ----
 
 
@@ -202,6 +213,7 @@ Following is an example of using the enhancer task in a [path]_build.xml_
     <echo message="Enhancement complete" />
 </target>
 ----
+
 ====
 
 [[ref_guide_integration_appidtool]]
@@ -222,7 +234,8 @@ Following is an example of using the application identity tool task in a [path]_
 [[ref_guide_integration_appidtool_task]]
 .Invoking the Application Identity Tool from Ant
 ====
-[source]
+
+[source, xml]
 ----
 
 <target name="appids">
@@ -239,6 +252,7 @@ Following is an example of using the application identity tool task in a [path]_
   </appidtool>
 </target>
 ----
+
 ====
 
 [[ref_guide_integration_mappingtool]]
@@ -259,7 +273,8 @@ Following is an example of a [path]_build.xml_ target that invokes the mapping t
 [[ref_guide_integration_mappingtool_task]]
 .Invoking the Mapping Tool from Ant
 ====
-[source]
+
+[source, xml]
 ----
 
 <target name="refresh">
@@ -276,6 +291,7 @@ Following is an example of a [path]_build.xml_ target that invokes the mapping t
   </mappingtool>
 </target>
 ----
+
 ====
 
 [[ref_guide_integration_revmappingtool]]
@@ -291,7 +307,8 @@ Following is an example of a [path]_build.xml_ target that invokes the reverse m
 [[ref_guide_integration_revmappingtool_task]]
 .Invoking the Reverse Mapping Tool from Ant
 ====
-[source]
+
+[source, xml]
 ----
 
 <target name="reversemap">
@@ -307,6 +324,7 @@ Following is an example of a [path]_build.xml_ target that invokes the reverse m
   </reversemappingtool>
 </target>
 ----
+
 ====
 
 [[ref_guide_integration_schematool]]
@@ -321,7 +339,8 @@ Following is an example of a [path]_build.xml_ target that invokes the schema to
 [[ref_guide_integration_schematool_task]]
 .Invoking the Schema Tool from Ant
 ====
-[source]
+
+[source, xml]
 ----
 
 <target name="schema">
@@ -338,6 +357,7 @@ Following is an example of a [path]_build.xml_ target that invokes the schema to
   </schematool>
 </target>
 ----
+
 ====
 
 [[ref_guide_integration_dbcp]]
@@ -351,25 +371,30 @@ For Java SE or applications running in application managed mode, the OpenJPA agg
 (((DBCP , configuration options)))
 
 The <<ref_guide_dbsetup_thirdparty,JDBC DataSource configuration options>> that we will need to modify in order to use Apache Commons DBCP for connection pooling are:
-[source]
+
+[source, xml]
 ----
 
     connectionDriverName="org.apache.commons.dbcp.BasicDataSource"
     connectionProperties="DriverClassName=<prior connectionDriverName>, ..."
 ----
+
 Additional Commons DBCP arguments can be provided in the connectionProperties value, such as:
-[source]
+
+[source, xml]
 ----
 
     MaxTotal=10,MaxIdle=5,MinIdle=2,MaxWait=60000
 ----
+
 Please visit the Commons DBCP website for the entire list of http://commons.apache.org/dbcp/configuration.html[configuration options] and explanations.
 
 [[ref_guide_integration_dbcp_derby]]
 .Using Commons DBCP with Apache Derby
 ====
 For example, to use Commons DBCP with an Apache Derby database server, we would need to provide the following settings, as either settings in the persistence.xml or as system environment overrides:
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.ConnectionDriverName" value="org.apache.commons.dbcp.BasicDataSource"/>

@@ -57,7 +57,8 @@ The example assumes execution outside a container.
 [[jpa_overview_arch_interact_outside]]
 .Interaction of Interfaces Outside Container
 ====
-[source]
+
+[source,java]
 ----
 
   // get an EntityManagerFactory using the Persistence class
@@ -74,9 +75,9 @@ The example assumes execution outside a container.
 
   // query for all employees who work in our research division
   // and put in over 40 hours a week average
-  Query query = em.createQuery("SELECT e "
-                               "  FROM Employee e "
-                               " WHERE e.division.name = 'Research' "
+  Query query = em.createQuery("SELECT e " +
+                               "  FROM Employee e " +
+                               " WHERE e.division.name = 'Research' " +
                                "   AND e.avgHours > 40");
   List results = query.getResultList();
 
@@ -92,6 +93,7 @@ The example assumes execution outside a container.
   // free the resources
   em.close();
 ----
+
 ====
 
 Within a container, the [class]``EntityManager`` will be injected and transactions will be handled declaratively.
@@ -100,7 +102,8 @@ Thus, the in-container version of the example consists entirely of business logi
 [[jpa_overview_arch_interact_inside]]
 .Interaction of Interfaces Inside Container
 ====
-[source]
+
+[source, java]
 ----
 
 // query for all employees who work in our research division
@@ -116,6 +119,7 @@ for (Object res : results) {
     emp.setSalary(emp.getSalary() * 1.1);
 }
 ----
+
 ====
 
 The remainder of this document explores the JPA interfaces in detail.

@@ -36,7 +36,7 @@ Within a container, you will typically use _injection_ to access an [class]``Ent
 Applications operating outside of a container, however, can use the https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/persistence[
 Persistence] class to obtain [class]``EntityManagerFactory`` objects in a vendor-neutral fashion.
 
-[source]
+[source, java]
 ----
 
 public static EntityManagerFactory createEntityManagerFactory(String name);
@@ -54,7 +54,7 @@ For example, if your `CLASSPATH` contains the [path]_conf_ directory, you could 
 
 The [method]``getPersistenceUtil`` method returns a PersistenceUtil interface that can be used to determine whether an entity or attribute of an entity is loaded.
 
-[source]
+[source, java]
 ----
 
 PersistenceUtil pUtil = Persistence.getPersistenceUtil();
@@ -71,7 +71,7 @@ With the introduction of JPA 2.0, there are two versions of the [path]_persisten
 The most current revision of the 2.0 persistence schema is presented below.
 Version 1.0 of the persistence schema can be found at http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd.
 
-[source]
+[source, xml]
 ----
 
 <?xml version="1.0" encoding="UTF-8"?>
@@ -384,7 +384,7 @@ Version 1.0 of the persistence schema can be found at http://java.sun.com/xml/ns
 </xsd:schema>
 ----
 
-The root element of a [path]_persistence.xml_ file is ``persistence``, which then contains one or more 
+The root element of a [path]_persistence.xml_ file is ``persistence``, which then contains one or more
 `persistence-unit` definitions.
 The root element should include the version attribute with the appropriate version, `1.0` for a version 1.0 file and `2.0` for a version 2.0 file.
 Each persistence unit describes the configuration for the entity managers created by the persistence unit's entity manager factory.
@@ -417,7 +417,8 @@ Here is a typical [path]_persistence.xml_ file for a non-EE environment:
 [[jpa_overview_persistence_xmlex]]
 .persistence.xml
 ====
-[source]
+
+[source, xml]
 ----
 
 <?xml version="1.0"?>
@@ -438,6 +439,7 @@ Here is a typical [path]_persistence.xml_ file for a non-EE environment:
   </persistence-unit>
 </persistence>
 ----
+
 ====
 
 [[jpa_overview_persistence_use]]
@@ -450,7 +452,8 @@ This bootstrapping code is only necessary in non-EE environments; in an EE envir
 [[jpa_overview_persistence_getemfactory]]
 .Obtaining an EntityManagerFactory
 ====
-[source]
+
+[source, java]
 ----
 
 // if your persistence.xml file does not contain all settings already, you
@@ -461,6 +464,7 @@ Properties props = new Properties();
 // create the factory defined by the "openjpa" entity-manager entry
 EntityManagerFactory emf = Persistence.createEntityManagerFactory("openjpa", props);
 ----
+
 ====
 
 ifdef::backend-docbook[]

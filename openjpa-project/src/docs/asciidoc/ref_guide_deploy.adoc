@@ -65,7 +65,7 @@ Simply set the ``openjpa.TransactionMode`` key of the given [class]``Map`` to th
 
 [NOTE]
 ====
-You can also override the ``openjpa.ConnectionUserName``, ``openjpa.ConnectionPassword``, and 
+You can also override the ``openjpa.ConnectionUserName``, ``openjpa.ConnectionPassword``, and
 `openjpa.ConnectionRetainMode` settings using the given [class]``Map``.
 ====
 
@@ -88,12 +88,14 @@ See the Javadoc for of each class for details on the bean properties you can pas
 [[ref_guide_enterprise_transex]]
 .Configuring Transaction Manager Integration
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.TransactionMode" value="managed"/>
 <property name="openjpa.ManagedRuntime" value="jndi(TransactionManagerName=java:/TransactionManager)"/>
 ----
+
 ====
 
 [[ref_guide_enterprise_xa]]

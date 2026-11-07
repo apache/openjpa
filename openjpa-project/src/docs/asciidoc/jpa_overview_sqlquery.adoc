@@ -39,7 +39,7 @@ The following sections detail each use.
 
 The [class]``EntityManager`` has two factory methods suitable for creating SQL queries:
 
-[source]
+[source, java]
 ----
 
 public Query createNativeQuery(String sqlString, Class resultClass);
@@ -54,13 +54,15 @@ The example below shows these methods in action.
 [[jpa_overview_sqlquery_createex]]
 .Creating a SQL Query
 ====
-[source]
+
+[source, java]
 ----
 
 EntityManager em = ...;
 Query query = em.createNativeQuery("SELECT * FROM MAG", Magazine.class);
 processMagazines(query.getResultList());
 ----
+
 ====
 
 [NOTE]
@@ -93,7 +95,8 @@ image::img/sqlquery-model.png[]
 [[jpa_overview_sqlquery_objex]]
 .Retrieving Persistent Objects
 ====
-[source]
+
+[source, java]
 ----
 
 Query query = em.createNativeQuery("SELECT ISBN, TITLE, PRICE, "
@@ -102,6 +105,7 @@ List<Magazine> results = (List<Magazine>) query.getResultList();
 for (Magazine mag : results)
     processMagazine(mag);
 ----
+
 ====
 
 The query above works as advertised, but isn't very flexible.
@@ -110,7 +114,8 @@ Let's update it to take in parameters for the minimum and maximum price, so we c
 [[jpa_overview_sqlquery_obj_paramex]]
 .SQL Query Parameters
 ====
-[source]
+
+[source, java]
 ----
 
 Query query = em.createNativeQuery("SELECT ISBN, TITLE, PRICE, "
@@ -123,6 +128,7 @@ List<Magazine> results = (List<Magazine>) query.getResultList();
 for (Magazine mag : results)
     processMagazine(mag);
 ----
+
 ====
 
 

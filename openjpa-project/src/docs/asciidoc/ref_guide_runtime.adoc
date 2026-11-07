@@ -65,11 +65,13 @@ As a <<ref_guide_conf_plugins,plugin string>>, this property can be used to conf
 [[ref_guide_runtime_pm_evictex]]
 .Evict from Data Cache
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.BrokerImpl" value="EvictFromDataCache=true"/>
 ----
+
 ====
 
 Additionally, some advanced users may want to add capabilities to OpenJPA's internal link:../../apidocs/org/apache/openjpa/kernel/BrokerImpl.html[
@@ -92,7 +94,7 @@ You may have noticed the examples throughout this document using the [method]``O
 This is the recommended practice.
 Some application server vendors may proxy OpenJPA's JPA implementation, preventing a straight cast. [class]``OpenJPAPersistence``'s [method]``cast`` methods work around these proxies.
 
-[source]
+[source, java]
 ----
 
 public static OpenJPAEntityManagerFactory cast(EntityManagerFactory emf);
@@ -143,7 +145,8 @@ The following code illustrates iterating over all instances of the [class]``Maga
 [[ref_guide_runtime_jpaextentex]]
 .Using a JPA Extent
 ====
-[source]
+
+[source, java]
 ----
 
 import org.apache.openjpa.persistence.*;
@@ -155,6 +158,7 @@ Extent<Magazine> mags = kem.createExtent(Magazine.class, false);
 for (Magazine m : mags)
     processMagazine(m);
 ----
+
 ====
 
 [[ref_guide_runtime_jpacache]]
@@ -238,13 +242,15 @@ It defaults to -1.
 [[ref_guide_locking_default_conf]]
 .Setting Default Lock Levels
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.ReadLockLevel" value="none"/>
 <property name="openjpa.WriteLockLevel" value="write"/>
 <property name="openjpa.LockTimeout" value="30000"/>
 ----
+
 ====
 
 [[ref_guide_locking_runtime]]
@@ -255,7 +261,7 @@ At the beginning of each datastore transaction, OpenJPA initializes the [class]`
 By changing the fetch plan's locking properties, you can control how objects loaded at different points in the transaction are locked.
 You can also use the fetch plan of an individual [class]``Query`` to apply your locking changes only to objects loaded through that [class]``Query``.
 
-[source]
+[source, java]
 ----
 
 public LockModeType getReadLockMode();
@@ -273,7 +279,8 @@ You cannot lock objects outside of a transaction.
 [[ref_guide_locking_fetch]]
 .Setting Runtime Lock Levels
 ====
-[source]
+
+[source, java]
 ----
 
 import org.apache.openjpa.persistence.*;
@@ -300,6 +307,7 @@ Market market = em.find(Market.class, marketId);
 stock.setPrice(market.calculatePrice(stock));
 em.getTransaction().commit();
 ----
+
 ====
 
 [[ref_guide_locking_apis]]
@@ -308,7 +316,7 @@ em.getTransaction().commit();
 
 In addition to allowing you to control implicit locking levels, OpenJPA provides explicit APIs to lock objects and to retrieve their current lock level.
 
-[source]
+[source, java]
 ----
 
 public LockModeType OpenJPAEntityManager.getLockMode(Object pc);
@@ -320,7 +328,7 @@ In addition to the standard https://jakarta.ee/specifications/persistence/3.2/ap
 EntityManager.lock(Object, LockModeType)] method, the link:../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html[
 OpenJPAEntityManager] exposes the following methods to lock objects explicitly:
 
-[source]
+[source, java]
 ----
 
 public void lock(Object pc);
@@ -337,7 +345,8 @@ The example below demonstrates these methods in action.
 [[ref_guide_locking_explicit]]
 .Locking APIs
 ====
-[source]
+
+[source, java]
 ----
 
 import org.apache.openjpa.persistence.*;
@@ -359,6 +368,7 @@ stock.setPrice(market.calculatePrice(stock));
 
 oem.getTransaction().commit();
 ----
+
 ====
 
 [[ref_guide_locking_lockmgr]]
@@ -379,15 +389,16 @@ For example: `VersionCheckOnReadLock` and ``VersionUpdateOnWriteLock`` propertie
 This is the default `openjpa.LockManager` setting in OpenJPA.
 * ``pessimistic``: This is an alias for the link:../../apidocs/org/apache/openjpa/jdbc/kernel/PessimisticLockManager.html[ org.apache.openjpa.jdbc.kernel.PessimisticLockManager ], which uses SELECT FOR UPDATE statements (or the database's equivalent) to lock the database rows corresponding to locked objects. This lock manager does not distinguish between read locks and write locks; all locks are write locks.
 
-The `pessimistic` LockManager can be configured to additionally perform the version checking and incrementing behavior of the `version`  lock manager described below by setting its 
+The `pessimistic` LockManager can be configured to additionally perform the version checking and incrementing behavior of the `version`  lock manager described below by setting its
 `VersionCheckOnReadLock` and `VersionUpdateOnWriteLock` properties:
 
 
-[source]
+[source, xml]
 ----
 
 <property name="openjpa.LockManager" value="pessimistic(VersionCheckOnReadLock=true,VersionUpdateOnWriteLock=true)"/>
 ----
+
 * ``version``: This is an alias for the link:../../apidocs/org/apache/openjpa/kernel/VersionLockManager.html[ org.apache.openjpa.kernel.VersionLockManager]. This lock manager does not perform any exclusive locking, but instead ensures read consistency by verifying that the version of all read-locked instances is unchanged at the end of the transaction. Furthermore, a write lock will force an increment to the version at the end of the transaction, even if the object is not otherwise modified. This ensures read consistency with non-blocking behavior.
 * ``none``: This is an alias for the link:../../apidocs/org/apache/openjpa/kernel/NoneLockManager.html[ org.apache.openjpa.kernel.NoneLockManager], which does not perform any locking at all.
 
@@ -400,11 +411,13 @@ In order for the `version` or `mixed` lock managers to prevent the dirty read ph
 [[ref_guide_locking_disable]]
 .Disabling Locking
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.LockManager" value="none"/>
 ----
+
 ====
 
 [[ref_guide_locking_rules]]
@@ -434,18 +447,20 @@ You should be aware of the issues outlined in this section, as they may affect y
 
 When using the pessimistic lock manager, the case above can only occur when OpenJPA cannot issue the state-loading SELECT as a locking statement due to database limitations.
 For example, some databases cannot lock SELECTs that use joins.
-The pessimistic lock manager will log an INFO message to the 
+The pessimistic lock manager will log an INFO message to the
 `openjpa.Runtime` logging channel whenever it cannot lock the initial SELECT due to database limitations.
 By paying attention to these log messages, you can see where you might consider using an object refresh to guarantee that you have the most recent state, or where you might rethink the way you load the state in question to circumvent the database limitations that prevent OpenJPA from issuing a locking SELECT in the first place.
 * When using the pessimistic lock manager and named queries you will see the following ``WARNING`` message logged if you do not specify a lockMode on the named query or you explicitly set it to ``LockModeType.NONE``. When using the pessimistic lock manager a `LockModeType.NONE` will always be promoted to ``LockModeType.READ``.
 
-[source]
+[source, log]
 ----
 
 WARN   [main] openjpa.MetaData - Encountered a read lock level less than LockModeType.READ when processing the NamedQuery annotation "findEmployeeById" in class "org.apache.openjpa.persistence.lockmgr.LockEmployee". Setting query lock level to LockModeType.READ.
 ----
+
 If you are using the pessimistic lock manager and you truly do want to set the lock mode to NONE for a given query, you can use a fetch plan to do so.
-[source]
+
+[source, java]
 ----
 
 OpenJPAQuery q = em.createNamedQuery("findEmployeeById");
@@ -472,7 +487,7 @@ OpenJPAEntityManager] have the following methods to control savepoint behavior.
 Note that the savepoints work in tandem with the current transaction.
 This means that savepoints require an open transaction, and that a rollback of the transaction will rollback all of the changes in the transaction regardless of any savepoints set.
 
-[source]
+[source, java]
 ----
 
 void setSavepoint(String name);
@@ -499,7 +514,8 @@ The following simple example illustrates setting, releasing, and rolling back to
 [[ref_guide_savepoints_example]]
 .Using Savepoints
 ====
-[source]
+
+[source, java]
 ----
 
 import org.apache.openjpa.persistence.*;
@@ -528,6 +544,7 @@ oem.rollbackToSavepoint("price");
 // the price is now restored to mag.getPageCount() * pricePerPage
 oem.getTransaction().commit();
 ----
+
 ====
 
 [[ref_guide_savepoints_conf]]
@@ -549,7 +566,7 @@ OpenJPA includes the following [class]``SavepointManager`` plugins:
 If JPQL and SQL queries do not match your needs, OpenJPA also allows you to name a Java method to use to load a set of objects.
 In a _MethodQL_  query, the query string names a static method to invoke to determine the matching objects:
 
-[source]
+[source, java]
 ----
 
 import org.apache.openjpa.persistence.*;
@@ -586,7 +603,7 @@ import org.apache.openjpa.persistence.*;
 
 For datastore queries, the method must have the following signature:
 
-[source]
+[source, java]
 ----
 
 public static ResultObjectProvider xxx(StoreContext ctx, ClassMetaData meta, boolean subclasses, Map params, FetchConfiguration  fetch)
@@ -597,7 +614,7 @@ If the returned objects do not have all fields in the given fetch configuration 
 
 In-memory execution is slightly different, taking in one object at a time and returning a boolean on whether the object matches the query:
 
-[source]
+[source, java]
 ----
 
 public static boolean xxx(StoreContext ctx, ClassMetaData meta, boolean subclasses, Object obj, Map params, FetchConfiguration fetch)
@@ -671,7 +688,8 @@ See <<ref_guide_conf_plugins>> for plugin string formatting.
 [[ref_guide_sequence_named]]
 .Named Seq Sequence
 ====
-[source]
+
+[source, java]
 ----
 
 @Entity
@@ -690,11 +708,12 @@ public class Author {
 
 Note that if you want to use a plugin string without any arguments, you must still suffix the plugin type with `()` to differentiate it from a sequence name in the `SequenceGenerator.sequenceName` attribute:
 
-[source]
+[source, java]
 ----
 
 @SequenceGenerator(name="AuthorSeq", sequenceName="table()")
 ----
+
 ====
 
 OpenJPA maintains a _system_ sequence to generate datastore identity values for classes that do not declare a specific datastore identity strategy.
@@ -704,18 +723,20 @@ This property accepts a plugin string describing a [class]``Seq`` instance.
 [[ref_guide_sequence_systemex]]
 .System Sequence Configuration
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.Sequence" value="time(Increment=100)"/>
 ----
+
 ====
 
-In JPA, set your `GeneratedValue` annotation's 
+In JPA, set your `GeneratedValue` annotation's
 `strategy` attribute to `AUTO` to use the configured system sequence.
 Or, because `AUTO` is the default strategy, use the annotation without attributes:
 
-[source]
+[source, java]
 ----
 
 @GeneratedValue
@@ -727,7 +748,7 @@ private long id;
 
 OpenJPA allows you to access named generators at runtime through the [method]``OpenJPAEntityManager.getNamedGenerator`` method:
 
-[source]
+[source, java]
 ----
 
 public Generator getNamedGenerator(String name);
@@ -751,7 +772,7 @@ By registering one or more link:../../apidocs/org/apache/openjpa/event/Transacti
 org.apache.openjpa.event.TransactionListener] s, you can receive notifications when transactions begin, flush, rollback, commit, and more.
 Where appropriate, event notifications include the set of persistence-capable objects participating in the transaction.
 
-[source]
+[source, java]
 ----
 
 public void addTransactionListener(Object listener);
@@ -761,7 +782,7 @@ public void removeTransactionListener(Object listener);
 These [class]``OpenJPAEntityManagerSPI`` methods allow you to add and remove listeners.
 These methods are outside the bounds of the published OpenJPA APIs, and are subject to change in the future.
 
-For details on the transaction framework, see the 
+For details on the transaction framework, see the
 `org.apache.openjpa.event` package link:../../apidocs/org/apache/openjpa/event/package-summary.html[Javadoc].
 Also see <<ref_guide_event>> for a description of OpenJPA's remote event support.
 

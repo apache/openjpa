@@ -43,11 +43,13 @@ org.apache.openjpa.jdbc.meta.MappingTool].
 [[ref_guide_mapping_mappingtool_typical]]
 .Using the Mapping Tool
 ====
-[source]
+
+[source, shell]
 ----
 
 java org.apache.openjpa.jdbc.meta.MappingTool Magazine.java
 ----
+
 ====
 
 In addition to the universal flags of the <<ref_guide_conf_devtools,configuration framework>>, the mapping tool accepts the following command line arguments:
@@ -98,35 +100,40 @@ It fails if any of your mappings don't match your object model.
 [[ref_guide_mapping_mappingtool_buildschema]]
 .Creating the Relational Schema from Mappings
 ====
-[source]
+
+[source, shell]
 ----
 
 java org.apache.openjpa.jdbc.meta.MappingTool Magazine.java
 ----
+
 ====
 
-To drop the schema for a persistent class, set the mapping tool's 
+To drop the schema for a persistent class, set the mapping tool's
 `schemaAction` to ``drop``.
 
 [[ref_guide_mapping_mappingtool_cleanup_tables]]
 .Refreshing entire schema and cleaning out tables
 ====
 (((testing , Rebuild mappings and clean tables)))
-[source]
+[source, shell]
 ----
 
 java org.apache.openjpa.jdbc.meta.MappingTool -schemaAction add,deleteTableContents
 ----
+
 ====
 
 [[ref_guide_mapping_mappingtool_dropschema]]
 .Dropping Mappings and Association Schema
 ====
-[source]
+
+[source, shell]
 ----
 
 java org.apache.openjpa.jdbc.meta.MappingTool -schemaAction drop Magazine.java
 ----
+
 ====
 
 [[ref_guide_ddl_examples]]
@@ -140,11 +147,12 @@ The examples below show how to use the mapping tool to generate DDL SQL scripts,
 ====
 This example uses your existing mappings to determine the needed schema, then writes the SQL to create that schema to [path]_create.sql_.
 
-[source]
+[source, shell]
 ----
 
 java org.apache.openjpa.jdbc.meta.MappingTool -schemaAction build -sql create.sql Magazine.java
 ----
+
 ====
 
 [[ref_guid_mapping_ddl_part_ddl]]
@@ -153,11 +161,12 @@ java org.apache.openjpa.jdbc.meta.MappingTool -schemaAction build -sql create.sq
 This example uses your existing mappings to determine the needed schema.
 It then writes the SQL to add any missing tables and columns to the current schema to [path]_update.sql_.
 
-[source]
+[source, shell]
 ----
 
 java org.apache.openjpa.jdbc.meta.MappingTool -sql update.sql Magazine.java
 ----
+
 ====
 
 [[ref_guide_mapping_synch]]
@@ -178,7 +187,8 @@ These properties correspond go the long versions of the tool's command line flag
 [[ref_guide_mapping_synchex]]
 .Configuring Runtime Forward Mapping
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
@@ -186,11 +196,12 @@ These properties correspond go the long versions of the tool's command line flag
 
 The setting above corresponds to running the following command:
 
-[source]
+[source, shell]
 ----
 
 java org.apache.openjpa.jdbc.meta.MappingTool -action buildSchema -foreignKeys true
 ----
+
 ====
 
 [[ref_guide_pc_reverse]]
@@ -210,11 +221,13 @@ To use the reverse mapping tool, follow the steps below:
 [[ref_guide_pc_reverse_schemagen]]
 .Reflection with the Schema Tool
 ====
-[source]
+
+[source, shell]
 ----
 
 java org.apache.openjpa.jdbc.schema.SchemaTool -a reflect -f schema.xml
 ----
+
 ====
 . Examine the generated schema file. JDBC drivers often provide incomplete or faulty metadata, in which case the file will not exactly match the actual schema. Alter the XML file to match the true schema. The XML format for the schema file is described in <<ref_guide_schema_xml>>.
 
@@ -226,37 +239,40 @@ By manually adding any missing foreign keys, you will give the reverse mapping t
 [[ref_guide_pc_reverse_reversemappingtool]]
 .Using the Reverse Mapping Tool
 ====
-[source]
+
+[source, shell]
 ----
 
 java org.apache.openjpa.jdbc.meta.ReverseMappingTool -pkg com.xyz -d ~/src -cp customizer.properties schema.xml
 ----
+
 ====
 
 In addition to OpenJPA's <<ref_guide_conf_devtools,standard
 configuration flags>>, including <<ref_guide_conf_devtools_format,code formatting options>>, the reverse mapping tool recognizes the following command line arguments:
-** ``-schemas/-s <schema and table names>``: A comma-separated list of schema and table names to reverse map, if no XML schema file is supplied. Each element of the list must follow the naming conventions for the `openjpa.jdbc.Schemas` property described in <<ref_guide_schema_info_list>>. In fact, if this flag is omitted, it defaults to the value of the `Schemas` property. If the `Schemas` property is not defined, all schemas will be reverse-mapped.
-** ``-package/-pkg <package name>``: The package name of the generated classes. If no package name is given, the generated code will not contain package declarations.
-** ``-directory/-d <output directory>``: All generated code and metadata will be written to the directory at this path. If the path does not match the package of a class, the package structure will be created beneath this directory. Defaults to the current directory.
-** ``-metadata/-md <class | package | none>``: Specify the level the metadata should be generated at. Defaults to generating a single package-level metadata file. Set to `none` to disable orm.xml generation.
-** ``-annotations/-ann <true/t | false/f>``: Set to ``true`` to generate JPA annotations in generated Java classes.
-** ``-accessType/-access <field | property>``: Change access type for generated annotations. Defaults to field access.
-** ``-useSchemaName/-sn <true/t | false/f>``: Set this flag to `true` to include the schema as well as table name in the name of each generated class. This can be useful when dealing with multiple schemas with same-named tables.
-** ``-useSchemaElement/-se <true/t | false/f>``: Set this flag to `false` to exclude the schema name from the ``@Table`` annotation in the generated class for each table. If set to ``false``, the schema name will also be removed from the corresponding XML mapping files (orm.xml) that are generated by the tool. The initialized value is true (in order to preserve backwards compatibility).
-** ``-useForeignKeyName/-fkn <true/t | false/f>``: Set this flag to `true` if you would like field names for relations to be based on the database foreign key name. By default, relation field names are derived from the name of the related class.
-** ``-nullableAsObject/-no <true/t | false/f>``: By default, all non-foreign key columns are mapped to primitives. Set this flag to  `true` to generate primitive wrapper fields instead for columns that allow null values.
-** ``-blobAsObject/-bo <true/t | false/f>``: By default, all binary columns are mapped to [class]``byte[]`` fields. Set this flag to `true` to map them to [class]``Object`` fields instead. Note that when mapped this way, the column is presumed to contain a serialized Java object.
-** ``-primaryKeyOnJoin/-pkj <true/t | false/f>``: The standard reverse mapping tool behavior is to map all tables with primary keys to persistent classes. If your schema has primary keys on many-many join tables as well, set this flag to `true` to avoid creating classes for those tables.
-** ``-inverseRelations/-ir <true/t | false/f>``: Set to ``false`` to prevent the creation of inverse 1-many/1-1 relations for every many-1/1-1 relation detected.
-** ``-useGenericCollections/-gc <true/t | false/f>``: Set to true to use generic collections on OneToMany and ManyToMany relations.
-** ``-useDatastoreIdentity/-ds <true/t | false/f>``: Set to ``true`` to use datastore identity for tables that have single numeric primary key columns. The tool typically uses application identity for all generated classes.
-** ``-useBuiltinIdentityClass/-bic <true/t | false/f>``: Set to `false` to prevent the tool from using built-in application identity classes when possible. This will force the tool to create custom application identity classes even when there is only one primary key column.
-** ``-innerIdentityClasses/-inn <true/t | false/f>``: Set to ``true`` to have any generated application identity classes be created as static inner classes within the persistent classes. Defaults to ``false``.
-** ``-identityClassSuffix/-is <suffix>``: Suffix to append to class names to form application identity class names, or for inner identity classes, the inner class name. Defaults to ``Id``.
-** ``-typeMap/-typ <type mapping>``: A string that specifies the default Java classes to generate for each SQL type that is seen in the schema. The format is ``SQLTYPE1=JavaClass1,SQLTYPE2=JavaClass2``. The SQL type name first looks for a customization based on ``SQLTYPE(SIZE,PRECISION)``, then ``SQLTYPE(SIZE)``, then ``SQLTYPE``. So if a column whose type name is ``CHAR`` is found, it will first look for the  `CHAR(50,0)` type name specification, then it will look for ``CHAR(50)``, and finally it will just look for ``CHAR``. For example, to generate a char array for every `CHAR` column whose size is exactly 50, and to generate a `short` for every type name of ``INTEGER``, you might specify: ``CHAR(50)=char[],INTEGER=short``. Note that since various databases report different type names differently, one database's type name specification might not work for another database. Enable `TRACE` level logging on the `MetaData` channel to track which type names OpenJPA is examining.
-** ``-customizerClass/-cc <class name>``: The full class name of a link:../../apidocs/org/apache/openjpa/jdbc/meta/ReverseCustomizer.html[ org.apache.openjpa.jdbc.meta.ReverseCustomizer] customization plugin. If you do not specify a reverse customizer of your own, the system defaults to a link:../../apidocs/org/apache/openjpa/jdbc/meta/PropertiesReverseCustomizer.html[ PropertiesReverseCustomizer]. This customizer allows you to specify simple customization options in the properties file given with the `-customizerProperties` flag below. We present the available property keys <<ref_guide_pc_reverse_custom, below>>.
-** `-customizerProperties/-cp <properties file or resource>` : The path or resource name of a properties file to pass to the reverse customizer on initialization.
-** `-customizer./-c.<property name> <property value>` : The given property name will be matched with the corresponding Java bean property in the specified reverse customizer, and set to the given value.
+
+* ``-schemas/-s <schema and table names>``: A comma-separated list of schema and table names to reverse map, if no XML schema file is supplied. Each element of the list must follow the naming conventions for the `openjpa.jdbc.Schemas` property described in <<ref_guide_schema_info_list>>. In fact, if this flag is omitted, it defaults to the value of the `Schemas` property. If the `Schemas` property is not defined, all schemas will be reverse-mapped.
+* ``-package/-pkg <package name>``: The package name of the generated classes. If no package name is given, the generated code will not contain package declarations.
+* ``-directory/-d <output directory>``: All generated code and metadata will be written to the directory at this path. If the path does not match the package of a class, the package structure will be created beneath this directory. Defaults to the current directory.
+* ``-metadata/-md <class | package | none>``: Specify the level the metadata should be generated at. Defaults to generating a single package-level metadata file. Set to `none` to disable orm.xml generation.
+* ``-annotations/-ann <true/t | false/f>``: Set to ``true`` to generate JPA annotations in generated Java classes.
+* ``-accessType/-access <field | property>``: Change access type for generated annotations. Defaults to field access.
+* ``-useSchemaName/-sn <true/t | false/f>``: Set this flag to `true` to include the schema as well as table name in the name of each generated class. This can be useful when dealing with multiple schemas with same-named tables.
+* ``-useSchemaElement/-se <true/t | false/f>``: Set this flag to `false` to exclude the schema name from the ``@Table`` annotation in the generated class for each table. If set to ``false``, the schema name will also be removed from the corresponding XML mapping files (orm.xml) that are generated by the tool. The initialized value is true (in order to preserve backwards compatibility).
+* ``-useForeignKeyName/-fkn <true/t | false/f>``: Set this flag to `true` if you would like field names for relations to be based on the database foreign key name. By default, relation field names are derived from the name of the related class.
+* ``-nullableAsObject/-no <true/t | false/f>``: By default, all non-foreign key columns are mapped to primitives. Set this flag to  `true` to generate primitive wrapper fields instead for columns that allow null values.
+* ``-blobAsObject/-bo <true/t | false/f>``: By default, all binary columns are mapped to [class]``byte[]`` fields. Set this flag to `true` to map them to [class]``Object`` fields instead. Note that when mapped this way, the column is presumed to contain a serialized Java object.
+* ``-primaryKeyOnJoin/-pkj <true/t | false/f>``: The standard reverse mapping tool behavior is to map all tables with primary keys to persistent classes. If your schema has primary keys on many-many join tables as well, set this flag to `true` to avoid creating classes for those tables.
+* ``-inverseRelations/-ir <true/t | false/f>``: Set to ``false`` to prevent the creation of inverse 1-many/1-1 relations for every many-1/1-1 relation detected.
+* ``-useGenericCollections/-gc <true/t | false/f>``: Set to true to use generic collections on OneToMany and ManyToMany relations.
+* ``-useDatastoreIdentity/-ds <true/t | false/f>``: Set to ``true`` to use datastore identity for tables that have single numeric primary key columns. The tool typically uses application identity for all generated classes.
+* ``-useBuiltinIdentityClass/-bic <true/t | false/f>``: Set to `false` to prevent the tool from using built-in application identity classes when possible. This will force the tool to create custom application identity classes even when there is only one primary key column.
+* ``-innerIdentityClasses/-inn <true/t | false/f>``: Set to ``true`` to have any generated application identity classes be created as static inner classes within the persistent classes. Defaults to ``false``.
+* ``-identityClassSuffix/-is <suffix>``: Suffix to append to class names to form application identity class names, or for inner identity classes, the inner class name. Defaults to ``Id``.
+* ``-typeMap/-typ <type mapping>``: A string that specifies the default Java classes to generate for each SQL type that is seen in the schema. The format is ``SQLTYPE1=JavaClass1,SQLTYPE2=JavaClass2``. The SQL type name first looks for a customization based on ``SQLTYPE(SIZE,PRECISION)``, then ``SQLTYPE(SIZE)``, then ``SQLTYPE``. So if a column whose type name is ``CHAR`` is found, it will first look for the  `CHAR(50,0)` type name specification, then it will look for ``CHAR(50)``, and finally it will just look for ``CHAR``. For example, to generate a char array for every `CHAR` column whose size is exactly 50, and to generate a `short` for every type name of ``INTEGER``, you might specify: ``CHAR(50)=char[],INTEGER=short``. Note that since various databases report different type names differently, one database's type name specification might not work for another database. Enable `TRACE` level logging on the `MetaData` channel to track which type names OpenJPA is examining.
+* ``-customizerClass/-cc <class name>``: The full class name of a link:../../apidocs/org/apache/openjpa/jdbc/meta/ReverseCustomizer.html[ org.apache.openjpa.jdbc.meta.ReverseCustomizer] customization plugin. If you do not specify a reverse customizer of your own, the system defaults to a link:../../apidocs/org/apache/openjpa/jdbc/meta/PropertiesReverseCustomizer.html[ PropertiesReverseCustomizer]. This customizer allows you to specify simple customization options in the properties file given with the `-customizerProperties` flag below. We present the available property keys <<ref_guide_pc_reverse_custom, below>>.
+* `-customizerProperties/-cp <properties file or resource>` : The path or resource name of a properties file to pass to the reverse customizer on initialization.
+* `-customizer./-c.<property name> <property value>` : The given property name will be matched with the corresponding Java bean property in the specified reverse customizer, and set to the given value.
 
 
 Running the tool will generate [path]_.java_ files for each generated class (and its application identity class, if applicable), along with JPA annotations (if enabled by setting ``-annotations true``), or an [path]_orm.xml_ file (if not disabled with ``-metadata none``) containing the corresponding persistence metadata.
@@ -275,13 +291,13 @@ Your persistent classes are now ready to access your existing schema.
 The [class]``org.apache.openjpa.jdbc.meta.ReverseCustomizer`` plugin interface allows you to customize the reverse mapping process.
 See the class link:../../apidocs/org/apache/openjpa/jdbc/meta/ReverseCustomizer.html[
 Javadoc] for details on the hooks that this interface provides.
-Specify the concrete plugin implementation to use with the 
+Specify the concrete plugin implementation to use with the
 `-customizerClass/-cc` command-line flag, described in the preceding section.
 
 By default, the reverse mapping tool uses a link:../../apidocs/org/apache/openjpa/jdbc/meta/PropertiesReverseCustomizer.html[
 org.apache.openjpa.jdbc.meta.PropertiesReverseCustomizer
 ].
-This customizer allows you to perform relatively simple customizations through the properties file named with the 
+This customizer allows you to perform relatively simple customizations through the properties file named with the
 `-customizerProperties` tool flag.
 The customizer recognizes the following properties:
 
@@ -306,7 +322,8 @@ All property keys are optional; if not specified, the customizer keeps the defau
 [[ref_guide_pc_reverse_custom_ex]]
 .Customizing Reverse Mapping with Properties
 ====
-[source]
+
+[source, shell]
 ----
 
 java org.apache.openjpa.jdbc.meta.ReverseMappingTool -pkg com.xyz -cp custom.properties schema.xml
@@ -314,7 +331,7 @@ java org.apache.openjpa.jdbc.meta.ReverseMappingTool -pkg com.xyz -cp custom.pro
 
 Example [path]_custom.properties_:
 
-[source]
+[source, conf]
 ----
 
 com.xyz.TblMagazine.rename:             com.xyz.Magazine
@@ -329,6 +346,7 @@ com.xyz.Magazine.identity:              datastore
 
 com.xyz.pub.Company.identity:           com.xyz.pub.CompanyId
 ----
+
 ====
 
 [[ref_guide_mapping_middle]]
@@ -345,11 +363,13 @@ It throws an informative exception when your mappings are incorrect.
 [[ref_guide_mapping_mappingtool_validate]]
 .Validating Mappings
 ====
-[source]
+
+[source, shell]
 ----
 
 java org.apache.openjpa.jdbc.meta.MappingTool -action validate Magazine.java
 ----
+
 ====
 
 The `buildSchema` action we discussed in <<ref_guide_mapping_mappingtool>> is also somewhat useful during meet-in-the-middle mapping.
@@ -415,13 +435,15 @@ The example below turns on foreign key generation during schema creation and ass
 [[ref_guide_mapping_defaults_conf]]
 .Configuring Mapping Defaults
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.jdbc.MappingDefaults"
     value="ForeignKeyDeleteAction=restrict,
     FieldStrategies='org.mag.data.InfoStruct=org.mag.mapping.InfoStructHandler'"/>
 ----
+
 ====
 
 [[ref_guide_mapping_factory]]
@@ -447,11 +469,12 @@ The bundled mapping factories are:
 ====
 In the standard JPA configuration, the mapping factory is left unset.
 
-[source]
+[source, xml]
 ----
 
 <property name="openjpa.MetaDataFactory" value="jpa"/>
 ----
+
 ====
 
 [[ref_guide_mapping_notes_nonstdjoins]]
@@ -490,11 +513,11 @@ image::img/joins-constant.png[]
 Consider the tables above.
 First, we want to join row `T1.R1` to row ``T2.R1``.
 If we just join column `T1.FK` to ``T2.PK1``, we will wind up matching both `T2.R1`  and ``T2.R2``.
-So in addition to joining 
+So in addition to joining
 `T1.FK` to ``T2.PK1``, we also have to specify that ``T2.PK2`` has the value ``a``.
 Here is how we'd accomplish this in mapping metadata.
 
-[source]
+[source, java]
 ----
 
 @Entity
@@ -515,7 +538,7 @@ Also notice that we put single quotes around the constant value so that it won't
 You do not need single quotes for numeric constants.
 For example, the syntax to join ``T1.R2`` to `T2.R4` is:
 
-[source]
+[source, java]
 ----
 
 @Entity
@@ -533,7 +556,7 @@ public class ...  {
 
 Finally, from the inverse direction, these joins would look like this:
 
-[source]
+[source, java]
 ----
 
 @Entity
@@ -586,7 +609,8 @@ All properties correspond exactly to the same-named properties on the standard [
 [[ref_guide_mapping_jpa_datastoreidex]]
 .Datastore Identity Mapping
 ====
-[source]
+
+[source, java]
 ----
 
 import org.apache.openjpa.persistence.*;
@@ -603,6 +627,7 @@ public class LogEntry {
     ...
 }
 ----
+
 ====
 
 [[ref_guide_mapping_jpa_version]]
@@ -643,7 +668,7 @@ By default, OpenJPA compares a version ``v1`` as later than another version ``v2
 Multiple surrogate version columns can be spread across primary and secondary tables.
 For example, following example shows 3 version columns ``v01, v11, v12, v21`` defined across the primary and secondary tables of a persistent entity
 
-[source]
+[source, java]
 ----
 
 @Entity
@@ -685,7 +710,7 @@ It becomes impossible to supply a single ``referencedColumnName`` that works for
 OpenJPA rectifies this by allowing you to declare which _attribute_  in the related type each join column links to, rather than which column.
 If the attribute is mapped differently in various subclass tables, OpenJPA automatically forms the proper join for the subclass record at hand.
 The link:../../apidocs/org/apache/openjpa/persistence/jdbc/XJoinColumn.html[
-org.apache.openjpa.persistence.jdbc.XJoinColumn] annotation has all the same properties as the standard [class]``JoinColumn`` annotation, but adds an additional 
+org.apache.openjpa.persistence.jdbc.XJoinColumn] annotation has all the same properties as the standard [class]``JoinColumn`` annotation, but adds an additional
 `referencedAttributeName` property for this purpose.
 Simply use a [class]``XJoinColumn`` in place of a [class]``JoinColumn`` whenever you need to access this added functionality.
 
@@ -734,7 +759,8 @@ The entity also declares that if the [class]``PathCoordinate``'s `siteName` fiel
 [[ref_guide_mapping_jpa_embedex]]
 .Overriding Complex Mappings
 ====
-[source]
+
+[source, java]
 ----
 
 import org.apache.openjpa.persistence.jdbc.*;
@@ -767,13 +793,14 @@ public class Path {
     ...
 }
 ----
+
 ====
 
 [[ref_guide_mapping_jpa_coll]]
 ===== Collections
 (((mapping metadata , collections)))
 
-In <<ref_guide_meta_jpa_persistent_coll>>, we explored the [class]``PersistentCollection`` annotation for persistent collection fields that aren't a standard `OneToMany` or 
+In <<ref_guide_meta_jpa_persistent_coll>>, we explored the [class]``PersistentCollection`` annotation for persistent collection fields that aren't a standard `OneToMany` or
 `ManyToMany` relation.
 To map these non-standard collections, combine OpenJPA's [class]``ContainerTable`` annotation with [class]``ElementJoinColumn``s.
 We explore the annotations below.
@@ -858,7 +885,8 @@ Note that OpenJPA automatically assumes an inverse foreign key mapping when elem
 [[ref_guide_mapping_jpa_onemanyex]]
 .One-Sided One-Many Mapping
 ====
-[source]
+
+[source, java]
 ----
 
 package org.mag.subscribe;
@@ -884,6 +912,7 @@ public class Subscription {
     ...
 }
 ----
+
 ====
 
 [[ref_guide_mapping_jpa_map]]
@@ -930,13 +959,14 @@ This annotation has exactly the same properties as the [class]``EmbeddedMapping`
 image::img/string-rel-map.png[]
 
 Map mapping in OpenJPA uses the same principles you saw in collection mapping.
-The example below maps the 
+The example below maps the
         `Article.authors` map according to the diagram above.
 
 [[ref_guide_mapping_jpa_map_stringrelmap]]
 .String Key, Entity Value Map Mapping
 ====
-[source]
+
+[source, java]
 ----
 
 package org.mag.pub;
@@ -967,6 +997,7 @@ public class Article {
     ...
 }
 ----
+
 ====
 
 [[ref_guide_mapping_jpa_constraints]]
@@ -1043,7 +1074,7 @@ See <<supported_databases>> for possible database-specific restrictions.
 
 Annotate the entity property using the XMLValueHandler strategy:
 
-[source]
+[source, java]
 ----
 
 @Persistent
@@ -1052,7 +1083,7 @@ Annotate the entity property using the XMLValueHandler strategy:
 
 The default fetch type is EAGER but can be changed to LAZY by using:
 
-[source]
+[source, java]
 ----
 
 @Persistence(fetch=FetchType.LAZY)
@@ -1094,7 +1125,8 @@ Shown below is a sample XML schema <<ref_guide_xmlmapping_myaddress,myaddress.xs
 [[ref_guide_xmlmapping_myaddress]]
 .myaddress.xsd
 ====
-[source]
+
+[source, xml]
 ----
 
 <?xml version="1.0" ?>
@@ -1145,6 +1177,7 @@ Shown below is a sample XML schema <<ref_guide_xmlmapping_myaddress,myaddress.xs
    substitutionGroup="MailAddress" />
 </xs:schema>
 ----
+
 ====
 
 Java classes <<ref_guide_xmlmapping_address,Address>>, <<ref_guide_xmlmapping_usaaddress,USAAddress>> and <<ref_guide_xmlmapping_canaddress,CANAddress>> are produced from `myaddress` schema by using the ``xjc`` generator.
@@ -1152,7 +1185,8 @@ Java classes <<ref_guide_xmlmapping_address,Address>>, <<ref_guide_xmlmapping_us
 [[ref_guide_xmlmapping_address]]
 .Address.java
 ====
-[source]
+
+[source, java]
 ----
 
     ...
@@ -1178,12 +1212,14 @@ public class Address {
      ...
 }
 ----
+
 ====
 
 [[ref_guide_xmlmapping_usaaddress]]
 .USAAddress.java
 ====
-[source]
+
+[source, java]
 ----
 
     ...
@@ -1209,12 +1245,14 @@ public class USAAddress
      ...
 }
 ----
+
 ====
 
 [[ref_guide_xmlmapping_canaddress]]
 .CANAddress.java
 ====
-[source]
+
+[source, java]
 ----
 
      ...
@@ -1240,12 +1278,14 @@ public class CANAddress
      ...
 }
 ----
+
 ====
 
 [[ref_guide_xmlmapping_annorder]]
 .Showing annotated Order entity with XML mapping strategy
 ====
-[source]
+
+[source, java]
 ----
 
 @Entity
@@ -1257,12 +1297,14 @@ public class Order {
     ...
 }
 ----
+
 ====
 
 [[ref_guide_xmlmapping_createorder]]
 .Showing creation of Order entity having shipAddress mapped to XML column
 ====
-[source]
+
+[source, java]
 ----
 
 ...
@@ -1281,23 +1323,26 @@ o1.setShipAddress(addr1);
 em.persist(o1);
 ...
 ----
+
 ====
 
 [[ref_guide_xmlmapping_jpqlquery]]
 .Sample JPQL queries for XML column mapping
 ====
-[source]
+
+[source, sql]
 ----
 
-. select o from Order o where o.shipAddress.city = "San Jose" or
+ select o from Order o where o.shipAddress.city = "San Jose" or
 			      o.shipAddress.city = "San Francisco"  (OK)
 
-. select o.shipaAddress from Order o  (OK)
+ select o.shipaAddress from Order o  (OK)
 
-. select o.shipAddress.city from Order o  (INVALID)
+ select o.shipAddress.city from Order o  (INVALID)
 
-. select o from Order o where o.shipAddress.street = "San Jose"  (INVALID multi-valued)
+ select o from Order o where o.shipAddress.street = "San Jose"  (INVALID multi-valued)
 ----
+
 ====
 
 [[ref_guide_streamsupport]]
@@ -1323,7 +1368,8 @@ org.apache.openjpa.persistence.Persistent] annotation to either [class]``java.io
 [[ref_guide_streamsupport_example]]
 .Annotated InputStream and Reader
 ====
-[source]
+
+[source, java]
 ----
 
 @Entity
@@ -1337,6 +1383,7 @@ public class Employee {
     ...
 }
 ----
+
 ====
 
 [[ref_guide_mapping_limits]]
@@ -1541,7 +1588,7 @@ Use these functional implementations as examples when you create your own value 
 
 OpenJPA interacts with persistent fields through the link:../../apidocs/org/apache/openjpa/jdbc/meta/FieldStrategy[
 org.apache.openjpa.jdbc.meta.FieldStrategy] interface.
-You can implement this interface yourself to create a custom field strategy, or extend one of the existing abstract or concrete strategies in the 
+You can implement this interface yourself to create a custom field strategy, or extend one of the existing abstract or concrete strategies in the
 `org.apache.openjpa.jdbc.meta.strats` package.
 Creating a custom field strategy is more difficult than writing a custom value handler, but gives you more freedom in how you interact with the database.
 
@@ -1585,11 +1632,13 @@ You can set this plugin string (see <<ref_guide_conf_plugins>>) to a custom impl
 [[ref_guide_orphan_logex]]
 .Custom Logging Orphaned Keys
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.OrphanedKeyAction" value="log(Channel=Orphans, Level=DEBUG)"/>
 ----
+
 ====
 
 ifdef::backend-docbook[]

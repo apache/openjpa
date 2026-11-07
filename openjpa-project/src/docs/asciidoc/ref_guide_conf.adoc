@@ -65,7 +65,7 @@ They also allow you to specify property values on the command line:
 * ``-properties/-p <configuration file or resource>``: Use the `-properties` flag, or its shorter `-p` form, to specify a configuration file to use. Note that OpenJPA always searches the default file locations described above, so this flag is only needed when you do not have a default resource in place, or when you wish to override the defaults. The given value can be the path to a file, or the resource name of a file somewhere in the ``CLASSPATH``. OpenJPA will search the given location as well as the location prefixed by [path]_META-INF/_. Thus, to point an OpenJPA tool at [path]_META-INF/my-persistence.xml_, you can use:
 
 
-[source]
+[source, shell]
 ----
 
 <tool> -p my-persistence.xml
@@ -76,12 +76,13 @@ If you do not specify an anchor, the tools will run against all the persistence 
 If the persistence unit is defined within the default resource location, then you can just specify the raw anchor itself:
 
 
-[source]
+[source, shell]
 ----
 
 <tool> -p my-persistence.xml#sales-persistence-unit
 <tool> -p #invoice-persistence-unit
 ----
+
 * ``-<property name> <property value>``: Any configuration property that you can specify in a configuration file can be overridden with a command line flag. The flag name is always the last token of the corresponding property name, with the first letter in either upper or lower case. For example, to override the `openjpa.ConnectionUserName` property, you could pass the `-connectionUserName <value>`  flag to any tool. Values set this way override both the values in the configuration file and values set via System properties.
 
 
@@ -105,11 +106,13 @@ All code formatting flags can begin with either the `codeFormat`  or `cf` prefix
 [[ref_guide_conf_devtools_format_ex]]
 .Code Formatting with the Application Id Tool
 ====
-[source]
+
+[source, shell]
 ----
 
 java org.apache.openjpa.enhance.ApplicationIdTool -cf.spaceBeforeParen true -cf.tabSpaces 4
 ----
+
 ====
 
 [[ref_guide_conf_plugins]]
@@ -121,13 +124,13 @@ Plugin properties have a syntax very similar to that of Java annotations.
 They allow you to specify both what class to use for the plugin and how to configure the public fields or bean properties of the instantiated plugin instance.
 The easiest way to describe the plugin syntax is by example:
 
-OpenJPA has a pluggable L2 caching mechanism that is controlled by the 
+OpenJPA has a pluggable L2 caching mechanism that is controlled by the
 `openjpa.DataCache` configuration property.
 Suppose that you have created a new class, [class]``com.xyz.MyDataCache``, that you want OpenJPA to use for caching.
 You've made instances of `MyDataCache`  configurable via two methods, [method]``setCacheSize(int size)`` and [method]``setRemoteHost(String host)``.
 The sample below shows how you would tell OpenJPA to use an instance of your custom plugin with a max size of 1000 and a remote host of ``cacheserver``.
 
-[source]
+[source, xml]
 ----
 
 <property name="openjpa.DataCache"
@@ -138,7 +141,7 @@ As you can see, plugin properties take a class name, followed by a comma-separat
 OpenJPA will match each named property to a field or setter method in the instantiated plugin instance, and set the field or invoke the method with the given value (after converting the value to the right type, of course). The first letter of the property names can be in either upper or lower case.
 The following would also have been valid:
 
-[source]
+[source, xml]
 ----
 
 com.xyz.MyDataCache(cacheSize=1000, remoteHost=cacheserver)
@@ -146,7 +149,7 @@ com.xyz.MyDataCache(cacheSize=1000, remoteHost=cacheserver)
 
 If you do not need to pass any property settings to a plugin, you can just name the class to use:
 
-[source]
+[source, xml]
 ----
 
 com.xyz.MyDataCache
@@ -156,7 +159,7 @@ Similarly, if the plugin has a default class that you do not want to change, you
 For example, OpenJPA's query cache companion to the data cache has a default implementation suitable to most users, but you still might want to change the query cache's size.
 It has a `CacheSize` property for this purpose:
 
-[source]
+[source, xml]
 ----
 
 CacheSize=1000
@@ -166,7 +169,7 @@ Finally, many of OpenJPA's built-in options for plugins have short alias names t
 The data cache property, for example, has an available alias of `true` for the standard cache implementation.
 The property value simply becomes:
 
-[source]
+[source, xml]
 ----
 
 true
@@ -174,7 +177,7 @@ true
 
 The standard cache implementation class also has a `CacheSize` property, so to use the standard implementation and configure the size, specify:
 
-[source]
+[source, xml]
 ----
 
 true(CacheSize=1000)
@@ -1798,7 +1801,7 @@ See <<ref_guide_mapping_synch>> for more information.
 
 *Default:* ``default``
 
-*Possible values:* ``default``, ``none``, ``read-committed``, ``read-uncommitted``, ``repeatable-read``, 
+*Possible values:* ``default``, ``none``, ``read-committed``, ``read-uncommitted``, ``repeatable-read``,
 `serializable`
 
 *Description:* The JDBC transaction isolation level to use.

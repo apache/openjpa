@@ -47,21 +47,25 @@ See <<ref_guide_pc_pcclasses>> for a discussion of when it is necessary to list 
 [[ref_guide_meta_stdfactoryex]]
 .Setting a Standard Metadata Factory
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.MetaDataFactory" value="jpa(ClasspathScan=build;lib.jar)"/>
 ----
+
 ====
 
 [[ref_guide_meta_customfactoryex]]
 .Setting a Custom Metadata Factory
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.MetaDataFactory" value="com.xyz.CustomMetaDataFactory"/>
 ----
+
 ====
 
 [[ref_guide_meta_repository]]
@@ -76,11 +80,13 @@ The following are valid properties:
 [[ref_guide_meta_repo]]
 .Setting the Preload Property on Metadata Repository
 ====
-[source]
+
+[source, xml]
 ----
 
 <property name="openjpa.MetaDataRepository" value="Preload=true"/>
 ----
+
 ====
 
 [[ref_guide_meta_jpa]]
@@ -127,7 +133,7 @@ For example, <<ref_guide_mapping_jpa_columns>> demonstrates the use of the [clas
 ===== Persistent Collection Fields
 (((persistent fields,collection metadata)))
 
-JPA standardizes support for collections of entities with the 
+JPA standardizes support for collections of entities with the
 `OneToMany` and `ManyToMany` persistence strategies.
 OpenJPA supports these strategies, and may be extended for other strategies as well.
 For extended strategies, use the link:../../apidocs/org/apache/openjpa/persistence/PersistentCollection.html[
@@ -219,7 +225,7 @@ OpenJPA recognizes the following field extensions:
 ====== Dependent
 
 In a _dependent_ relation, the referenced object is deleted whenever the owning object is deleted, or whenever the relation is severed by nulling or resetting the owning field.
-For example, if the 
+For example, if the
 `Magazine.coverArticle` field is marked dependent, then setting ``Magazine.coverArticle`` to a new [class]``Article`` instance will automatically delete the old [class]``Article`` stored in the field.
 Similarly, deleting a [class]``Magazine`` object will automatically delete its current cover [class]``Article``.
 (This latter processing is analogous to using JPA's CascadeType.REMOVE functionality as described in <<jpa_overview_meta_cascade>>.) You can prevent an orphaned dependent object from being automatically deleted by assigning it to another relation in the same transaction.
@@ -328,7 +334,8 @@ The following example shows you how to specify extensions in metadata.
 [[ref_guide_metaex]]
 .OpenJPA Metadata Extensions
 ====
-[source]
+
+[source, java]
 ----
 
 import org.apache.openjpa.persistence.*;
@@ -348,6 +355,7 @@ public class Magazine
     ...
 }
 ----
+
 ====
 
 [[ref_guide_meta_xml]]
@@ -366,7 +374,8 @@ In order to use the OpenJPA extensions in your mapping file you must include the
 [[ref_guide_schema_ex]]
 .OpenJPA Schema Extensions
 ====
-[source]
+
+[source, xml]
 ----
 
 <entity-mappings xmlns="http://www.apache.org/openjpa/ns/orm/extendable"
@@ -399,6 +408,7 @@ In order to use the OpenJPA extensions in your mapping file you must include the
 
 </entity-mappings>
 ----
+
 ====
 
 ifdef::backend-docbook[]

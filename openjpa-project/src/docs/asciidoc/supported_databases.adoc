@@ -370,12 +370,14 @@ For the list of databases that have been fully tested against this release, plea
 [[example_props_derby]]
 .Example properties for Derby
 ====
-[source]
+
+[source, conf]
 ----
 
 openjpa.ConnectionDriverName: org.apache.derby.jdbc.EmbeddedDriver
 openjpa.ConnectionURL: jdbc:derby:DB_NAME;create=true
 ----
+
 ====
 
 [[dbsupport_interbase]]
@@ -384,12 +386,14 @@ openjpa.ConnectionURL: jdbc:derby:DB_NAME;create=true
 [[example_props_interbase]]
 .Example properties for Interbase
 ====
-[source]
+
+[source, conf]
 ----
 
 openjpa.ConnectionDriverName: interbase.interclient.Driver
 openjpa.ConnectionURL: jdbc:interbase://SERVER_NAME:SERVER_PORT/DB_PATH
 ----
+
 ====
 
 [[dbsupport_interbase_issues]]
@@ -405,12 +409,14 @@ openjpa.ConnectionURL: jdbc:interbase://SERVER_NAME:SERVER_PORT/DB_PATH
 [[example_props_jdatastore]]
 .Example properties for JDataStore
 ====
-[source]
+
+[source, conf]
 ----
 
 openjpa.ConnectionDriverName: com.borland.datastore.jdbc.DataStoreDriver
 openjpa.ConnectionURL: jdbc:borland:dslocal:db-jdatastore.jds;create=true
 ----
+
 ====
 
 [[dbsupport_db2]]
@@ -419,12 +425,14 @@ openjpa.ConnectionURL: jdbc:borland:dslocal:db-jdatastore.jds;create=true
 [[example_props_db2]]
 .Example properties for IBM DB2
 ====
-[source]
+
+[source, conf]
 ----
 
 openjpa.ConnectionDriverName: com.ibm.db2.jcc.DB2Driver
 openjpa.ConnectionURL: jdbc:db2://SERVER_NAME:SERVER_PORT/DB_NAME
 ----
+
 ====
 
 [[dbsupport_db2_issues]]
@@ -439,7 +447,7 @@ openjpa.ConnectionURL: jdbc:db2://SERVER_NAME:SERVER_PORT/DB_NAME
 
 To work around this condition you may force fullyMaterializedLobData to true in the connection URL as shown below :
 
-[source]
+[source, conf]
 ----
 
 openjpa.ConnectionURL: jdbc:db2://localhost:50000/demodb:fullyMaterializeLobData=true;progressiveStreaming=NO
@@ -452,12 +460,14 @@ openjpa.ConnectionURL: jdbc:db2://localhost:50000/demodb:fullyMaterializeLobData
 [[example_props_empress]]
 .Example properties for Empress
 ====
-[source]
+
+[source, conf]
 ----
 
 openjpa.ConnectionDriverName: empress.jdbc.empressDriver
 openjpa.ConnectionURL: jdbc:empress://SERVER=yourserver;PORT=6322;DATABASE=yourdb
 ----
+
 ====
 
 [[dbsupport_empress_issues]]
@@ -473,12 +483,14 @@ openjpa.ConnectionURL: jdbc:empress://SERVER=yourserver;PORT=6322;DATABASE=yourd
 [[example_props_h2]]
 .Example properties for H2 Database Engine
 ====
-[source]
+
+[source, conf]
 ----
 
 openjpa.ConnectionDriverName: org.h2.Driver
 openjpa.ConnectionURL: jdbc:h2:DB_NAME
 ----
+
 ====
 
 [[dbsupport_h2_issues]]
@@ -493,12 +505,14 @@ openjpa.ConnectionURL: jdbc:h2:DB_NAME
 [[example_props_hypersonic]]
 .Example properties for Hypersonic
 ====
-[source]
+
+[source, conf]
 ----
 
 openjpa.ConnectionDriverName: org.hsqldb.jdbcDriver
 openjpa.ConnectionURL: jdbc:hsqldb:DB_NAME
 ----
+
 ====
 
 [[dbsupport_hypersonic_issues]]
@@ -513,12 +527,14 @@ openjpa.ConnectionURL: jdbc:hsqldb:DB_NAME
 [[example_props_firebird]]
 .Example properties for Firebird
 ====
-[source]
+
+[source, conf]
 ----
 
 openjpa.ConnectionDriverName: org.firebirdsql.jdbc.FBDriver
 openjpa.ConnectionURL: jdbc:firebirdsql:SERVER_NAME/3050:DB_PATH_OR_ALIAS
 ----
+
 ====
 
 [[dbsupport_firebird_issues]]
@@ -534,13 +550,15 @@ openjpa.ConnectionURL: jdbc:firebirdsql:SERVER_NAME/3050:DB_PATH_OR_ALIAS
 [[example_props_informix]]
 .Example properties for Informix Dynamic Server
 ====
-[source]
+
+[source, conf]
 ----
 
 openjpa.ConnectionDriverName: com.informix.jdbc.IfxDriver
 openjpa.ConnectionURL: \
   jdbc:informix-sqli://SERVER_NAME:SERVER_PORT/DB_NAME:INFORMIXSERVER=SERVER_ID
 ----
+
 ====
 
 [[dbsupport_informix_issues]]
@@ -555,13 +573,15 @@ openjpa.ConnectionURL: \
 [[example_props_ingres]]
 .Example properties for Ingres
 ====
-[source]
+
+[source, conf]
 ----
 
 openjpa.ConnectionDriverName: com.ingres.jdbc.IngresDriver
 openjpa.ConnectionURL: \
     jdbc:ingres://SERVER_NAME:DAS_SERVER_PORT/DB_NAME
 ----
+
 ====
 
 [[dbsupport_ingres_issues]]
@@ -576,12 +596,14 @@ openjpa.ConnectionURL: \
 [[example_props_intersystems_cache]]
 .Example properties for InterSystems Cache
 ====
-[source]
+
+[source, conf]
 ----
 
 openjpa.ConnectionDriverName: com.intersys.jdbc.CacheDriver
 openjpa.ConnectionURL: jdbc:Cache://SERVER_NAME:SERVER_PORT/DB_NAME
 ----
+
 ====
 
 [[dbsupport_intersystems_cache_issues]]
@@ -596,12 +618,14 @@ openjpa.ConnectionURL: jdbc:Cache://SERVER_NAME:SERVER_PORT/DB_NAME
 [[example_props_access]]
 .Example properties for Microsoft Access
 ====
-[source]
+
+[source, conf]
 ----
 
 openjpa.ConnectionDriverName: com.ddtek.jdbc.sequelink.SequeLinkDriver
 openjpa.ConnectionURL: jdbc:sequelink://SERVER_NAME:SERVER_PORT
 ----
+
 ====
 
 [[dbsupport_access_issues]]
@@ -616,13 +640,15 @@ openjpa.ConnectionURL: jdbc:sequelink://SERVER_NAME:SERVER_PORT
 [[example_props_sqlserver]]
 .Example properties for Microsoft SQL Server
 ====
-[source]
+
+[source, conf]
 ----
 
 openjpa.ConnectionDriverName: com.microsoft.sqlserver.jdbc.SQLServerDriver
 openjpa.ConnectionURL: \
     jdbc:sqlserver://SERVER_NAME:1433;DatabaseName=DB_NAME;selectMethod=cursor;sendStringParametersAsUnicode=false
 ----
+
 ====
 
 [[dbsupport_sqlserver_issues]]
@@ -647,12 +673,14 @@ openjpa.ConnectionURL: \
 [[example_props_foxpro]]
 .Example properties for Microsoft FoxPro
 ====
-[source]
+
+[source, conf]
 ----
 
 openjpa.ConnectionDriverName: com.ddtek.jdbc.sequelink.SequeLinkDriver
 openjpa.ConnectionURL: jdbc:sequelink://SERVER_NAME:SERVER_PORT
 ----
+
 ====
 
 [[dbsupport_foxpro_issues]]
@@ -667,12 +695,14 @@ openjpa.ConnectionURL: jdbc:sequelink://SERVER_NAME:SERVER_PORT
 [[example_props_mysql]]
 .Example properties for MySQL
 ====
-[source]
+
+[source, conf]
 ----
 
 openjpa.ConnectionDriverName: com.mysql.jdbc.Driver
 openjpa.ConnectionURL: jdbc:mysql://SERVER_NAME/DB_NAME
 ----
+
 ====
 
 [[dbsupport_mysql_query_hints]]
@@ -685,13 +715,15 @@ OpenJPA supports hints to be placed between SELECT keyword and column list.
 [[dbsupport_mysql_query_hints_ex]]
 .Using MySQL Hints
 ====
-[source]
+
+[source, java]
 ----
 
 Query query = em.createQuery(...);
 query.setHint("openjpa.hint.MySQLSelectHint", "SQL_NO_CACHE");
 List results = query.getResultList();
 ----
+
 ====
 
 [[dbsupport_mysql_issues]]
@@ -714,12 +746,14 @@ List results = query.getResultList();
 [[example_props_mariadb]]
 .Example properties for MariaDB
 ====
-[source]
+
+[source, conf]
 ----
 
                 openjpa.ConnectionDriverName: org.mariadb.jdbc.Driver
                 openjpa.ConnectionURL: jdbc:mariadb://SERVER_NAME/DB_NAME
 ----
+
 ====
 
 [[dbsupport_mariadb_issues]]
@@ -730,11 +764,10 @@ List results = query.getResultList();
 * MariaDB's InnoDB performs `ALTER TABLE ... ADD COLUMN` and `ALTER TABLE ... DROP COLUMN` instantly and keeps the dropped columns in the clustered index record format, where they continue to count towards the 8126 byte maximum row size. Re-synchronising a mapping with a drop/add schema action against the same table - either <<ref_guide_mapping_synch, `openjpa.jdbc.SynchronizeMappings`>> set to ``buildSchema(SchemaAction='drop,add')``, or `mappingtool -action refresh` in a deployment script - therefore accumulates that metadata on every cycle and eventually fails with
 
 
-[source]
+[source, log]
 ----
 
-Row size too large. The maximum row size for the used table type, not counting BLOBs,
-is 8126. [code=1118, state=42000]
+Row size too large. The maximum row size for the used table type, not counting BLOBs, is 8126. [code=1118, state=42000]
 ----
 
 even though the table's visible columns fit well inside the limit; `information_schema` gives no indication of the accumulated metadata.
@@ -747,12 +780,14 @@ Rebuild the table to discard it (``ALTER TABLE <name> FORCE`` or ``OPTIMIZE TABL
 [[example_props_oracle]]
 .Example properties for Oracle
 ====
-[source]
+
+[source, conf]
 ----
 
 openjpa.ConnectionDriverName: oracle.jdbc.driver.OracleDriver
 openjpa.ConnectionURL: jdbc:oracle:thin:@SERVER_NAME:1521:DB_NAME
 ----
+
 ====
 
 [[dbsupport_oracle_query_hints]]
@@ -764,13 +799,15 @@ These hints are usually designed to provide suggestions to the Oracle query opti
 [[dbsupport_oracle_query_hints_ex]]
 .Using Oracle Hints
 ====
-[source]
+
+[source, java]
 ----
 
 Query query = em.createQuery(...);
 query.setHint("openjpa.hint.OracleSelectHint", "/*+ first_rows(100) */");
 List results = query.getResultList();
 ----
+
 ====
 
 [[dbsupport_oracle_issues]]
@@ -784,11 +821,13 @@ List results = query.getResultList();
 [[dbsupport_oracle_disable_batch_updates]]
 .Property to disable statement batching for Oracle
 ====
-[source]
+
+[source, conf]
 ----
 
 openjpa.jdbc.DBDictionary: oracle(batchLimit=0)
 ----
+
 ====
 * Oracle cannot store numbers with more than 38 digits in numeric columns.
 * Floats and doubles may lose precision when stored.
@@ -799,11 +838,13 @@ openjpa.jdbc.DBDictionary: oracle(batchLimit=0)
 [[dbsupport_oracle_retain_connection]]
 .Property to retain connection over the lifetime of the entity manager
 ====
-[source]
+
+[source, conf]
 ----
 
 openjpa.ConnectionRetainMode: always
 ----
+
 ====
 * Mapping persistent attributes to <<ref_guide_xmlmapping,XML columns>> requires a JDBC 4 compliant driver if XML strings are longer than 4000 bytes, as counted in database. Otherwise an `ORA-01461: can bind a LONG value only for insert into a LONG column` error may result.
 * If Oracle dictionary property `MaxEmbeddedBlobSize` or ``MaxEmbeddedClobSize`` is set to some limit (i.e. not -1) and embedded collection with BLOB/CLOB attribute is used, a ``"org.apache.openjpa.persistence.ArgumentException: "x.y.z.EmbedOwner.embedCollection<element:class x.y.z.EmbedValue>" is mapped as embedded, but embedded field "x.y.z.EmbedOwner.embedCollection.x.y.z.EmbedValue.blob" is not embeddable. Embedded element/key/value types are limited to simple fields and direct relations to other persistent types"`` error may result. To overcome this limitation, either use JDBC driver 11.2.0.x.0 (or later version) or set both `MaxEmbeddedBlobSize` and ``MaxEmbeddedClobSize`` properties to -1.
@@ -815,13 +856,15 @@ openjpa.ConnectionRetainMode: always
 [[example_props_pointbase]]
 .Example properties for Pointbase
 ====
-[source]
+
+[source, conf]
 ----
 
 openjpa.ConnectionDriverName: com.pointbase.jdbc.jdbcUniversalDriver
 openjpa.ConnectionURL: \
     jdbc:pointbase:DB_NAME,database.home=pointbasedb,create=true,cache.size=10000,database.pagesize=30720
 ----
+
 ====
 
 [[dbsupport_pointbase_issues]]
@@ -836,12 +879,14 @@ openjpa.ConnectionURL: \
 [[example_props_postgresql]]
 .Example properties for PostgreSQL
 ====
-[source]
+
+[source, conf]
 ----
 
 openjpa.ConnectionDriverName: org.postgresql.Driver
 openjpa.ConnectionURL: jdbc:postgresql://SERVER_NAME:5432/DB_NAME
 ----
+
 ====
 
 [[dbsupport_postgresql_issues]]
@@ -860,12 +905,14 @@ openjpa.ConnectionURL: jdbc:postgresql://SERVER_NAME:5432/DB_NAME
 [[example_props_soliddb]]
 .Example properties for IBM solidDB
 ====
-[source]
+
+[source, conf]
 ----
 
 openjpa.ConnectionDriverName: solid.jdbc.SolidDriver
 openjpa.ConnectionURL: jdbc:solid://localhost:2315/dba/dba
 ----
+
 ====
 
 [[dbsupport_soliddb_table_types]]
@@ -896,13 +943,15 @@ The possible values for lockingMode is OPTIMISTIC/PESSIMISTIC.
 [[example_props_sybase]]
 .Example properties for Sybase
 ====
-[source]
+
+[source, conf]
 ----
 
 openjpa.ConnectionDriverName: com.sybase.jdbc2.jdbc.SybDriver
 openjpa.ConnectionURL: \
     jdbc:sybase:Tds:SERVER_NAME:4100/DB_NAME?ServiceName=DB_NAME&BE_AS_JDBC_COMPLIANT_AS_POSSIBLE=true
 ----
+
 ====
 
 [[dbsupport_sybase_issues]]

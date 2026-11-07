@@ -36,14 +36,14 @@ The API for executing JPQL queries will be discussed in <<jpa_query_api>>, and a
 [[jpa_overview_query_basic]]
 ===== Query Basics
 
-[source]
+[source, sql]
 ----
 SELECT x FROM Magazine x
 ----
 
 The preceding is a simple JPQL query for all [class]``Magazine`` entities.
 
-[source]
+[source, java]
 ----
 
 public Query createQuery(String jpql);
@@ -52,7 +52,7 @@ public Query createQuery(String jpql);
 The https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/entitymanager[
 EntityManager.createQuery] method creates a [class]``Query`` instance from a given JPQL string.
 
-[source]
+[source, java]
 ----
 
 public List getResultList();
@@ -62,7 +62,7 @@ Invoking https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persi
 Query.getResultList] executes the query and returns a [class]``List`` containing the matching objects.
 The following example executes our [class]``Magazine`` query above:
 
-[source]
+[source, java]
 ----
 
 EntityManager em = ...
@@ -93,7 +93,7 @@ OBJECT(x)` are synonymous.
 The optional `where` clause places criteria on matching results.
 For example:
 
-[source]
+[source, sql]
 ----
 SELECT x FROM Magazine x WHERE x.title = 'JDJ'
 ----
@@ -101,14 +101,14 @@ SELECT x FROM Magazine x WHERE x.title = 'JDJ'
 Keywords in JPQL expressions are case-insensitive, but entity, identifier, and member names are not.
 For example, the expression above could also be expressed as:
 
-[source]
+[source, sql]
 ----
 select x from Magazine x where x.title = 'JDJ'
 ----
 
 But it could not be expressed as:
 
-[source]
+[source, sql]
 ----
 SELECT x FROM Magazine x WHERE x.TITLE = 'JDJ'
 ----
@@ -119,7 +119,7 @@ The query above could be described in English as "for all [class]``Magazine`` in
 JPQL uses SQL-like syntax for query criteria.
 The `and` and ``or`` logical operators chain multiple criteria together:
 
-[source]
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE x.title = 'JDJ' OR x.title = 'JavaPro'
@@ -129,7 +129,7 @@ The `=` operator tests for equality. `<>`  tests for inequality.
 JPQL also supports the following arithmetic operators for numeric comparisons: ``>, >=, <, <=``.
 For example:
 
-[source]
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE x.price > 3.00 AND x.price <= 5.00
@@ -137,7 +137,7 @@ SELECT x FROM Magazine x WHERE x.price > 3.00 AND x.price <= 5.00
 
 This query returns all magazines whose price is greater than 3.00 and less than or equal to 5.00.
 
-[source]
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE x.price <> 3.00
@@ -149,7 +149,7 @@ You can group expressions together using parentheses in order to specify how the
 This is similar to how parentheses are used in Java.
 For example:
 
-[source]
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE (x.price > 3.00 AND x.price <= 5.00) OR x.price < 7.00
@@ -158,7 +158,7 @@ SELECT x FROM Magazine x WHERE (x.price > 3.00 AND x.price <= 5.00) OR x.price <
 This expression would match magazines whose price is less than 7.00.
 Alternately:
 
-[source]
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE x.price > 3.00 AND (x.price <= 5.00 OR x.price < 7.00)
@@ -170,16 +170,14 @@ JPQL also includes the following conditionals:
 
 * (((BETWEEN expressions)))``[NOT] BETWEEN``: Shorthand for expressing that a value falls between two other values.
 The following two statements are synonymous:
-
-
-[source]
++
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE x.price >= 3.00 AND x.price <= 5.00
 ----
-
-
-[source]
++
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE x.price BETWEEN 3.00 AND 5.00
@@ -187,71 +185,63 @@ SELECT x FROM Magazine x WHERE x.price BETWEEN 3.00 AND 5.00
 * (((LIKE expressions)))``[NOT] LIKE``: Performs a string comparison with wildcard support.
 The special character '_' in the parameter means to match any single character, and the special character '%' means to match any sequence of characters.
 The following statement matches title fields "JDJ" and "JavaPro", but not "IT Insider":
-
-
-[source]
++
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE x.title LIKE 'J%'
 ----
-
++
 The following statement matches the title field "JDJ" but not "JavaPro":
-
-
-[source]
++
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE x.title LIKE 'J__'
 ----
 * (((IN expressions)))``[NOT] IN``: Specifies that the member must be equal to one element of the provided list.
 The following two statements are synonymous:
-
-
-[source]
++
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE x.title IN ('JDJ', 'JavaPro', 'IT Insider')
 ----
-
-
-[source]
++
+[source, sql]
 ----
 SELECT x FROM Magazine x WHERE x.title = 'JDJ' OR x.title = 'JavaPro' OR x.title = 'IT Insider'
 ----
 * (((IS EMPTY expressions)))``IS [NOT] EMPTY``: Specifies that the collection field holds no elements.
 For example:
-
-
-[source]
++
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE x.articles is empty
 ----
-
++
 This statement will return all magazines whose  `articles` member contains no elements.
 * (((IS NULL expressions)))``IS [NOT] NULL``: Specifies that the field is equal to null.
 For example:
-
-
-[source]
++
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE x.publisher is null
 ----
-
++
 This statement will return all Magazine instances whose "publisher" field is set to ``null``.
 * (((NOT expressions)))``NOT``: Negates the contained expression.
 For example, the following two statements are synonymous:
-
-
-[source]
++
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE NOT(x.price = 10.0)
 ----
-
-
-[source]
++
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE x.price <> 10.0
@@ -264,20 +254,20 @@ SELECT x FROM Magazine x WHERE x.price <> 10.0
 Relations between objects can be traversed using Java-like syntax.
 For example, if the Magazine class has a field named "publisher" of type Company, that relation can be queried as follows:
 
-[source]
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE x.publisher.name = 'Random House'
 ----
 
-This query returns all [class]``Magazine`` instances whose 
+This query returns all [class]``Magazine`` instances whose
 `publisher` field is set to a [class]``Company`` instance whose name is "Random House".
 
 Single-valued relation traversal implies that the relation is not null.
 In SQL terms, this is known as an __inner join__.
 If you want to also include relations that are null, you can specify:
 
-[source]
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE x.publisher.name = 'Random House' or x.publisher is null
@@ -286,7 +276,7 @@ SELECT x FROM Magazine x WHERE x.publisher.name = 'Random House' or x.publisher 
 You can also traverse collection fields in queries, but you must declare each traversal in the `from` clause.
 Consider:
 
-[source]
+[source, sql]
 ----
 
 SELECT x FROM Magazine x, IN(x.articles) y WHERE y.authorName = 'John Doe'
@@ -298,7 +288,7 @@ This query says that for each [class]``Magazine````x``, traverse the `articles` 
 ====
 The `IN()` syntax can also be expressed with the keywords ``inner join``.
 The statements `SELECT x FROM Magazine
-x, IN(x.articles) y WHERE y.authorName = 'John Doe'` and 
+x, IN(x.articles) y WHERE y.authorName = 'John Doe'` and
 `SELECT x FROM Magazine x inner join x.articles y WHERE y.authorName = 'John Doe'`  are synonymous.
 ====
 
@@ -308,7 +298,7 @@ x, IN(x.articles) y WHERE y.authorName = 'John Doe'` and
 Similar to relation traversal, nested embeddable objects can be traversed using Java-like syntax.
 For example, if the [class]``Company`` class has a field named "address" of an embeddable type [class]``Address``, and the [class]``Address`` has a field named "geocode" of an embeddable type [class]``Geocode``, the `geocode` of a company's address can be queried as follows:
 
-[source]
+[source, sql]
 ----
 
 SELECT c.address.geocode FROM Company c WHERE c.name = 'Random House'
@@ -322,7 +312,7 @@ Modifications to these embeddable instances are not allowed.
 
 Traversal into embeddable's state field is also allowed as shown in the following query:
 
-[source]
+[source, sql]
 ----
 
 SELECT c.address.geocode.latitude FROM Company c WHERE c.name = 'Random House'
@@ -332,7 +322,7 @@ Embeddable objects may contain single-valued or collection-valued relations.
 These relations can also be traversed using Java-like syntax.
 For example, if the Address has a relation field named "phoneLists" of an entity type [class]``PhoneNumber``, the following query returns the [class]``PhoneNumber`` entities of the [class]``Company`` named 'Random House':
 
-[source]
+[source, sql]
 ----
 
 SELECT p FROM Company c, IN(c.address.phoneLists) p WHERE c.name = 'Random House'
@@ -343,7 +333,7 @@ SELECT p FROM Company c, IN(c.address.phoneLists) p WHERE c.name = 'Random House
 
 JPQL queries may specify one or more `join fetch` declarations, which allow the query to specify which fields in the returned instances will be pre-fetched.
 
-[source]
+[source, sql]
 ----
 
 SELECT x FROM Magazine x join fetch x.articles WHERE x.title = 'JDJ'
@@ -352,7 +342,8 @@ SELECT x FROM Magazine x join fetch x.articles WHERE x.title = 'JDJ'
 The query above returns [class]``Magazine`` instances and guarantees that the `articles` field will already be fetched in the returned instances.
 
 Multiple fields may be specified in separate `join fetch` declarations:
-[source]
+
+[source, sql]
 ----
 
 SELECT x FROM Magazine x join fetch x.articles join fetch x.authors WHERE x.title = 'JDJ'
@@ -362,7 +353,8 @@ Notice that in the above query, both `articles` and `authors` are relation prope
 JPQL syntax does not allow range variable declared for paths on the right-hand side of ``join fetch``.
 Therefore, if [class]``Article`` entity has a relation property of ``publishers``, it is not possible to specify a query that returns [class]``Magazine`` instances and pre-fetch the `articles` and the ``publishers``.
 The following query will result in syntax error:
-[source]
+
+[source, sql]
 ----
 
 SELECT x FROM Magazine x join fetch x.articles a join fetch a.publishers p WHERE x.title = 'JDJ'
@@ -383,152 +375,132 @@ As well as supporting direct field and relation comparisons, JPQL supports a pre
 
 * (((CONCAT function)))``CONCAT(string1, string2)``: Concatenates two string fields or literals.
 For example:
-
-
-[source]
++
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE CONCAT(x.title, 's') = 'JDJs'
 ----
 * (((SUBSTRING function)))``SUBSTRING(string, startIndex, [length])``: Returns the part of the `string` argument starting at `startIndex` (1-based) and optionally ending at `length` characters past ``startIndex``.
 If the `length` argument is not specified, the substring from the `startIndex` to the end of the `string` is returned.
-
-
-[source]
++
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE SUBSTRING(x.title, 1, 1) = 'J'
 ----
 * (((TRIM function)))``TRIM([LEADING | TRAILING | BOTH] [character FROM] string``: Trims the specified character from either the beginning ( ``LEADING``) end ( ``TRAILING``) or both ( ``BOTH``) of the string argument.
 If no trim character is specified, the space character will be trimmed.
-
-
-[source]
++
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE TRIM(BOTH 'J' FROM x.title) = 'D'
 ----
 * (((LOWER function)))``LOWER(string)``: Returns the lower-case of the specified string argument.
-
-
-[source]
++
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE LOWER(x.title) = 'jdj'
 ----
 * (((UPPER function)))``UPPER(string)``: Returns the upper-case of the specified string argument.
-
-
-[source]
++
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE UPPER(x.title) = 'JAVAPRO'
 ----
 * (((LENGTH function)))``LENGTH(string)``: Returns the number of characters in the specified string argument.
-
-
-[source]
++
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE LENGTH(x.title) = 3
 ----
-* (((LOCATE function)))``LOCATE(searchString, candidateString [, startIndex])``: Returns the first index of `searchString` in ``candidateString``.
-Positions are 1-based.
-If the string is not found, returns 0.
-
-
-[source]
+* (((LOCATE function)))``LOCATE(searchString, candidateString [, startIndex])``: Returns the first index of `searchString` in ``candidateString``. Positions are 1-based. If the string is not found, returns 0.
++
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE LOCATE('D', x.title) = 2
 ----
 * (((ABS function)))``ABS(number)``: Returns the absolute value of the argument.
-
-
-[source]
++
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE ABS(x.price) >= 5.00
 ----
 * (((CEILING function)))``CEILING(number)``: Returns the smallest (closest to negative infinity) value that is greater than or equal to the argument and is equal to a mathematical integer.
-
-
-[source]
++
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE CEILING(x.price) >= 10
 ----
 * (((EXP function)))``EXP(number)``: Returns the Euler's number `e` raised to the power of a value.
-
-
-[source]
++
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE EXP(x.price) >= 10
 ----
 * (((FLOOR function)))``FLOOR(number)``: Returns the largest (closest to positive infinity) value that is less than or equal to the argument and is equal to a mathematical integer.
-
-
-[source]
++
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE FLOOR(x.price) >= 10
 ----
 * (((LN function)))``LN(number)``: Returns the natural logarithm (base ``e``) of a value.
-
-
-[source]
++
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE LN(x.price) >= 10
 ----
 * (((SQRT function)))``SQRT(number)``: Returns the square root of the argument.
-
-
-[source]
++
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE SQRT(x.price) >= 1.00
 ----
 * (((MOD function)))``MOD(number, divisor)``: Returns the modulo of `number`  and ``divisor``.
-
-
-[source]
++
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE MOD(x.price, 10) = 0
 ----
 * (((POWER function)))``POWER(base, exponent)``: Returns the value of the first argument raised to the power of the second argument.
-
-
-[source]
++
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE POWER(x.price, 2) >= 10
 ----
 * (((ROUND function)))``ROUND(number, precision)``: Rounds the number to given precision.
-
-
-[source]
++
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE ROUND(x.price, 2) >= 10
 ----
 * (((SIGN function)))``SIGN(number)``: Returns the sign (-1, 0, 1) of a number
-
-
-[source]
++
+[source, sql]
 ----
 
 SELECT x FROM Magazine x WHERE SIGN(x.price) >= 0
 ----
 * (((INDEX function)))``INDEX(identification_variable)``: Returns an integer value corresponding to the position of its argument in an ordered list.
 The INDEX function can only be applied to identification variables denoting types for which an order column has been specified.
-
++
 In the following example, `studentWaitlist` is a list of students for which an order column has been specified, the query returns the name of the first student on the waiting list of the course named 'Calculus':
-
-
-[source]
++
+[source, sql]
 ----
 
 SELECT w.name FROM Course c JOIN c.studentWaitlist w WHERE c.name = ‘Calculus’ AND INDEX(w) = 0
@@ -540,17 +512,15 @@ SELECT w.name FROM Course c JOIN c.studentWaitlist w WHERE c.name = ‘Calculus�
 * (((LOCAL TIME function)))``LOCAL TIME``: returns the value of current time on the database server.
 * (((LOCAL DATETIME function)))``LOCAL DATETIME``: returns the value of current timestamp on the database server.
 * (((EXTRACT date field function)))``EXTRACT``(date_field `FROM` date_expression) : extracts a given field  (year, quarter, month, week, day, hour, minute or second) from a datetime.
-
-
-[source]
++
+[source, sql]
 ----
 
 SELECT c FROM Customer AS c WHERE EXTRACT(YEAR FROM c.birthDate)  (EXTRACT(YEAR FROM CURRENT_DATE) - 13)
 ----
 * (((EXTRACT date part function)))``EXTRACT``(date_part `FROM` date_expression) : extracts a date part  (date or time) from a datetime.
-
-
-[source]
++
+[source, sql]
 ----
 
 SELECT c FROM Customer AS c WHERE EXTRACT(DATE FROM c.createdTimestamp)  { d '1969-07-20' }
@@ -564,14 +534,15 @@ All JPQL queries are polymorphic, which means the `from` clause of a query inclu
 The instances returned by a query include instances of the subclasses that satisfy the query conditions.
 For example, the following query may return instances of [class]``Magazine``, as well as [class]``Tabloid`` and [class]``Digest`` instances, where [class]``Tabloid`` and [class]``Digest`` are [class]``Magazine`` subclasses.
 
-[source]
+[source, sql]
 ----
 SELECT x FROM Magazine x WHERE x.price  5
 ----
 
 Non-polymorphic queries or queries whose polymorphism is restricted can be specified using entity type expressions (see <<jpa_langref_entity_type_expressions>> ) in the `WHERE` clause to restrict the domain of the query.
 For example, the following query returns instances of [class]``Digest``:
-[source]
+
+[source, sql]
 ----
 
 SELECT x FROM Magazine WHERE TYPE(x) = Digest
@@ -585,7 +556,7 @@ Either named parameters or positional parameters may be specified in the query s
 Parameters allow you to re-use query templates where only the input parameters vary.
 A single query can declare either named parameters or positional parameters, but is not allowed to declare both named and positional parameters.
 
-[source]
+[source, java]
 ----
 
 public Query setParameter (int pos, Object value);
@@ -595,7 +566,7 @@ Specify positional parameters in your JPQL string using an integer prefixed by a
 You can then populate the [class]``Query`` object with positional parameter values via calls to the [method]``setParameter`` method above.
 The method returns the [class]``Query`` instance for optional method chaining.
 
-[source]
+[source, java]
 ----
 
 EntityManager em = ...
@@ -606,7 +577,7 @@ ListMagazine results = (ListMagazine) q.getResultList();
 
 This code will substitute `JDJ` for the `?1` parameter and `5.0` for the `?2` parameter, then execute the query with those values.
 
-[source]
+[source, java]
 ----
 
 public Query setParameter(String name, Object value);
@@ -616,7 +587,7 @@ Named parameters are denoted by prefixing an arbitrary name with a colon in your
 You can then populate the [class]``Query`` object with parameter values using the method above.
 Like the positional parameter method, this method returns the [class]``Query`` instance for optional method chaining.
 
-[source]
+[source, java]
 ----
 
 EntityManager em = ...
@@ -640,7 +611,8 @@ Additionally, if a DB2 database is being used, the OPTIMIZE FOR 2 ROWS clause wi
 [[jpa_query_hint1]]
 .Query Hints
 ====
-[source]
+
+[source, java]
 ----
 
 ...
@@ -650,6 +622,7 @@ q.setHint("openjpa.FetchPlan.ReadLockMode","WRITE");
 List r = q.getResultList();
 ...
 ----
+
 ====
 
 Hints which can not be processed by a particular database or are unknown to OpenJPA are ignored.
@@ -746,7 +719,8 @@ Hints can also be included as part of a NamedQuery definition.
 [[jpa_query_hint2]]
 .Named Query using Hints
 ====
-[source]
+
+[source, java]
 ----
 
 ...
@@ -759,6 +733,7 @@ Hints can also be included as part of a NamedQuery definition.
 )
 ...
 ----
+
 ====
 
 [[multi-hints-handling]]
@@ -775,7 +750,8 @@ When similar hints in different prefix scopes are specified in a query, the foll
 [[multi-hints-example]]
 .Setting Multiple Similar Query Hints
 ====
-[source]
+
+[source, java]
 ----
 
 ...
@@ -786,6 +762,7 @@ q.setHint("openjpa.LockTimeout", 3000);
 // Lock time out of 2000 ms is in effect for query q
 ...
 ----
+
 ====
 
 [[jpa_overview_query_ordering]]
@@ -795,7 +772,7 @@ JPQL queries may optionally contain an `order by` clause which specifies one or 
 You may follow the `order by field` clause with the `asc`  or `desc` keywords, which indicate that ordering should be ascending or descending, respectively.
 If the direction is omitted, ordering is ascending by default.
 
-[source]
+[source, sql]
 ----
 
 SELECT x FROM Magazine x order by x.title asc, x.price desc
@@ -813,7 +790,7 @@ These functions can be used for reporting and summary queries.
 
 The following query will return the average of all the prices of all the magazines:
 
-[source]
+[source, java]
 ----
 
 EntityManager em = ...
@@ -823,7 +800,7 @@ Number result = (Number) q.getSingleResult();
 
 The following query will return the highest price of all the magazines titled "JDJ":
 
-[source]
+[source, java]
 ----
 
 EntityManager em = ...
@@ -837,7 +814,7 @@ Number result = (Number) q.getSingleResult();
 Query templates can be statically declared using the  `NamedQuery`  and `NamedQueries` annotations.
 For example:
 
-[source]
+[source, java]
 ----
 
 @Entity
@@ -854,7 +831,7 @@ public class Magazine {
 
 These declarations will define two named queries called `magsOverPrice`  and ``magsByTitle``.
 
-[source]
+[source, java]
 ----
 
 public Query createNamedQuery(String name);
@@ -863,7 +840,7 @@ public Query createNamedQuery(String name);
 You retrieve named queries with the above [class]``EntityManager`` method.
 For example:
 
-[source]
+[source, java]
 ----
 
 EntityManager em = ...
@@ -872,7 +849,7 @@ q.setParameter(1, 5.0f);
 ListMagazine results = (ListMagazine) q.getResultList();
 ----
 
-[source]
+[source, java]
 ----
 
 EntityManager em = ...
@@ -891,7 +868,7 @@ Rather than bring these objects into memory and delete them individually, JPA al
 Delete by query uses the same JPQL syntax as normal queries, with one exception: begin your query string with the `delete` keyword instead of the `select` keyword.
 To then execute the delete, you call the following [class]``Query`` method:
 
-[source]
+[source, java]
 ----
 
 public int executeUpdate();
@@ -903,13 +880,15 @@ The following example deletes all subscriptions whose expiration date has passed
 [[jpa_overview_query_deleteex]]
 .Delete by Query
 ====
-[source]
+
+[source, java]
 ----
 
 Query q = em.createQuery("DELETE FROM Subscription s WHERE s.subscriptionDate  :today");
 q.setParameter("today", new Date());
 int deleted = q.executeUpdate();
 ----
+
 ====
 
 [[jpa_overview_query_update]]
@@ -921,7 +900,7 @@ Rather than bring these objects into memory and modifying them individually, JPA
 Update by query uses the same JPQL syntax as normal queries, except that the query string begins with the `update` keyword instead of ``select``.
 To execute the update, you call the following [class]``Query`` method:
 
-[source]
+[source, java]
 ----
 
 public int executeUpdate();
@@ -933,7 +912,8 @@ The following example updates all subscriptions whose expiration date has passed
 [[jpa_overview_query_updateex]]
 .Update by Query
 ====
-[source]
+
+[source, java]
 ----
 
 Query q = em.createQuery("UPDATE Subscription s SET s.paid = :paid WHERE s.subscriptionDate  :today");
@@ -941,6 +921,7 @@ q.setParameter("today", new Date());
 q.setParameter("paid", true);
 int updated = q.executeUpdate();
 ----
+
 ====
 
 [[jpa_langref]]
@@ -1044,7 +1025,7 @@ There is also a one-to-many relationship between `Magazine` and `Article` . The 
 Queries to select magazines can be defined by navigating over the association-fields and state-fields defined by `Magazine` and ``Author``.
 A query to find all magazines that have unpublished articles is as follows:
 
-[source]
+[source, sql]
 ----
 
 SELECT DISTINCT mag FROM Magazine AS mag JOIN mag.articles AS art WHERE art.published = FALSE
@@ -1053,14 +1034,14 @@ SELECT DISTINCT mag FROM Magazine AS mag JOIN mag.articles AS art WHERE art.publ
 This query navigates over the association-field `authors` of the abstract schema type `Magazine` to find articles, and uses the state-field `published` of `Article` to select those magazines that have at least one article that is not published.
 Although predefined reserved identifiers, such as ``DISTINCT``, ``FROM``, ``AS``, ``JOIN``, ``WHERE``, and `FALSE` appear in upper case in this example, predefined reserved identifiers are case insensitive.
 
-The 
+The
 `SELECT` clause of this example designates the return type of this query to be of type ``Magazine``.
 
 Because the same persistence unit defines the abstract persistence schemas of the related entities, the developer can also specify a query over articles that utilizes the abstract schema type for products, and hence the state-fields and association-fields of both the abstract schema types `Magazine` and ``Author``.
 For example, if the abstract schema type `Author` has a state-field named ``firstName``, a query over articles can be specified using this state-field.
 Such a query might be to find all magazines that have articles authored by someone with the first name "John".
 
-[source]
+[source, sql]
 ----
 
 SELECT DISTINCT mag FROM Magazine mag JOIN mag.articles art JOIN art.author auth WHERE auth.firstName = 'John'
@@ -1222,11 +1203,13 @@ Identification variables are case insensitive.
 
 An identification variable evaluates to a value of the type of the expression used in declaring the variable.
 For example, consider the previous query:
-[source]
+
+[source, sql]
 ----
 SELECT DISTINCT mag FROM Magazine mag JOIN mag.articles art JOIN art.author auth WHERE auth.firstName = 'John'
 ----
-In the `FROM` clause declaration 
+
+In the `FROM` clause declaration
 `mag.articles` ``art``, the identification variable ``art`` evaluates to any `Article` value directly reachable from ``Magazine``.
 The association-field ``articles`` is a collection of instances of the abstract schema type `Article` and the identification variable `art`  refers to an element of this collection.
 The type of `auth`  is the abstract schema type of ``Author``.
@@ -1270,7 +1253,7 @@ The following query returns magazines whose price is greater than the price of m
 This example illustrates the use of two different identification variables in the `FROM` clause, both of the abstract schema type Magazine.
 The `SELECT` clause of this query determines that it is the magazines with prices greater than those of "Adventure" publisher's that are returned.
 
-[source]
+[source, sql]
 ----
 
 SELECT DISTINCT mag1 FROM Magazine mag1, Magazine mag2
@@ -1302,7 +1285,7 @@ It cannot be further composed and can only appear in the ``SELECT`` list of a qu
 
 In the following query, `photos` is a map from photo label to filename.
 
-[source]
+[source, sql]
 ----
 
 SELECT i.name, VALUE(p)
@@ -1314,7 +1297,7 @@ In the above query the identification variable `p` designates an abstract schema
 The results of `VALUE(p)` and `KEY(p)` are the map value and the map key associated with p, respectively.
 The following query is equivalent:
 
-[source]
+[source, sql]
 ----
 
 SELECT i.name, p
@@ -1327,7 +1310,7 @@ Path expressions can be composed from other path expressions if the original pat
 
 In the following example, `contactInfo` denotes an embeddable class consisting of an address and set of phones. `Phone` is an entity.
 
-[source]
+[source, sql]
 ----
 
 SELECT p.vendor
@@ -1340,7 +1323,7 @@ That is, if the value of a non-terminal association-field in the path expression
 
 The following query is equivalent to the query above:
 
-[source]
+[source, sql]
 ----
 
 SELECT p.vendor
@@ -1368,13 +1351,13 @@ An identification variable used in a ``single_valued_object_path_expression`` or
 * general_identification_variable ::= identification_variable | KEY(identification_variable) | VALUE(identification_variable)
 
 It is syntactically illegal to compose a path expression from a path expression that evaluates to a collection.
-For example, if `mag`  designates ``Magazine``, the path expression 
+For example, if `mag`  designates ``Magazine``, the path expression
 `mag.articles.author` is illegal since navigation to authors results in a collection.
 This case should produce an error when the query string is verified.
 To handle such a navigation, an identification variable must be declared in the `FROM` clause to range over the elements of the ``articles`` collection.
 Another path expression must be used to navigate over each such element in the `WHERE` clause of the query, as in the following query which returns all authors that have any articles in any magazines:
 
-[source]
+[source, sql]
 ----
 
 SELECT DISTINCT art.author FROM Magazine AS mag, IN(mag.articles) art
@@ -1391,7 +1374,7 @@ In the absence of a join condition, this reduces to the cartesian product.
 
 The main use case for this generalized style of join is when a join condition does not involve a foreign key relationship that is mapped to an entity relationship, for example:
 
-[source]
+[source, sql]
 ----
 SELECT c FROM Customer c, Employee e WHERE c.hatsize = e.shoesize
 ----
@@ -1416,10 +1399,10 @@ The syntax for the inner join operation is
 
 * [ INNER ] JOIN join_association_path_expression [AS] identification_variable
 
- For example, the query below joins over the relationship between publishers and magazines.
+For example, the query below joins over the relationship between publishers and magazines.
 This type of join typically equates to a join over a foreign key relationship in the database.
 
-[source]
+[source, sql]
 ----
 
 SELECT pub FROM Publisher pub JOIN pub.magazines mag WHERE pub.revenue  1000000
@@ -1427,7 +1410,7 @@ SELECT pub FROM Publisher pub JOIN pub.magazines mag WHERE pub.revenue  1000000
 
 The keyword `INNER` may optionally be used:
 
-[source]
+[source, sql]
 ----
 
 SELECT pub FROM Publisher pub INNER JOIN pub.magazines mag WHERE pub.revenue  1000000
@@ -1436,7 +1419,7 @@ SELECT pub FROM Publisher pub INNER JOIN pub.magazines mag WHERE pub.revenue  10
 This is equivalent to the following query using the earlier ``IN`` construct.
 It selects those publishers with revenue of over 1 million for which at least one magazine exists:
 
-[source]
+[source, sql]
 ----
 
 SELECT OBJECT(pub) FROM Publisher pub, IN(pub.magazines) mag WHERE pub.revenue  1000000
@@ -1446,7 +1429,7 @@ The query below joins over Employee, ContactInfo and Phone.
 ContactInfo is an embeddable class that consists of an address and set of phones.
 Phone is an entity.
 
-[source]
+[source, sql]
 ----
 
 SELECT p.vendor
@@ -1464,14 +1447,20 @@ The syntax for a left outer join is:
 * LEFT [OUTER] JOIN join_association_path_expression [AS] identification_variable
 
 For example:
-[source]
+
+[source, sql]
 ----
 SELECT pub FROM Publisher pub LEFT JOIN pub.magazines mag WHERE pub.revenue  1000000
----- The keyword `OUTER` may optionally be used:
-[source]
+----
+
+The keyword `OUTER` may optionally be used:
+
+[source, sql]
 ----
 SELECT pub FROM Publisher pub LEFT OUTER JOIN pub.magazines mags WHERE pub.revenue  1000000
----- An important use case for `LEFT JOIN` is in enabling the prefetching of related data items as a side effect of a query.
+----
+
+An important use case for `LEFT JOIN` is in enabling the prefetching of related data items as a side effect of a query.
 This is accomplished by specifying the `LEFT JOIN` as a ``FETCH JOIN``.
 
 [[jpa_langref_fetch_joins]]
@@ -1490,7 +1479,8 @@ The following query returns a set of magazines.
 As a side effect, the associated articles for those magazines are also retrieved, even though they are not part of the explicit query result.
 The persistent fields or properties of the articles that are eagerly fetched are fully initialized.
 The initialization of the relationship properties of the `articles` that are retrieved is determined by the metadata for the `Article` entity class.
-[source]
+
+[source, sql]
 ----
 SELECT mag FROM Magazine mag LEFT JOIN FETCH mag.articles WHERE mag.id = 1
 ----
@@ -1517,19 +1507,25 @@ The syntax for declaring a collection member identification variable is as follo
 * collection_member_declaration ::= IN (collection_valued_path_expression) [AS] identification_variable
 
 For example, the query
-[source]
+
+[source, sql]
 ----
 SELECT DISTINCT mag FROM Magazine mag
     JOIN mag.articles art
     JOIN art.author auth
     WHERE auth.lastName = 'Grisham'
----- can equivalently be expressed as follows, using the `IN` operator:
-[source]
+----
+
+can equivalently be expressed as follows, using the `IN` operator:
+
+[source, sql]
 ----
 SELECT DISTINCT mag FROM Magazine mag,
     IN(mag.articles) art
     WHERE art.author.lastName = 'Grisham'
----- In this example, ``articles`` is the name of an association-field whose value is a collection of instances of the abstract schema type ``Article``.
+----
+
+In this example, ``articles`` is the name of an association-field whose value is a collection of instances of the abstract schema type ``Article``.
 The identification variable `art` designates a member of this collection, a single `Article` abstract schema type instance.
 In this example, `mag` is an identification variable of the abstract schema type ``Magazine``.
 
@@ -1542,7 +1538,7 @@ Application developers should use caution in defining identification variables b
 For example, the `FROM` clause below defines a query over all orders that have line items and existing products.
 If there are no `Product` instances in the database, the domain of the query is empty and no order is selected.
 
-[source]
+[source, sql]
 ----
 
 SELECT o
@@ -1581,7 +1577,7 @@ The `GROUP BY` and `HAVING` constructs are further discussed in <<jpa_langref_gr
 [[jpa_langref_cond]]
 ===== JPQL Conditional Expressions
 
-The following sections describe the language constructs that can be used in a conditional expression of the `WHERE` clause or 
+The following sections describe the language constructs that can be used in a conditional expression of the `WHERE` clause or
 `HAVING` clause.
 
 State-fields that are mapped in serialized form or as LOBs may not be portably used in conditional expressions.
@@ -1611,7 +1607,7 @@ Although predefined reserved literals appear in upper case, they are case insens
 The JDBC escape syntax may be used for the specification of date, time, and timestamp literals.
 For example:
 
-[source]
+[source, sql]
 ----
 
 SELECT o
@@ -1629,7 +1625,7 @@ Although reserved literals appear in upper case, they are case insensitive.
 [[jpa_langref_idvar]]
 ====== JPQL Identification Variables
 
-All identification variables used in the `WHERE` or 
+All identification variables used in the `WHERE` or
 `HAVING` clause of a `SELECT` or `DELETE`  statement must be declared in the `FROM` clause, as described in <<jpa_langref_from_vars>>.
 The identification variables used in the `WHERE` clause of an `UPDATE`  statement must be declared in the `UPDATE` clause.
 
@@ -1640,7 +1636,7 @@ An identification variable never designates a collection in its entirety.
 [[jpa_langref_path_exp]]
 ====== JPQL Path Expressions
 
-It is illegal to use a `collection_valued_path_expression` within a 
+It is illegal to use a `collection_valued_path_expression` within a
 `WHERE` or `HAVING` clause as part of a conditional expression except in an ``empty_collection_comparison_expression``, in a ``collection_member_expression``, or as an argument to the `SIZE` operator.
 
 [[jpa_langref_input_params]]
@@ -1675,7 +1671,8 @@ It follows the rules for identifiers defined in <<jpa_langref_from_identifiers>>
 Named parameters are case sensitive.
 
 Example:
-[source]
+
+[source, sql]
 ----
 SELECT pub FROM Publisher pub WHERE pub.revenue  :rev
 ----
@@ -1691,7 +1688,7 @@ The scalar expressions described in <<jpa_langref_scalar_expressions>> can be us
 
 Standard bracketing () for ordering expression evaluation is supported.
 
-Aggregate functions can only be used in conditional expressions in a 
+Aggregate functions can only be used in conditional expressions in a
 `HAVING` clause.
 See <<jpa_langref_group>>.
 
@@ -1729,19 +1726,19 @@ The syntax for the use of comparison expressions in a conditional expression is 
 
 Examples:
 
-[source]
+[source, sql]
 ----
 
 item.cost * 1.08 = 100.00
 ----
 
-[source]
+[source, sql]
 ----
 
 CONCAT(person.lastName, ‘, ’, person.firstName)) = ‘Jones, Sam’
 ----
 
-[source]
+[source, sql]
 ----
 
 TYPE(e) = ExemptEmployee
@@ -1760,39 +1757,53 @@ The syntax for the use of the comparison operator [ `NOT` ] ``BETWEEN`` in a con
 arithmetic_expression [NOT] BETWEEN arithmetic_expression AND arithmetic_expression | string_expression [NOT] BETWEEN string_expression AND string_expression | datetime_expression [NOT] BETWEEN datetime_expression AND datetime_expression
 
 The BETWEEN expression
-[source]
+
+[source, sql]
 ----
 x BETWEEN y AND z
----- is semantically equivalent to:
-[source]
+----
+
+is semantically equivalent to:
+
+[source, sql]
 ----
 y = x AND x = z
----- The rules for unknown and `NULL` values in comparison operations apply.
+----
+
+The rules for unknown and `NULL` values in comparison operations apply.
 See <<jpa_langref_null_values>> .
 
 Examples are:
-[source]
+
+[source, sql]
 ----
 p.age BETWEEN 15 and 19
----- is equivalent to:
-[source]
+----
+
+is equivalent to:
+
+[source, sql]
 ----
 p.age = 15 AND p.age = 19
 ----
 
 The following expression:
-[source]
+
+[source, sql]
 ----
 p.age NOT BETWEEN 15 and 19
----- excludes the range, and is equivalent to:
-[source]
+----
+
+excludes the range, and is equivalent to:
+
+[source, sql]
 ----
 p.age  15 OR p.age  19
 ----
 
 In the following example, `transactionHistory` is a list of credit card transactions defined using an order column.
 
-[source]
+[source, sql]
 ----
 
 SELECT t
@@ -1820,35 +1831,35 @@ Subqueries are discussed in <<jpa_langref_subqueries>>.
 
 Examples:
 
-[source]
+[source, sql]
 ----
 o.country IN ('UK', 'US', 'France')
 ----
 
 is true for UK and false for Peru, and is equivalent to the expression:
 
-[source]
+[source, sql]
 ----
 (o.country = 'UK') OR (o.country = 'US') OR (o.country = ' France')
 ----
 
 In the following expression:
 
-[source]
+[source, sql]
 ----
 o.country NOT IN ('UK', 'US', 'France')
 ----
 
 is false for UK and true for Peru, and is equivalent to the expression:
 
-[source]
+[source, sql]
 ----
 NOT ((o.country = 'UK') OR (o.country = 'US') OR (o.country = 'France'))
 ----
 
 There must be at least one element in the comma separated list that defines the set of values for the `IN` expression.
 
-If the value of a `state_field_path_expression` or `in_item` in an `IN` or 
+If the value of a `state_field_path_expression` or `in_item` in an `IN` or
 `NOT IN` expression is `NULL` or unknown, the value of the expression is unknown.
 
 Note that use of a collection-valued input parameter will mean that a static query cannot be precompiled.
@@ -1866,26 +1877,40 @@ The optional escape_character is a single-character string literal or a characte
 
 Examples:
 
-
-
-* [source]
+* {empty}
++
+[source, sql]
 ----
 address.phone LIKE '12%3'
----- is true for '123' '12993' and false for '1234'
-* [source]
+----
++
+is true for '123' '12993' and false for '1234'
+* {empty}
++
+[source, sql]
 ----
 asentence.word LIKE 'l_se'
----- is true for 'lose' and false for 'loose'
-* [source]
+----
++
+is true for 'lose' and false for 'loose'
+* {empty}
++
+[source, sql]
 ----
 aword.underscored LIKE '\_%' ESCAPE '\'
----- is true for '_foo' and false for 'bar'
-* [source]
+----
++
+is true for '_foo' and false for 'bar'
+* {empty}
++
+[source, sql]
 ----
 address.phone NOT LIKE '12%3'
----- is false for '123' and '12993' and true for '1234'.
+----
++
+is false for '123' and '12993' and true for '1234'.
 
-If the value of the `string_expression` or ``pattern_value`` is `NULL` or unknown, the value of the 
+If the value of the `string_expression` or ``pattern_value`` is `NULL` or unknown, the value of the
 `LIKE` expression is unknown.
 If the `escape_character` is specified and is ``NULL``, the value of the `LIKE` expression is unknown.
 
@@ -1911,7 +1936,8 @@ This expression tests whether or not the collection designated by the collection
 has no elements).
 
 For example, the following query will return all magazines that don't have any articles at all:
-[source]
+
+[source, sql]
 ----
 SELECT mag FROM Magazine mag WHERE mag.articles IS EMPTY
 ----
@@ -1931,7 +1957,7 @@ This expression tests whether the designated value is a member of the collection
 
 Expressions that evaluate to embeddable types are not supported in collection member expressions.
 
-If the collection valued path expression designates an empty collection, the value of the 
+If the collection valued path expression designates an empty collection, the value of the
 `MEMBER OF` expression is `FALSE` and the value of the ``NOT MEMBER OF`` expression is ``TRUE``.
 Otherwise, if the value of the `collection_valued_path_expression` or ``entity_or_value_expression`` in the collection member expression is `NULL` or unknown, the value of the collection member expression is unknown.
 
@@ -1939,7 +1965,7 @@ The use of the reserved word OF is optional in this expression.
 
 Example:
 
-[source]
+[source, sql]
 ----
 
 SELECT p
@@ -1956,12 +1982,14 @@ The syntax of an exists expression is
 * exists_expression ::= [NOT] EXISTS (subquery)
 
 Example:
-[source]
+
+[source, sql]
 ----
 SELECT DISTINCT auth FROM Author auth
     WHERE EXISTS
         (SELECT spouseAuthor FROM Author spouseAuthor WHERE spouseAuthor = auth.spouse)
 ----
+
 The result of this query consists of all authors whose spouse is also an author.
 
 [[jpa_langref_all_any]]
@@ -1981,7 +2009,8 @@ The syntax of an `ALL`  or `ANY` expression is specified as follows:
 * all_or_any_expression ::= { ALL | ANY | SOME} (subquery)
 
 The following example select the authors who make the highest salary for their magazine:
-[source]
+
+[source, sql]
 ----
 SELECT auth FROM Author auth
     WHERE auth.salary = ALL(SELECT a.salary FROM Author a WHERE a.magazine = auth.magazine)
@@ -2005,23 +2034,28 @@ Subqueries are restricted to the `WHERE` and `HAVING`  clauses in this release.
 Support for subqueries in the `FROM`  clause will be considered in a later release of the specification.
 
 Examples:
-[source]
+
+[source, sql]
 ----
 SELECT DISTINCT auth FROM Author auth
     WHERE EXISTS (SELECT spouseAuth FROM Author spouseAuth WHERE spouseAuth = auth.spouse)
 ----
-[source]
+
+[source, sql]
 ----
 SELECT mag FROM Magazine mag
     WHERE (SELECT COUNT(art) FROM mag.articles art)  10
 ----
+
 Note that some contexts in which a subquery can be used require that the subquery be a scalar subquery (i.e., produce a single result). This is illustrated in the following example involving a numeric comparison operation.
-[source]
+
+[source, sql]
 ----
 SELECT goodPublisher FROM Publisher goodPublisher
     WHERE goodPublisher.revenue  (SELECT AVG(p.revenue) FROM Publisher p)
 ----
-[source]
+
+[source, sql]
 ----
 
 SELECT goodCustomer
@@ -2079,7 +2113,7 @@ The `SUBSTRING` function returns a string.
 
 The ``TRIM`` function trims the specified character from a string.
 If the character to be trimmed is not specified, it is assumed to be space (or blank). The optional trim_character is a single-character string literal or a character-valued input parameter (i.e., char or Character). If a trim specification is not provided, `BOTH` is assumed.
-The 
+The
 `TRIM` function returns the trimmed string.
 
 The `LOWER` and `UPPER` functions convert a string to lower and upper case, respectively.
@@ -2117,7 +2151,7 @@ The `POWER` function accepts two numeric arguments and returns a double.
 Numeric arguments to these functions may correspond to the numeric Java object types as well as the primitive numeric types.
 
 The `SIZE` function returns an integer value, the number of elements of the collection.
-If the collection is empty, the 
+If the collection is empty, the
 `SIZE` function evaluates to zero.
 Numeric arguments to these functions may correspond to the numeric Java object types as well as the primitive numeric types.
 
@@ -2174,7 +2208,7 @@ The CAST function converts an expression of one type to an expression of a diffe
 
 Examples
 
-[source]
+[source, sql]
 ----
 
 UPDATE Invoice AS inv SET inv.description = CONCAT('Price ', CAST(inv.price AS STRING))
@@ -2200,7 +2234,7 @@ simple_case_expression::= ``CASE`` case_operand simple_when_clause {simple_when_
 
 Examples:
 
-[source]
+[source, sql]
 ----
 
 UPDATE Employee e
@@ -2211,7 +2245,7 @@ SET e.salary =
     END
 ----
 
-[source]
+[source, sql]
 ----
 
 UPDATE Employee e
@@ -2222,7 +2256,7 @@ SET e.salary =
     END
 ----
 
-[source]
+[source, sql]
 ----
 
 SELECT e.name,
@@ -2235,7 +2269,7 @@ FROM Employee e
 WHERE e.dept.name = 'Engineering'
 ----
 
-[source]
+[source, sql]
 ----
 
 SELECT e.name,
@@ -2271,7 +2305,7 @@ The Java class of the entity is used as an input parameter to specify the entity
 
 Examples:
 
-[source]
+[source, sql]
 ----
 
 SELECT e
@@ -2279,7 +2313,7 @@ FROM Employee e
 WHERE TYPE(e) IN (Exempt, Contractor)
 ----
 
-[source]
+[source, sql]
 ----
 
 SELECT e
@@ -2287,7 +2321,7 @@ FROM Employee e
 WHERE TYPE(e) IN (:empType1, :empType2)
 ----
 
-[source]
+[source, sql]
 ----
 
 SELECT e
@@ -2295,7 +2329,7 @@ FROM Employee e
 WHERE TYPE(e) IN :empTypes
 ----
 
-[source]
+[source, sql]
 ----
 
 SELECT TYPE(e)
@@ -2345,7 +2379,7 @@ OpenJPA supports the use of `HAVING` in the absence of ``GROUP BY`` if the under
 
 Examples:
 
-[source]
+[source, sql]
 ----
 
 SELECT c.status, AVG(c.filledOrderCount), COUNT(c)
@@ -2354,7 +2388,7 @@ GROUP BY c.status
 HAVING c.status IN (1, 2)
 ----
 
-[source]
+[source, sql]
 ----
 
 SELECT c.country, COUNT(c)
@@ -2373,8 +2407,6 @@ The `SELECT` clause can contain one or more of the following elements: a single 
 
 The `SELECT` clause has the following syntax:
 
-
-
 * select_clause ::= SELECT [DISTINCT] select_item {, select_item}*
 * select_item ::= select_expression [ [AS] result_variable]
 * select_expression ::= single_valued_path_expression | scalar_expression | aggregate_expression | identification_variable | OBJECT(identification_variable) | constructor_expression
@@ -2383,7 +2415,8 @@ The `SELECT` clause has the following syntax:
 * aggregate_expression ::= { AVG | MAX | MIN | SUM } ([DISTINCT] state_field_path_expression) | COUNT ([DISTINCT] identification_variable | state_field_path_expression | single_valued_object_path_expression)
 
 For example:
-[source]
+
+[source, sql]
 ----
 SELECT pub.id, pub.revenue
     FROM Publisher pub JOIN pub.magazines mag WHERE mag.price  5.00
@@ -2391,7 +2424,7 @@ SELECT pub.id, pub.revenue
 
 In the following example, videoInventory is a Map from the entity Movie to the number of copies in stock:
 
-[source]
+[source, sql]
 ----
 
 SELECT v.location.street, KEY(i).title, VALUE(i)
@@ -2401,7 +2434,8 @@ WHERE v.location.zipcode = '94301' AND VALUE(i)  0
 
 Note that the `SELECT` clause must be specified to return only single-valued expressions.
 The query below is therefore not valid:
-[source]
+
+[source, sql]
 ----
 SELECT mag.authors FROM Magazine AS mag
 ----
@@ -2417,7 +2451,8 @@ The `SELECT` clause must not use the OBJECT operator to qualify path expressions
 
 A `result_variable` may be used to name a `select_item` in the query result.
 For example,
-[source]
+
+[source, sql]
 ----
 
 SELECT c, COUNT(l) AS itemCount
@@ -2462,13 +2497,13 @@ If `PublisherInfo` is an entity class, the following 2 queries return instances 
 In the second example, `mag` is an `identification_variable` passed as an argument to the constructor ``PublisherInfo(Magazine mag)``; the entity instances of `Magazine` created during query evaluation will be in the managed state.
 Example:
 
-[source]
+[source, sql]
 ----
 SELECT NEW com.company.PublisherInfo(pub.id, pub.revenue, mag.price)
     FROM Publisher pub JOIN pub.magazines mag WHERE mag.price  5.00
 ----
 
-[source]
+[source, sql]
 ----
 SELECT NEW com.company.PublisherInfo(mag)
     FROM Publisher pub JOIN pub.magazines mag WHERE mag.price  5.00
@@ -2492,7 +2527,7 @@ In the following example, the `Address` instances returned by the query will ref
 While the `Phone` instances will be managed, the ``Address``> instances referenced by the ``addr`` result variable will not be.
 Modifications to these embeddable instances are not allowed.
 
-[source]
+[source, java]
 ----
 
 @Entity
@@ -2542,14 +2577,14 @@ The Java type that is contained in the result of a query using an aggregate func
 
 If ``SUM``, ``AVG``, ``MAX``, or `MIN`  is used, and there are no values to which the aggregate function can be applied, the result of the aggregate function is ``NULL``.
 
-If `COUNT` is used, and there are no values to which 
+If `COUNT` is used, and there are no values to which
 `COUNT` can be applied, the result of the aggregate function is 0.
 
-The argument to an aggregate function may be preceded by the keyword 
+The argument to an aggregate function may be preceded by the keyword
 `DISTINCT` to specify that duplicate values are to be eliminated before the aggregate function is applied.
 It is legal to specify `DISTINCT` with `MAX` or ``MIN``, but it does not affect the result.
 
-Null values are eliminated before the aggregate function is applied, regardless of whether the keyword 
+Null values are eliminated before the aggregate function is applied, regardless of whether the keyword
 `DISTINCT` is specified.
 
 The use of `DISTINCT` with `COUNT` is not supported for arguments of embeddable types or map entry types.
@@ -2558,15 +2593,22 @@ The use of `DISTINCT` with `COUNT` is not supported for arguments of embeddable 
 ====== JPQL Aggregate Examples
 
 The following query returns the average price of all magazines:
-[source]
+
+[source, sql]
 ----
 SELECT AVG(mag.price) FROM Magazine mag
----- The following query returns the sum of all the prices from all the magazines published by 'Larry':
-[source]
+----
+
+The following query returns the sum of all the prices from all the magazines published by 'Larry':
+
+[source, sql]
 ----
 SELECT SUM(mag.price) FROM Publisher pub JOIN pub.magazines mag WHERE pub.firstName = 'Larry'
----- The following query returns the total number of magazines:
-[source]
+----
+
+The following query returns the total number of magazines:
+
+[source, sql]
 ----
 SELECT COUNT(mag) FROM Magazine mag
 ----
@@ -2613,13 +2655,13 @@ An orderby_item must be one of the following:
 
 For example, the five queries below are legal.
 
-[source]
+[source, sql]
 ----
 
 SELECT pub FROM Publisher pub ORDER BY pub.revenue, pub.name
 ----
 
-[source]
+[source, sql]
 ----
 
 SELECT o
@@ -2628,7 +2670,7 @@ WHERE a.state = ‘CA’
 ORDER BY o.quantity DESC, o.totalcost
 ----
 
-[source]
+[source, sql]
 ----
 
 SELECT o.quantity, a.zipcode
@@ -2637,7 +2679,7 @@ WHERE a.state = ‘CA’
 ORDER BY o.quantity, a.zipcode
 ----
 
-[source]
+[source, sql]
 ----
 
 SELECT o.quantity, o.cost*1.08 AS taxedCost, a.zipcode
@@ -2646,7 +2688,7 @@ WHERE a.state = ‘CA’ AND a.county = ‘Santa Clara’
 ORDER BY o.quantity, taxedCost, a.zipcode
 ----
 
-[source]
+[source, sql]
 ----
 
 SELECT AVG(o.quantity) as q, a.zipcode
@@ -2658,7 +2700,7 @@ ORDER BY q DESC
 
 The following two queries are not legal because the `orderby_item` is not reflected in the `SELECT` clause of the query.
 
-[source]
+[source, sql]
 ----
 
 SELECT p.product_name
@@ -2667,7 +2709,7 @@ WHERE c.lastname = ‘Smith’ AND c.firstname = ‘John’
 ORDER BY p.price
 ----
 
-[source]
+[source, sql]
 ----
 
 SELECT p.product_name
@@ -2716,15 +2758,18 @@ Caution should be used when executing bulk update or delete operations because t
 In general, bulk update and delete operations should only be performed within a transaction in a new persistence context or at the beginning of a transaction (before entities have been accessed whose state might be affected by such operations).
 
 Examples:
-[source]
+
+[source, sql]
 ----
 DELETE FROM Publisher pub WHERE pub.revenue  1000000.0
 ----
-[source]
+
+[source, sql]
 ----
 DELETE FROM Publisher pub WHERE pub.revenue = 0 AND pub.magazines IS EMPTY
 ----
-[source]
+
+[source, sql]
 ----
 UPDATE Publisher pub SET pub.status = 'outstanding'
     WHERE pub.revenue  1000000 AND 20  (SELECT COUNT(mag) FROM pub.magazines mag)
@@ -2812,7 +2857,7 @@ The following is the BNF for the Jakarta Persistence query language, from sectio
 * delete_clause ::= ``DELETE````FROM`` entity_name [[ `AS` ] identification_variable]
 * select_clause ::= `SELECT` [ `DISTINCT` ] select_item {, select_item}*
 
-select_item ::= select_expression [[AS] result_variable] *
+* select_item ::= select_expression [[AS] result_variable] *
 * select_expression ::=  single_valued_path_expression | scalar_expression | aggregate_expression | identification_variable | `OBJECT` (identification_variable) | constructor_expression
 * constructor_expression ::= `NEW` constructor_name( constructor_item {, constructor_item}*)
 * constructor_item ::= single_valued_path_expression | scalar_expression | aggregate_expression | identification_variable

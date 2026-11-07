@@ -297,7 +297,7 @@
                                 <iconsdir>img/icons</iconsdir>
                                 <iconfont-remote>false</iconfont-remote>
                                 <webfonts>false</webfonts>
-                                <source-highlighter>coderay</source-highlighter>
+                                <source-highlighter>rouge</source-highlighter>
                                 <toclevels>10</toclevels>
                                 <project-version>${project.version}</project-version>
                                 <current-year>${current.year}</current-year>
