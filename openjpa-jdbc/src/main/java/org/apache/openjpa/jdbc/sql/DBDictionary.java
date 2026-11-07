@@ -112,6 +112,7 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.kernel.exps.DateTimeExtractField;
+import org.apache.openjpa.kernel.exps.DateTimeExtractPart;
 import org.apache.openjpa.kernel.exps.Path;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
@@ -6687,6 +6688,16 @@ public class DBDictionary
      */
     public String getExtractDateTimeFieldFunction(DateTimeExtractField extField) {
         return extractDateTimeFieldFunction.replace("{0}", getExtractField(extField));
+    }
+
+    /**
+     * Return the SQL that extracts the date or the time part of a date-time value, where
+     * {1} stands for the value and may occur more than once, in which case a parameter is bound
+     * once for each occurrence. By default the value is cast to DATE or TIME. Override for
+     * databases whose DATE type has a time of day or which have no TIME type.
+     */
+    public String getExtractDateTimePartFunction(DateTimeExtractPart part) {
+        return "CAST({1} AS " + part.name() + ")";
     }
 
     protected boolean isUsingRange(long start, long end) {
