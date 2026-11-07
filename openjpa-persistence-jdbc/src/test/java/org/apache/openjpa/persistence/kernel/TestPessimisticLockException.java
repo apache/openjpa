@@ -24,7 +24,6 @@ import jakarta.persistence.LockModeType;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DB2Dictionary;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.PessimisticLockException;
@@ -45,7 +44,7 @@ public class TestPessimisticLockException extends SQLListenerTestCase {
     protected boolean skipTest() {
         if (emf.getConfiguration() instanceof JDBCConfiguration) {
             DBDictionary inst = ((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance();
-            return !((inst instanceof DB2Dictionary) || (inst instanceof OracleDictionary));
+            return !((inst instanceof DB2Dictionary));
         }
         return true;
     }
