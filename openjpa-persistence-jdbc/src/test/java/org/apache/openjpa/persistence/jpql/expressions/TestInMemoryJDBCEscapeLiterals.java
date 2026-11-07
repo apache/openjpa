@@ -32,6 +32,7 @@ import java.util.regex.Pattern;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -193,7 +194,8 @@ public class TestInMemoryJDBCEscapeLiterals extends SingleEMFTestCase {
             };
             for (String s : select) {
                 String jpql = "SELECT " + s + " FROM AllFieldTypes e";
-                List<String> db = sorted(timestamps(em.createQuery(jpql).getResultList()));
+                List<?> values = em.createQuery(jpql).getResultList();
+                List<String> db = sorted(s.startsWith("NULLIF") && s.contains("{d ") ? dates(values) : timestamps(values));
                 assertEquals(jpql, 2, db.size());
                 assertFalse(jpql, db.get(0).equals(db.get(1)));
                 assertEquals(jpql, db, sorted(inMemory(em, all, jpql)));
@@ -210,6 +212,28 @@ public class TestInMemoryJDBCEscapeLiterals extends SingleEMFTestCase {
                 assertEquals(jpql, Arrays.asList(n[1], "null"), sorted(inMemory(em, all, jpql)));
             }
         }
+    }
+
+    /**
+     * Oracle has no type for a date without a time of day: a date field is
+     * mapped to a DATE column, for which the Oracle driver returns a
+     * {@link Timestamp}. The type of NULLIF over a date field and an escape is
+     * not known to OpenJPA, so that Timestamp is passed on. A Timestamp at the
+     * start of a day is compared as the {@link Date} it stands for.
+     */
+    private List<?> dates(List<?> values) {
+        if (!(getDBDictionary() instanceof OracleDictionary)) {
+            return values;
+        }
+        List<Object> result = new ArrayList<>();
+        for (Object value : values) {
+            if (value instanceof Timestamp ts && ts.toLocalDateTime().toLocalTime().equals(LocalTime.MIDNIGHT)) {
+                result.add(Date.valueOf(ts.toLocalDateTime().toLocalDate()));
+            } else {
+                result.add(value);
+            }
+        }
+        return result;
     }
 
     /**

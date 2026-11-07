@@ -26,6 +26,7 @@ import jakarta.persistence.EntityManager;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 /**
@@ -151,6 +152,10 @@ public class TestDeleteOrderForUnmappedForeignKey extends SQLListenerTestCase {
      * violate the constraint.
      */
     public void testCycleOfNullableLogicalForeignKeys() {
+        // the statements are counted, so they are not batched, as on Oracle and DB2 by default
+        DBDictionary dict = getDbDictionary(emf);
+        int batchLimit = dict.getBatchLimit();
+        dict.setBatchLimit(0);
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -183,6 +188,7 @@ public class TestDeleteOrderForUnmappedForeignKey extends SQLListenerTestCase {
             assertEquals(sql.toString(), 2, deletes);
             em.getTransaction().commit();
         } finally {
+            dict.setBatchLimit(batchLimit);
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
