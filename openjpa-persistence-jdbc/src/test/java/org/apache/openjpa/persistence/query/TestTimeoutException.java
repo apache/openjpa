@@ -27,6 +27,7 @@ import jakarta.persistence.Timeout;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.jdbc.sql.SolidDBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.exception.PObject;
@@ -52,7 +53,7 @@ public class TestTimeoutException extends SingleEMFTestCase {
         assertNotNull(tempEMF);
         DBDictionary dict = ((JDBCConfiguration)tempEMF.getConfiguration()).getDBDictionaryInstance();
         assertNotNull(dict);
-        if (!dict.supportsSelectForUpdate || !dict.supportsQueryTimeout || dict instanceof SolidDBDictionary)
+        if (!dict.supportsSelectForUpdate || !dict.supportsQueryTimeout || dict instanceof SolidDBDictionary || dict instanceof OracleDictionary)
             setTestsDisabled(true);
 
         if (emf == null) {

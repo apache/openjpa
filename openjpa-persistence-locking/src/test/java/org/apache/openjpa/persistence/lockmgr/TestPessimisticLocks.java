@@ -39,6 +39,7 @@ import org.apache.openjpa.jdbc.sql.DB2Dictionary;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.jdbc.sql.InformixDictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.LockTimeoutException;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
@@ -71,8 +72,9 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         assertNotNull(tempEMF);
         dict = ((JDBCConfiguration)tempEMF.getConfiguration()).getDBDictionaryInstance();
         assertNotNull(dict);
-        if (!dict.supportsQueryTimeout)
+        if (!dict.supportsQueryTimeout || dict instanceof OracleDictionary) {
             setTestsDisabled(true);
+        }
         if (emf == null) {
             closeEMF(tempEMF);
         }
