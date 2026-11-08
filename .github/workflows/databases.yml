@@ -272,21 +272,6 @@ jobs:
       matrix:
         version: ['23-slim']
     name: build (Java 21, test-oracle-docker, ${{ matrix.version }})
-    services:
-      oracle:
-        image: gvenzl/oracle-free:${{ matrix.version }}
-        env:
-          ORACLE_PASSWORD: openjpatst
-          ORACLE_DATABASE: openjpatst
-          APP_USER: openjpatst
-          APP_USER_PASSWORD: openjpatst
-        ports:
-          - 1521:1521
-        options: >-
-          --health-cmd healthcheck.sh
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Setup Java JDK
@@ -300,8 +285,13 @@ jobs:
           path: ~/.m2
           key: cache-21-test-oracle-docker
           restore-keys: cache-21-test-oracle-docker
+      - name: 'Start Oracle DB v${{ matrix.version }}'
+        run: mvn -N -B -Ptest-oracle-docker -Doracle.server.version=${{ matrix.version }} docker:start
       - name: 'Build with Maven'
         run: mvn -Ptest-oracle-docker -B clean install --file pom.xml
+      - name: 'Stop Oracle DB v${{ matrix.version }}'
+        if: always()
+        run: mvn -N -B -Ptest-oracle-docker -Doracle.server.version=${{ matrix.version }} docker:stop
       - name: 'Remove snapshots before caching'
         if: always()
         run: find ~/.m2 -name '*SNAPSHOT' | xargs rm -Rf
