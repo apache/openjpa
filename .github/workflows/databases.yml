@@ -19,8 +19,7 @@
 # Derby) and OPENJPA-3010 (tests asserting the SQL shape Derby and H2 emit).
 #
 # One job per database: MySQL and MariaDB both listen on 3306, and a service
-# container cannot be chosen per matrix entry. The credentials below are the ones
-# the corresponding profile in pom.xml expects.
+# container cannot be chosen per matrix entry.
 #
 # Each database runs against its oldest supported and its newest LTS release
 # (OPENJPA-3027), so that a dialect regression on an older server shows up as
@@ -84,25 +83,10 @@ jobs:
       matrix:
         version: ['8.4', '9.7']
     name: build (Java 21, test-mysql-docker, ${{ matrix.version }})
-    services:
-      mysql:
-        image: mysql:${{ matrix.version }}
-        env:
-          MYSQL_DATABASE: openjpatst
-          MYSQL_USER: openjpatst
-          MYSQL_PASSWORD: openjpatst
-          MYSQL_RANDOM_ROOT_PASSWORD: yes
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=12
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Setup Java JDK
-        uses: actions/setup-java@v6.0.0
+        uses: actions/setup-java@v6.2.0
         with:
           distribution: 'zulu'
           java-version: 21
@@ -112,8 +96,13 @@ jobs:
           path: ~/.m2
           key: cache-21-test-mysql-docker
           restore-keys: cache-21-test-mysql-docker
+      - name: 'Start MySQL DB v${{ matrix.version }}'
+        run: mvn -N -B -Ptest-mysql-docker -Dmysql.server.version=${{ matrix.version }} docker:start
       - name: 'Build with Maven'
         run: mvn -Ptest-mysql-docker -B clean install --file pom.xml
+      - name: 'Stop MySQL DB v${{ matrix.version }}'
+        if: always()
+        run: mvn -N -B -Ptest-mysql-docker -Dmysql.server.version=${{ matrix.version }} docker:stop
       - name: 'Remove snapshots before caching'
         if: always()
         run: find ~/.m2 -name '*SNAPSHOT' | xargs rm -Rf
@@ -127,23 +116,10 @@ jobs:
       matrix:
         version: ['10.11', '12.3']
     name: build (Java 21, test-mariadb-docker, ${{ matrix.version }})
-    services:
-      mariadb:
-        image: mariadb:${{ matrix.version }}
-        env:
-          MARIADB_DATABASE: openjpatst
-          MARIADB_ROOT_PASSWORD: openjpatst
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="healthcheck.sh --connect --innodb_initialized"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=12
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Setup Java JDK
-        uses: actions/setup-java@v6.0.0
+        uses: actions/setup-java@v6.2.0
         with:
           distribution: 'zulu'
           java-version: 21
@@ -153,8 +129,13 @@ jobs:
           path: ~/.m2
           key: cache-21-test-mariadb-docker
           restore-keys: cache-21-test-mariadb-docker
+      - name: 'Start Maria DB v${{ matrix.version }}'
+        run: mvn -N -B -Ptest-mariadb-docker -Dmariadb.server.version=${{ matrix.version }} docker:start
       - name: 'Build with Maven'
         run: mvn -Ptest-mariadb-docker -B clean install --file pom.xml
+      - name: 'Stop Maria DB v${{ matrix.version }}'
+        if: always()
+        run: mvn -N -B -Ptest-mariadb-docker -Dmariadb.server.version=${{ matrix.version }} docker:stop
       - name: 'Remove snapshots before caching'
         if: always()
         run: find ~/.m2 -name '*SNAPSHOT' | xargs rm -Rf
@@ -168,24 +149,10 @@ jobs:
       matrix:
         version: ['15', '18']
     name: build (Java 21, test-postgresql-docker, ${{ matrix.version }})
-    services:
-      postgres:
-        image: postgres:${{ matrix.version }}
-        env:
-          POSTGRES_DB: openjpatst
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd=pg_isready
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=12
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Setup Java JDK
-        uses: actions/setup-java@v6.0.0
+        uses: actions/setup-java@v6.2.0
         with:
           distribution: 'zulu'
           java-version: 21
@@ -195,8 +162,13 @@ jobs:
           path: ~/.m2
           key: cache-21-test-postgresql-docker
           restore-keys: cache-21-test-postgresql-docker
+      - name: 'Start Postgres DB v${{ matrix.version }}'
+        run: mvn -N -B -Ptest-postgresql-docker -Dpostgresql.server.version=${{ matrix.version }} docker:start
       - name: 'Build with Maven'
         run: mvn -Ptest-postgresql-docker -B clean install --file pom.xml
+      - name: 'Stop Postgres DB v${{ matrix.version }}'
+        if: always()
+        run: mvn -N -B -Ptest-postgresql-docker -Dpostgresql.server.version=${{ matrix.version }} docker:stop
       - name: 'Remove snapshots before caching'
         if: always()
         run: find ~/.m2 -name '*SNAPSHOT' | xargs rm -Rf
@@ -211,7 +183,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Setup Java JDK
-        uses: actions/setup-java@v6.0.0
+        uses: actions/setup-java@v6.2.0
         with:
           distribution: 'zulu'
           java-version: 21
@@ -236,18 +208,10 @@ jobs:
       matrix:
         version: ['2017-latest', 'latest']
     name: build (Java 21, test-mssql-docker, ${{ matrix.version }})
-    services:
-      mssql:
-        image: mcr.microsoft.com/mssql/server:${{ matrix.version }}
-        env:
-          ACCEPT_EULA: Y
-          SA_PASSWORD: OpenJP8tst
-        ports:
-          - 1433:1433
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Setup Java JDK
-        uses: actions/setup-java@v6.0.0
+        uses: actions/setup-java@v6.2.0
         with:
           distribution: 'zulu'
           java-version: 21
@@ -257,8 +221,13 @@ jobs:
           path: ~/.m2
           key: cache-21-test-mssql-docker
           restore-keys: cache-21-test-mssql-docker
+      - name: 'Start MSSQL DB v${{ matrix.version }}'
+        run: mvn -N -B -Ptest-mssql-docker -Dmssql.server.version=${{ matrix.version }} docker:start
       - name: 'Build with Maven'
         run: mvn -Ptest-mssql-docker -B clean install --file pom.xml
+      - name: 'Stop MSSQL DB v${{ matrix.version }}'
+        if: always()
+        run: mvn -N -B -Ptest-mssql-docker -Dmssql.server.version=${{ matrix.version }} docker:stop
       - name: 'Remove snapshots before caching'
         if: always()
         run: find ~/.m2 -name '*SNAPSHOT' | xargs rm -Rf
@@ -275,7 +244,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Setup Java JDK
-        uses: actions/setup-java@v6.0.0
+        uses: actions/setup-java@v6.2.0
         with:
           distribution: 'zulu'
           java-version: 21

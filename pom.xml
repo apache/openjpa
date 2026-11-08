@@ -593,6 +593,10 @@
                                         <ports>
                                             <port>${docker.external.mysql.port}:3306</port>
                                         </ports>
+                                        <wait>
+                                            <log>mysqld: ready for connections</log>
+                                            <time>360000</time>
+                                        </wait>
                                     </run>
                                 </image>
                             </images>
@@ -693,6 +697,10 @@
                                         <ports>
                                             <port>${docker.external.mariadb.port}:3306</port>
                                         </ports>
+                                        <wait>
+                                            <log>mariadbd: ready for connections</log>
+                                            <time>3600000</time>
+                                        </wait>
                                     </run>
                                 </image>
                             </images>
@@ -794,6 +802,10 @@
                                         <ports>
                                             <port>${docker.external.postgresql.port}:5432</port>
                                         </ports>
+                                        <wait>
+                                            <log>database system is ready to accept connections</log>
+                                            <time>360000</time>
+                                        </wait>
                                     </run>
                                 </image>
                             </images>
@@ -939,6 +951,10 @@
                                         <ports>
                                             <port>${docker.external.mssql.port}:1433</port>
                                         </ports>
+                                        <wait>
+                                            <log>SQL Server is now ready for client connections</log>
+                                            <time>360000</time>
+                                        </wait>
                                     </run>
                                 </image>
                             </images>
