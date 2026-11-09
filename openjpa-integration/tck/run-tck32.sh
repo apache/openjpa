@@ -125,6 +125,8 @@ DB_PASSWORD="${DB_PASSWORD:-TcktestPwd13}"
 DB_NAME="${DB_NAME:-tcktest}"
 DB_URL=""
 declare -a JPROPS=()
+# system properties of the TCK run itself
+declare -a TCK_PROPS=()
 
 DB_HOST_ONLY="${DB_HOST%%:*}"
 DB_PORT="${DB_HOST##*:}"
@@ -143,6 +145,8 @@ setProps() {
     case ${DB_TYPE} in
         mysql)
             DB_URL="jdbc:mysql://${DB_HOST}/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&transformedBitIsBoolean=true"
+            # MySQL has no sequence objects, so the TCK skips its SEQUENCE tests
+            TCK_PROPS+=("-Ddb.supports.sequence=false")
             # The TCK's SQL scripts create upper case tables (PERSON) while entities without @Table map to
             # their entity name (Person): table names must be case insensitive, as on Windows/macOS.
             # With --no-docker the server must be initialised with lower_case_table_names=1 as well.
@@ -257,4 +261,5 @@ mvn -e -f "${TCK_POM}" -P "openjpa,${TCK_DB_TYPE}" verify \
     "-Djakarta.persistence.jdbc.user=${DB_USER}" \
     "-Djakarta.persistence.jdbc.password=${DB_PASSWORD}" \
     "-Djakarta.persistence.jdbc.url=${DB_URL}" \
+    "${TCK_PROPS[@]}" \
     "${EXTRA_ARGS[@]}"
