@@ -17,10 +17,11 @@ specific language governing permissions and limitations
 under the License.
 -->
 <html>
-<title>Release Notes for Apache OpenJPA 3.2.0</title>
+<head>
+<title>Release Notes for Apache OpenJPA 4.2.0</title>
+</head>
 <body>
-<h1>Release Notes for Apache OpenJPA 3.2.0</h1>
-<p>
+<h1>Release Notes for Apache OpenJPA 4.2.0</h1>
 <ul>
   <li><a href="#Overview">Overview</a></li>
   <li><a href="#Prerequisites">Prerequisites</a></li>
@@ -31,61 +32,52 @@ under the License.
   <li><a href="#ReleaseNotes">Release Notes</a></li>
   <li><a href="#Previous">Release Notes for previous OpenJPA releases</a></li>
 </ul>
-</p>
 <BR>
 <hr>
 <h2><a name="Overview"></a>Overview</h2>
 
 <P>
-   The Apache OpenJPA community is proud to release a distribution of
-   OpenJPA 3.2.0. This distribution is based on the final JSR 338 Java
-   Persistence API, Version 2.2 specification while not beeing fully TCK tested.
-   We remain backwards compatible with prior releases based on the
-   Java Persistence API 1.0 and 2.0.
+   This is the release of Apache OpenJPA 4.2.0. This distribution implements
+   the Jakarta Persistence 3.2 specification. The Jakarta Persistence 3.2 TCK
+   is run weekly in CI on Java 21 against PostgreSQL, MySQL, MariaDB,
+   Microsoft SQL Server, Oracle and Apache Derby (on MySQL without the SEQUENCE tests, as MySQL has no sequences).
 </P>
 
 <p>Additional information on the OpenJPA project may be found at the project
-web site: <a href="http://openjpa.apache.org">http://openjpa.apache.org</a></p>
+web site: <a href="https://openjpa.apache.org">https://openjpa.apache.org</a></p>
 
 <h2><a name="Prerequisites"></a>Prerequisites</h2>
-<P>OpenJPA requires Java 8 or higher and a relational
+<P>OpenJPA requires Java 17 or higher and a relational
 database of some sort.
 </p>
 
 <h2><a name="Documentation"></a>Documentation</h2>
-<p>If you have questions about OpenJPA, a good source of information is the
-online product manual. You can find the manual for the current release as well
-as older releases of OpenJPA at
-<a href="http://openjpa.apache.org/documentation.html">
-http://openjpa.apache.org/documentation.html</a></p>
+<p>The manual for this and older releases of OpenJPA is at
+<a href="https://openjpa.apache.org/documentation.html">
+https://openjpa.apache.org/documentation.html</a></p>
 <p>If you can't find what you are looking for in the manual or would like more
 clarification, please post to the OpenJPA development mailing list.
 Information on all of the OpenJPA mailing lists may be found here:
-<a href="http://openjpa.apache.org/mailing-lists.html">
-http://openjpa.apache.org/mailing-lists.html</a></p>
+<a href="https://openjpa.apache.org/mailing-lists.html">
+https://openjpa.apache.org/mailing-lists.html</a></p>
 
 <h2><a name="GetInvolved"></a>Getting Involved</h2>
-<p>The Apache OpenJPA project is being built by the open source community for the open source community -
-we welcome your input and contributions!</p>
-<P>What we are looking for:
+<p>Contributions are welcome, for example:</p>
 <ul>
     <li> Source code and fixes contributions </li>
     <li> Documentation assistance </li>
     <li> Product and feature suggestions </li>
     <li> Detailed and constructive feedback </li>
     <li> Articles and whitepapers </li>
-</ul></p>
-<p>How do I contribute?
+</ul>
+<p>How to contribute:</p>
 <ul>
     <li> To discuss Apache OpenJPA topics check out the mailing lists. </li>
-    <li> Informal discussion also occurs on the #openjpa IRC channel on
-         freenode.net. </li>
     <li> Bugs and other issues can be posted on
          <a href="https://issues.apache.org/jira/browse/OPENJPA">
          the issue tracker</a>.
      </li>
 </ul>
-</p>
 
 <BR>
 <hr>
@@ -98,8 +90,8 @@ to you under the Apache License, Version 2.0 (the
 "License"); you may not use this file except in compliance
 with the License.
 <BR>You may obtain a copy of the License at:
-<a href="http://www.apache.org/licenses/LICENSE-2.0">
-http://www.apache.org/licenses/LICENSE-2.0</a>
+<a href="https://www.apache.org/licenses/LICENSE-2.0">
+https://www.apache.org/licenses/LICENSE-2.0</a>
 <BR>Unless required by applicable law or agreed to in writing,
 software distributed under the License is distributed on an
 "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -110,15 +102,18 @@ under the License.</p>
 in each release of OpenJPA.</P>
 
 <h2><a name="Notice"></a>Notice</h2>
-<p>Copyright 2006,2021 The Apache Software Foundation
+<p>Copyright 2006,2026 The Apache Software Foundation
 <BR>This product includes software developed at The Apache Software Foundation (http://www.apache.org/).</p>
-<P>Apache OpenJPA includes the persistence and orm schemas from the JPA specifications.
-<BR>Copyright 2005-2009 Sun Microsystems, Inc. All rights reserved.
-<BR>Apache OpenJPA elects to include this software in this distribution under the CDDL license.
-<BR>You can obtain a copy of the License at:
-<a href="https://glassfish.dev.java.net/public/CDDL+GPL.html">https://glassfish.dev.java.net/public/CDDL+GPL.html</a>
-<BR>The source code is available at:
-<a href="http://java.net/projects/glassfish">http://java.net/projects/glassfish</a></p>
+<p>Apache OpenJPA includes the persistence and orm schemas from the JPA and Jakarta Persistence specifications:</p>
+<ul>
+  <li>JPA 1.0 and 2.0 schemas: Copyright 2005-2009 Sun Microsystems, Inc. All rights reserved.
+      Apache OpenJPA elects to include these schemas under the CDDL license.</li>
+  <li>JPA 2.1 and 2.2 schemas: Copyright (c) 2008-2017 Oracle Corporation. All rights reserved.
+      Licensed under the Eclipse Public License v1.0 and Eclipse Distribution License v1.0.</li>
+  <li>Jakarta Persistence 3.0, 3.1 and 3.2 schemas: Copyright (c) Oracle and/or its affiliates. All rights reserved.
+      Licensed under the Eclipse Public License v2.0 or the Eclipse Distribution License v1.0
+      (SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause).</li>
+</ul>
 <P>The complete list of notices can be found in NOTICE.txt included in each assembly.</p>
 
 <BR>
@@ -126,152 +121,287 @@ in each release of OpenJPA.</P>
 <h2><a name="ReleaseNotes">Release Notes</a></h2>
 
 <hr>
-<h3><a name="312">OpenJPA 3.2.0</a></h3>
+<h3><a name="420">OpenJPA 4.2.0</a></h3>
 
-
-
-<h1>Release Notes - OpenJPA - Version 3.2.0</h1>
-
+<h1>Release Notes - OpenJPA - Version 4.2.0</h1>
 <h2>        Sub-task
 </h2>
 <ul>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1594'>OPENJPA-1594</a>] -         Tests not handling new QueryTimeOut and LockTimeOut exceptions correctly
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2946'>OPENJPA-2946</a>] -         Java Compiler Compiler Warnings need to be addressed
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2950'>OPENJPA-2950</a>] -         Broadened auto-flush before every query hurts perf
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2951'>OPENJPA-2951</a>] -         Full context flush after in-memory bulk update/delete
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2952'>OPENJPA-2952</a>] -         Transient object wrongly assumed detached in flush check
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2953'>OPENJPA-2953</a>] -         Embedded converter override leaks to shared embeddable meta
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2954'>OPENJPA-2954</a>] -         Unsafe publication of cached AttributeConverter instance
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2955'>OPENJPA-2955</a>] -         extractSchemaGenObjects mutates caller&#x27;s properties map
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2956'>OPENJPA-2956</a>] -         In-memory ID(), set ops and nullPrecedence unimplemented
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2957'>OPENJPA-2957</a>] -         hasEmbeddableAnnotation relies on annotation simple name
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2958'>OPENJPA-2958</a>] -         Direct access to ImplHelper._unenhancedInstanceMap
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2959'>OPENJPA-2959</a>] -         dropExcludedTypeTables drops user tables with raw SQL
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2960'>OPENJPA-2960</a>] -         NULLS FIRST/LAST string rewrite breaks on commas, triplicated
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2961'>OPENJPA-2961</a>] -         TREAT discriminator filter excludes subclasses of target
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2962'>OPENJPA-2962</a>] -         Schema-gen methods leak a Broker just to get classloader
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2963'>OPENJPA-2963</a>] -         Static _droppedTables shared across concurrent EMFs
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2964'>OPENJPA-2964</a>] -         Range ignored in executeSetOperatorQuery
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2965'>OPENJPA-2965</a>] -         Bulk delete no longer cleans dependent/collection rows
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2966'>OPENJPA-2966</a>] -         Long cast uses decimalTypeName instead of bigint
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2967'>OPENJPA-2967</a>] -         VersionVal NPEs on surrogate or missing version
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2968'>OPENJPA-2968</a>] -         IdClass paths swallow exceptions and rely on field order
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2969'>OPENJPA-2969</a>] -         Instant.now() precision loss on DB round-trip
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2970'>OPENJPA-2970</a>] -         Null named parameter falls through to positional lookup
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2971'>OPENJPA-2971</a>] -         storeCharsAsNumbers default flip breaks existing schemas
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2973'>OPENJPA-2973</a>] -         Converter instantiated reflectively, skips CDI and nulls
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2974'>OPENJPA-2974</a>] -         String cache mode properties no longer converted to enum
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2975'>OPENJPA-2975</a>] -         treat() join overloads silently cast without narrowing
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2976'>OPENJPA-2976</a>] -         version 3.1 persistence.xml validated against 3.0 XSD
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2977'>OPENJPA-2977</a>] -         convert() mutates caller config, ignores mappingFiles
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2978'>OPENJPA-2978</a>] -         Typos, stray semicolon, and validate() masking unsupported
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2979'>OPENJPA-2979</a>] -         getReference(entity) fails on composite ids
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2980'>OPENJPA-2980</a>] -         addNamedQuery relabels criteria query as JPQL
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2981'>OPENJPA-2981</a>] -         Dead access-type annotation helper methods
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2983'>OPENJPA-2983</a>] -         Locale-sensitive toUpperCase on temporal field name
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2984'>OPENJPA-2984</a>] -         Dropped non-Serializable IdClass warning
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2985'>OPENJPA-2985</a>] -         Mandatory JPA 3.2 methods throw UnsupportedOperationException
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2986'>OPENJPA-2986</a>] -         setTimeout(null) cannot clear a previously set query timeout
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2987'>OPENJPA-2987</a>] -         Externalized-parameter tests reduced to no-op assertions
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2988'>OPENJPA-2988</a>] -         LOCAL TIME test query is a tautology matching all rows
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2989'>OPENJPA-2989</a>] -         Results always materialized, lazy ResultList behavior lost
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2990'>OPENJPA-2990</a>] -         Bulk delete no longer cleans join-table rows
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2991'>OPENJPA-2991</a>] -         Deeply nested multiselect extension now rejected
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2992'>OPENJPA-2992</a>] -         Non-entity classes in persistence.xml silently skipped
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2993'>OPENJPA-2993</a>] -         Renamed getaXxx accessors drop JavaBeans naming coverage
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2994'>OPENJPA-2994</a>] -         Map-key column default KEY0 to entityCs_KEY breaks upgrades
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2995'>OPENJPA-2995</a>] -         assertSQL now ignores identifier delimiters suite-wide
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2996'>OPENJPA-2996</a>] -         testNotLoadedLazy duplicates eager check, lazy path untested
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2998'>OPENJPA-2998</a>] -         MariaDB branch accepts either message without naming versions
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2999'>OPENJPA-2999</a>] -         Leftover [2024] bracket and stale CDDL sentence vs EFSL 1.1
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3005'>OPENJPA-3005</a>] -         Use jakarta.persistence.PersistenceUnitTransactionType internally instead of the deprecated SPI enum
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3029'>OPENJPA-3029</a>] -         Derby: EXTRACT is not supported
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3030'>OPENJPA-3030</a>] -         Derby: LEFT and RIGHT are not supported
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3031'>OPENJPA-3031</a>] -         Derby: CAST(? AS VARCHAR) without a length
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3032'>OPENJPA-3032</a>] -         StoredProcedureQuery tests fail on Derby and SQL Server
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3033'>OPENJPA-3033</a>] -         Derby: basic type, generator and numeric result type tests fail
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3034'>OPENJPA-3034</a>] -         Tests failing on several databases: sequence generator, timestamp, scalar expressions, mixed access
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3035'>OPENJPA-3035</a>] -         MySQL: numeric operations return Long where Integer is expected
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3036'>OPENJPA-3036</a>] -         MySQL: bulk UPDATE with a subquery on the same table
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3037'>OPENJPA-3037</a>] -         MySQL: EXTRACT(WEEK) returns a different week
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3038'>OPENJPA-3038</a>] -         MySQL: mapping, order column and map key tests fail
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3039'>OPENJPA-3039</a>] -         Derby: JPQL comparison of two parameters fails
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3040'>OPENJPA-3040</a>] -         Criteria parameter used only in the select list is not registered
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3041'>OPENJPA-3041</a>] -         H2: EXTRACT(SECOND) drops fractional seconds
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3042'>OPENJPA-3042</a>] -         In-memory EXTRACT(WEEK) returns the day of the week
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3044'>OPENJPA-3044</a>] -         JPQL does not accept a sign in front of a path, e.g. SELECT -n.intA
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3046'>OPENJPA-3046</a>] -         Criteria parameter used only in a join ON condition is not registered
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3047'>OPENJPA-3047</a>] -         Bulk UPDATE of a column in a joined superclass or a secondary table fails on Derby and H2
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3048'>OPENJPA-3048</a>] -         JDBC escape date literal is not converted when a query is evaluated in memory
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3049'>OPENJPA-3049</a>] -         JPQL arithmetic ranks BigDecimal above Double, unlike the numeric promotion of the specification
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3066'>OPENJPA-3066</a>] -         setParameter(Parameter, Calendar, TemporalType) ignores the TemporalType
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3067'>OPENJPA-3067</a>] -         EXTRACT(WEEK) is not supported on Derby
     </li>
 </ul>
 
 <h2>        Bug
 </h2>
 <ul>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1303'>OPENJPA-1303</a>] -         Reserved words are not mapped correctly in table definition
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2938'>OPENJPA-2938</a>] -         Certain combination of ConnectionProperties can lead to NPE
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2182'>OPENJPA-2182</a>] -         DB dictionaries do not properly process reserved words for column names
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2939'>OPENJPA-2939</a>] -         Fix metamodel generation and XML/Json conversion when entity has an UUID property
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2648'>OPENJPA-2648</a>] -         hsqldb @Id long create table as interger instead of bigint
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2942'>OPENJPA-2942</a>] -         Java8TimeTypesTest is broken at CI (H2)
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2731'>OPENJPA-2731</a>] -         Problems with Boolean Representation with Postgres
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3001'>OPENJPA-3001</a>] -         MySQL TCK: char field insert truncated on CHAR column
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2788'>OPENJPA-2788</a>] -         Anonymous parameters are not being picked when adding via CriteriaBuilder
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3002'>OPENJPA-3002</a>] -         Column names specified at @Index annotation silently ignored
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2789'>OPENJPA-2789</a>] -         JDBC connection not closed when running named query in explicitly opened connection
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3006'>OPENJPA-3006</a>] -         EntityManagerFactory.getProperties() is not usable as configuration input
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2795'>OPENJPA-2795</a>] -         generate foreign key indexes for Oracle
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3008'>OPENJPA-3008</a>] -         H2 test profile loses committed data when H2 closes the database between EntityManagerFactories
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2814'>OPENJPA-2814</a>] -         Memory Leak in ForeignKey class
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3009'>OPENJPA-3009</a>] -         JPQL LIKE with an escaped wildcard matches only on Derby
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2821'>OPENJPA-2821</a>] -         Subclassing enhancer must use AsmAdapter
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3010'>OPENJPA-3010</a>] -         Bulk delete and map key tests assert Derby-shaped SQL and fail on MySQL
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2828'>OPENJPA-2828</a>] -         org.apache.openjpa.kernel.conf.Specification.equals() : returns true even if different
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3012'>OPENJPA-3012</a>] -         memory leak in Serialization
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2829'>OPENJPA-2829</a>] -         javax script execution does not ignore empty lines
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3014'>OPENJPA-3014</a>] -         A named @SequenceGenerator fails where the database has no sequences
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2830'>OPENJPA-2830</a>] -         jakarta.persistencesql-load-script-source does not support &quot;;&quot; in strings
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3016'>OPENJPA-3016</a>] -         Criteria tests fail on MariaDB and exhaust the connection pool; TestPessimisticLocks fails on PostgreSQL
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2832'>OPENJPA-2832</a>] -         DROP COLUMN does not use delimiters and always add double quotes
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3017'>OPENJPA-3017</a>] -         @Convert on a collection attribute is ignored and the attribute is silently not persisted
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2834'>OPENJPA-2834</a>] -         Performance issue while deploying in Wildfly EAP with OpenJPA-3.1.1
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3018'>OPENJPA-3018</a>] -         Size appended to a JSON or JSONB column definition on PostgreSQL, MySQL and MariaDB
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2842'>OPENJPA-2842</a>] -         openjpa.Log=log4j vs log4j2 - reintroduce log4j support and add explicit log4j2 support
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3019'>OPENJPA-3019</a>] -         In-place change to an element of a collection converted as a whole is not written
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2843'>OPENJPA-2843</a>] -         try to get rid of com.ibm dependency
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3020'>OPENJPA-3020</a>] -         @Lob with an AttributeConverter uses the attribute type instead of the converter database type
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2846'>OPENJPA-2846</a>] -         Enhancement does not work with JDK 16
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3021'>OPENJPA-3021</a>] -         A converted attribute value is replaced by a bean proxy that loses state without a setter
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2849'>OPENJPA-2849</a>] -         select(max) etc of LocalDate, LocalDateTime etc leads to ClassCastException
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3022'>OPENJPA-3022</a>] -         Loading a field of an instance with unflushed changes stores those changes in the data cache
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2850'>OPENJPA-2850</a>] -         [MSSQL] BLOB column type is not supported
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3023'>OPENJPA-3023</a>] -         The data cache shares the value of a converted attribute between persistence contexts
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2851'>OPENJPA-2851</a>] -         argument CURRENT_DATE cannot handle java.time.LocalDateTime entity fields
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3024'>OPENJPA-3024</a>] -         An element removed from a collection with orphanRemoval and cascade remove is not deleted
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2854'>OPENJPA-2854</a>] -         fix OffsetTime handling for PostgreSQL
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3025'>OPENJPA-3025</a>] -         orphan-removal in an XML mapping is lost when the relation also cascades remove
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2855'>OPENJPA-2855</a>] -         primary keys do no respect naming rules
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3026'>OPENJPA-3026</a>] -         Build fails under Windows
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2856'>OPENJPA-2856</a>] -         [MariaDB] improve TIME handling
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3043'>OPENJPA-3043</a>] -         A parameter used twice with another parameter in between is bound at the wrong position from the query cache
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2857'>OPENJPA-2857</a>] -         [MariaDB] locking in some cases gets handled via sqlState 70100
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3050'>OPENJPA-3050</a>] -         In-memory arithmetic treats NULL as 0
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2858'>OPENJPA-2858</a>] -         update dbcp2 to 2.8.0
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3051'>OPENJPA-3051</a>] -         H2: a BigDecimal column is created with scale 0
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2859'>OPENJPA-2859</a>] -         [HSQLDB] HSQLDictionary wrongly maps double to NUMERIC without precision
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3054'>OPENJPA-3054</a>] -         OSGi/Karaf packaging is broken after the switch to the Jakarta namespace
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2860'>OPENJPA-2860</a>] -         [Postgres] use setQueryTimeout for PostgreSQL &gt;= 10
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3055'>OPENJPA-3055</a>] -         EXTRACT(SECOND) lost the fraction (all MySQL and MariaDB jobs)
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2861'>OPENJPA-2861</a>] -         select sum(CASE x WHEN x THEN 1 ELSE 0 ) returns String instead of Long.
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3056'>OPENJPA-3056</a>] -         Bulk DELETE with a subquery on the target table fails on MariaDB before 11.1 (error 1093)
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2862'>OPENJPA-2862</a>] -         select SUM doesn&#39;t return spec defined types
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3057'>OPENJPA-3057</a>] -         Slice target hint and QueryTargetPolicy are ignored by bulk UPDATE and native bulk statements
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2863'>OPENJPA-2863</a>] -         java.time.LocalDateTime in Oracle gets rounded to just 3 digits
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3058'>OPENJPA-3058</a>] -         H2: a BigInteger column is created as BIGINT
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2864'>OPENJPA-2864</a>] -         respect the Columns precision when persisting a java.sql.Timestamp value
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3059'>OPENJPA-3059</a>] -         It is impossible to specify bind address for TCPRemoteCommitProvider
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2865'>OPENJPA-2865</a>] -         [Oracle] use native java.time JDBC features
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3060'>OPENJPA-3060</a>] -         MariaDB: StoreCharsAsNumbers still defaults to true
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2866'>OPENJPA-2866</a>] -         [Oracle] add GenerationType#IDENTITY support for Oracle
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3061'>OPENJPA-3061</a>] -         MariaDB: writing a Reader into a CLOB fails with ArrayIndexOutOfBoundsException
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2871'>OPENJPA-2871</a>] -         upgrade to xbean-4.20 to remove transitive ASM dependency
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3062'>OPENJPA-3062</a>] -         MySQL and MariaDB: a decimal column without a precision rounds values to integers
     </li>
-</ul>
-
-<h2>        New Feature
-</h2>
-<ul>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2816'>OPENJPA-2816</a>] -         Add HerdDB DBDictionary
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3063'>OPENJPA-3063</a>] -         HSQLDB: LOB type of converted attributes, decimal scale, CASE padding and EXTRACT of a parameter fail
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2873'>OPENJPA-2873</a>] -         Add ProductDerivation for persistence_2_2.xsd
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3064'>OPENJPA-3064</a>] -         SQL Server: decimal scale, EXTRACT(SECOND/WEEK), current local time and shared test tables fail
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3065'>OPENJPA-3065</a>] -         Enhancer runs into ConcurrentModificationException if run in Maven with -C
     </li>
 </ul>
 
 <h2>        Improvement
 </h2>
 <ul>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-84'>OPENJPA-84</a>] -         Escape sql reserved words in column names
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2940'>OPENJPA-2940</a>] -         Implement Jakarta Persistence 3.2
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2665'>OPENJPA-2665</a>] -         refactore code to use more Java7 features.
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2941'>OPENJPA-2941</a>] -         H2 should be upgraded to v2
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2765'>OPENJPA-2765</a>] -         Fix documentation of JPA spec compliance
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3011'>OPENJPA-3011</a>] -         Run the MySQL, MariaDB and PostgreSQL profiles on a schedule in CI
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2820'>OPENJPA-2820</a>] -         Track when a DBIdentifier is already delimited in order to save memory allocations and cpu
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3013'>OPENJPA-3013</a>] -         Collect the deserialization candidate loaders without a MultiClassLoader
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2822'>OPENJPA-2822</a>] -         enhancer can rely on at least java8
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3015'>OPENJPA-3015</a>] -         Mail the dev list when a GitHub Actions run fails
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2823'>OPENJPA-2823</a>] -         treat jakarta.* as spec class in enhancer
-    </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2852'>OPENJPA-2852</a>] -         Maven Plugin should be marked thread safe
-    </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2853'>OPENJPA-2853</a>] -         [MSSQL Server] support sendTimeAsDatetime handling
-    </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2867'>OPENJPA-2867</a>] -         generate list of reserved Words via unit test
-    </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2868'>OPENJPA-2868</a>] -         update reserved column names list for various of our DBDictionaries
-    </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2870'>OPENJPA-2870</a>] -         update specification-version to 2.2
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3053'>OPENJPA-3053</a>] -         Set rule to automatically drop merged branches
     </li>
 </ul>
 
 <h2>        Task
 </h2>
 <ul>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2819'>OPENJPA-2819</a>] -         Add simple GitHub Actions validation for Pull Requests
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3003'>OPENJPA-3003</a>] -         Dependencies should be up-to-date
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2824'>OPENJPA-2824</a>] -         When @OpenJPASupport (junit5 extension) is used, ensure to not do auto enhancement more than once
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3027'>OPENJPA-3027</a>] -         Test the scheduled Databases job against supported database versions
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2831'>OPENJPA-2831</a>] -         Import commons-collections4 classes instead of the dependency in openjpa-lib
+</ul>
+
+<h2>        Test
+</h2>
+<ul>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3045'>OPENJPA-3045</a>] -         TestPessimisticLocks fails on PostgreSQL because a query with OFFSET has no ORDER BY
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2833'>OPENJPA-2833</a>] -         Upgrade to ASM 9
+</ul>
+
+<h2>        Epic
+</h2>
+<ul>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2945'>OPENJPA-2945</a>] -         Multiple issues found due to Jakarta Persistence 3.2 implementation need to be addressed
     </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2835'>OPENJPA-2835</a>] -         update to xbean-asm9 for Java16 support
-    </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2838'>OPENJPA-2838</a>] -         Add a JUL LogFactory
-    </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2840'>OPENJPA-2840</a>] -         Enable a light SPI for asm support in kernel module
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3028'>OPENJPA-3028</a>] -         Jakarta Persistence 3.2 TCK failures on Derby, MySQL and SQL Server
     </li>
 </ul>
 
 <BR>
 <hr>
 <h2><a name="Previous"></a>Previous Releases</h2>
-<p>Release notes for earlier releases of OpenJPA may be found in our repos at the following locations.
+<p>Release notes for earlier releases of OpenJPA:</p>
 <ul>
+  <li><a href='https://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12310351&amp;version=12355805'>OpenJPA 4.1.1 release notes (JIRA)</a></li>
+  <li><a href='https://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12310351&amp;version=12355113'>OpenJPA 4.1.0 release notes (JIRA)</a></li>
+  <li><a href='https://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12310351&amp;version=12354768'>OpenJPA 4.0.1 release notes (JIRA)</a></li>
+  <li><a href='https://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12310351&amp;version=12353166'>OpenJPA 4.0.0 release notes (JIRA)</a></li>
+  <li><a href='https://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12310351&amp;version=12351466'>OpenJPA 3.2.2 release notes (JIRA)</a></li>
+  <li><a href='https://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12310351&amp;version=12350116'>OpenJPA 3.2.1 release notes (JIRA)</a></li>
+  <li><a href='https://github.com/apache/openjpa/blob/3.2.0/openjpa-project/RELEASE-NOTES.html'>OpenJPA 3.2.0 RELEASE-NOTES.html</a></li>
   <li><a href='https://github.com/apache/openjpa/blob/3.1.2/openjpa-project/RELEASE-NOTES.html'>OpenJPA 3.1.2 RELEASE-NOTES.html</a></li>
   <li><a href='https://github.com/apache/openjpa/blob/3.1.1/openjpa-project/RELEASE-NOTES.html'>OpenJPA 3.1.1 RELEASE-NOTES.html</a></li>
   <li><a href='https://github.com/apache/openjpa/blob/3.1.0/openjpa-project/RELEASE-NOTES.html'>OpenJPA 3.1.0 RELEASE-NOTES.html</a></li>
@@ -285,7 +415,6 @@ in each release of OpenJPA.</P>
   <li><a href='http://svn.apache.org/viewvc/openjpa/tags/2.2.1/openjpa-project/RELEASE-NOTES.html?view=co'>OpenJPA 2.2.1 RELEASE-NOTES.html</a></li>
   <li><a href='http://svn.apache.org/viewvc/openjpa/tags/2.2.0/openjpa-project/RELEASE-NOTES.html?view=co'>OpenJPA 2.2.0 RELEASE-NOTES.html</a></li>
   <li><a href='http://svn.apache.org/viewvc/openjpa/tags/2.1.1/openjpa-project/RELEASE-NOTES.html?view=co'>OpenJPA 2.1.1 RELEASE-NOTES.html</a></li>
-  <li><a href='http://svn.apache.org/viewvc/openjpa/tags/2.1.1/openjpa-project/RELEASE-NOTES.html?view=co'>OpenJPA 2.1.1 RELEASE-NOTES.html</a></li>
   <li><a href='http://svn.apache.org/viewvc/openjpa/tags/2.1.0/openjpa-project/RELEASE-NOTES.html?view=co'>OpenJPA 2.1.0 RELEASE-NOTES.html</a></li>
   <li><a href='http://svn.apache.org/viewvc/openjpa/tags/2.0.1/openjpa-project/RELEASE-NOTES.html?view=co'>OpenJPA 2.0.1 RELEASE-NOTES.html</a></li>
   <li><a href='http://svn.apache.org/viewvc/openjpa/tags/2.0.0/openjpa-project/RELEASE-NOTES.html?view=co'>OpenJPA 2.0.0 RELEASE-NOTES.html</a></li>
@@ -294,15 +423,14 @@ in each release of OpenJPA.</P>
   <li><a href='http://svn.apache.org/viewvc/openjpa/tags/2.0.0-beta/openjpa-project/RELEASE-NOTES.html?view=co'>OpenJPA 2.0.0-Beta RELEASE-NOTES.html</a></li>
   <li><a href='http://svn.apache.org/viewvc/openjpa/tags/2.0.0-M3/openjpa-project/RELEASE-NOTES.html?view=co'>OpenJPA 2.0.0-Milestone 3 RELEASE-NOTES.html</a></li>
   <li><a href='http://svn.apache.org/viewvc/openjpa/tags/1.2.2/openjpa-project/RELEASE-NOTES.html?view=co'>OpenJPA 1.2.2 RELEASE-NOTES.html</a></li>
-  <li><a href='http://svn.apache.org/viewvc/openjpa/tags/1.2.2/openjpa-project/RELEASE-NOTES.html?view=co'>OpenJPA 1.2.2 RELEASE-NOTES.html</a></li>
   <li><a href='http://svn.apache.org/viewvc/openjpa/tags/1.2.1/openjpa-project/RELEASE-NOTES.html?view=co'>OpenJPA 1.2.1 RELEASE-NOTES.html</a></li>
   <li><a href='http://svn.apache.org/viewvc/openjpa/tags/1.1.0/openjpa-project/RELEASE-NOTES.html?view=co'>OpenJPA 1.1.0 RELEASE-NOTES.html</a></li>
   <li><a href='http://svn.apache.org/viewvc/openjpa/tags/1.0.4/openjpa-project/RELEASE-NOTES.html?view=co'>OpenJPA 1.0.4 RELEASE-NOTES.html</a></li>
   <li><a href='http://svn.apache.org/viewvc/openjpa/tags/1.0.3/openjpa-project/RELEASE-NOTES.html?view=co'>OpenJPA 1.0.3 RELEASE-NOTES.html</a></li>
-</ul></p>
+</ul>
 
 <hr>
-<p>Copyright (C) 2006,2021 Apache Software Foundation. Licensed under Apache License 2.0.<br>
-Apache, the Apache feather logo and OpenJPA are trademarks of Apache Software Foundation.<br>
+<p>Copyright (C) 2006,2026 Apache Software Foundation. Licensed under Apache License 2.0.<br>
+Apache, the Apache feather logo and OpenJPA are trademarks of Apache Software Foundation.</p>
 </body>
 </html>
