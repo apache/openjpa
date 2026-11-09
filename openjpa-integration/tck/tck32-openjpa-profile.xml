@@ -18,7 +18,7 @@
 -->
 
 <!--
-    This file contains the OpenJPA profile XML fragment to be inserted into
+    This file contains the OpenJPA profile XML fragments to be inserted into
     the JPA 3.2 TCK runner pom.xml (persistence-tck/bin/pom.xml).
     It is injected automatically by the tck32-profile build.
 -->
@@ -76,4 +76,23 @@
             </plugin>
         </plugins>
     </build>
+</profile>
+<!--
+    The TCK has no MariaDB profile: MariaDB uses the TCK's MySQL SQL scripts.
+    mariadb.jdbc.version is set by run-tck32.sh.
+-->
+<profile>
+    <id>mariadb</id>
+    <properties>
+        <jdbc.db>mysql</jdbc.db>
+        <jakarta.persistence.jdbc.driver>org.mariadb.jdbc.Driver</jakarta.persistence.jdbc.driver>
+        <db.delimiter>!</db.delimiter>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>${mariadb.jdbc.version}</version>
+        </dependency>
+    </dependencies>
 </profile>

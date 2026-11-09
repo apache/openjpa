@@ -2,7 +2,7 @@
 # OpenJPA JPA 3.2 TCK Runner
 
 This module runs the Jakarta Persistence 3.2 Technology Compatibility Kit (TCK)
-against OpenJPA. PostgreSQL is the default database; MySQL, MS SQL Server, Derby and
+against OpenJPA. PostgreSQL is the default database; MySQL, MariaDB, MS SQL Server, Derby and
 Oracle are also supported via `DB_TYPE`.
 
 ## Prerequisites
@@ -39,9 +39,9 @@ The script will:
 
 To skip starting the database container please add `--no-docker` command line option.
 
-MySQL must treat table names case insensitively: the TCK's SQL scripts create
+MySQL and MariaDB must treat table names case insensitively: the TCK's SQL scripts create
 upper case tables such as `PERSON`, while entities without `@Table` map to their entity name
-(`Person`). On Linux the server default is case sensitive, so the dockerized MySQL is started with
+(`Person`). On Linux the server default is case sensitive, so the dockerized servers are started with
 `--lower_case_table_names=1`. With `--no-docker` the server has to be initialised with
 `lower_case_table_names=1` too; otherwise OpenJPA creates its own `Person` table next to `PERSON`,
 the TCK cleanup (`DELETE FROM PERSON`) misses its rows and later tests fail with duplicate keys or
@@ -54,7 +54,7 @@ starts. Override via environment variables:
 
 | Variable           | Default              | Description                          |
 |--------------------|----------------------|--------------------------------------|
-| `DB_TYPE`          | `postgresql`         | `postgresql`, `mysql`, `mssql`, `derby`, `oracle` |
+| `DB_TYPE`          | `postgresql`         | `postgresql`, `mysql`, `mariadb`, `mssql`, `derby`, `oracle` |
 | `DB_VERSION`       | `15` (postgresql)    | Database image version               |
 | `DB_HOST`          | `localhost:5555`     | Database host:port — set to skip Docker |
 | `DB_USER`          | `tcktest`            | Database user                        |
