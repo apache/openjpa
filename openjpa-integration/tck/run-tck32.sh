@@ -26,6 +26,7 @@ PROJECT_ROOT="$(cd "${SCRIPT_ROOT}/../.." && pwd)"
 
 declare -A FULL_DB_LIST=(
     [mysql]=mysql
+    [mariadb]=mariadb
     [postgresql]=postgresql
     [mssql]=mssqlserver
     [oracle]=oracle
@@ -34,6 +35,7 @@ declare -A FULL_DB_LIST=(
 
 declare -A DOCKER_NAMES=(
     [mysql]=mysql
+    [mariadb]=mariadb
     [postgresql]=postgresql
     [mssql]=server
     [oracle]=oracle-free
@@ -151,6 +153,15 @@ setProps() {
             # their entity name (Person): table names must be case insensitive, as on Windows/macOS.
             # With --no-docker the server must be initialised with lower_case_table_names=1 as well.
             JPROPS+=("-Ddocker.mysql.lower_case_table_names=1")
+            ;;
+        mariadb)
+            # the dockerized MariaDB only has the root user
+            DB_USER="root"
+            DB_URL="jdbc:mariadb://${DB_HOST}/${DB_NAME}?allowPublicKeyRetrieval=true"
+            # same as MySQL: the TCK uses the MySQL SQL scripts, so table names must be case insensitive
+            JPROPS+=("-Ddocker.mariadb.lower_case_table_names=1")
+            # the TCK has no MariaDB profile: use the driver version OpenJPA is tested with
+            TCK_PROPS+=("-Dmariadb.jdbc.version=$(mvn org.apache.maven.plugins:maven-help-plugin:evaluate -Dexpression=mariadb.connector.version -f ${PROJECT_ROOT} -q -DforceStdout)")
             ;;
         postgresql)
             DB_URL="jdbc:postgresql://${DB_HOST}/${DB_NAME}"

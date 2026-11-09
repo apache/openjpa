@@ -67,7 +67,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        db: ['mysql', 'postgresql', 'mssql', 'oracle', 'derby']
+        db: ['mysql', 'mariadb', 'postgresql', 'mssql', 'oracle', 'derby']
     name: TCK (Java 21, ${{ matrix.db }})
     steps:
       - uses: actions/checkout@v7.0.1

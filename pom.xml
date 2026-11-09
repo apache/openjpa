@@ -672,6 +672,8 @@
                 <dbcp.minIdle>0</dbcp.minIdle>
 
                 <mariadb.server.version>12.3</mariadb.server.version>
+                <!-- 0 = case sensitive table names (Linux default); the JPA TCK needs 1 -->
+                <docker.mariadb.lower_case_table_names>0</docker.mariadb.lower_case_table_names>
             </properties>
 
             <build>
@@ -686,6 +688,12 @@
                                 <image>
                                     <name>mariadb:${mariadb.server.version}</name>
                                     <run>
+                                        <cmd>
+                                            <exec>
+                                                <arg>mariadbd</arg>
+                                                <arg>--lower_case_table_names=${docker.mariadb.lower_case_table_names}</arg>
+                                            </exec>
+                                        </cmd>
                                         <env>
                                             <!-- mariadb still uses the old mysql env variables -->
                                             <MYSQL_DATABASE>${openjpa.mariadb.dbname}</MYSQL_DATABASE>
