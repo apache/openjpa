@@ -234,28 +234,35 @@ The exceptions are as follows:
 
 ===========================
 openjpa-persistence -
-  orm.xsd.rsrc - CDDL 1.0 - included in the openjpa jar, taken from:
+  orm.xsd.rsrc - CDDL 1.0 or GPL 2.0 - included in the openjpa jar, taken from:
     http://java.sun.com/xml/ns/persistence/orm_1_0.xsd)
-  orm_2_0.xsd.rsrc - CDDL 1.0 - included in the openjpa jar, taken from:
+  orm_2_0.xsd.rsrc - CDDL 1.0 or GPL 2.0 - included in the openjpa jar, taken from:
     http://java.sun.com/xml/ns/persistence/orm_2_0.xsd)
-  orm_2_1.xsd.rsrc - Eclipse Public License v1.0 - included in the openjpa jar, taken from:
+  orm_2_1.xsd.rsrc - EPL 1.0 or EDL 1.0 - included in the openjpa jar, taken from:
     http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd)
-  orm_2_2.xsd.rsrc - Eclipse Public License v1.0 - included in the openjpa jar, taken from:
+  orm_2_2.xsd.rsrc - EPL 1.0 or EDL 1.0 - included in the openjpa jar, taken from:
     http://xmlns.jcp.org/xml/ns/persistence/orm_2_2.xsd)
-  orm_3_0.xsd.rsrc - Eclipse Public License v2.0 - included in the openjpa jar, taken from:
+  orm_3_0.xsd.rsrc - EPL 2.0 or BSD-3-Clause - included in the openjpa jar, taken from:
     https://jakarta.ee/xml/ns/persistence/orm/orm_3_0.xsd
-  orm_3_1.xsd.rsrc - Eclipse Public License v2.0 - included in the openjpa jar, taken from:
+  orm_3_1.xsd.rsrc - EPL 2.0 or BSD-3-Clause - included in the openjpa jar, taken from:
     https://jakarta.ee/xml/ns/persistence/orm/orm_3_1.xsd
-  persistence.xsd.rsrc - CDDL 1.0 - included in the openjpa jar, taken from:
+  orm_3_2.xsd.rsrc - EPL 2.0 or BSD-3-Clause - included in the openjpa jar, taken from:
+    https://jakarta.ee/xml/ns/persistence/orm/orm_3_2.xsd
+  persistence.xsd.rsrc - CDDL 1.0 or GPL 2.0 - included in the openjpa jar, taken from:
     http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd)
-  persistence_2_0.xsd.rsrc - CDDL 1.0 - included in the openjpa jar, taken from:
+  persistence_2_0.xsd.rsrc - CDDL 1.0 or GPL 2.0 - included in the openjpa jar, taken from:
     http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd).
-  persistence_2_1.xsd.rsrc - Eclipse Public License v1.0 - included in the openjpa jar, taken from:
+  persistence_2_1.xsd.rsrc - EPL 1.0 or EDL 1.0 - included in the openjpa jar, taken from:
     http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd).
-  persistence_2_2.xsd.rsrc - Eclipse Public License v1.0 - included in the openjpa jar, taken from:
+  persistence_2_2.xsd.rsrc - EPL 1.0 or EDL 1.0 - included in the openjpa jar, taken from:
     http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd).
-  persistence_3_0.xsd.rsrc - Eclipse Public License v2.0 - included in the openjpa jar, taken from:
+  persistence_3_0.xsd.rsrc - EPL 2.0 or BSD-3-Clause - included in the openjpa jar, taken from:
     https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd
+  persistence_3_2.xsd.rsrc - EPL 2.0 or BSD-3-Clause - included in the openjpa jar, taken from:
+    https://jakarta.ee/xml/ns/persistence/persistence_3_2.xsd
+  OpenJPA elects to include the CDDL 1.0 or GPL 2.0 schemas under the CDDL 1.0,
+  the EPL 1.0 or EDL 1.0 schemas under the Eclipse Public License v1.0 and the
+  EPL 2.0 or BSD-3-Clause schemas under the Eclipse Public License v2.0.
 jakarta.persistence-api - Eclipse Public License v2.0 or BSD-3-Clause.
   OpenJPA elects to include it under the Eclipse Public License v2.0.
   Source code: https://github.com/jakartaee/persistence

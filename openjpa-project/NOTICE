@@ -24,6 +24,15 @@ OpenJPA elects to include this software in this distribution under the
 CDDL 1.0 license. The license text is included in the LICENSE file. The
 schemas are included in source form in the openjpa-persistence module.
 
+OpenJPA includes the persistence and orm schemas from the JPA 2.1 and 2.2
+and the Jakarta Persistence 3.0, 3.1 and 3.2 specifications.
+Copyright (c) 2008-2024 Oracle and/or its affiliates. All rights reserved.
+The JPA 2.1 and 2.2 schemas are available under the EPL 1.0 or EDL 1.0
+license, the Jakarta Persistence 3.x schemas under the EPL 2.0 or
+BSD-3-Clause license. OpenJPA elects to include them under the EPL 1.0 and
+EPL 2.0 licenses. The license texts are included in the LICENSE file. The
+schemas are included in source form in the openjpa-persistence module.
+
 OpenJPA includes software written by Miroslav Nachev.
 
 OpenJPA uses test code written by Charles Tillman.
