@@ -698,8 +698,8 @@
                                             <port>${docker.external.mariadb.port}:3306</port>
                                         </ports>
                                         <wait>
-                                            <log>mariadbd: ready for connections</log>
-                                            <time>3600000</time>
+                                            <log>port: 3306\s</log>
+                                            <time>360000</time>
                                         </wait>
                                     </run>
                                 </image>
