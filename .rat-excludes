@@ -25,4 +25,3 @@
 scripts/domain-class.list
 **/**/reference_schema.orig_xml
 **/dependency-reduced-pom.xml
-**/appended-resources/META-INF/LICENSE.vm

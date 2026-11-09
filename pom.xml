@@ -119,7 +119,7 @@
     </licenses>
 
     <organization>
-        <name>Apache Software Foundation</name>
+        <name>The Apache Software Foundation</name>
         <url>https://www.apache.org</url>
     </organization>
 
@@ -2183,7 +2183,6 @@
                         <exclude>scripts/domain-class.list</exclude>
                         <exclude>**/**/reference_schema.orig_xml</exclude>
                         <exclude>**/dependency-reduced-pom.xml</exclude>
-                        <exclude>**/appended-resources/META-INF/LICENSE.vm</exclude>
                     </excludes>
                 </configuration>
             </plugin>
