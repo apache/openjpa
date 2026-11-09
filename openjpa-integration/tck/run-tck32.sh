@@ -115,7 +115,8 @@ TCK_DIR="${SCRIPT_ROOT}/target/tck32"
 TCK_ZIP="${TCK_DIR}/jakarta-persistence-tck-${TCK_VERSION}.zip"
 TCK_SIG="${TCK_ZIP}.sig"
 TCK_HOME="${TCK_DIR}/persistence-tck"
-OPENJPA_VERSION="${OPENJPA_VERSION:-4.2.0-SNAPSHOT}"
+OPENJPA_CURRENT=$(mvn org.apache.maven.plugins:maven-help-plugin:evaluate -Dexpression=project.version -f ${PROJECT_ROOT} -q -DforceStdout)
+OPENJPA_VERSION="${OPENJPA_VERSION:-${OPENJPA_CURRENT}}"
 
 DB_TYPE="${DB_TYPE:-postgresql}"
 DB_HOST="${DB_HOST:-localhost:5555}"
@@ -172,6 +173,14 @@ setProps() {
 }
 
 setProps
+
+finalize() {
+    if [[ -n "${START_DOCKER}" ]]; then
+        echo "Stopping dockerized ${DB_TYPE}"
+        mvn -N -f ${PROJECT_ROOT} -Ptest-${DB_TYPE}-docker "${JPROPS[@]}" docker:stop -Ddocker.showLogs
+    fi
+}
+trap finalize EXIT
 
 if [[ -n "${START_DOCKER}" ]]; then
     echo "Starting dockerized ${DB_TYPE}"

@@ -1,0 +1,94 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements.  See the NOTICE file distributed with this work for additional
+# information regarding copyright ownership.  The ASF licenses this file to you
+# under the Apache License, Version 2.0 (the # "License"); you may not use this
+# file except in compliance with the License.  You may obtain a copy of the License
+# at:
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed
+# under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+# CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations under the License.
+#
+
+name: TCK
+on:
+  schedule:
+    # Tuesdays, 04:17 UTC. A quarter past the hour avoids the load peak at :00.
+    - cron: '17 4 * * 2'
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  MAVEN_OPTS: -Dmaven.artifact.threads=256 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+jobs:
+  # A scheduled run on an unchanged tree would test what the previous one already
+  # tested, so skip it unless something was committed since. A manual run always
+  # proceeds, which is the point of being able to ask for one.
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.decide.outputs.should_run }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: 'Decide whether there is anything new to test'
+        id: decide
+        env:
+          EVENT: ${{ github.event_name }}
+          BRANCH: ${{ github.ref_name }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          if [ "$EVENT" = 'workflow_dispatch' ]; then
+            echo "Manual run on $BRANCH."
+            echo 'should_run=true' >> "$GITHUB_OUTPUT"
+          elif [ "$BRANCH" != "$DEFAULT_BRANCH" ]; then
+            echo "Scheduled runs are limited to $DEFAULT_BRANCH, this is $BRANCH."
+            echo 'should_run=false' >> "$GITHUB_OUTPUT"
+          else
+            age=$(( ( $(date +%s) - $(git log -1 --format=%ct) ) / 86400 ))
+            if [ "$age" -ge 7 ]; then
+              echo "Last commit is $age days old, nothing new since the previous run."
+              echo 'should_run=false' >> "$GITHUB_OUTPUT"
+            else
+              echo "Last commit is $age days old."
+              echo 'should_run=true' >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
+  tck:
+    needs: check
+    if: needs.check.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        db: ['mysql', 'postgresql', 'mssql', 'oracle', 'derby']
+    name: TCK (Java 21, ${{ matrix.db }})
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Setup Java JDK
+        uses: actions/setup-java@v6.2.0
+        with:
+          distribution: 'zulu'
+          java-version: 21
+      - name: 'Cache Maven packages'
+        uses: actions/cache@v6.1.0
+        with:
+          path: ~/.m2
+          key: cache-21-tck-${{ matrix.db }}
+          restore-keys: cache-21-tck-${{ matrix.db }}
+      - name: 'Build with Maven'
+        run: mvn clean install -DskipTests
+      - name: 'Test TCK against ${{ matrix.db }}'
+        shell: bash
+        run: |
+          cd openjpa-integration/tck
+          DB_TYPE=${{ matrix.db }} ./run-tck32.sh |& tee tck_${{ matrix.db }}.log
+      - name: 'Remove snapshots before caching'
+        if: always()
+        run: find ~/.m2 -name '*SNAPSHOT' | xargs rm -Rf
