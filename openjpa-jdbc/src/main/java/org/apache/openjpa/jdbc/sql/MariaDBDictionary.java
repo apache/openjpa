@@ -196,6 +196,10 @@ public class MariaDBDictionary extends DBDictionary {
         // MariaDB requires double-escape for strings
         searchStringEscape = "\\\\";
 
+        // a backslash in a string literal is an escape character unless
+        // sql_mode contains NO_BACKSLASH_ESCAPES
+        backslashEscapesInStringLiterals = true;
+
         typeModifierSet.addAll(Arrays.asList(new String[] { "UNSIGNED", "ZEROFILL" }));
 
         setLeadingDelimiter(DELIMITER_BACK_TICK);
