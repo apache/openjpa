@@ -33,7 +33,7 @@
             <excludes>
                 <exclude>**/target/**</exclude>
                 <exclude>**/*.log</exclude>
-                <exclude>**/*.dependency-reduced-pom.xml</exclude>
+                <exclude>**/dependency-reduced-pom.xml</exclude>
                 <exclude>**/.*</exclude>
                 <exclude>**/.*/**</exclude>
                 <exclude>openjpa-xmlstore/jdbc*/**</exclude>
