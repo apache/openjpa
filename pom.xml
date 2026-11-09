@@ -594,7 +594,7 @@
                                             <port>${docker.external.mysql.port}:3306</port>
                                         </ports>
                                         <wait>
-                                            <log>mysqld: ready for connections</log>
+                                            <log>port: 3306\s</log>
                                             <time>360000</time>
                                         </wait>
                                     </run>
