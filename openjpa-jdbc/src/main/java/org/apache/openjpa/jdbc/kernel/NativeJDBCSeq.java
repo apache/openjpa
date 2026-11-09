@@ -235,8 +235,9 @@ public class NativeJDBCSeq
                     // first we have to allocate a new connection as some databases do an implicit commit
                     // if a DDL gets changed. Others do blow up on a DDL change
                     try (Connection newConn = getConnection(store, true)) {
-                        if (updateSql(newConn, dict.getAlterSequenceSQL(_seq)) == -1) {
-                            newConn.commit(); // new connection has autoCommit=false
+                        boolean altered = alterSequence(newConn, dict.getAlterSequenceSQL(_seq));
+                        newConn.commit(); // new connection has autoCommit=false
+                        if (!altered) {
                             if (!alreadyLoggedAlterSeqFailure) {
                                 Log log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
                                 if (log.isWarnEnabled()) {
@@ -391,27 +392,20 @@ public class NativeJDBCSeq
         }
     }
 
-    private int updateSql(Connection conn, String sql) throws SQLException {
+    /**
+     * Runs the ALTER SEQUENCE statement and returns whether it succeeded, which is when it did not throw.
+     * The update count of a DDL statement is no indication: the SQL Server driver reports -1.
+     */
+    private boolean alterSequence(Connection conn, String sql) {
         DBDictionary dict = _conf.getDBDictionaryInstance();
-        PreparedStatement stmnt = null;
-        int rc = -1;
-        try {
-            stmnt = conn.prepareStatement(sql);
+        try (PreparedStatement stmnt = conn.prepareStatement(sql)) {
             dict.setTimeouts(stmnt, _conf, false);
-            rc = stmnt.executeUpdate();
+            stmnt.executeUpdate();
+            return true;
         } catch (Exception e) {
-            // tolerate exception when attempting to alter increment,
-            // however, caller should check rc and not cache sequence values if rc != -1.
-        } finally {
-            // clean up our resources
-            if (stmnt != null) {
-                try {
-                    stmnt.close();
-                } catch (SQLException se) {
-                }
-            }
+            // tolerated; the caller then does not cache sequence values
+            return false;
         }
-        return rc;
     }
 
     /////////
