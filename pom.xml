@@ -803,7 +803,7 @@
                                             <port>${docker.external.postgresql.port}:5432</port>
                                         </ports>
                                         <wait>
-                                            <log>database system is ready to accept connections</log>
+                                            <log>(?s)init process complete.*ready to accept connections</log>
                                             <time>360000</time>
                                         </wait>
                                     </run>
