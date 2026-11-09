@@ -63,6 +63,7 @@ jobs:
     needs: check
     if: needs.check.outputs.should_run == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 180
     strategy:
       fail-fast: false
       matrix:
