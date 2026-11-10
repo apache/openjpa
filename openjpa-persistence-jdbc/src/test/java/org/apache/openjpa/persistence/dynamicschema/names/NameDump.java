@@ -417,7 +417,8 @@ public final class NameDump {
     /**
      * The identifier that the name of the given identifier becomes when the
      * database metadata returns it as the database stores it, and whether
-     * it equals the given identifier.
+     * it equals the given identifier, and the name the database metadata is
+     * asked for.
      */
     private static String readBack(DBDictionary dict, DBIdentifier id, DBIdentifierType type) {
         if (id == null || DBIdentifier.isNull(id)) {
@@ -425,6 +426,9 @@ public final class NameDump {
         }
         DBIdentifier stored = dict.getNamingUtil().convertSchemaCase(id.getUnqualifiedName());
         DBIdentifier read = dict.fromDBName(stored.getName(), type);
-        return stored.getName() + "->" + read.getName() + (read.equals(id.getUnqualifiedName()) ? "" : " DIFFERENT");
+        // the name the metadata is asked for
+        String lookup = dict.convertSchemaCase(id.getUnqualifiedName());
+        return stored.getName() + "->" + read.getName() + (read.equals(id.getUnqualifiedName()) ? "" : " DIFFERENT")
+            + " lookup=" + lookup;
     }
 }
