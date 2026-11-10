@@ -18,13 +18,20 @@
  */
 package org.apache.openjpa.event;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.openjpa.lib.log.LogFactoryImpl;
 import org.apache.openjpa.util.UserException;
@@ -63,7 +70,9 @@ public class TestTCPRemoteCommitProvider {
     }
 
     private static Object getPrivateField(Object target, String fieldName) throws Exception {
-        Field field = TCPRemoteCommitProvider.class.getDeclaredField(fieldName);
+        Field field = target instanceof TCPRemoteCommitProvider
+            ? TCPRemoteCommitProvider.class.getDeclaredField(fieldName)
+            : target.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
         return field.get(target);
     }
@@ -206,6 +215,180 @@ public class TestTCPRemoteCommitProvider {
             Assert.fail("Expected UnknownHostException for an unresolvable host name");
         } catch (UnknownHostException uhe) {
             Assert.assertTrue("Unexpected message: " + uhe.getMessage(), uhe.getMessage().contains(UNRESOLVABLE_HOST));
+        }
+    }
+
+    @Test
+    public void testAcceptsConnectionFromThisHost() throws Exception {
+        TCPRemoteCommitProvider provider = createProvider();
+
+        Assert.assertTrue(provider.acceptsConnectionFrom(InetAddress.getLoopbackAddress()));
+        Assert.assertTrue(provider.acceptsConnectionFrom(findLocalAddress()));
+    }
+
+    @Test
+    public void testAcceptsConnectionOnlyFromPeers() throws Exception {
+        TCPRemoteCommitProvider provider = createProvider();
+        provider.setAddresses(NON_LOCAL_ADDRESS + ":5671");
+
+        // the port of the peer is not relevant, peers connect from arbitrary ports
+        Assert.assertTrue(provider.acceptsConnectionFrom(InetAddress.getByName(NON_LOCAL_ADDRESS)));
+        Assert.assertFalse(provider.acceptsConnectionFrom(InetAddress.getByName("198.51.100.2")));
+    }
+
+    @Test
+    public void testAcceptsConnectionFromAnyHostWhenNotRestricted() throws Exception {
+        TCPRemoteCommitProvider provider = createProvider();
+        provider.setRestrictToPeers(false);
+
+        Assert.assertTrue(provider.acceptsConnectionFrom(InetAddress.getByName("198.51.100.2")));
+    }
+
+    @Test
+    public void testAcceptsConnectionFollowsAddressUpdates() throws Exception {
+        TCPRemoteCommitProvider provider = createProvider();
+        InetAddress first = InetAddress.getByName(NON_LOCAL_ADDRESS);
+        InetAddress second = InetAddress.getByName("198.51.100.2");
+
+        provider.setAddresses(NON_LOCAL_ADDRESS + ":5671");
+        Assert.assertTrue(provider.acceptsConnectionFrom(first));
+        Assert.assertFalse(provider.acceptsConnectionFrom(second));
+
+        provider.setAddresses("198.51.100.2:5671");
+        Assert.assertFalse(provider.acceptsConnectionFrom(first));
+        Assert.assertTrue(provider.acceptsConnectionFrom(second));
+    }
+
+    /**
+     * Provider that treats connections from this host as coming from a
+     * host that is not a peer, as no other host is available in a test.
+     */
+    private static class NonPeerProvider extends TCPRemoteCommitProvider {
+        private NonPeerProvider() throws UnknownHostException {
+            super();
+        }
+
+        @Override
+        protected boolean acceptsConnectionFrom(InetAddress address) {
+            return !isRestrictToPeers();
+        }
+    }
+
+    private static int freePort() throws IOException {
+        try (ServerSocket ss = new ServerSocket(0)) {
+            return ss.getLocalPort();
+        }
+    }
+
+    private static TCPRemoteCommitProvider startProvider(TCPRemoteCommitProvider provider) throws IOException {
+        provider.log = new LogFactoryImpl().getLog(TestTCPRemoteCommitProvider.class.getName());
+        provider.setNumBroadcastThreads(0);
+        provider.setPort(freePort());
+        provider.endConfiguration();
+        return provider;
+    }
+
+    private static Socket connect(TCPRemoteCommitProvider provider) throws IOException {
+        return new Socket(InetAddress.getLoopbackAddress(), provider.getPort());
+    }
+
+    /**
+     * Whether the remote end closed the connection within a few seconds.
+     */
+    private static boolean isClosedByRemote(Socket s) throws IOException {
+        s.setSoTimeout(5000);
+        try (InputStream in = s.getInputStream()) {
+            return in.read() == -1;
+        } catch (SocketTimeoutException e) {
+            return false;
+        } catch (SocketException e) {
+            // connection reset
+            return true;
+        }
+    }
+
+    /**
+     * Whether the remote end keeps the connection open.
+     */
+    private static boolean isKeptOpen(Socket s) throws IOException {
+        s.setSoTimeout(300);
+        try {
+            return s.getInputStream().read() != -1;
+        } catch (SocketTimeoutException e) {
+            return true;
+        } catch (SocketException e) {
+            return false;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Set<Thread> receiverThreads(TCPRemoteCommitProvider provider) throws Exception {
+        Object listener = getPrivateField(provider, "_listener");
+        return (Set<Thread>) getPrivateField(listener, "_receiverThreads");
+    }
+
+    private static void awaitReceivers(TCPRemoteCommitProvider provider, int expected) throws Exception {
+        long end = System.currentTimeMillis() + 5000;
+        while (receiverThreads(provider).size() != expected && System.currentTimeMillis() < end) {
+            Thread.sleep(20);
+        }
+        Assert.assertEquals(expected, receiverThreads(provider).size());
+    }
+
+    @Test
+    public void testConnectionFromNonPeerIsRejected() throws Exception {
+        TCPRemoteCommitProvider provider = startProvider(new NonPeerProvider());
+        try (Socket s = connect(provider)) {
+            Assert.assertTrue(isClosedByRemote(s));
+            Assert.assertEquals(0, receiverThreads(provider).size());
+        } finally {
+            provider.close();
+        }
+    }
+
+    @Test
+    public void testConnectionFromNonPeerIsAcceptedWhenNotRestricted() throws Exception {
+        TCPRemoteCommitProvider provider = new NonPeerProvider();
+        provider.setRestrictToPeers(false);
+        startProvider(provider);
+        try (Socket s = connect(provider)) {
+            Assert.assertTrue(isKeptOpen(s));
+            awaitReceivers(provider, 1);
+        } finally {
+            provider.close();
+        }
+    }
+
+    @Test
+    public void testMaxReceiveConnectionsIsEnforcedAndFinishedReceiversAreRemoved() throws Exception {
+        TCPRemoteCommitProvider provider = createProvider();
+        provider.setMaxReceiveConnections(2);
+        startProvider(provider);
+        List<Socket> sockets = new ArrayList<>();
+        try {
+            sockets.add(connect(provider));
+            sockets.add(connect(provider));
+            awaitReceivers(provider, 2);
+            Assert.assertTrue(isKeptOpen(sockets.get(0)));
+            Assert.assertTrue(isKeptOpen(sockets.get(1)));
+
+            // over the limit
+            try (Socket s = connect(provider)) {
+                Assert.assertTrue(isClosedByRemote(s));
+            }
+            Assert.assertEquals(2, receiverThreads(provider).size());
+
+            // a finished receiver removes itself, which makes room for a new connection
+            sockets.remove(0).close();
+            awaitReceivers(provider, 1);
+            sockets.add(connect(provider));
+            awaitReceivers(provider, 2);
+            Assert.assertTrue(isKeptOpen(sockets.get(1)));
+        } finally {
+            for (Socket s : sockets) {
+                s.close();
+            }
+            provider.close();
         }
     }
 }

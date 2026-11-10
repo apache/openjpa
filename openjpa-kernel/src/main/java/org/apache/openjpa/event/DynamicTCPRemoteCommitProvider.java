@@ -23,11 +23,21 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 public abstract class DynamicTCPRemoteCommitProvider extends TCPRemoteCommitProvider {
 
+    /**
+     * Minimum time between two refreshes of the addresses triggered by connections from unknown hosts.
+     */
+    private static final long MIN_ON_DEMAND_REFRESH_MILLIS = 1000;
+
     private int _cacheDurationMillis = 30000;
+
+    private volatile TcpAddressesUpdater _updater;
+
+    private final AtomicLong _lastOnDemandRefresh = new AtomicLong();
 
     public DynamicTCPRemoteCommitProvider() throws UnknownHostException {
         super();
@@ -51,11 +61,34 @@ public abstract class DynamicTCPRemoteCommitProvider extends TCPRemoteCommitProv
     public void endConfiguration() {
         TcpAddressesUpdater updater = new TcpAddressesUpdater();
         updater.run();
+        _updater = updater;
 
         Timer timer = new Timer(true);
         timer.scheduleAtFixedRate(updater, 0, _cacheDurationMillis);
 
         super.endConfiguration();
+    }
+
+    /**
+     * A peer that just came up may connect before the periodic refresh has discovered it, so the addresses are
+     * refreshed (at most once per second) before a connection from an unknown host is rejected.
+     */
+    @Override
+    protected boolean acceptsConnectionFrom(final InetAddress address) {
+        if (super.acceptsConnectionFrom(address)) {
+            return true;
+        }
+        TcpAddressesUpdater updater = _updater;
+        if (updater == null) {
+            return false;
+        }
+        long now = System.currentTimeMillis();
+        long last = _lastOnDemandRefresh.get();
+        if (now - last < MIN_ON_DEMAND_REFRESH_MILLIS || !_lastOnDemandRefresh.compareAndSet(last, now)) {
+            return false;
+        }
+        updater.run();
+        return super.acceptsConnectionFrom(address);
     }
 
     protected abstract List<String> fetchDynamicAddresses();

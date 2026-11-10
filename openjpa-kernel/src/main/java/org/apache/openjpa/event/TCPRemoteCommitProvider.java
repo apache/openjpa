@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
@@ -90,6 +91,8 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
     private int _maxTotal = 2;
     private int _maxIdle = 2;
     private int _recoveryTimeMillis = 15000;
+    private boolean _restrictToPeers = true;
+    private int _maxReceiveConnections = 100;
     private TCPPortListener _listener;
     private final BroadcastQueue _broadcastQueue = new BroadcastQueue();
     private final List<BroadcastWorkerThread> _broadcastThreads = Collections.synchronizedList(new LinkedList<>());
@@ -167,6 +170,40 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
      */
     public int getRecoveryTimeMillis() {
         return _recoveryTimeMillis;
+    }
+
+    /**
+     * Set whether incoming connections are only accepted from the configured peers (see
+     * {@link #setAddresses(String)}) and from this host. Defaults to <code>true</code>.
+     *
+     * @param restrictToPeers whether incoming connections are only accepted from the configured peers and this host
+     */
+    public void setRestrictToPeers(final boolean restrictToPeers) {
+        _restrictToPeers = restrictToPeers;
+    }
+
+    /**
+     * @return whether incoming connections are only accepted from the configured peers and from this host.
+     */
+    public boolean isRestrictToPeers() {
+        return _restrictToPeers;
+    }
+
+    /**
+     * Set the maximum number of incoming connections that are received from peers simultaneously. Further connections
+     * are closed until a receiving connection ends. A value of 0 or less means no limit. Defaults to 100.
+     *
+     * @param maxReceiveConnections the maximum number of incoming connections that are received simultaneously
+     */
+    public void setMaxReceiveConnections(final int maxReceiveConnections) {
+        _maxReceiveConnections = maxReceiveConnections;
+    }
+
+    /**
+     * @return the maximum number of incoming connections that are received from peers simultaneously.
+     */
+    public int getMaxReceiveConnections() {
+        return _maxReceiveConnections;
     }
 
     /**
@@ -286,6 +323,27 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
         }
     }
 
+    /**
+     * Whether this provider accepts an incoming connection from the given address. Connections from this host are
+     * always accepted; connections from other hosts only if they are one of the configured peers, unless
+     * {@link #setRestrictToPeers(boolean) RestrictToPeers} is turned off. The port of the peers is not considered, as
+     * the peers connect from arbitrary local ports.
+     *
+     * @param address the address of the remote end of the incoming connection
+     * @return <code>true</code> if the connection is accepted
+     */
+    protected boolean acceptsConnectionFrom(final InetAddress address) {
+        if (!_restrictToPeers || address.isLoopbackAddress() || localAddresses.contains(address)) {
+            return true;
+        }
+        _addressesLock.lock();
+        try {
+            return _addresses.stream().anyMatch(peer -> address.equals(peer.getAddress()));
+        } finally {
+            _addressesLock.unlock();
+        }
+    }
+
     // ---------- Configurable implementation ----------
 
     /**
@@ -303,6 +361,9 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
             if (_listener == null || (!_listener.isRunning() && _listener._port == _port)) {
                 try {
                     _listener = new TCPPortListener(_port, _bindAddress, log);
+                    // register before listening, so that no connection is
+                    // rejected for lack of a provider allowing it
+                    _listener.addProvider(this);
                     _listener.listen();
                     s_portListenerMap.put(key, _listener);
                 } catch (Exception e) {
@@ -491,7 +552,7 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
         private final Log _log;
         private ServerSocket _receiveSocket;
         private Thread _acceptThread;
-        private Set<Thread> _receiverThreads = new HashSet<>();
+        private final Set<Thread> _receiverThreads = ConcurrentHashMap.newKeySet();
         private final Set<TCPRemoteCommitProvider> _providers = new HashSet<>();
 
         /**
@@ -585,11 +646,16 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
                     if (_log.isTraceEnabled()) {
                         _log.trace(s_loc.get("tcp-received-connection", getAddress(s)));
                     }
+                    if (!isAccepted(s)) {
+                        closeRejected(s);
+                        continue;
+                    }
                     ReceiveSocketHandler sh = new ReceiveSocketHandler(s);
                     Thread receiverThread = new Thread(sh);
                     receiverThread.setDaemon(true);
-                    receiverThread.start();
+                    // add before starting, the thread removes itself when it is done
                     _receiverThreads.add(receiverThread);
+                    receiverThread.start();
                 } catch (Exception e) {
                     if (e instanceof PrivilegedActionException priv) {
                         e = priv.getException();
@@ -635,6 +701,52 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
         }
 
         /**
+         * Whether an incoming connection is accepted. As the listener is shared by all providers listening on the
+         * same port, a connection is accepted if any of them accepts the remote address, and the most permissive
+         * limit of receiving connections applies.
+         */
+        private boolean isAccepted(final Socket s) {
+            List<TCPRemoteCommitProvider> providers;
+            synchronized (_providers) {
+                providers = new ArrayList<>(_providers);
+            }
+
+            InetAddress remote = s.getInetAddress();
+            if (providers.stream().noneMatch(provider -> provider.acceptsConnectionFrom(remote))) {
+                if (_log.isWarnEnabled()) {
+                    _log.warn(s_loc.get("tcp-reject-not-peer", getAddress(s)));
+                }
+                return false;
+            }
+
+            int maxReceivers = 0;
+            for (TCPRemoteCommitProvider provider : providers) {
+                if (provider._maxReceiveConnections <= 0) {
+                    maxReceivers = 0;
+                    break;
+                }
+                maxReceivers = Math.max(maxReceivers, provider._maxReceiveConnections);
+            }
+            if (maxReceivers > 0 && _receiverThreads.size() >= maxReceivers) {
+                if (_log.isWarnEnabled()) {
+                    _log.warn(s_loc.get("tcp-reject-limit", getAddress(s), String.valueOf(maxReceivers)));
+                }
+                return false;
+            }
+            return true;
+        }
+
+        private void closeRejected(final Socket s) {
+            try {
+                s.close();
+            } catch (IOException e) {
+                if (_log.isWarnEnabled()) {
+                    _log.warn(s_loc.get("tcp-close-socket-error", getAddress(s)), e);
+                }
+            }
+        }
+
+        /**
          * Utility class that acts as a worker thread to receive Events
          * from broadcasters.
          */
@@ -666,6 +778,14 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
 
             @Override
             public void run() {
+                try {
+                    receive();
+                } finally {
+                    _receiverThreads.remove(Thread.currentThread());
+                }
+            }
+
+            private void receive() {
                 if (_s == null) {
                     return;
                 }
