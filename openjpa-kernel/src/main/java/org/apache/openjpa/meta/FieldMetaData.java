@@ -25,11 +25,13 @@ import java.io.ObjectOutput;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.lang.reflect.Modifier;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
@@ -1765,34 +1767,106 @@ public class FieldMetaData
     /**
      * Extract one type argument of the AttributeConverter&lt;X,Y&gt; that an
      * implementation class declares: index 0 for the attribute type, 1 for the
-     * database type. A parameterized argument such as {@code List<Item>}
-     * yields its raw type. Returns {@code Object.class} when the argument is
-     * neither, for instance a type variable.
+     * database type. The argument may be given anywhere in the type hierarchy
+     * of the class, also through a generic superclass or an interface that
+     * extends AttributeConverter, whose type variables are resolved against
+     * the arguments the subtypes pass. A parameterized argument such as
+     * {@code List<Item>} yields its raw type. Returns {@code Object.class}
+     * when the argument stays unresolved, for instance a type variable of the
+     * converter class itself.
      */
     public static Class resolveConverterTypeArgument(Class converterClass, int index) {
-        for (Type iface : converterClass.getGenericInterfaces()) {
-            if (iface instanceof ParameterizedType pt) {
-                Type rawType = pt.getRawType();
-                if (rawType instanceof Class<?> rawCls
-                        && "jakarta.persistence.AttributeConverter"
-                            .equals(rawCls.getName())) {
-                    Type arg = pt.getActualTypeArguments()[index];
-                    if (arg instanceof Class<?> argCls) {
-                        return argCls;
-                    }
-                    if (arg instanceof ParameterizedType argPt
-                            && argPt.getRawType() instanceof Class<?> argRawCls) {
-                        return argRawCls;
-                    }
-                }
+        Class<?> cls = toClass(resolveConverterGenericTypeArgument(converterClass, index));
+        return cls == null ? Object.class : cls;
+    }
+
+    /**
+     * The generic form of {@link #resolveConverterTypeArgument}: the type
+     * argument as the type hierarchy of the class resolves it, which may be a
+     * class, a parameterized type, an array type or a type variable that
+     * remains unbound. Returns null if the class does not extend a
+     * parameterized AttributeConverter.
+     */
+    public static Type resolveConverterGenericTypeArgument(Class<?> converterClass, int index) {
+        return findConverterTypeArgument(converterClass, Collections.emptyMap(), index);
+    }
+
+    /**
+     * Search the given type and its supertypes for the AttributeConverter
+     * type argument at the given index. The bindings map the type variables
+     * of the given type to the arguments its subtype passes. Returns null if
+     * the type does not extend a parameterized AttributeConverter.
+     */
+    private static Type findConverterTypeArgument(Type type,
+        Map<TypeVariable<?>, Type> bindings, int index) {
+        Class<?> raw;
+        Map<TypeVariable<?>, Type> typeBindings;
+        if (type instanceof ParameterizedType pt
+            && pt.getRawType() instanceof Class<?> rawCls) {
+            raw = rawCls;
+            Type[] args = pt.getActualTypeArguments();
+            if ("jakarta.persistence.AttributeConverter".equals(raw.getName())) {
+                return bind(args[index], bindings);
+            }
+            TypeVariable<?>[] params = raw.getTypeParameters();
+            typeBindings = new HashMap<>();
+            for (int i = 0; i < params.length && i < args.length; i++) {
+                typeBindings.put(params[i], bind(args[i], bindings));
+            }
+        } else if (type instanceof Class<?> cls) {
+            // a raw supertype binds none of its type variables
+            raw = cls;
+            typeBindings = Collections.emptyMap();
+        } else {
+            return null;
+        }
+
+        for (Type iface : raw.getGenericInterfaces()) {
+            Type arg = findConverterTypeArgument(iface, typeBindings, index);
+            if (arg != null) {
+                return arg;
             }
         }
-        // Check superclass
-        Class superclass = converterClass.getSuperclass();
+        Type superclass = raw.getGenericSuperclass();
         if (superclass != null && superclass != Object.class) {
-            return resolveConverterTypeArgument(superclass, index);
+            return findConverterTypeArgument(superclass, typeBindings, index);
         }
-        return Object.class;
+        return null;
+    }
+
+    /**
+     * Replace a type variable, or the component of an array of one, by the
+     * type it is bound to, if any.
+     */
+    private static Type bind(Type type, Map<TypeVariable<?>, Type> bindings) {
+        if (type instanceof TypeVariable<?> var && bindings.containsKey(var)) {
+            return bindings.get(var);
+        }
+        if (type instanceof GenericArrayType gat) {
+            Class<?> component = toClass(bind(gat.getGenericComponentType(), bindings));
+            if (component != null) {
+                return component.arrayType();
+            }
+        }
+        return type;
+    }
+
+    /**
+     * The class of a resolved type argument, or null if it is not resolved.
+     */
+    private static Class<?> toClass(Type type) {
+        if (type instanceof Class<?> cls) {
+            return cls;
+        }
+        if (type instanceof ParameterizedType pt
+            && pt.getRawType() instanceof Class<?> rawCls) {
+            return rawCls;
+        }
+        if (type instanceof GenericArrayType gat) {
+            Class<?> component = toClass(gat.getGenericComponentType());
+            return component == null ? null : component.arrayType();
+        }
+        return null;
     }
 
     /**

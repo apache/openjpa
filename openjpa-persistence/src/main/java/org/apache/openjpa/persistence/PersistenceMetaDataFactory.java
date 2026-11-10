@@ -20,7 +20,6 @@ package org.apache.openjpa.persistence;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.ArrayList;
@@ -321,23 +320,12 @@ public class PersistenceMetaDataFactory
 
     /**
      * Extract the entity attribute type (first type parameter) from an
-     * AttributeConverter implementation.
+     * AttributeConverter implementation, or null if it is not a class.
      */
     private Class<?> getConverterEntityType(Class<?> converterClass) {
-        for (Type iface : converterClass.getGenericInterfaces()) {
-            if (iface instanceof ParameterizedType pt) {
-                if (pt.getRawType() == AttributeConverter.class) {
-                    Type entityArg = pt.getActualTypeArguments()[0];
-                    if (entityArg instanceof Class<?>)
-                        return (Class<?>) entityArg;
-                }
-            }
-        }
-        // Check superclass
-        Class<?> superclass = converterClass.getSuperclass();
-        if (superclass != null && superclass != Object.class)
-            return getConverterEntityType(superclass);
-        return null;
+        Type entityType =
+            FieldMetaData.resolveConverterGenericTypeArgument(converterClass, 0);
+        return entityType instanceof Class<?> cls ? cls : null;
     }
 
     /**
