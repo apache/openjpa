@@ -113,6 +113,7 @@ import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.kernel.exps.DateTimeExtractPart;
+import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.kernel.exps.Path;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
@@ -6704,6 +6705,27 @@ public class DBDictionary
             return null;
         }
         return "'" + value.replace("'", "''") + "'";
+    }
+
+    /**
+     * Return the given JDBC escaped date-time literal, such as {@code {ts '...'}}, as the
+     * SQL standard typed literal {@code DATE '...'}, {@code TIME '...'} or
+     * {@code TIMESTAMP '...'}, or the escape unchanged if it has no quoted value.
+     * For drivers that translate the escape into a plain string literal, which
+     * has no date-time type in expressions such as COALESCE or CASE.
+     */
+    protected String toTypedDateTimeLiteral(String escape, int parseType) {
+        int start = escape.indexOf('\'');
+        int end = escape.lastIndexOf('\'');
+        if (start < 0 || end <= start) {
+            return escape;
+        }
+        String keyword = switch (parseType) {
+            case Literal.TYPE_DATE -> "DATE ";
+            case Literal.TYPE_TIME -> "TIME ";
+            default -> "TIMESTAMP ";
+        };
+        return keyword + escape.substring(start, end + 1);
     }
 
     public String getExtractField(DateTimeExtractField extField) {

@@ -817,4 +817,14 @@ public class MariaDBDictionary extends DBDictionary {
 
         super.setTime(stmnt, idx, val, cal, col);
     }
+
+    /**
+     * MariaDB Connector/J translates a JDBC escaped date-time literal into a string literal,
+     * so that COALESCE or CASE with a date-time column has a string result. A SQL
+     * standard typed literal keeps the date-time type.
+     */
+    @Override
+    public String toJDBCEscapedDateTimeLiteral(String escape, int parseType) {
+        return toTypedDateTimeLiteral(escape, parseType);
+    }
 }

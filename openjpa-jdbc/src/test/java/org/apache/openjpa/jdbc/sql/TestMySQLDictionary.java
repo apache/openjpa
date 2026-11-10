@@ -32,6 +32,7 @@ import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfigurationImpl;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.kernel.exps.DateTimeExtractField;
+import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.meta.JavaTypes;
 import org.jmock.Expectations;
 import org.jmock.integration.junit4.JUnitRuleMockery;
@@ -219,5 +220,18 @@ public class TestMySQLDictionary {
 
         dict.numericTypeName = "DOUBLE";
         assertEquals("DOUBLE", dict.getTypeName(decimal(JavaTypes.BIGDECIMAL, 0, 0)));
+    }
+
+    /**
+     * Date-time literals are written as typed literals: the driver turns the JDBC escape
+     * into a plain string literal, which gives COALESCE or CASE a string result (OPENJPA-2935).
+     */
+    @Test
+    public void testDateTimeLiteralIsTyped() {
+        DBDictionary dict = new MySQLDictionary();
+        assertEquals("DATE '2020-01-02'", dict.toJDBCEscapedDateTimeLiteral("{d '2020-01-02'}", Literal.TYPE_DATE));
+        assertEquals("TIME '03:04:05'", dict.toJDBCEscapedDateTimeLiteral("{t '03:04:05'}", Literal.TYPE_TIME));
+        assertEquals("TIMESTAMP '2020-01-02 03:04:05.123456'",
+                dict.toJDBCEscapedDateTimeLiteral("{ts '2020-01-02 03:04:05.123456'}", Literal.TYPE_TIMESTAMP));
     }
 }
