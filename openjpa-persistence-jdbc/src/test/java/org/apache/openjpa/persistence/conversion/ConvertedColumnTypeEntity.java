@@ -56,7 +56,7 @@ public class ConvertedColumnTypeEntity {
     @Convert(converter = InterfaceCodeConverter.class)
     private Code interfaceCode;
 
-    private Rank rank;
+    private Rank rating;
 
     private Box<String> box;
 
@@ -108,12 +108,12 @@ public class ConvertedColumnTypeEntity {
         this.interfaceCode = interfaceCode;
     }
 
-    public Rank getRank() {
-        return rank;
+    public Rank getRating() {
+        return rating;
     }
 
-    public void setRank(Rank rank) {
-        this.rank = rank;
+    public void setRating(Rank rating) {
+        this.rating = rating;
     }
 
     public Box<String> getBox() {

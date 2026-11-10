@@ -86,9 +86,9 @@ public class TestConvertedColumnTypeCompat extends SingleEMFTestCase {
     }
 
     public void testAutoApplyConverterWithGenericSuperclassIsNotRegistered() {
-        column("rank");
+        column("rating");
         assertNull(repository().getAutoApplyConverter(Rank.class));
-        assertSerialized("rank");
+        assertSerialized("rating");
     }
 
     public void testAutoApplyConverterOfParameterizedTypeIsNotRegistered() {

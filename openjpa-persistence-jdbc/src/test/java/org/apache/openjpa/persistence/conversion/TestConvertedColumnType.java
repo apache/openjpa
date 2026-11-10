@@ -92,7 +92,7 @@ public class TestConvertedColumnType extends SingleEMFTestCase {
     }
 
     public void testAutoAppliedConverterWithGenericSuperclass() {
-        assertColumn("rank", JavaTypes.INT_OBJ, Types.INTEGER, Types.NUMERIC, Types.DECIMAL);
+        assertColumn("rating", JavaTypes.INT_OBJ, Types.INTEGER, Types.NUMERIC, Types.DECIMAL);
     }
 
     public void testAutoAppliedConverterOfParameterizedType() {
@@ -111,7 +111,7 @@ public class TestConvertedColumnType extends SingleEMFTestCase {
              Connection conn = (Connection) OpenJPAPersistence.cast(em).getConnection()) {
             DatabaseMetaData meta = conn.getMetaData();
             for (String field : List.of("externalized", "converted", "code",
-                "inheritedCode", "interfaceCode", "rank", "box")) {
+                "inheritedCode", "interfaceCode", "rating", "box")) {
                 String name = column(field).getIdentifier().getName();
                 int type = dbColumnType(meta, table, name);
                 switch (type) {
@@ -151,7 +151,7 @@ public class TestConvertedColumnType extends SingleEMFTestCase {
             e.setCode(new Code(Long.MAX_VALUE));
             e.setInheritedCode(new Code(42L));
             e.setInterfaceCode(new Code(-7L));
-            e.setRank(new Rank(3));
+            e.setRating(new Rank(3));
             e.setBox(new Box<>("boxed"));
             em.persist(e);
             em.getTransaction().commit();
@@ -163,7 +163,7 @@ public class TestConvertedColumnType extends SingleEMFTestCase {
             assertEquals(Long.MAX_VALUE, found.getCode().getValue());
             assertEquals(42L, found.getInheritedCode().getValue());
             assertEquals(-7L, found.getInterfaceCode().getValue());
-            assertEquals(3, found.getRank().getValue());
+            assertEquals(3, found.getRating().getValue());
             assertEquals("boxed", found.getBox().getContent());
         }
     }
