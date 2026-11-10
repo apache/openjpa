@@ -44,8 +44,13 @@ public class TestRemoteCommitUnloadedSubclass extends SingleEMFTestCase {
 
     @Override
     public void setUp() throws Exception {
-        // creates the table; the subclass is not part of the listed types
+        // the subclass is not part of the listed types
         super.setUp(DROP_TABLES, RemoteCommitAnimal.class);
+        // the schema is synchronized when the first broker is created; the
+        // factory without listed types below cannot create the table itself
+        try (EntityManager em = emf.createEntityManager()) {
+            assertNull(em.find(RemoteCommitAnimal.class, 1));
+        }
     }
 
     public void testQueryCacheInvalidatesSuperclassOfUnloadedType() {
