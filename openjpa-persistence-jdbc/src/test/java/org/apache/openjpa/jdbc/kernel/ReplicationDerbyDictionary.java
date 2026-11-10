@@ -16,15 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.mysql.cj.jdbc.ha;
+package org.apache.openjpa.jdbc.kernel;
 
 import java.sql.Connection;
 
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
+
 /**
- * Stand-in for the interface of the same name in MySQL Connector/J 8 and
- * later, which a connection opened with a <code>jdbc:mysql:replication:</code>
- * URL implements. The MySQL driver is not on the test class path, so this
- * lets the tests look the interface up by name as the dictionary does.
+ * A Derby dictionary that takes every connection for a replication
+ * connection, as MySQL's does for one of Connector/J's. Derby rejects the
+ * writes of a read-only connection, as a replica does, so a write that is
+ * sent to a connection the store keeps read-only fails.
  */
-public interface ReplicationConnection extends Connection {
+public class ReplicationDerbyDictionary extends DerbyDictionary {
+
+    @Override
+    public boolean isReplicationConnection(Connection conn) {
+        return true;
+    }
 }

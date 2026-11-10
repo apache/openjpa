@@ -24,21 +24,22 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.sql.CallableStatement;
 import java.lang.reflect.Proxy;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Types;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.mysql.cj.jdbc.ha.ReplicationConnection;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfigurationImpl;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.kernel.exps.DateTimeExtractField;
+import org.apache.openjpa.lib.jdbc.ConfiguringConnectionDecorator;
+import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator;
 import org.apache.openjpa.meta.JavaTypes;
 import org.jmock.Expectations;
 import org.jmock.integration.junit4.JUnitRuleMockery;
@@ -229,92 +230,162 @@ public class TestMySQLDictionary {
     }
 
     /**
-     * The legacy <code>com.mysql.jdbc.ReplicationDriver</code> of Connector/J 5
-     * still gets read-only connections.
+     * A replication connection of Connector/J 8 and later, opened for a
+     * <code>jdbc:mysql:replication:</code> URL, implements its
+     * <code>ReplicationConnection</code> interface. It is recognized behind
+     * OpenJPA's own decorators, which the store's connection always has.
      */
     @Test
-    public void testDecorateReadOnlyForLegacyReplicationDriver() throws Exception {
+    public void testReplicationConnectionBehindDecorators() throws Exception {
+        MySQLDictionary dict = new ReplicationTestDictionary();
+        assertTrue(dict.isReplicationConnection(decorated(connection(FakeReplicationConnection.class))));
+        assertTrue(dict.isReplicationConnection(connection(FakeReplicationConnection.class)));
+        assertFalse(dict.isReplicationConnection(decorated(connection())));
+    }
+
+    /**
+     * A connection pool's wrapper does not implement the interface itself, but
+     * is a wrapper for it.
+     */
+    @Test
+    public void testReplicationConnectionBehindPoolWrapper() throws Exception {
+        MySQLDictionary dict = new ReplicationTestDictionary();
+        assertTrue(dict.isReplicationConnection(decorated(poolWrapper(connection(FakeReplicationConnection.class)))));
+        assertFalse(dict.isReplicationConnection(decorated(poolWrapper(connection()))));
+    }
+
+    /**
+     * The configured driver and URL do not make a connection of another data
+     * source, e.g. a plain one of <code>openjpa.Connection2URL</code>, a
+     * replication connection.
+     */
+    @Test
+    public void testConfigurationDoesNotOverrideConnection() throws Exception {
         JDBCConfiguration conf = new JDBCConfigurationImpl();
         conf.setConnectionDriverName("com.mysql.jdbc.ReplicationDriver");
-        conf.setConnectionURL("jdbc:mysql://source,replica/test");
-        AtomicBoolean readOnly = new AtomicBoolean();
-        decorate(conf, connection(readOnly));
-        assertTrue(readOnly.get());
+        conf.setConnectionURL("jdbc:mysql:replication://source,replica/test");
+        MySQLDictionary dict = new ReplicationTestDictionary();
+        dict.setConfiguration(conf);
+        assertFalse(dict.isReplicationConnection(decorated(connection())));
     }
 
     /**
-     * Connector/J 8 and later dropped the <code>ReplicationDriver</code>; a
-     * replication connection is configured with the URL scheme instead.
+     * Without the driver's replication interfaces, the legacy
+     * <code>com.mysql.jdbc.ReplicationDriver</code> of Connector/J 5 is still
+     * recognized by its configured name.
      */
     @Test
-    public void testDecorateReadOnlyForReplicationUrl() throws Exception {
+    public void testLegacyReplicationDriverName() throws Exception {
         JDBCConfiguration conf = new JDBCConfigurationImpl();
-        conf.setConnectionDriverName("com.mysql.cj.jdbc.Driver");
-        conf.setConnectionURL("jdbc:mysql:replication://source,replica/test");
-        AtomicBoolean readOnly = new AtomicBoolean();
-        decorate(conf, connection(readOnly));
-        assertTrue(readOnly.get());
+        conf.setConnectionDriverName("com.mysql.jdbc.ReplicationDriver");
+        MySQLDictionary dict = new NoDriverDictionary();
+        dict.setConfiguration(conf);
+        assertTrue(dict.isReplicationConnection(decorated(connection())));
 
         conf = new JDBCConfigurationImpl();
-        conf.setConnectionURL("jdbc:mysql+srv:replication://_mysql._tcp.example.com/test");
-        readOnly = new AtomicBoolean();
-        decorate(conf, connection(readOnly));
-        assertTrue(readOnly.get());
-    }
-
-    /**
-     * A replication connection obtained from a <code>DataSource</code> has no
-     * URL in the configuration, but still implements Connector/J's
-     * <code>ReplicationConnection</code>, possibly behind a pool's wrapper.
-     */
-    @Test
-    public void testDecorateReadOnlyForReplicationConnection() throws Exception {
-        AtomicBoolean readOnly = new AtomicBoolean();
-        decorate(new JDBCConfigurationImpl(), connection(readOnly, ReplicationConnection.class));
-        assertTrue(readOnly.get());
-    }
-
-    @Test
-    public void testDecorateLeavesPlainConnectionWritable() throws Exception {
-        JDBCConfiguration conf = new JDBCConfigurationImpl();
         conf.setConnectionDriverName("com.mysql.cj.jdbc.Driver");
-        conf.setConnectionURL("jdbc:mysql://localhost/test");
-        AtomicBoolean readOnly = new AtomicBoolean();
-        decorate(conf, connection(readOnly));
-        assertFalse(readOnly.get());
-
-        readOnly = new AtomicBoolean();
-        decorate(new JDBCConfigurationImpl(), connection(readOnly));
-        assertFalse(readOnly.get());
-    }
-
-    private static void decorate(JDBCConfiguration conf, Connection conn) throws Exception {
-        MySQLDictionary dict = new MySQLDictionary();
+        dict = new NoDriverDictionary();
         dict.setConfiguration(conf);
-        dict.connected = true;
-        assertTrue(conn == dict.decorate(conn));
+        assertFalse(dict.isReplicationConnection(decorated(connection())));
     }
 
     /**
-     * A connection that records <code>setReadOnly</code> and, like the
-     * connections of Connector/J, is a wrapper for the given interface.
+     * Decorating a connection leaves its read-only state alone; the store
+     * decides when a replication connection is read-only.
      */
-    private static Connection connection(AtomicBoolean readOnly, Class<?>... interfaces) {
+    @Test
+    public void testDecorateLeavesConnectionWritable() throws Exception {
+        MySQLDictionary dict = new ReplicationTestDictionary();
+        dict.setConfiguration(new JDBCConfigurationImpl());
+        dict.connected = true;
+        Connection conn = connection(FakeReplicationConnection.class);
+        dict.decorate(conn);
+        assertFalse(conn.isReadOnly());
+    }
+
+    /**
+     * Stands in for Connector/J's <code>ReplicationConnection</code>; the
+     * driver is not on the test class path.
+     */
+    public interface FakeReplicationConnection extends Connection {
+    }
+
+    /**
+     * A dictionary that looks for the stand-in instead of Connector/J's
+     * interfaces, by name like for those.
+     */
+    private static class ReplicationTestDictionary extends MySQLDictionary {
+        @Override
+        protected String[] getReplicationConnectionTypeNames() {
+            return new String[] { FakeReplicationConnection.class.getName() };
+        }
+    }
+
+    /**
+     * A dictionary that cannot load the driver's replication interfaces.
+     */
+    private static class NoDriverDictionary extends MySQLDictionary {
+        @Override
+        protected String[] getReplicationConnectionTypeNames() {
+            return new String[] { "org.apache.openjpa.jdbc.sql.NoSuchReplicationConnection" };
+        }
+    }
+
+    /**
+     * The connection wrapped by OpenJPA's logging and configuring decorators,
+     * as a data source of the store hands it out.
+     */
+    private static Connection decorated(Connection conn) throws Exception {
+        ConfiguringConnectionDecorator configuring = new ConfiguringConnectionDecorator();
+        configuring.setAutoCommit(Boolean.TRUE);
+        return configuring.decorate(new LoggingConnectionDecorator().decorate(conn));
+    }
+
+    /**
+     * A pool's wrapper, which delegates <code>isWrapperFor</code>.
+     */
+    private static Connection poolWrapper(Connection conn) {
+        return (Connection) Proxy.newProxyInstance(TestMySQLDictionary.class.getClassLoader(),
+            new Class<?>[] { Connection.class }, (proxy, method, args) -> {
+                if ("isWrapperFor".equals(method.getName())) {
+                    return ((Class<?>) args[0]).isInstance(conn) || conn.isWrapperFor((Class<?>) args[0]);
+                }
+                return method.invoke(conn, args);
+            });
+    }
+
+    /**
+     * A connection that keeps its read-only and auto-commit state and, like
+     * the connections of Connector/J, is a wrapper for the interfaces it
+     * implements.
+     */
+    private static Connection connection(Class<?>... interfaces) {
         Class<?>[] types = new Class<?>[interfaces.length + 1];
         types[0] = Connection.class;
         System.arraycopy(interfaces, 0, types, 1, interfaces.length);
+        AtomicBoolean readOnly = new AtomicBoolean();
+        AtomicBoolean autoCommit = new AtomicBoolean(true);
         return (Connection) Proxy.newProxyInstance(TestMySQLDictionary.class.getClassLoader(), types,
             (proxy, method, args) -> {
                 switch (method.getName()) {
                     case "setReadOnly":
                         readOnly.set((Boolean) args[0]);
                         return null;
+                    case "isReadOnly":
+                        return readOnly.get();
+                    case "setAutoCommit":
+                        autoCommit.set((Boolean) args[0]);
+                        return null;
+                    case "getAutoCommit":
+                        return autoCommit.get();
                     case "isWrapperFor":
                         return ((Class<?>) args[0]).isInstance(proxy);
                     case "hashCode":
                         return System.identityHashCode(proxy);
                     case "equals":
                         return proxy == args[0];
+                    case "toString":
+                        return "connection";
                     default:
                         throw new UnsupportedOperationException(method.getName());
                 }

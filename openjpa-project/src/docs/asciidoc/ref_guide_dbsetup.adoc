@@ -739,10 +739,13 @@ MySQL Reference] for more details.
 This replication feature can be used transparently with OpenJPA application by following configuration:
 
 * Connector/J 8 and later: `openjpa.ConnectionURL: jdbc:mysql:replication://source,replica/database` with the regular driver ``com.mysql.cj.jdbc.Driver``.
-A replication connection obtained from a ``DataSource`` is recognized as well.
+A replication connection obtained from a ``DataSource`` or a connection pool is recognized as well.
 * Connector/J 5: `openjpa.ConnectionDriverName: com.mysql.jdbc.ReplicationDriver` and `openjpa.ConnectionFactoryProperties: autoReconnect=true,roundRobinLoadBalance=true`
 
-OpenJPA will use a read-only connection with replicated database configuration and will automatically switch the connection to a non-readonly mode if the transaction is writing to the database.
+The same holds for MariaDB Connector/J with a `jdbc:mariadb:replication://primary,replica/database` URL and the ``MariaDBDictionary``.
+
+OpenJPA keeps the connection of an `EntityManager` read-only outside of a transaction, so that those reads go to a replica, and makes it writable when a transaction begins, so that the statements of the transaction, its reads included, go to the source.
+The connections OpenJPA uses for sequences and for schema changes are never made read-only.
 
 
 [[ref_guide_dbsetup_dbsupport_oracle]]

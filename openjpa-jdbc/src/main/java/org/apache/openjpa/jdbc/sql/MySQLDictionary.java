@@ -25,8 +25,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +48,7 @@ import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.lib.identifier.IdentifierRule;
+import org.apache.openjpa.lib.jdbc.DelegatingConnection;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.util.ExceptionInfo;
 import org.apache.openjpa.util.StoreException;
@@ -62,21 +65,20 @@ public class MySQLDictionary
     private static final String REPLICATION_DRIVER = "com.mysql.jdbc.ReplicationDriver";
 
     /**
-     * The URL schemes of a Connector/J replication connection.
-     */
-    private static final String[] REPLICATION_URL_PREFIXES = {
-        "jdbc:mysql:replication:",
-        "jdbc:mysql+srv:replication:",
-    };
-
-    /**
      * The interfaces a replication connection implements in Connector/J 8
-     * and later, and in Connector/J 5.
+     * and later, which opens one for a <code>jdbc:mysql:replication:</code>
+     * URL, and in Connector/J 5.
      */
     private static final String[] REPLICATION_CONNECTION_TYPES = {
         "com.mysql.cj.jdbc.ha.ReplicationConnection",
         "com.mysql.jdbc.ReplicationConnection",
     };
+
+    /**
+     * The replication connection interfaces of the driver, resolved on first
+     * use; empty if the driver has none or is not visible.
+     */
+    private volatile List<Class<?>> _replicationTypes = null;
 
     public static final String SELECT_HINT = "openjpa.hint.MySQLSelectHint";
 
@@ -311,54 +313,34 @@ public class MySQLDictionary
     }
 
     /**
-     * Starts a replication connection read-only, so that Connector/J sends the
-     * reads to a replica; the connection is made writable again before a flush.
+     * Whether the given connection is a Connector/J replication connection,
+     * which routes the statements of a read-only connection to a replica:
+     * one opened with a <code>jdbc:mysql:replication:</code> URL by
+     * Connector/J 8 and later, or by the <code>ReplicationDriver</code> of
+     * Connector/J 5, also behind the wrapper of a connection pool. The
+     * configured driver name is only consulted when the driver's replication
+     * connection interfaces cannot be loaded.
      */
     @Override
-    public Connection decorate(Connection conn)  throws SQLException {
-        conn = super.decorate(conn);
-        if (isReplicationConnection(conn)) {
-            conn.setReadOnly(true);
+    public boolean isReplicationConnection(Connection conn) throws SQLException {
+        Connection inner = conn instanceof DelegatingConnection delegating
+            ? delegating.getInnermostDelegate() : conn;
+        List<Class<?>> types = getReplicationConnectionTypes(inner);
+        if (types.isEmpty()) {
+            return conf != null && REPLICATION_DRIVER.equals(conf.getConnectionDriverName());
         }
-        return conn;
-    }
-
-    /**
-     * Whether the given connection is a Connector/J replication connection,
-     * which routes the statements of a read-only connection to a replica.
-     * That is the case for the <code>ReplicationDriver</code> of Connector/J 5,
-     * for a <code>jdbc:mysql:replication:</code> URL, which replaced that
-     * driver in Connector/J 8, and for a connection that is a wrapper for
-     * Connector/J's <code>ReplicationConnection</code>, e.g. one obtained
-     * from a <code>DataSource</code>.
-     */
-    protected boolean isReplicationConnection(Connection conn) {
-        if (conf == null) {
-            return false;
-        }
-        if (REPLICATION_DRIVER.equals(conf.getConnectionDriverName())) {
-            return true;
-        }
-        String url = conf.getConnectionURL();
-        if (url != null) {
-            for (String prefix : REPLICATION_URL_PREFIXES) {
-                if (url.regionMatches(true, 0, prefix, 0, prefix.length())) {
+        for (Class<?> type : types) {
+            if (type.isInstance(inner)) {
+                return true;
+            }
+            try {
+                if (inner.isWrapperFor(type)) {
                     return true;
                 }
-            }
-        }
-        for (String name : REPLICATION_CONNECTION_TYPES) {
-            Class<?> type = loadClass(name, conn);
-            if (type != null) {
-                try {
-                    if (conn.isWrapperFor(type)) {
-                        return true;
-                    }
-                } catch (SQLException | LinkageError e) {
-                    // a driver or pool that cannot tell is not taken as replicated
-                    if (log.isTraceEnabled()) {
-                        log.trace(e.toString(), e);
-                    }
+            } catch (SQLException | LinkageError e) {
+                // a driver or pool that cannot tell is not taken as replicated
+                if (log.isTraceEnabled()) {
+                    log.trace(e.toString(), e);
                 }
             }
         }
@@ -366,25 +348,44 @@ public class MySQLDictionary
     }
 
     /**
-     * Load the named class, which need not be on the class path, through the
-     * class loader of the connection or the context class loader.
+     * The names of the interfaces a replication connection of the driver
+     * implements.
      */
-    private static Class<?> loadClass(String name, Connection conn) {
+    protected String[] getReplicationConnectionTypeNames() {
+        return REPLICATION_CONNECTION_TYPES;
+    }
+
+    /**
+     * The replication connection interfaces of the driver, loaded once through
+     * the class loader of the given connection, the context class loader or
+     * this class's loader, since the driver need not be on the class path.
+     */
+    private List<Class<?>> getReplicationConnectionTypes(Connection conn) {
+        List<Class<?>> types = _replicationTypes;
+        if (types != null) {
+            return types;
+        }
         ClassLoader[] loaders = {
             conn.getClass().getClassLoader(),
             Thread.currentThread().getContextClassLoader(),
             MySQLDictionary.class.getClassLoader(),
         };
-        for (ClassLoader loader : loaders) {
-            if (loader != null) {
-                try {
-                    return Class.forName(name, false, loader);
-                } catch (ClassNotFoundException | LinkageError e) {
-                    // try the next loader
+        types = new ArrayList<>();
+        for (String name : getReplicationConnectionTypeNames()) {
+            for (ClassLoader loader : loaders) {
+                if (loader != null) {
+                    try {
+                        types.add(Class.forName(name, false, loader));
+                        break;
+                    } catch (ClassNotFoundException | LinkageError e) {
+                        // try the next loader
+                    }
                 }
             }
         }
-        return null;
+        types = Collections.unmodifiableList(types);
+        _replicationTypes = types;
+        return types;
     }
 
     private static int[] getMajorMinorVersions(String versionStr)

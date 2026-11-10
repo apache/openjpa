@@ -49,6 +49,7 @@ import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.lib.jdbc.DelegatingConnection;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.util.ExceptionInfo;
@@ -65,6 +66,11 @@ public class MariaDBDictionary extends DBDictionary {
     public static final String SELECT_HINT = "openjpa.hint.MariaDBSelectHint";
 
     public static final String DELIMITER_BACK_TICK = "`";
+
+    /**
+     * The URL scheme of a MariaDB Connector/J replication connection.
+     */
+    private static final String REPLICATION_URL_PREFIX = "jdbc:mariadb:replication:";
 
     /**
      * The replication compatibility prefix a MariaDB 10 or 11 server prepends
@@ -387,6 +393,30 @@ public class MariaDBDictionary extends DBDictionary {
     public Connection decorate(Connection conn)  throws SQLException {
         conn = super.decorate(conn);
         return conn;
+    }
+
+    /**
+     * Whether the given connection was opened by MariaDB Connector/J with a
+     * <code>jdbc:mariadb:replication:</code> URL, which routes the statements
+     * of a read-only connection to a replica. The driver reports that URL in
+     * the connection's metadata without a round trip to the server.
+     */
+    @Override
+    public boolean isReplicationConnection(Connection conn) throws SQLException {
+        Connection inner = conn instanceof DelegatingConnection delegating
+            ? delegating.getInnermostDelegate() : conn;
+        String url;
+        try {
+            url = inner.getMetaData().getURL();
+        } catch (SQLException e) {
+            // a driver or pool that cannot tell is not taken as replicated
+            if (log.isTraceEnabled()) {
+                log.trace(e.toString(), e);
+            }
+            return false;
+        }
+        return url != null
+            && url.regionMatches(true, 0, REPLICATION_URL_PREFIX, 0, REPLICATION_URL_PREFIX.length());
     }
 
     /**
