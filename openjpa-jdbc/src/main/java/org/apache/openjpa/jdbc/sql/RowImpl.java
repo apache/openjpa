@@ -308,7 +308,7 @@ public class RowImpl
                 setRaw(fromCols[i], val.toString());
             else if (set) {
                 setObject(fromCols[i], val, toCols[i].getJavaType(), false);
-                setJoinRefColumn(to, fromCols, toCols[i], val);
+                setJoinRefColumn(to, fromCols, fromCols[i], toCols[i]);
             } else if (val == null)
                 whereNull(fromCols[i]);
             else if (val instanceof Raw)
@@ -318,8 +318,18 @@ public class RowImpl
         }
     }
 
-    private void setJoinRefColumn(OpenJPAStateManager inverseSm, Column ownerCols[], Column inverseCol,
-                                   Object val) {
+    /**
+     * Copy the value of the given column of the inverse instance to every
+     * attribute of the owner instance that is mapped to the owner column
+     * joined to it.
+     *
+     * @param inverseSm the instance being joined to
+     * @param ownerCols all columns of the owner joining to the inverse instance
+     * @param ownerCol the owner column joined to <code>inverseCol</code>
+     * @param inverseCol the inverse column being joined to
+     */
+    private void setJoinRefColumn(OpenJPAStateManager inverseSm, Column[] ownerCols, Column ownerCol,
+                                  Column inverseCol) {
         OpenJPAStateManager ownerSm = getPrimaryKey();
         if (ownerSm != null) {
             ClassMetaData ownerMeta = ownerSm.getMetaData();
@@ -327,10 +337,10 @@ public class RowImpl
             for (FieldMetaData ownerFM : ownerMeta.getFields()) {
                 // look for any single column in this field references the
                 // same column as the foreign key target column
-                Column cols[] = ((FieldMapping) ownerFM).getColumns();
+                Column[] cols = ((FieldMapping) ownerFM).getColumns();
                 if (cols.length == 1            // only support attribute of non-compound foreign key
                         && cols != ownerCols    // not @Id field
-                        && cols[0].getIdentifier().equals(ownerCols[0].getIdentifier())) {
+                        && cols[0].getIdentifier().equals(ownerCol.getIdentifier())) {
                     // copy the foreign key value to the current field.
                     FieldMetaData inverseFM = inverseSm.getMetaData().getField(
                                     inverseCol.getIdentifier().getName());
