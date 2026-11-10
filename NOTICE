@@ -1,21 +1,20 @@
 
 Apache OpenJPA
-Copyright 2006-2021 The Apache Software Foundation
+Copyright 2006-2026 The Apache Software Foundation
 
 This product includes software developed by
-The Apache Software Foundation (http://www.apache.org/).
+The Apache Software Foundation (https://www.apache.org/).
 
 
 The following copyright notice(s) were affixed to portions of this code
 with which this file is now or was at one time distributed.
 
-OpenJPA includes the persistence and orm schemas from the JPA specifications.
+OpenJPA includes the persistence and orm schemas from the JPA 1.0 and 2.0
+specifications.
 Copyright 2005-2009 Sun Microsystems, Inc. All rights reserved.
 OpenJPA elects to include this software in this distribution under the
-CDDL license.  You can obtain a copy of the License at:
-    https://glassfish.dev.java.net/public/CDDL+GPL.html
-The source code is available at:
-    https://glassfish.dev.java.net/source/browse/glassfish/
+CDDL 1.0 license. The license text is included in the LICENSE file. The
+schemas are included in source form in the openjpa-persistence module.
 
 OpenJPA includes software written by Miroslav Nachev
 
