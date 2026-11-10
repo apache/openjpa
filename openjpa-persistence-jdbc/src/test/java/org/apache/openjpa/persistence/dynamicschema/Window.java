@@ -20,36 +20,86 @@ package org.apache.openjpa.persistence.dynamicschema;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 /**
- * An entity whose default table name is a word that MySQL 8.0 and later
- * reserve, which cannot be a table name as it is (OPENJPA-3074).
+ * An entity whose name and attribute names are words Derby rejects as
+ * unquoted identifiers. The JPA mapping defaults take the table name from the
+ * entity name as given, without checking it against the reserved words of the
+ * database, so the table is named explicitly.
  */
 @Entity
+@Table(name = "WINDOWS")
 public class Window {
 
     @Id
     private int id;
 
-    private String label;
+    private String cursors;
 
-    public Window() {
-    }
+    private String window;
 
-    public Window(int id, String label) {
-        this.id = id;
-        this.label = label;
-    }
+    private String definer;
+
+    private String invoker;
+
+    private String xmlquery;
+
+    private boolean deterministic;
 
     public int getId() {
         return id;
     }
 
-    public String getLabel() {
-        return label;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
+    public String getCursors() {
+        return cursors;
+    }
+
+    public void setCursors(String cursors) {
+        this.cursors = cursors;
+    }
+
+    public String getWindow() {
+        return window;
+    }
+
+    public void setWindow(String window) {
+        this.window = window;
+    }
+
+    public String getDefiner() {
+        return definer;
+    }
+
+    public void setDefiner(String definer) {
+        this.definer = definer;
+    }
+
+    public String getInvoker() {
+        return invoker;
+    }
+
+    public void setInvoker(String invoker) {
+        this.invoker = invoker;
+    }
+
+    public String getXmlquery() {
+        return xmlquery;
+    }
+
+    public void setXmlquery(String xmlquery) {
+        this.xmlquery = xmlquery;
+    }
+
+    public boolean isDeterministic() {
+        return deterministic;
+    }
+
+    public void setDeterministic(boolean deterministic) {
+        this.deterministic = deterministic;
     }
 }

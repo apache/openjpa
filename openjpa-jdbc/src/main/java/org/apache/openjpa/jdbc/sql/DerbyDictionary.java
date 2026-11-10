@@ -121,6 +121,10 @@ public class DerbyDictionary
             "GET_CURRENT_CONNECTION", "INOUT", "LONGINT", "LTRIM", "NONE",
             "NVARCHAR", "OFF", "OUT", "RTRIM", "SUBSTR", "XML", "XMLEXISTS",
             "XMLPARSE", "XMLSERIALIZE",
+            // reserved by Derby, which rejects them as unquoted table, sequence,
+            // index, constraint and schema names
+            "BIGINT", "CURRENT_ROLE", "CURSORS", "DEFINER", "DETERMINISTIC",
+            "GETCURRENTCONNECTION", "INVOKER", "WINDOW", "XMLQUERY",
         }));
 
         // reservedWordSet subset that CANNOT be used as valid column names
@@ -151,6 +155,8 @@ public class DerbyDictionary
             // The following keywords used to be defined as reserved words in the past, but now seem to work
             // we still add them for compat reasons
             "COALESCE", "OVER", "ROW_NUMBER",
+            // reserved by Derby, but missing from the word list the generated part was tested with
+            "CURSORS",
         }));
     }
 
