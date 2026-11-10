@@ -191,14 +191,14 @@ public class TestAbstractMySQLDictionary {
     }
 
     /**
-     * <code>UpdatedMySQLReservedWords=false</code> keeps the names an earlier
+     * <code>UpdatedMySQLAndMariaDBReservedWords=false</code> keeps the names an earlier
      * release generated. The words that were reserved before, such as
      * <code>ROWS</code> of the SQL standard or the <code>LIBRARY</code> that
      * MySQL reserved already, are still delimited on MySQL.
      */
     @Test
     public void testCompatibilityKeepsTheEarlierNames() {
-        MySQLDictionary mysql = configure(new MySQLDictionary(), "UpdatedMySQLReservedWords=false");
+        MySQLDictionary mysql = configure(new MySQLDictionary(), "UpdatedMySQLAndMariaDBReservedWords=false");
         assertEquals("RANK", validColumnName(mysql, "rank"));
         assertEquals("WINDOW", validColumnName(mysql, "window"));
         assertFalse(mysql.getInvalidColumnWordSet().contains("RANK"));
@@ -209,7 +209,7 @@ public class TestAbstractMySQLDictionary {
         assertEquals("\"ROWS\"", validTableName(mysql, "ROWS"));
         assertEquals("\"LIBRARY\"", validTableName(mysql, "LIBRARY"));
 
-        MariaDBDictionary mariadb = configure(new MariaDBDictionary(), "UpdatedMySQLReservedWords=false");
+        MariaDBDictionary mariadb = configure(new MariaDBDictionary(), "UpdatedMySQLAndMariaDBReservedWords=false");
         assertEquals("ROW_NUMBER", validColumnName(mariadb, "row_number"));
         assertEquals("OVER0", validColumnName(mariadb, "over"));
         assertEquals("LINEAR", validTableName(mariadb, "LINEAR"));

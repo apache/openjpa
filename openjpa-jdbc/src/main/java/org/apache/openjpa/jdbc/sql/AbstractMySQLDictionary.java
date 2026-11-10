@@ -196,11 +196,11 @@ public abstract class AbstractMySQLDictionary
      * Adds words that MySQL 8.0 and later reserve to the
      * {@link #invalidColumnWordSet invalid column words} and to the
      * {@link #reservedWordSet reserved words} (OPENJPA-3074). The
-     * compatibility option <code>UpdatedMySQLReservedWords=false</code>
+     * compatibility option <code>UpdatedMySQLAndMariaDBReservedWords=false</code>
      * removes the words that were added here again, so that the names keep
      * the form an earlier release generated.
      *
-     * @see org.apache.openjpa.conf.Compatibility#getUpdatedMySQLReservedWords()
+     * @see org.apache.openjpa.conf.Compatibility#getUpdatedMySQLAndMariaDBReservedWords()
      */
     protected void addUpdatedReservedWords(Collection<String> words) {
         for (String word : words) {
@@ -222,7 +222,7 @@ public abstract class AbstractMySQLDictionary
     @Override
     public void setConfiguration(Configuration conf) {
         if (conf instanceof OpenJPAConfiguration openjpaConf
-            && !openjpaConf.getCompatibilityInstance().getUpdatedMySQLReservedWords()) {
+            && !openjpaConf.getCompatibilityInstance().getUpdatedMySQLAndMariaDBReservedWords()) {
             invalidColumnWordSet.removeAll(_updatedInvalidColumnWords);
             reservedWordSet.removeAll(_updatedReservedWords);
         }

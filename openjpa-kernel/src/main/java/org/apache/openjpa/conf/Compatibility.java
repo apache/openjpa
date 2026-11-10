@@ -87,6 +87,7 @@ public class Compatibility {
     private boolean _flushAfterInMemoryBulkOperation = true; // OPENJPA-2951
     private boolean _resolveConverterTypeHierarchy = true; // OPENJPA-2944
     private boolean _updatedMySQLReservedWords = true; // OPENJPA-3074
+    private boolean _updatedMySQLAndMariaDBReservedWords = true; // OPENJPA-3074
 
     /**
      * Whether to require exact identity value types when creating object
@@ -1063,8 +1064,8 @@ public class Compatibility {
      *
      * @since 4.2.0
      */
-    public boolean getUpdatedMySQLReservedWords() {
-        return _updatedMySQLReservedWords;
+    public boolean getUpdatedMySQLAndMariaDBReservedWords() {
+        return _updatedMySQLAndMariaDBReservedWords;
     }
 
     /**
@@ -1073,7 +1074,7 @@ public class Compatibility {
      *
      * @since 4.2.0
      */
-    public void setUpdatedMySQLReservedWords(boolean b) {
-        _updatedMySQLReservedWords = b;
+    public void setUpdatedMySQLAndMariaDBReservedWords(boolean b) {
+        _updatedMySQLAndMariaDBReservedWords = b;
     }
 }

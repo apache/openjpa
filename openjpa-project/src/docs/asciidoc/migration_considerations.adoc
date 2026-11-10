@@ -713,7 +713,7 @@ The delimited name is the same name, so a schema that an earlier release created
 It does not delimit reserved words: a column whose name is such a word now gets a `0` appended - a column `ROW_NUMBER` is mapped to ``ROW_NUMBER0`` - also when the name is given explicitly in `@Column` or ``orm.xml``, as it does for the words that were reserved before.
 A schema that still uses the earlier column names no longer matches the mapping: reading fails with an unknown column, and `openjpa.jdbc.SynchronizeMappings` adds the new column next to the old one.
 
-Set `openjpa.Compatibility=UpdatedMySQLReservedWords=false` to keep the names and the SQL of OpenJPA 4.1.x, or give the columns their existing names, delimited, in ``@Column``.
+Set `openjpa.Compatibility=UpdatedMySQLAndMariaDBReservedWords=false` to keep the names and the SQL of OpenJPA 4.1.x, or give the columns their existing names, delimited, in ``@Column``.
 
 [class]``MySQLDictionary`` and [class]``MariaDBDictionary`` now share their common code in the new [class]``AbstractMySQLDictionary``. Their public fields, such as ``TableType``, ``UseClobs``, `DriverDeserializesBlobs` and ``OptimizeMultiTableDeletes``, keep their names and defaults and are still set in <<openjpa.jdbc.DBDictionary>>; they are now declared by the superclass, which is only observable through reflection on the declared members of the two classes.
 

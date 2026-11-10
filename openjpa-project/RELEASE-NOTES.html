@@ -87,7 +87,7 @@ restore the behaviour of OpenJPA 4.1.x where one exists.</p>
   <code>READ_WRITE</code> or <code>ROW_NUMBER</code> now gets a
   <code>0</code> appended, e.g. <code>ROW_NUMBER0</code>, so a schema that
   still has the earlier column name no longer matches; set
-  <code>openjpa.Compatibility=UpdatedMySQLReservedWords=false</code> to keep
+  <code>openjpa.Compatibility=UpdatedMySQLAndMariaDBReservedWords=false</code> to keep
   the 4.1.x names (OPENJPA-3074).
   </li>
 </ul>
