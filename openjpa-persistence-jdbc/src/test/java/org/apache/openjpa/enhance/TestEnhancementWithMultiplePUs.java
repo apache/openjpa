@@ -151,7 +151,9 @@ public class TestEnhancementWithMultiplePUs
         opts.setProperty("MetaDataRepository",
             "org.apache.openjpa.enhance.RestrictedMetaDataRepository(excludedTypes=" +
             "\"org.apache.openjpa.persistence.jdbc.annotations.UnenhancedMixedAccess," +
-            "org.apache.openjpa.idtool.RecordsPerYear\")");
+            "org.apache.openjpa.idtool.RecordsPerYear," +
+            // needs its auto-apply converters, which are not listed in any PU
+            "org.apache.openjpa.persistence.conversion.autoapply.UnenhancedAutoApplyBasicEntity\")");
         opts.put(PCEnhancer.class.getName() + "#bytecodeWriter", writer);
         PCEnhancer.run(null, opts);
 

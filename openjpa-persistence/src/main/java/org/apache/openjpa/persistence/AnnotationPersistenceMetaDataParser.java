@@ -1581,6 +1581,18 @@ public class AnnotationPersistenceMetaDataParser
     }
 
     /**
+     * Whether the given field is converted by an auto-apply converter of its
+     * type, which makes it basic whether or not its type is serializable.
+     */
+    private boolean isAutoApplyConverted(FieldMetaData fmd) {
+        Member member = getRepository().getMetaDataFactory().getDefaults()
+            .getBackingMember(fmd);
+        return member instanceof AnnotatedElement el
+            && PersistenceMetaDataDefaults.isAutoApplyConverted(getRepository(),
+                el, fmd.getDeclaredType());
+    }
+
+    /**
      * Parse @Basic. Given annotation may be null.
      *
      * @param wholeValueConverted whether an {@code @Convert} on the member
@@ -1604,7 +1616,7 @@ public class AnnotationPersistenceMetaDataParser
                 case JavaTypes.MAP:
                 case JavaTypes.PC:
                 case JavaTypes.PC_UNTYPED:
-                    if (wholeValueConverted) {
+                    if (wholeValueConverted || isAutoApplyConverted(fmd)) {
                         break;
                     }
                     if (Serializable.class.isAssignableFrom(type))

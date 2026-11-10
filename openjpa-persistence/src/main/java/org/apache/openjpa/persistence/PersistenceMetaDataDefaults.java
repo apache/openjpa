@@ -53,10 +53,12 @@ import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Convert;
+import jakarta.persistence.Converts;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
@@ -69,6 +71,7 @@ import jakarta.persistence.PostUpdate;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreRemove;
 import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Temporal;
 import jakarta.persistence.Transient;
 import jakarta.persistence.Version;
 
@@ -99,6 +102,11 @@ public class PersistenceMetaDataDefaults
 
     private static final Localizer _loc = Localizer.forPackage
         (PersistenceMetaDataDefaults.class);
+
+    // annotations that keep an auto-apply converter off an attribute
+    private static final List<Class<? extends Annotation>> AUTO_APPLY_EXCLUDED = List.of(
+        Id.class, Version.class, Enumerated.class, Temporal.class,
+        Convert.class, Converts.class);
 
     private static final Map<Class<?>, PersistenceStrategy> _strats =
         new HashMap<>();
@@ -280,7 +288,51 @@ public class PersistenceMetaDataDefaults
         if (convertsWholeValue(el, type)) {
             return BASIC;
         }
+
+        // So is an auto-apply converter of the type (OPENJPA-3073)
+        if (fmd != null && isMappedByAutoApplyConverter(fmd.getRepository(), el, type)) {
+            return BASIC;
+        }
         return null;
+    }
+
+    /**
+     * Whether the member is converted by an auto-apply converter registered
+     * for its declared type, which makes it a basic attribute (Jakarta
+     * Persistence 3.2, section 3.9) whether or not its type is serializable.
+     * Only a type without a type code of its own ({@link JavaTypes#OBJECT})
+     * is considered, as for the converter itself. Identifiers, versions,
+     * enumerated and temporal attributes are not converted, and neither is a
+     * member that declares a {@link Convert} of its own, which either disables
+     * the conversion or names its converter.
+     */
+    public static boolean isAutoApplyConverted(MetaDataRepository repos,
+        AnnotatedElement el, Class<?> type) {
+        if (repos == null || type == null
+            || JavaTypes.getTypeCode(type) != JavaTypes.OBJECT) {
+            return false;
+        }
+        for (Class<? extends Annotation> excluded : AUTO_APPLY_EXCLUDED) {
+            if (el.isAnnotationPresent(excluded)) {
+                return false;
+            }
+        }
+        return repos.getAutoApplyConverter(type) != null;
+    }
+
+    /**
+     * Whether the member has no persistence strategy of its own but is mapped
+     * as a basic attribute because an auto-apply converter is registered for
+     * its type, unless the 4.1.x mapping is requested.
+     *
+     * @see #isAutoApplyConverted
+     * @see org.apache.openjpa.conf.Compatibility#getMapAutoApplyConvertedFields
+     */
+    private static boolean isMappedByAutoApplyConverter(MetaDataRepository repos,
+        AnnotatedElement el, Class<?> type) {
+        return repos != null
+            && repos.getConfiguration().getCompatibilityInstance().getMapAutoApplyConvertedFields()
+            && isAutoApplyConverted(repos, el, type);
     }
 
     /**
@@ -845,6 +897,10 @@ public class PersistenceMetaDataDefaults
 
         PersistenceStrategy strat = getPersistenceStrategy(null, member, ignoreTransient);
         if (strat == null) {
+            if (isMappedByAutoApplyConverter(meta.getRepository(), (AnnotatedElement) member,
+                member instanceof Field field ? field.getType() : ((Method) member).getReturnType())) {
+                return true;
+            }
             warn(meta, _loc.get("no-pers-strat", meta.getDescribedTypeString() + "." + name));
             return false;
         } else return strat != PersistenceStrategy.TRANSIENT;
