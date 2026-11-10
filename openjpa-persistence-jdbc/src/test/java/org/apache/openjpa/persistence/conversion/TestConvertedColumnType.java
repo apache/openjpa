@@ -23,6 +23,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.List;
 import java.util.UUID;
 
 import jakarta.persistence.EntityManager;
@@ -106,22 +107,19 @@ public class TestConvertedColumnType extends SingleEMFTestCase {
             em.getTransaction().commit();
         }
         String table = column("code").getTable().getIdentifier().getName();
-        try (EntityManager em = emf.createEntityManager()) {
-            Connection conn = (Connection) OpenJPAPersistence.cast(em).getConnection();
+        try (EntityManager em = emf.createEntityManager();
+             Connection conn = (Connection) OpenJPAPersistence.cast(em).getConnection()) {
             DatabaseMetaData meta = conn.getMetaData();
-            for (String field : new String[] { "externalized", "converted", "code",
-                "inheritedCode", "interfaceCode", "rank", "box" }) {
+            for (String field : List.of("externalized", "converted", "code",
+                "inheritedCode", "interfaceCode", "rank", "box")) {
                 String name = column(field).getIdentifier().getName();
                 int type = dbColumnType(meta, table, name);
                 switch (type) {
-                    case Types.BLOB:
-                    case Types.LONGVARBINARY:
-                    case Types.VARBINARY:
-                    case Types.BINARY:
+                    case Types.BLOB, Types.LONGVARBINARY, Types.VARBINARY, Types.BINARY ->
                         fail(field + " is stored as binary, type " + type);
-                        break;
-                    default:
-                        break;
+                    default -> {
+                        // not binary
+                    }
                 }
             }
         }
@@ -129,8 +127,8 @@ public class TestConvertedColumnType extends SingleEMFTestCase {
 
     private static int dbColumnType(DatabaseMetaData meta, String table, String column)
         throws SQLException {
-        for (String t : new String[] { table, table.toUpperCase(), table.toLowerCase() }) {
-            for (String c : new String[] { column, column.toUpperCase(), column.toLowerCase() }) {
+        for (String t : List.of(table, table.toUpperCase(), table.toLowerCase())) {
+            for (String c : List.of(column, column.toUpperCase(), column.toLowerCase())) {
                 try (ResultSet rs = meta.getColumns(null, null, t, c)) {
                     if (rs.next()) {
                         return rs.getInt("DATA_TYPE");
