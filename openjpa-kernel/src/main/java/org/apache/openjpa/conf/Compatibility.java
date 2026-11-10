@@ -985,6 +985,13 @@ public class Compatibility {
      * with only a warning, so that its value was not stored. Attributes of a
      * serializable type and attributes annotated with <code>@Basic</code> are
      * not affected by this option.
+     *<p>
+     * The enhancer decides which fields of a class are persistent, so the
+     * option has to be set where the enhancer sees it as well, e.g. in
+     * <code>persistence.xml</code>, and build-time enhanced classes have to be
+     * enhanced again after it changes. A class enhanced with the default keeps
+     * such an attribute persistent when the option is set to false at runtime
+     * only.
      *
      * @since 4.2.0
      */
