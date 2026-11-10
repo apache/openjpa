@@ -1064,13 +1064,17 @@ public class Compatibility {
      * with back ticks and keep it, where <code>MariaDBDictionary</code>
      * appended a <code>0</code> before, e.g. <code>ORDER0</code>. A column
      * <code>LIMIT0</code> becomes <code>limit</code>, and a delimited
-     * default table name keeps the case of the entity name.</li>
+     * default table name keeps the case of the entity name. The names built
+     * from such a name, such as default join tables and join columns, change
+     * alike, e.g. <code>ORDER0_ITEMS</code> becomes
+     * <code>Order_items</code>.</li>
      * </ul>
      * Set to false to keep the names and the SQL that an earlier release
-     * generated for a schema that is still used under its original names: on
-     * MariaDB those of OpenJPA 4.1.x, with no name delimited; on MySQL those
-     * of the words added here, while the words that were reserved before are
-     * still delimited.
+     * generated before this change for a schema that is still used under its
+     * original names: on MariaDB those of the reserved words, with no name
+     * delimited, as in OpenJPA 4.1.x apart from the other 4.2 changes to the
+     * reserved words; on MySQL those of the words added here, while the words
+     * that were reserved before are still delimited.
      *
      * @since 4.2.0
      */

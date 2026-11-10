@@ -78,13 +78,16 @@ restore the behaviour of OpenJPA 4.1.x where one exists.</p>
   <code>LIMIT0</code>, is now the delimited <code>limit</code>; on MariaDB,
   which did not delimit before, this holds for every reserved word, e.g. a
   column <code>ORDER0</code> becomes <code>order</code> and a table
-  <code>USER0</code> becomes <code>User</code>. A delimited default table
+  <code>USER0</code> becomes <code>User</code>, and so do the names built
+  from such a name, such as default join tables and join columns, e.g.
+  <code>ORDER0_ITEMS</code> becomes <code>Order_items</code>. A delimited default table
   name keeps the case of the entity name, e.g. <code>Window</code> instead of
   <code>WINDOW</code>, which matters where table names are case sensitive. A
   schema that still has the earlier names no longer matches; set
   <code>openjpa.Compatibility=UpdatedMySQLAndMariaDBReservedWords=false</code>
-  to restore the 4.1.x names on MariaDB, and on MySQL those of the words added
-  by this change (OPENJPA-3074).
+  to restore the names generated before this change: on MariaDB the naming
+  of 4.1.x, apart from the other 4.2 changes to reserved words, and on MySQL
+  the names of the words added by this change (OPENJPA-3074).
   </li>
 </ul>
 
