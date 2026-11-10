@@ -703,15 +703,17 @@ Before upgrading the server, either create each sequence with `START WITH` above
 Emptying the dictionary's `NextSequenceQuery` does not pin the old backing store, because an empty value is normalised to none and then set again for a 10.3 server.
 
 [[jpa_4.2_MySQL8ReservedWords]]
-==== Column names that MySQL 8.0 and later reserve
+==== Names that MySQL 8.0 and later reserve
 
-[class]``MySQLDictionary`` now treats the words that MySQL 8.0 and later reserve as invalid column names, as it did with the words of MySQL 5.x before: those that came with window functions and common table expressions - `RANK`, ``DENSE_RANK``, ``ROW_NUMBER``, ``LAG``, ``LEAD``, ``GROUPS``, ``WINDOW``, ``OVER``, ``CUME_DIST``, ``PERCENT_RANK``, ``FIRST_VALUE``, ``LAST_VALUE``, ``NTH_VALUE``, `RECURSIVE` and others - as well as ``SYSTEM``, ``EMPTY``, ``JSON_TABLE``, ``LATERAL``, ``ROW``, ``OF``, ``FUNCTION``, ``QUALIFY``, ``TABLESAMPLE``, the `EXTERNAL` and `LIBRARY` of MySQL 9 and a few that MySQL 5.7 reserved already, such as `LINEAR` or ``VIRTUAL``.
-[class]``MariaDBDictionary`` does the same for those of the words that MariaDB reserves too: ``ACCESSIBLE``, ``LINEAR``, `READ_WRITE` and ``ROW_NUMBER``.
-A column whose name is such a word now gets a `0` appended - an attribute `rank` is mapped to the column ``RANK0`` - so that its table can be created and written to; before, `CREATE TABLE` and `INSERT` failed with a syntax error on MySQL 8.0 and later.
-The new name also applies to a column name given explicitly in `@Column` or ``orm.xml``, as it does for the words that were reserved before.
+[class]``MySQLDictionary`` now knows the words that MySQL 8.0 and later reserve as reserved words, as it did with the words of MySQL 5.x before: those that came with window functions and common table expressions - `RANK`, ``DENSE_RANK``, ``ROW_NUMBER``, ``LAG``, ``LEAD``, ``GROUPS``, ``WINDOW``, ``OVER``, ``CUME_DIST``, ``PERCENT_RANK``, ``FIRST_VALUE``, ``LAST_VALUE``, ``NTH_VALUE``, `RECURSIVE` and others - as well as ``SYSTEM``, ``EMPTY``, ``JSON_TABLE``, ``LATERAL``, ``ROW``, ``FUNCTION``, ``QUALIFY``, ``TABLESAMPLE``, the `LIBRARY` of MySQL 9 and a few that MySQL 5.7 reserved already, such as `LINEAR` or ``VIRTUAL``.
+It delimits a table or column name that is such a word in the SQL it generates, as it does for the words it knew before, so that the table of an entity named `Window` or with an attribute `rank` can be created, written to and queried; before, `CREATE TABLE` and `INSERT` failed with a syntax error on MySQL 8.0 and later.
+The delimited name is the same name, so a schema that an earlier release created, e.g. on MySQL 5.7, still matches.
 
-A schema that still uses the earlier names - one created on MySQL 5.7, where most of the words are not reserved, or one whose columns were created with delimited names - no longer matches the mapping: reading fails with an unknown column, and `openjpa.jdbc.SynchronizeMappings` adds the new column next to the old one.
-Set `openjpa.Compatibility=UpdatedMySQLReservedWords=false` to keep the earlier column names, or give the columns their existing names, delimited, in ``@Column``.
+[class]``MariaDBDictionary`` adds those of the words that MariaDB reserves too: ``ACCESSIBLE``, ``LINEAR``, `READ_WRITE` and ``ROW_NUMBER``.
+It does not delimit reserved words: a column whose name is such a word now gets a `0` appended - a column `ROW_NUMBER` is mapped to ``ROW_NUMBER0`` - also when the name is given explicitly in `@Column` or ``orm.xml``, as it does for the words that were reserved before.
+A schema that still uses the earlier column names no longer matches the mapping: reading fails with an unknown column, and `openjpa.jdbc.SynchronizeMappings` adds the new column next to the old one.
+
+Set `openjpa.Compatibility=UpdatedMySQLReservedWords=false` to keep the names and the SQL of OpenJPA 4.1.x, or give the columns their existing names, delimited, in ``@Column``.
 
 [class]``MySQLDictionary`` and [class]``MariaDBDictionary`` now share their common code in the new [class]``AbstractMySQLDictionary``. Their public fields, such as ``TableType``, ``UseClobs``, `DriverDeserializesBlobs` and ``OptimizeMultiTableDeletes``, keep their names and defaults and are still set in <<openjpa.jdbc.DBDictionary>>; they are now declared by the superclass, which is only observable through reflection on the declared members of the two classes.
 

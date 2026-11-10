@@ -29,6 +29,7 @@ import java.util.List;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.meta.JavaTypes;
@@ -138,16 +139,42 @@ public class TestAbstractMySQLDictionary {
         assertTrue(sql, sql.endsWith(" ENGINE = MyISAM COMMENT = 'custom'"));
     }
 
+    /**
+     * MySQL delimits the reserved words in identifiers, so a column or table
+     * named after such a word keeps its name, quoted.
+     */
     @Test
-    public void testMySQL8ReservedWordsAreInvalidColumnNames() {
+    public void testMySQL8ReservedWordsAreDelimited() {
         MySQLDictionary dict = configure(new MySQLDictionary(), null);
         for (String word : MYSQL_8_WORDS) {
             assertTrue(word, dict.getInvalidColumnWordSet().contains(word));
         }
-        assertEquals("RANK0", validColumnName(dict, "rank"));
-        assertEquals("WINDOW0", validColumnName(dict, "window"));
-        assertEquals("ROW_NUMBER0", validColumnName(dict, "ROW_NUMBER"));
+        for (String word : MYSQL_8_WORDS) {
+            if (!"NTILE".equals(word)) {
+                assertTrue(word, dict.reservedWordSet.contains(word));
+            }
+        }
+        assertEquals("\"rank\"", validColumnName(dict, "rank"));
+        assertEquals("\"window\"", validColumnName(dict, "window"));
+        assertEquals("\"ROW_NUMBER\"", validColumnName(dict, "ROW_NUMBER"));
         assertEquals("RANKING", validColumnName(dict, "ranking"));
+        // as an earlier release did for a word it already knew as invalid only
+        assertEquals("NTILE0", validColumnName(dict, "ntile"));
+
+        assertEquals("\"Function\"", validTableName(dict, "Function"));
+        assertEquals("\"WINDOW\"", validTableName(dict, "WINDOW"));
+        assertEquals("RANKING", validTableName(dict, "RANKING"));
+    }
+
+    /**
+     * MariaDB does not delimit reserved words: a name that is such a word
+     * gets a <code>0</code> appended.
+     */
+    @Test
+    public void testMariaDBAppendsZeroToReservedTableNames() {
+        MariaDBDictionary mariadb = configure(new MariaDBDictionary(), null);
+        assertEquals("LINEAR0", validTableName(mariadb, "LINEAR"));
+        assertEquals("RANK", validTableName(mariadb, "RANK"));
     }
 
     /**
@@ -164,21 +191,28 @@ public class TestAbstractMySQLDictionary {
     }
 
     /**
-     * <code>UpdatedMySQLReservedWords=false</code> keeps the column names an
-     * earlier release generated, for the words that were reserved before
-     * as well.
+     * <code>UpdatedMySQLReservedWords=false</code> keeps the names an earlier
+     * release generated. The words that were reserved before, such as
+     * <code>ROWS</code> of the SQL standard or the <code>LIBRARY</code> that
+     * MySQL reserved already, are still delimited on MySQL.
      */
     @Test
-    public void testCompatibilityKeepsTheEarlierColumnNames() {
+    public void testCompatibilityKeepsTheEarlierNames() {
         MySQLDictionary mysql = configure(new MySQLDictionary(), "UpdatedMySQLReservedWords=false");
         assertEquals("RANK", validColumnName(mysql, "rank"));
         assertEquals("WINDOW", validColumnName(mysql, "window"));
         assertFalse(mysql.getInvalidColumnWordSet().contains("RANK"));
+        assertFalse(mysql.reservedWordSet.contains("RANK"));
         assertEquals("NTILE0", validColumnName(mysql, "ntile"));
+        assertEquals("FUNCTION", validTableName(mysql, "FUNCTION"));
+        assertEquals("WINDOW", validTableName(mysql, "WINDOW"));
+        assertEquals("\"ROWS\"", validTableName(mysql, "ROWS"));
+        assertEquals("\"LIBRARY\"", validTableName(mysql, "LIBRARY"));
 
         MariaDBDictionary mariadb = configure(new MariaDBDictionary(), "UpdatedMySQLReservedWords=false");
         assertEquals("ROW_NUMBER", validColumnName(mariadb, "row_number"));
         assertEquals("OVER0", validColumnName(mariadb, "over"));
+        assertEquals("LINEAR", validTableName(mariadb, "LINEAR"));
     }
 
     private static <T extends DBDictionary> T configure(T dict, String compatibility) {
@@ -188,6 +222,10 @@ public class TestAbstractMySQLDictionary {
         }
         Configurations.configureInstance(dict, conf, (String) null, "DBDictionary");
         return dict;
+    }
+
+    private static String validTableName(DBDictionary dict, String name) {
+        return dict.getValidTableName(DBIdentifier.newTable(name), new Schema()).getName();
     }
 
     private static String validColumnName(DBDictionary dict, String name) {

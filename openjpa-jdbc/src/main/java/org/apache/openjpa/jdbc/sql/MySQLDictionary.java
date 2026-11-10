@@ -24,7 +24,6 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -72,9 +71,10 @@ public class MySQLDictionary
      * <code>TABLESAMPLE</code>, <code>EXTERNAL</code> and <code>LIBRARY</code>
      * of MySQL 9, and some that MySQL 5.7 reserved already
      * (OPENJPA-3074). Taken from <code>INFORMATION_SCHEMA.KEYWORDS</code> of
-     * MySQL 8.4 and 9.7.
+     * MySQL 8.4 and 9.7. They are reserved words as well, which this
+     * dictionary delimits in table and column names.
      */
-    private static final List<String> UPDATED_INVALID_COLUMN_WORDS = List.of(
+    private static final List<String> UPDATED_RESERVED_WORDS = List.of(
         "ACCESSIBLE", "CUBE", "CUME_DIST", "DENSE_RANK", "EMPTY", "EXCEPT", "EXTERNAL", "FIRST_VALUE",
         "FUNCTION", "GROUPING", "GROUPS", "INTERSECT", "IO_AFTER_GTIDS", "IO_BEFORE_GTIDS", "JSON_TABLE",
         "LAG", "LAST_VALUE", "LATERAL", "LEAD", "LIBRARY", "LINEAR", "NTH_VALUE", "OF", "OPTIMIZER_COSTS",
@@ -121,14 +121,9 @@ public class MySQLDictionary
             // we still add them for compat reasons
             "INDEX", "SELECT"
         }));
-        invalidColumnWordSet.addAll(UPDATED_INVALID_COLUMN_WORDS);
+        addUpdatedReservedWords(UPDATED_RESERVED_WORDS);
 
         integerCastTypeName = "SIGNED";
-    }
-
-    @Override
-    protected Collection<String> getUpdatedInvalidColumnWords() {
-        return UPDATED_INVALID_COLUMN_WORDS;
     }
 
     @Override

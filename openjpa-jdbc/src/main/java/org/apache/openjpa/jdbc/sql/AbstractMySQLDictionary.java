@@ -101,6 +101,13 @@ public abstract class AbstractMySQLDictionary
      */
     private static final int UNSIZED_DECIMAL_SCALE = 30;
 
+    /**
+     * The words that {@link #addUpdatedReservedWords(Collection)} added to
+     * the invalid column words and to the reserved words.
+     */
+    private final Set<String> _updatedInvalidColumnWords = new HashSet<>();
+    private final Set<String> _updatedReservedWords = new HashSet<>();
+
     public AbstractMySQLDictionary() {
         validationSQL = "SELECT NOW()";
         distinctCountColumnSeparator = ",";
@@ -186,29 +193,38 @@ public abstract class AbstractMySQLDictionary
     }
 
     /**
-     * The words of {@link #invalidColumnWordSet} that MySQL 8.0 and later
-     * reserve and that this dictionary added in 4.2.0 (OPENJPA-3074). The
+     * Adds words that MySQL 8.0 and later reserve to the
+     * {@link #invalidColumnWordSet invalid column words} and to the
+     * {@link #reservedWordSet reserved words} (OPENJPA-3074). The
      * compatibility option <code>UpdatedMySQLReservedWords=false</code>
-     * removes them again, so that column names keep the form an earlier
-     * release generated.
+     * removes the words that were added here again, so that the names keep
+     * the form an earlier release generated.
      *
      * @see org.apache.openjpa.conf.Compatibility#getUpdatedMySQLReservedWords()
      */
-    protected Collection<String> getUpdatedInvalidColumnWords() {
-        return List.of();
+    protected void addUpdatedReservedWords(Collection<String> words) {
+        for (String word : words) {
+            if (invalidColumnWordSet.add(word)) {
+                _updatedInvalidColumnWords.add(word);
+            }
+            if (reservedWordSet.add(word)) {
+                _updatedReservedWords.add(word);
+            }
+        }
     }
 
     /**
-     * Removes the {@link #getUpdatedInvalidColumnWords() updated invalid
-     * column words} if the compatibility options ask for the earlier column
-     * names. This has to happen before the naming rules are configured, which
-     * take a copy of the words.
+     * Removes the {@link #addUpdatedReservedWords(Collection) updated
+     * reserved words} if the compatibility options ask for the earlier names.
+     * This has to happen before the naming rules are configured, which take a
+     * copy of the words.
      */
     @Override
     public void setConfiguration(Configuration conf) {
         if (conf instanceof OpenJPAConfiguration openjpaConf
             && !openjpaConf.getCompatibilityInstance().getUpdatedMySQLReservedWords()) {
-            invalidColumnWordSet.removeAll(getUpdatedInvalidColumnWords());
+            invalidColumnWordSet.removeAll(_updatedInvalidColumnWords);
+            reservedWordSet.removeAll(_updatedReservedWords);
         }
         super.setConfiguration(conf);
     }

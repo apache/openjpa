@@ -32,15 +32,18 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 /**
  * Attributes named after words that MySQL 8.0 and later reserve - window
  * functions, <code>SYSTEM</code> - get a column name the database accepts,
- * so that the table can be created, written to and queried (OPENJPA-3074).
+ * and an entity named after such a word a table name it accepts, so that the
+ * table can be created, written to and queried (OPENJPA-3074).
  */
 public class TestMySQLReservedWordColumns extends SingleEMFTestCase {
 
     @Override
     public void setUp() {
-        super.setUp(CLEAR_TABLES, RankedEntry.class);
+        super.setUp(CLEAR_TABLES, RankedEntry.class, Window.class);
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
+            em.persist(new Window(1, "first"));
+            em.persist(new Window(2, "second"));
             em.persist(new RankedEntry(1, 10, "a", 2));
             em.persist(new RankedEntry(2, 20, "b", 1));
             em.persist(new RankedEntry(3, 10, "b", 3));
@@ -98,11 +101,11 @@ public class TestMySQLReservedWordColumns extends SingleEMFTestCase {
     }
 
     /**
-     * On MySQL the default column name of an attribute named after such a
-     * word gets a <code>0</code> appended, as for the words that were
-     * reserved before. MariaDB reserves none of the words of the entity but
-     * <code>ROW_NUMBER</code>. A name given in <code>@Column</code> is
-     * treated alike, unless it is delimited.
+     * On MySQL the column name of an attribute named after such a word is
+     * delimited, as for the words that were reserved before. MariaDB reserves
+     * none of the words of the entity but <code>ROW_NUMBER</code>, and appends
+     * a <code>0</code> to a reserved word instead. A name given in
+     * <code>@Column</code> is treated alike, unless it is delimited.
      */
     public void testColumnNames() {
         DBDictionary dict = getDBDictionary();
@@ -111,12 +114,39 @@ public class TestMySQLReservedWordColumns extends SingleEMFTestCase {
         }
         ClassMapping mapping = getMapping(RankedEntry.class);
         boolean mysql = !(dict instanceof MariaDBDictionary);
-        assertEquals(mysql ? "RANK0" : "RANK", columnName(mapping, "rank"));
-        assertEquals(mysql ? "WINDOW0" : "WINDOW", columnName(mapping, "window"));
-        assertEquals(mysql ? "SYSTEM0" : "SYSTEM", columnName(mapping, "system"));
-        assertEquals("ROW_NUMBER0", columnName(mapping, "rowNumber"));
+        assertEquals(mysql ? "\"RANK\"" : "RANK", columnName(mapping, "rank"));
+        assertEquals(mysql ? "\"WINDOW\"" : "WINDOW", columnName(mapping, "window"));
+        assertEquals(mysql ? "\"SYSTEM\"" : "SYSTEM", columnName(mapping, "system"));
+        assertEquals(mysql ? "\"ROW_NUMBER\"" : "ROW_NUMBER0", columnName(mapping, "rowNumber"));
         // a delimited name is kept
         assertEquals("\"LAG\"", columnName(mapping, "lag"));
+    }
+
+    public void testReservedTableName() {
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            em.find(Window.class, 1).setLabel("changed");
+            em.getTransaction().commit();
+        }
+        try (EntityManager em = emf.createEntityManager()) {
+            assertEquals("changed", em.find(Window.class, 1).getLabel());
+            List<String> labels = em.createQuery("SELECT w.label FROM Window w ORDER BY w.id", String.class)
+                .getResultList();
+            assertEquals(List.of("changed", "second"), labels);
+        }
+    }
+
+    /**
+     * On MySQL the default table name of an entity named after such a word is
+     * delimited. MariaDB does not reserve <code>WINDOW</code>.
+     */
+    public void testTableName() {
+        DBDictionary dict = getDBDictionary();
+        if (!(dict instanceof AbstractMySQLDictionary)) {
+            return;
+        }
+        String table = getMapping(Window.class).getTable().getIdentifier().getName().toUpperCase(Locale.ROOT);
+        assertEquals(dict instanceof MariaDBDictionary ? "WINDOW" : "\"WINDOW\"", table);
     }
 
     private static String columnName(ClassMapping mapping, String field) {

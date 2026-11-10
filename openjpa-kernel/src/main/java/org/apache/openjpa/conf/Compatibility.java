@@ -1050,15 +1050,16 @@ public class Compatibility {
      * 8.0 and later reserve - <code>RANK</code>, <code>ROW_NUMBER</code>,
      * <code>WINDOW</code>, <code>SYSTEM</code> and others, see
      * <code>MySQLDictionary</code> - and that are missing from their earlier
-     * lists of words which cannot be column names as such words. Defaults to
-     * true: a column whose name is such a word gets a <code>0</code>
-     * appended, e.g. <code>RANK0</code> for a field <code>rank</code>, as for
-     * every other reserved word, so that its table can be created and
-     * written to.
+     * lists of reserved words as such words. Defaults to true: on MySQL a
+     * table or column whose name is such a word is delimited, as for every
+     * other reserved word, so that its table can be created and written to;
+     * the name stays the same. MariaDB does not delimit reserved words, and a
+     * column named after one of the few of the words it reserves gets a
+     * <code>0</code> appended, e.g. <code>ROW_NUMBER0</code>.
      *<p>
-     * Set to false to keep the column names that an earlier release generated,
-     * e.g. for a schema that was created on MySQL 5.7, where the words are
-     * not reserved, and is still used under its original column names.
+     * Set to false to keep the names and the SQL that an earlier release
+     * generated, e.g. for a MariaDB schema that is still used under its
+     * original column names.
      *
      * @since 4.2.0
      */
@@ -1068,7 +1069,7 @@ public class Compatibility {
 
     /**
      * Whether the MySQL and MariaDB dictionaries treat the words that MySQL
-     * 8.0 and later reserve as words which cannot be column names.
+     * 8.0 and later reserve as reserved words.
      *
      * @since 4.2.0
      */
