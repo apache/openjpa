@@ -28,8 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.openjpa.jdbc.identifier.Normalizer;
-import org.apache.openjpa.lib.identifier.IdentifierRule;
 import org.apache.openjpa.lib.jdbc.DelegatingConnection;
 import org.apache.openjpa.util.ExceptionInfo;
 import org.apache.openjpa.util.StoreException;
@@ -255,12 +253,13 @@ public class MySQLDictionary
         return types;
     }
 
+    /**
+     * MySQL delimits a name that is a reserved word, also under the
+     * compatibility option <code>UpdatedMySQLAndMariaDBReservedWords=false</code>.
+     */
     @Override
-    protected void configureNamingRules() {
-        super.configureNamingRules();
-        IdentifierRule rule = Normalizer.getNamingConfiguration().getDefaultIdentifierRule();
-        rule.setDelimitReservedWords(true);
-        rule.setReservedWords(reservedWordSet);
+    protected boolean delimitsReservedWords() {
+        return true;
     }
 
     @Override

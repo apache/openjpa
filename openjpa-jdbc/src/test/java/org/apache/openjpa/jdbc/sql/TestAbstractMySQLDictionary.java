@@ -167,14 +167,16 @@ public class TestAbstractMySQLDictionary {
     }
 
     /**
-     * MariaDB does not delimit reserved words: a name that is such a word
-     * gets a <code>0</code> appended.
+     * MariaDB delimits the reserved words in identifiers as MySQL does, so a
+     * table or column named after such a word keeps its name, quoted.
      */
     @Test
-    public void testMariaDBAppendsZeroToReservedTableNames() {
+    public void testMariaDBDelimitsReservedWords() {
         MariaDBDictionary mariadb = configure(new MariaDBDictionary(), null);
-        assertEquals("LINEAR0", validTableName(mariadb, "LINEAR"));
+        assertEquals("\"LINEAR\"", validTableName(mariadb, "LINEAR"));
+        assertEquals("\"Order\"", validTableName(mariadb, "Order"));
         assertEquals("RANK", validTableName(mariadb, "RANK"));
+        assertEquals("\"order\"", validColumnName(mariadb, "order"));
     }
 
     /**
@@ -186,7 +188,7 @@ public class TestAbstractMySQLDictionary {
         MariaDBDictionary dict = configure(new MariaDBDictionary(), null);
         assertEquals("RANK", validColumnName(dict, "rank"));
         assertEquals("WINDOW", validColumnName(dict, "window"));
-        assertEquals("ROW_NUMBER0", validColumnName(dict, "row_number"));
+        assertEquals("\"row_number\"", validColumnName(dict, "row_number"));
         assertEquals("OVER0", validColumnName(dict, "over"));
     }
 
@@ -194,7 +196,8 @@ public class TestAbstractMySQLDictionary {
      * <code>UpdatedMySQLAndMariaDBReservedWords=false</code> keeps the names an earlier
      * release generated. The words that were reserved before, such as
      * <code>ROWS</code> of the SQL standard or the <code>LIBRARY</code> that
-     * MySQL reserved already, are still delimited on MySQL.
+     * MySQL reserved already, are still delimited on MySQL; MariaDB appends
+     * a <code>0</code> to them again.
      */
     @Test
     public void testCompatibilityKeepsTheEarlierNames() {
@@ -212,7 +215,9 @@ public class TestAbstractMySQLDictionary {
         MariaDBDictionary mariadb = configure(new MariaDBDictionary(), "UpdatedMySQLAndMariaDBReservedWords=false");
         assertEquals("ROW_NUMBER", validColumnName(mariadb, "row_number"));
         assertEquals("OVER0", validColumnName(mariadb, "over"));
+        assertEquals("ORDER0", validColumnName(mariadb, "order"));
         assertEquals("LINEAR", validTableName(mariadb, "LINEAR"));
+        assertEquals("ORDER0", validTableName(mariadb, "Order"));
     }
 
     private static <T extends DBDictionary> T configure(T dict, String compatibility) {

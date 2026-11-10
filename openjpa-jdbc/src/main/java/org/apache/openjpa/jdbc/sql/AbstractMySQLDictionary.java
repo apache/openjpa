@@ -33,6 +33,7 @@ import java.util.Set;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
+import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
@@ -44,6 +45,7 @@ import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.lib.identifier.IdentifierRule;
 import org.apache.openjpa.lib.util.StringUtil;
 
 /**
@@ -107,6 +109,12 @@ public abstract class AbstractMySQLDictionary
      */
     private final Set<String> _updatedInvalidColumnWords = new HashSet<>();
     private final Set<String> _updatedReservedWords = new HashSet<>();
+
+    /**
+     * Whether the compatibility options leave the updated reserved words in
+     * place.
+     */
+    private boolean _usesUpdatedReservedWords = true;
 
     public AbstractMySQLDictionary() {
         validationSQL = "SELECT NOW()";
@@ -193,12 +201,13 @@ public abstract class AbstractMySQLDictionary
     }
 
     /**
-     * Adds words that MySQL 8.0 and later reserve to the
+     * Adds words that the database reserves to the
      * {@link #invalidColumnWordSet invalid column words} and to the
-     * {@link #reservedWordSet reserved words} (OPENJPA-3074). The
-     * compatibility option <code>UpdatedMySQLAndMariaDBReservedWords=false</code>
-     * removes the words that were added here again, so that the names keep
-     * the form an earlier release generated.
+     * {@link #reservedWordSet reserved words}, as far as they are missing
+     * there (OPENJPA-3074). The compatibility option
+     * <code>UpdatedMySQLAndMariaDBReservedWords=false</code> removes the words
+     * that were added here again, so that the names keep the form an earlier
+     * release generated.
      *
      * @see org.apache.openjpa.conf.Compatibility#getUpdatedMySQLAndMariaDBReservedWords()
      */
@@ -214,6 +223,24 @@ public abstract class AbstractMySQLDictionary
     }
 
     /**
+     * Whether the {@link #addUpdatedReservedWords(Collection) updated
+     * reserved words} are in use, which the compatibility option
+     * <code>UpdatedMySQLAndMariaDBReservedWords=false</code> turns off. Known
+     * once the configuration is set.
+     */
+    protected boolean usesUpdatedReservedWords() {
+        return _usesUpdatedReservedWords;
+    }
+
+    /**
+     * Whether a table, column or other name that is a
+     * {@link #reservedWordSet reserved word} is delimited in the SQL, so that
+     * it keeps its name, rather than renamed, e.g. with a <code>0</code>
+     * appended.
+     */
+    protected abstract boolean delimitsReservedWords();
+
+    /**
      * Removes the {@link #addUpdatedReservedWords(Collection) updated
      * reserved words} if the compatibility options ask for the earlier names.
      * This has to happen before the naming rules are configured, which take a
@@ -223,10 +250,27 @@ public abstract class AbstractMySQLDictionary
     public void setConfiguration(Configuration conf) {
         if (conf instanceof OpenJPAConfiguration openjpaConf
             && !openjpaConf.getCompatibilityInstance().getUpdatedMySQLAndMariaDBReservedWords()) {
+            _usesUpdatedReservedWords = false;
             invalidColumnWordSet.removeAll(_updatedInvalidColumnWords);
             reservedWordSet.removeAll(_updatedReservedWords);
         }
         super.setConfiguration(conf);
+    }
+
+    /**
+     * Makes the default identifier rule delimit the reserved words if
+     * {@link #delimitsReservedWords()}. An identifier is delimited when it is
+     * created, by {@link Normalizer}, whose rule is shared by all dictionaries
+     * of the JVM, so the dictionary that was configured last decides.
+     */
+    @Override
+    protected void configureNamingRules() {
+        super.configureNamingRules();
+        if (delimitsReservedWords()) {
+            IdentifierRule rule = Normalizer.getNamingConfiguration().getDefaultIdentifierRule();
+            rule.setDelimitReservedWords(true);
+            rule.setReservedWords(reservedWordSet);
+        }
     }
 
     /**
