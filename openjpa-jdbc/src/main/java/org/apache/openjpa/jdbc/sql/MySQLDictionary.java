@@ -80,6 +80,29 @@ public class MySQLDictionary
         "STORED", "SYSTEM", "TABLESAMPLE", "VIRTUAL", "WINDOW");
 
     /**
+     * The invalid column words that MySQL reserves and that are missing from
+     * the reserved words, so that a table, rather than a column, named after
+     * one of them failed to be created (OPENJPA-3074). Taken from
+     * <code>INFORMATION_SCHEMA.KEYWORDS</code> of MySQL 8.4 and 9.7, and
+     * checked with an unquoted <code>CREATE TABLE</code>. They are reserved
+     * words now, which this dictionary delimits in table and column names.
+     */
+    private static final List<String> UPDATED_RESERVED_TABLE_WORDS = List.of(
+        "ANALYZE", "ASENSITIVE", "BEFORE", "BIGINT", "CALL", "CONDITION", "DATABASE", "DATABASES", "DAY_HOUR",
+        "DAY_MICROSECOND", "DAY_MINUTE", "DAY_SECOND", "DELAYED", "DETERMINISTIC", "DISTINCTROW", "DIV", "DUAL",
+        "EACH", "ELSEIF", "ENCLOSED", "ESCAPED", "EXIT", "EXPLAIN", "FLOAT8", "FORCE", "FULLTEXT", "GENERATED",
+        "HIGH_PRIORITY", "HOUR_MICROSECOND", "HOUR_MINUTE", "HOUR_SECOND", "IF", "IGNORE", "INOUT", "INT3", "INT8",
+        "ITERATE", "KEYS", "KILL", "LEAVE", "LIMIT", "LINES", "LOCALTIME", "LOCALTIMESTAMP", "LOCK", "LONG",
+        "LONGBLOB", "LONGTEXT", "LOOP", "LOW_PRIORITY", "MAXVALUE", "MEDIUMBLOB", "MEDIUMTEXT", "MIDDLEINT",
+        "MINUTE_MICROSECOND", "MINUTE_SECOND", "MOD", "MODIFIES", "NO_WRITE_TO_BINLOG", "NTILE", "OPTIMIZE",
+        "OPTIONALLY", "OUT", "PARTITION", "PURGE", "RANGE", "READS", "REGEXP", "RELEASE", "RENAME", "REPEAT",
+        "REQUIRE", "RESIGNAL", "RETURN", "RLIKE", "SCHEMAS", "SECOND_MICROSECOND", "SENSITIVE", "SEPARATOR", "SHOW",
+        "SIGNAL", "SPATIAL", "SPECIFIC", "SQLEXCEPTION", "SQLWARNING", "SQL_BIG_RESULT", "SQL_CALC_FOUND_ROWS",
+        "SQL_SMALL_RESULT", "SSL", "STRAIGHT_JOIN", "TERMINATED", "TINYBLOB", "TINYINT", "TINYTEXT", "TRIGGER",
+        "UNDO", "UNLOCK", "USE", "UTC_DATE", "UTC_TIME", "UTC_TIMESTAMP", "VARBINARY", "VARCHARACTER", "WHILE",
+        "XOR", "YEAR_MONTH");
+
+    /**
      * The largest scale of a decimal column on MySQL.
      */
     private static final int MAX_DECIMAL_SCALE = 30;
@@ -120,6 +143,7 @@ public class MySQLDictionary
             "INDEX", "SELECT"
         }));
         addUpdatedReservedWords(UPDATED_RESERVED_WORDS);
+        addUpdatedReservedTableWords(UPDATED_RESERVED_TABLE_WORDS);
 
         integerCastTypeName = "SIGNED";
     }

@@ -223,8 +223,28 @@ public abstract class AbstractMySQLDictionary
     }
 
     /**
+     * Adds words that the database reserves in a table name, and that are
+     * either {@link #invalidColumnWordSet invalid column words} already or
+     * valid column names, to the {@link #reservedWordSet reserved words}
+     * only, as far as they are missing there (OPENJPA-3074). The
+     * compatibility option
+     * <code>UpdatedMySQLAndMariaDBReservedWords=false</code> removes them
+     * again, as the {@link #addUpdatedReservedWords(Collection) updated
+     * reserved words}.
+     */
+    protected void addUpdatedReservedTableWords(Collection<String> words) {
+        for (String word : words) {
+            if (reservedWordSet.add(word)) {
+                _updatedReservedWords.add(word);
+            }
+        }
+    }
+
+    /**
      * Whether the {@link #addUpdatedReservedWords(Collection) updated
-     * reserved words} are in use, which the compatibility option
+     * reserved words} and
+     * {@link #addUpdatedReservedTableWords(Collection) reserved table words}
+     * are in use, which the compatibility option
      * <code>UpdatedMySQLAndMariaDBReservedWords=false</code> turns off. Known
      * once the configuration is set.
      */

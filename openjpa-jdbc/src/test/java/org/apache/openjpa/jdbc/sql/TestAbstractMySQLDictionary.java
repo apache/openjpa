@@ -38,7 +38,7 @@ import org.junit.Test;
 /**
  * The defaults that {@link MySQLDictionary} and {@link MariaDBDictionary}
  * share through {@link AbstractMySQLDictionary} and those they keep apart,
- * and the words that MySQL 8.0 and later reserve (OPENJPA-3074).
+ * and the words that MySQL 8.0 and later and MariaDB reserve (OPENJPA-3074).
  */
 public class TestAbstractMySQLDictionary {
 
@@ -46,6 +46,22 @@ public class TestAbstractMySQLDictionary {
         "LEAD", "GROUPS", "WINDOW", "OVER", "CUME_DIST", "PERCENT_RANK", "NTILE", "FIRST_VALUE", "LAST_VALUE",
         "NTH_VALUE", "RECURSIVE", "LATERAL", "SYSTEM", "EMPTY", "JSON_TABLE", "ROW", "ROWS", "OF", "FUNCTION",
         "CUBE", "GROUPING", "EXCEPT", "INTERSECT", "QUALIFY", "TABLESAMPLE", "EXTERNAL", "LIBRARY");
+
+    /**
+     * Words that only MariaDB reserves.
+     */
+    private static final List<String> MARIADB_WORDS = List.of("OFFSET", "RETURNING", "PORTION", "PAGE_CHECKSUM",
+        "STATS_AUTO_RECALC", "STATS_PERSISTENT", "STATS_SAMPLE_PAGES", "REF_SYSTEM_ID", "DELETE_DOMAIN_ID",
+        "DO_DOMAIN_IDS", "IGNORE_DOMAIN_IDS", "MASTER_DEMOTE_TO_REPLICA", "MASTER_DEMOTE_TO_SLAVE", "PARSE_VCOL_EXPR",
+        "MASTER_SSL_VERIFY_SERVER_CERT", "VECTOR", "TO_DATE", "CONVERSION", "CURRENT_PATH", "SQL_AFTER_GTIDS",
+        "SQL_BEFORE_GTIDS");
+
+    /**
+     * Some of the invalid column words that MySQL and MariaDB reserve for
+     * table names too.
+     */
+    private static final List<String> TABLE_WORDS = List.of("DUAL", "KEYS", "LIMIT", "RANGE", "LOCK", "RELEASE",
+        "SHOW", "USE", "LONG", "SIGNAL");
 
     @Test
     public void testSharedDefaults() {
@@ -148,22 +164,44 @@ public class TestAbstractMySQLDictionary {
         MySQLDictionary dict = configure(new MySQLDictionary(), null);
         for (String word : MYSQL_8_WORDS) {
             assertTrue(word, dict.getInvalidColumnWordSet().contains(word));
-        }
-        for (String word : MYSQL_8_WORDS) {
-            if (!"NTILE".equals(word)) {
-                assertTrue(word, dict.reservedWordSet.contains(word));
-            }
+            assertTrue(word, dict.reservedWordSet.contains(word));
         }
         assertEquals("\"rank\"", validColumnName(dict, "rank"));
         assertEquals("\"window\"", validColumnName(dict, "window"));
         assertEquals("\"ROW_NUMBER\"", validColumnName(dict, "ROW_NUMBER"));
+        assertEquals("\"ntile\"", validColumnName(dict, "ntile"));
         assertEquals("RANKING", validColumnName(dict, "ranking"));
-        // as an earlier release did for a word it already knew as invalid only
-        assertEquals("NTILE0", validColumnName(dict, "ntile"));
 
         assertEquals("\"Function\"", validTableName(dict, "Function"));
         assertEquals("\"WINDOW\"", validTableName(dict, "WINDOW"));
+        assertEquals("\"Ntile\"", validTableName(dict, "Ntile"));
         assertEquals("RANKING", validTableName(dict, "RANKING"));
+    }
+
+    /**
+     * The words that the generated list of invalid column words has, and
+     * that MySQL and MariaDB reserve for table names too, are reserved words,
+     * so that a table named after one of them is delimited as well.
+     */
+    @Test
+    public void testInvalidColumnWordsAreReservedForTables() {
+        for (AbstractMySQLDictionary dict : List.of(configure(new MySQLDictionary(), null),
+            configure(new MariaDBDictionary(), null))) {
+            String name = dict.getClass().getSimpleName();
+            for (String word : TABLE_WORDS) {
+                assertTrue(name + " " + word, dict.getInvalidColumnWordSet().contains(word));
+                assertTrue(name + " " + word, dict.reservedWordSet.contains(word));
+            }
+            assertEquals(name, "\"Dual\"", validTableName(dict, "Dual"));
+            assertEquals(name, "\"Range\"", validTableName(dict, "Range"));
+            assertEquals(name, "\"limit\"", validColumnName(dict, "limit"));
+        }
+        assertTrue(configure(new MySQLDictionary(), null).reservedWordSet.contains("NTILE"));
+        // MariaDB does not reserve them, so a table keeps its undelimited name
+        MariaDBDictionary mariadb = configure(new MariaDBDictionary(), null);
+        assertTrue(mariadb.getInvalidColumnWordSet().contains("DATABASE"));
+        assertFalse(mariadb.reservedWordSet.contains("DATABASE"));
+        assertEquals("DATABASE", validTableName(mariadb, "Database"));
     }
 
     /**
@@ -175,29 +213,63 @@ public class TestAbstractMySQLDictionary {
         MariaDBDictionary mariadb = configure(new MariaDBDictionary(), null);
         assertEquals("\"LINEAR\"", validTableName(mariadb, "LINEAR"));
         assertEquals("\"Order\"", validTableName(mariadb, "Order"));
-        assertEquals("RANK", validTableName(mariadb, "RANK"));
+        assertEquals("\"Offset\"", validTableName(mariadb, "Offset"));
+        assertEquals("WINDOW", validTableName(mariadb, "WINDOW"));
         assertEquals("\"order\"", validColumnName(mariadb, "order"));
+        assertEquals("\"row_number\"", validColumnName(mariadb, "row_number"));
+        assertEquals("\"returning\"", validColumnName(mariadb, "returning"));
     }
 
     /**
-     * MariaDB reserves few of the words: <code>RANK</code> or
-     * <code>WINDOW</code> are valid column names there.
+     * MariaDB reserves few of the words of MySQL 8.0: <code>WINDOW</code> is
+     * a valid name there. It reserves words that MySQL does not, such as
+     * <code>OFFSET</code> or <code>RETURNING</code>.
      */
     @Test
     public void testMariaDBReservesOnlySomeOfTheWords() {
-        MariaDBDictionary dict = configure(new MariaDBDictionary(), null);
-        assertEquals("RANK", validColumnName(dict, "rank"));
-        assertEquals("WINDOW", validColumnName(dict, "window"));
-        assertEquals("\"row_number\"", validColumnName(dict, "row_number"));
-        assertEquals("OVER0", validColumnName(dict, "over"));
+        MariaDBDictionary mariadb = configure(new MariaDBDictionary(), null);
+        assertEquals("WINDOW", validColumnName(mariadb, "window"));
+        assertEquals("WINDOW", validTableName(mariadb, "Window"));
+        assertEquals("\"over\"", validColumnName(mariadb, "over"));
+        MySQLDictionary mysql = configure(new MySQLDictionary(), null);
+        for (String word : MARIADB_WORDS) {
+            assertTrue(word, mariadb.getInvalidColumnWordSet().contains(word));
+            assertTrue(word, mariadb.reservedWordSet.contains(word));
+            assertFalse(word, mysql.getInvalidColumnWordSet().contains(word));
+        }
     }
 
     /**
-     * <code>UpdatedMySQLAndMariaDBReservedWords=false</code> keeps the names an earlier
-     * release generated. The words that were reserved before, such as
-     * <code>ROWS</code> of the SQL standard or the <code>LIBRARY</code> that
-     * MySQL reserved already, are still delimited on MySQL; MariaDB appends
-     * a <code>0</code> to them again.
+     * The names of built-in functions are reserved in a table name on
+     * MariaDB, under the <code>IGNORE_SPACE</code> SQL mode that MariaDB
+     * Connector/J sets, but they are valid column names. They are delimited
+     * as the other reserved words.
+     */
+    @Test
+    public void testMariaDBReservesFunctionNamesForTables() {
+        MariaDBDictionary mariadb = configure(new MariaDBDictionary(), null);
+        for (String word : List.of("NTILE", "RANK", "NOW", "GROUP_CONCAT", "STDDEV", "COUNT", "MAX")) {
+            assertTrue(word, mariadb.reservedWordSet.contains(word));
+            assertFalse(word, mariadb.getInvalidColumnWordSet().contains(word));
+        }
+        assertEquals("\"Ntile\"", validTableName(mariadb, "Ntile"));
+        assertEquals("\"Rank\"", validTableName(mariadb, "Rank"));
+        assertEquals("\"rank\"", validColumnName(mariadb, "rank"));
+
+        mariadb = configure(new MariaDBDictionary(), "UpdatedMySQLAndMariaDBReservedWords=false");
+        assertFalse(mariadb.reservedWordSet.contains("NTILE"));
+        assertEquals("NTILE", validTableName(mariadb, "Ntile"));
+        assertEquals("RANK", validColumnName(mariadb, "rank"));
+        // the words of the SQL standard were reserved before
+        assertEquals("COUNT0", validTableName(mariadb, "Count"));
+    }
+
+    /**
+     * <code>UpdatedMySQLAndMariaDBReservedWords=false</code> keeps the names
+     * an earlier release generated. The words that were reserved before,
+     * such as <code>ROWS</code> of the SQL standard or the
+     * <code>LIBRARY</code> that MySQL reserved already, are still delimited
+     * on MySQL; MariaDB appends a <code>0</code> to them again.
      */
     @Test
     public void testCompatibilityKeepsTheEarlierNames() {
@@ -207,17 +279,34 @@ public class TestAbstractMySQLDictionary {
         assertFalse(mysql.getInvalidColumnWordSet().contains("RANK"));
         assertFalse(mysql.reservedWordSet.contains("RANK"));
         assertEquals("NTILE0", validColumnName(mysql, "ntile"));
+        assertEquals("LIMIT0", validColumnName(mysql, "limit"));
         assertEquals("FUNCTION", validTableName(mysql, "FUNCTION"));
         assertEquals("WINDOW", validTableName(mysql, "WINDOW"));
+        assertEquals("DUAL", validTableName(mysql, "Dual"));
         assertEquals("\"ROWS\"", validTableName(mysql, "ROWS"));
         assertEquals("\"LIBRARY\"", validTableName(mysql, "LIBRARY"));
+        for (String word : TABLE_WORDS) {
+            assertTrue(word, mysql.getInvalidColumnWordSet().contains(word));
+            assertFalse(word, mysql.reservedWordSet.contains(word));
+        }
 
         MariaDBDictionary mariadb = configure(new MariaDBDictionary(), "UpdatedMySQLAndMariaDBReservedWords=false");
         assertEquals("ROW_NUMBER", validColumnName(mariadb, "row_number"));
+        assertEquals("OFFSET", validColumnName(mariadb, "offset"));
         assertEquals("OVER0", validColumnName(mariadb, "over"));
         assertEquals("ORDER0", validColumnName(mariadb, "order"));
+        assertEquals("LIMIT0", validColumnName(mariadb, "limit"));
         assertEquals("LINEAR", validTableName(mariadb, "LINEAR"));
+        assertEquals("DUAL", validTableName(mariadb, "Dual"));
         assertEquals("ORDER0", validTableName(mariadb, "Order"));
+        for (String word : MARIADB_WORDS) {
+            assertFalse(word, mariadb.getInvalidColumnWordSet().contains(word));
+            assertFalse(word, mariadb.reservedWordSet.contains(word));
+        }
+        for (String word : TABLE_WORDS) {
+            assertTrue(word, mariadb.getInvalidColumnWordSet().contains(word));
+            assertFalse(word, mariadb.reservedWordSet.contains(word));
+        }
     }
 
     private static <T extends DBDictionary> T configure(T dict, String compatibility) {

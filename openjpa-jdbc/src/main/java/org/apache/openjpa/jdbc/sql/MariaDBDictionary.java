@@ -65,14 +65,65 @@ public class MariaDBDictionary extends AbstractMySQLDictionary {
     private static final String COMPAT_VERSION_PREFIX = "5.5.5-";
 
     /**
-     * The words that MySQL 8.0 and later reserve, which MariaDB reserves as
-     * well, and that are missing from the generated list of invalid column
-     * words (OPENJPA-3074). MariaDB 12 no longer reserves
-     * <code>ACCESSIBLE</code>, MariaDB 10.11 does. They are reserved
-     * words as well.
+     * The words that MariaDB reserves and that are missing from the generated
+     * list of invalid column words (OPENJPA-3074): those that MySQL 8.0 and
+     * later reserve as well, and those that only MariaDB reserves, such as
+     * <code>OFFSET</code>, <code>RETURNING</code> or <code>PORTION</code>.
+     * Taken from <code>INFORMATION_SCHEMA.KEYWORDS</code> of MariaDB 10.11
+     * and 12.3, and checked with an unquoted <code>CREATE TABLE</code>.
+     * MariaDB 12 no longer reserves <code>ACCESSIBLE</code> and
+     * <code>MASTER_SSL_VERIFY_SERVER_CERT</code>, MariaDB 10.11 does not
+     * reserve yet <code>CONVERSION</code>, <code>CURRENT_PATH</code>,
+     * <code>SQL_AFTER_GTIDS</code>, <code>SQL_BEFORE_GTIDS</code>,
+     * <code>TO_DATE</code> and <code>VECTOR</code>. They are reserved words
+     * as well.
      */
     private static final List<String> UPDATED_RESERVED_WORDS = List.of(
-        "ACCESSIBLE", "LINEAR", "READ_WRITE", "ROW_NUMBER");
+        "ACCESSIBLE", "CONVERSION", "CURRENT_PATH", "DELETE_DOMAIN_ID", "DO_DOMAIN_IDS", "IGNORE_DOMAIN_IDS",
+        "LINEAR", "MASTER_DEMOTE_TO_REPLICA", "MASTER_DEMOTE_TO_SLAVE", "MASTER_SSL_VERIFY_SERVER_CERT", "OFFSET",
+        "PAGE_CHECKSUM", "PARSE_VCOL_EXPR", "PORTION", "READ_WRITE", "REF_SYSTEM_ID", "RETURNING", "ROW_NUMBER",
+        "SQL_AFTER_GTIDS", "SQL_BEFORE_GTIDS", "STATS_AUTO_RECALC", "STATS_PERSISTENT", "STATS_SAMPLE_PAGES",
+        "TO_DATE", "VECTOR");
+
+    /**
+     * The invalid column words that MariaDB reserves and that are missing
+     * from the reserved words, so that a table, rather than a column, named
+     * after one of them failed to be created (OPENJPA-3074). Taken from
+     * MariaDB 10.11 and 12.3 as above. They are reserved words now, which
+     * this dictionary delimits in table and column names.
+     */
+    private static final List<String> UPDATED_RESERVED_TABLE_WORDS = List.of(
+        "ANALYZE", "ASENSITIVE", "BEFORE", "BIGINT", "CALL", "CONDITION", "CURRENT_ROLE", "DATABASES", "DAY_HOUR",
+        "DAY_MICROSECOND", "DAY_MINUTE", "DAY_SECOND", "DELAYED", "DETERMINISTIC", "DISTINCTROW", "DIV", "DUAL",
+        "EACH", "ELSEIF", "ENCLOSED", "ESCAPED", "EXIT", "EXPLAIN", "FLOAT8", "FORCE", "FULLTEXT", "HIGH_PRIORITY",
+        "HOUR_MICROSECOND", "HOUR_MINUTE", "HOUR_SECOND", "IF", "IGNORE", "INOUT", "INT3", "INT8", "ITERATE",
+        "KEYS", "KILL", "LEAVE", "LIMIT", "LINES", "LOCALTIME", "LOCALTIMESTAMP", "LOCK", "LONG", "LONGBLOB",
+        "LONGTEXT", "LOOP", "LOW_PRIORITY", "MAXVALUE", "MEDIUMBLOB", "MEDIUMTEXT", "MIDDLEINT",
+        "MINUTE_MICROSECOND", "MINUTE_SECOND", "MOD", "MODIFIES", "NO_WRITE_TO_BINLOG", "OPTIMIZE", "OPTIONALLY",
+        "OUT", "OVER", "PARTITION", "PURGE", "RANGE", "READS", "RECURSIVE", "REGEXP", "RELEASE", "RENAME", "REPEAT",
+        "REQUIRE", "RESIGNAL", "RETURN", "RLIKE", "SCHEMAS", "SECOND_MICROSECOND", "SENSITIVE", "SEPARATOR", "SHOW",
+        "SIGNAL", "SPATIAL", "SPECIFIC", "SQLEXCEPTION", "SQLWARNING", "SQL_BIG_RESULT", "SQL_CALC_FOUND_ROWS",
+        "SQL_SMALL_RESULT", "SSL", "STRAIGHT_JOIN", "TERMINATED", "TINYBLOB", "TINYINT", "TINYTEXT", "TRIGGER",
+        "UNDO", "UNLOCK", "USE", "UTC_DATE", "UTC_TIME", "UTC_TIMESTAMP", "VARBINARY", "VARCHARACTER", "WHILE",
+        "XOR", "YEAR_MONTH");
+
+    /**
+     * The names of built-in functions that MariaDB reserves in a table name
+     * under the <code>IGNORE_SPACE</code> SQL mode, which MariaDB Connector/J
+     * adds to the session's <code>sql_mode</code>: a table name followed by a
+     * blank and a parenthesis, as in <code>CREATE TABLE Ntile (</code> or
+     * <code>INSERT INTO Ntile (</code>, is taken for a function call
+     * (OPENJPA-3074). Taken from <code>INFORMATION_SCHEMA.SQL_FUNCTIONS</code>
+     * and <code>INFORMATION_SCHEMA.KEYWORDS</code> of MariaDB 10.11 and 12.3,
+     * and checked with an unquoted <code>CREATE TABLE</code> under
+     * <code>IGNORE_SPACE</code>, leaving out those that are reserved words
+     * already. A column of such a name is valid.
+     */
+    private static final List<String> IGNORE_SPACE_FUNCTION_WORDS = List.of(
+        "BIT_AND", "BIT_OR", "BIT_XOR", "CUME_DIST", "CURDATE", "CURTIME", "DATE_ADD", "DATE_SUB", "DENSE_RANK",
+        "FIRST_VALUE", "GROUP_CONCAT", "JSON_ARRAYAGG", "JSON_OBJECTAGG", "LAG", "LEAD", "MEDIAN", "MID", "NOW",
+        "NTH_VALUE", "NTILE", "PERCENTILE_CONT", "PERCENTILE_DISC", "PERCENT_RANK", "RANK", "STD", "STDDEV",
+        "STDDEV_POP", "STDDEV_SAMP", "ST_COLLECT", "SUBSTR", "VARIANCE", "VAR_POP", "VAR_SAMP");
 
     /**
      * The largest scale of a decimal column on MariaDB.
@@ -114,6 +165,8 @@ public class MariaDBDictionary extends AbstractMySQLDictionary {
             "OPTION", "SELECT",
         }));
         addUpdatedReservedWords(UPDATED_RESERVED_WORDS);
+        addUpdatedReservedTableWords(UPDATED_RESERVED_TABLE_WORDS);
+        addUpdatedReservedTableWords(IGNORE_SPACE_FUNCTION_WORDS);
     }
 
     /**
