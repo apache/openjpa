@@ -117,7 +117,8 @@ public class MariaDBDictionary extends AbstractMySQLDictionary {
      * and <code>INFORMATION_SCHEMA.KEYWORDS</code> of MariaDB 10.11 and 12.3,
      * and checked with an unquoted <code>CREATE TABLE</code> under
      * <code>IGNORE_SPACE</code>, leaving out those that are reserved words
-     * already. A column of such a name is valid.
+     * already. MariaDB 10.11 does not know <code>ST_COLLECT</code> yet; it is
+     * a reserved word as well. A column of such a name is valid.
      */
     private static final List<String> IGNORE_SPACE_FUNCTION_WORDS = List.of(
         "BIT_AND", "BIT_OR", "BIT_XOR", "CUME_DIST", "CURDATE", "CURTIME", "DATE_ADD", "DATE_SUB", "DENSE_RANK",
