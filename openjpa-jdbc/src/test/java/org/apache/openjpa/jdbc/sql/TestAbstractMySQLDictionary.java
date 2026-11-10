@@ -225,6 +225,27 @@ public class TestAbstractMySQLDictionary {
     }
 
     /**
+     * A name that is built from a delimited name, such as the default join
+     * table or join column of an entity named after a reserved word, is
+     * delimited too and keeps the case of that name. With the earlier names
+     * it is built from the name with the <code>0</code> appended.
+     */
+    @Test
+    public void testNamesBuiltFromADelimitedName() {
+        MariaDBDictionary mariadb = configure(new MariaDBDictionary(), null);
+        DBIdentifier order = mariadb.getValidTableName(DBIdentifier.newTable("Order"), new Schema());
+        assertEquals("\"Order_items\"", DBIdentifier.combine(order, "items").getName());
+        assertEquals("\"Order_ID\"", DBIdentifier.combine(order, "ID").getName());
+        MySQLDictionary mysql = configure(new MySQLDictionary(), null);
+        DBIdentifier linear = mysql.getValidTableName(DBIdentifier.newTable("Linear"), new Schema());
+        assertEquals("\"Linear_items\"", DBIdentifier.combine(linear, "items").getName());
+
+        mariadb = configure(new MariaDBDictionary(), "UpdatedMySQLAndMariaDBReservedWords=false");
+        order = mariadb.getValidTableName(DBIdentifier.newTable("Order"), new Schema());
+        assertEquals("ORDER0_items", DBIdentifier.combine(order, "items").getName());
+    }
+
+    /**
      * MariaDB reserves few of the words of MySQL 8.0: <code>WINDOW</code> is
      * a valid name there. It reserves words that MySQL does not, such as
      * <code>OFFSET</code> or <code>RETURNING</code>.
