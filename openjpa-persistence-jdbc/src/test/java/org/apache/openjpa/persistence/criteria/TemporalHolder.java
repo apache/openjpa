@@ -53,6 +53,8 @@ public class TemporalHolder {
 
     private LocalTime dueLocalTime;
 
+    private Character code;
+
     public TemporalHolder() {
     }
 
@@ -115,5 +117,13 @@ public class TemporalHolder {
 
     public void setDueLocalTime(LocalTime dueLocalTime) {
         this.dueLocalTime = dueLocalTime;
+    }
+
+    public Character getCode() {
+        return code;
+    }
+
+    public void setCode(Character code) {
+        this.code = code;
     }
 }
