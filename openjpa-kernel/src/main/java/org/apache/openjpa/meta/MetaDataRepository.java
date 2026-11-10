@@ -2664,13 +2664,19 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     /**
      * Register an auto-apply converter. The converter will be automatically
      * applied to fields whose type matches the converter's entity attribute type.
+     * A converter registered earlier for the same type is replaced, with a warning.
      *
      * @param entityAttributeType the Java type that the converter handles
      * @param converterClass the converter class
      */
     public void addAutoApplyConverter(Class<?> entityAttributeType,
         Class<?> converterClass) {
-        _autoApplyConverters.put(entityAttributeType, converterClass);
+        Class<?> previous = _autoApplyConverters.put(entityAttributeType, converterClass);
+        if (previous != null && previous != converterClass
+            && _log != null && _log.isWarnEnabled()) {
+            _log.warn(_loc.get("auto-apply-converter-replaced", entityAttributeType.getName(),
+                previous.getName(), converterClass.getName()));
+        }
     }
 
     /**

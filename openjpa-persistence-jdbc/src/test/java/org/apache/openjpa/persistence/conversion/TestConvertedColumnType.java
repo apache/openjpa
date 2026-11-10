@@ -48,7 +48,8 @@ public class TestConvertedColumnType extends SingleEMFTestCase {
 
     @Override
     public void setUp() {
-        setUp(ConvertedColumnTypeEntity.class, RankConverter.class, DROP_TABLES);
+        setUp(ConvertedColumnTypeEntity.class, RankConverter.class, BoxConverter.class,
+            DROP_TABLES);
     }
 
     private Column column(String field) {
@@ -93,6 +94,10 @@ public class TestConvertedColumnType extends SingleEMFTestCase {
         assertColumn("rank", JavaTypes.INT_OBJ, Types.INTEGER, Types.NUMERIC, Types.DECIMAL);
     }
 
+    public void testAutoAppliedConverterOfParameterizedType() {
+        assertColumn("box", JavaTypes.STRING, Types.VARCHAR);
+    }
+
     public void testSchemaColumnTypes() throws SQLException {
         // the table must exist in the database to read its columns back
         try (EntityManager em = emf.createEntityManager()) {
@@ -105,7 +110,7 @@ public class TestConvertedColumnType extends SingleEMFTestCase {
             Connection conn = (Connection) OpenJPAPersistence.cast(em).getConnection();
             DatabaseMetaData meta = conn.getMetaData();
             for (String field : new String[] { "externalized", "converted", "code",
-                "inheritedCode", "interfaceCode", "rank" }) {
+                "inheritedCode", "interfaceCode", "rank", "box" }) {
                 String name = column(field).getIdentifier().getName();
                 int type = dbColumnType(meta, table, name);
                 switch (type) {
@@ -149,6 +154,7 @@ public class TestConvertedColumnType extends SingleEMFTestCase {
             e.setInheritedCode(new Code(42L));
             e.setInterfaceCode(new Code(-7L));
             e.setRank(new Rank(3));
+            e.setBox(new Box<>("boxed"));
             em.persist(e);
             em.getTransaction().commit();
         }
@@ -160,6 +166,7 @@ public class TestConvertedColumnType extends SingleEMFTestCase {
             assertEquals(42L, found.getInheritedCode().getValue());
             assertEquals(-7L, found.getInterfaceCode().getValue());
             assertEquals(3, found.getRank().getValue());
+            assertEquals("boxed", found.getBox().getContent());
         }
     }
 }

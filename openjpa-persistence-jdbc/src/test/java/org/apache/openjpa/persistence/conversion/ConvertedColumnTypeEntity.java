@@ -58,6 +58,8 @@ public class ConvertedColumnTypeEntity {
 
     private Rank rank;
 
+    private Box<String> box;
+
     public long getId() {
         return id;
     }
@@ -112,5 +114,13 @@ public class ConvertedColumnTypeEntity {
 
     public void setRank(Rank rank) {
         this.rank = rank;
+    }
+
+    public Box<String> getBox() {
+        return box;
+    }
+
+    public void setBox(Box<String> box) {
+        this.box = box;
     }
 }

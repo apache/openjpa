@@ -1787,7 +1787,7 @@ public class FieldMetaData
      * remains unbound. Returns null if the class does not extend a
      * parameterized AttributeConverter.
      */
-    public static Type resolveConverterGenericTypeArgument(Class<?> converterClass, int index) {
+    private static Type resolveConverterGenericTypeArgument(Class<?> converterClass, int index) {
         return findConverterTypeArgument(converterClass, Collections.emptyMap(), index);
     }
 
