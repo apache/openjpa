@@ -20,6 +20,8 @@ package org.apache.openjpa.persistence;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -310,7 +312,9 @@ public class PersistenceMetaDataFactory
                 continue;
 
             // Extract the entity attribute type from the generic interface
-            Class<?> entityType = getConverterEntityType(cls);
+            Class<?> entityType = repos.getConfiguration().getCompatibilityInstance()
+                .getResolveConverterTypeHierarchy()
+                ? getConverterEntityType(cls) : getDeclaredConverterEntityType(cls);
             if (entityType != null) {
                 repos.addAutoApplyConverter(entityType, cls);
             }
@@ -326,6 +330,29 @@ public class PersistenceMetaDataFactory
         Class<?> entityType =
             FieldMetaData.resolveConverterTypeArgument(converterClass, 0);
         return entityType == Object.class ? null : entityType;
+    }
+
+    /**
+     * Extract the entity attribute type the way OpenJPA 4.1.x did: only from
+     * a class of the superclass chain that implements AttributeConverter
+     * directly, and only if the type is a plain class. Returns null
+     * otherwise.
+     *
+     * @see org.apache.openjpa.conf.Compatibility#getResolveConverterTypeHierarchy
+     */
+    private Class<?> getDeclaredConverterEntityType(Class<?> converterClass) {
+        for (Type iface : converterClass.getGenericInterfaces()) {
+            if (iface instanceof ParameterizedType pt
+                && pt.getRawType() == AttributeConverter.class
+                && pt.getActualTypeArguments()[0] instanceof Class<?> entityType) {
+                return entityType;
+            }
+        }
+        Class<?> superclass = converterClass.getSuperclass();
+        if (superclass != null && superclass != Object.class) {
+            return getDeclaredConverterEntityType(superclass);
+        }
+        return null;
     }
 
     /**

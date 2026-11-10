@@ -441,6 +441,22 @@ A converter that throws while the cache is filled leaves that attribute out of t
 Audit existing `@Converter(autoApply=true)` classes: attributes of the matching type that were stored unconverted by 4.1.x are now written and read through the converter and their generated column type changes.
 Remove ``autoApply``, declare an explicit converter, or pin the column type with `@Column(columnDefinition=...)` where the old behavior is required.
 
+[[jpa_4.2_ConverterTypeHierarchy]]
+==== Converter types declared by a generic superclass or interface
+
+The attribute type `X` and the database type `Y` of an `AttributeConverter<X, Y>` are now resolved through the whole type hierarchy of the converter class.
+A converter that extends a generic base class, such as `class CodeConverter extends AbstractConverter<Code, Long>` with ``AbstractConverter<X, Y> implements AttributeConverter<X, Y>``, or that implements an interface extending ``AttributeConverter``, such as ``interface LongConverter<X> extends AttributeConverter<X, Long>``, previously resolved its database type to [class]``Object``.
+Its attribute was then mapped like an unconverted serializable value, as a serialized object in a BLOB column (``BYTEA`` on PostgreSQL), while the same converter declared directly on `AttributeConverter` gave the column of its database type.
+Such an attribute is now mapped to a column of the converter's database type, a `BIGINT` for a [class]``Long`` for instance.
+
+The same resolution is used for `@Converter(autoApply=true)` classes.
+An `autoApply` converter that gets its attribute type from a generic superclass or from such an interface, or whose attribute type is parameterized, such as ``AttributeConverter<Box<String>, String>``, was not registered and is now applied to every attribute of that type (of the raw type [class]``Box`` in the example).
+Where more than one `autoApply` converter is found for the same attribute type, one replaces the other and a warning is logged; annotate the attributes with `@Convert` to choose the converter explicitly.
+
+Tables created by earlier releases for such attributes no longer match the mapping, and their data is stored in serialized form.
+Migrate the columns and the data, or keep the old mapping with ``@Column(columnDefinition=...)``.
+Set `openjpa.Compatibility=ResolveConverterTypeHierarchy=false` (default ``true``) to restore the 4.1.x resolution of the converter types, both for the column type and for the registration of `autoApply` converters.
+
 [[jpa_4.2_AccessType]]
 ==== Access type determination and property accessors
 

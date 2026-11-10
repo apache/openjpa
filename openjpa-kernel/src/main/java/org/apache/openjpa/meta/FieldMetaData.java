@@ -1733,7 +1733,8 @@ public class FieldMetaData
             return null;
         Class dbType = _converterDbType;
         if (dbType == null) {
-            dbType = resolveConverterDatabaseType(converter);
+            dbType = resolveConverterTypeArgument(converter, 1,
+                resolveConverterTypeHierarchy());
             _converterDbType = dbType;
         }
         return dbType;
@@ -1750,18 +1751,34 @@ public class FieldMetaData
         }
         Class attrType = _converterAttrType;
         if (attrType == null) {
-            attrType = resolveConverterTypeArgument(converter, 0);
+            attrType = resolveConverterTypeArgument(converter, 0,
+                resolveConverterTypeHierarchy());
             _converterAttrType = attrType;
         }
         return attrType;
     }
 
     /**
-     * Extract the database type (second type argument) from an
-     * AttributeConverter implementation class.
+     * Whether the type arguments of a converter are resolved through its
+     * whole type hierarchy, as the
+     * {@link org.apache.openjpa.conf.Compatibility#getResolveConverterTypeHierarchy}
+     * option of the configuration says.
      */
-    private static Class resolveConverterDatabaseType(Class converterClass) {
-        return resolveConverterTypeArgument(converterClass, 1);
+    private boolean resolveConverterTypeHierarchy() {
+        return resolveConverterTypeHierarchy(getRepository());
+    }
+
+    /**
+     * Whether the type arguments of a converter are resolved through its
+     * whole type hierarchy, as the
+     * {@link org.apache.openjpa.conf.Compatibility#getResolveConverterTypeHierarchy}
+     * option of the configuration of the given repository says. True if
+     * there is no repository or configuration.
+     */
+    public static boolean resolveConverterTypeHierarchy(MetaDataRepository repos) {
+        OpenJPAConfiguration conf = repos == null ? null : repos.getConfiguration();
+        return conf == null
+            || conf.getCompatibilityInstance().getResolveConverterTypeHierarchy();
     }
 
     /**
@@ -1776,8 +1793,54 @@ public class FieldMetaData
      * converter class itself.
      */
     public static Class resolveConverterTypeArgument(Class converterClass, int index) {
+        return resolveConverterTypeArgument(converterClass, index, true);
+    }
+
+    /**
+     * Extract one type argument of the AttributeConverter&lt;X,Y&gt; that an
+     * implementation class declares, as {@link
+     * #resolveConverterTypeArgument(Class, int)} does if the type hierarchy
+     * is to be resolved. Otherwise the argument is only found the way
+     * OpenJPA 4.1.x found it: in a class of the superclass chain that
+     * implements AttributeConverter directly with a class or a parameterized
+     * type as the argument.
+     *
+     * @see org.apache.openjpa.conf.Compatibility#getResolveConverterTypeHierarchy
+     */
+    public static Class resolveConverterTypeArgument(Class converterClass, int index,
+        boolean typeHierarchy) {
+        if (!typeHierarchy) {
+            return resolveDeclaredConverterTypeArgument(converterClass, index);
+        }
         Class<?> cls = toClass(resolveConverterGenericTypeArgument(converterClass, index));
         return cls == null ? Object.class : cls;
+    }
+
+    /**
+     * Find the type argument in a class of the superclass chain that
+     * implements AttributeConverter directly, without resolving type
+     * variables. Returns {@code Object.class} if there is none.
+     */
+    private static Class<?> resolveDeclaredConverterTypeArgument(Class<?> converterClass,
+        int index) {
+        for (Class<?> cls = converterClass; cls != null && cls != Object.class;
+            cls = cls.getSuperclass()) {
+            for (Type iface : cls.getGenericInterfaces()) {
+                if (iface instanceof ParameterizedType pt
+                    && pt.getRawType() instanceof Class<?> rawCls
+                    && "jakarta.persistence.AttributeConverter".equals(rawCls.getName())) {
+                    Type arg = pt.getActualTypeArguments()[index];
+                    if (arg instanceof Class<?> argCls) {
+                        return argCls;
+                    }
+                    if (arg instanceof ParameterizedType argPt
+                        && argPt.getRawType() instanceof Class<?> argRawCls) {
+                        return argRawCls;
+                    }
+                }
+            }
+        }
+        return Object.class;
     }
 
     /**

@@ -24,6 +24,7 @@ under the License.
 <h1>Release Notes for Apache OpenJPA 4.2.0</h1>
 <ul>
   <li><a href="#Overview">Overview</a></li>
+  <li><a href="#UpgradeNotes">Upgrade Notes</a></li>
   <li><a href="#Prerequisites">Prerequisites</a></li>
   <li><a href="#Documentation">Documentation</a></li>
   <li><a href="#GetInvolved">Getting Involved</a></li>
@@ -45,6 +46,28 @@ under the License.
 
 <p>Additional information on the OpenJPA project may be found at the project
 web site: <a href="https://openjpa.apache.org">https://openjpa.apache.org</a></p>
+
+<h2><a name="UpgradeNotes"></a>Upgrade Notes</h2>
+<p>Some changes of this release alter the mapping or the behaviour of
+existing applications. They are described in the Migration Considerations
+of the <a href="https://openjpa.apache.org/documentation.html">reference
+guide</a>, together with the <code>openjpa.Compatibility</code> options that
+restore the behaviour of OpenJPA 4.1.x where one exists.</p>
+<ul>
+  <li>An <code>AttributeConverter</code> that declares its attribute or
+  database type through a generic superclass or through an interface that
+  extends <code>AttributeConverter</code> now maps its attribute to a column
+  of the converter's database type. Before, such an attribute was mapped as a
+  serialized object (a BLOB, <code>BYTEA</code> on PostgreSQL). Such
+  converters, and those of a parameterized attribute type, are now also
+  registered when they are declared <code>autoApply</code>, so attributes of
+  their type get the converter and its column type. Applications with such
+  converters need to migrate the affected columns and their data, or set
+  <code>openjpa.Compatibility=ResolveConverterTypeHierarchy=false</code> to
+  restore the 4.1.x mapping
+  (<a href='https://issues.apache.org/jira/browse/OPENJPA-2944'>OPENJPA-2944</a>).
+  </li>
+</ul>
 
 <h2><a name="Prerequisites"></a>Prerequisites</h2>
 <P>OpenJPA requires Java 17 or higher and a relational
