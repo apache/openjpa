@@ -265,6 +265,13 @@ Because of the nature of JMS, it is important that you invoke [method]``EntityMa
 If you do not do so, a daemon thread will stay up in the JVM, preventing the JVM from exiting.
 ====
 
+[NOTE]
+====
+The JMS provider sends events as [class]``jakarta.jms.ObjectMessage``s, which the JMS client deserializes on its own.
+The serialization class blacklist of OpenJPA, which the TCP provider applies to the events it receives, does not apply to this path.
+Restrict who may publish to the topic, and configure the deserialization filtering of your JMS provider (for example, the trusted packages of ActiveMQ) or a JVM-wide serialization filter.
+====
+
 [[ref_guide_event_conf_tcp]]
 ====== TCP
 (((remote , events , TCP)))
