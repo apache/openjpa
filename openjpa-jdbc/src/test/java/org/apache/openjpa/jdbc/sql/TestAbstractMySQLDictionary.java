@@ -22,21 +22,18 @@ import static org.apache.openjpa.jdbc.sql.Columns.decimal;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
-import java.util.Set;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
-import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.lib.conf.Configurations;
-import org.apache.openjpa.lib.identifier.IdentifierRule;
 import org.apache.openjpa.meta.JavaTypes;
-import org.junit.After;
 import org.junit.Test;
 
 /**
@@ -335,19 +332,44 @@ public class TestAbstractMySQLDictionary {
     }
 
     /**
-     * The MySQL and MariaDB dictionaries make the default identifier rule of
-     * {@link Normalizer}, which all dictionaries of the JVM share, delimit
-     * their reserved words. Put it back for the tests that run after.
+     * Whether a reserved word is delimited is up to each dictionary rather
+     * than to the dictionary that was configured last in the JVM: a MySQL or
+     * MariaDB dictionary and a dictionary of another database, configured in
+     * either order, name the identifiers as each does alone, and the
+     * identifiers created without a dictionary do not delimit reserved words
+     * (OPENJPA-3076).
      */
-    @After
-    public void tearDown() {
-        resetDelimitingOfReservedWords();
-    }
+    @Test
+    public void testReservedWordsAreDelimitedPerDictionary() {
+        for (boolean mysqlFirst : new boolean[] {true, false}) {
+            MySQLDictionary mysql = mysqlFirst ? configure(new MySQLDictionary(), null) : null;
+            DerbyDictionary derby = configure(new DerbyDictionary(), null);
+            if (!mysqlFirst) {
+                mysql = configure(new MySQLDictionary(), null);
+            }
+            assertEquals("\"Window\"", validTableName(mysql, "Window"));
+            assertEquals("\"rank\"", validColumnName(mysql, "rank"));
+            assertEquals("WINDOW", validTableName(derby, "Window"));
+            assertEquals("RANK", validColumnName(derby, "rank"));
 
-    static void resetDelimitingOfReservedWords() {
-        IdentifierRule rule = Normalizer.getNamingConfiguration().getDefaultIdentifierRule();
-        rule.setDelimitReservedWords(false);
-        rule.setReservedWords(Set.of());
+            DBIdentifier window = DBIdentifier.newTable("Window");
+            assertEquals("Window", window.getName());
+            assertSame(window, derby.normalize(window));
+            assertEquals("\"Window\"", mysql.normalize(window).getName());
+            assertEquals("Window", window.getName());
+        }
+        for (boolean mariadbFirst : new boolean[] {true, false}) {
+            MariaDBDictionary mariadb = mariadbFirst ? configure(new MariaDBDictionary(), null) : null;
+            PostgresDictionary postgres = configure(new PostgresDictionary(), null);
+            if (!mariadbFirst) {
+                mariadb = configure(new MariaDBDictionary(), null);
+            }
+            assertEquals("\"offset\"", validColumnName(mariadb, "offset"));
+            assertEquals("\"Order\"", validTableName(mariadb, "Order"));
+            assertEquals("OFFSET0", validColumnName(postgres, "offset"));
+            assertEquals("ORDER0", validTableName(postgres, "Order"));
+            assertEquals("Order", DBIdentifier.newTable("Order").getName());
+        }
     }
 
     private static <T extends DBDictionary> T configure(T dict, String compatibility) {
