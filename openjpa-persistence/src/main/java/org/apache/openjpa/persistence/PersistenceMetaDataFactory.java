@@ -333,10 +333,11 @@ public class PersistenceMetaDataFactory
     }
 
     /**
-     * Extract the entity attribute type the way OpenJPA 4.1.x did: only from
-     * a class of the superclass chain that implements AttributeConverter
-     * directly, and only if the type is a plain class. Returns null
-     * otherwise.
+     * Extract the entity attribute type without resolving the type hierarchy:
+     * only from a class of the superclass chain that implements
+     * AttributeConverter directly, and only if the type is a plain class.
+     * Returns null otherwise, so that such an auto apply converter is not
+     * applied, as in OpenJPA 4.1.x.
      *
      * @see org.apache.openjpa.conf.Compatibility#getResolveConverterTypeHierarchy
      */

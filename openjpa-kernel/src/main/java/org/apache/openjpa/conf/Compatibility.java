@@ -1018,14 +1018,16 @@ public class Compatibility {
      * type is parameterized, is registered when it is declared
      * <code>autoApply</code>.
      *<p>
-     * Set to false to get the behaviour of OpenJPA 4.1.x, where only a class
-     * in the superclass chain of the converter that implements
-     * <code>AttributeConverter</code> directly with concrete type arguments
-     * was considered. Otherwise the database type resolved to
-     * <code>Object</code>, so that a serializable attribute was mapped as a
-     * serialized object (a BLOB, BYTEA on PostgreSQL), and an
+     * Set to false to restore the OpenJPA 4.1.x mapping for attributes whose
+     * converter declares its types through a generic superclass or interface:
+     * only a class in the superclass chain of the converter that implements
+     * <code>AttributeConverter</code> directly with concrete type arguments is
+     * considered, so such a serializable attribute is mapped as a serialized
+     * object (a BLOB, BYTEA on PostgreSQL) as in 4.1.x, and an
      * <code>autoApply</code> converter of that kind or of a parameterized
-     * attribute type was not registered.
+     * attribute type is not applied, as 4.1.x ignored <code>autoApply</code>.
+     * Converters that implement <code>AttributeConverter</code> directly with
+     * concrete type arguments are not affected by this option.
      *
      * @since 4.2.0
      */

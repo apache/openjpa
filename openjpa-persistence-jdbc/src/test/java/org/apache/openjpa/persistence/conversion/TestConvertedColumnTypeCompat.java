@@ -29,12 +29,12 @@ import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
- * <code>ResolveConverterTypeHierarchy=false</code> restores the mapping of
- * OpenJPA 4.1.x: a converter that gets its database type from a generic
- * superclass or from an interface extending AttributeConverter does not
- * decide the column type, so the serializable attribute is mapped as a
- * serialized object, and an auto apply converter of that kind or of a
- * parameterized attribute type is not registered.
+ * <code>ResolveConverterTypeHierarchy=false</code> restores the OpenJPA 4.1.x
+ * mapping for hierarchy converters: a converter that gets its database type
+ * from a generic superclass or from an interface extending
+ * AttributeConverter does not decide the column type, so the serializable
+ * attribute is mapped as a serialized object, and an auto apply converter of
+ * that kind or of a parameterized attribute type is not applied.
  */
 public class TestConvertedColumnTypeCompat extends SingleEMFTestCase {
 

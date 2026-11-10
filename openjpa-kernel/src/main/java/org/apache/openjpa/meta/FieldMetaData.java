@@ -1800,10 +1800,11 @@ public class FieldMetaData
      * Extract one type argument of the AttributeConverter&lt;X,Y&gt; that an
      * implementation class declares, as {@link
      * #resolveConverterTypeArgument(Class, int)} does if the type hierarchy
-     * is to be resolved. Otherwise the argument is only found the way
-     * OpenJPA 4.1.x found it: in a class of the superclass chain that
-     * implements AttributeConverter directly with a class or a parameterized
-     * type as the argument.
+     * is to be resolved. Otherwise the argument is only found in a class of
+     * the superclass chain that implements AttributeConverter directly with a
+     * class or a parameterized type as the argument, which keeps converters
+     * declaring their types through a generic superclass or interface on the
+     * OpenJPA 4.1.x mapping.
      *
      * @see org.apache.openjpa.conf.Compatibility#getResolveConverterTypeHierarchy
      */
