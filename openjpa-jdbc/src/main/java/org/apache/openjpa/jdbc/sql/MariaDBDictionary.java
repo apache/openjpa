@@ -373,8 +373,9 @@ public class MariaDBDictionary extends AbstractMySQLDictionary {
           ||(subtype == StoreException.QUERY && ex.getErrorCode() == 1317)) {
             return false;
         }
-        if (ex.getErrorCode() == 0 && ex.getSQLState() == null)
+        if (ex.getErrorCode() == 0 && ex.getSQLState() == null) {
             return false;
+        }
         return super.isFatalException(subtype, ex);
     }
 

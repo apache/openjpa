@@ -276,8 +276,8 @@ public class MySQLDictionary
             // look at the nested MySQL exception for more details
             SQLException sqle = ex.getNextException();
             if (sqle != null
-            		&& (sqle.toString().startsWith("com.mysql.jdbc.exceptions.MySQLTimeoutException") ||
-            				sqle.toString().startsWith("com.mysql.cj.jdbc.exceptions.MySQLTimeoutException"))) {
+                && (sqle.toString().startsWith("com.mysql.jdbc.exceptions.MySQLTimeoutException")
+                    || sqle.toString().startsWith("com.mysql.cj.jdbc.exceptions.MySQLTimeoutException"))) {
                 if (conf != null && conf.getLockTimeout() != -1) {
                     state = StoreException.LOCK;
                 } else {
@@ -294,8 +294,9 @@ public class MySQLDictionary
           ||(subtype == StoreException.QUERY && ex.getErrorCode() == 1317)) {
             return false;
         }
-        if (ex.getErrorCode() == 0 && ex.getSQLState() == null)
+        if (ex.getErrorCode() == 0 && ex.getSQLState() == null) {
             return false;
+        }
         return super.isFatalException(subtype, ex);
     }
 }
