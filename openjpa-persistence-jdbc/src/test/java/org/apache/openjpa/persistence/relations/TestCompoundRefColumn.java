@@ -31,7 +31,9 @@ public class TestCompoundRefColumn extends SingleEMFTestCase {
 
     @Override
     public void setUp() {
-        setUp(CLEAR_TABLES, CompoundRefTarget.class, CompoundRefOwner.class, CompoundRefSwappedOwner.class);
+        setUp(CLEAR_TABLES, CompoundRefTarget.class, CompoundRefOwner.class, CompoundRefSwappedOwner.class,
+              CompoundRefEmbeddedTargetKey.class, CompoundRefEmbeddedTarget.class, CompoundRefEmbeddedOwner.class,
+              CompoundRefRenamedTarget.class, CompoundRefRenamedOwner.class);
     }
 
     public void testCompoundRefColumnsAreFilled() {
@@ -103,6 +105,52 @@ public class TestCompoundRefColumn extends SingleEMFTestCase {
             assertEquals("third", found.getBId1());
             assertEquals("fourth", found.getBId2());
             assertEquals("b2", found.getB().getName());
+        }
+    }
+
+    public void testCompoundRefColumnsAreFilledForEmbeddedId() {
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            CompoundRefEmbeddedTarget b = new CompoundRefEmbeddedTarget("first", "second", "b");
+            em.persist(b);
+            CompoundRefEmbeddedOwner a = new CompoundRefEmbeddedOwner(1);
+            a.setB(b);
+            em.persist(a);
+            em.flush();
+            assertEquals("first", a.getBId1());
+            assertEquals("second", a.getBId2());
+            em.getTransaction().commit();
+            assertEquals("first", a.getBId1());
+            assertEquals("second", a.getBId2());
+
+            em.clear();
+            CompoundRefEmbeddedOwner found = em.find(CompoundRefEmbeddedOwner.class, 1L);
+            assertEquals("first", found.getBId1());
+            assertEquals("second", found.getBId2());
+            assertEquals("b", found.getB().getName());
+        }
+    }
+
+    public void testCompoundRefColumnsAreFilledWhenIdColumnNamesDifferFromAttributeNames() {
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            CompoundRefRenamedTarget b = new CompoundRefRenamedTarget("first", "second", "b");
+            em.persist(b);
+            CompoundRefRenamedOwner a = new CompoundRefRenamedOwner(1);
+            a.setB(b);
+            em.persist(a);
+            em.flush();
+            assertEquals("first", a.getBId1());
+            assertEquals("second", a.getBId2());
+            em.getTransaction().commit();
+            assertEquals("first", a.getBId1());
+            assertEquals("second", a.getBId2());
+
+            em.clear();
+            CompoundRefRenamedOwner found = em.find(CompoundRefRenamedOwner.class, 1L);
+            assertEquals("first", found.getBId1());
+            assertEquals("second", found.getBId2());
+            assertEquals("b", found.getB().getName());
         }
     }
 }

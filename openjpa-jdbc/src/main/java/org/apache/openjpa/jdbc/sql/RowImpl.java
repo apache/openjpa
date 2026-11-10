@@ -43,8 +43,8 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
-import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.InternalException;
@@ -308,7 +308,7 @@ public class RowImpl
                 setRaw(fromCols[i], val.toString());
             else if (set) {
                 setObject(fromCols[i], val, toCols[i].getJavaType(), false);
-                setJoinRefColumn(to, fromCols, fromCols[i], toCols[i]);
+                setJoinRefColumn(fromCols, fromCols[i], val);
             } else if (val == null)
                 whereNull(fromCols[i]);
             else if (val instanceof Raw)
@@ -319,42 +319,29 @@ public class RowImpl
     }
 
     /**
-     * Copy the value of the given column of the inverse instance to every
-     * attribute of the owner instance that is mapped to the owner column
-     * joined to it.
+     * Copy the join value of the given owner column to every attribute of the
+     * owner instance that is mapped to that column alone.
      *
-     * @param inverseSm the instance being joined to
      * @param ownerCols all columns of the owner joining to the inverse instance
-     * @param ownerCol the owner column joined to <code>inverseCol</code>
-     * @param inverseCol the inverse column being joined to
+     * @param ownerCol the owner column the join value is set for
+     * @param val the join value taken from the referenced column of the inverse instance
      */
-    private void setJoinRefColumn(OpenJPAStateManager inverseSm, Column[] ownerCols, Column ownerCol,
-                                  Column inverseCol) {
+    private void setJoinRefColumn(Column[] ownerCols, Column ownerCol, Object val) {
         OpenJPAStateManager ownerSm = getPrimaryKey();
-        if (ownerSm != null) {
-            ClassMetaData ownerMeta = ownerSm.getMetaData();
-            // loop through all the fields in the owner entity
-            for (FieldMetaData ownerFM : ownerMeta.getFields()) {
-                // look for any single column in this field references the
-                // same column as the foreign key target column
-                Column[] cols = ((FieldMapping) ownerFM).getColumns();
-                if (cols.length == 1            // only support attribute of non-compound foreign key
-                        && cols != ownerCols    // not @Id field
-                        && cols[0].getIdentifier().equals(ownerCol.getIdentifier())) {
-                    // copy the foreign key value to the current field.
-                    FieldMetaData inverseFM = inverseSm.getMetaData().getField(
-                                    inverseCol.getIdentifier().getName());
-                    if (inverseFM != null) {
-                        int inverseValIndex = inverseFM.getIndex();
-                        Class<?> inverseType = inverseSm.getMetaData().getField(inverseValIndex).getType();
-                        int ownerIndex = ownerFM.getIndex();
-                        Class<?> ownerType = ownerSm.getMetaData().getField(ownerIndex).getType();
-                        if (inverseType == ownerType) {
-                            Object inverseVal = inverseSm.fetch(inverseValIndex);
-                            ownerSm.storeField(ownerIndex, inverseVal);
-                        }
-                    }
-                }
+        if (ownerSm == null) {
+            return;
+        }
+        // loop through all the fields in the owner entity
+        for (FieldMetaData ownerFM : ownerSm.getMetaData().getFields()) {
+            // look for any single column in this field references the
+            // same column as the foreign key column
+            Column[] cols = ((FieldMapping) ownerFM).getColumns();
+            if (cols.length == 1            // only support attribute of non-compound foreign key
+                    && cols != ownerCols    // not @Id field
+                    && cols[0].getIdentifier().equals(ownerCol.getIdentifier())
+                    && Filters.wrap(ownerFM.getDeclaredType()).isInstance(val)) {
+                // copy the foreign key value to the current field.
+                ownerSm.storeField(ownerFM.getIndex(), val);
             }
         }
     }
