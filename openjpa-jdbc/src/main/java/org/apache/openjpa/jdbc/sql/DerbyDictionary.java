@@ -127,10 +127,12 @@ public class DerbyDictionary
             "GETCURRENTCONNECTION", "INVOKER", "WINDOW", "XMLQUERY",
         }));
 
-        // reservedWordSet subset that CANNOT be used as valid column names
-        // (i.e., without surrounding them with double-quotes)
+        // words Derby rejects as unquoted table names; checked with Derby 10.16 against
+        // the SQL:2016 and Derby reserved words, the tokens of the Derby grammar and the
+        // reserved words of the OpenJPA dictionaries, Derby rejects exactly these words,
+        // and the same words as unquoted column names
         // generated at 2021-05-02T14:07:25.218 via org.apache.openjpa.reservedwords.ReservedWordsIT
-        invalidColumnWordSet.addAll(Arrays.asList(new String[] {
+        invalidTableWordSet.addAll(Arrays.asList(new String[] {
             "ADD", "ALL", "ALLOCATE", "ALTER", "AND", "ANY", "ARE", "AS", "ASC", "ASSERTION", "AT", "AUTHORIZATION", "AVG",
             "BEGIN", "BETWEEN", "BIGINT", "BIT", "BOOLEAN", "BOTH", "BY", "CALL", "CASCADE", "CASCADED", "CASE", "CAST", "CHAR",
             "CHARACTER", "CHARACTER_LENGTH", "CHECK", "CLOSE", "COLLATE", "COLLATION", "COLUMN", "COMMIT", "CONNECT", "CONNECTION",
@@ -152,11 +154,17 @@ public class DerbyDictionary
             "USING", "VALUES", "VARCHAR", "VARYING", "VIEW", "WHENEVER", "WHERE", "WINDOW", "WITH", "WORK", "WRITE", "XML",
             "XMLEXISTS", "XMLPARSE", "XMLQUERY", "XMLSERIALIZE", "YEAR",
             // end generated.
-            // The following keywords used to be defined as reserved words in the past, but now seem to work
-            // we still add them for compat reasons
-            "COALESCE", "OVER", "ROW_NUMBER",
             // reserved by Derby, but missing from the word list the generated part was tested with
             "CURSORS",
+        }));
+
+        // reservedWordSet subset that CANNOT be used as valid column names
+        // (i.e., without surrounding them with double-quotes)
+        invalidColumnWordSet.addAll(invalidTableWordSet);
+        // The following keywords used to be defined as reserved words in the past, but now seem to work
+        // we still add them for compat reasons
+        invalidColumnWordSet.addAll(Arrays.asList(new String[] {
+            "COALESCE", "OVER", "ROW_NUMBER",
         }));
     }
 

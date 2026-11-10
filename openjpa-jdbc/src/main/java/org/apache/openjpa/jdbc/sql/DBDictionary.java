@@ -510,6 +510,13 @@ public class DBDictionary
     public Set<String> invalidColumnWordSet = new HashSet<>();
 
     /**
+     * Words the database rejects as unquoted table names. Only filled for
+     * databases the words were measured on; see
+     * {@link #getValidDefaultTableName(DBIdentifier)}.
+     */
+    protected final Set<String> invalidTableWordSet = new HashSet<>();
+
+    /**
      * This variable was used in 2.1.x and prior releases to indicate that
      * OpenJPA should not use the CACHE clause when getting a native
      * sequence; instead the INCREMENT BY clause gets its value equal to the
@@ -3992,6 +3999,34 @@ public class DBDictionary
      */
     public DBIdentifier getValidTableName(DBIdentifier name, Schema schema) {
         return namingUtil.getValidTableIdentifier(name, schema, maxTableNameLength);
+    }
+
+    /**
+     * Return the words the database rejects as unquoted table names. The set
+     * is empty for databases the words were not measured on.
+     */
+    public final Set<String> getInvalidTableWordSet() {
+        return invalidTableWordSet;
+    }
+
+    /**
+     * Make the given default table name valid if the database rejects it, that
+     * is if it is neither delimited nor all identifiers are delimited, and it
+     * is one of the {@link #getInvalidTableWordSet() invalid table words}.
+     * Such a name is made valid like
+     * {@link #getValidTableName(DBIdentifier, Schema)} does, but without making
+     * it unique in the schema, so that the same name is derived whether the
+     * table exists already or not. For any other name, including reserved
+     * words the database accepts as table names, the given identifier itself
+     * is returned.
+     */
+    public DBIdentifier getValidDefaultTableName(DBIdentifier name) {
+        if (DBIdentifier.isNull(name) || invalidTableWordSet.isEmpty() || name.isDelimited()
+            || getDelimitIdentifiers()
+            || !invalidTableWordSet.contains(name.getName().toUpperCase(Locale.ENGLISH))) {
+            return name;
+        }
+        return makeNameValid(name, null, maxTableNameLength, DBIdentifierUtil.TABLE, false);
     }
 
     /**

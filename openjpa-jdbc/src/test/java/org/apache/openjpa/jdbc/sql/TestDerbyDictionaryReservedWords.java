@@ -19,10 +19,13 @@
 package org.apache.openjpa.jdbc.sql;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
@@ -35,7 +38,8 @@ import org.junit.Test;
 
 /**
  * Tests that the words Derby rejects as unquoted identifiers are not used as
- * unquoted table or column names by the {@link DerbyDictionary}.
+ * unquoted table or column names by the {@link DerbyDictionary}, and that only
+ * default table names Derby rejects are changed.
  */
 public class TestDerbyDictionaryReservedWords {
 
@@ -75,5 +79,61 @@ public class TestDerbyDictionaryReservedWords {
         }
         assertEquals("CURSOR0", dict.getValidColumnName("CURSOR", table));
         assertEquals("WINDOWS", dict.getValidColumnName("WINDOWS", table));
+    }
+
+    @Test
+    public void testInvalidTableWordsAreReservedWords() {
+        assertTrue(dict.getInvalidTableWordSet().containsAll(TABLE_WORDS));
+        for (String word : dict.getInvalidTableWordSet()) {
+            if (word.indexOf('-') < 0) {
+                assertEquals(word + "0", dict.getValidDefaultTableName(DBIdentifier.newTable(word)).getName());
+            }
+        }
+    }
+
+    @Test
+    public void testInvalidColumnWordsAreInvalidTableWordsAndCompatWords() {
+        Set<String> expected = new HashSet<>(dict.getInvalidTableWordSet());
+        expected.addAll(List.of("COALESCE", "OVER", "ROW_NUMBER"));
+        assertEquals(expected, dict.getInvalidColumnWordSet());
+    }
+
+    @Test
+    public void testRejectedDefaultTableNames() {
+        for (String name : List.of("Window", "window", "WINDOW", "Order", "User", "Current_date", "Session_user")) {
+            assertEquals(name.toUpperCase(Locale.ENGLISH) + "0",
+                dict.getValidDefaultTableName(DBIdentifier.newTable(name)).getName());
+        }
+    }
+
+    @Test
+    public void testAcceptedDefaultTableNamesAreNotChanged() {
+        // reserved words Derby accepts as table names are kept, unlike in
+        // getValidTableName
+        for (String name : List.of("Action", "Count", "Session", "Windows", "Window_panes", "Person")) {
+            DBIdentifier sName = DBIdentifier.newTable(name);
+            assertSame(name, sName, dict.getValidDefaultTableName(sName));
+        }
+        assertEquals("COUNT0", dict.getValidTableName("Count", schema));
+    }
+
+    @Test
+    public void testDefaultTableNameIsNotMadeUnique() {
+        // an existing table must not lead to another name for the same entity
+        schema.addTable(DBIdentifier.newTable("WINDOW0"));
+        assertEquals("WINDOW0", dict.getValidDefaultTableName(DBIdentifier.newTable("Window")).getName());
+        assertEquals("WINDOW01", dict.getValidTableName("Window", schema));
+    }
+
+    @Test
+    public void testDelimitedDefaultTableNamesAreNotChanged() {
+        DBIdentifier delimited = DBIdentifier.newTable("Window", true);
+        assertSame(delimited, dict.getValidDefaultTableName(delimited));
+
+        DerbyDictionary delimitingDict = new DerbyDictionary();
+        Configurations.configureInstance(delimitingDict, new JDBCConfigurationImpl(), "DelimitIdentifiers=true",
+            "DBDictionary");
+        DBIdentifier sName = DBIdentifier.newTable("Window");
+        assertSame(sName, delimitingDict.getValidDefaultTableName(sName));
     }
 }
