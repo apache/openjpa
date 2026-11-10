@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
 
 import org.apache.openjpa.lib.log.LogFactoryImpl;
 import org.apache.openjpa.util.UserException;
@@ -259,6 +261,37 @@ public class TestTCPRemoteCommitProvider {
         Assert.assertTrue(provider.acceptsConnectionFrom(second));
     }
 
+    @Test(timeout = 10000)
+    public void testAcceptsConnectionDoesNotWaitForSending() throws Exception {
+        TCPRemoteCommitProvider provider = createProvider();
+        provider.setAddresses(NON_LOCAL_ADDRESS + ":5671");
+
+        // sending to the peers holds the lock of the addresses, possibly
+        // for a long time while connecting to a peer that is not reachable
+        CountDownLatch locked = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        Thread sender = new Thread(() -> {
+            provider._addressesLock.lock();
+            try {
+                locked.countDown();
+                release.await();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } finally {
+                provider._addressesLock.unlock();
+            }
+        });
+        sender.start();
+        locked.await();
+        try {
+            Assert.assertTrue(provider.acceptsConnectionFrom(InetAddress.getByName(NON_LOCAL_ADDRESS)));
+            Assert.assertFalse(provider.acceptsConnectionFrom(InetAddress.getByName("198.51.100.2")));
+        } finally {
+            release.countDown();
+            sender.join();
+        }
+    }
+
     /**
      * Provider that treats connections from this host as coming from a
      * host that is not a peer, as no other host is available in a test.
@@ -390,5 +423,87 @@ public class TestTCPRemoteCommitProvider {
             }
             provider.close();
         }
+    }
+
+    /**
+     * Dynamic provider that treats connections from this host as coming from
+     * a host that only becomes a peer once a refresh of the addresses finds it.
+     */
+    private static class DynamicNonPeerProvider extends DynamicTCPRemoteCommitProvider {
+        private final List<Thread> _fetchThreads = new CopyOnWriteArrayList<>();
+        private volatile boolean _peerAppears;
+        private volatile boolean _isPeer;
+
+        private DynamicNonPeerProvider() throws UnknownHostException {
+            super();
+            setCacheDurationMillis(3600000);
+        }
+
+        @Override
+        protected List<String> fetchDynamicAddresses() {
+            _fetchThreads.add(Thread.currentThread());
+            if (_peerAppears) {
+                _isPeer = true;
+            }
+            return List.of();
+        }
+
+        @Override
+        protected boolean acceptsConnectionFrom(InetAddress address) {
+            return !isRestrictToPeers() || _isPeer;
+        }
+    }
+
+    private static DynamicNonPeerProvider startDynamicProvider() throws Exception {
+        DynamicNonPeerProvider provider = new DynamicNonPeerProvider();
+        startProvider(provider);
+        // the initial refresh and the first run of the periodic refresh
+        long end = System.currentTimeMillis() + 5000;
+        while (provider._fetchThreads.size() < 2 && System.currentTimeMillis() < end) {
+            Thread.sleep(20);
+        }
+        Assert.assertEquals(2, provider._fetchThreads.size());
+        return provider;
+    }
+
+    private static void assertNotRefreshedOnAcceptThread(TCPRemoteCommitProvider provider, List<Thread> fetchThreads)
+        throws Exception {
+        Object listener = getPrivateField(provider, "_listener");
+        Thread acceptThread = (Thread) getPrivateField(listener, "_acceptThread");
+        Assert.assertFalse(fetchThreads.contains(acceptThread));
+    }
+
+    @Test
+    public void testDynamicProviderRefreshesAddressesBeforeRejectingUnknownHost() throws Exception {
+        DynamicNonPeerProvider provider = startDynamicProvider();
+        try (Socket s = connect(provider)) {
+            Assert.assertTrue(isClosedByRemote(s));
+            Assert.assertEquals(3, provider._fetchThreads.size());
+            assertNotRefreshedOnAcceptThread(provider, provider._fetchThreads);
+            awaitReceivers(provider, 0);
+        } finally {
+            provider.close();
+        }
+    }
+
+    @Test
+    public void testDynamicProviderAcceptsPeerFoundByRefresh() throws Exception {
+        DynamicNonPeerProvider provider = startDynamicProvider();
+        provider._peerAppears = true;
+        try (Socket s = connect(provider)) {
+            Assert.assertTrue(isKeptOpen(s));
+            awaitReceivers(provider, 1);
+            Assert.assertEquals(3, provider._fetchThreads.size());
+            assertNotRefreshedOnAcceptThread(provider, provider._fetchThreads);
+        } finally {
+            provider.close();
+        }
+    }
+
+    @Test
+    public void testDynamicProviderDoesNotRefreshWhenNotRestricted() throws Exception {
+        DynamicNonPeerProvider provider = new DynamicNonPeerProvider();
+        provider.setRestrictToPeers(false);
+        Assert.assertFalse(provider.refreshesAddressesOnDemand());
     }
 }

@@ -100,6 +100,12 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
     protected List<HostAddress> _addresses = new ArrayList<>();
     protected final ReentrantLock _addressesLock;
 
+    /**
+     * Snapshot of the IP addresses of the peers in {@link #_addresses}, read by the listener without taking
+     * {@link #_addressesLock}, which is held while sending to the peers.
+     */
+    private volatile Set<InetAddress> _peerAddresses = Set.of();
+
     public TCPRemoteCommitProvider() throws UnknownHostException {
         // obtain a unique ID.
         synchronized (TCPRemoteCommitProvider.class) {
@@ -319,8 +325,17 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
                 }
             }
         } finally {
+            addressesChanged();
             _addressesLock.unlock();
         }
+    }
+
+    /**
+     * Updates the addresses from which incoming connections are accepted. Must be invoked, while holding
+     * {@link #_addressesLock}, whenever {@link #_addresses} has been changed.
+     */
+    protected void addressesChanged() {
+        _peerAddresses = _addresses.stream().map(HostAddress::getAddress).collect(Collectors.toUnmodifiableSet());
     }
 
     /**
@@ -333,15 +348,30 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
      * @return <code>true</code> if the connection is accepted
      */
     protected boolean acceptsConnectionFrom(final InetAddress address) {
-        if (!_restrictToPeers || address.isLoopbackAddress() || localAddresses.contains(address)) {
-            return true;
-        }
-        _addressesLock.lock();
-        try {
-            return _addresses.stream().anyMatch(peer -> address.equals(peer.getAddress()));
-        } finally {
-            _addressesLock.unlock();
-        }
+        return !_restrictToPeers || address.isLoopbackAddress() || localAddresses.contains(address)
+            || _peerAddresses.contains(address);
+    }
+
+    /**
+     * Whether this provider can refresh its addresses when a connection from an unknown host arrives, see
+     * {@link #refreshAddresses(long)}. Defaults to <code>false</code>.
+     *
+     * @return <code>true</code> if {@link #refreshAddresses(long)} may find further peers
+     */
+    protected boolean refreshesAddressesOnDemand() {
+        return false;
+    }
+
+    /**
+     * Refreshes the addresses of the peers before a connection from an unknown host is rejected. It is invoked on
+     * the thread receiving that connection, not on the thread accepting connections, and only if
+     * {@link #refreshesAddressesOnDemand()} returns <code>true</code>.
+     *
+     * @param acceptedNanos the {@link System#nanoTime()} at which the connection was accepted; a refresh started
+     * later already covers this connection
+     */
+    protected void refreshAddresses(final long acceptedNanos) {
+        // no-op
     }
 
     // ---------- Configurable implementation ----------
@@ -646,11 +676,14 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
                     if (_log.isTraceEnabled()) {
                         _log.trace(s_loc.get("tcp-received-connection", getAddress(s)));
                     }
-                    if (!isAccepted(s)) {
+                    long acceptedNanos = System.nanoTime();
+                    Admission admission = admit(s);
+                    if (admission == Admission.REJECTED) {
                         closeRejected(s);
                         continue;
                     }
-                    ReceiveSocketHandler sh = new ReceiveSocketHandler(s);
+                    ReceiveSocketHandler sh = new ReceiveSocketHandler(s, admission == Admission.UNKNOWN_HOST,
+                        acceptedNanos);
                     Thread receiverThread = new Thread(sh);
                     receiverThread.setDaemon(true);
                     // add before starting, the thread removes itself when it is done
@@ -701,22 +734,40 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
         }
 
         /**
+         * The outcome of the check of an incoming connection on the accept thread.
+         */
+        private enum Admission {
+            /** The connection is closed. */
+            REJECTED,
+            /** The connection comes from this host or a known peer. */
+            PEER,
+            /**
+             * The connection comes from an unknown host; it is only received if a refresh of the addresses finds
+             * the host, see {@link ReceiveSocketHandler#isPeerAfterRefresh()}.
+             */
+            UNKNOWN_HOST
+        }
+
+        private List<TCPRemoteCommitProvider> providers() {
+            synchronized (_providers) {
+                return new ArrayList<>(_providers);
+            }
+        }
+
+        /**
          * Whether an incoming connection is accepted. As the listener is shared by all providers listening on the
          * same port, a connection is accepted if any of them accepts the remote address, and the most permissive
-         * limit of receiving connections applies.
+         * limit of receiving connections applies. This runs on the accept thread, so it must not block.
+         *
          */
-        private boolean isAccepted(final Socket s) {
-            List<TCPRemoteCommitProvider> providers;
-            synchronized (_providers) {
-                providers = new ArrayList<>(_providers);
-            }
+        private Admission admit(final Socket s) {
+            List<TCPRemoteCommitProvider> providers = providers();
 
             InetAddress remote = s.getInetAddress();
-            if (providers.stream().noneMatch(provider -> provider.acceptsConnectionFrom(remote))) {
-                if (_log.isWarnEnabled()) {
-                    _log.warn(s_loc.get("tcp-reject-not-peer", getAddress(s)));
-                }
-                return false;
+            boolean knownPeer = providers.stream().anyMatch(provider -> provider.acceptsConnectionFrom(remote));
+            if (!knownPeer && providers.stream().noneMatch(TCPRemoteCommitProvider::refreshesAddressesOnDemand)) {
+                warnNotPeer(s);
+                return Admission.REJECTED;
             }
 
             int maxReceivers = 0;
@@ -731,9 +782,15 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
                 if (_log.isWarnEnabled()) {
                     _log.warn(s_loc.get("tcp-reject-limit", getAddress(s), String.valueOf(maxReceivers)));
                 }
-                return false;
+                return Admission.REJECTED;
             }
-            return true;
+            return knownPeer ? Admission.PEER : Admission.UNKNOWN_HOST;
+        }
+
+        private void warnNotPeer(final Socket s) {
+            if (_log.isWarnEnabled()) {
+                _log.warn(s_loc.get("tcp-reject-not-peer", getAddress(s)));
+            }
         }
 
         private void closeRejected(final Socket s) {
@@ -754,14 +811,22 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
 
             private InputStream _in;
             private Socket _s;
+            private final boolean _refreshPeers;
+            private final long _acceptedNanos;
 
-            private ReceiveSocketHandler(final Socket s) {
+            private ReceiveSocketHandler(final Socket s, final boolean refreshPeers, final long acceptedNanos) {
+                _refreshPeers = refreshPeers;
+                _acceptedNanos = acceptedNanos;
                 // We are the receiving end and we don't send any messages
                 // back to the broadcaster. Turn off Nagle's so that
                 // we will send ack packets without waiting.
                 _s = s;
                 try {
                     _s.setTcpNoDelay(true);
+                    // detect peers that went away without closing the
+                    // connection, so that they do not hold a receiving
+                    // connection forever
+                    _s.setKeepAlive(true);
                     _in = new BufferedInputStream(s.getInputStream());
                 } catch (IOException ioe) {
                     if (_log.isInfoEnabled()) {
@@ -779,16 +844,38 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
             @Override
             public void run() {
                 try {
-                    receive();
+                    if (_s == null) {
+                        return;
+                    }
+                    if (_refreshPeers && !isPeerAfterRefresh()) {
+                        warnNotPeer(_s);
+                    } else {
+                        receive();
+                    }
+                    close();
                 } finally {
                     _receiverThreads.remove(Thread.currentThread());
                 }
             }
 
-            private void receive() {
-                if (_s == null) {
-                    return;
+            /**
+             * Whether the remote host of a connection from an unknown host is a peer after the providers that
+             * support it refreshed their addresses. This runs on the receiver thread, as a refresh may block.
+             */
+            private boolean isPeerAfterRefresh() {
+                InetAddress remote = _s.getInetAddress();
+                for (TCPRemoteCommitProvider provider : providers()) {
+                    if (provider.refreshesAddressesOnDemand()) {
+                        provider.refreshAddresses(_acceptedNanos);
+                    }
+                    if (provider.acceptsConnectionFrom(remote)) {
+                        return true;
+                    }
                 }
+                return false;
+            }
+
+            private void receive() {
                 while (_isRunning && _s != null) {
                     try {
                         // This will block our thread, waiting to read
@@ -808,6 +895,9 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
                         break;
                     }
                 }
+            }
+
+            private void close() {
                 // We are done receiving on this socket and this worker
                 // thread is terminating.
                 try {
