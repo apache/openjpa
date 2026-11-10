@@ -21,7 +21,7 @@ package org.apache.openjpa.jdbc.kernel;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collections;
+import java.util.Map;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
@@ -66,22 +66,15 @@ public class TestReplicationConnection extends SingleEMFTestCase {
         if (emf == null) {
             return;
         }
-        OpenJPAEntityManager em = OpenJPAPersistence.cast(emf.createEntityManager());
-        try {
-            Connection conn = (Connection) em.getConnection();
-            try {
-                assertTrue(conn.isReadOnly());
-                try (Statement stmnt = conn.createStatement()) {
-                    stmnt.executeUpdate("UPDATE OJ2943_REPLICATED SET name = 'x'");
-                    fail("a read-only connection must not write");
-                } catch (SQLException expected) {
-                    // as a replica rejects the write
-                }
-            } finally {
-                conn.close();
+        try (OpenJPAEntityManager em = OpenJPAPersistence.cast(emf.createEntityManager());
+             Connection conn = (Connection) em.getConnection()) {
+            assertTrue(conn.isReadOnly());
+            try (Statement stmnt = conn.createStatement()) {
+                stmnt.executeUpdate("UPDATE OJ2943_REPLICATED SET name = 'x'");
+                fail("a read-only connection must not write");
+            } catch (SQLException expected) {
+                // as a replica rejects the write
             }
-        } finally {
-            em.close();
         }
     }
 
@@ -89,14 +82,14 @@ public class TestReplicationConnection extends SingleEMFTestCase {
         if (emf == null) {
             return;
         }
-        EntityManager em = emf.createEntityManager();
-        try {
-            assertWrites(em);
-        } finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
+        try (EntityManager em = emf.createEntityManager()) {
+            try {
+                assertWrites(em);
+            } finally {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
             }
-            em.close();
         }
     }
 
@@ -108,30 +101,24 @@ public class TestReplicationConnection extends SingleEMFTestCase {
         if (emf == null) {
             return;
         }
-        OpenJPAEntityManager em = OpenJPAPersistence.cast(emf.createEntityManager(
-            Collections.singletonMap("openjpa.ConnectionRetainMode", "always")));
-        try {
-            Connection conn = (Connection) em.getConnection();
+        try (OpenJPAEntityManager em = OpenJPAPersistence.cast(emf.createEntityManager(
+            Map.of("openjpa.ConnectionRetainMode", "always")))) {
             try {
-                assertTrue(conn.isReadOnly());
-            } finally {
-                conn.close();
-            }
-            assertWrites(em);
+                try (Connection conn = (Connection) em.getConnection()) {
+                    assertTrue(conn.isReadOnly());
+                }
+                assertWrites(em);
 
-            em.getTransaction().begin();
-            conn = (Connection) em.getConnection();
-            try {
-                assertFalse(conn.isReadOnly());
-            } finally {
-                conn.close();
-            }
-            em.getTransaction().rollback();
-        } finally {
-            if (em.getTransaction().isActive()) {
+                em.getTransaction().begin();
+                try (Connection conn = (Connection) em.getConnection()) {
+                    assertFalse(conn.isReadOnly());
+                }
                 em.getTransaction().rollback();
+            } finally {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
             }
-            em.close();
         }
     }
 

@@ -367,28 +367,23 @@ public class TestMySQLDictionary {
         AtomicBoolean autoCommit = new AtomicBoolean(true);
         return (Connection) Proxy.newProxyInstance(TestMySQLDictionary.class.getClassLoader(), types,
             (proxy, method, args) -> {
-                switch (method.getName()) {
-                    case "setReadOnly":
+                return switch (method.getName()) {
+                    case "setReadOnly" -> {
                         readOnly.set((Boolean) args[0]);
-                        return null;
-                    case "isReadOnly":
-                        return readOnly.get();
-                    case "setAutoCommit":
+                        yield null;
+                    }
+                    case "isReadOnly" -> readOnly.get();
+                    case "setAutoCommit" -> {
                         autoCommit.set((Boolean) args[0]);
-                        return null;
-                    case "getAutoCommit":
-                        return autoCommit.get();
-                    case "isWrapperFor":
-                        return ((Class<?>) args[0]).isInstance(proxy);
-                    case "hashCode":
-                        return System.identityHashCode(proxy);
-                    case "equals":
-                        return proxy == args[0];
-                    case "toString":
-                        return "connection";
-                    default:
-                        throw new UnsupportedOperationException(method.getName());
-                }
+                        yield null;
+                    }
+                    case "getAutoCommit" -> autoCommit.get();
+                    case "isWrapperFor" -> ((Class<?>) args[0]).isInstance(proxy);
+                    case "hashCode" -> System.identityHashCode(proxy);
+                    case "equals" -> proxy == args[0];
+                    case "toString" -> "connection";
+                    default -> throw new UnsupportedOperationException(method.getName());
+                };
             });
     }
 }
