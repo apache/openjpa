@@ -24,6 +24,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -62,6 +63,23 @@ public class MySQLDictionary
     private volatile List<Class<?>> _replicationTypes = null;
 
     public static final String SELECT_HINT = "openjpa.hint.MySQLSelectHint";
+
+    /**
+     * The words that MySQL 8.0 and later reserve and that are missing from
+     * the generated list of invalid column words: those that came with window
+     * functions, common table expressions, <code>JSON_TABLE</code>,
+     * <code>LATERAL</code>, <code>QUALIFY</code> and
+     * <code>TABLESAMPLE</code>, <code>EXTERNAL</code> and <code>LIBRARY</code>
+     * of MySQL 9, and some that MySQL 5.7 reserved already
+     * (OPENJPA-3074). Taken from <code>INFORMATION_SCHEMA.KEYWORDS</code> of
+     * MySQL 8.4 and 9.7.
+     */
+    private static final List<String> UPDATED_INVALID_COLUMN_WORDS = List.of(
+        "ACCESSIBLE", "CUBE", "CUME_DIST", "DENSE_RANK", "EMPTY", "EXCEPT", "EXTERNAL", "FIRST_VALUE",
+        "FUNCTION", "GROUPING", "GROUPS", "INTERSECT", "IO_AFTER_GTIDS", "IO_BEFORE_GTIDS", "JSON_TABLE",
+        "LAG", "LAST_VALUE", "LATERAL", "LEAD", "LIBRARY", "LINEAR", "NTH_VALUE", "OF", "OPTIMIZER_COSTS",
+        "OVER", "PERCENT_RANK", "QUALIFY", "RANK", "READ_WRITE", "RECURSIVE", "ROW", "ROW_NUMBER", "ROWS",
+        "STORED", "SYSTEM", "TABLESAMPLE", "VIRTUAL", "WINDOW");
 
     /**
      * The largest scale of a decimal column on MySQL.
@@ -103,8 +121,14 @@ public class MySQLDictionary
             // we still add them for compat reasons
             "INDEX", "SELECT"
         }));
+        invalidColumnWordSet.addAll(UPDATED_INVALID_COLUMN_WORDS);
 
         integerCastTypeName = "SIGNED";
+    }
+
+    @Override
+    protected Collection<String> getUpdatedInvalidColumnWords() {
+        return UPDATED_INVALID_COLUMN_WORDS;
     }
 
     @Override

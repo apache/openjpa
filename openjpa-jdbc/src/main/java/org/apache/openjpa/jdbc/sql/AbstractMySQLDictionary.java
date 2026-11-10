@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
@@ -42,6 +43,7 @@ import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
+import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.util.StringUtil;
 
 /**
@@ -181,6 +183,34 @@ public abstract class AbstractMySQLDictionary
         longCastTypeName = "SIGNED";
         // MySQL and MariaDB support the CHAR data type (OPENJPA-3001)
         storeCharsAsNumbers = false;
+    }
+
+    /**
+     * The words of {@link #invalidColumnWordSet} that MySQL 8.0 and later
+     * reserve and that this dictionary added in 4.2.0 (OPENJPA-3074). The
+     * compatibility option <code>UpdatedMySQLReservedWords=false</code>
+     * removes them again, so that column names keep the form an earlier
+     * release generated.
+     *
+     * @see org.apache.openjpa.conf.Compatibility#getUpdatedMySQLReservedWords()
+     */
+    protected Collection<String> getUpdatedInvalidColumnWords() {
+        return List.of();
+    }
+
+    /**
+     * Removes the {@link #getUpdatedInvalidColumnWords() updated invalid
+     * column words} if the compatibility options ask for the earlier column
+     * names. This has to happen before the naming rules are configured, which
+     * take a copy of the words.
+     */
+    @Override
+    public void setConfiguration(Configuration conf) {
+        if (conf instanceof OpenJPAConfiguration openjpaConf
+            && !openjpaConf.getCompatibilityInstance().getUpdatedMySQLReservedWords()) {
+            invalidColumnWordSet.removeAll(getUpdatedInvalidColumnWords());
+        }
+        super.setConfiguration(conf);
     }
 
     /**

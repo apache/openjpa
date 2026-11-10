@@ -26,6 +26,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.schema.Table;
@@ -35,9 +36,15 @@ import org.junit.Test;
 
 /**
  * The defaults that {@link MySQLDictionary} and {@link MariaDBDictionary}
- * share through {@link AbstractMySQLDictionary} and those they keep apart (OPENJPA-3074).
+ * share through {@link AbstractMySQLDictionary} and those they keep apart,
+ * and the words that MySQL 8.0 and later reserve (OPENJPA-3074).
  */
 public class TestAbstractMySQLDictionary {
+
+    private static final List<String> MYSQL_8_WORDS = List.of("RANK", "DENSE_RANK", "ROW_NUMBER", "LAG",
+        "LEAD", "GROUPS", "WINDOW", "OVER", "CUME_DIST", "PERCENT_RANK", "NTILE", "FIRST_VALUE", "LAST_VALUE",
+        "NTH_VALUE", "RECURSIVE", "LATERAL", "SYSTEM", "EMPTY", "JSON_TABLE", "ROW", "ROWS", "OF", "FUNCTION",
+        "CUBE", "GROUPING", "EXCEPT", "INTERSECT", "QUALIFY", "TABLESAMPLE", "EXTERNAL", "LIBRARY");
 
     @Test
     public void testSharedDefaults() {
@@ -129,5 +136,61 @@ public class TestAbstractMySQLDictionary {
         table.addColumn(DBIdentifier.newColumn("C1")).setJavaType(JavaTypes.INT);
         String sql = dict.getCreateTableSQL(table)[0];
         assertTrue(sql, sql.endsWith(" ENGINE = MyISAM COMMENT = 'custom'"));
+    }
+
+    @Test
+    public void testMySQL8ReservedWordsAreInvalidColumnNames() {
+        MySQLDictionary dict = configure(new MySQLDictionary(), null);
+        for (String word : MYSQL_8_WORDS) {
+            assertTrue(word, dict.getInvalidColumnWordSet().contains(word));
+        }
+        assertEquals("RANK0", validColumnName(dict, "rank"));
+        assertEquals("WINDOW0", validColumnName(dict, "window"));
+        assertEquals("ROW_NUMBER0", validColumnName(dict, "ROW_NUMBER"));
+        assertEquals("RANKING", validColumnName(dict, "ranking"));
+    }
+
+    /**
+     * MariaDB reserves few of the words: <code>RANK</code> or
+     * <code>WINDOW</code> are valid column names there.
+     */
+    @Test
+    public void testMariaDBReservesOnlySomeOfTheWords() {
+        MariaDBDictionary dict = configure(new MariaDBDictionary(), null);
+        assertEquals("RANK", validColumnName(dict, "rank"));
+        assertEquals("WINDOW", validColumnName(dict, "window"));
+        assertEquals("ROW_NUMBER0", validColumnName(dict, "row_number"));
+        assertEquals("OVER0", validColumnName(dict, "over"));
+    }
+
+    /**
+     * <code>UpdatedMySQLReservedWords=false</code> keeps the column names an
+     * earlier release generated, for the words that were reserved before
+     * as well.
+     */
+    @Test
+    public void testCompatibilityKeepsTheEarlierColumnNames() {
+        MySQLDictionary mysql = configure(new MySQLDictionary(), "UpdatedMySQLReservedWords=false");
+        assertEquals("RANK", validColumnName(mysql, "rank"));
+        assertEquals("WINDOW", validColumnName(mysql, "window"));
+        assertFalse(mysql.getInvalidColumnWordSet().contains("RANK"));
+        assertEquals("NTILE0", validColumnName(mysql, "ntile"));
+
+        MariaDBDictionary mariadb = configure(new MariaDBDictionary(), "UpdatedMySQLReservedWords=false");
+        assertEquals("ROW_NUMBER", validColumnName(mariadb, "row_number"));
+        assertEquals("OVER0", validColumnName(mariadb, "over"));
+    }
+
+    private static <T extends DBDictionary> T configure(T dict, String compatibility) {
+        JDBCConfiguration conf = new JDBCConfigurationImpl();
+        if (compatibility != null) {
+            conf.setCompatibility(compatibility);
+        }
+        Configurations.configureInstance(dict, conf, (String) null, "DBDictionary");
+        return dict;
+    }
+
+    private static String validColumnName(DBDictionary dict, String name) {
+        return dict.getValidColumnName(DBIdentifier.newColumn(name), new Table()).getName();
     }
 }

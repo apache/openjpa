@@ -86,6 +86,7 @@ public class Compatibility {
     private boolean _allowNestedCompoundSelection = false; // OPENJPA-2991
     private boolean _flushAfterInMemoryBulkOperation = true; // OPENJPA-2951
     private boolean _resolveConverterTypeHierarchy = true; // OPENJPA-2944
+    private boolean _updatedMySQLReservedWords = true; // OPENJPA-3074
 
     /**
      * Whether to require exact identity value types when creating object
@@ -1042,5 +1043,36 @@ public class Compatibility {
      */
     public void setResolveConverterTypeHierarchy(boolean b) {
         _resolveConverterTypeHierarchy = b;
+    }
+
+    /**
+     * Whether the MySQL and MariaDB dictionaries treat the words that MySQL
+     * 8.0 and later reserve - <code>RANK</code>, <code>ROW_NUMBER</code>,
+     * <code>WINDOW</code>, <code>SYSTEM</code> and others, see
+     * <code>MySQLDictionary</code> - and that are missing from their earlier
+     * lists of words which cannot be column names as such words. Defaults to
+     * true: a column whose name is such a word gets a <code>0</code>
+     * appended, e.g. <code>RANK0</code> for a field <code>rank</code>, as for
+     * every other reserved word, so that its table can be created and
+     * written to.
+     *<p>
+     * Set to false to keep the column names that an earlier release generated,
+     * e.g. for a schema that was created on MySQL 5.7, where the words are
+     * not reserved, and is still used under its original column names.
+     *
+     * @since 4.2.0
+     */
+    public boolean getUpdatedMySQLReservedWords() {
+        return _updatedMySQLReservedWords;
+    }
+
+    /**
+     * Whether the MySQL and MariaDB dictionaries treat the words that MySQL
+     * 8.0 and later reserve as words which cannot be column names.
+     *
+     * @since 4.2.0
+     */
+    public void setUpdatedMySQLReservedWords(boolean b) {
+        _updatedMySQLReservedWords = b;
     }
 }

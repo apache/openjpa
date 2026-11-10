@@ -69,6 +69,17 @@ restore the behaviour of OpenJPA 4.1.x where one exists.</p>
   through a generic superclass or interface; the general converter changes
   described in the Migration Considerations are not affected by this option
   (<a href='https://issues.apache.org/jira/browse/OPENJPA-2944'>OPENJPA-2944</a>).
+  <li>On MySQL, a column whose name is a word that MySQL 8.0 and later
+  reserve, such as <code>RANK</code>, <code>ROW_NUMBER</code>,
+  <code>WINDOW</code> or <code>SYSTEM</code>, now gets a <code>0</code>
+  appended, as other reserved words did before: an attribute
+  <code>rank</code> is mapped to the column <code>RANK0</code>. On MariaDB the
+  same applies to <code>ACCESSIBLE</code>, <code>LINEAR</code>,
+  <code>READ_WRITE</code> and <code>ROW_NUMBER</code>. A schema that still
+  has the earlier column names, e.g. one created on MySQL 5.7, no longer
+  matches; set
+  <code>openjpa.Compatibility=UpdatedMySQLReservedWords=false</code> to keep
+  the 4.1.x column names (OPENJPA-3074).
   </li>
 </ul>
 

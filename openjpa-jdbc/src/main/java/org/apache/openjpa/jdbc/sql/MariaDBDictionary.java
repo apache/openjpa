@@ -28,7 +28,9 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -62,6 +64,15 @@ public class MariaDBDictionary extends AbstractMySQLDictionary {
      * as in <code>5.5.5-10.3.39-MariaDB</code>.
      */
     private static final String COMPAT_VERSION_PREFIX = "5.5.5-";
+
+    /**
+     * The words that MySQL 8.0 and later reserve, which MariaDB reserves as
+     * well, and that are missing from the generated list of invalid column
+     * words (OPENJPA-3074). MariaDB 12 no longer reserves
+     * <code>ACCESSIBLE</code>, MariaDB 10.11 does.
+     */
+    private static final List<String> UPDATED_INVALID_COLUMN_WORDS = List.of(
+        "ACCESSIBLE", "LINEAR", "READ_WRITE", "ROW_NUMBER");
 
     /**
      * The largest scale of a decimal column on MariaDB.
@@ -102,6 +113,12 @@ public class MariaDBDictionary extends AbstractMySQLDictionary {
             // we still add them for compat reasons
             "OPTION", "SELECT",
         }));
+        invalidColumnWordSet.addAll(UPDATED_INVALID_COLUMN_WORDS);
+    }
+
+    @Override
+    protected Collection<String> getUpdatedInvalidColumnWords() {
+        return UPDATED_INVALID_COLUMN_WORDS;
     }
 
     @Override
