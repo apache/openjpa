@@ -60,52 +60,52 @@ public class TestStringLiteralValues extends SingleEMFTestCase {
     @Override
     public void setUp() {
         setUp(CLEAR_TABLES, StringValue.class, "openjpa.jdbc.QuerySQLCache", "false");
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        for (Object[] row : ROWS) {
-            em.persist(new StringValue((Integer) row[0], (String) row[1], (Character) row[2]));
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            for (Object[] row : ROWS) {
+                em.persist(new StringValue((Integer) row[0], (String) row[1], (Character) row[2]));
+            }
+            em.getTransaction().commit();
         }
-        em.getTransaction().commit();
-        em.close();
     }
 
     public void testEqualsLiteralInJPQL() {
-        EntityManager em = emf.createEntityManager();
-        for (Object[] row : ROWS) {
-            String jpql = "SELECT e.id FROM StringValue e WHERE e.name = " + toJPQLLiteral((String) row[1]);
-            TypedQuery<Integer> q = em.createQuery(jpql, Integer.class);
-            q.setHint(QueryHints.HINT_USE_LITERAL_IN_SQL, true);
-            assertIds(jpql, q.getResultList(), (Integer) row[0]);
+        try (EntityManager em = emf.createEntityManager()) {
+            for (Object[] row : ROWS) {
+                String jpql = "SELECT e.id FROM StringValue e WHERE e.name = " + toJPQLLiteral((String) row[1]);
+                TypedQuery<Integer> q = em.createQuery(jpql, Integer.class);
+                q.setHint(QueryHints.HINT_USE_LITERAL_IN_SQL, true);
+                assertIds(jpql, q.getResultList(), (Integer) row[0]);
+            }
         }
-        em.close();
     }
 
     public void testEqualsValueInCriteria() {
-        EntityManager em = emf.createEntityManager();
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        for (Object[] row : ROWS) {
-            CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
-            Root<StringValue> e = cq.from(StringValue.class);
-            cq.select(e.get("id")).where(cb.equal(e.get("name"), row[1]));
-            TypedQuery<Integer> q = em.createQuery(cq);
-            q.setHint(QueryHints.HINT_USE_LITERAL_IN_SQL, true);
-            assertIds("name = " + row[1], q.getResultList(), (Integer) row[0]);
+        try (EntityManager em = emf.createEntityManager()) {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            for (Object[] row : ROWS) {
+                CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
+                Root<StringValue> e = cq.from(StringValue.class);
+                cq.select(e.get("id")).where(cb.equal(e.get("name"), row[1]));
+                TypedQuery<Integer> q = em.createQuery(cq);
+                q.setHint(QueryHints.HINT_USE_LITERAL_IN_SQL, true);
+                assertIds("name = " + row[1], q.getResultList(), (Integer) row[0]);
+            }
         }
-        em.close();
     }
 
     public void testEqualsCharacterInCriteria() {
-        EntityManager em = emf.createEntityManager();
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        for (Object[] row : ROWS) {
-            CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
-            Root<StringValue> e = cq.from(StringValue.class);
-            cq.select(e.get("id")).where(cb.equal(e.get("code"), row[2]));
-            TypedQuery<Integer> q = em.createQuery(cq);
-            q.setHint(QueryHints.HINT_USE_LITERAL_IN_SQL, true);
-            assertIds("code = " + row[2], q.getResultList(), (Integer) row[0]);
+        try (EntityManager em = emf.createEntityManager()) {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            for (Object[] row : ROWS) {
+                CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
+                Root<StringValue> e = cq.from(StringValue.class);
+                cq.select(e.get("id")).where(cb.equal(e.get("code"), row[2]));
+                TypedQuery<Integer> q = em.createQuery(cq);
+                q.setHint(QueryHints.HINT_USE_LITERAL_IN_SQL, true);
+                assertIds("code = " + row[2], q.getResultList(), (Integer) row[0]);
+            }
         }
-        em.close();
     }
 
     public void testLikeLiteralInJPQL() {
@@ -129,65 +129,65 @@ public class TestStringLiteralValues extends SingleEMFTestCase {
     }
 
     public void testCaseLiteralInJPQL() {
-        EntityManager em = emf.createEntityManager();
-        for (Object[] row : ROWS) {
-            String jpql = "SELECT CASE WHEN e.id = 1 THEN " + toJPQLLiteral((String) row[1])
-                + " ELSE e.name END FROM StringValue e WHERE e.id = 1";
-            List<String> result = em.createQuery(jpql, String.class).getResultList();
-            assertEquals(jpql, Collections.singletonList(row[1]), result);
+        try (EntityManager em = emf.createEntityManager()) {
+            for (Object[] row : ROWS) {
+                String jpql = "SELECT CASE WHEN e.id = 1 THEN " + toJPQLLiteral((String) row[1])
+                    + " ELSE e.name END FROM StringValue e WHERE e.id = 1";
+                List<String> result = em.createQuery(jpql, String.class).getResultList();
+                assertEquals(jpql, Collections.singletonList(row[1]), result);
+            }
         }
-        em.close();
     }
 
     public void testCaseCoalesceAndNullIfValuesInCriteria() {
-        EntityManager em = emf.createEntityManager();
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        for (Object[] row : ROWS) {
-            String value = (String) row[1];
+        try (EntityManager em = emf.createEntityManager()) {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            for (Object[] row : ROWS) {
+                String value = (String) row[1];
 
-            CriteriaQuery<String> cq = cb.createQuery(String.class);
-            Root<StringValue> e = cq.from(StringValue.class);
-            Expression<String> name = e.get("name");
-            cq.select(cb.<String> selectCase().when(cb.equal(e.get("id"), 1), value).otherwise(name))
-                .where(cb.equal(e.get("id"), 1));
-            assertEquals("case " + value, Collections.singletonList(value), em.createQuery(cq).getResultList());
+                CriteriaQuery<String> cq = cb.createQuery(String.class);
+                Root<StringValue> e = cq.from(StringValue.class);
+                Expression<String> name = e.get("name");
+                cq.select(cb.<String> selectCase().when(cb.equal(e.get("id"), 1), value).otherwise(name))
+                    .where(cb.equal(e.get("id"), 1));
+                assertEquals("case " + value, Collections.singletonList(value), em.createQuery(cq).getResultList());
 
-            cq = cb.createQuery(String.class);
-            e = cq.from(StringValue.class);
-            Expression<String> missing = e.get("missing");
-            cq.select(cb.coalesce(missing, value)).where(cb.equal(e.get("id"), 1));
-            assertEquals("coalesce " + value, Collections.singletonList(value), em.createQuery(cq).getResultList());
+                cq = cb.createQuery(String.class);
+                e = cq.from(StringValue.class);
+                Expression<String> missing = e.get("missing");
+                cq.select(cb.coalesce(missing, value)).where(cb.equal(e.get("id"), 1));
+                assertEquals("coalesce " + value, Collections.singletonList(value), em.createQuery(cq).getResultList());
 
-            CriteriaQuery<Integer> iq = cb.createQuery(Integer.class);
-            Root<StringValue> r = iq.from(StringValue.class);
-            Expression<String> rname = r.get("name");
-            iq.select(r.get("id")).where(cb.isNull(cb.nullif(rname, value)));
-            assertIds("nullif " + value, em.createQuery(iq).getResultList(), (Integer) row[0]);
+                CriteriaQuery<Integer> iq = cb.createQuery(Integer.class);
+                Root<StringValue> r = iq.from(StringValue.class);
+                Expression<String> rname = r.get("name");
+                iq.select(r.get("id")).where(cb.isNull(cb.nullif(rname, value)));
+                assertIds("nullif " + value, em.createQuery(iq).getResultList(), (Integer) row[0]);
+            }
         }
-        em.close();
     }
 
     private void assertLikeInJPQL(String pattern, Integer... expected) {
-        EntityManager em = emf.createEntityManager();
-        String jpql = "SELECT e.id FROM StringValue e WHERE e.name LIKE " + pattern;
-        TypedQuery<Integer> q = em.createQuery(jpql, Integer.class);
-        q.setHint(QueryHints.HINT_USE_LITERAL_IN_SQL, true);
-        assertIds(jpql, q.getResultList(), expected);
-        em.close();
+        try (EntityManager em = emf.createEntityManager()) {
+            String jpql = "SELECT e.id FROM StringValue e WHERE e.name LIKE " + pattern;
+            TypedQuery<Integer> q = em.createQuery(jpql, Integer.class);
+            q.setHint(QueryHints.HINT_USE_LITERAL_IN_SQL, true);
+            assertIds(jpql, q.getResultList(), expected);
+        }
     }
 
     private void assertLikeInCriteria(String pattern, Character escape, Integer... expected) {
-        EntityManager em = emf.createEntityManager();
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
-        Root<StringValue> e = cq.from(StringValue.class);
-        Expression<String> name = e.get("name");
-        Predicate like = escape == null ? cb.like(name, pattern) : cb.like(name, pattern, escape);
-        cq.select(e.get("id")).where(like);
-        TypedQuery<Integer> q = em.createQuery(cq);
-        q.setHint(QueryHints.HINT_USE_LITERAL_IN_SQL, true);
-        assertIds("like " + pattern + " escape " + escape, q.getResultList(), expected);
-        em.close();
+        try (EntityManager em = emf.createEntityManager()) {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
+            Root<StringValue> e = cq.from(StringValue.class);
+            Expression<String> name = e.get("name");
+            Predicate like = escape == null ? cb.like(name, pattern) : cb.like(name, pattern, escape);
+            cq.select(e.get("id")).where(like);
+            TypedQuery<Integer> q = em.createQuery(cq);
+            q.setHint(QueryHints.HINT_USE_LITERAL_IN_SQL, true);
+            assertIds("like " + pattern + " escape " + escape, q.getResultList(), expected);
+        }
     }
 
     private static void assertIds(String message, List<Integer> actual, Integer... expected) {

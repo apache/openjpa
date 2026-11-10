@@ -197,7 +197,9 @@ public class MariaDBDictionary extends DBDictionary {
         searchStringEscape = "\\\\";
 
         // a backslash in a string literal is an escape character unless
-        // sql_mode contains NO_BACKSLASH_ESCAPES
+        // sql_mode contains NO_BACKSLASH_ESCAPES. The sql_mode is not checked,
+        // because a session can change it at any time; a value with a
+        // backslash is bound as a parameter instead, which is correct either way
         backslashEscapesInStringLiterals = true;
 
         typeModifierSet.addAll(Arrays.asList(new String[] { "UNSIGNED", "ZEROFILL" }));
