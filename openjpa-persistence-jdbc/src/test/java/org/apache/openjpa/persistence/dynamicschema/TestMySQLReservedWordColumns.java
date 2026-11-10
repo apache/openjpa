@@ -24,22 +24,28 @@ import java.util.Locale;
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
-import org.apache.openjpa.jdbc.sql.AbstractMySQLDictionary;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
+import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
- * Attributes named after words that MySQL 8.0 and later reserve - window
- * functions, <code>SYSTEM</code> - get a column name the database accepts,
- * and an entity named after such a word a table name it accepts, so that the
- * table can be created, written to and queried (OPENJPA-3074).
+ * Attributes named after words that MySQL 8.0 and later or MariaDB reserve -
+ * window functions, <code>SYSTEM</code>, <code>OFFSET</code> - get a column
+ * name the database accepts, and an entity named after such a word a table
+ * name it accepts, so that the table can be created, written to and queried
+ * (OPENJPA-3074).
  */
 public class TestMySQLReservedWordColumns extends SingleEMFTestCase {
 
     @Override
     public void setUp() {
-        super.setUp(CLEAR_TABLES, RankedEntry.class, Window.class);
+        // other databases reserve other words, Derby e.g. WINDOW
+        setSupportedDatabases(MySQLDictionary.class, MariaDBDictionary.class);
+        if (isTestsDisabled()) {
+            return;
+        }
+        super.setUp(CLEAR_TABLES, RankedEntry.class, Window.class, Linear.class, Dual.class, Ntile.class);
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.persist(new Window(1, "first"));
@@ -47,6 +53,10 @@ public class TestMySQLReservedWordColumns extends SingleEMFTestCase {
             em.persist(new RankedEntry(1, 10, "a", 2));
             em.persist(new RankedEntry(2, 20, "b", 1));
             em.persist(new RankedEntry(3, 10, "b", 3));
+            em.persist(new Linear(1, 5, 10, 2));
+            em.persist(new Linear(2, 7, 20, 1));
+            em.persist(new Dual(1, "a-z", "first"));
+            em.persist(new Ntile(1, "k1,k2"));
             em.getTransaction().commit();
         }
     }
@@ -101,25 +111,70 @@ public class TestMySQLReservedWordColumns extends SingleEMFTestCase {
     }
 
     /**
-     * On MySQL the column name of an attribute named after such a word is
-     * delimited, as for the words that were reserved before. MariaDB reserves
-     * none of the words of the entity but <code>ROW_NUMBER</code>, and appends
-     * a <code>0</code> to a reserved word instead. A name given in
-     * <code>@Column</code> is treated alike, unless it is delimited.
+     * The column name of an attribute named after such a word is delimited,
+     * as for the words that were reserved before. Of the words of the entity
+     * MariaDB reserves <code>ROW_NUMBER</code>, and <code>RANK</code> as the
+     * name of a built-in function. A name given in <code>@Column</code> is
+     * treated alike.
      */
     public void testColumnNames() {
         DBDictionary dict = getDBDictionary();
-        if (!(dict instanceof AbstractMySQLDictionary)) {
-            return;
-        }
         ClassMapping mapping = getMapping(RankedEntry.class);
         boolean mysql = !(dict instanceof MariaDBDictionary);
-        assertEquals(mysql ? "\"RANK\"" : "RANK", columnName(mapping, "rank"));
+        assertEquals("\"RANK\"", columnName(mapping, "rank"));
         assertEquals(mysql ? "\"WINDOW\"" : "WINDOW", columnName(mapping, "window"));
         assertEquals(mysql ? "\"SYSTEM\"" : "SYSTEM", columnName(mapping, "system"));
-        assertEquals(mysql ? "\"ROW_NUMBER\"" : "ROW_NUMBER0", columnName(mapping, "rowNumber"));
+        assertEquals("\"ROW_NUMBER\"", columnName(mapping, "rowNumber"));
         // a delimited name is kept
         assertEquals("\"LAG\"", columnName(mapping, "lag"));
+
+        // only MariaDB reserves OFFSET and RETURNING
+        ClassMapping linear = getMapping(Linear.class);
+        assertEquals(mysql ? "OFFSET" : "\"OFFSET\"", columnName(linear, "offset"));
+        assertEquals("\"LIMIT\"", columnName(linear, "limit"));
+        assertEquals("\"NTILE\"", columnName(linear, "ntile"));
+        ClassMapping dual = getMapping(Dual.class);
+        assertEquals("\"RANGE\"", columnName(dual, "range"));
+        assertEquals(mysql ? "RETURNING" : "\"RETURNING\"", columnName(dual, "returning"));
+        assertEquals("\"KEYS\"", columnName(getMapping(Ntile.class), "keys"));
+    }
+
+    /**
+     * The table of an entity named after a word that MySQL or MariaDB
+     * reserve, and whose attributes are named after such words, can be
+     * written to and queried, also with the words in the query.
+     */
+    public void testReservedTableAndColumnNames() {
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            em.find(Linear.class, 1).setOffset(6);
+            em.find(Dual.class, 1).setReturning("changed");
+            assertEquals(1, em.createQuery("UPDATE Linear l SET l.ntile = l.ntile + l.limit WHERE l.offset = 7")
+                .executeUpdate());
+            em.getTransaction().commit();
+        }
+        try (EntityManager em = emf.createEntityManager()) {
+            Linear linear = em.find(Linear.class, 1);
+            assertEquals(6, linear.getOffset());
+            assertEquals(10, linear.getLimit());
+            assertEquals(2, linear.getNtile());
+            List<Integer> ids = em.createQuery("SELECT l.id FROM Linear l WHERE l.limit > :limit "
+                + "ORDER BY l.ntile, l.offset", Integer.class)
+                .setParameter("limit", 5)
+                .getResultList();
+            assertEquals(List.of(1, 2), ids);
+            assertEquals(21, em.find(Linear.class, 2).getNtile());
+
+            Dual dual = em.find(Dual.class, 1);
+            assertEquals("a-z", dual.getRange());
+            assertEquals("changed", dual.getReturning());
+            assertEquals(List.of("changed"), em.createQuery("SELECT d.returning FROM Dual d WHERE d.range = 'a-z'",
+                String.class).getResultList());
+
+            assertEquals("k1,k2", em.find(Ntile.class, 1).getKeys());
+            assertEquals(1L, (long) em.createQuery("SELECT COUNT(n) FROM Ntile n WHERE n.keys LIKE 'k1%'",
+                Long.class).getSingleResult());
+        }
     }
 
     public void testReservedTableName() {
@@ -137,16 +192,21 @@ public class TestMySQLReservedWordColumns extends SingleEMFTestCase {
     }
 
     /**
-     * On MySQL the default table name of an entity named after such a word is
-     * delimited. MariaDB does not reserve <code>WINDOW</code>.
+     * The default table name of an entity named after such a word is
+     * delimited. MariaDB does not reserve <code>WINDOW</code>; it reserves
+     * <code>NTILE</code> in a table name as the name of a built-in function.
      */
     public void testTableName() {
         DBDictionary dict = getDBDictionary();
-        if (!(dict instanceof AbstractMySQLDictionary)) {
-            return;
-        }
-        String table = getMapping(Window.class).getTable().getIdentifier().getName().toUpperCase(Locale.ROOT);
-        assertEquals(dict instanceof MariaDBDictionary ? "WINDOW" : "\"WINDOW\"", table);
+        boolean mysql = !(dict instanceof MariaDBDictionary);
+        assertEquals(mysql ? "\"WINDOW\"" : "WINDOW", tableName(Window.class));
+        assertEquals("\"LINEAR\"", tableName(Linear.class));
+        assertEquals("\"DUAL\"", tableName(Dual.class));
+        assertEquals("\"NTILE\"", tableName(Ntile.class));
+    }
+
+    private String tableName(Class<?> type) {
+        return getMapping(type).getTable().getIdentifier().getName().toUpperCase(Locale.ROOT);
     }
 
     private static String columnName(ClassMapping mapping, String field) {
