@@ -33,11 +33,19 @@
             <excludes>
                 <exclude>**/target/**</exclude>
                 <exclude>**/*.log</exclude>
-                <exclude>**/*.dependency-reduced-pom.xml</exclude>
+                <exclude>**/dependency-reduced-pom.xml</exclude>
                 <exclude>**/.*</exclude>
                 <exclude>**/.*/**</exclude>
                 <exclude>openjpa-xmlstore/jdbc*/**</exclude>
             </excludes>
+        </fileSet>
+        <!-- RAT excludes for the release checks (ATR); the only dot file in the archive -->
+        <fileSet>
+            <directory>..</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>.rat-excludes</include>
+            </includes>
         </fileSet>
     </fileSets>
 </assembly>
