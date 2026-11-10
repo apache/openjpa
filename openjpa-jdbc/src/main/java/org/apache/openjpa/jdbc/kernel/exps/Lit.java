@@ -124,7 +124,7 @@ public class Lit extends Const implements Literal {
             switch (parseType) {
                 case Literal.TYPE_SQ_STRING:
                 case Literal.TYPE_STRING:
-                    lstate.sqlValue = new Raw("'" + _val + "'");
+                    lstate.sqlValue = toRawString(ctx, _val, lstate.sqlValue);
                     break;
                 case Literal.TYPE_BOOLEAN:
                     Boolean boolVal = (Boolean)_val;
@@ -139,8 +139,11 @@ public class Lit extends Const implements Literal {
                     }
                     break;
                 case Literal.TYPE_ENUM:
-                    String delim = lstate.sqlValue instanceof Integer ? "" : "'";
-                    lstate.sqlValue = new Raw(delim + lstate.sqlValue + delim);
+                    if (lstate.sqlValue instanceof Integer) {
+                        lstate.sqlValue = new Raw(lstate.sqlValue.toString());
+                    } else {
+                        lstate.sqlValue = toRawString(ctx, lstate.sqlValue, lstate.sqlValue);
+                    }
                     break;
                 case Literal.TYPE_DATE:
                 case Literal.TYPE_TIME:
@@ -151,12 +154,26 @@ public class Lit extends Const implements Literal {
                     lstate.sqlValue = new Raw(_val.toString());
                     break;
                 default:
-                    lstate.sqlValue = new Raw(_val instanceof String ? "'" + _val + "'" : _val.toString());
+                    if (_val instanceof String) {
+                        lstate.sqlValue = toRawString(ctx, _val, lstate.sqlValue);
+                    } else {
+                        lstate.sqlValue = new Raw(_val.toString());
+                    }
                     break;
             }
         }
         Object useLiteral = ctx.fetch.getHint(QueryHints.HINT_USE_LITERAL_IN_SQL);
         boolean useParamToken = useLiteral != null ? !(Boolean)useLiteral : true;
         sql.appendValue(lstate.sqlValue, lstate.getColumn(index), null, useParamToken);
+    }
+
+    /**
+     * Return the given value as a raw string literal of the dictionary, or
+     * the given SQL value if the dictionary cannot write the value as a
+     * literal, so that it is bound as a parameter.
+     */
+    private static Object toRawString(ExpContext ctx, Object val, Object sqlValue) {
+        String literal = ctx.store.getDBDictionary().toStringLiteral(String.valueOf(val));
+        return literal == null ? sqlValue : new Raw(literal);
     }
 }

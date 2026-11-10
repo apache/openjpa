@@ -117,6 +117,24 @@ public abstract class AbstractSQLServerDictionary
             super.setNull(stmnt, idx, colType, col);
     }
 
+    /**
+     * A string literal without the N prefix is converted to the code page of
+     * the database, so a value with a character outside ASCII may arrive as a
+     * different character. Such a value is bound as a parameter instead, which
+     * the driver sends as Unicode.
+     */
+    @Override
+    public String toStringLiteral(String value) {
+        if (value != null) {
+            for (int i = 0; i < value.length(); i++) {
+                if (value.charAt(i) > 0x7F) {
+                    return null;
+                }
+            }
+        }
+        return super.toStringLiteral(value);
+    }
+
     @Override
     protected void appendSelectRange(SQLBuffer buf, long start, long end,
         boolean subselect) {
