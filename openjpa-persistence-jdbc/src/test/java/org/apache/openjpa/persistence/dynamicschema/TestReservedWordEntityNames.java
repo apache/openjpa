@@ -30,7 +30,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 /**
  * Tests an entity named and with attributes named after words Derby rejects
  * as unquoted identifiers: the schema is created, and the entity is persisted,
- * found and queried.
+ * found and queried. Other databases reserve other words, so the tests only
+ * run on Derby.
  */
 public class TestReservedWordEntityNames extends SingleEMFTestCase {
 
@@ -51,6 +52,9 @@ public class TestReservedWordEntityNames extends SingleEMFTestCase {
     }
 
     public void testPersistFindAndQuery() {
+        if (!(getDBDictionary() instanceof DerbyDictionary)) {
+            return;
+        }
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             Window window = new Window();
