@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
+import java.time.temporal.Temporal;
+import java.util.Calendar;
+
 import org.apache.openjpa.jdbc.sql.Raw;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
@@ -154,9 +157,11 @@ public class Lit extends Const implements Literal {
                     lstate.sqlValue = new Raw(_val.toString());
                     break;
                 default:
+                    // OPENJPA-2935: a temporal value has no portable literal form, its
+                    // toString() is not valid SQL, so it stays bound as a parameter
                     if (_val instanceof String) {
                         lstate.sqlValue = toRawString(ctx, _val, lstate.sqlValue);
-                    } else {
+                    } else if (!isTemporal(_val)) {
                         lstate.sqlValue = new Raw(_val.toString());
                     }
                     break;
@@ -175,5 +180,9 @@ public class Lit extends Const implements Literal {
     private static Object toRawString(ExpContext ctx, Object val, Object sqlValue) {
         String literal = ctx.store.getDBDictionary().toStringLiteral(String.valueOf(val));
         return literal == null ? sqlValue : new Raw(literal);
+    }
+
+    private static boolean isTemporal(Object val) {
+        return val instanceof java.util.Date || val instanceof Calendar || val instanceof Temporal;
     }
 }
