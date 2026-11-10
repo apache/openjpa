@@ -6727,7 +6727,7 @@ public class DBDictionary
 
     public String toDBName(DBIdentifier name, boolean delimit) {
         if (!getSupportsDelimitedIdentifiers())
-            return normalize(name).getName();
+            return (delimit ? normalize(name) : name).getName();
         else
             return getNamingUtil().toDBName(name, delimit);
     }

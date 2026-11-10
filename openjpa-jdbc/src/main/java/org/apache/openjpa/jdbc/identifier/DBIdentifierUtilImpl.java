@@ -239,7 +239,11 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         if (DBIdentifier.isNull(name)) {
             return null;
         }
-        name = normalize(name);
+        if (delimit) {
+            // a name that is not to be delimited, such as a name for the
+            // database metadata, is written as it is
+            name = normalize(name);
+        }
         if (getIdentifierConfiguration().getSupportsDelimitedIdentifiers() && delimit
             && getIdentifierConfiguration().delimitAll() && !name.isDelimited()) {
             return delimit(name, true);
