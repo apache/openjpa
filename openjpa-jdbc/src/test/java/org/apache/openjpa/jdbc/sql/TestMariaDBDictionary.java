@@ -43,6 +43,7 @@ import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator;
 import org.apache.openjpa.meta.JavaTypes;
+import org.junit.After;
 import org.junit.Test;
 
 /**
@@ -55,6 +56,15 @@ import org.junit.Test;
 public class TestMariaDBDictionary {
 
     private static final String NEXT_SEQUENCE_QUERY = "SELECT NEXTVAL({0})";
+
+    /**
+     * Puts back the delimiting of reserved words that a configured MySQL or
+     * MariaDB dictionary sets for the whole JVM.
+     */
+    @After
+    public void tearDown() {
+        TestAbstractMySQLDictionary.resetDelimitingOfReservedWords();
+    }
 
     @Test
     public void testNoSequenceSupportBefore103() throws Exception {

@@ -25,14 +25,18 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.lib.conf.Configurations;
+import org.apache.openjpa.lib.identifier.IdentifierRule;
 import org.apache.openjpa.meta.JavaTypes;
+import org.junit.After;
 import org.junit.Test;
 
 /**
@@ -307,6 +311,22 @@ public class TestAbstractMySQLDictionary {
             assertTrue(word, mariadb.getInvalidColumnWordSet().contains(word));
             assertFalse(word, mariadb.reservedWordSet.contains(word));
         }
+    }
+
+    /**
+     * The MySQL and MariaDB dictionaries make the default identifier rule of
+     * {@link Normalizer}, which all dictionaries of the JVM share, delimit
+     * their reserved words. Put it back for the tests that run after.
+     */
+    @After
+    public void tearDown() {
+        resetDelimitingOfReservedWords();
+    }
+
+    static void resetDelimitingOfReservedWords() {
+        IdentifierRule rule = Normalizer.getNamingConfiguration().getDefaultIdentifierRule();
+        rule.setDelimitReservedWords(false);
+        rule.setReservedWords(Set.of());
     }
 
     private static <T extends DBDictionary> T configure(T dict, String compatibility) {
