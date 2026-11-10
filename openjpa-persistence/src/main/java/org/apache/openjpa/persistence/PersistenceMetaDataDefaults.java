@@ -300,16 +300,21 @@ public class PersistenceMetaDataDefaults
      * Whether the member is converted by an auto-apply converter registered
      * for its declared type, which makes it a basic attribute (Jakarta
      * Persistence 3.2, section 3.9) whether or not its type is serializable.
-     * Only a type without a type code of its own ({@link JavaTypes#OBJECT})
-     * is considered, as for the converter itself. Identifiers, versions,
+     * Only a type without a type code of its own is considered: a class
+     * ({@link JavaTypes#OBJECT}) or an interface that is not serializable
+     * ({@link JavaTypes#PC_UNTYPED}), as for the converter itself; collections,
+     * maps and arrays are not. Identifiers, versions,
      * enumerated and temporal attributes are not converted, and neither is a
      * member that declares a {@link Convert} of its own, which either disables
      * the conversion or names its converter.
      */
     public static boolean isAutoApplyConverted(MetaDataRepository repos,
         AnnotatedElement el, Class<?> type) {
-        if (repos == null || type == null
-            || JavaTypes.getTypeCode(type) != JavaTypes.OBJECT) {
+        if (repos == null || type == null) {
+            return false;
+        }
+        int code = JavaTypes.getTypeCode(type);
+        if (code != JavaTypes.OBJECT && code != JavaTypes.PC_UNTYPED) {
             return false;
         }
         for (Class<? extends Annotation> excluded : AUTO_APPLY_EXCLUDED) {

@@ -1617,6 +1617,12 @@ public class AnnotationPersistenceMetaDataParser
                 case JavaTypes.PC:
                 case JavaTypes.PC_UNTYPED:
                     if (wholeValueConverted || isAutoApplyConverted(fmd)) {
+                        // the converter maps the value, so an interface
+                        // that is not serializable is no relation to an
+                        // entity of an unknown type
+                        if (fmd.getDeclaredTypeCode() == JavaTypes.PC_UNTYPED) {
+                            fmd.setDeclaredTypeCode(JavaTypes.OBJECT);
+                        }
                         break;
                     }
                     if (Serializable.class.isAssignableFrom(type))
