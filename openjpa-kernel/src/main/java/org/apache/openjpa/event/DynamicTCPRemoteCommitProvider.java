@@ -41,7 +41,8 @@ public abstract class DynamicTCPRemoteCommitProvider extends TCPRemoteCommitProv
 
     /**
      * {@link System#nanoTime()} at which the last refresh triggered by a connection from an unknown host started,
-     * guarded by {@link #_onDemandRefreshLock}.
+     * guarded by {@link #_onDemandRefreshLock}. The monotonic clock is used rather than the wall clock, which can
+     * jump, as it is compared with the time a connection was accepted.
      */
     private long _lastOnDemandRefreshNanos;
 

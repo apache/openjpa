@@ -348,6 +348,8 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
      * @return <code>true</code> if the connection is accepted
      */
     protected boolean acceptsConnectionFrom(final InetAddress address) {
+        // localAddresses only holds the interface addresses, such as 127.0.0.1, while all of 127.0.0.0/8 is
+        // loopback; it also falls back to the local host address alone if the interfaces cannot be listed
         return !_restrictToPeers || address.isLoopbackAddress() || localAddresses.contains(address)
             || _peerAddresses.contains(address);
     }
@@ -404,10 +406,10 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
                     // this really shouldn't be able to happen.
                     throw new GeneralException(s_loc.get("tcp-not-equal", key)).setFatal(true);
                 }
+                _listener.addProvider(this);
             } else {
                 throw new InternalException(s_loc.get("tcp-listener-broken"));
             }
-            _listener.addProvider(this);
         }
 
         _addressesLock.lock();
@@ -750,7 +752,7 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
 
         private List<TCPRemoteCommitProvider> providers() {
             synchronized (_providers) {
-                return new ArrayList<>(_providers);
+                return List.copyOf(_providers);
             }
         }
 
