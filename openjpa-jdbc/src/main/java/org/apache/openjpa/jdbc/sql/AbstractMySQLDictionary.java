@@ -281,15 +281,18 @@ public abstract class AbstractMySQLDictionary
      * Makes the default identifier rule delimit the reserved words if
      * {@link #delimitsReservedWords()}. An identifier is delimited when it is
      * created, by {@link Normalizer}, whose rule is shared by all dictionaries
-     * of the JVM, so the dictionary that was configured last decides.
+     * of the JVM, so the dictionary that was configured last decides. The
+     * words are set before the delimiting is switched on, so that a
+     * dictionary configured at the same time never makes the rule delimit
+     * with words other than its own.
      */
     @Override
     protected void configureNamingRules() {
         super.configureNamingRules();
         if (delimitsReservedWords()) {
             IdentifierRule rule = Normalizer.getNamingConfiguration().getDefaultIdentifierRule();
-            rule.setDelimitReservedWords(true);
             rule.setReservedWords(reservedWordSet);
+            rule.setDelimitReservedWords(true);
         }
     }
 
