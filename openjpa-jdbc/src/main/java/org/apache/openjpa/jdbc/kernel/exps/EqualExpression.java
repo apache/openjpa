@@ -22,6 +22,7 @@ import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.meta.ClassMetaData;
 
 /**
  * Compares two values.
@@ -79,18 +80,12 @@ class EqualExpression
                 // 1) Lit - in this case a Lit is hard coded to return a length of 1.
                 // 2) Param - in this case the metadata is null so length will return 1.
                 // Given this, first look to see if lenVal1 is greater than lenVal2.
-                if (lenVal1 > lenVal2) {
-                    // If here, lets get the metadata from val1 and see if its PK
-                    // is an embeddable. If so, the length (val1Len) will be the
-                    // size of the number of colunns in the PK. Use this length
-                    // in order to create an equal expression with the right number
-                    // of 'AND' statementes.
-                    ClassMapping cm = (ClassMapping) val1.getMetaData();
-                    FieldMapping[] fmsPK = cm.getPrimaryKeyFieldMappings();
-
-                    if (fmsPK[0].isEmbedded()) {
-                        len = lenVal1;
-                    }
+                if (lenVal1 > lenVal2 && comparesAllColumns(val1.getMetaData(), lenVal1)) {
+                    // If here, val1 holds all the columns of the compared value
+                    // (for example all the PK columns of an entity with a composite
+                    // PK). Use this length in order to create an equal expression
+                    // with the right number of 'AND' statements.
+                    len = lenVal1;
                 }
 
                 for (int i = 0; i < len; i++) {
@@ -103,5 +98,26 @@ class EqualExpression
                 }
             }
         }
+    }
+
+    /**
+     * Whether all the given number of columns of a value with the given
+     * metadata must be compared (OPENJPA-2631, OPENJPA-2931). This is the
+     * case for an embedded value, and for an entity whose primary key is
+     * embedded or a basic value, or whose primary key columns, possibly
+     * derived from a relation, are exactly the given columns.
+     */
+    private static boolean comparesAllColumns(ClassMetaData meta, int len) {
+        if (!(meta instanceof ClassMapping cm)) {
+            return false;
+        }
+        if (cm.getEmbeddingMetaData() != null || cm.isEmbeddedOnly()) {
+            return true;
+        }
+        FieldMapping[] fmsPK = cm.getPrimaryKeyFieldMappings();
+        if (fmsPK.length > 0 && fmsPK[0].isEmbedded()) {
+            return true;
+        }
+        return cm.getPrimaryKeyColumns().length == len;
     }
 }

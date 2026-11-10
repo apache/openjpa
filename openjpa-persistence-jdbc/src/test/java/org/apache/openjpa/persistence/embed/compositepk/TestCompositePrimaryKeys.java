@@ -29,6 +29,8 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.ListJoin;
+import jakarta.persistence.criteria.MapJoin;
 import jakarta.persistence.criteria.ParameterExpression;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -55,7 +57,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
     @Override
     public void setUp() {
         super.setUp(DROP_TABLES, Subject.class, SubjectKey.class, SubjectWithIdClass.class, Topic.class,
-            SubTopic.class);
+            SubTopic.class, Chapter.class, Section.class, SubjectGroup.class);
 
             em = emf.createEntityManager();
             tx = em.getTransaction();
@@ -562,6 +564,109 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
         Assert.assertEquals(Integer.valueOf(8), em.createQuery(cq).getSingleResult().getId());
     }
 
+    /*
+     * OPENJPA-2931: the comparison on a path navigated from a root whose own primary key starts with a
+     * relation, so that only the metadata of the type the path navigates to, Subject, tells the store to
+     * compare all PK columns.
+     */
+    public void testFindUsingCriteriaBuilderEqualsOnPathFromDerivedIdentityRoot() {
+        Subject sub = createSubject();
+
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+        CriteriaQuery<Chapter> cq = builder.createQuery(Chapter.class);
+        Root<Chapter> root = cq.from(Chapter.class);
+        cq.where(builder.equal(root.get("topic").get("subject"), sub));
+
+        Chapter chapter = em.createQuery(cq).getSingleResult();
+        Assert.assertEquals("Type", chapter.getOwner().getKey().getSubjectTypeCode());
+    }
+
+    /*
+     * OPENJPA-2931: comparing an entity with a derived identity, whose first PK field is a relation, on a
+     * path navigated from the root must compare all of its PK columns.
+     */
+    public void testFindUsingCriteriaBuilderEqualsOnDerivedIdentityPath() {
+        Chapter chapter = em.find(Chapter.class, new ChapterId(new SubjectKey(1, "Type"), 1));
+
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+        CriteriaQuery<Section> cq = builder.createQuery(Section.class);
+        Root<Section> root = cq.from(Section.class);
+        cq.where(builder.equal(root.get("chapter"), chapter));
+
+        Assert.assertEquals(Integer.valueOf(1), em.createQuery(cq).getSingleResult().getId());
+    }
+
+    /*
+     * OPENJPA-2931: the same comparison as the previous test on a join.
+     */
+    public void testFindUsingCriteriaBuilderEqualsOnDerivedIdentityJoin() {
+        Chapter chapter = em.find(Chapter.class, new ChapterId(new SubjectKey(1, "Type"), 1));
+
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+        CriteriaQuery<Section> cq = builder.createQuery(Section.class);
+        Root<Section> root = cq.from(Section.class);
+        Join<Section, Chapter> join = root.join("chapter");
+        cq.where(builder.equal(join, chapter));
+
+        Assert.assertEquals(Integer.valueOf(1), em.createQuery(cq).getSingleResult().getId());
+    }
+
+    /*
+     * OPENJPA-2931: JPQL equivalent of the previous tests.
+     */
+    public void testFindUsingJPQLEqualsOnDerivedIdentityPath() {
+        Chapter chapter = em.find(Chapter.class, new ChapterId(new SubjectKey(1, "Type"), 1));
+
+        TypedQuery<Section> query = em.createQuery(
+                "select s from Section s where s.chapter = :chapter", Section.class);
+        query.setParameter("chapter", chapter);
+
+        Assert.assertEquals(Integer.valueOf(1), query.getSingleResult().getId());
+    }
+
+    /*
+     * OPENJPA-2931: comparing an entity with a composite PK on a plural join.
+     */
+    public void testFindUsingCriteriaBuilderEqualsOnPluralJoin() {
+        Subject sub = em.find(Subject.class, new SubjectKey(1, "Type"));
+
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+        CriteriaQuery<SubjectGroup> cq = builder.createQuery(SubjectGroup.class);
+        Root<SubjectGroup> root = cq.from(SubjectGroup.class);
+        ListJoin<SubjectGroup, Subject> join = root.joinList("subjects");
+        cq.where(builder.equal(join, sub));
+
+        Assert.assertEquals(Integer.valueOf(1), em.createQuery(cq).getSingleResult().getId());
+    }
+
+    /*
+     * OPENJPA-2931: JPQL equivalent of the previous test.
+     */
+    public void testFindUsingJPQLEqualsOnPluralJoin() {
+        Subject sub = em.find(Subject.class, new SubjectKey(1, "Type"));
+
+        TypedQuery<SubjectGroup> query = em.createQuery(
+                "select g from SubjectGroup g join g.subjects s where s = :subject", SubjectGroup.class);
+        query.setParameter("subject", sub);
+
+        Assert.assertEquals(Integer.valueOf(1), query.getSingleResult().getId());
+    }
+
+    /*
+     * OPENJPA-2931: comparing the entity key of a map join, which has a composite PK.
+     */
+    public void testFindUsingCriteriaBuilderEqualsOnMapJoinKey() {
+        Subject sub = em.find(Subject.class, new SubjectKey(1, "Type"));
+
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+        CriteriaQuery<SubjectGroup> cq = builder.createQuery(SubjectGroup.class);
+        Root<SubjectGroup> root = cq.from(SubjectGroup.class);
+        MapJoin<SubjectGroup, Subject, Topic> join = root.joinMap("topics");
+        cq.where(builder.equal(join.key(), sub));
+
+        Assert.assertEquals(Integer.valueOf(1), em.createQuery(cq).getSingleResult().getId());
+    }
+
     private void createData(){
         Subject s = new Subject();
         SubjectKey sk = new SubjectKey();
@@ -609,6 +714,44 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
         swic.setSubjectNummer(1);
         swic.setSubjectTypeCode("Type2");
         em.persist(swic);
+
+        // Two Chapters with a derived identity whose owners differ in the second PK column only, each
+        // referenced by one Section, so that a comparison selects one row only if all PK columns are compared.
+        Topic t5 = em.find(Topic.class, 5);
+        Chapter c1 = new Chapter();
+        c1.setOwner(s);
+        c1.setPosition(1);
+        c1.setTopic(t5);
+        em.persist(c1);
+
+        Chapter c2 = new Chapter();
+        c2.setOwner(s2);
+        c2.setPosition(1);
+        c2.setTopic(t);
+        em.persist(c2);
+
+        Section section = new Section();
+        section.setId(1);
+        section.setChapter(c1);
+        em.persist(section);
+
+        section = new Section();
+        section.setId(2);
+        section.setChapter(c2);
+        em.persist(section);
+
+        // Two groups that hold one Subject each, differing in the second PK column only.
+        SubjectGroup g1 = new SubjectGroup();
+        g1.setId(1);
+        g1.getSubjects().add(s);
+        g1.getTopics().put(s, t5);
+        em.persist(g1);
+
+        SubjectGroup g2 = new SubjectGroup();
+        g2.setId(2);
+        g2.getSubjects().add(s2);
+        g2.getTopics().put(s2, t);
+        em.persist(g2);
 
         em.flush();
     }
