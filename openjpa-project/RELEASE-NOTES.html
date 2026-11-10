@@ -24,6 +24,7 @@ under the License.
 <h1>Release Notes for Apache OpenJPA 4.2.0</h1>
 <ul>
   <li><a href="#Overview">Overview</a></li>
+  <li><a href="#UpgradeNotes">Upgrade Notes</a></li>
   <li><a href="#Prerequisites">Prerequisites</a></li>
   <li><a href="#Documentation">Documentation</a></li>
   <li><a href="#GetInvolved">Getting Involved</a></li>
@@ -45,6 +46,25 @@ under the License.
 
 <p>Additional information on the OpenJPA project may be found at the project
 web site: <a href="https://openjpa.apache.org">https://openjpa.apache.org</a></p>
+
+<h2><a name="UpgradeNotes"></a>Upgrade Notes</h2>
+<p>Some changes of this release alter the mapping or the behaviour of
+existing applications. They are described in the Migration Considerations
+of the <a href="https://openjpa.apache.org/documentation.html">reference
+guide</a>, together with the <code>openjpa.Compatibility</code> options that
+restore the behaviour of OpenJPA 4.1.x where one exists.</p>
+<ul>
+  <li>An attribute whose type is not <code>java.io.Serializable</code> and
+  that has no mapping annotation is now mapped as a basic attribute when a
+  <code>@Converter(autoApply = true)</code> is registered for its type, as
+  Jakarta Persistence 3.2 section 3.9 requires. In 4.1.x such an attribute
+  was left out of the mapping with only a warning and its value was not
+  stored. Applications with such attributes get a new column of the
+  converter's database type for each of them; set
+  <code>openjpa.Compatibility=MapAutoApplyConvertedFields=false</code> to
+  restore the 4.1.x mapping (OPENJPA-3073).
+  </li>
+</ul>
 
 <h2><a name="Prerequisites"></a>Prerequisites</h2>
 <P>OpenJPA requires Java 17 or higher and a relational

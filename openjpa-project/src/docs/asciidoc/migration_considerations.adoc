@@ -441,6 +441,28 @@ A converter that throws while the cache is filled leaves that attribute out of t
 Audit existing `@Converter(autoApply=true)` classes: attributes of the matching type that were stored unconverted by 4.1.x are now written and read through the converter and their generated column type changes.
 Remove ``autoApply``, declare an explicit converter, or pin the column type with `@Column(columnDefinition=...)` where the old behavior is required.
 
+[[jpa_4.2_AutoApplyNonSerializable]]
+==== An auto-apply converter maps an attribute whose type is not serializable
+
+Without a mapping annotation of its own, an attribute is persistent by default only if its type is a basic type, an embeddable or serializable.
+An attribute of any other type, such as a value class or a record that does not implement [class]``java.io.Serializable``, was left out of the mapping with only a warning in 4.1.x, even when a `@Converter(autoApply=true)` was declared for its type, and its value was not stored.
+Jakarta Persistence 3.2 section 3.9 considers a converted attribute a basic attribute and applies an auto-apply converter to all attributes of its target type.
+Such an attribute is therefore now mapped as a basic attribute when an auto-apply converter is registered for its type: it gets a column of the converter's database type, its value is written and read through the converter, it can be used in queries, and the metamodel shows it as a basic [class]``SingularAttribute``.
+This applies to the attributes of entities and embeddables, with field as well as property access.
+
+Expect a new column for each such attribute.
+`openjpa.jdbc.SynchronizeMappings` adds it, a schema maintained by hand has to add it, and existing rows have no value in it, since 4.1.x never stored one.
+
+Identifier and version attributes, attributes annotated `@Enumerated` or `@Temporal` and attributes with a `@Convert` of their own are not mapped this way; in particular `@Convert(disableConversion=true)` keeps such an attribute out of the mapping, as before.
+An attribute of such a type for which no auto-apply converter is registered is still left out of the mapping with a warning.
+An attribute of such a type that is declared `@Basic` failed in 4.1.x with ``isn't supported by declared persistence strategy "Basic"``; it is now mapped through the auto-apply converter of its type as well.
+
+The converter is registered from the classes of the persistence unit, so list it in `persistence.xml` like the entities.
+This also holds for build-time enhancement: a class that was enhanced while the converter was not known keeps the persistent fields it was enhanced with, so the attribute stays out of the mapping until the class is enhanced again with the converter listed.
+
+Set `openjpa.Compatibility=MapAutoApplyConvertedFields=false` (default ``true``) to restore the 4.1.x mapping (OPENJPA-3073).
+The option does not affect attributes of a serializable type, which were persistent before and get their auto-apply converter as described in <<jpa_4.2_AttributeConverters>>, nor attributes declared ``@Basic``.
+
 [[jpa_4.2_AccessType]]
 ==== Access type determination and property accessors
 
