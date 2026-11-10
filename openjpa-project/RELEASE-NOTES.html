@@ -69,26 +69,22 @@ restore the behaviour of OpenJPA 4.1.x where one exists.</p>
   through a generic superclass or interface; the general converter changes
   described in the Migration Considerations are not affected by this option
   (<a href='https://issues.apache.org/jira/browse/OPENJPA-2944'>OPENJPA-2944</a>).
-  <li>On MySQL, a column whose name is a word that MySQL 8.0 and later
-  reserve, such as <code>RANK</code>, <code>ROW_NUMBER</code>,
-  <code>WINDOW</code> or <code>SYSTEM</code>, now gets a <code>0</code>
-  appended, as other reserved words did before: an attribute
-  <code>rank</code> is mapped to the column <code>RANK0</code>. On MariaDB the
-  same applies to <code>ACCESSIBLE</code>, <code>LINEAR</code>,
-  <code>READ_WRITE</code> and <code>ROW_NUMBER</code>. A schema that still
-  has the earlier column names, e.g. one created on MySQL 5.7, no longer
-  matches; set
-  <li>On MySQL, a table or column whose name is a word that MySQL 8.0 and
-  later reserve, such as <code>RANK</code>, <code>ROW_NUMBER</code>,
-  <code>WINDOW</code> or <code>SYSTEM</code>, is now delimited in the
-  generated SQL, as other reserved words were before, so that its table can
-  be created on MySQL 8.0 and later; the name itself is unchanged. On MariaDB
-  a column named <code>ACCESSIBLE</code>, <code>LINEAR</code>,
-  <code>READ_WRITE</code> or <code>ROW_NUMBER</code> now gets a
-  <code>0</code> appended, e.g. <code>ROW_NUMBER0</code>, so a schema that
-  still has the earlier column name no longer matches; set
-  <code>openjpa.Compatibility=UpdatedMySQLAndMariaDBReservedWords=false</code> to keep
-  the 4.1.x names (OPENJPA-3074).
+  <li>MySQL and MariaDB: the dictionaries now know the words that MySQL
+  8.4 and 9.7 and MariaDB 10.11 and 12.3 reserve, such as <code>RANK</code>,
+  <code>WINDOW</code>, <code>LIMIT</code>, <code>DUAL</code> or, on MariaDB,
+  <code>OFFSET</code>, and both delimit a table or column whose name is a
+  reserved word with back ticks instead of renaming it, so that its table can
+  be created. On MySQL a column that got a <code>0</code> appended, such as
+  <code>LIMIT0</code>, is now the delimited <code>limit</code>; on MariaDB,
+  which did not delimit before, this holds for every reserved word, e.g. a
+  column <code>ORDER0</code> becomes <code>order</code> and a table
+  <code>USER0</code> becomes <code>User</code>. A delimited default table
+  name keeps the case of the entity name, e.g. <code>Window</code> instead of
+  <code>WINDOW</code>, which matters where table names are case sensitive. A
+  schema that still has the earlier names no longer matches; set
+  <code>openjpa.Compatibility=UpdatedMySQLAndMariaDBReservedWords=false</code>
+  to restore the 4.1.x names on MariaDB, and on MySQL those of the words added
+  by this change (OPENJPA-3074).
   </li>
 </ul>
 

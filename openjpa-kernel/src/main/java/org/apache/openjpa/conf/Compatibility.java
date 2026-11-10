@@ -86,7 +86,6 @@ public class Compatibility {
     private boolean _allowNestedCompoundSelection = false; // OPENJPA-2991
     private boolean _flushAfterInMemoryBulkOperation = true; // OPENJPA-2951
     private boolean _resolveConverterTypeHierarchy = true; // OPENJPA-2944
-    private boolean _updatedMySQLReservedWords = true; // OPENJPA-3074
     private boolean _updatedMySQLAndMariaDBReservedWords = true; // OPENJPA-3074
 
     /**
@@ -1047,20 +1046,31 @@ public class Compatibility {
     }
 
     /**
-     * Whether the MySQL and MariaDB dictionaries treat the words that MySQL
-     * 8.0 and later reserve - <code>RANK</code>, <code>ROW_NUMBER</code>,
-     * <code>WINDOW</code>, <code>SYSTEM</code> and others, see
-     * <code>MySQLDictionary</code> - and that are missing from their earlier
-     * lists of reserved words as such words. Defaults to true: on MySQL a
-     * table or column whose name is such a word is delimited, as for every
-     * other reserved word, so that its table can be created and written to;
-     * the name stays the same. MariaDB does not delimit reserved words, and a
-     * column named after one of the few of the words it reserves gets a
-     * <code>0</code> appended, e.g. <code>ROW_NUMBER0</code>.
-     *<p>
+     * Whether the MySQL and MariaDB dictionaries use the reserved words of
+     * the current servers and delimit them on MariaDB too. Defaults to true:
+     * <ul>
+     * <li><code>MySQLDictionary</code> treats the words that MySQL 8.0 and
+     * later reserve, such as <code>RANK</code>, <code>WINDOW</code> or
+     * <code>SYSTEM</code>, and the invalid column words that MySQL reserves
+     * in a table name too, such as <code>NTILE</code>, <code>DUAL</code> or
+     * <code>LIMIT</code>, as reserved words.</li>
+     * <li><code>MariaDBDictionary</code> treats the words that MariaDB
+     * reserves, such as <code>LINEAR</code>, <code>OFFSET</code>,
+     * <code>RETURNING</code> or <code>LIMIT</code>, and the names of
+     * built-in functions it reserves in a table name under the
+     * <code>IGNORE_SPACE</code> SQL mode, such as <code>NTILE</code> or
+     * <code>RANK</code>, as reserved words.</li>
+     * <li>Both delimit a table, column or other name that is a reserved word
+     * with back ticks and keep it, where <code>MariaDBDictionary</code>
+     * appended a <code>0</code> before, e.g. <code>ORDER0</code>. A column
+     * <code>LIMIT0</code> becomes <code>limit</code>, and a delimited
+     * default table name keeps the case of the entity name.</li>
+     * </ul>
      * Set to false to keep the names and the SQL that an earlier release
-     * generated, e.g. for a MariaDB schema that is still used under its
-     * original column names.
+     * generated for a schema that is still used under its original names: on
+     * MariaDB those of OpenJPA 4.1.x, with no name delimited; on MySQL those
+     * of the words added here, while the words that were reserved before are
+     * still delimited.
      *
      * @since 4.2.0
      */
@@ -1069,8 +1079,8 @@ public class Compatibility {
     }
 
     /**
-     * Whether the MySQL and MariaDB dictionaries treat the words that MySQL
-     * 8.0 and later reserve as reserved words.
+     * Whether the MySQL and MariaDB dictionaries use the reserved words of
+     * the current servers and delimit them on MariaDB too.
      *
      * @since 4.2.0
      */
