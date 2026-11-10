@@ -806,6 +806,7 @@ public class Column extends ReferenceCounter {
                     case Types.CLOB:
                     case Types.BLOB:
                     case Types.SQLXML:
+                    case 2007:
                         return true;
                      default:
                          return false;
