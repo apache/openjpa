@@ -392,6 +392,9 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
      * Creates the object-level representation of the sequence table.
      */
     private void buildTable() {
+        DBDictionary dict = _conf.getDBDictionaryInstance();
+        // the configured name is not named for the dictionary yet
+        _table = dict.normalize(_table);
         DBIdentifier tableName = DBIdentifier.NULL;
         DBIdentifier schemaName = DBIdentifier.NULL;
         QualifiedDBIdentifier path = QualifiedDBIdentifier.getPath(_table);
@@ -415,7 +418,6 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
         PrimaryKey pk = table.addPrimaryKey();
         pk.addColumn(_pkColumn);
 
-        DBDictionary dict = _conf.getDBDictionaryInstance();
         DBIdentifier _delimitedSeqColumnName = dict.delimitAll() ?
                 DBIdentifier.newColumn(this._seqColumnName.getName(), true) : this._seqColumnName;
         _seqColumn = table.addColumn(dict.getValidColumnName

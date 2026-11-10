@@ -666,6 +666,8 @@ public abstract class MappingInfo implements Serializable {
         // to put the column in an unexpected table
         if (DBIdentifier.isNull(colName))
             colName = tmplate.getIdentifier();
+        // the template name was not named for the dictionary yet
+        colName = dict.normalize(colName);
         QualifiedDBIdentifier path = QualifiedDBIdentifier.getPath(colName);
         if (path.isUnqualifiedColumn()) {
             colName = path.getIdentifier();

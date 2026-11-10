@@ -26,6 +26,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.meta.XMLMetaDataParser;
@@ -241,7 +243,8 @@ public class XMLSchemaParser
         Iterator<String> cols;
         for (ForeignKeyInfo info : _fkInfos) {
             fkInfo = info;
-            toTable = _group.findTable(fkInfo.toTable);
+            toTable = _group.findTable(QualifiedDBIdentifier.getPath(
+                _dict.normalize(DBIdentifier.newTable(fkInfo.toTable))));
             if (toTable == null || toTable.getPrimaryKey() == null)
                 throwUserException(_loc.get("fk-totable", new Object[]
                         {fkInfo.fk, fkInfo.toTable, fkInfo.fk.getTable()}));
@@ -404,7 +407,7 @@ public class XMLSchemaParser
         // creates group if not set
         SchemaGroup group = getSchemaGroup();
 
-        String name = attrs.getValue("name");
+        DBIdentifier name = _dict.normalize(DBIdentifier.newSchema(attrs.getValue("name")));
         _schema = group.getSchema(name);
         if (_schema == null)
             _schema = group.addSchema(name);
@@ -438,7 +441,7 @@ public class XMLSchemaParser
     }
 
     private void startTable(Attributes attrs) {
-        _table = _schema.addTable(attrs.getValue("name"));
+        _table = _schema.addTable(_dict.normalize(DBIdentifier.newTable(attrs.getValue("name"))));
         _table.setSource(getSourceFile(), SourceTracker.SRC_XML);
         Locator locator = getLocation().getLocator();
         if (locator != null) {

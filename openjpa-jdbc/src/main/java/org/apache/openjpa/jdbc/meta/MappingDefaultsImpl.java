@@ -614,7 +614,7 @@ public class MappingDefaultsImpl
 
     @Override
     public DBIdentifier getTableIdentifier(ClassMapping cls, Schema schema) {
-        return DBIdentifier.newTable(getTableName(cls, schema));
+        return dict.normalize(DBIdentifier.newTable(getTableName(cls, schema)));
     }
 
     @Override
@@ -624,7 +624,7 @@ public class MappingDefaultsImpl
 
     @Override
     public DBIdentifier getTableIdentifier(FieldMapping fm, Schema schema) {
-        DBIdentifier sName = DBIdentifier.newTable(fm.getName());
+        DBIdentifier sName = dict.normalize(DBIdentifier.newTable(fm.getName()));
         Table table = fm.getDefiningMapping().getTable();
         if (table != null) {
             DBIdentifier tableName = DBIdentifier.truncate(table.getIdentifier(),5);
@@ -723,7 +723,7 @@ public class MappingDefaultsImpl
     public void populateForeignKeyColumn(ValueMapping vm, String name,
         Table local, Table foreign, Column col, Object target, boolean inverse,
         int pos, int cols) {
-        populateForeignKeyColumn(vm, DBIdentifier.newColumn(name), local, foreign, col,
+        populateForeignKeyColumn(vm, dict.normalize(DBIdentifier.newColumn(name)), local, foreign, col,
             target, inverse, pos, cols);
     }
 
@@ -741,7 +741,7 @@ public class MappingDefaultsImpl
     @Override
     public void populateColumns(ValueMapping vm, String name, Table table,
         Column[] cols) {
-        populateColumns(vm, DBIdentifier.newColumn(name), table, cols);
+        populateColumns(vm, dict.normalize(DBIdentifier.newColumn(name)), table, cols);
     }
 
     @Override
@@ -773,7 +773,7 @@ public class MappingDefaultsImpl
     @Override
     public boolean populateNullIndicatorColumns(ValueMapping vm, String name,
         Table table, Column[] cols) {
-        return populateNullIndicatorColumns(vm, DBIdentifier.newColumn(name), table, cols);
+        return populateNullIndicatorColumns(vm, dict.normalize(DBIdentifier.newColumn(name)), table, cols);
     }
 
     @Override
@@ -818,7 +818,7 @@ public class MappingDefaultsImpl
     @Override
     public ForeignKey getForeignKey(ValueMapping vm, String name, Table local,
         Table foreign, boolean inverse) {
-        return getForeignKey(vm, DBIdentifier.newForeignKey(name), local, foreign, inverse);
+        return getForeignKey(vm, dict.normalize(DBIdentifier.newForeignKey(name)), local, foreign, inverse);
     }
 
     @Override
@@ -869,7 +869,7 @@ public class MappingDefaultsImpl
      */
     @Deprecated
     protected String getIndexName(String name, Table table, Column[] cols) {
-        return getIndexName(DBIdentifier.newIndex(name), table, cols).getName();
+        return getIndexName(dict.normalize(DBIdentifier.newIndex(name)), table, cols).getName();
     }
 
     protected DBIdentifier getIndexName(DBIdentifier name, Table table, Column[] cols) {
@@ -892,7 +892,7 @@ public class MappingDefaultsImpl
     @Override
     public Index getIndex(ValueMapping vm, String name, Table table,
         Column[] cols) {
-        return getIndex(vm, DBIdentifier.newIndex(name), table, cols);
+        return getIndex(vm, dict.normalize(DBIdentifier.newIndex(name)), table, cols);
     }
 
     @Override

@@ -421,7 +421,7 @@ public class XMLPersistenceMappingParser
             Object current = currentElement();
             if (current instanceof Unique) {
                 Unique unq = (Unique)current;
-                unq.setIdentifier(DBIdentifier.newConstraint(name, delimit()));
+                unq.setIdentifier(_dict.normalize(DBIdentifier.newConstraint(name, delimit())));
             }
         }
 
@@ -511,7 +511,7 @@ public class XMLPersistenceMappingParser
         throws SAXException {
         ClassMapping cm = (ClassMapping) meta;
         if (_schema != null)
-            cm.getMappingInfo().setSchemaIdentifier(DBIdentifier.newSchema(_schema, delimit()));
+            cm.getMappingInfo().setSchemaIdentifier(_dict.normalize(DBIdentifier.newSchema(_schema, delimit())));
 
         if (_supJoinCols != null)
             cm.getMappingInfo().setColumns(_supJoinCols);
@@ -555,7 +555,7 @@ public class XMLPersistenceMappingParser
         _secondaryTable = toTableIdentifier(attrs.getValue("schema"),
             attrs.getValue("name")).getName();
         ((ClassMapping)currentElement()).getMappingInfo()
-        	.addSecondaryTable(DBIdentifier.newTable(_secondaryTable));
+        	.addSecondaryTable(_dict.normalize(DBIdentifier.newTable(_secondaryTable)));
         return true;
     }
 
@@ -565,7 +565,8 @@ public class XMLPersistenceMappingParser
     private void endSecondaryTable() {
         ClassMapping cm = (ClassMapping) currentElement();
         ClassMappingInfo info = cm.getMappingInfo();
-        info.setSecondaryTableJoinColumns(DBIdentifier.newTable(_secondaryTable, delimit()), _joinCols);
+        info.setSecondaryTableJoinColumns(_dict.normalize(DBIdentifier.newTable(_secondaryTable, delimit())),
+            _joinCols);
         clearSecondaryTableInfo();
     }
 
@@ -594,8 +595,10 @@ public class XMLPersistenceMappingParser
         seq.setSequencePlugin(SequenceMapping.IMPL_VALUE_TABLE);
         seq.setTableIdentifier(toTableIdentifier(attrs.getValue("schema"),
             attrs.getValue("table")));
-        seq.setPrimaryKeyColumnIdentifier(DBIdentifier.newColumn(attrs.getValue("pk-column-name"), delimit()));
-        seq.setSequenceColumnIdentifier(DBIdentifier.newColumn(attrs.getValue("value-column-name"), delimit()));
+        seq.setPrimaryKeyColumnIdentifier(
+            _dict.normalize(DBIdentifier.newColumn(attrs.getValue("pk-column-name"), delimit())));
+        seq.setSequenceColumnIdentifier(
+            _dict.normalize(DBIdentifier.newColumn(attrs.getValue("value-column-name"), delimit())));
         seq.setPrimaryKeyValue(attrs.getValue("pk-column-value"));
         String val = attrs.getValue("initial-value");
         if (val != null)
@@ -835,7 +838,7 @@ public class XMLPersistenceMappingParser
                     fm.getValueInfo().setColumns(_cols);
             }
             if (_colTable != null)
-                fm.getMappingInfo().setTableIdentifier(DBIdentifier.newTable(_colTable, delimit()));
+                fm.getMappingInfo().setTableIdentifier(_dict.normalize(DBIdentifier.newTable(_colTable, delimit())));
             setUnique(fm);
         }
         clearColumnInfo();
@@ -895,7 +898,7 @@ public class XMLPersistenceMappingParser
                         getEmbeddedClassType(basefm, _override),
                         basefm, _override, true);
                 dfm._defCols = _cols;
-                dfm._defTable = DBIdentifier.newTable(_colTable, delimit());
+                dfm._defTable = _dict.normalize(DBIdentifier.newTable(_colTable, delimit()));
                 dfm._attrName = _override;
                 dfm._unique = _unique;
             }
@@ -903,7 +906,7 @@ public class XMLPersistenceMappingParser
         if (fm != null && _cols != null) {
             fm.getValueInfo().setColumns(_cols);
             if (_colTable != null)
-                fm.getMappingInfo().setTableIdentifier(DBIdentifier.newTable(_colTable, delimit()));
+                fm.getMappingInfo().setTableIdentifier(_dict.normalize(DBIdentifier.newTable(_colTable, delimit())));
             setUnique(fm);
         }
         clearColumnInfo();
@@ -1135,7 +1138,7 @@ public class XMLPersistenceMappingParser
         List<Column> cols = info.getColumns();
         Column col = cols.get(0);
         if (DBIdentifier.isNull(col.getIdentifier())) {
-            col.setIdentifier(DBIdentifier.newColumn(fm.getName() + "_" + "KEY", delimit()));
+            col.setIdentifier(_dict.normalize(DBIdentifier.newColumn(fm.getName() + "_" + "KEY", delimit())));
         }
 
         return retVal;
@@ -1149,7 +1152,7 @@ public class XMLPersistenceMappingParser
         Column col = new Column();
         String val = attrs.getValue("name");
         if (val != null)
-            col.setIdentifier(DBIdentifier.newColumn(val, delimit()));
+            col.setIdentifier(_dict.normalize(DBIdentifier.newColumn(val, delimit())));
         val = attrs.getValue("referenced-column-name");
         if (val != null) {
             setTargetIdentifier(col, val);
@@ -1208,7 +1211,7 @@ public class XMLPersistenceMappingParser
     	if (refColumnName.charAt(0) == SINGLE_QUOTE) {
     		col.setTargetIdentifier(DBIdentifier.newConstant(refColumnName));
     	} else {
-    		col.setTargetIdentifier(DBIdentifier.newColumn(refColumnName, delimit()));
+    		col.setTargetIdentifier(_dict.normalize(DBIdentifier.newColumn(refColumnName, delimit())));
     	}
     }
 
@@ -1235,12 +1238,12 @@ public class XMLPersistenceMappingParser
      * Form a qualified table name from a schema and table name.
      */
     private DBIdentifier toTableIdentifier(String schema, String table) {
-        DBIdentifier sName = DBIdentifier.newSchema(schema, delimit());
-        DBIdentifier tName = DBIdentifier.newTable(table, delimit());
+        DBIdentifier sName = _dict.normalize(DBIdentifier.newSchema(schema, delimit()));
+        DBIdentifier tName = _dict.normalize(DBIdentifier.newTable(table, delimit()));
         if (DBIdentifier.isEmpty(tName) || DBIdentifier.isEmpty(sName)) {
             return tName;
         }
-        return QualifiedDBIdentifier.newPath(sName, tName);
+        return _dict.normalize(QualifiedDBIdentifier.newPath(sName, tName));
     }
 
 
@@ -1481,7 +1484,8 @@ public class XMLPersistenceMappingParser
     private boolean startEntityResult(Attributes attrs)
         throws SAXException {
         Class<?> entityClass = classForName(attrs.getValue("entity-class"));
-        String discriminator = DBIdentifier.newColumn(attrs.getValue("discriminator-column"), delimit()).getName();
+        String discriminator = _dict.normalize(
+            DBIdentifier.newColumn(attrs.getValue("discriminator-column"), delimit())).getName();
 
         // JPA 3.2: entity-result may appear inside named-native-query
         QueryResultMapping parent;
@@ -1508,7 +1512,7 @@ public class XMLPersistenceMappingParser
     private boolean startFieldResult(Attributes attrs)
         throws SAXException {
         String fieldName = attrs.getValue("name");
-        String columnName = DBIdentifier.newColumn(attrs.getValue("column"), delimit()).getName();
+        String columnName = _dict.normalize(DBIdentifier.newColumn(attrs.getValue("column"), delimit())).getName();
 
         QueryResultMapping.PCResult parent = (QueryResultMapping.PCResult)
             currentElement();
@@ -1560,7 +1564,7 @@ public class XMLPersistenceMappingParser
         throws SAXException {
         Unique unique = new Unique();
 
-        DBIdentifier name = DBIdentifier.newConstraint(attrs.getValue("name"), delimit());
+        DBIdentifier name = _dict.normalize(DBIdentifier.newConstraint(attrs.getValue("name"), delimit()));
         if (!DBIdentifier.isEmpty(name)) {
             unique.setIdentifier(name);
         }
@@ -1578,11 +1582,11 @@ public class XMLPersistenceMappingParser
     private void endUniqueConstraint() {
         Unique unique = (Unique) popElement();
         Object ctx = currentElement();
-        DBIdentifier tableName = DBIdentifier.newTable("?");
+        DBIdentifier tableName = _dict.normalize(DBIdentifier.newTable("?"));
         if (ctx instanceof ClassMapping) {
         	ClassMappingInfo info = ((ClassMapping) ctx).getMappingInfo();
         	tableName = (_secondaryTable == null)
-        		? info.getTableIdentifier() : DBIdentifier.newTable(_secondaryTable, delimit());
+        		? info.getTableIdentifier() : _dict.normalize(DBIdentifier.newTable(_secondaryTable, delimit()));
         	info.addUnique(tableName, unique);
         } else if (ctx instanceof FieldMapping) {// JoinTable
         	FieldMappingInfo info = ((FieldMapping)ctx).getMappingInfo();
@@ -1613,7 +1617,7 @@ public class XMLPersistenceMappingParser
         if (current instanceof Unique) {
             Unique unique = (Unique) current;
             Column column = new Column();
-            column.setIdentifier(DBIdentifier.newColumn(this.currentText(), delimit()));
+            column.setIdentifier(_dict.normalize(DBIdentifier.newColumn(this.currentText(), delimit())));
             unique.addColumn(column);
             return true;
         }
@@ -1664,7 +1668,7 @@ public class XMLPersistenceMappingParser
         Column col = new Column();
         String val = attrs.getValue("name");
         if (val != null)
-            col.setIdentifier(DBIdentifier.newColumn(val, delimit()));
+            col.setIdentifier(_dict.normalize(DBIdentifier.newColumn(val, delimit())));
         val = attrs.getValue("column-definition");
         if (val != null)
             col.setTypeIdentifier(DBIdentifier.newColumnDefinition(val));
@@ -1847,7 +1851,7 @@ public class XMLPersistenceMappingParser
         if (StringUtil.isEmpty(seqName)) {
             return seqName;
         }
-        return DBIdentifier.newSequence(seqName, delimit()).getName();
+        return _dict.normalize(DBIdentifier.newSequence(seqName, delimit())).getName();
     }
 
     @Override
@@ -1855,7 +1859,7 @@ public class XMLPersistenceMappingParser
         if (StringUtil.isEmpty(schName)) {
             return schName;
         }
-        return DBIdentifier.newSchema(schName, delimit()).getName();
+        return _dict.normalize(DBIdentifier.newSchema(schName, delimit())).getName();
     }
 
     @Override
@@ -1863,7 +1867,7 @@ public class XMLPersistenceMappingParser
         if (StringUtil.isEmpty(catName)) {
             return catName;
         }
-        return DBIdentifier.newCatalog(catName, delimit()).getName();
+        return _dict.normalize(DBIdentifier.newCatalog(catName, delimit())).getName();
     }
 
     private boolean delimit() {
@@ -1892,7 +1896,7 @@ public class XMLPersistenceMappingParser
         Column col = new Column();
         String name = attrs.getValue("name");
         if (!StringUtil.isEmpty(name));
-            col.setIdentifier(DBIdentifier.newColumn(name, delimit()));
+            col.setIdentifier(_dict.normalize(DBIdentifier.newColumn(name, delimit())));
         String columnDefinition= attrs.getValue("column-definition");
         if (!StringUtil.isEmpty(columnDefinition))
             col.setTypeIdentifier(DBIdentifier.newColumnDefinition(columnDefinition));
@@ -1929,7 +1933,7 @@ public class XMLPersistenceMappingParser
         org.apache.openjpa.jdbc.schema.Index idx =
             new org.apache.openjpa.jdbc.schema.Index();
         if (!StringUtil.isEmpty(name))
-            idx.setIdentifier(DBIdentifier.newConstraint(name, delimit()));
+            idx.setIdentifier(_dict.normalize(DBIdentifier.newConstraint(name, delimit())));
         idx.setUnique(unique);
         info.setIndex(idx);
     }
@@ -1986,7 +1990,7 @@ public class XMLPersistenceMappingParser
         org.apache.openjpa.jdbc.schema.ForeignKey fk =
             new org.apache.openjpa.jdbc.schema.ForeignKey();
         if (!StringUtil.isEmpty(name))
-            fk.setIdentifier(DBIdentifier.newForeignKey(name, delimit()));
+            fk.setIdentifier(_dict.normalize(DBIdentifier.newForeignKey(name, delimit())));
         fk.setDeferred(deferred);
         fk.setDeleteAction(deleteAction);
         fk.setUpdateAction(updateAction);
@@ -2069,7 +2073,7 @@ public class XMLPersistenceMappingParser
     private boolean startVersionColumn(Attributes attrs)
             throws SAXException {
 
-        Column col = AnnotationPersistenceMappingParser.newColumn(attrs.getValue("name"),
+        Column col = AnnotationPersistenceMappingParser.newColumn(_dict, attrs.getValue("name"),
             Boolean.parseBoolean(attrs.getValue("nullable")),
             Boolean.parseBoolean(attrs.getValue("insertable")),
             Boolean.parseBoolean(attrs.getValue("updatable")),

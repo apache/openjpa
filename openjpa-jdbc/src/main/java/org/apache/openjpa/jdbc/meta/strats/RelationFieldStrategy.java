@@ -252,11 +252,12 @@ public class RelationFieldStrategy
                         Column[] targetPkCols = targetPk.getColumns();
                         if (targetPkCols.length == cols.size()) {
                             String fieldName = field.getName();
+                            DBDictionary dict = field.getMappingRepository().getDBDictionary();
                             for (int i = 0; i < cols.size(); i++) {
                                 Column col = (Column) cols.get(i);
                                 DBIdentifier fkColName =
                                     DBIdentifier.combine(
-                                        DBIdentifier.newColumn(fieldName),
+                                        dict.normalize(DBIdentifier.newColumn(fieldName)),
                                         targetPkCols[i].getIdentifier()
                                             .getName());
                                 col.setIdentifier(fkColName);

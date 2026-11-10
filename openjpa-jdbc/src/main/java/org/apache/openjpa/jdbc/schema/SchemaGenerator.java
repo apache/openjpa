@@ -99,9 +99,9 @@ public class SchemaGenerator {
                 continue;
             }
             if (splitName.length == 1) {
-                names[i] = DBIdentifier.newSchema(schemaArray[i]);
+                names[i] = _dict.normalize(DBIdentifier.newSchema(schemaArray[i]));
             } else {
-                names[i] = DBIdentifier.newTable(schemaArray[i]);
+                names[i] = _dict.normalize(DBIdentifier.newTable(schemaArray[i]));
             }
         }
         _allowed = parseSchemasList(names);

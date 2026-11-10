@@ -54,6 +54,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         if (DBIdentifier.isNull(name)) {
             return name;
         }
+        name = normalize(name);
         String rule = name.getType().name();
         maxLen = getMaxLen(rule, name, maxLen);
 
@@ -66,6 +67,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         if (DBIdentifier.isNull(name)) {
             return name;
         }
+        name = normalize(name);
         String rule = name.getType().name();
         maxLen = getMaxLen(rule, name, maxLen);
 
@@ -80,6 +82,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         if (DBIdentifier.isNull(name)) {
             return name;
         }
+        name = normalize(name);
         String rule = name.getType().name();
         maxLen = getMaxLen(rule, name, maxLen);
 
@@ -93,6 +96,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         if (DBIdentifier.isNull(name)) {
             return name;
         }
+        name = normalize(name);
         String rule = name.getType().name();
         maxLen = getMaxLen(rule, name, maxLen);
 
@@ -106,6 +110,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         if (DBIdentifier.isNull(name)) {
             return name;
         }
+        name = normalize(name);
         String rule = name.getType().name();
         maxLen = getMaxLen(rule, name, maxLen);
 
@@ -118,6 +123,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         if (DBIdentifier.isNull(name)) {
             return name;
         }
+        name = normalize(name);
         String rule = name.getType().name();
         maxLen = getMaxLen(rule, name, maxLen);
 
@@ -148,7 +154,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
     @Override
     public DBIdentifier makeIdentifierValid(DBIdentifier sname, NameSet set, int maxLen,
         boolean checkForUniqueness) {
-        DBIdentifier validName = sname;
+        DBIdentifier validName = normalize(sname);
         String rule = sname.getType().name();
 
         maxLen = getMaxLen(rule, validName, maxLen);
@@ -233,6 +239,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         if (DBIdentifier.isNull(name)) {
             return null;
         }
+        name = normalize(name);
         if (getIdentifierConfiguration().getSupportsDelimitedIdentifiers() && delimit
             && getIdentifierConfiguration().delimitAll() && !name.isDelimited()) {
             return delimit(name, true);
@@ -290,7 +297,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
             return DBIdentifier.NULL;
         }
         if (!getIdentifierConfiguration().getSupportsDelimitedIdentifiers()) {
-            return DBIdentifier.newIdentifier(name, id);
+            return normalize(DBIdentifier.newIdentifier(name, id));
         }
         String delimCase = getIdentifierConfiguration().getDelimitedCase();
         String nonDelimCase = getIdentifierConfiguration().getSchemaCase();
@@ -300,7 +307,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         // case or try to determine whether delimiting is required.  Let the
         // normalizer figure it out using standard rules.
         if (delimCase.equals(nonDelimCase)) {
-            return DBIdentifier.newIdentifier(name, id, false, false, !delimCase.equals(CASE_PRESERVE));
+            return normalize(DBIdentifier.newIdentifier(name, id, false, false, !delimCase.equals(CASE_PRESERVE)));
         }
 
         // Otherwise, try to determine whether to delimit based on an expected vs.
@@ -322,8 +329,8 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         }
 
         boolean delimit = !caseName.equals(name) || getIdentifierConfiguration().delimitAll();
-        return DBIdentifier.newIdentifier((delimit ? name : caseName), id, false, delimit,
-            !delimCase.equals(CASE_PRESERVE));
+        return normalize(DBIdentifier.newIdentifier((delimit ? name : caseName), id, false, delimit,
+            !delimCase.equals(CASE_PRESERVE)));
     }
 
     @Override
@@ -410,6 +417,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         if (DBIdentifier.isNull(name))
             return DBIdentifier.NULL;
 
+        name = normalize(name);
         DBIdentifier sName = name.clone();
         // Handle delimited string differently. Return unquoted name.
         String delimCase = getIdentifierConfiguration().getDelimitedCase();
@@ -489,6 +497,19 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         }
 
         return maxLen;
+    }
+
+    /**
+     * Returns the given identifier as the dictionary whose naming utility
+     * this is names it.
+     *
+     * @see DBDictionary#normalize(DBIdentifier)
+     */
+    private DBIdentifier normalize(DBIdentifier name) {
+        if (getIdentifierConfiguration() instanceof DBDictionary dict) {
+            return dict.normalize(name);
+        }
+        return name;
     }
 
     /**

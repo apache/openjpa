@@ -350,8 +350,8 @@ public class AnnotationPersistenceMappingParser
         meta = (SequenceMapping) getRepository().addSequenceMetaData(name);
         meta.setSequencePlugin(SequenceMapping.IMPL_VALUE_TABLE);
         meta.setTableIdentifier(toTableIdentifier(gen.schema(), gen.table()));
-        meta.setPrimaryKeyColumnIdentifier(DBIdentifier.newColumn(gen.pkColumnName(), delimit()));
-        meta.setSequenceColumnIdentifier(DBIdentifier.newColumn(gen.valueColumnName(),delimit()));
+        meta.setPrimaryKeyColumnIdentifier(_dict.normalize(DBIdentifier.newColumn(gen.pkColumnName(), delimit())));
+        meta.setSequenceColumnIdentifier(_dict.normalize(DBIdentifier.newColumn(gen.valueColumnName(),delimit())));
         meta.setPrimaryKeyValue(gen.pkColumnValue());
         meta.setInitialValue(gen.initialValue());
         meta.setAllocate(gen.allocationSize());
@@ -364,8 +364,8 @@ public class AnnotationPersistenceMappingParser
         case 1:
         	meta.setUniqueColumnsIdentifier(DBIdentifier.toArray(gen.uniqueConstraints()[0].columnNames(),
         	    DBIdentifierType.COLUMN, delimit()));
-        	meta.setUniqueConstraintIdentifier(DBIdentifier.newConstraint(gen.uniqueConstraints()[0].name(),
-        	    delimit()));
+        	meta.setUniqueConstraintIdentifier(_dict.normalize(
+        	    DBIdentifier.newConstraint(gen.uniqueConstraints()[0].name(), delimit())));
         	break;
         default:
         	log.warn(_loc.get("unique-many-on-seq-unsupported", el, name));
@@ -593,7 +593,7 @@ public class AnnotationPersistenceMappingParser
         Column col = new Column();
         col.setFlag(Column.FLAG_PK_JOIN, true);
         if (!StringUtil.isEmpty(join.name()))
-            col.setIdentifier(DBIdentifier.newColumn(join.name(), delimit()));
+            col.setIdentifier(_dict.normalize(DBIdentifier.newColumn(join.name(), delimit())));
         if (!StringUtil.isEmpty(join.columnDefinition()))
             col.setTypeIdentifier(DBIdentifier.newColumnDefinition(join.columnDefinition()));
         if (!StringUtil.isEmpty(join.referencedColumnName()))
@@ -610,12 +610,12 @@ public class AnnotationPersistenceMappingParser
 
         List<Column> joins = null;
         for (SecondaryTable table : tables) {
-            DBIdentifier sName = DBIdentifier.newTable(table.name(), delimit());
+            DBIdentifier sName = _dict.normalize(DBIdentifier.newTable(table.name(), delimit()));
             if (DBIdentifier.isEmpty(sName))
                 throw new MetaDataException(_loc.get("second-name", cm));
             if (!StringUtil.isEmpty(table.schema())) {
-                DBIdentifier sSchema = DBIdentifier.newSchema(table.schema(), delimit());
-                sName = QualifiedDBIdentifier.newPath(sSchema, sName);
+                DBIdentifier sSchema = _dict.normalize(DBIdentifier.newSchema(table.schema(), delimit()));
+                sName = _dict.normalize(QualifiedDBIdentifier.newPath(sSchema, sName));
             }
             if (table.pkJoinColumns().length > 0) {
                 joins = new ArrayList<>(table.pkJoinColumns().length);
@@ -632,8 +632,8 @@ public class AnnotationPersistenceMappingParser
                 org.apache.openjpa.jdbc.schema.ForeignKey fk =
                     new org.apache.openjpa.jdbc.schema.ForeignKey();
                 if (!StringUtil.isEmpty(jpaFk.name()))
-                    fk.setIdentifier(DBIdentifier.newForeignKey(
-                        jpaFk.name(), delimit()));
+                    fk.setIdentifier(_dict.normalize(DBIdentifier.newForeignKey(
+                        jpaFk.name(), delimit())));
                 info.setSecondaryTableForeignKey(sName, fk);
             }
             addUniqueConstraints(sName.getName(), cm, info, table.uniqueConstraints());
@@ -672,7 +672,7 @@ public class AnnotationPersistenceMappingParser
             uniqueConstraint.addColumn(column);
         }
         if (!StringUtil.isEmpty(anno.name())) {
-            uniqueConstraint.setIdentifier(DBIdentifier.newConstraint(anno.name(), delimit()));
+            uniqueConstraint.setIdentifier(_dict.normalize(DBIdentifier.newConstraint(anno.name(), delimit())));
         }
         return uniqueConstraint;
     }
@@ -681,9 +681,9 @@ public class AnnotationPersistenceMappingParser
         MappingInfo info, UniqueConstraint... uniqueConstraints) {
         for (UniqueConstraint anno : uniqueConstraints) {
             Unique unique = createUniqueConstraint(ctx, anno);
-            unique.setTableIdentifier(DBIdentifier.newTable(table, delimit()));
+            unique.setTableIdentifier(_dict.normalize(DBIdentifier.newTable(table, delimit())));
             if (info instanceof ClassMappingInfo)
-                ((ClassMappingInfo) info).addUnique(DBIdentifier.newTable(table), unique);
+                ((ClassMappingInfo) info).addUnique(_dict.normalize(DBIdentifier.newTable(table)), unique);
             else if (info instanceof FieldMappingInfo)
                 ((FieldMappingInfo) info).addJoinTableUnique(unique);
             else
@@ -727,7 +727,7 @@ public class AnnotationPersistenceMappingParser
         }
         indx.setUnique(anno.unique());
         if (!StringUtil.isEmpty(anno.name())) {
-            indx.setIdentifier(DBIdentifier.newConstraint(anno.name(), delimit()));
+            indx.setIdentifier(_dict.normalize(DBIdentifier.newConstraint(anno.name(), delimit())));
         }
         return indx;
     }
@@ -736,9 +736,9 @@ public class AnnotationPersistenceMappingParser
         MappingInfo info, jakarta.persistence.Index... indices) {
         for (jakarta.persistence.Index anno : indices) {
             org.apache.openjpa.jdbc.schema.Index idx = createIndex(ctx, anno);
-            idx.setTableIdentifier(DBIdentifier.newTable(table, delimit()));
+            idx.setTableIdentifier(_dict.normalize(DBIdentifier.newTable(table, delimit())));
             if (info instanceof ClassMappingInfo)
-                ((ClassMappingInfo) info).addIndex(DBIdentifier.newTable(table), idx);
+                ((ClassMappingInfo) info).addIndex(_dict.normalize(DBIdentifier.newTable(table)), idx);
             else
                 throw new InternalException();
         }
@@ -751,12 +751,12 @@ public class AnnotationPersistenceMappingParser
         if (StringUtil.isEmpty(table)) {
             return DBIdentifier.NULL;
         }
-        DBIdentifier tName = DBIdentifier.newTable(table, delimit());
-        DBIdentifier sName = DBIdentifier.newSchema(schema, delimit());
+        DBIdentifier tName = _dict.normalize(DBIdentifier.newTable(table, delimit()));
+        DBIdentifier sName = _dict.normalize(DBIdentifier.newSchema(schema, delimit()));
         if (DBIdentifier.isEmpty(tName) || DBIdentifier.isEmpty(sName)) {
             return tName;
         }
-        return QualifiedDBIdentifier.newPath(sName, tName);
+        return _dict.normalize(QualifiedDBIdentifier.newPath(sName, tName));
     }
 
     /**
@@ -791,7 +791,7 @@ public class AnnotationPersistenceMappingParser
                         entity.discriminatorColumn());
 
                 for (FieldResult field : entity.fields()) {
-                    DBIdentifier sColName = DBIdentifier.newColumn(field.column(), delimit());
+                    DBIdentifier sColName = _dict.normalize(DBIdentifier.newColumn(field.column(), delimit()));
                     entityResult.addMapping(field.name(), sColName.getName());
                 }
             }
@@ -803,7 +803,7 @@ public class AnnotationPersistenceMappingParser
                 }
             }
             for (ColumnResult column : anno.columns()) {
-                DBIdentifier sName = DBIdentifier.newColumn(column.name(), delimit());
+                DBIdentifier sName = _dict.normalize(DBIdentifier.newColumn(column.name(), delimit()));
                 result.addColumnResult(sName.getName());
             }
         }
@@ -849,14 +849,14 @@ public class AnnotationPersistenceMappingParser
                         entity.discriminatorColumn());
                 for (FieldResult field : entity.fields()) {
                     DBIdentifier sColName =
-                        DBIdentifier.newColumn(field.column(), delimit());
+                        _dict.normalize(DBIdentifier.newColumn(field.column(), delimit()));
                     entityResult.addMapping(field.name(),
                         sColName.getName());
                 }
             }
             for (ColumnResult column : columns) {
                 DBIdentifier sName =
-                    DBIdentifier.newColumn(column.name(), delimit());
+                    _dict.normalize(DBIdentifier.newColumn(column.name(), delimit()));
                 result.addColumnResult(sName.getName());
             }
 
@@ -877,7 +877,7 @@ public class AnnotationPersistenceMappingParser
         DiscriminatorColumn dcol) {
         Column col = new Column();
         if (!StringUtil.isEmpty(dcol.name())) {
-            col.setIdentifier(DBIdentifier.newColumn(dcol.name(),delimit()));
+            col.setIdentifier(_dict.normalize(DBIdentifier.newColumn(dcol.name(),delimit())));
         }
         if (!StringUtil.isEmpty(dcol.columnDefinition())) {
             col.setTypeIdentifier(DBIdentifier.newColumnDefinition(dcol.columnDefinition()));
@@ -957,7 +957,7 @@ public class AnnotationPersistenceMappingParser
     private void parseDataStoreIdColumn(ClassMapping cm, DataStoreIdColumn id) {
         Column col = new Column();
         if (!StringUtil.isEmpty(id.name()))
-            col.setIdentifier(DBIdentifier.newColumn(id.name(), delimit()));
+            col.setIdentifier(_dict.normalize(DBIdentifier.newColumn(id.name(), delimit())));
         if (!StringUtil.isEmpty(id.columnDefinition()))
             col.setTypeIdentifier(DBIdentifier.newColumnDefinition(id.columnDefinition()));
         if (id.precision() != 0)
@@ -995,7 +995,7 @@ public class AnnotationPersistenceMappingParser
         org.apache.openjpa.jdbc.schema.ForeignKey fk =
             new org.apache.openjpa.jdbc.schema.ForeignKey();
         if (!StringUtil.isEmpty(name))
-            fk.setIdentifier(DBIdentifier.newForeignKey(name, delimit()));
+            fk.setIdentifier(_dict.normalize(DBIdentifier.newForeignKey(name, delimit())));
         fk.setDeferred(deferred);
         fk.setDeleteAction(toForeignKeyAction(deleteAction));
         fk.setUpdateAction(toForeignKeyAction(updateAction));
@@ -1021,8 +1021,8 @@ public class AnnotationPersistenceMappingParser
         org.apache.openjpa.jdbc.schema.ForeignKey fk =
             new org.apache.openjpa.jdbc.schema.ForeignKey();
         if (!StringUtil.isEmpty(jpaFk.name()))
-            fk.setIdentifier(DBIdentifier.newForeignKey(jpaFk.name(),
-                delimit()));
+            fk.setIdentifier(_dict.normalize(DBIdentifier.newForeignKey(jpaFk.name(),
+                delimit())));
         info.setForeignKey(fk);
     }
 
@@ -1087,13 +1087,13 @@ public class AnnotationPersistenceMappingParser
         org.apache.openjpa.jdbc.schema.Index idx =
             new org.apache.openjpa.jdbc.schema.Index();
         if (!StringUtil.isEmpty(name))
-            idx.setIdentifier(DBIdentifier.newConstraint(name, delimit()));
+            idx.setIdentifier(_dict.normalize(DBIdentifier.newConstraint(name, delimit())));
         idx.setUnique(unique);
 
         if (columnNames != null) {
             for (String columnName : columnNames) {
                 Column column = new Column();
-                column.setIdentifier(DBIdentifier.newColumn(columnName, delimit()));
+                column.setIdentifier(_dict.normalize(DBIdentifier.newColumn(columnName, delimit())));
                 idx.addColumn(column);
             }
         }
@@ -1115,7 +1115,7 @@ public class AnnotationPersistenceMappingParser
         org.apache.openjpa.jdbc.schema.Unique unq =
             new org.apache.openjpa.jdbc.schema.Unique();
         if (!StringUtil.isEmpty(anno.name()))
-            unq.setIdentifier(DBIdentifier.newIndex(anno.name(), delimit()));
+            unq.setIdentifier(_dict.normalize(DBIdentifier.newIndex(anno.name(), delimit())));
         unq.setDeferred(anno.deferred());
         info.setUnique(unq);
     }
@@ -1136,8 +1136,8 @@ public class AnnotationPersistenceMappingParser
     /**
      * Create a new schema column with information from the given annotation.
      */
-    private static Column newColumn(VersionColumn anno, boolean delimit) {
-        return newColumn(anno.name(),
+    private Column newColumn(VersionColumn anno, boolean delimit) {
+        return newColumn(_dict, anno.name(),
             anno.nullable(),
             anno.insertable(),
             anno.updatable(),
@@ -1149,7 +1149,7 @@ public class AnnotationPersistenceMappingParser
             delimit);
     }
 
-    static Column newColumn(String name,
+    static Column newColumn(DBDictionary dict, String name,
             boolean nullable,
             boolean insertable,
             boolean updatable,
@@ -1160,9 +1160,9 @@ public class AnnotationPersistenceMappingParser
             String table,
             boolean delimit) {
         Column col = new Column();
-        col.setTableIdentifier(DBIdentifier.newTable(table, delimit));
+        col.setTableIdentifier(dict.normalize(DBIdentifier.newTable(table, delimit)));
         if (!StringUtil.isEmpty(name))
-            col.setIdentifier(DBIdentifier.newColumn(name, delimit));
+            col.setIdentifier(dict.normalize(DBIdentifier.newColumn(name, delimit)));
         if (precision != 0)
             col.setSize(precision);
         else if (length != 255)
@@ -1231,10 +1231,10 @@ public class AnnotationPersistenceMappingParser
     /**
      * Create a new schema column with information from the given annotation.
      */
-    private static Column newColumn(ElementColumn anno, boolean delimit) {
+    private Column newColumn(ElementColumn anno, boolean delimit) {
         Column col = new Column();
         if (!StringUtil.isEmpty(anno.name()))
-            col.setIdentifier(DBIdentifier.newColumn(anno.name(), delimit));
+            col.setIdentifier(_dict.normalize(DBIdentifier.newColumn(anno.name(), delimit)));
         if (!StringUtil.isEmpty(anno.columnDefinition()))
             col.setTypeIdentifier(DBIdentifier.newColumnDefinition(anno.columnDefinition()));
         if (anno.precision() != 0)
@@ -1267,14 +1267,14 @@ public class AnnotationPersistenceMappingParser
     /**
      *  Create a new schema column with information from the given annotation.
      */
-    private static Column newColumn(KeyJoinColumn join, boolean delimit) {
+    private Column newColumn(KeyJoinColumn join, boolean delimit) {
         Column col = new Column();
         if (!StringUtil.isEmpty(join.name()))
-            col.setIdentifier(DBIdentifier.newColumn(join.name(),delimit));
+            col.setIdentifier(_dict.normalize(DBIdentifier.newColumn(join.name(),delimit)));
         if (!StringUtil.isEmpty(join.columnDefinition()))
             col.setIdentifier(DBIdentifier.newColumnDefinition(join.columnDefinition()));
         if (!StringUtil.isEmpty(join.referencedColumnName()))
-            col.setTargetIdentifier(DBIdentifier.newColumn(join.referencedColumnName(),delimit));
+            col.setTargetIdentifier(_dict.normalize(DBIdentifier.newColumn(join.referencedColumnName(),delimit)));
         if (!StringUtil.isEmpty(join.referencedAttributeName()))
             col.setTargetField(join.referencedAttributeName());
         col.setNotNull(!join.nullable());
@@ -1380,7 +1380,7 @@ public class AnnotationPersistenceMappingParser
                 case KEY_EMBEDDED_MAPPING:
                     KeyEmbeddedMapping kembed = (KeyEmbeddedMapping) anno;
                     parseEmbeddedMapping(fm.getKeyMapping(),
-                        DBIdentifier.newColumn(kembed.nullIndicatorColumnName(), delimit()),
+                        _dict.normalize(DBIdentifier.newColumn(kembed.nullIndicatorColumnName(), delimit())),
                         DBIdentifier.newConstant(kembed.nullIndicatorAttributeName()),
                         kembed.overrides());
                     break;
@@ -1472,7 +1472,7 @@ public class AnnotationPersistenceMappingParser
                     ElementEmbeddedMapping ee = (ElementEmbeddedMapping) anno;
                     parseEmbeddedMapping(fm.getElementMapping(),
                         DBIdentifier.newConstant(ee.nullIndicatorAttributeName()),
-                        DBIdentifier.newColumn(ee.nullIndicatorColumnName(), delimit()),
+                        _dict.normalize(DBIdentifier.newColumn(ee.nullIndicatorColumnName(), delimit())),
                         ee.overrides());
                     break;
                 case ELEM_FK:
@@ -1529,7 +1529,8 @@ public class AnnotationPersistenceMappingParser
                     break;
                 case X_EMBEDDED_MAPPING:
                     XEmbeddedMapping embed = (XEmbeddedMapping) anno;
-                    parseEmbeddedMapping(fm, DBIdentifier.newColumn(embed.nullIndicatorColumnName(), delimit()),
+                    parseEmbeddedMapping(fm,
+                        _dict.normalize(DBIdentifier.newColumn(embed.nullIndicatorColumnName(), delimit())),
                         DBIdentifier.newConstant(embed.nullIndicatorAttributeName()), embed.overrides());
                     break;
                 case X_JOIN_COL:
@@ -1889,7 +1890,7 @@ public class AnnotationPersistenceMappingParser
             }
 
             unique |= (pcols[i].unique()) ? TRUE : FALSE;
-            DBIdentifier sSecTable = DBIdentifier.newTable(pcols[i].table(), delimit());
+            DBIdentifier sSecTable = _dict.normalize(DBIdentifier.newTable(pcols[i].table(), delimit()));
         	sSecondary = trackSecondaryTable(fm, sSecondary, sSecTable, i);
         }
 
@@ -1904,7 +1905,7 @@ public class AnnotationPersistenceMappingParser
     /**
      * Create a new schema column with information from the given annotation.
      */
-    private static Column newColumn(jakarta.persistence.Column anno,
+    private Column newColumn(jakarta.persistence.Column anno,
         boolean delimit) {
         Column col = new Column();
         setupColumn(col, anno, delimit);
@@ -1914,10 +1915,10 @@ public class AnnotationPersistenceMappingParser
     /**
      * Setup the given column with information from the given annotation.
      */
-    private static void setupColumn(Column col, jakarta.persistence.Column anno,
+    private void setupColumn(Column col, jakarta.persistence.Column anno,
         boolean delimit) {
         if (!StringUtil.isEmpty(anno.name()))
-            col.setIdentifier(DBIdentifier.newColumn(anno.name(),delimit));
+            col.setIdentifier(_dict.normalize(DBIdentifier.newColumn(anno.name(),delimit)));
         if (!StringUtil.isEmpty(anno.columnDefinition()))
             col.setTypeIdentifier(DBIdentifier.newColumnDefinition(anno.columnDefinition()));
         if (anno.precision() != 0)
@@ -2011,7 +2012,7 @@ public class AnnotationPersistenceMappingParser
                 sTable = ((FieldMappingInfo)info).getTableIdentifier();
             }
             if (sTable.isNull()) {
-                sTable = DBIdentifier.newTable(joins[i].table(), delimit());
+                sTable = _dict.normalize(DBIdentifier.newTable(joins[i].table(), delimit()));
             }
             sSecondary = trackSecondaryTable(fm, sSecondary, sTable, i);
             if (!secondaryAllowed && !DBIdentifier.isNull(sSecondary))
@@ -2058,7 +2059,7 @@ public class AnnotationPersistenceMappingParser
     private Column newColumn(JoinColumn join) {
         Column col = new Column();
         if (!StringUtil.isEmpty(join.name()))
-            col.setIdentifier(DBIdentifier.newColumn(join.name(), delimit()));
+            col.setIdentifier(_dict.normalize(DBIdentifier.newColumn(join.name(), delimit())));
         if (!StringUtil.isEmpty(join.columnDefinition()))
             col.setTypeIdentifier(DBIdentifier.newColumnDefinition(join.columnDefinition()));
         String refColumnName = join.referencedColumnName();
@@ -2084,7 +2085,7 @@ public class AnnotationPersistenceMappingParser
     	if (refColumnName.charAt(0) == SINGLE_QUOTE) {
     		col.setTargetIdentifier(DBIdentifier.newConstant(refColumnName));
     	} else {
-    		col.setTargetIdentifier(DBIdentifier.newColumn(refColumnName, delimit()));
+    		col.setTargetIdentifier(_dict.normalize(DBIdentifier.newColumn(refColumnName, delimit())));
     	}
     }
 
@@ -2107,10 +2108,10 @@ public class AnnotationPersistenceMappingParser
     /**
      * Create a new schema column with information from the given annotation.
      */
-    private static Column newColumn(KeyColumn anno, boolean delimit) {
+    private Column newColumn(KeyColumn anno, boolean delimit) {
         Column col = new Column();
         if (!StringUtil.isEmpty(anno.name()))
-            col.setIdentifier(DBIdentifier.newColumn(anno.name(), delimit));
+            col.setIdentifier(_dict.normalize(DBIdentifier.newColumn(anno.name(), delimit)));
         if (!StringUtil.isEmpty(anno.columnDefinition()))
             col.setTypeIdentifier(DBIdentifier.newColumnDefinition(anno.columnDefinition()));
         if (anno.precision() != 0)
@@ -2150,7 +2151,7 @@ public class AnnotationPersistenceMappingParser
             cols.add(newColumn(joins[i], delimit()));
             unique |= (joins[i].unique()) ? TRUE : FALSE;
             sSecondary = trackSecondaryTable(fm, sSecondary,
-                DBIdentifier.newTable(joins[i].table(), delimit()), i);
+                _dict.normalize(DBIdentifier.newTable(joins[i].table(), delimit())), i);
             if (!secondaryAllowed && !DBIdentifier.isNull(sSecondary))
                 throw new MetaDataException(_loc.get("bad-second", fm));
         }
@@ -2166,7 +2167,7 @@ public class AnnotationPersistenceMappingParser
     private Column newColumn(XJoinColumn join, boolean delimit) {
         Column col = new Column();
         if (!StringUtil.isEmpty(join.name()))
-            col.setIdentifier(DBIdentifier.newColumn(join.name(), delimit));
+            col.setIdentifier(_dict.normalize(DBIdentifier.newColumn(join.name(), delimit)));
         if (!StringUtil.isEmpty(join.columnDefinition()))
             col.setTypeIdentifier(DBIdentifier.newColumnDefinition(join.columnDefinition()));
         if (!StringUtil.isEmpty(join.referencedColumnName()))
@@ -2200,7 +2201,7 @@ public class AnnotationPersistenceMappingParser
         if (!StringUtil.isEmpty(anno.nullIndicatorAttributeName()))
             nullInd = DBIdentifier.newConstant(anno.nullIndicatorAttributeName());
         else if (!StringUtil.isEmpty(anno.nullIndicatorColumnName()))
-            nullInd = DBIdentifier.newColumn(anno.nullIndicatorColumnName(), delimit());
+            nullInd = _dict.normalize(DBIdentifier.newColumn(anno.nullIndicatorColumnName(), delimit()));
         if (DBIdentifier.isNull(nullInd))
             return;
 
@@ -2287,7 +2288,7 @@ public class AnnotationPersistenceMappingParser
 
         Column col = new Column();
         if (!StringUtil.isEmpty(order.name()))
-            col.setIdentifier(DBIdentifier.newColumn(order.name(), delimit()));
+            col.setIdentifier(_dict.normalize(DBIdentifier.newColumn(order.name(), delimit())));
         if (!StringUtil.isEmpty(order.columnDefinition()))
             col.setTypeIdentifier(DBIdentifier.newColumnDefinition(order.columnDefinition()));
         if (order.precision() != 0)
@@ -2304,7 +2305,7 @@ public class AnnotationPersistenceMappingParser
 
         Column col = new Column();
         if (!StringUtil.isEmpty(order.name()))
-            col.setIdentifier(DBIdentifier.newColumn(order.name(), delimit()));
+            col.setIdentifier(_dict.normalize(DBIdentifier.newColumn(order.name(), delimit())));
         if (!StringUtil.isEmpty(order.columnDefinition()))
             col.setTypeIdentifier(DBIdentifier.newColumnDefinition(order.columnDefinition()));
         col.setNotNull(!order.nullable());
@@ -2337,7 +2338,7 @@ public class AnnotationPersistenceMappingParser
     private Column newColumn(ElementJoinColumn join, boolean delimit) {
         Column col = new Column();
         if (!StringUtil.isEmpty(join.name()))
-            col.setIdentifier(DBIdentifier.newColumn(join.name(), delimit));
+            col.setIdentifier(_dict.normalize(DBIdentifier.newColumn(join.name(), delimit)));
         if (!StringUtil.isEmpty(join.columnDefinition()))
             col.setTypeIdentifier(DBIdentifier.newColumnDefinition(join.columnDefinition()));
         if (!StringUtil.isEmpty(join.referencedColumnName()))
@@ -2357,7 +2358,7 @@ public class AnnotationPersistenceMappingParser
         int unique = 0;
         FieldMappingInfo info = fm.getMappingInfo();
         if (anno.table() != null && anno.table().length() > 0) {
-            info.setTableIdentifier(DBIdentifier.newTable(anno.table(), delimit()));
+            info.setTableIdentifier(_dict.normalize(DBIdentifier.newTable(anno.table(), delimit())));
         }
         Column col = new Column();
         setupMapKeyColumn(fm, col, anno);
@@ -2371,10 +2372,10 @@ public class AnnotationPersistenceMappingParser
     private void setupMapKeyColumn(FieldMapping fm, Column col,
         MapKeyColumn anno) {
         if (!StringUtil.isEmpty(anno.name())) {
-            col.setIdentifier(DBIdentifier.newColumn(anno.name(), delimit()));
+            col.setIdentifier(_dict.normalize(DBIdentifier.newColumn(anno.name(), delimit())));
         }
         else
-            col.setIdentifier(DBIdentifier.newColumn(fm.getName() + "_" + "KEY", delimit()));
+            col.setIdentifier(_dict.normalize(DBIdentifier.newColumn(fm.getName() + "_" + "KEY", delimit())));
         if (!StringUtil.isEmpty(anno.columnDefinition()))
             col.setTypeIdentifier(DBIdentifier.newColumnDefinition(anno.columnDefinition()));
         if (anno.precision() != 0)
@@ -2425,7 +2426,7 @@ public class AnnotationPersistenceMappingParser
     private Column newColumn(MapKeyJoinColumn join) {
         Column col = new Column();
         if (!StringUtil.isEmpty(join.name()))
-            col.setIdentifier(DBIdentifier.newColumn(join.name(), delimit()));
+            col.setIdentifier(_dict.normalize(DBIdentifier.newColumn(join.name(), delimit())));
         if (!StringUtil.isEmpty(join.columnDefinition()))
             col.setTypeIdentifier(DBIdentifier.newColumnDefinition(join.columnDefinition()));
         if (!StringUtil.isEmpty(join.referencedColumnName()))
@@ -2441,7 +2442,7 @@ public class AnnotationPersistenceMappingParser
         if (StringUtil.isEmpty(seqName)) {
             return seqName;
         }
-        return DBIdentifier.newSequence(seqName, delimit()).getName();
+        return _dict.normalize(DBIdentifier.newSequence(seqName, delimit())).getName();
     }
 
     @Override
@@ -2449,7 +2450,7 @@ public class AnnotationPersistenceMappingParser
         if (StringUtil.isEmpty(schName)) {
             return schName;
         }
-        return DBIdentifier.newSchema(schName, delimit()).getName();
+        return _dict.normalize(DBIdentifier.newSchema(schName, delimit())).getName();
     }
 
     @Override
@@ -2457,7 +2458,7 @@ public class AnnotationPersistenceMappingParser
         if (StringUtil.isEmpty(catName)) {
             return catName;
         }
-        return DBIdentifier.newCatalog(catName, delimit()).getName();
+        return _dict.normalize(DBIdentifier.newCatalog(catName, delimit())).getName();
     }
 
     private boolean delimit() {

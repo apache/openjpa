@@ -33,7 +33,6 @@ import java.util.Set;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
-import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
@@ -278,19 +277,18 @@ public abstract class AbstractMySQLDictionary
     }
 
     /**
-     * Makes the default identifier rule delimit the reserved words if
-     * {@link #delimitsReservedWords()}. An identifier is delimited when it is
-     * created, by {@link Normalizer}, whose rule is shared by all dictionaries
-     * of the JVM, so the dictionary that was configured last decides. The
-     * words are set before the delimiting is switched on, so that a
-     * dictionary configured at the same time never makes the rule delimit
-     * with words other than its own.
+     * Makes the {@link #getNormalizingRule() normalizing rule} of this
+     * dictionary delimit the reserved words if
+     * {@link #delimitsReservedWords()}, so that an identifier named for this
+     * dictionary keeps a name that is such a word. The rule is this
+     * dictionary's own, the identifiers of other dictionaries of the JVM are
+     * not affected.
      */
     @Override
     protected void configureNamingRules() {
         super.configureNamingRules();
         if (delimitsReservedWords()) {
-            IdentifierRule rule = Normalizer.getNamingConfiguration().getDefaultIdentifierRule();
+            IdentifierRule rule = getNormalizingRule();
             rule.setReservedWords(reservedWordSet);
             rule.setDelimitReservedWords(true);
         }
