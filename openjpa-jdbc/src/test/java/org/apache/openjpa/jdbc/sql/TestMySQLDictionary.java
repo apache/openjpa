@@ -21,13 +21,20 @@ package org.apache.openjpa.jdbc.sql;
 import static org.apache.openjpa.jdbc.sql.Columns.column;
 import static org.apache.openjpa.jdbc.sql.Columns.decimal;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.sql.CallableStatement;
+import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Types;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.mysql.cj.jdbc.ha.ReplicationConnection;
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfigurationImpl;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -219,5 +226,98 @@ public class TestMySQLDictionary {
 
         dict.numericTypeName = "DOUBLE";
         assertEquals("DOUBLE", dict.getTypeName(decimal(JavaTypes.BIGDECIMAL, 0, 0)));
+    }
+
+    /**
+     * The legacy <code>com.mysql.jdbc.ReplicationDriver</code> of Connector/J 5
+     * still gets read-only connections.
+     */
+    @Test
+    public void testDecorateReadOnlyForLegacyReplicationDriver() throws Exception {
+        JDBCConfiguration conf = new JDBCConfigurationImpl();
+        conf.setConnectionDriverName("com.mysql.jdbc.ReplicationDriver");
+        conf.setConnectionURL("jdbc:mysql://source,replica/test");
+        AtomicBoolean readOnly = new AtomicBoolean();
+        decorate(conf, connection(readOnly));
+        assertTrue(readOnly.get());
+    }
+
+    /**
+     * Connector/J 8 and later dropped the <code>ReplicationDriver</code>; a
+     * replication connection is configured with the URL scheme instead.
+     */
+    @Test
+    public void testDecorateReadOnlyForReplicationUrl() throws Exception {
+        JDBCConfiguration conf = new JDBCConfigurationImpl();
+        conf.setConnectionDriverName("com.mysql.cj.jdbc.Driver");
+        conf.setConnectionURL("jdbc:mysql:replication://source,replica/test");
+        AtomicBoolean readOnly = new AtomicBoolean();
+        decorate(conf, connection(readOnly));
+        assertTrue(readOnly.get());
+
+        conf = new JDBCConfigurationImpl();
+        conf.setConnectionURL("jdbc:mysql+srv:replication://_mysql._tcp.example.com/test");
+        readOnly = new AtomicBoolean();
+        decorate(conf, connection(readOnly));
+        assertTrue(readOnly.get());
+    }
+
+    /**
+     * A replication connection obtained from a <code>DataSource</code> has no
+     * URL in the configuration, but still implements Connector/J's
+     * <code>ReplicationConnection</code>, possibly behind a pool's wrapper.
+     */
+    @Test
+    public void testDecorateReadOnlyForReplicationConnection() throws Exception {
+        AtomicBoolean readOnly = new AtomicBoolean();
+        decorate(new JDBCConfigurationImpl(), connection(readOnly, ReplicationConnection.class));
+        assertTrue(readOnly.get());
+    }
+
+    @Test
+    public void testDecorateLeavesPlainConnectionWritable() throws Exception {
+        JDBCConfiguration conf = new JDBCConfigurationImpl();
+        conf.setConnectionDriverName("com.mysql.cj.jdbc.Driver");
+        conf.setConnectionURL("jdbc:mysql://localhost/test");
+        AtomicBoolean readOnly = new AtomicBoolean();
+        decorate(conf, connection(readOnly));
+        assertFalse(readOnly.get());
+
+        readOnly = new AtomicBoolean();
+        decorate(new JDBCConfigurationImpl(), connection(readOnly));
+        assertFalse(readOnly.get());
+    }
+
+    private static void decorate(JDBCConfiguration conf, Connection conn) throws Exception {
+        MySQLDictionary dict = new MySQLDictionary();
+        dict.setConfiguration(conf);
+        dict.connected = true;
+        assertTrue(conn == dict.decorate(conn));
+    }
+
+    /**
+     * A connection that records <code>setReadOnly</code> and, like the
+     * connections of Connector/J, is a wrapper for the given interface.
+     */
+    private static Connection connection(AtomicBoolean readOnly, Class<?>... interfaces) {
+        Class<?>[] types = new Class<?>[interfaces.length + 1];
+        types[0] = Connection.class;
+        System.arraycopy(interfaces, 0, types, 1, interfaces.length);
+        return (Connection) Proxy.newProxyInstance(TestMySQLDictionary.class.getClassLoader(), types,
+            (proxy, method, args) -> {
+                switch (method.getName()) {
+                    case "setReadOnly":
+                        readOnly.set((Boolean) args[0]);
+                        return null;
+                    case "isWrapperFor":
+                        return ((Class<?>) args[0]).isInstance(proxy);
+                    case "hashCode":
+                        return System.identityHashCode(proxy);
+                    case "equals":
+                        return proxy == args[0];
+                    default:
+                        throw new UnsupportedOperationException(method.getName());
+                }
+            });
     }
 }
