@@ -18,18 +18,19 @@
  */
 package org.apache.openjpa.persistence.dynamicschema;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 
 /**
  * An entity whose name and attribute names are words Derby rejects as
- * unquoted identifiers. The JPA mapping defaults take the table name from the
- * entity name as given, without checking it against the reserved words of the
- * database, so the table is named explicitly.
+ * unquoted identifiers. The table and the collection table are named by the
+ * JPA mapping defaults.
  */
 @Entity
-@Table(name = "WINDOWS")
 public class Window {
 
     @Id
@@ -46,6 +47,9 @@ public class Window {
     private String xmlquery;
 
     private boolean deterministic;
+
+    @ElementCollection
+    private List<String> panes = new ArrayList<>();
 
     public int getId() {
         return id;
@@ -101,5 +105,9 @@ public class Window {
 
     public void setDeterministic(boolean deterministic) {
         this.deterministic = deterministic;
+    }
+
+    public List<String> getPanes() {
+        return panes;
     }
 }
