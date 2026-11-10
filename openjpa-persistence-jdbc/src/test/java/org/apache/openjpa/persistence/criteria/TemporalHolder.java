@@ -28,6 +28,8 @@ import java.time.LocalTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 /**
  * Entity with nullable temporal fields of the various supported types, used to
@@ -46,6 +48,9 @@ public class TemporalHolder {
     private Date dueDate;
 
     private Time dueTime;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private java.util.Date dueUtilDate;
 
     private LocalDateTime dueLocalDateTime;
 
@@ -93,6 +98,14 @@ public class TemporalHolder {
 
     public void setDueTime(Time dueTime) {
         this.dueTime = dueTime;
+    }
+
+    public java.util.Date getDueUtilDate() {
+        return dueUtilDate;
+    }
+
+    public void setDueUtilDate(java.util.Date dueUtilDate) {
+        this.dueUtilDate = dueUtilDate;
     }
 
     public LocalDateTime getDueLocalDateTime() {

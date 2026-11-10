@@ -55,6 +55,7 @@ public class TestTemporalCoalesce extends SingleEMFTestCase {
             set.setDue(Timestamp.valueOf("2025-04-08 11:56:02.0"));
             set.setDueDate(Date.valueOf("2025-04-08"));
             set.setDueTime(Time.valueOf("11:56:02"));
+            set.setDueUtilDate(new java.util.Date(Timestamp.valueOf("2025-04-08 11:56:02.0").getTime()));
             set.setDueLocalDateTime(LocalDateTime.of(2025, 4, 8, 11, 56, 2));
             set.setDueLocalDate(LocalDate.of(2025, 4, 8));
             set.setDueLocalTime(LocalTime.of(11, 56, 2));
@@ -75,6 +76,11 @@ public class TestTemporalCoalesce extends SingleEMFTestCase {
 
     public void testSqlTime() {
         verify("dueTime", Time.valueOf("11:56:02"), Time.valueOf("03:04:05"));
+    }
+
+    public void testUtilDate() {
+        verify("dueUtilDate", new java.util.Date(Timestamp.valueOf("2025-04-08 11:56:02.0").getTime()),
+                new java.util.Date(Timestamp.valueOf("2020-01-02 03:04:05.0").getTime()));
     }
 
     public void testLocalDateTime() {
