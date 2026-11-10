@@ -62,13 +62,10 @@ public class TestRemoteCommitUnloadedSubclass extends SingleEMFTestCase {
             assertNull(unlisted.getConfiguration().getMetaDataRepositoryInstance()
                 .getPersistentTypeNames(false, null));
             AbstractQueryCache cache = getQueryCache(unlisted);
-            EntityManager em = unlisted.createEntityManager();
-            try {
+            try (EntityManager em = unlisted.createEntityManager()) {
                 assertNull(em.find(RemoteCommitAnimal.class, 1));
                 em.createQuery("select a from RemoteCommitAnimal a", RemoteCommitAnimal.class)
                     .getResultList();
-            } finally {
-                em.close();
             }
             assertEquals(1, cache.count());
 

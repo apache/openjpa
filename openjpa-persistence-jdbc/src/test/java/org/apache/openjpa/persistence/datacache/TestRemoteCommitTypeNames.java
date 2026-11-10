@@ -97,16 +97,13 @@ public class TestRemoteCommitTypeNames extends SingleEMFTestCase {
     }
 
     private CachedPerson persist(int id) {
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             CachedPerson person = new CachedPerson();
             person.setId(id);
             em.persist(person);
             em.getTransaction().commit();
             return person;
-        } finally {
-            em.close();
         }
     }
 
