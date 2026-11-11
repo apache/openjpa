@@ -18,46 +18,30 @@
  */
 package org.apache.openjpa.tools.maven;
 
+import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.File;
 import java.util.ArrayList;
 
-import org.apache.maven.plugin.testing.AbstractMojoTestCase;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoTest;
 import org.junit.jupiter.api.Test;
 
 /**
- * @version $Id: OpenJpaEnhancerMojoTest.java 9348 2009-04-03 22:59:47Z struberg $
  * @since 1.0.0
  */
-class OpenJpaEnhancerMojoTest extends AbstractMojoTestCase {
-
-    // AbstractMojoTestCase is a JUnit 3 TestCase: its setUp() registers the plugin's mojos
-    // in the Plexus container, so Jupiter has to call it explicitly
-    @BeforeEach
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    @AfterEach
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
+@MojoTest
+class OpenJpaEnhancerMojoTest {
 
     @Test
-    void execution() throws Exception {
-        File testPom = new File( getBasedir(), "target/test-classes/projects/project-01/plugin-config.xml" );
+    @InjectMojo(goal = "enhance", pom = "target/test-classes/projects/project-01/plugin-config.xml")
+    void execution(OpenJpaEnhancerMojo mojo) throws Exception {
+        assertNotNull(mojo);
 
-        OpenJpaEnhancerMojo mojo = (OpenJpaEnhancerMojo) lookupMojo( "enhance", testPom );
-        assertNotNull( mojo );
-
-        mojo.classes = new File( getBasedir(), "target/test-classes/" );
+        mojo.classes = new File(getBasedir(), "target/test-classes/");
         mojo.compileClasspathElements = new ArrayList<>();
-        mojo.compileClasspathElements.add( mojo.classes.getAbsolutePath() );
+        mojo.compileClasspathElements.add(mojo.classes.getAbsolutePath());
 
         mojo.execute();
     }

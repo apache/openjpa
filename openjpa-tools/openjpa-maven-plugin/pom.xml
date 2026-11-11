@@ -141,7 +141,7 @@
         <dependency>
             <groupId>org.apache.maven.plugin-testing</groupId>
             <artifactId>maven-plugin-testing-harness</artifactId>
-            <version>3.3.0</version>
+            <version>3.5.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -180,17 +180,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <!-- the testing harness brings junit:junit 3.8.1 (through plexus-container-default),
-                         which the vintage engine rejects; the tests are Jupiter tests -->
-                    <excludeJUnit5Engines>
-                        <excludeJUnit5Engine>junit-vintage</excludeJUnit5Engine>
-                    </excludeJUnit5Engines>
-                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-invoker-plugin</artifactId>
