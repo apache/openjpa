@@ -23,14 +23,17 @@ import java.util.Locale;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.jdbc.kernel.NativeJDBCSeq;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
+import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Tests entities named and with attributes named after words Derby rejects
  * as unquoted identifiers, with tables, join tables and collection tables
- * named by the JPA mapping defaults: the schema is created, and the entities
+ * named by the JPA mapping defaults, and with a sequence generator named after
+ * such a word that names no sequence: the schema is created, and the entities
  * are persisted, found, queried and updated. Other databases reserve other
  * words, so the tests only run on Derby.
  */
@@ -42,7 +45,7 @@ public class TestReservedWordEntityNames extends SingleEMFTestCase {
         if (isTestsDisabled()) {
             return;
         }
-        setUp(Window.class, Order.class, User.class, UserSession.class, DROP_TABLES);
+        setUp(Window.class, Order.class, User.class, UserSession.class, Ticket.class, DROP_TABLES);
     }
 
     public void testTableNames() {
@@ -56,6 +59,41 @@ public class TestReservedWordEntityNames extends SingleEMFTestCase {
         assertEquals("Window_panes", getFieldTableName(Window.class, "panes"));
         assertEquals("User_roles", getFieldTableName(User.class, "roles"));
         assertEquals("SESSION_USER0", getFieldTableName(UserSession.class, "user"));
+    }
+
+    public void testDefaultSequenceName() {
+        // the generator name is the default sequence name, and Derby rejects it
+        SequenceMetaData meta = getMapping(Ticket.class).getMappingRepository()
+            .getSequenceMetaData("Window", Ticket.class.getClassLoader(), true);
+        assertTrue(meta.isDefaultSequence());
+        assertEquals("Window", meta.getSequence());
+        NativeJDBCSeq seq = (NativeJDBCSeq) meta.getInstance(Ticket.class.getClassLoader());
+        assertEquals("WINDOW0", seq.getSequence());
+    }
+
+    public void testPersistWithDefaultSequenceName() {
+        long first;
+        long second;
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            Ticket ticket = new Ticket();
+            ticket.setSubject("a");
+            em.persist(ticket);
+            Ticket other = new Ticket();
+            other.setSubject("b");
+            em.persist(other);
+            em.getTransaction().commit();
+            first = ticket.getId();
+            second = other.getId();
+        }
+        assertTrue(first > 0);
+        assertTrue(second > 0);
+        assertTrue(first != second);
+
+        try (EntityManager em = emf.createEntityManager()) {
+            assertEquals("a", em.find(Ticket.class, first).getSubject());
+            assertEquals("b", em.find(Ticket.class, second).getSubject());
+        }
     }
 
     public void testColumnNames() {

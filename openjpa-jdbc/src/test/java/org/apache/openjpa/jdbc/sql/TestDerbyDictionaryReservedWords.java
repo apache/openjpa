@@ -39,7 +39,7 @@ import org.junit.Test;
 /**
  * Tests that the words Derby rejects as unquoted identifiers are not used as
  * unquoted table or column names by the {@link DerbyDictionary}, and that only
- * default table names Derby rejects are changed.
+ * default table and sequence names Derby rejects are changed.
  */
 public class TestDerbyDictionaryReservedWords {
 
@@ -123,6 +123,28 @@ public class TestDerbyDictionaryReservedWords {
         schema.addTable(DBIdentifier.newTable("WINDOW0"));
         assertEquals("WINDOW0", dict.getValidDefaultTableName(DBIdentifier.newTable("Window")).getName());
         assertEquals("WINDOW01", dict.getValidTableName("Window", schema));
+    }
+
+    @Test
+    public void testRejectedDefaultSequenceNames() {
+        for (String name : List.of("Window", "window", "Order", "User", "Cursors")) {
+            assertEquals(name.toUpperCase(Locale.ENGLISH) + "0",
+                dict.getValidDefaultSequenceName(DBIdentifier.newSequence(name)).getName());
+        }
+    }
+
+    @Test
+    public void testAcceptedDefaultSequenceNamesAreNotChanged() {
+        for (String name : List.of("Action", "Count", "Windows", "Person_seq", "OPENJPA_SEQUENCE")) {
+            DBIdentifier sName = DBIdentifier.newSequence(name);
+            assertSame(name, sName, dict.getValidDefaultSequenceName(sName));
+        }
+    }
+
+    @Test
+    public void testDelimitedDefaultSequenceNamesAreNotChanged() {
+        DBIdentifier delimited = DBIdentifier.newSequence("Window", true);
+        assertSame(delimited, dict.getValidDefaultSequenceName(delimited));
     }
 
     @Test

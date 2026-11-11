@@ -130,7 +130,8 @@ public class DerbyDictionary
         // words Derby rejects as unquoted table names; checked with Derby 10.16 against
         // the SQL:2016 and Derby reserved words, the tokens of the Derby grammar and the
         // reserved words of the OpenJPA dictionaries, Derby rejects exactly these words,
-        // and the same words as unquoted column names
+        // and the same words as unquoted column names; it rejects all of them as unquoted
+        // sequence names as well
         // generated at 2021-05-02T14:07:25.218 via org.apache.openjpa.reservedwords.ReservedWordsIT
         invalidTableWordSet.addAll(Arrays.asList(new String[] {
             "ADD", "ALL", "ALLOCATE", "ALTER", "AND", "ANY", "ARE", "AS", "ASC", "ASSERTION", "AT", "AUTHORIZATION", "AVG",

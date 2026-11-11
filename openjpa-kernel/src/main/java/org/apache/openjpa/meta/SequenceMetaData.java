@@ -88,6 +88,7 @@ public class SequenceMetaData
     private int _colNum = 0;
     private String[] _comments = null;
     private String _sequence = null;
+    private boolean _defaultSequence = false;
     private int _increment = -1;
     private int _allocate = -1;
     private int _initial = -1;
@@ -190,6 +191,30 @@ public class SequenceMetaData
      */
     public void setSequence(String sequence) {
         _sequence = sequence;
+    }
+
+    /**
+     * Whether the native sequence name is the default one, the generator
+     * name, because the generator names no sequence.
+     */
+    public boolean isDefaultSequence() {
+        return _defaultSequence;
+    }
+
+    /**
+     * Whether the native sequence name is the default one, the generator
+     * name, because the generator names no sequence.
+     */
+    public void setDefaultSequence(boolean defaultSequence) {
+        _defaultSequence = defaultSequence;
+    }
+
+    /**
+     * The native sequence name the sequence instance is configured with.
+     * This is the {@link #getSequence() native sequence name} by default.
+     */
+    protected String getConfiguredSequence() {
+        return _sequence;
     }
 
     /**
@@ -367,7 +392,7 @@ public class SequenceMetaData
      * Add standard properties to the given properties buffer.
      */
     protected void addStandardProperties(StringBuilder props) {
-        appendProperty(props, PROP_SEQUENCE, wrapValue(_sequence));
+        appendProperty(props, PROP_SEQUENCE, wrapValue(getConfiguredSequence()));
         appendProperty(props, PROP_INITIAL_VALUE, _initial);
         appendProperty(props, PROP_ALLOCATE, _allocate);
         appendProperty(props, PROP_INCREMENT, _increment);

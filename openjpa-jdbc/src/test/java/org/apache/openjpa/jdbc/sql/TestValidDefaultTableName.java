@@ -30,7 +30,7 @@ import org.junit.Test;
 
 /**
  * Tests that dictionaries without measured invalid table words do not change
- * default table names, even if they are reserved words.
+ * default table and sequence names, even if they are reserved words.
  */
 public class TestValidDefaultTableName {
 
@@ -45,6 +45,8 @@ public class TestValidDefaultTableName {
             for (String name : List.of("Window", "Order", "User", "SELECT", "Current_date", "Person")) {
                 DBIdentifier sName = DBIdentifier.newTable(name);
                 assertSame(cls.getSimpleName() + " " + name, sName, dict.getValidDefaultTableName(sName));
+                DBIdentifier seqName = DBIdentifier.newSequence(name);
+                assertSame(cls.getSimpleName() + " " + name, seqName, dict.getValidDefaultSequenceName(seqName));
             }
         }
     }
