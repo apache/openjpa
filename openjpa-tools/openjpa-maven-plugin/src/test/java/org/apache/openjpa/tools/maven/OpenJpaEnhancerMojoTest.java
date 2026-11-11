@@ -24,6 +24,8 @@ import java.io.File;
 import java.util.ArrayList;
 
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -31,6 +33,20 @@ import org.junit.jupiter.api.Test;
  * @since 1.0.0
  */
 class OpenJpaEnhancerMojoTest extends AbstractMojoTestCase {
+
+    // AbstractMojoTestCase is a JUnit 3 TestCase: its setUp() registers the plugin's mojos
+    // in the Plexus container, so Jupiter has to call it explicitly
+    @BeforeEach
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+    }
+
+    @AfterEach
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+    }
 
     @Test
     void execution() throws Exception {
