@@ -32,6 +32,8 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.sql.H2Dictionary;
+import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -77,6 +79,11 @@ public class TestConvertedColumnType extends SingleEMFTestCase {
     public void testUuidColumnsAgree() {
         assertColumn("externalized", JavaTypes.STRING, Types.VARCHAR);
         assertColumn("converted", JavaTypes.STRING, Types.VARCHAR);
+        if (getDBDictionary().supportsUuidType) {
+            assertColumn("nativeUuid", JavaTypes.UUID_OBJ, Types.OTHER);
+        } else {
+        	assertColumn("nativeUuid", JavaTypes.STRING, Types.VARCHAR);
+        }
     }
 
     public void testConverterToLong() {

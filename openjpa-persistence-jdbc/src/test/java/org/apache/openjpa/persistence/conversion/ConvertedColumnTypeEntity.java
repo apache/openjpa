@@ -20,8 +20,11 @@ package org.apache.openjpa.persistence.conversion;
 
 import java.util.UUID;
 
+import jakarta.persistence.Basic;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 import org.apache.openjpa.persistence.Externalizer;
@@ -46,6 +49,10 @@ public class ConvertedColumnTypeEntity {
 
     @Convert(converter = UuidStringConverter.class)
     private UUID converted;
+    
+    @Basic
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID nativeUuid;
 
     @Convert(converter = CodeConverter.class)
     private Code code;
@@ -84,7 +91,15 @@ public class ConvertedColumnTypeEntity {
         this.converted = converted;
     }
 
-    public Code getCode() {
+    public UUID getNativeUuid() {
+		return nativeUuid;
+	}
+
+	public void setNativeUuid(UUID nativeUuid) {
+		this.nativeUuid = nativeUuid;
+	}
+
+	public Code getCode() {
         return code;
     }
 
