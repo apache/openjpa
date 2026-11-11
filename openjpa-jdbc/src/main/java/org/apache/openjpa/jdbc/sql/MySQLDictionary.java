@@ -25,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -46,6 +47,7 @@ import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.lib.identifier.IdentifierRule;
+import org.apache.openjpa.lib.jdbc.DelegatingConnection;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.util.ExceptionInfo;
 import org.apache.openjpa.util.StoreException;
@@ -55,6 +57,27 @@ import org.apache.openjpa.util.StoreException;
  */
 public class MySQLDictionary
     extends DBDictionary {
+
+    /**
+     * The replication driver of Connector/J 5, removed in Connector/J 8.
+     */
+    private static final String REPLICATION_DRIVER = "com.mysql.jdbc.ReplicationDriver";
+
+    /**
+     * The interfaces a replication connection implements in Connector/J 8
+     * and later, which opens one for a <code>jdbc:mysql:replication:</code>
+     * URL, and in Connector/J 5.
+     */
+    private static final String[] REPLICATION_CONNECTION_TYPES = {
+        "com.mysql.cj.jdbc.ha.ReplicationConnection",
+        "com.mysql.jdbc.ReplicationConnection",
+    };
+
+    /**
+     * The replication connection interfaces of the driver, resolved on first
+     * use; empty if the driver has none or is not visible.
+     */
+    private volatile List<Class<?>> _replicationTypes = null;
 
     public static final String SELECT_HINT = "openjpa.hint.MySQLSelectHint";
 
@@ -184,6 +207,12 @@ public class MySQLDictionary
         // MySQL requires double-escape for strings
         searchStringEscape = "\\\\";
 
+        // a backslash in a string literal is an escape character unless
+        // sql_mode contains NO_BACKSLASH_ESCAPES. The sql_mode is not checked,
+        // because a session can change it at any time; a value with a
+        // backslash is bound as a parameter instead, which is correct either way
+        backslashEscapesInStringLiterals = true;
+
         typeModifierSet.addAll(Arrays.asList(new String[] { "UNSIGNED", "ZEROFILL" }));
 
         setLeadingDelimiter(DELIMITER_BACK_TICK);
@@ -288,13 +317,80 @@ public class MySQLDictionary
         }
     }
 
+    /**
+     * Whether the given connection is a Connector/J replication connection,
+     * which routes the statements of a read-only connection to a replica:
+     * one opened with a <code>jdbc:mysql:replication:</code> URL by
+     * Connector/J 8 and later, or by the <code>ReplicationDriver</code> of
+     * Connector/J 5, also behind the wrapper of a connection pool. The
+     * configured driver name is only consulted when the driver's replication
+     * connection interfaces cannot be loaded.
+     */
     @Override
-    public Connection decorate(Connection conn)  throws SQLException {
-        conn = super.decorate(conn);
-        String driver = conf.getConnectionDriverName();
-        if ("com.mysql.jdbc.ReplicationDriver".equals(driver))
-            conn.setReadOnly(true);
-        return conn;
+    public boolean isReplicationConnection(Connection conn) throws SQLException {
+        Connection inner = conn instanceof DelegatingConnection delegating
+            ? delegating.getInnermostDelegate() : conn;
+        List<Class<?>> types = getReplicationConnectionTypes(inner);
+        if (types.isEmpty()) {
+            return conf != null && REPLICATION_DRIVER.equals(conf.getConnectionDriverName());
+        }
+        for (Class<?> type : types) {
+            if (type.isInstance(inner)) {
+                return true;
+            }
+            try {
+                if (inner.isWrapperFor(type)) {
+                    return true;
+                }
+            } catch (SQLException | LinkageError e) {
+                // a driver or pool that cannot tell is not taken as replicated
+                if (log.isTraceEnabled()) {
+                    log.trace(e.toString(), e);
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * The names of the interfaces a replication connection of the driver
+     * implements.
+     */
+    protected String[] getReplicationConnectionTypeNames() {
+        return REPLICATION_CONNECTION_TYPES;
+    }
+
+    /**
+     * The replication connection interfaces of the driver, loaded once through
+     * the class loader of the given connection, the context class loader or
+     * this class's loader, since the driver need not be on the class path.
+     */
+    private List<Class<?>> getReplicationConnectionTypes(Connection conn) {
+        List<Class<?>> types = _replicationTypes;
+        if (types != null) {
+            return types;
+        }
+        ClassLoader[] loaders = {
+            conn.getClass().getClassLoader(),
+            Thread.currentThread().getContextClassLoader(),
+            MySQLDictionary.class.getClassLoader(),
+        };
+        types = new ArrayList<>();
+        for (String name : getReplicationConnectionTypeNames()) {
+            for (ClassLoader loader : loaders) {
+                if (loader != null) {
+                    try {
+                        types.add(Class.forName(name, false, loader));
+                        break;
+                    } catch (ClassNotFoundException | LinkageError e) {
+                        // try the next loader
+                    }
+                }
+            }
+        }
+        types = List.copyOf(types);
+        _replicationTypes = types;
+        return types;
     }
 
     private static int[] getMajorMinorVersions(String versionStr)
@@ -667,5 +763,14 @@ public class MySQLDictionary
         emulateNullsPrecedence(ordering, nullPrecedence,
                 expr -> expr + " IS NULL " + nullSort + ", " + expr);
     }
-}
 
+    /**
+     * Connector/J translates a JDBC escaped date-time literal into a string literal,
+     * so that COALESCE or CASE with a date-time column has a string result. A SQL
+     * standard typed literal keeps the date-time type.
+     */
+    @Override
+    public String toJDBCEscapedDateTimeLiteral(String escape, int parseType) {
+        return toTypedDateTimeLiteral(escape, parseType);
+    }
+}

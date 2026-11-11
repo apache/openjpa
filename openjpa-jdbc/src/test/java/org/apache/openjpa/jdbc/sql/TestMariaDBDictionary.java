@@ -39,7 +39,9 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.kernel.exps.DateTimeExtractField;
+import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.lib.conf.Configurations;
+import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator;
 import org.apache.openjpa.meta.JavaTypes;
 import org.junit.Test;
 
@@ -364,12 +366,65 @@ public class TestMariaDBDictionary {
         }
     }
 
+    /**
+     * Date-time literals are written as typed literals: the driver turns the JDBC escape
+     * into a plain string literal, which gives COALESCE or CASE a string result (OPENJPA-2935).
+     */
+    @Test
+    public void testDateTimeLiteralIsTyped() {
+        DBDictionary dict = new MariaDBDictionary();
+        assertEquals("DATE '2020-01-02'", dict.toJDBCEscapedDateTimeLiteral("{d '2020-01-02'}", Literal.TYPE_DATE));
+        assertEquals("TIME '03:04:05'", dict.toJDBCEscapedDateTimeLiteral("{t '03:04:05'}", Literal.TYPE_TIME));
+        assertEquals("TIMESTAMP '2020-01-02 03:04:05.123456'",
+                dict.toJDBCEscapedDateTimeLiteral("{ts '2020-01-02 03:04:05.123456'}", Literal.TYPE_TIMESTAMP));
+    }
+
     private static Sequence sequence() {
         Schema schema = new Schema();
         Sequence seq = new Sequence(DBIdentifier.newSequence("OJPA3014_SEQ"), schema);
         seq.setInitialValue(100);
         seq.setIncrement(7);
         return seq;
+    }
+
+    /**
+     * MariaDB Connector/J routes the reads of a read-only connection to a
+     * replica when it was opened with a <code>jdbc:mariadb:replication:</code>
+     * URL, which it reports in the connection's metadata, also behind
+     * OpenJPA's decorators.
+     */
+    @Test
+    public void testReplicationConnection() throws Exception {
+        MariaDBDictionary dict = new MariaDBDictionary();
+        assertTrue(dict.isReplicationConnection(
+            connectionWithUrl("jdbc:mariadb:replication://primary,replica/test")));
+        assertTrue(dict.isReplicationConnection(new LoggingConnectionDecorator().decorate(
+            connectionWithUrl("jdbc:mariadb:replication://primary,replica/test"))));
+        assertFalse(dict.isReplicationConnection(
+            connectionWithUrl("jdbc:mariadb://primary/test")));
+        assertFalse(dict.isReplicationConnection(
+            connectionWithUrl("jdbc:mariadb:loadbalance://primary,primary2/test")));
+    }
+
+    /**
+     * A {@link Connection} whose {@link DatabaseMetaData} reports the given URL.
+     */
+    private static Connection connectionWithUrl(final String url) {
+        final DatabaseMetaData metaData = (DatabaseMetaData) Proxy.newProxyInstance(
+            TestMariaDBDictionary.class.getClassLoader(), new Class<?>[] { DatabaseMetaData.class },
+            new DefaultHandler() {
+                @Override
+                protected Object handle(Method method, Object[] args) {
+                    return "getURL".equals(method.getName()) ? url : null;
+                }
+            });
+        return (Connection) Proxy.newProxyInstance(TestMariaDBDictionary.class.getClassLoader(),
+            new Class<?>[] { Connection.class }, new DefaultHandler() {
+                @Override
+                protected Object handle(Method method, Object[] args) {
+                    return "getMetaData".equals(method.getName()) ? metaData : null;
+                }
+            });
     }
 
     /**

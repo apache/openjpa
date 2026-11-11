@@ -119,7 +119,7 @@ class MatchesExpression
                 if (_escape.equals("\\"))
                     buf.append(" ESCAPE '").append(dict.searchStringEscape).append("'");
                 else
-                    buf.append(" ESCAPE '").append(_escape).append("'");
+                    buf.append(" ESCAPE '").append(_escape.replace("'", "''")).append("'");
             }
             else if (dict.requiresSearchStringEscapeForLike) {
                 // The query gave no ESCAPE clause, so only '%' and '_' are

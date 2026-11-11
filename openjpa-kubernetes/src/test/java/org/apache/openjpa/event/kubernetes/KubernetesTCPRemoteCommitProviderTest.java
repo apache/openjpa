@@ -19,6 +19,7 @@
 package org.apache.openjpa.event.kubernetes;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -168,6 +169,9 @@ public class KubernetesTCPRemoteCommitProviderTest {
 
         // expect to find remote addresses of matching pods
         assertAddresses(rcp);
+
+        // pods that are not ready are no peers, but may still send events
+        assertFalse(rcp.isRestrictToPeers());
 
         // the addresses are periodically refreshed in the background: expect them to be
         // still there after some refreshes have taken place

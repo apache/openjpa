@@ -113,6 +113,7 @@ import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.kernel.exps.DateTimeExtractPart;
+import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.kernel.exps.Path;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
@@ -302,6 +303,16 @@ public class DBDictionary
      * name a single character expression that cannot occur in a pattern.
      */
     public String searchStringNoEscape = "''";
+    /**
+     * Set to true for a database which may read a backslash inside a string
+     * literal as an escape character, such as MySQL and MariaDB unless their
+     * sql_mode contains NO_BACKSLASH_ESCAPES, or PostgreSQL with
+     * standard_conforming_strings turned off. As that mode can differ between
+     * servers and even sessions, a string value with a backslash is then never
+     * written into the SQL text as a literal, but bound as a parameter. See
+     * {@link #toStringLiteral(String)}.
+     */
+    public boolean backslashEscapesInStringLiterals = false;
     public boolean requiresCastForMathFunctions = false;
     public boolean requiresCastForComparisons = false;
     /**
@@ -5870,6 +5881,22 @@ public class DBDictionary
     }
 
     /**
+     * Whether the given connection is a replication connection, whose driver
+     * sends the statements of a read-only connection to a replica. The store
+     * keeps such a connection read-only outside of a transaction, so that the
+     * reads go to a replica, and makes it writable when a transaction begins.
+     * This implementation returns <code>false</code>.
+     *
+     * @param conn a connection of the store, possibly wrapped by OpenJPA's
+     * decorators
+     * @since 4.2.0
+     */
+    public boolean isReplicationConnection(Connection conn)
+        throws SQLException {
+        return false;
+    }
+
+    /**
      * Implementation of the
      * {@link LoggingConnectionDecorator.SQLWarningHandler} interface
      * that allows customization of the actions to perform when a
@@ -6677,6 +6704,44 @@ public class DBDictionary
 
     public String toJDBCEscapedDateTimeLiteral(String escape, int parseType) {
         return escape; // default: passthrough
+    }
+
+    /**
+     * Return the given value as a SQL string literal which the database reads
+     * back as exactly this value, or null if the value cannot be written as
+     * such a literal and has to be bound as a parameter instead. Single quotes
+     * are doubled. A value with a backslash is not written as a literal if
+     * {@link #backslashEscapesInStringLiterals} is set, because escaping the
+     * backslash would change the value on a server which does not read it as
+     * an escape character. A dictionary overrides this method if its database
+     * may read other values in a literal differently.
+     */
+    public String toStringLiteral(String value) {
+        if (value == null || (backslashEscapesInStringLiterals && value.indexOf('\\') != -1)) {
+            return null;
+        }
+        return "'" + value.replace("'", "''") + "'";
+    }
+
+    /**
+     * Return the given JDBC escaped date-time literal, such as {@code {ts '...'}}, as the
+     * SQL standard typed literal {@code DATE '...'}, {@code TIME '...'} or
+     * {@code TIMESTAMP '...'}, or the escape unchanged if it has no quoted value.
+     * For drivers that translate the escape into a plain string literal, which
+     * has no date-time type in expressions such as COALESCE or CASE.
+     */
+    protected String toTypedDateTimeLiteral(String escape, int parseType) {
+        int start = escape.indexOf('\'');
+        int end = escape.lastIndexOf('\'');
+        if (start < 0 || end <= start) {
+            return escape;
+        }
+        String keyword = switch (parseType) {
+            case Literal.TYPE_DATE -> "DATE ";
+            case Literal.TYPE_TIME -> "TIME ";
+            default -> "TIMESTAMP ";
+        };
+        return keyword + escape.substring(start, end + 1);
     }
 
     public String getExtractField(DateTimeExtractField extField) {

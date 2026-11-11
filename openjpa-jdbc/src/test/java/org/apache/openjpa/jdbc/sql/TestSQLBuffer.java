@@ -19,8 +19,10 @@
 package org.apache.openjpa.jdbc.sql;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.apache.openjpa.jdbc.kernel.exps.Param;
 import org.apache.openjpa.kernel.exps.Parameter;
@@ -66,5 +68,66 @@ public class TestSQLBuffer {
         buf.append("SELECT t0.ID FROM T t0 WHERE ").append(cond);
 
         assertEquals(Arrays.asList(0, b, 1, a, 2, a), buf.getUserParameters());
+    }
+
+    /**
+     * With literals instead of parameters, a string value is written with its
+     * single quotes doubled.
+     */
+    @Test
+    public void testStringLiteralWithQuote() {
+        SQLBuffer buf = new SQLBuffer(new DBDictionary());
+        buf.append("t0.NAME = ").appendValue("O'Brien", null, null, false);
+
+        assertEquals("t0.NAME = 'O''Brien'", buf.getSQL());
+        assertEquals(Collections.emptyList(), buf.getParameters());
+    }
+
+    /**
+     * A string value with a backslash is written as a literal for a database
+     * which reads the backslash as an ordinary character, and bound as a
+     * parameter otherwise.
+     */
+    @Test
+    public void testStringLiteralWithBackslash() {
+        SQLBuffer buf = new SQLBuffer(new DBDictionary());
+        buf.append("t0.NAME = ").appendValue("abc\\'", null, null, false);
+        assertEquals("t0.NAME = 'abc\\'''", buf.getSQL());
+
+        DBDictionary dict = new DBDictionary();
+        dict.backslashEscapesInStringLiterals = true;
+        dict.storeCharsAsNumbers = false;
+        buf = new SQLBuffer(dict);
+        buf.append("t0.NAME = ").appendValue("abc\\'", null, null, false)
+            .append(" AND t0.CODE = ").appendValue('\\', null, null, false)
+            .append(" AND t0.ALT = ").appendValue("O'Brien", null, null, false);
+        assertEquals("t0.NAME = ? AND t0.CODE = ? AND t0.ALT = 'O''Brien'", buf.getSQL());
+        assertEquals(Arrays.asList("abc\\'", '\\'), buf.getParameters());
+    }
+
+    @Test
+    public void testToStringLiteral() {
+        DBDictionary dict = new DBDictionary();
+        assertEquals("'a\\b'", dict.toStringLiteral("a\\b"));
+        assertEquals("''''", dict.toStringLiteral("'"));
+
+        dict.backslashEscapesInStringLiterals = true;
+        assertNull(dict.toStringLiteral("trail\\"));
+        assertEquals("'O''Brien'", dict.toStringLiteral("O'Brien"));
+    }
+
+    @Test
+    public void testToStringLiteralSQLServer() {
+        DBDictionary dict = new SQLServerDictionary();
+        assertEquals("'O''Brien'", dict.toStringLiteral("O'Brien"));
+        assertEquals("'a\\b'", dict.toStringLiteral("a\\b"));
+        assertNull(dict.toStringLiteral("\u00e9t\u00e9"));
+        assertNull(dict.toStringLiteral("\u03a9"));
+
+        SQLBuffer buf = new SQLBuffer(dict);
+        buf.append("t0.NAME = ").appendValue("\u03a9", null, null, false)
+            .append(" AND t0.ALT = ").appendValue("abc", null, null, false);
+        assertEquals("t0.NAME = ? AND t0.ALT = 'abc'", buf.getSQL());
+        assertEquals(Arrays.asList("\u03a9"), buf.getParameters());
     }
 }

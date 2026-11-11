@@ -18,9 +18,12 @@
  */
 package org.apache.openjpa.util;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -28,6 +31,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 
@@ -36,6 +43,7 @@ import org.junit.Test;
  * {@link Serialization.ClassResolvingObjectInputStream}: every candidate loader
  * is consulted, the thread context loader takes precedence, and descriptors that
  * no loader can resolve by name fall back to the stream's own resolution.
+ * Interface names of dynamic proxies are checked like class names.
  */
 public class TestSerializationClassResolving {
 
@@ -87,6 +95,54 @@ public class TestSerializationClassResolving {
         }
     }
 
+    @Test
+    public void testProxyIsResolved() throws Exception {
+        Object read = deserialize(serialize((Serializable) newProxy()));
+        assertTrue(Proxy.isProxyClass(read.getClass()));
+        assertArrayEquals(new Class<?>[]{ Runnable.class }, read.getClass().getInterfaces());
+    }
+
+    /**
+     * A proxy whose interface is blacklisted must be rejected before the
+     * interface is loaded. The interface name in the stream is replaced by a
+     * blacklisted name of the same length.
+     */
+    @Test
+    public void testProxyWithBlacklistedInterfaceIsRejected() throws Exception {
+        String allowed = Runnable.class.getName();
+        String blocked = "org.apache.xalanXX";
+        assertEquals(allowed.length(), blocked.length());
+
+        byte[] bytes = replace(serialize((Serializable) newProxy()),
+            allowed.getBytes(StandardCharsets.UTF_8), blocked.getBytes(StandardCharsets.UTF_8));
+        try {
+            deserialize(bytes);
+            fail("a proxy of a blacklisted interface must not be deserialized");
+        } catch (StoreException e) {
+            assertTrue(String.valueOf(e.getCause()), e.getCause() instanceof SecurityException);
+            assertTrue(e.getCause().getMessage().contains(blocked));
+        }
+    }
+
+    private static Object newProxy() {
+        return Proxy.newProxyInstance(TestSerializationClassResolving.class.getClassLoader(),
+            new Class<?>[]{ Runnable.class }, new Handler());
+    }
+
+    private static byte[] replace(byte[] bytes, byte[] search, byte[] replacement) {
+        for (int i = 0; i <= bytes.length - search.length; i++) {
+            boolean match = true;
+            for (int j = 0; j < search.length && match; j++) {
+                match = bytes[i + j] == search[j];
+            }
+            if (match) {
+                System.arraycopy(replacement, 0, bytes, i, replacement.length);
+                return bytes;
+            }
+        }
+        throw new AssertionError("name not found in the serialized bytes");
+    }
+
     private static byte[] serialize(Serializable value) throws IOException {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         try (ObjectOutputStream objects = new ObjectOutputStream(bytes)) {
@@ -106,6 +162,18 @@ public class TestSerializationClassResolving {
      */
     public static class Payload implements Serializable {
         private static final long serialVersionUID = 1L;
+    }
+
+    /**
+     * Serializable handler of the proxies of this test.
+     */
+    private static class Handler implements InvocationHandler, Serializable {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) {
+            return null;
+        }
     }
 
     /**
