@@ -52,7 +52,7 @@ class TestDBIdentifiers {
         QualifiedDBIdentifier p2 = QualifiedDBIdentifier.newPath(DBIdentifier.newSchema("SCHEMA"));
         DBIdentifier s2 = DBIdentifier.newSchema("SCHEMA2");
         assertFalse(DBIdentifier.equal(p2, s2));
-        assertEquals("\"SCHEMA\"", p2.getName());
+        assertEquals("SCHEMA", p2.getName());
         assertEquals("SCHEMA2", s2.getName());
         assertEquals(DBIdentifierType.SCHEMA, p2.getType());
         assertEquals(DBIdentifierType.SCHEMA, s2.getType());
@@ -63,7 +63,7 @@ class TestDBIdentifiers {
     @Test
     void tableOps() {
         DBIdentifier name = DBIdentifier.newTable("table");
-        assertEquals("\"table\"", name.getName());
+        assertEquals("table", name.getName());
 
         // Assert name is normalized using delimiters
         name = DBIdentifier.newTable("my table");
@@ -127,7 +127,7 @@ class TestDBIdentifiers {
         DBIdentifier s1 = DBIdentifier.newSchema("\"my schema\"");
 
         DBIdentifier p1 = QualifiedDBIdentifier.newPath(s1, t1, c1);
-        assertEquals("\"my schema\".\"table\".\"column 1\"", p1.getName());
+        assertEquals("\"my schema\".table.\"column 1\"", p1.getName());
 
         DBIdentifier c2 = DBIdentifier.newColumn("\"column_2\"");
         // Create a new table name without delimiters, but switch on the
