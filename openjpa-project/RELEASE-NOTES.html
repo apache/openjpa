@@ -24,6 +24,7 @@ under the License.
 <h1>Release Notes for Apache OpenJPA 4.2.0</h1>
 <ul>
   <li><a href="#Overview">Overview</a></li>
+  <li><a href="#UpgradeNotes">Upgrade Notes</a></li>
   <li><a href="#Prerequisites">Prerequisites</a></li>
   <li><a href="#Documentation">Documentation</a></li>
   <li><a href="#GetInvolved">Getting Involved</a></li>
@@ -45,6 +46,31 @@ under the License.
 
 <p>Additional information on the OpenJPA project may be found at the project
 web site: <a href="https://openjpa.apache.org">https://openjpa.apache.org</a></p>
+
+<h2><a name="UpgradeNotes"></a>Upgrade Notes</h2>
+<p>Some changes of this release alter the mapping or the behaviour of
+existing applications. They are described in the Migration Considerations
+of the <a href="https://openjpa.apache.org/documentation.html">reference
+guide</a>, together with the <code>openjpa.Compatibility</code> options that
+restore the behaviour of OpenJPA 4.1.x where one exists.</p>
+<ul>
+  <li>An <code>AttributeConverter</code> that declares its attribute or
+  database type through a generic superclass or through an interface that
+  extends <code>AttributeConverter</code> now maps its attribute to a column
+  of the converter's database type. In 4.1.x the column followed the
+  attribute type, so such a serializable attribute was mapped as a serialized
+  object (a BLOB, <code>BYTEA</code> on PostgreSQL), and <code>autoApply</code>
+  was ignored. Such converters, and those of a parameterized attribute type,
+  are now applied when they are declared <code>autoApply</code>, so attributes
+  of their type get the converter and its column type. Applications with such
+  converters need to migrate the affected columns and their data, or set
+  <code>openjpa.Compatibility=ResolveConverterTypeHierarchy=false</code> to
+  restore the 4.1.x mapping for attributes whose converter declares its types
+  through a generic superclass or interface; the general converter changes
+  described in the Migration Considerations are not affected by this option
+  (<a href='https://issues.apache.org/jira/browse/OPENJPA-2944'>OPENJPA-2944</a>).
+  </li>
+</ul>
 
 <h2><a name="Prerequisites"></a>Prerequisites</h2>
 <P>OpenJPA requires Java 17 or higher and a relational
@@ -325,6 +351,8 @@ in each release of OpenJPA.</P>
     <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2942'>OPENJPA-2942</a>] -         Java8TimeTypesTest is broken at CI (H2)
     </li>
     <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2943'>OPENJPA-2943</a>] -         MySQLDictionary.decorate() is out of date with MySQL Driver Changes
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2944'>OPENJPA-2944</a>] -         Inconsistent column type conversion when using AttributeConverter
     </li>
     <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3001'>OPENJPA-3001</a>] -         MySQL TCK: char field insert truncated on CHAR column
     </li>

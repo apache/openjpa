@@ -1215,7 +1215,8 @@ public class AnnotationPersistenceMetaDataParser
                 case BASIC:
                     parseBasic(fmd, el.getAnnotation(Basic.class), lob,
                         PersistenceMetaDataDefaults.convertsWholeValue(el,
-                            fmd.getDeclaredType()));
+                            fmd.getDeclaredType(),
+                            FieldMetaData.resolveConverterTypeHierarchy(getRepository())));
                     break;
                 case MANY_ONE:
                     parseManyToOne(fmd, el.getAnnotation
