@@ -291,6 +291,10 @@ The TCP provider understands the following properties:
 * ``RecoveryTimeMillis``: Amount of time to wait in milliseconds before attempting to reconnect to a peer of the cluster when connectivity to the peer is lost. Defaults to 15000.
 * ``MaxIdle``: The number of TCP sockets (channels) to keep open to each peer in the cluster for the transmission of events. Defaults to 2.
 * ``MaxTotal``: Total allowed number of TCP sockets (channels) to open simultaneously between each peer in the cluster. Defaults to 2.
+* ``RestrictToPeers``: Whether incoming connections are only accepted from the hosts listed in ``Addresses`` and from this host itself. Connections from any other host are closed and logged as a warning. Set it to false to accept connections from any host, for example when peers connect through network address translation. Defaults to true, except for ``org.apache.openjpa.event.kubernetes.KubernetesTCPRemoteCommitProvider``: it only knows the pods that are ready as peers, but pods that are not ready yet can already send events, so it defaults to false.
+* ``MaxReceiveConnections``: The maximum number of incoming TCP connections from peers that are received simultaneously. Further connections are closed and logged as a warning until a receiving connection ends. Each peer opens up to ``MaxTotal`` connections, so this value should be at least the number of peers multiplied by their ``MaxTotal``. A value of 0 or less means no limit. Defaults to 100. Receiving connections use TCP keep-alive, so the connection of a peer that went away without closing it, for example because its host crashed, is only released once the keep-alive of the operating system detects it (on Linux after about two hours by default, see ``net.ipv4.tcp_keepalive_time``).
+
+When several persistence units in the same JVM listen on the same ``Port``, they share one listener: a connection is accepted if any of them accepts it, and the highest ``MaxReceiveConnections`` applies.
 
 To configure a factory to use the TCP provider, your properties might look like the following:
 

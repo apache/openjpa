@@ -127,6 +127,10 @@ in each release of OpenJPA.</P>
 <h2>        Sub-task
 </h2>
 <ul>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-89'>OPENJPA-89</a>] -         Bulk delete fails to delete owned many-to-many relationship (entry remains in join table)
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-254'>OPENJPA-254</a>] -         Bulk update did not work on an entity that is mapped to multiple tables
+    </li>
     <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2946'>OPENJPA-2946</a>] -         Java Compiler Compiler Warnings need to be addressed
     </li>
     <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2950'>OPENJPA-2950</a>] -         Broadened auto-flush before every query hurts perf
@@ -272,15 +276,55 @@ in each release of OpenJPA.</P>
 <h2>        Bug
 </h2>
 <ul>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-18'>OPENJPA-18</a>] -         bulk update to Entity with secondary table mapping produces BAD SQL
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-26'>OPENJPA-26</a>] -         JPQL parser failed to handle unary operations in arithmetic comparisons, eg. where -(e.salary+10) &gt; -10
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-221'>OPENJPA-221</a>] -         DerbyDictionary doesn't describe a working mapping for char fields.
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-223'>OPENJPA-223</a>] -         columnNames field of @Index annotation is ignored
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-603'>OPENJPA-603</a>] -         Schema Tool discards the size of decimal column
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1698'>OPENJPA-1698</a>] -         SchemaAction=deleteTableContents throws error if table doesn't exist
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2185'>OPENJPA-2185</a>] -         Exception when @SequenceGenerator is used with DerbyDB
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2186'>OPENJPA-2186</a>] -         Sequences are not removed in DerbyDB
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2364'>OPENJPA-2364</a>] -         Slices: Bulk JPQL Deletes/Updates ignoring Target plugins and query hints.
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2496'>OPENJPA-2496</a>] -         Sequence Objects not working in MS SQL 2012
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2590'>OPENJPA-2590</a>] -         PersistenceUnitUtil#getIdentifier should return id's value
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2837'>OPENJPA-2837</a>] -         HerdDBDictionary does not work with 'native' SchemaFactory (LazySchemaFactory) - set useSchemaName=false by default
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2844'>OPENJPA-2844</a>] -         Unable to call getProperties on EnitityManagerFactory before createEntityManager is called.
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2847'>OPENJPA-2847</a>] -         CriteriaUpdate/CriteriaDelete are not implemented
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2879'>OPENJPA-2879</a>] -         Regression in Column.isCompatible
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2880'>OPENJPA-2880</a>] -         NPE in StoredProcedureQueryImpl
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2888'>OPENJPA-2888</a>] -         commons-dbcp2 bundle version defined in karaf features repository is not aligned with the actual version used by openjpa
+    </li>
     <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2929'>OPENJPA-2929</a>] -         Filling inverse FK columns is broken for compound keys
     </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2931'>OPENJPA-2931</a>] -         Comparing objects with composite keys through criteria API doesn't work in joins
+    </li>
     <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2935'>OPENJPA-2935</a>] -         Timestamp + coalesce + orderBy + Postgres makes Postgres syntax errors
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2937'>OPENJPA-2937</a>] -         UUID Generator
     </li>
     <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2938'>OPENJPA-2938</a>] -         Certain combination of ConnectionProperties can lead to NPE
     </li>
     <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2939'>OPENJPA-2939</a>] -         Fix metamodel generation and XML/Json conversion when entity has an UUID property
     </li>
     <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2942'>OPENJPA-2942</a>] -         Java8TimeTypesTest is broken at CI (H2)
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2943'>OPENJPA-2943</a>] -         MySQLDictionary.decorate() is out of date with MySQL Driver Changes
     </li>
     <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3001'>OPENJPA-3001</a>] -         MySQL TCK: char field insert truncated on CHAR column
     </li>
@@ -359,6 +403,14 @@ in each release of OpenJPA.</P>
 <h2>        Improvement
 </h2>
 <ul>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-897'>OPENJPA-897</a>] -         OpenJPA Documentaion should provide better navigation
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1346'>OPENJPA-1346</a>] -         ClassNotFoundException in org.apache.openjpa.datacache.Caches.addTypesByName
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1817'>OPENJPA-1817</a>] -         JPQL doens't support ORDER BY UPPER(fieldname)
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2219'>OPENJPA-2219</a>] -         warn if a "class" listed in persistence unit is an enum and ignore it in mappings
+    </li>
     <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2940'>OPENJPA-2940</a>] -         Implement Jakarta Persistence 3.2
     </li>
     <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2941'>OPENJPA-2941</a>] -         H2 should be upgraded to v2

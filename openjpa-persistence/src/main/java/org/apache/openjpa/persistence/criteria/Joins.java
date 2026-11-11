@@ -45,6 +45,7 @@ import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.persistence.meta.AbstractManagedType;
 import org.apache.openjpa.persistence.meta.Members;
 import org.apache.openjpa.persistence.meta.Members.KeyAttributeImpl;
@@ -435,7 +436,14 @@ abstract class Joins {
 
             Value var = c.getRegisteredVariable(this);
             if (var != null) {
-                 path = factory.newPath(var);
+                path = factory.newPath(var);
+                // the path carries the metadata of the element, as the JPQL parser
+                // sets it, because the store relies on it to compare an entity
+                // with a composite primary key (OPENJPA-2931)
+                ClassMetaData meta = var.getMetaData() != null ? var.getMetaData() : getMemberClassMetaData();
+                if (meta != null) {
+                    path.setMetaData(meta);
+                }
             } else if (parent.inSubquery(subquery)) {
                 org.apache.openjpa.kernel.exps.Subquery subQ = subquery.getSubQ();
                 path = factory.newPath(subQ);
@@ -444,6 +452,10 @@ abstract class Joins {
             } else {
                 path = (org.apache.openjpa.kernel.exps.Path) _parent.toValue(factory, c);
                 path.get(_member.fmd, allowNull);
+                ClassMetaData meta = getMemberClassMetaData();
+                if (meta != null) {
+                    path.setMetaData(meta);
+                }
             }
             return path;
         }
@@ -783,7 +795,15 @@ abstract class Joins {
        public Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> c) {
            Value val = c.getRegisteredVariable(map);
            org.apache.openjpa.kernel.exps.Path path = factory.newPath(val);
-           return factory.getKey(path);
+           Value key = factory.getKey(path);
+           // the key carries the metadata of the key type, because the store relies
+           // on it to compare an entity with a composite primary key (OPENJPA-2931)
+           ValueMetaData vmd = attr.fmd.getKey();
+           ClassMetaData meta = vmd.isEmbedded() ? vmd.getEmbeddedMetaData() : vmd.getDeclaredTypeMetaData();
+           if (meta != null) {
+               key.setMetaData(meta);
+           }
+           return key;
        }
 
        @Override
