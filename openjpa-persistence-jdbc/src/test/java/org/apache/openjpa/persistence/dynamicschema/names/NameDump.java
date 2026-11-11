@@ -121,6 +121,11 @@ public final class NameDump {
         add("mysql-nodelimsupport", "mysql(SupportsDelimitedIdentifiers=false)", null);
         // MariaDB 10.3 and later, which has sequences
         add("mariadb-seq", "mariadb(NextSequenceQuery=\"SELECT NEXTVAL({0})\")", null);
+        // a configured schema that is a reserved word
+        add("mysql-schema", "mysql", null);
+        SETUPS.get("mysql-schema").put("openjpa.jdbc.Schema", "Current");
+        add("derby-schema", "derby", null);
+        SETUPS.get("derby-schema").put("openjpa.jdbc.Schema", "Current");
     }
 
     /**
