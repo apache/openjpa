@@ -505,7 +505,9 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
 
     /**
      * Returns the given identifier as the dictionary whose naming utility
-     * this is names it.
+     * this is names it. An identifier configuration that is no
+     * {@link DBDictionary} delimits no reserved words, so the identifier is
+     * returned as it is.
      *
      * @see DBDictionary#normalize(DBIdentifier)
      */

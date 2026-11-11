@@ -1582,7 +1582,7 @@ public class XMLPersistenceMappingParser
     private void endUniqueConstraint() {
         Unique unique = (Unique) popElement();
         Object ctx = currentElement();
-        DBIdentifier tableName = _dict.normalize(DBIdentifier.newTable("?"));
+        DBIdentifier tableName = DBIdentifier.newTable("?");
         if (ctx instanceof ClassMapping) {
         	ClassMappingInfo info = ((ClassMapping) ctx).getMappingInfo();
         	tableName = (_secondaryTable == null)
