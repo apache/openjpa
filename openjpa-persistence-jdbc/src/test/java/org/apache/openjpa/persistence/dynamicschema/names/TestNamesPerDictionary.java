@@ -18,8 +18,14 @@
  */
 package org.apache.openjpa.persistence.dynamicschema.names;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import junit.framework.TestCase;
 
@@ -62,6 +68,34 @@ public class TestNamesPerDictionary extends TestCase {
         assertTrue(postgres, postgres.contains("MAPPING Order table=Order|Order\n"));
         assertTrue(postgres, postgres.contains("FIELD offset col=OFFSET0|OFFSET0\n"));
         assertTrue(postgres, postgres.contains("FIELD window col=WINDOW0|WINDOW0\n"));
+    }
+
+    /**
+     * Persistence units for different databases that are mapped at the same
+     * time by different threads get the names they get alone as well.
+     */
+    public void testConcurrentPersistenceUnits() throws Exception {
+        List<String> keys = List.of("mysql", "derby", "mariadb", "postgres", "mysql-compat", "sqlserver");
+        Map<String, String> alone = new HashMap<>();
+        for (String key : keys) {
+            alone.put(key, NameDump.dump(key));
+        }
+        ExecutorService executor = Executors.newFixedThreadPool(keys.size());
+        try {
+            List<Future<String>> dumps = new ArrayList<>();
+            List<String> dumped = new ArrayList<>();
+            for (int i = 0; i < 3; i++) {
+                for (String key : keys) {
+                    dumps.add(executor.submit(() -> NameDump.dump(key)));
+                    dumped.add(key);
+                }
+            }
+            for (int i = 0; i < dumps.size(); i++) {
+                assertEquals(dumped.get(i), alone.get(dumped.get(i)), dumps.get(i).get(5, TimeUnit.MINUTES));
+            }
+        } finally {
+            executor.shutdownNow();
+        }
     }
 
     /**
